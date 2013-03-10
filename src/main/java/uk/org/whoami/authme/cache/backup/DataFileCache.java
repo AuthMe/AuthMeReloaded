@@ -27,8 +27,8 @@ public class DataFileCache {
 	public DataFileCache(ItemStack[] inventory, ItemStack[] armor, String group, boolean operator){
 		this.inventory = inventory;
 		this.armor = armor;
-        this.group = group;
-        this.operator = operator;
+                this.group = group;
+                this.operator = operator;
 	}        
 	public ItemStack[] getInventory(){
 		return inventory;
@@ -43,7 +43,7 @@ public class DataFileCache {
 	}
         
 	public Boolean getOperator(){
-		return operator;
+                return operator;
 	}         
 }    
 

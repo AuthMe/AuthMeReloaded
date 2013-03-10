@@ -722,12 +722,9 @@ public class AuthMePlayerListener implements Listener {
           } 
           // isent in session or session was ended correctly
           LimboCache.getInstance().addLimboPlayer(player);
-
-	    try {
-	    	playerBackup.createCache(name, new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(),LimboCache.getInstance().getLimboPlayer(name).getArmour()), LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator());
-	    } catch (NullPointerException npe) {
-	    	ConsoleLogger.showError("Problem while trying to create player cache for : " + name);
-	    }
+          
+          DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(),LimboCache.getInstance().getLimboPlayer(name).getArmour());
+          playerBackup.createCache(name, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator());
                              
         } else {  
             if(!Settings.unRegisteredGroup.isEmpty()){

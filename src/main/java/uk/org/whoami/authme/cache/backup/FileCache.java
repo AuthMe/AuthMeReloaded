@@ -15,8 +15,6 @@ import java.util.Scanner;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
-import uk.org.whoami.authme.ConsoleLogger;
-
 
 public class FileCache {
         //private HashMap<Enchantment, Integer> ench;
@@ -71,14 +69,9 @@ public class FileCache {
                                         
                                                 for(Enchantment e : invstack[i].getEnchantments().keySet())
                                                  {
-                                                	try {
-                                                		enchList = enchList.concat(e.getName()+":"+invstack[i].getEnchantmentLevel(e)+":");
-                                                	} catch (NullPointerException npe) {
-                                                		ConsoleLogger.showError(npe.getMessage());
-                                                		ConsoleLogger.showError("The player " + playername + " has an illegaly enchant, Check Him !");
-                                                	}
-                                                    
-
+                                                    //System.out.println("enchant "+e.getName()+" bog "+invstack[i].getEnchantmentLevel(e));
+                                                    enchList = enchList.concat(e.getName()+":"+invstack[i].getEnchantmentLevel(e)+":");
+                                                    //System.out.println(enchList);
                                                     
                                                  }
                                         }
@@ -103,13 +96,9 @@ public class FileCache {
                                         
                                                 for(Enchantment e : armorstack[i].getEnchantments().keySet())
                                                  {
-                                                    try {
-                                                    	enchList = enchList.concat(e.getName()+":"+armorstack[i].getEnchantmentLevel(e)+":");
-                                                    } catch (NullPointerException npe) {
-                                                		ConsoleLogger.showError(npe.getMessage());
-                                                		ConsoleLogger.showError("The player " + playername + " has an illegaly enchant, Check Him !");
-                                                	}
-                                                    
+                                                    //System.out.println("enchant "+e.getName()+" bog "+armorstack[i].getEnchantmentLevel(e));
+                                                    enchList = enchList.concat(e.getName()+":"+armorstack[i].getEnchantmentLevel(e)+":");
+                                                    //System.out.println(enchList);
                                                     
                                                  }                                        
 				}
@@ -170,7 +159,8 @@ public class FileCache {
 				}
                         // can enchant item? size ofstring in file - 4  all / 2 = number of enchant
 				if (in[0].equals("i")) {
-                                    stacki[i] = new ItemStack(Integer.parseInt(in[1]),
+                                    
+					stacki[i] = new ItemStack(Integer.parseInt(in[1]),
 							Integer.parseInt(in[2]), Short.parseShort((in[3])));
 					// qui c'e' un problema serio!
                                         if(in.length > 4 && !in[4].isEmpty()) {
@@ -182,7 +172,7 @@ public class FileCache {
                                         }
                                         i++;
 				} else {
-                                    stacka[a] = new ItemStack(Integer.parseInt(in[1]),
+					stacka[a] = new ItemStack(Integer.parseInt(in[1]),
 							Integer.parseInt(in[2]), Short.parseShort((in[3])));
                                         if(in.length > 4 && !in[4].isEmpty()) {
                                            for(int k=4;k<in.length-1;k++) {
