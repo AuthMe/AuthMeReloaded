@@ -41,16 +41,11 @@ public class PhpBB {
     return md5(password);
   }
 
-  private String unique_id() {
-    return unique_id("c");
-  }
-
   // global $config;
   // private boolean dss_seeded = false;
 
-  private String unique_id(String extra) {
-    // TODO Generate something random here.
-    return "1234567890abcdef";
+  private String unique_id() {
+    return new RandomString(16).nextString();
   }
 
 

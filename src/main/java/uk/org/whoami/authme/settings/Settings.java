@@ -60,7 +60,7 @@ public final class Settings extends YamlConfiguration {
             isForceSurvivalModeEnabled, isResetInventoryIfCreative, isCachingEnabled, isKickOnWrongPasswordEnabled,
             getEnablePasswordVerifier, protectInventoryBeforeLogInEnabled, isBackupActivated, isBackupOnStart,
             isBackupOnStop, enablePasspartu, isStopEnabled, reloadSupport, rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-            useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck;
+            useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange;
             
             
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
@@ -219,6 +219,7 @@ public void loadConfigOptions() {
         getForcedWorlds = (List<String>) configFile.getList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
         doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
+        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
 
         saveDefaults();
    }
@@ -338,19 +339,18 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         getForcedWorlds = (List<String>) configFile.getList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
         doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
+        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
         
    }
    
 
 public void mergeConfig() {
        
-       if (contains("settings.restrictions.allowedPluginTeleportHandler")) {
+       if (contains("settings.restrictions.allowedPluginTeleportHandler"))
     	   set("settings.restrictions.allowedPluginTeleportHandler", null);
-       }
        
-       if(!contains("DataSource.mySQLColumnEmail")) {
+       if(!contains("DataSource.mySQLColumnEmail"))
     	   set("DataSource.mySQLColumnEmail","email");
-       }
        
        if(contains("Email.GmailAccount")) {
     	   set("Email.mailAccount", getString("Email.GmailAccount"));
@@ -362,77 +362,59 @@ public void mergeConfig() {
     	   set("Email.GmailPassword", null);
        }
        
-       if(!contains("Email.RecoveryPasswordLength")) {
+       if(!contains("Email.RecoveryPasswordLength"))
     	   set("Email.RecoveryPasswordLength", 8);
-       }
        
-       if(!contains("Email.mailPort")) {
+       if(!contains("Email.mailPort"))
     	   set("Email.mailPort", 465);
-       }
        
-       if(!contains("Email.mailSMTP")) {
+       if(!contains("Email.mailSMTP"))
     	   set("Email.mailSMTP", "smtp.gmail.com");
-       }
        
-       if(!contains("Email.mailAccount")) {
+       if(!contains("Email.mailAccount"))
     	   set("Email.mailAccount", "");
-       }
        
-       if(!contains("Email.mailPassword")) {
+       if(!contains("Email.mailPassword"))
     	   set("Email.mailPassword", "");
-       }
        
-       if(!contains("ExternalBoardOptions.mySQLOtherUsernameColumns")) {
+       if(!contains("ExternalBoardOptions.mySQLOtherUsernameColumns"))
     	   set("ExternalBoardOptions.mySQLOtherUsernameColumns", new ArrayList<String>());
-       }
        
-       if(!contains("settings.restrictions.displayOtherAccounts")) {
+       if(!contains("settings.restrictions.displayOtherAccounts"))
     	   set("settings.restrictions.displayOtherAccounts", true);
-       }
        
-       if(!contains("DataSource.mySQLColumnId")) {
+       if(!contains("DataSource.mySQLColumnId"))
     	   set("DataSource.mySQLColumnId", "id");
-       }
        
-       if(!contains("Email.mailSenderName")) {
+       if(!contains("Email.mailSenderName"))
     	   set("Email.mailSenderName", "");
-       }
        
-       if(!contains("Xenoforo.predefinedSalt")) {
+       if(!contains("Xenoforo.predefinedSalt"))
     	   set("Xenoforo.predefinedSalt", "");
-       }
        
-       if(!contains("Security.captcha.useCaptcha")) {
+       if(!contains("Security.captcha.useCaptcha"))
     	   set("Security.captcha.useCaptcha", false);
-       }
        
-       if(!contains("Security.captcha.maxLoginTry")) {
+       if(!contains("Security.captcha.maxLoginTry"))
     	   set("Security.captcha.maxLoginTry", 5);
-       }
        
-       if(!contains("Security.captcha.captchaLength")) {
+       if(!contains("Security.captcha.captchaLength"))
     	   set("Security.captcha.captchaLength", 5);
-       }
        
-       if(!contains("Email.mailSubject")) {
+       if(!contains("Email.mailSubject"))
     	   set("Email.mailSubject", "");
-       }
        
-       if(!contains("Email.mailText")) {
+       if(!contains("Email.mailText"))
     	   set("Email.mailText", "Dear <playername>, \n\n This is your new AuthMe password for the server : \n\n <servername> \n\n <generatedpass>\n\n 	 Do not forget to change password after login! \n /changepassword <generatedpass> newPassword");
-       }
        
-       if(!contains("settings.registration.enableEmailRegistrationSystem")) {
+       if(!contains("settings.registration.enableEmailRegistrationSystem"))
     	   set("settings.registration.enableEmailRegistrationSystem", false);
-       }
        
-       if(!contains("settings.security.doubleMD5SaltLength")) {
+       if(!contains("settings.security.doubleMD5SaltLength"))
     	   set("settings.security.doubleMD5SaltLength", 8);
-       }
        
-       if(!contains("Email.maxRegPerEmail")) {
+       if(!contains("Email.maxRegPerEmail"))
     	   set("Email.maxRegPerEmail", 1);
-       }
        
        if(!contains("Hooks.multiverse")) {
     	   set("Hooks.multiverse", true);
@@ -441,17 +423,17 @@ public void mergeConfig() {
            set("Hooks.bungeecord", false);
        }
        
-       if(!contains("settings.restrictions.ForceSpawnOnTheseWorlds")) {
+       if(!contains("settings.restrictions.ForceSpawnOnTheseWorlds"))
     	   set("settings.restrictions.ForceSpawnOnTheseWorlds", new ArrayList<String>());
-       }
        
-       if(!contains("settings.restrictions.banUnsafedIP")) {
+       if(!contains("settings.restrictions.banUnsafedIP"))
     	   set("settings.restrictions.banUnsafedIP", false);
-       }
        
-       if(!contains("settings.registration.doubleEmailCheck")) {
+       if(!contains("settings.registration.doubleEmailCheck"))
     	   set("settings.registration.doubleEmailCheck", false);
-       }
+       
+       if(!contains("settings.sessions.sessionExpireOnIpChange"))
+    	   set("settings.sessions.sessionExpireOnIpChange", false);
 
        plugin.getLogger().info("Merge new Config Options if needed..");
        plugin.saveConfig();

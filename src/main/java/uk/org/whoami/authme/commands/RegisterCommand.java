@@ -41,7 +41,7 @@ import uk.org.whoami.authme.cache.auth.PlayerCache;
 import uk.org.whoami.authme.cache.limbo.LimboCache;
 import uk.org.whoami.authme.cache.limbo.LimboPlayer;
 import uk.org.whoami.authme.datasource.DataSource;
-import uk.org.whoami.authme.events.AuthMeTeleportEvent;
+import uk.org.whoami.authme.events.RegisterTeleportEvent;
 import uk.org.whoami.authme.security.PasswordSecurity;
 import uk.org.whoami.authme.security.RandomString;
 import uk.org.whoami.authme.settings.Messages;
@@ -195,6 +195,29 @@ public class RegisterCommand implements CommandExecutor {
                 LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg.getTaskId());
 
             	LimboCache.getInstance().deleteLimboPlayer(name);
+                if (Settings.isTeleportToSpawnEnabled) {
+                	World world = player.getWorld();
+                	Location loca = world.getSpawnLocation();
+                	if (plugin.mv != null) {
+                		try {
+                			loca = plugin.mv.getMVWorldManager().getMVWorld(world).getSpawnLocation();
+                		} catch (NullPointerException npe) {
+                			
+                		} catch (ClassCastException cce) {
+                			
+                		} catch (NoClassDefFoundError ncdfe) {
+                			
+                		}
+                	}
+                    RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
+                    plugin.getServer().getPluginManager().callEvent(tpEvent);
+                    if(!tpEvent.isCancelled()) {
+                    	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+                    		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+                    	}
+                  	  	player.teleport(tpEvent.getTo());
+                    }
+                }
                 this.isFirstTimeJoin = true;
                 player.saveData();
                 if (!Settings.noConsoleSpam)
@@ -260,7 +283,7 @@ public class RegisterCommand implements CommandExecutor {
                 			
                 		}
                 	}
-                    AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, loca);
+                    RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if(!tpEvent.isCancelled()) {
                     	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {

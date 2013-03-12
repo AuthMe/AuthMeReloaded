@@ -98,7 +98,7 @@ public class AuthMePlayerListener implements Listener {
         String name = player.getName().toLowerCase();
         
         
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player) ) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
@@ -700,7 +700,7 @@ public class AuthMePlayerListener implements Listener {
 
              if((cur - lastLogin < timeout || timeout == 0) && !auth.getIp().equals("198.18.0.1") ) {
                 if (auth.getNickname().equalsIgnoreCase(name) && auth.getIp().equals(ip) ) {
-                	Bukkit.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
+                	plugin.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
                 	if(PlayerCache.getInstance().getAuth(name) != null) {
                 		PlayerCache.getInstance().updatePlayer(auth);
                 	} else {
@@ -709,10 +709,15 @@ public class AuthMePlayerListener implements Listener {
                     player.sendMessage(m._("valid_session"));
                     return;
                 } else {
-                    int gM = gameMode.get(name);
-                	player.setGameMode(GameMode.getByValue(gM));
-                    player.kickPlayer(m._("unvalid_session"));
-                    return;
+                	if(Settings.sessionExpireOnIpChange && !player.isOnline()) {
+                        PlayerCache.getInstance().removePlayer(name);
+                        LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
+                	} else {
+                        int gM = gameMode.get(name);
+                    	player.setGameMode(GameMode.getByValue(gM));
+                        player.kickPlayer(m._("unvalid_session"));
+                        return;
+                	}
                 }
             } else {
 
@@ -741,7 +746,7 @@ public class AuthMePlayerListener implements Listener {
         	try {
         		LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
             	ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour(), 36, 4);
-            	Bukkit.getServer().getPluginManager().callEvent(ev);
+            	plugin.getServer().getPluginManager().callEvent(ev);
             	if (ev.isCancelled()) {
             		if (!Settings.noConsoleSpam)
             		ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
@@ -820,7 +825,7 @@ public class AuthMePlayerListener implements Listener {
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
             if(Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
             	RestoreInventoryEvent ev = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-            	Bukkit.getServer().getPluginManager().callEvent(ev);
+            	plugin.getServer().getPluginManager().callEvent(ev);
             	if (!ev.isCancelled()) {
             		API.setPlayerInventory(player, limbo.getInventory(), limbo.getArmour());
             	}
@@ -847,6 +852,7 @@ public class AuthMePlayerListener implements Listener {
         }
         if (gameMode.containsKey(name)) gameMode.remove(name);
         player.saveData();
+        
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
@@ -883,7 +889,7 @@ public class AuthMePlayerListener implements Listener {
         if (Settings.protectInventoryBeforeLogInEnabled.booleanValue()) {
         	try {
             	RestoreInventoryEvent ev = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-            	Bukkit.getServer().getPluginManager().callEvent(ev);
+            	plugin.getServer().getPluginManager().callEvent(ev);
             	if (!ev.isCancelled()) {
             		API.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
             	}

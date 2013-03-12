@@ -25,6 +25,7 @@ settings:
     sessions:
         enabled: false
         timeout: 10
+        sessionExpireOnIpChange: false
     restrictions:
         allowChat: false
         allowCommands:
