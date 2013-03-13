@@ -29,6 +29,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -77,6 +78,7 @@ public class AuthMePlayerListener implements Listener {
     
     public static int gm = 0;
     public static HashMap<String, Integer> gameMode = new HashMap<String, Integer>();
+    public HashMap<String, Boolean> sessions = new HashMap<String, Boolean>();
 	private Utils utils = Utils.getInstance();
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
@@ -565,6 +567,22 @@ public class AuthMePlayerListener implements Listener {
     }
     
     @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerPreLogin(AsyncPlayerPreLoginEvent event) {
+    	if (event == null || event.getName() == null || event.getName().isEmpty()) return;
+    	
+    	if (!Settings.isSessionsEnabled && !Settings.sessionExpireOnIpChange) return;
+    	
+    		PlayerAuth auth = data.getAuth(event.getName().toLowerCase());
+    		if (event.getAddress().getHostAddress() == auth.getIp()) {
+    			return;
+    		} else {
+    			if (!plugin.getServer().getPlayer(event.getName()).isOnline()) {
+    				this.sessions.put(event.getName().toLowerCase(), true);
+    			}
+    		}
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
 
         final Player player = event.getPlayer();
@@ -699,28 +717,30 @@ public class AuthMePlayerListener implements Listener {
 
 
              if((cur - lastLogin < timeout || timeout == 0) && !auth.getIp().equals("198.18.0.1") ) {
-                if (auth.getNickname().equalsIgnoreCase(name) && auth.getIp().equals(ip) ) {
-                	plugin.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
-                	if(PlayerCache.getInstance().getAuth(name) != null) {
-                		PlayerCache.getInstance().updatePlayer(auth);
-                	} else {
-                		PlayerCache.getInstance().addPlayer(auth);
-                	}
-                    player.sendMessage(m._("valid_session"));
-                    return;
-                } else {
-                	if(Settings.sessionExpireOnIpChange && !player.isOnline()) {
-                        PlayerCache.getInstance().removePlayer(name);
-                        LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
-                	} else {
-                        int gM = gameMode.get(name);
-                    	player.setGameMode(GameMode.getByValue(gM));
-                        player.kickPlayer(m._("unvalid_session"));
-                        return;
-                	}
-                }
+            	 if (!this.sessions.containsKey(name)) {
+                     if (auth.getNickname().equalsIgnoreCase(name) && auth.getIp().equals(ip) ) {
+                     	plugin.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
+                     	if(PlayerCache.getInstance().getAuth(name) != null) {
+                     		PlayerCache.getInstance().updatePlayer(auth);
+                     	} else {
+                     		PlayerCache.getInstance().addPlayer(auth);
+                     	}
+                         player.sendMessage(m._("valid_session"));
+                         return;
+                     } else {
+                     	int gM = gameMode.get(name);
+                     	player.setGameMode(GameMode.getByValue(gM));
+                     	player.kickPlayer(m._("unvalid_session"));
+                     	return;
+                     }
+            	 } else {
+            		 //Player change his IP between 2 relog-in
+                     PlayerCache.getInstance().removePlayer(name);
+                     LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
+                     this.sessions.remove(name);
+            	 }
             } else {
-
+            	//Session is ended correctly
                 PlayerCache.getInstance().removePlayer(name);
                 LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
                 }
