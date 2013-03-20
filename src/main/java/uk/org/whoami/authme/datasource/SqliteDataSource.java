@@ -93,7 +93,13 @@ public class SqliteDataSource implements DataSource {
                     + lastlocZ + " smallint(6) DEFAULT '0',"
                     + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com',"
                     + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
-
+            
+            rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
+            if (!rs.next()) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
+                        + columnPassword + " VARCHAR(255) NOT NULL;");
+            }
+            rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnIp);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "

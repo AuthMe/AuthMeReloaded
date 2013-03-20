@@ -16,11 +16,11 @@
 
 package uk.org.whoami.authme.listener;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-
-import net.md_5.bungee.api.connection.ConnectedPlayer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -664,9 +664,36 @@ public class AuthMePlayerListener implements Listener {
         Location spawnLoc = world.getSpawnLocation();
         gm = player.getGameMode().getValue();
         final String name = player.getName().toLowerCase();
+        final String playerName = player.getName();
         gameMode.put(name, gm);
         BukkitScheduler sched = plugin.getServer().getScheduler();
         final PlayerJoinEvent e = event;
+        
+        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+		    public void run() {
+			try {
+
+			    ByteArrayOutputStream b = new ByteArrayOutputStream();
+			    DataOutputStream out = new DataOutputStream(b);
+
+			    try {
+				out.writeUTF("IP");
+			    } catch (IOException e) {
+				// Can never happen
+			    }
+
+			    plugin.getServer()
+				    .getPlayerExact(playerName)
+				    .sendPluginMessage(plugin, "BungeeCord",
+					    b.toByteArray());
+
+			} catch (Exception exception) {
+
+			    exception.printStackTrace();
+
+			}
+		    }
+		}, 21L);
 
        
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
@@ -674,12 +701,13 @@ public class AuthMePlayerListener implements Listener {
         }
 
         String ip = player.getAddress().getAddress().getHostAddress();
-        if (Settings.bungee && player instanceof ProxiedPlayer) {
-        	ProxiedPlayer pPlayer = (ProxiedPlayer) player;
-        	ip = pPlayer.getAddress().getAddress().getHostAddress();
-        } else if (Settings.bungee && player instanceof ConnectedPlayer) {
-        	ConnectedPlayer cPlayer = (ConnectedPlayer) player;
-        	ip = cPlayer.getAddress().getAddress().getHostAddress();
+        if (Settings.bungee) {
+        	try {
+        		if (plugin.bungeesIp.containsKey(playerName))
+            	ip = plugin.bungeesIp.get(playerName);
+        	} catch (NoClassDefFoundError ncdfe) {
+        		ConsoleLogger.showError("Your BungeeCord version is outdated");
+        	}
         }
             if(Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
                 int gM = gameMode.get(name);
@@ -961,10 +989,9 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
-            return;
-        }
-
+        if (event.isCancelled() || event.getPlayer() == null) return;
+        if (event.getClickedBlock() == null) return;
+        
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
@@ -982,10 +1009,15 @@ public class AuthMePlayerListener implements Listener {
             }
         }
         
-        final int sign = event.getClickedBlock().getTypeId();
-        if (sign == Material.SIGN_POST.getId() || sign == Material.WALL_SIGN.getId()) {
-        	event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+        try {
+        	final int sign = event.getClickedBlock().getTypeId();
+        	if (sign == Material.SIGN_POST.getId() || sign == Material.WALL_SIGN.getId()) {
+        		event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+        	}
+        } catch (NullPointerException npe) {
+        	
         }
+
 
         event.setCancelled(true);
     }

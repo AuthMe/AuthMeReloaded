@@ -20,8 +20,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import me.muizers.Notifications.Notification;
-import net.md_5.bungee.api.connection.ConnectedPlayer;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -78,14 +76,16 @@ public class RegisterCommand implements CommandExecutor {
         
         final Player player = (Player) sender;
         final String name = player.getName().toLowerCase();
+        final String playerName = player.getName();
         String ipA = player.getAddress().getAddress().getHostAddress();
         
-        if (Settings.bungee && player instanceof ProxiedPlayer) {
-        	ProxiedPlayer pPlayer = (ProxiedPlayer) player;
-        	ipA = pPlayer.getAddress().getAddress().getHostAddress();
-        } else if (Settings.bungee && player instanceof ConnectedPlayer) {
-        	ConnectedPlayer cPlayer = (ConnectedPlayer) player;
-        	ipA = cPlayer.getAddress().getAddress().getHostAddress();
+        if (Settings.bungee) {
+        	try {
+        		if (plugin.bungeesIp.containsKey(playerName))
+            	ipA = plugin.bungeesIp.get(playerName);
+        	} catch (NoClassDefFoundError ncdfe) {
+        		ConsoleLogger.showError("Your BungeeCord version is outdated");
+        	}
         }
         
         final String ip = ipA;
