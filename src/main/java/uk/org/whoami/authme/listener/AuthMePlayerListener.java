@@ -669,6 +669,7 @@ public class AuthMePlayerListener implements Listener {
         BukkitScheduler sched = plugin.getServer().getScheduler();
         final PlayerJoinEvent e = event;
         
+        if (Settings.bungee);
         sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 		    public void run() {
 			try {
