@@ -95,7 +95,6 @@ public class AuthMe extends JavaPlugin {
 	public API api;
     public HashMap<String, Integer> captcha = new HashMap<String, Integer>();
     public HashMap<String, String> cap = new HashMap<String, String>();
-    public HashMap<String, String> bungeesIp = new HashMap<String, String>();
 	public MultiverseCore mv = null;
     
     @Override
@@ -235,10 +234,6 @@ public class AuthMe extends JavaPlugin {
         
         management =  new Management(database, this);
         
-        if (Settings.bungee) {
-        	this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-        	this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCord(this));
-        }
         PluginManager pm = getServer().getPluginManager();
         if (pm.isPluginEnabled("Spout")) {
         	pm.registerEvents(new AuthMeSpoutListener(database), this);

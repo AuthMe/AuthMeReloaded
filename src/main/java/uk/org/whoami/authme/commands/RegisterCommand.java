@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import me.muizers.Notifications.Notification;
+import net.md_5.bungee.BungeeCord;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -76,15 +77,13 @@ public class RegisterCommand implements CommandExecutor {
         
         final Player player = (Player) sender;
         final String name = player.getName().toLowerCase();
-        final String playerName = player.getName();
         String ipA = player.getAddress().getAddress().getHostAddress();
         
         if (Settings.bungee) {
         	try {
-        		if (plugin.bungeesIp.containsKey(playerName))
-            	ipA = plugin.bungeesIp.get(playerName);
+        		ipA = BungeeCord.getInstance().getPlayer(player.getName()).getAddress().getAddress().getHostAddress();
         	} catch (NoClassDefFoundError ncdfe) {
-        		ConsoleLogger.showError("Your BungeeCord version is outdated");
+        		ConsoleLogger.showError("Your BungeeCord version is outdated, you need a version with the latest API");
         	}
         }
         

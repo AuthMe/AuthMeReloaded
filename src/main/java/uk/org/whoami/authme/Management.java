@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import me.muizers.Notifications.Notification;
+import net.md_5.bungee.BungeeCord;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -60,13 +61,11 @@ public class Management {
             
         String name = player.getName().toLowerCase();
         String ip = player.getAddress().getAddress().getHostAddress();
-        String playerName = player.getName();
         if (Settings.bungee) {
         	try {
-        		if (plugin.bungeesIp.containsKey(playerName))
-            	ip = plugin.bungeesIp.get(playerName);
+        		ip = BungeeCord.getInstance().getPlayer(player.getName()).getAddress().getAddress().getHostAddress();
         	} catch (NoClassDefFoundError ncdfe) {
-        		ConsoleLogger.showError("Your BungeeCord version is outdated");
+        		ConsoleLogger.showError("Your BungeeCord version is outdated, you need a version with the latest API");
         	}
         }
         World world = player.getWorld();

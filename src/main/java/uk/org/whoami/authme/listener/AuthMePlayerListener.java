@@ -16,11 +16,10 @@
 
 package uk.org.whoami.authme.listener;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+
+import net.md_5.bungee.BungeeCord;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -664,39 +663,10 @@ public class AuthMePlayerListener implements Listener {
         Location spawnLoc = world.getSpawnLocation();
         gm = player.getGameMode().getValue();
         final String name = player.getName().toLowerCase();
-        final String playerName = player.getName();
         gameMode.put(name, gm);
         BukkitScheduler sched = plugin.getServer().getScheduler();
         final PlayerJoinEvent e = event;
-        
-        if (Settings.bungee);
-        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-		    public void run() {
-			try {
 
-			    ByteArrayOutputStream b = new ByteArrayOutputStream();
-			    DataOutputStream out = new DataOutputStream(b);
-
-			    try {
-				out.writeUTF("IP");
-			    } catch (IOException e) {
-				// Can never happen
-			    }
-
-			    plugin.getServer()
-				    .getPlayerExact(playerName)
-				    .sendPluginMessage(plugin, "BungeeCord",
-					    b.toByteArray());
-
-			} catch (Exception exception) {
-
-			    exception.printStackTrace();
-
-			}
-		    }
-		}, 21L);
-
-       
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
@@ -704,10 +674,9 @@ public class AuthMePlayerListener implements Listener {
         String ip = player.getAddress().getAddress().getHostAddress();
         if (Settings.bungee) {
         	try {
-        		if (plugin.bungeesIp.containsKey(playerName))
-            	ip = plugin.bungeesIp.get(playerName);
+        		ip = BungeeCord.getInstance().getPlayer(player.getName()).getAddress().getAddress().getHostAddress();
         	} catch (NoClassDefFoundError ncdfe) {
-        		ConsoleLogger.showError("Your BungeeCord version is outdated");
+        		ConsoleLogger.showError("Your BungeeCord version is outdated, you need a version with the latest API");
         	}
         }
             if(Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
