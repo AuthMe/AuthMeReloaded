@@ -3,7 +3,7 @@ author: darkwarriros,Xephi
 website: http://www.multiplayer-italia.com/
 description: AuthMe prevents people, which aren't logged in, from doing stuff like placing blocks, moving, typing commands or seeing the inventory of the current player.
 main: uk.org.whoami.authme.AuthMe
-version: 2.7.12b3
+version: 2.7.13
 softdepend: [Vault, ChestShop, Spout, Multiverse-Core, Notifications, Citizens, CombatTag]
 commands:
     register:
@@ -126,3 +126,9 @@ permissions:
     authme.captcha:
         description: Captcha
         default: true
+    authme.admin.setspawn:
+        description: Set the AuthMe spawn point
+        default: op
+    authme.admin.spawn:
+        description: Teleport to AuthMe spawn point
+        default: op

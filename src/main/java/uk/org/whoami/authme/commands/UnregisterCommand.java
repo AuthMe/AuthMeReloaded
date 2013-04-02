@@ -20,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 
 import me.muizers.Notifications.Notification;
 
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -35,10 +36,12 @@ import uk.org.whoami.authme.cache.auth.PlayerCache;
 import uk.org.whoami.authme.cache.backup.FileCache;
 import uk.org.whoami.authme.cache.limbo.LimboCache;
 import uk.org.whoami.authme.datasource.DataSource;
+import uk.org.whoami.authme.events.SpawnTeleportEvent;
 import uk.org.whoami.authme.security.PasswordSecurity;
 import uk.org.whoami.authme.settings.Messages;
 import uk.org.whoami.authme.settings.PlayersLogs;
 import uk.org.whoami.authme.settings.Settings;
+import uk.org.whoami.authme.settings.Spawn;
 import uk.org.whoami.authme.task.MessageTask;
 import uk.org.whoami.authme.task.TimeoutTask;
 
@@ -128,6 +131,27 @@ public class UnregisterCommand implements CommandExecutor {
                  ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                  if(plugin.notifications != null) {
                  	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
+                 }
+                 if (Settings.isTeleportToSpawnEnabled) {
+                	 Location spawn = player.getWorld().getSpawnLocation();
+                     if (plugin.mv != null) {
+                 		try {
+                 			spawn = plugin.mv.getMVWorldManager().getMVWorld(player.getWorld()).getSpawnLocation();
+                 		} catch (NullPointerException npe) {
+                 		} catch (ClassCastException cce) {	
+                 		} catch (NoClassDefFoundError ncdfe) {
+                 		}
+                     }
+                     if (Spawn.getInstance().getLocation() != null)
+                     	spawn = Spawn.getInstance().getLocation();
+                     SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
+                     plugin.getServer().getPluginManager().callEvent(tpEvent);
+                     if(!tpEvent.isCancelled()) {
+                     	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+                   		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+                   	}
+                   	  player.teleport(tpEvent.getTo());
+                     }
                  }
                 return true;
             } else {

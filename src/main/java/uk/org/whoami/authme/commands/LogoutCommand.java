@@ -18,6 +18,7 @@ package uk.org.whoami.authme.commands;
 
 import me.muizers.Notifications.Notification;
 
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -39,6 +40,7 @@ import uk.org.whoami.authme.events.AuthMeTeleportEvent;
 import uk.org.whoami.authme.settings.Messages;
 import uk.org.whoami.authme.settings.PlayersLogs;
 import uk.org.whoami.authme.settings.Settings;
+import uk.org.whoami.authme.settings.Spawn;
 import uk.org.whoami.authme.task.MessageTask;
 import uk.org.whoami.authme.task.TimeoutTask;
 
@@ -93,7 +95,10 @@ public class LogoutCommand implements CommandExecutor {
             playerBackup.createCache(name, playerData, LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator());            
         }
         if (Settings.isTeleportToSpawnEnabled) {
-            AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, player.getWorld().getSpawnLocation());
+        	Location spawnLoc = player.getWorld().getSpawnLocation();
+            if (Spawn.getInstance().getLocation() != null)
+            	spawnLoc = Spawn.getInstance().getLocation();
+            AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawnLoc);
             plugin.getServer().getPluginManager().callEvent(tpEvent);
             if(!tpEvent.isCancelled()) {
             	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {

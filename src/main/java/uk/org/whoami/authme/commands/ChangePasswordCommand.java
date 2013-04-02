@@ -64,14 +64,6 @@ public class ChangePasswordCommand implements CommandExecutor {
             return true;
         }
         
-        //
-        // Check to prevent Changing Password if is active VBullettin system
-        //
-        if(!Settings.getMySQLColumnSalt.isEmpty()) {
-            player.sendMessage(m._("You can Change Your Password on Forum panel!"));
-            return true;            
-        }
-        
         if (args.length != 2) {
             player.sendMessage(m._("usage_changepassword"));
             return true;

@@ -46,6 +46,7 @@ import uk.org.whoami.authme.security.RandomString;
 import uk.org.whoami.authme.settings.Messages;
 import uk.org.whoami.authme.settings.PlayersLogs;
 import uk.org.whoami.authme.settings.Settings;
+import uk.org.whoami.authme.settings.Spawn;
 import uk.org.whoami.authme.task.MessageTask;
 import uk.org.whoami.authme.task.TimeoutTask;
 
@@ -208,6 +209,9 @@ public class RegisterCommand implements CommandExecutor {
                 			
                 		}
                 	}
+                	if (Spawn.getInstance().getLocation() != null)
+                		loca = Spawn.getInstance().getLocation();
+                	
                     RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if(!tpEvent.isCancelled()) {
@@ -282,6 +286,8 @@ public class RegisterCommand implements CommandExecutor {
                 			
                 		}
                 	}
+                	if (Spawn.getInstance().getLocation() != null)
+                		loca = Spawn.getInstance().getLocation();
                     RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if(!tpEvent.isCancelled()) {

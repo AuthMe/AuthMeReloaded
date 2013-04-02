@@ -31,6 +31,7 @@ import uk.org.whoami.authme.security.RandomString;
 import uk.org.whoami.authme.settings.Messages;
 import uk.org.whoami.authme.settings.PlayersLogs;
 import uk.org.whoami.authme.settings.Settings;
+import uk.org.whoami.authme.settings.Spawn;
 
 public class Management {
 
@@ -78,6 +79,8 @@ public class Management {
     		} catch (NoClassDefFoundError ncdfe) {
     		}
         }
+        if (Spawn.getInstance().getLocation() != null)
+        	spawnLoc = Spawn.getInstance().getLocation();
         
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return m._("logged_in");
@@ -140,9 +143,9 @@ public class Management {
                       this.utils.addNormal(player, limbo.getGroup());
                     
                     
-                      if ((Settings.isTeleportToSpawnEnabled.booleanValue()) && (!Settings.isForceSpawnLocOnJoinEnabled.booleanValue()  && Settings.getForcedWorlds.contains(player.getWorld().getName())))
+                      if ((Settings.isTeleportToSpawnEnabled) && (!Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName())))
                                 {
-                        if ((Settings.isSaveQuitLocationEnabled.booleanValue()) && (this.database.getAuth(name).getQuitLocY() != 0))
+                        if ((Settings.isSaveQuitLocationEnabled) && (this.database.getAuth(name).getQuitLocY() != 0))
                                   {
                           this.utils.packCoords(this.database.getAuth(name).getQuitLocX(), this.database.getAuth(name).getQuitLocY(), this.database.getAuth(name).getQuitLocZ(), player);
                                   }
@@ -160,7 +163,7 @@ public class Management {
                                   }
                     
                                 }
-                      else if (Settings.isForceSpawnLocOnJoinEnabled.booleanValue() && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                      else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
                           SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, true);
                           pm.callEvent(tpEvent);
                           if(!tpEvent.isCancelled()) {
@@ -170,7 +173,7 @@ public class Management {
                         	  player.teleport(tpEvent.getTo());
                           }
                                 }
-                      else if ((Settings.isSaveQuitLocationEnabled.booleanValue()) && (this.database.getAuth(name).getQuitLocY() != 0))
+                      else if ((Settings.isSaveQuitLocationEnabled) && (this.database.getAuth(name).getQuitLocY() != 0))
                                 {
                         this.utils.packCoords(this.database.getAuth(name).getQuitLocX(), this.database.getAuth(name).getQuitLocY(), this.database.getAuth(name).getQuitLocZ(), player);
                                 }
@@ -188,7 +191,7 @@ public class Management {
                       
                       player.setGameMode(GameMode.getByValue(limbo.getGameMode()));
                       
-                      if (Settings.protectInventoryBeforeLogInEnabled.booleanValue() && player.hasPlayedBefore()) {
+                      if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
                       		RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
                       		Bukkit.getServer().getPluginManager().callEvent(event);
                       		if (!event.isCancelled()) {
@@ -235,7 +238,7 @@ public class Management {
                 player.sendMessage(m._("login"));
                 displayOtherAccounts(auth);
                 if(!Settings.noConsoleSpam)
-                ConsoleLogger.info(player.getDisplayName() + " logged in!");
+                ConsoleLogger.info(player.getName() + " logged in!");
                 if(plugin.notifications != null) {
                 	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged in!"));
                 }
@@ -243,10 +246,12 @@ public class Management {
                 
             } else {
             	if (!Settings.noConsoleSpam)
-                ConsoleLogger.info(player.getDisplayName() + " used the wrong password");
+                ConsoleLogger.info(player.getName() + " used the wrong password");
                 if (Settings.isKickOnWrongPasswordEnabled) {
-                    int gm = AuthMePlayerListener.gameMode.get(name);
-                	player.setGameMode(GameMode.getByValue(gm));
+                	try {
+                        int gm = AuthMePlayerListener.gameMode.get(name);
+                    	player.setGameMode(GameMode.getByValue(gm));
+                	} catch (NullPointerException npe) {}
                     player.kickPlayer(m._("wrong_pwd"));
                 } else {
                     return (m._("wrong_pwd"));
@@ -266,9 +271,9 @@ public class Management {
                       this.utils.addNormal(player, limbo.getGroup());
                       
 
-                      if ((Settings.isTeleportToSpawnEnabled.booleanValue()) && (!Settings.isForceSpawnLocOnJoinEnabled.booleanValue() && Settings.getForcedWorlds.contains(player.getWorld().getName())))
+                      if ((Settings.isTeleportToSpawnEnabled) && (!Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())))
                                 {
-                        if ((Settings.isSaveQuitLocationEnabled.booleanValue()) && (this.database.getAuth(name).getQuitLocY() != 0)) {
+                        if ((Settings.isSaveQuitLocationEnabled) && (this.database.getAuth(name).getQuitLocY() != 0)) {
                           Location quitLoc = new Location(player.getWorld(), this.database.getAuth(name).getQuitLocX() + 0.5D, this.database.getAuth(name).getQuitLocY() + 0.5D, this.database.getAuth(name).getQuitLocZ() + 0.5D);
                           AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
                           pm.callEvent(tpEvent);
@@ -292,7 +297,7 @@ public class Management {
                                   }
                       
                                 }
-                      else if (Settings.isForceSpawnLocOnJoinEnabled.booleanValue() && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                      else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
 
                           SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, true);
                           pm.callEvent(tpEvent);
@@ -303,7 +308,7 @@ public class Management {
                         	  player.teleport(tpEvent.getTo());
                           }
                                 }
-                      else if ((Settings.isSaveQuitLocationEnabled.booleanValue()) && (this.database.getAuth(name).getQuitLocY() != 0)) {
+                      else if ((Settings.isSaveQuitLocationEnabled) && (this.database.getAuth(name).getQuitLocY() != 0)) {
                         Location quitLoc = new Location(player.getWorld(), this.database.getAuth(name).getQuitLocX() + 0.5D, this.database.getAuth(name).getQuitLocY() + 0.5D, this.database.getAuth(name).getQuitLocZ() + 0.5D);
                         AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
                         pm.callEvent(tpEvent);
@@ -329,7 +334,7 @@ public class Management {
                       
                       player.setGameMode(GameMode.getByValue(limbo.getGameMode()));
                       
-                      if (Settings.protectInventoryBeforeLogInEnabled.booleanValue() && player.hasPlayedBefore()) {
+                      if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
                       	RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
                       	Bukkit.getServer().getPluginManager().callEvent(event);
                       	if (!event.isCancelled()) {
@@ -373,7 +378,7 @@ public class Management {
                 player.sendMessage(m._("login"));
                 displayOtherAccounts(auth);
                 if(!Settings.noConsoleSpam)
-                ConsoleLogger.info(player.getDisplayName() + " logged in!");
+                ConsoleLogger.info(player.getName() + " logged in!");
                 if(plugin.notifications != null) {
                 	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged in!"));
                 }

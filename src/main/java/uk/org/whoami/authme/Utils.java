@@ -150,13 +150,12 @@ public class Utils {
         AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, loc);
         AuthMe.getInstance().getServer().getPluginManager().callEvent(tpEvent);
         if(!tpEvent.isCancelled()) {
-        	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-      		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-      	}
+        	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded())
+        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
       	  pl.teleport(tpEvent.getTo());
         }
     	
-    	id = Bukkit.getScheduler().runTaskTimerAsynchronously(AuthMe.authme, new Runnable()
+    	id = Bukkit.getScheduler().runTaskTimer(AuthMe.authme, new Runnable()
     	{
     		@Override
     		public void run() {

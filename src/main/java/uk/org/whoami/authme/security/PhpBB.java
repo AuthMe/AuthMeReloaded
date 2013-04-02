@@ -45,7 +45,12 @@ public class PhpBB {
   // private boolean dss_seeded = false;
 
   private String unique_id() {
-    return new RandomString(16).nextString();
+    return unique_id("c");
+  }
+  
+  private String unique_id(String extra) {
+	  //TODO: Maybe check the salt?
+	  return "1234567890abcdef";
   }
 
 

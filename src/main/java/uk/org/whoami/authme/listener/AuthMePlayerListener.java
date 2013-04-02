@@ -67,6 +67,7 @@ import uk.org.whoami.authme.plugin.manager.CombatTagComunicator;
 import uk.org.whoami.authme.settings.Messages;
 import uk.org.whoami.authme.settings.PlayersLogs;
 import uk.org.whoami.authme.settings.Settings;
+import uk.org.whoami.authme.settings.Spawn;
 import uk.org.whoami.authme.task.MessageTask;
 import uk.org.whoami.authme.task.TimeoutTask;
 
@@ -556,6 +557,8 @@ public class AuthMePlayerListener implements Listener {
     		} catch (NoClassDefFoundError ncdfe) {
     		}
         }
+        if (Spawn.getInstance().getLocation() != null)
+        	spawn = Spawn.getInstance().getLocation();
         
         if ((spawn.distance(player.getLocation()) > radius) ) {
             event.getPlayer().teleport(spawn);
@@ -661,6 +664,8 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         World world = player.getWorld();
         Location spawnLoc = world.getSpawnLocation();
+        if (Spawn.getInstance().getLocation() != null)
+        	spawnLoc = Spawn.getInstance().getLocation();
         gm = player.getGameMode().getValue();
         final String name = player.getName().toLowerCase();
         gameMode.put(name, gm);

@@ -48,6 +48,7 @@ import uk.org.whoami.authme.datasource.DataSource;
 import uk.org.whoami.authme.security.PasswordSecurity;
 import uk.org.whoami.authme.settings.Messages;
 import uk.org.whoami.authme.settings.Settings;
+import uk.org.whoami.authme.settings.Spawn;
 import uk.org.whoami.authme.settings.SpoutCfg;
 
 public class AdminCommand implements CommandExecutor {
@@ -345,7 +346,33 @@ public class AdminCommand implements CommandExecutor {
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (NullPointerException ex) {
-				System.out.println(ex.getMessage());
+				ConsoleLogger.showError(ex.getMessage());
+			}
+    	
+        } else if (args[0].equalsIgnoreCase("setspawn")) {
+    		try {
+    			if (sender instanceof Player) {
+    				if (Spawn.getInstance().setSpawn(((Player) sender).getLocation()))
+    				sender.sendMessage("[AuthMe] Correctly define new spawn");
+    				else sender.sendMessage("[AuthMe] SetSpawn fail , please retry");
+    			} else {
+    				sender.sendMessage("[AuthMe] Please use that command in game");
+    			}
+			} catch (NullPointerException ex) {
+				ConsoleLogger.showError(ex.getMessage());
+			}
+    	
+        } else if (args[0].equalsIgnoreCase("spawn")) {
+    		try {
+    			if (sender instanceof Player) {
+    				if (Spawn.getInstance().getLocation() != null)
+    				((Player) sender).teleport(Spawn.getInstance().getLocation());
+    				else sender.sendMessage("[AuthMe] Spawn fail , please try to define the spawn");
+    			} else {
+    				sender.sendMessage("[AuthMe] Please use that command in game");
+    			}
+			} catch (NullPointerException ex) {
+				ConsoleLogger.showError(ex.getMessage());
 			}
     	
         } else if (args[0].equalsIgnoreCase("changepassword") || args[0].equalsIgnoreCase("cp")) {
