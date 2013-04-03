@@ -39,3 +39,5 @@ recovery_email: '&c¿Olvidaste tu contraseña? Por favor usa /email recovery <tu
 usage_captcha: '&cUso: /captcha <elCaptcha>'
 wrong_captcha: '&cCaptcha incorrecto, please use : /captcha EL_CAPTCHA'
 valid_captcha: '&c¡ Captcha ingresado correctamente !'
+kick_forvip: '&cA VIP Player join the full server!'
+kick_fullserver: '&cThe server is actually full, Sorry!'

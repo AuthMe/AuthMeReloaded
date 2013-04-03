@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -255,7 +256,6 @@ public class AuthMe extends JavaPlugin {
         if (permissionProvider != null)
             permission = permissionProvider.getProvider();
         else {
-            
             ConsoleLogger.showError("Vault and Permissions plugins is needed for enable AuthMe Reloaded!");
             this.getServer().getPluginManager().disablePlugin(this);   
             }
@@ -496,6 +496,20 @@ public class AuthMe extends JavaPlugin {
 
 	public Messages getMessages() {
 		return m;
+	}
+	
+	public Player generateKickPlayer(Player[] players) {
+		Player player = null;
+		int i;
+		for (i = 0 ; i <= players.length ; i++) {
+			Random rdm = new Random();
+			int a = rdm.nextInt(players.length);
+			if (!players[a].hasPermission("authme.vip")) {
+				player = players[a];
+				break;
+			}	
+		}
+		return player;
 	}
 	
 }

@@ -38,3 +38,5 @@ recovery_email: '&c忘記密碼 ？ 請使用這個的指令來更新密碼 ： 
 usage_captcha: '&c用法 ： 《 /captcha <驗證碼> 》'
 wrong_captcha: '&c你輸入了錯誤的驗證碼，請使用 《 /captcha <驗證碼> 》 再次輸入 。'
 valid_captcha: '&c你的驗證碼是無效的 ！'
+kick_forvip: '&cA VIP Player join the full server!'
+kick_fullserver: '&cThe server is actually full, Sorry!'

@@ -566,7 +566,7 @@ public class AuthMePlayerListener implements Listener {
 
     }
     
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
 
         final Player player = event.getPlayer();
@@ -651,6 +651,26 @@ public class AuthMePlayerListener implements Listener {
                 event.disallow(Result.KICK_OTHER, m._("reg_only"));
                 return;
             }
+        }
+        if (event.getResult() != Result.KICK_FULL) return;
+        if (player.isBanned()) return;
+        if (!player.hasPermission("authme.vip")) {
+        	event.disallow(Result.KICK_FULL, m._("kick_fullserver"));
+        	return;
+        }
+        if (plugin.getServer().getOnlinePlayers().length > plugin.getServer().getMaxPlayers()) {
+        	event.allow();
+        	return;
+        } else {
+        	final Player pl = plugin.generateKickPlayer(plugin.getServer().getOnlinePlayers());
+        	if (pl != null) {
+        		pl.kickPlayer(m._("kick_forvip"));
+        		event.allow();
+        		return;
+        	} else {
+        		ConsoleLogger.info("The player " + player.getName() + " wants to join, but the server is full");
+        		event.disallow(Result.KICK_FULL, m._("kick_fullserver"));
+        	}
         }
     }
     

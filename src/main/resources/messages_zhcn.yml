@@ -38,3 +38,5 @@ recovery_email: '&c忘了你的密码？请输入：“/email recovery <你的�
 usage_captcha: '&c正确用法：/captcha <验证码>'
 wrong_captcha: '&c错误的验证码，请输入：“/captcha <验证码>”'
 valid_captcha: '&c你的验证码是有效的！'
+kick_forvip: '&cA VIP Player join the full server!'
+kick_fullserver: '&cThe server is actually full, Sorry!'

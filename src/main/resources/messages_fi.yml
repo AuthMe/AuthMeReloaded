@@ -38,5 +38,5 @@ recovery_email: '&cUnohtuiko salasana?'
 usage_captcha: '&cKäyttö: /captcha <theCaptcha>'
 wrong_captcha: '&cVäärä varmistus, käytä : /captcha THE_CAPTCHA'
 valid_captcha: '&cSinun varmistus epäonnistui.!'
-
-
+kick_forvip: '&cA VIP Player join the full server!'
+kick_fullserver: '&cThe server is actually full, Sorry!'

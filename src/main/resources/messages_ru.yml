@@ -40,3 +40,8 @@ add_email: '&eДобавь свой email: &d/email add АДРЕС_ПОЧТЫ П
 bad_database_email: '&c[AuthMe] Команда &d/email&c доступна только при работе с MySQL
   или SQLite'
 recovery_email: '&cЗабыл пароль? Используй команду &d/email recovery <АДРЕС_ПОЧТЫ>'
+usage_captcha: '&cUsage: /captcha <theCaptcha>'
+wrong_captcha: '&cWrong Captcha, please use : /captcha THE_CAPTCHA'
+valid_captcha: '&cYour captcha is valid !'
+kick_forvip: '&cA VIP Player join the full server!'
+kick_fullserver: '&cThe server is actually full, Sorry!'

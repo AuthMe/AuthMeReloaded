@@ -73,6 +73,8 @@ public class Messages extends CustomConfiguration {
         this.set("usage_captcha", "&cUsage: /captcha <theCaptcha>");
         this.set("wrong_captcha", "&cWrong Captcha, please use : /captcha THE_CAPTCHA");
         this.set("valid_captcha", "&cYour captcha is valid !");
+        this.set("kick_forvip", "&cA VIP Player join the full server!");
+        this.set("kick_fullserver", "&cThe server is actually full, Sorry!");
     }
 
 	private void loadFile() {
