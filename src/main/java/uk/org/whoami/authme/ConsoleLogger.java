@@ -16,17 +16,65 @@
 
 package uk.org.whoami.authme;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.logging.Logger;
+
+import org.bukkit.Bukkit;
+
+import uk.org.whoami.authme.settings.Settings;
 
 public class ConsoleLogger {
 
     private static final Logger log = Logger.getLogger("Minecraft");
 
     public static void info(String message) {
-        log.info("[AuthMe] " + message);
+    	if (AuthMe.getInstance().isEnabled()) {
+    		log.info("[AuthMe] " + message);
+    		if (Settings.useLogging) {
+    			Calendar date = Calendar.getInstance();
+    			final String actually = "[" + DateFormat.getDateInstance().format(date.getTime()) + ", " + date.get(Calendar.HOUR_OF_DAY) + ":" + date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND) + "] " + message;
+    			Bukkit.getScheduler().runTaskAsynchronously(AuthMe.getInstance(), new Runnable() {
+    				@Override
+    				public void run() {
+    					writeLog(actually);
+    				}
+    			});
+    		}
+    	}
     }
 
     public static void showError(String message) {
-        log.severe("[AuthMe] ERROR: " + message);
+    	if (AuthMe.getInstance().isEnabled()) {
+            log.severe("[AuthMe] ERROR: " + message);
+            if (Settings.useLogging) {
+                Calendar date = Calendar.getInstance();
+                final String actually = "[" + DateFormat.getDateInstance().format(date.getTime()) + ", " + date.get(Calendar.HOUR_OF_DAY) + ":" + date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND) + "] ERROR : " + message;
+                Bukkit.getScheduler().runTaskAsynchronously(AuthMe.getInstance(), new Runnable() {
+        			@Override
+        			public void run() {
+        				writeLog(actually);
+        			}
+                });
+            }
+    	}
     }
+
+	public static void writeLog(String string) {
+        try {
+        	FileWriter fw = new FileWriter(AuthMe.getInstance().getDataFolder() + File.separator + "authme.log", true);
+    		BufferedWriter w = null;
+			w = new BufferedWriter(fw);
+			w.write(string);
+			w.newLine();
+			w.close();
+		} catch (IOException e) {
+			ConsoleLogger.showError(e.getMessage());
+		}
+	}
+
 }

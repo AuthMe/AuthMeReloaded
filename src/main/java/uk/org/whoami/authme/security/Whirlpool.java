@@ -132,26 +132,6 @@ class Whirlpool {
             }
         }
         /*
-        for (int t = 0; t < 8; t++) {
-            System.out.println("static const u64 C" + t + "[256] = {");
-            for (int i = 0; i < 64; i++) {
-                System.out.print("   ");
-                for (int j = 0; j < 4; j++) {
-                    String v = Long.toHexString(C[t][4*i + j]);
-                    while (v.length() < 16) {
-                        v = "0" + v;
-                    }
-                    System.out.print(" LL(0x" + v + "),");
-                }
-                System.out.println();
-            }
-            System.out.println("};");
-            System.out.println();
-        }
-        System.out.println();
-        //*/
-
-        /*
          * build the round constants:
          */
         rc[0] = 0L; /* not used (assigment kept only to properly initialize all variables) */
@@ -167,18 +147,6 @@ class Whirlpool {
                 (C[6][i + 6] & 0x000000000000ff00L) ^
                 (C[7][i + 7] & 0x00000000000000ffL);
         }
-        /*
-        System.out.println("static const u64 rc[R + 1] = {");
-        for (int r = 0; r <= R; r++) {
-            String v = Long.toHexString(rc[r]);
-            while (v.length() < 16) {
-                v = "0" + v;
-            }
-            System.out.println("    LL(0x" + v + "),");
-        }
-        System.out.println("};");
-        System.out.println();
-        //*/
     }
 
     /**
@@ -205,10 +173,10 @@ class Whirlpool {
      * The hashing state.
      */
     protected long[] hash  = new long[8];
-    protected long[] K     = new long[8]; // the round key
+    protected long[] K     = new long[8];
     protected long[] L     = new long[8];
-    protected long[] block = new long[8]; // mu(buffer)
-    protected long[] state = new long[8]; // the cipher state
+    protected long[] block = new long[8];
+    protected long[] state = new long[8];
 
     public Whirlpool() {
     }
@@ -281,8 +249,8 @@ class Whirlpool {
     public void NESSIEinit() {
         Arrays.fill(bitLength, (byte)0);
         bufferBits = bufferPos = 0;
-        buffer[0] = 0; // it's only necessary to cleanup buffer[bufferPos].
-        Arrays.fill(hash, 0L); // initial value
+        buffer[0] = 0;
+        Arrays.fill(hash, 0L);
     }
 
     /**

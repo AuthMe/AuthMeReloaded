@@ -6,6 +6,7 @@ import java.util.List;
 
 import me.muizers.Notifications.Notification;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -44,7 +45,7 @@ public class Management {
     private boolean passpartu = false;
     public static RandomString rdm = new RandomString(Settings.captchaLength);
     public PluginManager pm;
-    
+
     public Management(DataSource database, AuthMe plugin) {
         this.database = database;
         this.plugin = plugin;
@@ -57,342 +58,423 @@ public class Management {
         this.plugin = plugin;
         this.pm = plugin.getServer().getPluginManager();
     }   
-    
-    public String performLogin(Player player, String password) {
-            
-        String name = player.getName().toLowerCase();
-        String ip = player.getAddress().getAddress().getHostAddress();
-        if (Settings.bungee) {
-        	try {
-        		ip = BungeeCord.getInstance().getPlayer(player.getName()).getAddress().getAddress().getHostAddress();
-        	} catch (NoClassDefFoundError ncdfe) {
-        		ConsoleLogger.showError("Your BungeeCord version is outdated, you need a version with the latest API");
-        	}
-        }
-        World world = player.getWorld();
-        Location spawnLoc = world.getSpawnLocation();
-        if (plugin.mv != null) {
-    		try {
-    			spawnLoc = plugin.mv.getMVWorldManager().getMVWorld(world).getSpawnLocation();
-    		} catch (NullPointerException npe) {
-    		} catch (ClassCastException cce) {	
-    		} catch (NoClassDefFoundError ncdfe) {
-    		}
-        }
-        if (Spawn.getInstance().getLocation() != null)
-        	spawnLoc = Spawn.getInstance().getLocation();
-        
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return m._("logged_in");
-           
-        }
 
-        if (!database.isAuthAvailable(player.getName().toLowerCase())) {
-            return m._("user_unknown");
-        }
-        
-        PlayerAuth pAuth = database.getAuth(name);
-            // if Mysql is unavaible
-            if(pAuth == null)
-                return m._("user_unknown");
-            
-            //if columnGroup is set
-            if(!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
-            	return m._("vb_nonActiv");
-            }
-            
-        String hash = pAuth.getHash();
-        String email = pAuth.getEmail();
-        
+    public void performLogin(final Player player, final String password) {
+        final String name = player.getName().toLowerCase();
 
-        try {
-            if(!passpartu) {
-            	if (Settings.useCaptcha) {
-                    if(!plugin.captcha.containsKey(name)) {
-                    	plugin.captcha.put(name, 1);
-                    } else {
-                    	int i = plugin.captcha.get(name) + 1;
-                    	plugin.captcha.remove(name);
-                    	plugin.captcha.put(name, i);
-                    }
-                    
-                    if(plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
-                    	player.sendMessage(m._("need_captcha"));
-                    	plugin.cap.put(name, rdm.nextString());
-                    	return "Type : /captcha " + plugin.cap.get(name);
-                    } else if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
-                    	try {
-                    		plugin.captcha.remove(name);
-                    		plugin.cap.remove(name);
-                    	} catch (NullPointerException npe) {
-                    	}
+    	Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-                    }
-            	}
-            if (PasswordSecurity.comparePasswordWithHash(password, hash, name)) {
-                PlayerAuth auth = new PlayerAuth(name, hash, ip, new Date().getTime(), email);
-            
-                database.updateSession(auth);
-                PlayerCache.getInstance().addPlayer(auth);
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-                if (limbo != null) {
+			@Override
+			public void run() {
+		        String ip = player.getAddress().getAddress().getHostAddress();
+		        if (Settings.bungee) {
+		        	try {
+		        		for (ProxiedPlayer pp : BungeeCord.getInstance().getPlayers()) {
+		        			if (pp.getName().toLowerCase() == name) {
+		        				ip = pp.getAddress().getAddress().getHostAddress();
+		        				break;
+		        			}
+		        		}
+		        	} catch (NoClassDefFoundError ncdfe) {
+		        	}
+		        }
+		        World world = player.getWorld();
+		        Location spawnLoc = world.getSpawnLocation();
+		        if (plugin.mv != null) {
+		    		try {
+		    			spawnLoc = plugin.mv.getMVWorldManager().getMVWorld(world).getSpawnLocation();
+		    		} catch (NullPointerException npe) {
+		    		} catch (ClassCastException cce) {	
+		    		} catch (NoClassDefFoundError ncdfe) {
+		    		}
+		        }
+		        if (Spawn.getInstance().getLocation() != null)
+		        	spawnLoc = Spawn.getInstance().getLocation();
+		        if (PlayerCache.getInstance().isAuthenticated(name)) {
+		            player.sendMessage(m._("logged_in"));
+		            return;
+		        }
+		        if (!database.isAuthAvailable(player.getName().toLowerCase())) {
+		            player.sendMessage(m._("user_unknown"));
+		            return;
+		        }
+		        PlayerAuth pAuth = database.getAuth(name);
+		            if(pAuth == null) {
+		            	player.sendMessage(m._("user_unknown"));
+		            	return;
+		            }
+		            if(!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
+		            	player.sendMessage(m._("vb_nonActiv"));
+		            	return;
+		            }
+		        String hash = pAuth.getHash();
+		        String email = pAuth.getEmail();
+		        try {
+		            if(!passpartu) {
+		            	if (Settings.useCaptcha) {
+		                    if(!plugin.captcha.containsKey(name)) {
+		                    	plugin.captcha.put(name, 1);
+		                    } else {
+		                    	int i = plugin.captcha.get(name) + 1;
+		                    	plugin.captcha.remove(name);
+		                    	plugin.captcha.put(name, i);
+		                    }
+		                    if(plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
+		                    	player.sendMessage(m._("need_captcha"));
+		                    	plugin.cap.put(name, rdm.nextString());
+		                    	player.sendMessage("Type : /captcha " + plugin.cap.get(name));
+		                    	return;
+		                    } else if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
+		                    	try {
+		                    		plugin.captcha.remove(name);
+		                    		plugin.cap.remove(name);
+		                    	} catch (NullPointerException npe) {
+		                    	}
+		                    }
+		            	}
+		            if (PasswordSecurity.comparePasswordWithHash(password, hash, name)) {
+		                PlayerAuth auth = new PlayerAuth(name, hash, ip, new Date().getTime(), email);
+		                database.updateSession(auth);
+		                PlayerCache.getInstance().addPlayer(auth);
+		                final LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+		                PlayerAuth getAuth = database.getAuth(name);
+		                if (limbo != null) {
+		                	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+								@Override
+								public void run() {
+				                      player.setOp(limbo.getOperator());
+								}
+		                	});
 
-                	
-                      player.setOp(limbo.getOperator());
-                    
-                      this.utils.addNormal(player, limbo.getGroup());
-                    
-                    
-                      if ((Settings.isTeleportToSpawnEnabled) && (!Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName())))
-                                {
-                        if ((Settings.isSaveQuitLocationEnabled) && (this.database.getAuth(name).getQuitLocY() != 0))
-                                  {
-                          this.utils.packCoords(this.database.getAuth(name).getQuitLocX(), this.database.getAuth(name).getQuitLocY(), this.database.getAuth(name).getQuitLocZ(), player);
-                                  }
-                                  else {
+		                      utils.addNormal(player, limbo.getGroup());
 
-                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-                          pm.callEvent(tpEvent);
-                          if(!tpEvent.isCancelled()) {
-                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                        	}
-                        	  player.teleport(tpEvent.getTo());
-                          }
-                         
-                                  }
-                    
-                                }
-                      else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
-                          SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, true);
-                          pm.callEvent(tpEvent);
-                          if(!tpEvent.isCancelled()) {
-                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                        	}
-                        	  player.teleport(tpEvent.getTo());
-                          }
-                                }
-                      else if ((Settings.isSaveQuitLocationEnabled) && (this.database.getAuth(name).getQuitLocY() != 0))
-                                {
-                        this.utils.packCoords(this.database.getAuth(name).getQuitLocX(), this.database.getAuth(name).getQuitLocY(), this.database.getAuth(name).getQuitLocZ(), player);
-                                }
-                                else {
-                        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-                        pm.callEvent(tpEvent);
-                        if(!tpEvent.isCancelled()) {
-                        	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                        	}
-                      	  player.teleport(tpEvent.getTo());
-                        }
-                                }
-                      
-                      
-                      player.setGameMode(GameMode.getByValue(limbo.getGameMode()));
-                      
-                      if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
-                      		RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-                      		Bukkit.getServer().getPluginManager().callEvent(event);
-                      		if (!event.isCancelled()) {
-                      			API.setPlayerInventory(player, limbo.getInventory(), limbo.getArmour());
-                      		}
-                      }
+		                      if ((Settings.isTeleportToSpawnEnabled) && (!Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName())))
+		                                {
+		                        if ((Settings.isSaveQuitLocationEnabled) && (getAuth.getQuitLocY() != 0))
+		                                  {
+		                          utils.packCoords(getAuth.getQuitLocX(), getAuth.getQuitLocY(), getAuth.getQuitLocZ(), player);
+		                                  }
+		                                  else {
 
-                    
-                      player.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
-                      player.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
-                      LimboCache.getInstance().deleteLimboPlayer(name);
-                      if (this.playerCache.doesCacheExist(name)) {
-                        this.playerCache.removeCache(name);
-                                }
-                    
-                              }
-                
-               /*
-                *  Little Work Around under Registration Group Switching for admins that
-                *  add Registration thru a web Scripts.
-                */
-                if ( Settings.isPermissionCheckEnabled && AuthMe.permission.playerInGroup(player, Settings.unRegisteredGroup) && !Settings.unRegisteredGroup.isEmpty() ) {
-                    AuthMe.permission.playerRemoveGroup(player.getWorld(), player.getName(), Settings.unRegisteredGroup);
-                    AuthMe.permission.playerAddGroup(player.getWorld(), player.getName(), Settings.getRegisteredGroup);
-                }
-                
-                try {
-                    if (!PlayersLogs.players.contains(player.getName()))
-                    	PlayersLogs.players.add(player.getName());
-                    pllog.save();
-                } catch (NullPointerException ex) {
-                	
-                }
-                
-                Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
-                if (Settings.useCaptcha) {
-                    if(plugin.captcha.containsKey(name)) {
-                    	plugin.captcha.remove(name);
-                    }
-                    if(plugin.cap.containsKey(name)) {
-                    	plugin.cap.containsKey(name);
-                    }
-                }
-                player.sendMessage(m._("login"));
-                displayOtherAccounts(auth);
-                if(!Settings.noConsoleSpam)
-                ConsoleLogger.info(player.getName() + " logged in!");
-                if(plugin.notifications != null) {
-                	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged in!"));
-                }
-                player.saveData();
-                
-            } else {
-            	if (!Settings.noConsoleSpam)
-                ConsoleLogger.info(player.getName() + " used the wrong password");
-                if (Settings.isKickOnWrongPasswordEnabled) {
-                	try {
-                        int gm = AuthMePlayerListener.gameMode.get(name);
-                    	player.setGameMode(GameMode.getByValue(gm));
-                	} catch (NullPointerException npe) {}
-                    player.kickPlayer(m._("wrong_pwd"));
-                } else {
-                    return (m._("wrong_pwd"));
-                }
-            }
-         } else {
-            // need for bypass password check if passpartu command is enabled
-                PlayerAuth auth = new PlayerAuth(name, hash, ip, new Date().getTime(), email);
-                database.updateSession(auth);
-                PlayerCache.getInstance().addPlayer(auth);
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-                if (limbo != null) {
+		                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
+		                          pm.callEvent(tpEvent);
+		                          if(!tpEvent.isCancelled()) {
+		                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+		                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+		                        	}
+		                          	final Location fLoc = tpEvent.getTo();
+		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+											player.teleport(fLoc);
+										}
+		                          	});
+		                          }
+		                                  }
+		                                }
+		                      else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+		                          SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, true);
+		                          pm.callEvent(tpEvent);
+		                          if(!tpEvent.isCancelled()) {
+		                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+		                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+		                        	}
+		                          	final Location fLoc = tpEvent.getTo();
+		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+											player.teleport(fLoc);
+										}
+		                          	});
+		                          }
+		                                }
+		                      else if ((Settings.isSaveQuitLocationEnabled) && (getAuth.getQuitLocY() != 0))
+		                                {
+		                        utils.packCoords(getAuth.getQuitLocX(), getAuth.getQuitLocY(), getAuth.getQuitLocZ(), player);
+		                                }
+		                                else {
+		                        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
+		                        pm.callEvent(tpEvent);
+		                        if(!tpEvent.isCancelled()) {
+		                        	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+		                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+		                        	}
+		                          	final Location fLoc = tpEvent.getTo();
+		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+											player.teleport(fLoc);
+										}
+		                          	});
+		                        }
+		                                }
 
-                      
-                      player.setOp(limbo.getOperator());
-                      
-                      this.utils.addNormal(player, limbo.getGroup());
-                      
+		                      Bukkit.getScheduler().runTask(plugin, new Runnable() {
+								@Override
+								public void run() {
+									player.setGameMode(GameMode.getByValue(limbo.getGameMode()));
+								}
+		                      });
 
-                      if ((Settings.isTeleportToSpawnEnabled) && (!Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())))
-                                {
-                        if ((Settings.isSaveQuitLocationEnabled) && (this.database.getAuth(name).getQuitLocY() != 0)) {
-                          Location quitLoc = new Location(player.getWorld(), this.database.getAuth(name).getQuitLocX() + 0.5D, this.database.getAuth(name).getQuitLocY() + 0.5D, this.database.getAuth(name).getQuitLocZ() + 0.5D);
-                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
-                          pm.callEvent(tpEvent);
-                          if(!tpEvent.isCancelled()) {
-                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                        	}
-                        	  player.teleport(tpEvent.getTo());
-                          }
-                                  }
-                                  else
-                                  {
-                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-                          pm.callEvent(tpEvent);
-                          if(!tpEvent.isCancelled()) {
-                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                        	}
-                        	  player.teleport(tpEvent.getTo());
-                          }
-                                  }
-                      
-                                }
-                      else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+		                      if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
+		                      		RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+		                      		Bukkit.getServer().getPluginManager().callEvent(event);
+		                      		if (!event.isCancelled()) {
+		                      			API.setPlayerInventory(player, limbo.getInventory(), limbo.getArmour());
+		                      		}
+		                      }
 
-                          SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, true);
-                          pm.callEvent(tpEvent);
-                          if(!tpEvent.isCancelled()) {
-                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                        	}
-                        	  player.teleport(tpEvent.getTo());
-                          }
-                                }
-                      else if ((Settings.isSaveQuitLocationEnabled) && (this.database.getAuth(name).getQuitLocY() != 0)) {
-                        Location quitLoc = new Location(player.getWorld(), this.database.getAuth(name).getQuitLocX() + 0.5D, this.database.getAuth(name).getQuitLocY() + 0.5D, this.database.getAuth(name).getQuitLocZ() + 0.5D);
-                        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
-                        pm.callEvent(tpEvent);
-                        if(!tpEvent.isCancelled()) {
-                        	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                        	}
-                      	  player.teleport(tpEvent.getTo());
-                        }
-                                }
-                                else
-                                {
-                        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-                        pm.callEvent(tpEvent);
-                        if(!tpEvent.isCancelled()) {
-                        	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                        	}
-                      	  player.teleport(tpEvent.getTo());
-                        }
-                                }
-                      
-                      
-                      player.setGameMode(GameMode.getByValue(limbo.getGameMode()));
-                      
-                      if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
-                      	RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-                      	Bukkit.getServer().getPluginManager().callEvent(event);
-                      	if (!event.isCancelled()) {
-                      		API.setPlayerInventory(player, limbo.getInventory(), limbo.getArmour());
-                      	}
-                      }
-                      
-                      
-                      player.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
-                      player.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
-                      LimboCache.getInstance().deleteLimboPlayer(name);
-                      if (this.playerCache.doesCacheExist(name)) {
-                        this.playerCache.removeCache(name);
-                                }
-                              }
-                
-               /*
-                *  Little Work Around under Registration Group Switching for admins that
-                *  add Registration thru a web Scripts.
-                */
-                if ( Settings.isPermissionCheckEnabled && AuthMe.permission.playerInGroup(player, Settings.unRegisteredGroup) && !Settings.unRegisteredGroup.isEmpty() ) {
-                    AuthMe.permission.playerRemoveGroup(player.getWorld(), player.getName(), Settings.unRegisteredGroup);
-                    AuthMe.permission.playerAddGroup(player.getWorld(), player.getName(), Settings.getRegisteredGroup);
-                }
-                
-                try {
-                    if (!PlayersLogs.players.contains(player.getName()))
-                    	PlayersLogs.players.add(player.getName());
-                    pllog.save();
-                } catch (NullPointerException ex) { }
-                
-                Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
-                if (Settings.useCaptcha) {
-                    if(plugin.captcha.containsKey(name)) {
-                    	plugin.captcha.remove(name);
-                    }
-                    if(plugin.cap.containsKey(name)) {
-                    	plugin.cap.containsKey(name);
-                    }
-                }
-                player.sendMessage(m._("login"));
-                displayOtherAccounts(auth);
-                if(!Settings.noConsoleSpam)
-                ConsoleLogger.info(player.getName() + " logged in!");
-                if(plugin.notifications != null) {
-                	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged in!"));
-                }
-                player.saveData(); 
-                this.passpartu = false;
-            }                
-          
-        } catch (NoSuchAlgorithmException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return (m._("error"));
-        }
-        return "";
+		                      player.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
+		                      player.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
+		                      LimboCache.getInstance().deleteLimboPlayer(name);
+		                      if (playerCache.doesCacheExist(name)) {
+		                        playerCache.removeCache(name);
+		                                }
+		                              }
+
+		               /*
+		                *  Little Work Around under Registration Group Switching for admins that
+		                *  add Registration thru a web Scripts.
+		                */
+		                if ( Settings.isPermissionCheckEnabled && AuthMe.permission.playerInGroup(player, Settings.unRegisteredGroup) && !Settings.unRegisteredGroup.isEmpty() ) {
+		                    AuthMe.permission.playerRemoveGroup(player.getWorld(), player.getName(), Settings.unRegisteredGroup);
+		                    AuthMe.permission.playerAddGroup(player.getWorld(), player.getName(), Settings.getRegisteredGroup);
+		                }
+
+		                try {
+		                    if (!PlayersLogs.players.contains(player.getName()))
+		                    	PlayersLogs.players.add(player.getName());
+		                    pllog.save();
+		                } catch (NullPointerException ex) {
+		                }
+
+		                Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
+		                if (Settings.useCaptcha) {
+		                    if(plugin.captcha.containsKey(name)) {
+		                    	plugin.captcha.remove(name);
+		                    }
+		                    if(plugin.cap.containsKey(name)) {
+		                    	plugin.cap.containsKey(name);
+		                    }
+		                }
+		                player.sendMessage(m._("login"));
+		                displayOtherAccounts(auth);
+		                if(!Settings.noConsoleSpam)
+		                ConsoleLogger.info(player.getName() + " logged in!");
+		                if(plugin.notifications != null) {
+		                	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged in!"));
+		                }
+		                Bukkit.getScheduler().runTask(plugin, new Runnable() {
+							@Override
+							public void run() {
+								player.saveData();
+							}
+		                });
+
+		            } else {
+		            	if (!Settings.noConsoleSpam)
+		                ConsoleLogger.info(player.getName() + " used the wrong password");
+		                if (Settings.isKickOnWrongPasswordEnabled) {
+		                	try {
+		                        final int gm = AuthMePlayerListener.gameMode.get(name);
+		                        Bukkit.getScheduler().runTask(plugin, new Runnable() {
+									@Override
+									public void run() {
+										player.setGameMode(GameMode.getByValue(gm));
+									}
+		                        });
+		                	} catch (NullPointerException npe) {}
+	                        Bukkit.getScheduler().runTask(plugin, new Runnable() {
+								@Override
+								public void run() {
+									player.kickPlayer(m._("wrong_pwd"));
+								}
+	                        });
+		                } else {
+		                	player.sendMessage(m._("wrong_pwd"));
+		                	return;
+		                }
+		            }
+		         } else {
+		            // need for bypass password check if passpartu command is enabled
+		                PlayerAuth auth = new PlayerAuth(name, hash, ip, new Date().getTime(), email);
+		                database.updateSession(auth);
+		                PlayerCache.getInstance().addPlayer(auth);
+		                final LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+		                if (limbo != null) {
+
+		                	Bukkit.getScheduler().runTask(plugin, new Runnable(){
+								@Override
+								public void run() {
+				                      player.setOp(limbo.getOperator());
+								}
+		                	});
+
+		                      utils.addNormal(player, limbo.getGroup());
+
+		                      if ((Settings.isTeleportToSpawnEnabled) && (!Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())))
+		                                {
+		                        if ((Settings.isSaveQuitLocationEnabled) && (database.getAuth(name).getQuitLocY() != 0)) {
+		                          Location quitLoc = new Location(player.getWorld(), database.getAuth(name).getQuitLocX() + 0.5D, database.getAuth(name).getQuitLocY() + 0.5D, database.getAuth(name).getQuitLocZ() + 0.5D);
+		                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
+		                          pm.callEvent(tpEvent);
+		                          if(!tpEvent.isCancelled()) {
+		                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+		                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+		                        	}
+		                          	final Location fLoc = tpEvent.getTo();
+		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+											player.teleport(fLoc);
+										}
+		                          	});
+		                          }
+		                                  }
+		                                  else
+		                                  {
+		                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
+		                          pm.callEvent(tpEvent);
+		                          if(!tpEvent.isCancelled()) {
+		                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+		                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+		                        	}
+		                          	final Location fLoc = tpEvent.getTo();
+		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+											player.teleport(fLoc);
+										}
+		                          	});
+		                          }
+		                                  }
+		                                }
+		                      else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+
+		                          SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, true);
+		                          pm.callEvent(tpEvent);
+		                          if(!tpEvent.isCancelled()) {
+		                          	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+		                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+		                        	}
+		                          	final Location fLoc = tpEvent.getTo();
+		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+											player.teleport(fLoc);
+										}
+		                          	});
+		                          }
+		                                }
+		                      else if ((Settings.isSaveQuitLocationEnabled) && (database.getAuth(name).getQuitLocY() != 0)) {
+		                        Location quitLoc = new Location(player.getWorld(), database.getAuth(name).getQuitLocX() + 0.5D, database.getAuth(name).getQuitLocY() + 0.5D, database.getAuth(name).getQuitLocZ() + 0.5D);
+		                        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
+		                        pm.callEvent(tpEvent);
+		                        if(!tpEvent.isCancelled()) {
+		                        	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+		                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+		                        	}
+		                          	final Location fLoc = tpEvent.getTo();
+		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+											player.teleport(fLoc);
+										}
+		                          	});
+		                        }
+		                                }
+		                                else
+		                                {
+		                        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
+		                        pm.callEvent(tpEvent);
+		                        if(!tpEvent.isCancelled()) {
+		                        	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+		                        		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+		                        	}
+		                          	final Location fLoc = tpEvent.getTo();
+		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+											player.teleport(fLoc);
+										}
+		                          	});
+		                        }
+		                                }
+
+		                      Bukkit.getScheduler().runTask(plugin, new Runnable() {
+								@Override
+								public void run() {
+									player.setGameMode(GameMode.getByValue(limbo.getGameMode()));
+								}
+		                      });
+
+		                      if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
+		                      	RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+		                      	Bukkit.getServer().getPluginManager().callEvent(event);
+		                      	if (!event.isCancelled()) {
+		                      		API.setPlayerInventory(player, limbo.getInventory(), limbo.getArmour());
+		                      	}
+		                      }
+
+		                      player.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
+		                      player.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
+		                      LimboCache.getInstance().deleteLimboPlayer(name);
+		                      if (playerCache.doesCacheExist(name)) {
+		                        playerCache.removeCache(name);
+		                                }
+		                              }
+
+		               /*
+		                *  Little Work Around under Registration Group Switching for admins that
+		                *  add Registration thru a web Scripts.
+		                */
+		                if ( Settings.isPermissionCheckEnabled && AuthMe.permission.playerInGroup(player, Settings.unRegisteredGroup) && !Settings.unRegisteredGroup.isEmpty() ) {
+		                    AuthMe.permission.playerRemoveGroup(player.getWorld(), player.getName(), Settings.unRegisteredGroup);
+		                    AuthMe.permission.playerAddGroup(player.getWorld(), player.getName(), Settings.getRegisteredGroup);
+		                }
+
+		                try {
+		                    if (!PlayersLogs.players.contains(player.getName()))
+		                    	PlayersLogs.players.add(player.getName());
+		                    pllog.save();
+		                } catch (NullPointerException ex) { }
+
+		                Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
+		                if (Settings.useCaptcha) {
+		                    if(plugin.captcha.containsKey(name)) {
+		                    	plugin.captcha.remove(name);
+		                    }
+		                    if(plugin.cap.containsKey(name)) {
+		                    	plugin.cap.containsKey(name);
+		                    }
+		                }
+		                player.sendMessage(m._("login"));
+		                displayOtherAccounts(auth);
+		                if(!Settings.noConsoleSpam)
+		                ConsoleLogger.info(player.getName() + " logged in!");
+		                if(plugin.notifications != null) {
+		                	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged in!"));
+		                }
+		                Bukkit.getScheduler().runTask(plugin, new Runnable() {
+							@Override
+							public void run() {
+								player.saveData();
+							}
+		                });
+		                passpartu = false;
+		            }
+		        } catch (NoSuchAlgorithmException ex) {
+		            ConsoleLogger.showError(ex.getMessage());
+		            player.sendMessage(m._("error"));
+		            return;
+		        }
+		        return;
+			}
+    		
+    	});
+
 	}
-    
+
     private void displayOtherAccounts(PlayerAuth auth) {
     	if (!Settings.displayOtherAccounts) {
     		return;
@@ -417,7 +499,7 @@ public class Management {
     		} else {
     			message = message + ".";
     		}
-    		
+
     	}
     	for (Player player : AuthMe.getInstance().getServer().getOnlinePlayers()) {
     		if (player.hasPermission("authme.seeOtherAccounts")) {
@@ -426,6 +508,5 @@ public class Management {
     		}
     	}
     }
-    
-    
+
 }

@@ -32,7 +32,6 @@ import uk.org.whoami.authme.settings.Settings;
 
 public class FileDataSource implements DataSource {
 
-
     /* file layout:
      *
      * PLAYERNAME:HASHSUM:IP:LOGININMILLIESECONDS:COORDS
@@ -48,7 +47,7 @@ public class FileDataSource implements DataSource {
         source = new File(Settings.AUTH_FILE);
         source.createNewFile();
     }
-    
+
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         BufferedReader br = null;
@@ -83,17 +82,14 @@ public class FileDataSource implements DataSource {
         if (isAuthAvailable(auth.getNickname())) {
             return false;
         }
-
         BufferedWriter bw = null;
         try {
             if( auth.getQuitLocY() == 0 ) {
             bw = new BufferedWriter(new FileWriter(source, true));
             bw.write(auth.getNickname() + ":" + auth.getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + "\n");
-            //System.out.println("[Debug save1] "+auth.getQuitLocY());
             } else {
             bw = new BufferedWriter(new FileWriter(source, true));
-            bw.write(auth.getNickname() + ":" + auth.getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + "\n");                
-            //System.out.println("[Debug save2] "+auth.getQuitLocY());
+            bw.write(auth.getNickname() + ":" + auth.getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + "\n");
             }
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -114,9 +110,7 @@ public class FileDataSource implements DataSource {
         if (!isAuthAvailable(auth.getNickname())) {
             return false;
         }
-
         PlayerAuth newAuth = null;
-
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
@@ -152,9 +146,7 @@ public class FileDataSource implements DataSource {
         if (!isAuthAvailable(auth.getNickname())) {
             return false;
         }
-
         PlayerAuth newAuth = null;
-
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
@@ -187,13 +179,10 @@ public class FileDataSource implements DataSource {
 
    @Override
    public boolean updateQuitLoc(PlayerAuth auth) {
-       
        if (!isAuthAvailable(auth.getNickname())) {
             return false;
         }
-       
         PlayerAuth newAuth = null;
-
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
@@ -201,7 +190,6 @@ public class FileDataSource implements DataSource {
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equals(auth.getNickname())) {
-                    //System.out.println("[Debug update] "+auth.getQuitLocX());
                     newAuth = new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
                     break;
                 }
@@ -224,7 +212,7 @@ public class FileDataSource implements DataSource {
         saveAuth(newAuth);
         return true;
     }
-    
+
     @Override
     public int getIps(String ip) {
         BufferedReader br = null;
@@ -234,7 +222,6 @@ public class FileDataSource implements DataSource {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
-                //System.out.println(ip+" match? "+args[2]);
                 if (args.length > 3 && args[2].equals(ip)) {
                     countIp++;
                 }
@@ -255,14 +242,13 @@ public class FileDataSource implements DataSource {
             }
         } 
     }
-   
+
     @Override
     public int purgeDatabase(long until) {
         BufferedReader br = null;
         BufferedWriter bw = null;
         ArrayList<String> lines = new ArrayList<String>();
         int cleared = 0;
-
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -276,7 +262,6 @@ public class FileDataSource implements DataSource {
                 }
                 cleared++;
             }
-
             bw = new BufferedWriter(new FileWriter(source));
             for (String l : lines) {
                 bw.write(l + "\n");
@@ -309,7 +294,6 @@ public class FileDataSource implements DataSource {
         if (!isAuthAvailable(user)) {
             return false;
         }
-
         BufferedReader br = null;
         BufferedWriter bw = null;
         ArrayList<String> lines = new ArrayList<String>();
@@ -322,7 +306,6 @@ public class FileDataSource implements DataSource {
                     lines.add(line);
                 }
             }
-
             bw = new BufferedWriter(new FileWriter(source));
             for (String l : lines) {
                 bw.write(l + "\n");
@@ -400,7 +383,7 @@ public class FileDataSource implements DataSource {
 	public boolean updateEmail(PlayerAuth auth) {
 		return false;
 	}
-	
+
 	@Override
 	public boolean updateSalt(PlayerAuth auth) {
 		return false;
@@ -415,7 +398,6 @@ public class FileDataSource implements DataSource {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
-                //System.out.println(ip+" match? "+args[2]);
                 if (args.length > 3 && args[2].equals(auth.getIp())) {
                     countIp.add(args[0]);
                 }
@@ -471,4 +453,49 @@ public class FileDataSource implements DataSource {
 	public List<String> getAllAuthsByEmail(String email) {
 		return new ArrayList<String>();
 	}
+
+	@Override
+	public void purgeBanned(List<String> banned) {
+        BufferedReader br = null;
+        BufferedWriter bw = null;
+        ArrayList<String> lines = new ArrayList<String>();
+        try {
+            br = new BufferedReader(new FileReader(source));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] args = line.split(":");
+                try {
+                	if (banned.contains(args[0])) {
+                		lines.add(line);
+                	}
+                } catch (NullPointerException npe) {}
+                catch (ArrayIndexOutOfBoundsException aioobe) {}
+            }
+            bw = new BufferedWriter(new FileWriter(source));
+            for (String l : lines) {
+                bw.write(l + "\n");
+            }
+        } catch (FileNotFoundException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } catch (IOException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException ex) {
+                }
+            }
+            if (bw != null) {
+                try {
+                    bw.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
+        return;
+	}
+
 }

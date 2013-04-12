@@ -48,12 +48,11 @@ public class LogoutCommand implements CommandExecutor {
 
     private Messages m = Messages.getInstance();
     private PlayersLogs pllog = PlayersLogs.getInstance();
-    //private Settings settings = Settings.getInstance();
     private AuthMe plugin;
     private DataSource database;
     private Utils utils = Utils.getInstance();
     private FileCache playerBackup = new FileCache();
-    
+
     public LogoutCommand(AuthMe plugin, DataSource database) {
         this.plugin = plugin;
         this.database = database;
@@ -78,13 +77,12 @@ public class LogoutCommand implements CommandExecutor {
             return true;
         }
 
-        //clear session
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
         auth.setIp("198.18.0.1");
         database.updateSession(auth);
 
         PlayerCache.getInstance().removePlayer(name);
-        
+
         LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
         LimboCache.getInstance().addLimboPlayer(player);
         if(Settings.protectInventoryBeforeLogInEnabled) {
@@ -117,22 +115,19 @@ public class LogoutCommand implements CommandExecutor {
         }
         BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, m._("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT.getTaskId());
-
         try {
         	         if (PlayersLogs.players.contains(player.getName())) {
         	        	 	PlayersLogs.players.remove(player.getName());
         	        	 	pllog.save();
         	         }
         } catch (NullPointerException npe) {
-        	
         }
-
         player.sendMessage(m._("logout"));
         ConsoleLogger.info(player.getDisplayName() + " logged out");
         if(plugin.notifications != null) {
         	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged out!"));
         }
-
         return true;
     }
+
 }

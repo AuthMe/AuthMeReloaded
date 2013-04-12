@@ -33,14 +33,13 @@ public class AuthMeBlockListener implements Listener {
 
     private DataSource data;
     public AuthMe instance;
-    //private Settings settings = Settings.getInstance();
 
     public AuthMeBlockListener(DataSource data, AuthMe instance) {
         this.data = data;
         this.instance = instance;
     }
 
-     @EventHandler
+    @EventHandler
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
@@ -62,11 +61,10 @@ public class AuthMeBlockListener implements Listener {
                 return;
             }
         }
-
         event.setCancelled(true);
     }
 
-     @EventHandler
+    @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
@@ -74,7 +72,7 @@ public class AuthMeBlockListener implements Listener {
 
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
-       
+
         if(instance.getCitizensCommunicator().isNPC(player, instance) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
@@ -88,8 +86,7 @@ public class AuthMeBlockListener implements Listener {
                 return;
             }
         }
-
         event.setCancelled(true);
     }
-     
+
 }

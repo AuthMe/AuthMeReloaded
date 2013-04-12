@@ -49,11 +49,10 @@ public class UnregisterCommand implements CommandExecutor {
 
     private Messages m = Messages.getInstance();
     private PlayersLogs pllog = PlayersLogs.getInstance();
-    //private Settings settings = Settings.getInstance();
     public AuthMe plugin;
     private DataSource database;
     private FileCache playerCache = new FileCache();
-    
+
     public UnregisterCommand(AuthMe plugin, DataSource database) {
         this.plugin = plugin;
         this.database = database;
@@ -94,8 +93,6 @@ public class UnregisterCommand implements CommandExecutor {
                     player.saveData();
                     PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                     LimboCache.getInstance().addLimboPlayer(player);
-
-
                     int delay = Settings.getRegistrationTimeout * 20;
                     int interval = Settings.getWarnMessageInterval;
                     BukkitScheduler sched = sender.getServer().getScheduler();
@@ -121,8 +118,7 @@ public class UnregisterCommand implements CommandExecutor {
                 // check if Player cache File Exist and delete it, preventing duplication of items
                  if(playerCache.doesCacheExist(name)) {
                         playerCache.removeCache(name);
-                 }   
-                
+                 }
                  if (PlayersLogs.players.contains(player.getName())) {
                 	 PlayersLogs.players.remove(player.getName());
                 	 pllog.save();

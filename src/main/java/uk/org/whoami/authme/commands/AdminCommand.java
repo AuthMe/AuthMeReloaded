@@ -21,12 +21,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -52,14 +54,12 @@ import uk.org.whoami.authme.settings.Spawn;
 import uk.org.whoami.authme.settings.SpoutCfg;
 
 public class AdminCommand implements CommandExecutor {
-	
-	public AuthMe plugin;
 
+	public AuthMe plugin;
     private Messages m = Messages.getInstance();
     private SpoutCfg s = SpoutCfg.getInstance();
-    //private Settings settings = Settings.getInstance();
     public DataSource database;
-    
+
     public AdminCommand(AuthMe plugin, DataSource database) {
         this.database = database;
         this.plugin = plugin;
@@ -77,13 +77,12 @@ public class AdminCommand implements CommandExecutor {
             sender.sendMessage("/authme lastlogin <playername> - Display Date about the Player's LastLogin");
             return true;
         }
-        
+
        if((sender instanceof ConsoleCommandSender) && args[0].equalsIgnoreCase("passpartuToken")) {
            if(args.length > 1) {  
                System.out.println("[AuthMe] command usage: authme passpartuToken");
                return true;
            }
-               
            if(Utils.getInstance().obtainToken()) {
                 System.out.println("[AuthMe] You have 30s for insert this token ingame with /passpartu [token]");
             } else {
@@ -91,40 +90,32 @@ public class AdminCommand implements CommandExecutor {
             }
             return true;
        }
-       
-       
+
        if (!sender.hasPermission("authme.admin." + args[0].toLowerCase())) {
             sender.sendMessage(m._("no_perm"));
             return true;
         }
-       
-        
+
         if (args[0].equalsIgnoreCase("version")) {
             sender.sendMessage("AuthMe Version: "+AuthMe.getInstance().getDescription().getVersion());
             return true;
         }
-        
-        
+
         if (args[0].equalsIgnoreCase("purge")) {
             if (args.length != 2) {
                 sender.sendMessage("Usage: /authme purge <DAYS>");
                 return true;
             }
-
             try {
                 long days = Long.parseLong(args[1]) * 86400000;
                 long until = new Date().getTime() - days;
-
                 sender.sendMessage("Deleted " + database.purgeDatabase(until) + " user accounts");
-
             } catch (NumberFormatException e) {
                 sender.sendMessage("Usage: /authme purge <DAYS>");
                 return true;
             }
         } else if (args[0].equalsIgnoreCase("reload")) {
             database.reload();
-            
-            //Trying to load config from JAR-Ressources, if config.yml doesn't exist...
             File newConfigFile = new File("plugins/AuthMe","config.yml");
             if (!newConfigFile.exists()) {
             	InputStream fis = getClass().getResourceAsStream("/config.yml");
@@ -186,7 +177,6 @@ public class AdminCommand implements CommandExecutor {
             	final CommandSender fSender = sender;
             	final String[] arguments = args;
             	Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
     				@Override
     				public void run() {
     		        	PlayerAuth pAuth = null;
@@ -223,16 +213,13 @@ public class AdminCommand implements CommandExecutor {
     		        		fSender.sendMessage("[AuthMe] This player is unknown");
     		        		return;
     		        	}
-    					
     				}
-            		
             	});
             	return true;
         	} else {
             	final CommandSender fSender = sender;
             	final String[] arguments = args;
             	Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
     				@Override
     				public void run() {
     		        	String message = "[AuthMe] ";
@@ -262,9 +249,7 @@ public class AdminCommand implements CommandExecutor {
     		        		fSender.sendMessage("[AuthMe] Please put a valid IP");
     		        		return;
     		        	}
-    					
     				}
-            		
             	});
             	return true;
         	}
@@ -273,16 +258,13 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage: /authme register playername password");
                 return true;
             }
-
             try {
                 String name = args[1].toLowerCase();
                 String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
-
                 if (database.isAuthAvailable(name)) {
                     sender.sendMessage(m._("user_regged"));
                     return true;
                 }
-
                 PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0);
                 if (!database.saveAuth(auth)) {
                     sender.sendMessage(m._("error"));
@@ -304,7 +286,6 @@ public class AdminCommand implements CommandExecutor {
 				} catch (NullPointerException ex) {
 					System.out.println(ex.getMessage());
 				}
-        	
         } else if (args[0].equalsIgnoreCase("xauthimport")) {
             	xAuthToFlat converter = new xAuthToFlat(plugin, database);
             	if (converter.convert(sender)) {
@@ -312,7 +293,6 @@ public class AdminCommand implements CommandExecutor {
             	} else {
             		sender.sendMessage("[AuthMe] Error while trying to convert from xAuth database");
             	}
-        	
         } else if (args[0].equalsIgnoreCase("getemail")) {
             if (args.length != 2) {
                 sender.sendMessage("Usage: /authme getemail playername");
@@ -322,7 +302,6 @@ public class AdminCommand implements CommandExecutor {
     		PlayerAuth getAuth = PlayerCache.getInstance().getAuth(playername);
     		sender.sendMessage("[AuthMe] " + args[1] + " email : " + getAuth.getEmail());
     		return true;
-    	
         } else if (args[0].equalsIgnoreCase("chgemail")) {
             if (args.length != 3) {
                 sender.sendMessage("Usage: /authme chgemail playername email");
@@ -337,7 +316,6 @@ public class AdminCommand implements CommandExecutor {
             }
             PlayerCache.getInstance().updatePlayer(getAuth);
     		return true;
-    	
         } else if (args[0].equalsIgnoreCase("convertfromrakamak")) {
     		try {
     			RakamakConverter.RakamakConvert();
@@ -348,7 +326,6 @@ public class AdminCommand implements CommandExecutor {
 			} catch (NullPointerException ex) {
 				ConsoleLogger.showError(ex.getMessage());
 			}
-    	
         } else if (args[0].equalsIgnoreCase("setspawn")) {
     		try {
     			if (sender instanceof Player) {
@@ -361,7 +338,18 @@ public class AdminCommand implements CommandExecutor {
 			} catch (NullPointerException ex) {
 				ConsoleLogger.showError(ex.getMessage());
 			}
-    	
+        } else if (args[0].equalsIgnoreCase("purgebannedplayers")) {
+        	List<String> bannedPlayers = new ArrayList<String>();
+        	for (OfflinePlayer off : plugin.getServer().getBannedPlayers()) {
+        		bannedPlayers.add(off.getName().toLowerCase());
+        	}
+        	final List<String> bP = bannedPlayers;
+        	Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+				@Override
+				public void run() {
+					database.purgeBanned(bP);
+				}
+        	});
         } else if (args[0].equalsIgnoreCase("spawn")) {
     		try {
     			if (sender instanceof Player) {
@@ -374,17 +362,14 @@ public class AdminCommand implements CommandExecutor {
 			} catch (NullPointerException ex) {
 				ConsoleLogger.showError(ex.getMessage());
 			}
-    	
         } else if (args[0].equalsIgnoreCase("changepassword") || args[0].equalsIgnoreCase("cp")) {
             if (args.length != 3) {
                 sender.sendMessage("Usage: /authme changepassword playername newpassword");
                 return true;
             }
-
             try {
                 String name = args[1].toLowerCase();
                 String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
-
                 PlayerAuth auth = null;
                 if (PlayerCache.getInstance().isAuthenticated(name)) {
                     auth = PlayerCache.getInstance().getAuth(name);
@@ -395,12 +380,10 @@ public class AdminCommand implements CommandExecutor {
                     return true;
                 }
                 auth.setHash(hash);
-
                 if (!database.updatePassword(auth)) {
                     sender.sendMessage(m._("error"));
                     return true;
                 }
-
                 sender.sendMessage("pwd_changed");
                 ConsoleLogger.info(args[1] + "'s password changed");
             } catch (NoSuchAlgorithmException ex) {
@@ -412,17 +395,13 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage: /authme unregister playername");
                 return true;
             }
-
             String name = args[1].toLowerCase();
-
             if (!database.removeAuth(name)) {
                 sender.sendMessage(m._("error"));
                 return true;
             }
-
             PlayerCache.getInstance().removePlayer(name);
             sender.sendMessage("unregistered");
-
             ConsoleLogger.info(args[1] + " unregistered");
         } else {
             sender.sendMessage("Usage: /authme reload|register playername password|changepassword playername password|unregister playername");

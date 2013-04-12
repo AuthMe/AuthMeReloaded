@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -71,10 +72,8 @@ import uk.org.whoami.authme.settings.Spawn;
 import uk.org.whoami.authme.task.MessageTask;
 import uk.org.whoami.authme.task.TimeoutTask;
 
-
 public class AuthMePlayerListener implements Listener {
 
-    
     public static int gm = 0;
     public static HashMap<String, Integer> gameMode = new HashMap<String, Integer>();
 	private Utils utils = Utils.getInstance();
@@ -96,8 +95,7 @@ public class AuthMePlayerListener implements Listener {
 
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
-        
-        
+
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
@@ -122,30 +120,28 @@ public class AuthMePlayerListener implements Listener {
         if (cmd.equalsIgnoreCase("/login") || cmd.equalsIgnoreCase("/register") || cmd.equalsIgnoreCase("/passpartu") || cmd.equalsIgnoreCase("/l") || cmd.equalsIgnoreCase("/reg") || cmd.equalsIgnoreCase("/email") || cmd.equalsIgnoreCase("/captcha")) {
             return;
         }
-        
         if (Settings.allowCommands.contains(cmd)) {
         	return;
         }
-
         event.setMessage("/notloggedin");
         event.setCancelled(true);
     }
-    
+
     @EventHandler( priority = EventPriority.NORMAL)
     public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
         }
-        
+
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
-        
+
         if(plugin.CitizensVersion != 0) {
         	if (plugin.getCitizensCommunicator().isNPC(player, plugin)) {
         		return;
         	}
         }
-        
+
         if(plugin.CombatTag != 0) {
         	if (CombatTagComunicator.isNPC(player)) {
         		return;
@@ -159,7 +155,7 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-        
+
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
@@ -167,7 +163,7 @@ public class AuthMePlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        
+
         if (!event.isAsynchronous()) {
         	if (data.isAuthAvailable(name)) {
         		player.sendMessage(m._("login_msg"));
@@ -178,7 +174,6 @@ public class AuthMePlayerListener implements Listener {
         		player.sendMessage(m._("reg_msg"));
         	}
         } else {
-        	
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
         		{
         			@Override
@@ -193,14 +188,13 @@ public class AuthMePlayerListener implements Listener {
         		}});
         }        
     }
-    
+
     @EventHandler( priority = EventPriority.HIGH)
     public void onPlayerHighChat(AsyncPlayerChatEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
         }
-        
-        
+
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
 
@@ -223,7 +217,7 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-        
+
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
@@ -231,7 +225,7 @@ public class AuthMePlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        
+
         if (!event.isAsynchronous()) {
         	if (data.isAuthAvailable(name)) {
         		player.sendMessage(m._("login_msg"));
@@ -242,7 +236,6 @@ public class AuthMePlayerListener implements Listener {
         		player.sendMessage(m._("reg_msg"));
         	}
         } else {
-        	
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
         		{
         			@Override
@@ -257,14 +250,13 @@ public class AuthMePlayerListener implements Listener {
         		}});
         }        
     }
-    
+
     @EventHandler( priority = EventPriority.MONITOR)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
         }
-        
-        
+
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
 
@@ -287,7 +279,7 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-        
+
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
@@ -295,7 +287,7 @@ public class AuthMePlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        
+
         if (!event.isAsynchronous()) {
         	if (data.isAuthAvailable(name)) {
         		player.sendMessage(m._("login_msg"));
@@ -306,7 +298,6 @@ public class AuthMePlayerListener implements Listener {
         		player.sendMessage(m._("reg_msg"));
         	}
         } else {
-        	
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
         		{
         			@Override
@@ -321,14 +312,13 @@ public class AuthMePlayerListener implements Listener {
         		}});
         }        
     }
-    
+
     @EventHandler( priority = EventPriority.HIGHEST)
     public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
         }
-        
-        
+
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
 
@@ -351,7 +341,7 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-        
+
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
@@ -359,7 +349,7 @@ public class AuthMePlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        
+
         if (!event.isAsynchronous()) {
         	if (data.isAuthAvailable(name)) {
         		player.sendMessage(m._("login_msg"));
@@ -370,7 +360,6 @@ public class AuthMePlayerListener implements Listener {
         		player.sendMessage(m._("reg_msg"));
         	}
         } else {
-        	
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
         		{
         			@Override
@@ -385,15 +374,13 @@ public class AuthMePlayerListener implements Listener {
         		}});
         }        
     }
-    
-    
+
     @EventHandler( priority = EventPriority.LOWEST)
     public void onPlayerEarlyChat(AsyncPlayerChatEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
         }
-        
-        
+
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
 
@@ -416,7 +403,7 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-        
+
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
@@ -424,7 +411,7 @@ public class AuthMePlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        
+
         if (!event.isAsynchronous()) {
         	if (data.isAuthAvailable(name)) {
         		player.sendMessage(m._("login_msg"));
@@ -435,7 +422,6 @@ public class AuthMePlayerListener implements Listener {
         		player.sendMessage(m._("reg_msg"));
         	}
         } else {
-        	
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
         		{
         			@Override
@@ -456,8 +442,7 @@ public class AuthMePlayerListener implements Listener {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
         }
-        
-        
+
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
 
@@ -480,7 +465,7 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-        
+
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
@@ -488,7 +473,7 @@ public class AuthMePlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        
+
         if (!event.isAsynchronous()) {
         	if (data.isAuthAvailable(name)) {
         		player.sendMessage(m._("login_msg"));
@@ -499,7 +484,6 @@ public class AuthMePlayerListener implements Listener {
         		player.sendMessage(m._("reg_msg"));
         	}
         } else {
-        	
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
         		{
         			@Override
@@ -520,7 +504,6 @@ public class AuthMePlayerListener implements Listener {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
         }
-        
 
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
@@ -536,7 +519,7 @@ public class AuthMePlayerListener implements Listener {
         if (!Settings.isForcedRegistrationEnabled) {
             return;
         }
-        
+
         if (!Settings.isMovementAllowed) {
             event.setTo(event.getFrom());
             return;
@@ -545,7 +528,6 @@ public class AuthMePlayerListener implements Listener {
         if (Settings.getMovementRadius == 0) {
             return;
         }
-        
 
         int radius = Settings.getMovementRadius;
         Location spawn = player.getWorld().getSpawnLocation();
@@ -559,62 +541,44 @@ public class AuthMePlayerListener implements Listener {
         }
         if (Spawn.getInstance().getLocation() != null)
         	spawn = Spawn.getInstance().getLocation();
-        
+
         if ((spawn.distance(player.getLocation()) > radius) ) {
             event.getPlayer().teleport(spawn);
         }
-
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
 
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
-       
+
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
-        
+
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
         	event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("same_nick"));
             return;
         }
-        
-        if(!event.isAsynchronous()) {
-            if(data.isAuthAvailable(name) && !LimboCache.getInstance().hasLimboPlayer(name)) {
-                if(!Settings.isSessionsEnabled) {
-                LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
-                } else if(PlayerCache.getInstance().isAuthenticated(name)) {
-                	if(!Settings.sessionExpireOnIpChange)
-                		if(LimboCache.getInstance().hasLimboPlayer(player.getName().toLowerCase())) {
-                            LimboCache.getInstance().deleteLimboPlayer(name);  
-                        }
-                    LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
-                }
-            }
-        } else {
-        	Bukkit.getScheduler().runTask(plugin, new Runnable() {
 
-				@Override
-				public void run() {
-			        if(data.isAuthAvailable(name) && !LimboCache.getInstance().hasLimboPlayer(name)) {
-			            if(!Settings.isSessionsEnabled) {
-			            LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
-			            } else if(PlayerCache.getInstance().isAuthenticated(name)) {
-			            	if(!Settings.sessionExpireOnIpChange)
-			                if(LimboCache.getInstance().hasLimboPlayer(player.getName().toLowerCase())) {
-			                        LimboCache.getInstance().deleteLimboPlayer(name);  
-			                    }
-			                LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
-			            }
-			        }
-					
-				}
-        		
-        	});
-        }
-        
+        //Run that asynchronous
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			@Override
+			public void run() {
+		        if(data.isAuthAvailable(name) && !LimboCache.getInstance().hasLimboPlayer(name)) {
+		        	if(!Settings.isSessionsEnabled) {
+		        	LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
+		        	} else if(PlayerCache.getInstance().isAuthenticated(name)) {
+		        		if(!Settings.sessionExpireOnIpChange)
+		        			if(LimboCache.getInstance().hasLimboPlayer(player.getName().toLowerCase())) {
+		        				LimboCache.getInstance().deleteLimboPlayer(name);  
+		        			}
+		        		LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
+		        	}
+		        }
+			}
+        });
         //Check if forceSingleSession is set to true, so kick player that has joined with same nick of online player
         if(player.isOnline() && Settings.isForceSingleSessionEnabled ) {
              LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase()); 
@@ -625,9 +589,8 @@ public class AuthMePlayerListener implements Listener {
                         LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
                     }            
             return;
-               
         }
-        
+
         int min = Settings.getMinNickLength;
         int max = Settings.getMaxNickLength;
         String regex = Settings.getNickRegex;
@@ -645,7 +608,7 @@ public class AuthMePlayerListener implements Listener {
             }
             return;
         }
- 
+
         if (Settings.isKickNonRegisteredEnabled) {
             if (!data.isAuthAvailable(name)) {    
                 event.disallow(Result.KICK_OTHER, m._("reg_only"));
@@ -658,6 +621,7 @@ public class AuthMePlayerListener implements Listener {
         	event.disallow(Result.KICK_FULL, m._("kick_fullserver"));
         	return;
         }
+
         if (plugin.getServer().getOnlinePlayers().length > plugin.getServer().getMaxPlayers()) {
         	event.allow();
         	return;
@@ -673,7 +637,6 @@ public class AuthMePlayerListener implements Listener {
         	}
         }
     }
-    
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -699,9 +662,13 @@ public class AuthMePlayerListener implements Listener {
         String ip = player.getAddress().getAddress().getHostAddress();
         if (Settings.bungee) {
         	try {
-        		ip = BungeeCord.getInstance().getPlayer(player.getName()).getAddress().getAddress().getHostAddress();
+        		for (ProxiedPlayer pp : BungeeCord.getInstance().getPlayers()) {
+        			if (pp.getName().toLowerCase() == name) {
+        				ip = pp.getAddress().getAddress().getHostAddress();
+        				break;
+        			}
+        		}
         	} catch (NoClassDefFoundError ncdfe) {
-        		ConsoleLogger.showError("Your BungeeCord version is outdated, you need a version with the latest API");
         	}
         }
             if(Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
@@ -712,17 +679,13 @@ public class AuthMePlayerListener implements Listener {
                 plugin.getServer().banIP(ip);
                 return;           
             }
-        
+
         if (data.isAuthAvailable(name)) {    
-       
-            
             if (Settings.isSessionsEnabled) {
                 PlayerAuth auth = data.getAuth(name);
                 long timeout = Settings.getSessionTimeout * 60000;
                 long lastLogin = auth.getLastLogin();
                 long cur = new Date().getTime();
-
-
              if((cur - lastLogin < timeout || timeout == 0) && !auth.getIp().equals("198.18.0.1") ) {
                      if (auth.getNickname().equalsIgnoreCase(name) && auth.getIp().equals(ip) ) {
                      	plugin.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
@@ -756,10 +719,8 @@ public class AuthMePlayerListener implements Listener {
           } 
           // isent in session or session was ended correctly
           LimboCache.getInstance().addLimboPlayer(player);
-          
           DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(),LimboCache.getInstance().getLimboPlayer(name).getArmour());
           playerBackup.createCache(name, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator());
-                             
         } else {  
             if(!Settings.unRegisteredGroup.isEmpty()){
                utils.setGroup(player, Utils.groupType.UNREGISTERED);
@@ -768,9 +729,6 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-
-
-
         if(Settings.protectInventoryBeforeLogInEnabled) {
         	try {
         		LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
@@ -783,10 +741,8 @@ public class AuthMePlayerListener implements Listener {
         	} catch (NullPointerException ex) {
         	}
         }
- 
         if(player.isOp()) 
             player.setOp(false);
-
         if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
             SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
             plugin.getServer().getPluginManager().callEvent(tpEvent);
@@ -797,25 +753,19 @@ public class AuthMePlayerListener implements Listener {
           	  player.teleport(tpEvent.getTo());
             }
         }
-        
-
         String msg = data.isAuthAvailable(name) ? m._("login_msg") : m._("reg_msg");
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
         if (time != 0) {
-
             BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), time);
             if(!LimboCache.getInstance().hasLimboPlayer(name))
                  LimboCache.getInstance().addLimboPlayer(player);
-            
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id.getTaskId());
         }
-        
         if(!LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().addLimboPlayer(player);
         BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT.getTaskId());
-        
         if (Settings.isForceSurvivalModeEnabled)
         	sched.runTask(plugin, new Runnable() {
         		public void run() {
@@ -823,32 +773,34 @@ public class AuthMePlayerListener implements Listener {
         		}
         	});
     }
-    
 
 	@EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (event.getPlayer() == null) {
             return;
         }
-        
-        
+
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
-        
+
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
-    
-    if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) { 
-        if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
-            PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(),(int)player.getLocation().getX(),(int)player.getLocation().getY(),(int)player.getLocation().getZ());
-            try {
-            	data.updateQuitLoc(auth);
-            } catch (NullPointerException npe) { }
-            
-        }
-    } 
-        
+
+        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) { 
+        	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
+        		final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(),(int)player.getLocation().getX(),(int)player.getLocation().getY(),(int)player.getLocation().getZ());
+        		try {
+        			Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        				@Override
+        				public void run() {
+        					data.updateQuitLoc(auth);
+        				}
+        			});
+        		} catch (NullPointerException npe) { }
+        	}
+        } 
+
         if (LimboCache.getInstance().hasLimboPlayer(name)) {
             //System.out.println("e' nel quit");
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
@@ -870,18 +822,13 @@ public class AuthMePlayerListener implements Listener {
         }
         try {
         	PlayerCache.getInstance().removePlayer(name);
-        } catch (NullPointerException npe) {
-        	
-        }
-        try {
         	PlayersLogs.players.remove(player.getName());
         	PlayersLogs.getInstance().save();
+        	player.getVehicle().eject();
         } catch (NullPointerException ex) {
-        	
         }
         if (gameMode.containsKey(name)) gameMode.remove(name);
         player.saveData();
-        
     }
 
     @EventHandler(priority=EventPriority.MONITOR)
@@ -908,8 +855,13 @@ public class AuthMePlayerListener implements Listener {
       String name = player.getName().toLowerCase();
       if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead()) && 
         (Settings.isSaveQuitLocationEnabled.booleanValue())  && data.isAuthAvailable(name)) {
-        PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), (int)player.getLocation().getX(), (int)player.getLocation().getY(), (int)player.getLocation().getZ());
-        this.data.updateQuitLoc(auth);
+        final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), (int)player.getLocation().getX(), (int)player.getLocation().getY(), (int)player.getLocation().getZ());
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			@Override
+			public void run() {
+				data.updateQuitLoc(auth);
+			}
+        });
       }
 
       if (LimboCache.getInstance().hasLimboPlayer(name))
@@ -936,7 +888,6 @@ public class AuthMePlayerListener implements Listener {
           	  player.teleport(tpEvent.getTo());
             }
         } catch (NullPointerException npe) {
-        	
         }
         this.utils.addNormal(player, limbo.getGroup());
         player.setOp(limbo.getOperator());
@@ -952,6 +903,7 @@ public class AuthMePlayerListener implements Listener {
       	PlayersLogs.players.remove(player.getName());
       	PlayersLogs.getInstance().save();
       	if (gameMode.containsKey(name)) gameMode.remove(name);
+      	player.getVehicle().eject();
       	player.saveData();
       } catch (NullPointerException ex) {}
     }
@@ -982,11 +934,11 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) return;
         if (event.getClickedBlock() == null) return;
-        
+
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
@@ -1003,17 +955,14 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-        
+
         try {
         	final int sign = event.getClickedBlock().getTypeId();
         	if (sign == Material.SIGN_POST.getId() || sign == Material.WALL_SIGN.getId()) {
         		event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
         	}
         } catch (NullPointerException npe) {
-        	
         }
-
-
         event.setCancelled(true);
     }
 
@@ -1063,8 +1012,6 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-        //System.out.println("player try to drop item");
-        
         event.setCancelled(true);
     }
 
@@ -1091,8 +1038,8 @@ public class AuthMePlayerListener implements Listener {
         }
         event.setCancelled(true);
     }
-    
-    @EventHandler(priority = EventPriority.MONITOR)
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
         if (event.isCancelled() || event.getPlayer() == null || event == null) {
             return;
@@ -1114,8 +1061,5 @@ public class AuthMePlayerListener implements Listener {
             }
         }
         event.setCancelled(true);
-        
     }
-
-
 }

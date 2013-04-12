@@ -34,25 +34,25 @@ import uk.org.whoami.authme.settings.Settings;
 
 /**
  *
- * @author darkwarriors
+ * @author Xephi59
  */
 public class EmailCommand implements CommandExecutor {
 
 	public AuthMe plugin;
 	private DataSource data;
     private Messages m = Messages.getInstance();
-    
+
     public EmailCommand(AuthMe plugin, DataSource data) {
         this.plugin = plugin;
         this.data = data;
     }
-    
+
     @Override
     public boolean onCommand(CommandSender sender, Command cmnd, String label, String[] args) {
         if (!(sender instanceof Player)) {
             return true;
         }  
-        
+
         if (!sender.hasPermission("authme." + label.toLowerCase())) {
             sender.sendMessage(m._("no_perm"));
             return true;
@@ -61,13 +61,13 @@ public class EmailCommand implements CommandExecutor {
        Player player = (Player) sender;
        String name = player.getName().toLowerCase();
 
-        if (args.length == 0) {
-            player.sendMessage("usage: /email add <Email> <confirmEmail> ");
-            player.sendMessage("usage: /email change <old> <new> ");
-            player.sendMessage("usage: /email recovery <Email>");
-            return true;
-        }
-        
+       if (args.length == 0) {
+    	   player.sendMessage("usage: /email add <Email> <confirmEmail> ");
+           player.sendMessage("usage: /email change <old> <new> ");
+           player.sendMessage("usage: /email recovery <Email>");
+           return true;
+       }
+
         if(args[0].equalsIgnoreCase("add")) {
         	if (args.length != 3) {
         		player.sendMessage("[AuthMe] /email add <Email> <confirmEmail>");
@@ -148,7 +148,6 @@ public class EmailCommand implements CommandExecutor {
         			player.sendMessage(m._("logged_in"));
         			return true;
         		}
-
         			try {
             			RandomString rand = new RandomString(Settings.getRecoveryPassLength);
             			String thePass = rand.nextString();
@@ -171,19 +170,14 @@ public class EmailCommand implements CommandExecutor {
 		        			player.sendMessage("[AuthMe] Invalid Email");
 		        			return true;
 		        		}
-		        		
 		        		final String finalhashnew = hashnew;
 		        		final PlayerAuth finalauth = auth;
-		        		
-		        		Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
+		        		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 							@Override
 							public void run() {
 								finalauth.setHash(finalhashnew);
 								data.updatePassword(finalauth);
-								
 							}
-		        			
 		        		});
 		                plugin.mail.main(auth, thePass);
 		                player.sendMessage("[AuthMe] Recovery Email Send !");
@@ -198,7 +192,6 @@ public class EmailCommand implements CommandExecutor {
         		player.sendMessage(m._("reg_msg"));
         	}
         }
-         
         return true;
     }
 }

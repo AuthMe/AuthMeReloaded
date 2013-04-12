@@ -45,14 +45,13 @@ public final class Settings extends YamlConfiguration {
     private static List<String> getRestrictedIp;
     public static List<String> getMySQLOtherUsernameColumn = null;
     public static List<String> getForcedWorlds = null;
-   
     public final Plugin plugin;
     private final File file;    
-    
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
     public static HashAlgorithm rakamakHash;
-    
+    public static Boolean useLogging = false;
+
     public static Boolean isPermissionCheckEnabled, isRegistrationEnabled, isForcedRegistrationEnabled,
             isTeleportToSpawnEnabled, isSessionsEnabled, isChatAllowed, isAllowRestrictedIp, 
             isMovementAllowed, isKickNonRegisteredEnabled, isForceSingleSessionEnabled,
@@ -61,8 +60,7 @@ public final class Settings extends YamlConfiguration {
             getEnablePasswordVerifier, protectInventoryBeforeLogInEnabled, isBackupActivated, isBackupOnStart,
             isBackupOnStop, enablePasspartu, isStopEnabled, reloadSupport, rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
             useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange;
-            
-            
+ 
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
             getMySQLColumnName, getMySQLColumnPassword, getMySQLColumnIp, getMySQLColumnLastLogin,
@@ -70,24 +68,16 @@ public final class Settings extends YamlConfiguration {
             getcUnrestrictedName, getRegisteredGroup, messagesLanguage, getMySQLlastlocX, getMySQLlastlocY, getMySQLlastlocZ,
             rakamakUsers, rakamakUsersIp, getmailAccount, getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName, 
             getPredefinedSalt, getMailSubject, getMailText;
-            
-    
+
     public static int getWarnMessageInterval, getSessionTimeout, getRegistrationTimeout, getMaxNickLength,
             getMinNickLength, getPasswordMinLen, getMovementRadius, getmaxRegPerIp, getNonActivatedGroup,
             passwordMaxLength, getRecoveryPassLength, getMailPort, maxLoginTry, captchaLength, saltLength, getmaxRegPerEmail;
-                    
+
     protected static YamlConfiguration configFile;
-    
+
    public Settings(Plugin plugin) {
-        //super(new File(Settings.PLUGIN_FOLDER + "/config.yml"), this.plugin);
         this.file = new File(plugin.getDataFolder(),"config.yml");
-        
         this.plugin = plugin;
-
-              
-
-        //options().indent(4); 
-        // Override to always indent 4 spaces
         if(exists()) {
             load();         
          }
@@ -95,21 +85,14 @@ public final class Settings extends YamlConfiguration {
             loadDefaults(file.getName());
             load();
         }
-        
         configFile = (YamlConfiguration) plugin.getConfig();
-        
-        //saveDefaults();
-        
     }
-   
 
 @SuppressWarnings("unchecked")
 public void loadConfigOptions() {
-       
         plugin.getLogger().info("Loading Configuration File...");
-        
         mergeConfig();
-        
+
         messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage","en"));
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
         isForcedRegistrationEnabled  = configFile.getBoolean("settings.registration.force", true);
@@ -220,16 +203,15 @@ public void loadConfigOptions() {
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
         doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
+        useLogging = configFile.getBoolean("Security.console.logConsole", false);
 
         saveDefaults();
    }
-   
 
 @SuppressWarnings("unchecked")
 public static void reloadConfigOptions(YamlConfiguration newConfig) {
        configFile = newConfig;
-              
-       //plugin.getLogger().info("RELoading Configuration File...");
+
         messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage","en"));
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
@@ -340,114 +322,84 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
         doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
-        
+        useLogging = configFile.getBoolean("Security.console.logConsole", false);
+
    }
-   
 
 public void mergeConfig() {
-       
        if (contains("settings.restrictions.allowedPluginTeleportHandler"))
     	   set("settings.restrictions.allowedPluginTeleportHandler", null);
-       
        if(!contains("DataSource.mySQLColumnEmail"))
     	   set("DataSource.mySQLColumnEmail","email");
-       
        if(contains("Email.GmailAccount")) {
     	   set("Email.mailAccount", getString("Email.GmailAccount"));
     	   set("Email.GmailAccount", null);
        }
-       
        if(contains("Email.GmailPassword")) {
     	   set("Email.mailPassword", getString("Email.GmailPassword"));
     	   set("Email.GmailPassword", null);
        }
-       
        if(!contains("Email.RecoveryPasswordLength"))
     	   set("Email.RecoveryPasswordLength", 8);
-       
        if(!contains("Email.mailPort"))
     	   set("Email.mailPort", 465);
-       
        if(!contains("Email.mailSMTP"))
     	   set("Email.mailSMTP", "smtp.gmail.com");
-       
        if(!contains("Email.mailAccount"))
     	   set("Email.mailAccount", "");
-       
        if(!contains("Email.mailPassword"))
     	   set("Email.mailPassword", "");
-       
        if(!contains("ExternalBoardOptions.mySQLOtherUsernameColumns"))
     	   set("ExternalBoardOptions.mySQLOtherUsernameColumns", new ArrayList<String>());
-       
        if(!contains("settings.restrictions.displayOtherAccounts"))
     	   set("settings.restrictions.displayOtherAccounts", true);
-       
        if(!contains("DataSource.mySQLColumnId"))
     	   set("DataSource.mySQLColumnId", "id");
-       
        if(!contains("Email.mailSenderName"))
     	   set("Email.mailSenderName", "");
-       
        if(!contains("Xenoforo.predefinedSalt"))
     	   set("Xenoforo.predefinedSalt", "");
-       
        if(!contains("Security.captcha.useCaptcha"))
     	   set("Security.captcha.useCaptcha", false);
-       
        if(!contains("Security.captcha.maxLoginTry"))
     	   set("Security.captcha.maxLoginTry", 5);
-       
        if(!contains("Security.captcha.captchaLength"))
     	   set("Security.captcha.captchaLength", 5);
-       
        if(!contains("Email.mailSubject"))
     	   set("Email.mailSubject", "");
-       
        if(!contains("Email.mailText"))
     	   set("Email.mailText", "Dear <playername>, \n\n This is your new AuthMe password for the server : \n\n <servername> \n\n <generatedpass>\n\n 	 Do not forget to change password after login! \n /changepassword <generatedpass> newPassword");
-       
        if(!contains("settings.registration.enableEmailRegistrationSystem"))
     	   set("settings.registration.enableEmailRegistrationSystem", false);
-       
        if(!contains("settings.security.doubleMD5SaltLength"))
     	   set("settings.security.doubleMD5SaltLength", 8);
-       
        if(!contains("Email.maxRegPerEmail"))
     	   set("Email.maxRegPerEmail", 1);
-       
        if(!contains("Hooks.multiverse")) {
     	   set("Hooks.multiverse", true);
            set("Hooks.chestshop", true);
            set("Hooks.notifications", true);
            set("Hooks.bungeecord", false);
        }
-       
        if(!contains("settings.restrictions.ForceSpawnOnTheseWorlds"))
     	   set("settings.restrictions.ForceSpawnOnTheseWorlds", new ArrayList<String>());
-       
        if(!contains("settings.restrictions.banUnsafedIP"))
     	   set("settings.restrictions.banUnsafedIP", false);
-       
        if(!contains("settings.registration.doubleEmailCheck"))
     	   set("settings.registration.doubleEmailCheck", false);
-       
        if(!contains("settings.sessions.sessionExpireOnIpChange"))
     	   set("settings.sessions.sessionExpireOnIpChange", false);
+       if(!contains("Security.console.logConsole"))
+    	   set("Security.console.logConsole", false);
 
        plugin.getLogger().info("Merge new Config Options if needed..");
        plugin.saveConfig();
-       
+
        return;
    }
-   /** 
-    * 
-    * 
-    * 
-    */   
+
     private static HashAlgorithm getPasswordHash() {
         String key = "settings.security.passwordHash";
-
         try {
             return PasswordSecurity.HashAlgorithm.valueOf(configFile.getString(key,"SHA256").toUpperCase());
         } catch (IllegalArgumentException ex) {
@@ -455,8 +407,7 @@ public void mergeConfig() {
             return PasswordSecurity.HashAlgorithm.SHA256;
         }
     }
-    
-    
+
     private static HashAlgorithm getRakamakHash() {
         String key = "Converter.Rakamak.newPasswordHash";
 
@@ -467,15 +418,9 @@ public void mergeConfig() {
             return PasswordSecurity.HashAlgorithm.SHA256;
         }
     }
-    
-   /** 
-    * 
-    * 
-    * 
-    */
+
     private static DataSourceType getDataSource() {
         String key = "DataSource.backend";
-
         try {
             return DataSource.DataSourceType.valueOf(configFile.getString(key).toUpperCase());
         } catch (IllegalArgumentException ex) {
@@ -490,48 +435,33 @@ public void mergeConfig() {
      * player that join the server, so player has a restricted access
     */   
     public static Boolean getRestrictedIp(String name, String ip) {
-        
+
         Iterator<String> iter = getRestrictedIp.iterator();
-        
-        /* setup a few boolean variables to test the parameters */
         Boolean trueonce = false;
         Boolean namefound = false;
-        
           while (iter.hasNext()) {
              String[] args =  iter.next().split(";");
-             
              String testname = args[0];
              String testip = args[1];
-             
-             /** Changing this logic to be more customized
-              *  test each case against the entire
-              *  list not just the first one in the list.*/
-             
-             /* Fist Check the name */
              if(testname.equalsIgnoreCase(name) ) {
-                     namefound = true;
-                     /* Check to see if the IP is the same */
-                     if(testip.equalsIgnoreCase(ip)) {
-                     trueonce = true;
-                      };
-                  } 
-          }
-       // if the name is not found in the list let the user pass they are not being monitored    
+            	 namefound = true;
+            	 if(testip.equalsIgnoreCase(ip)) {
+            		 trueonce = true;
+            	 };
+             } 
+          }   
        if ( namefound == false){
       	 return true;
        }
        	else { 
-              // if the name and IP was found once in the list let the user pass they are in the config
        		if ( trueonce == true ){
        		return true;
-              // otherwise nip them in the bud and THEY SHALL NOT PASS!
        	} else { 
        		return false;
        		}
        	}		
 }
 
-    
     /**
      * Loads the configuration from disk
      *
@@ -545,7 +475,7 @@ public void mergeConfig() {
             return false;
         }
     }
-    
+
     public final void reload() {
         load();
         loadDefaults(file.getName());
@@ -599,10 +529,8 @@ public void mergeConfig() {
         boolean success = save();
         options().copyDefaults(false);
         options().copyHeader(false);
-
         return success;
     }
-
 
     /**
      * Clears current configuration defaults
@@ -611,7 +539,7 @@ public void mergeConfig() {
         setDefaults(new MemoryConfiguration());
     }
 
-    /**
+/**
 * Check loaded defaults against current configuration
 *
 * @return false When all defaults aren't present in config
@@ -622,17 +550,9 @@ public void mergeConfig() {
         }
         return getKeys(true).containsAll(getDefaults().getKeys(true));
     }
- /*   
-    public static Settings getInstance() {
-        if (singleton == null) {
-            singleton = new Settings();
-        }
-        return singleton;
-    }
-*/
+
     public static String checkLang(String lang) {
         for(messagesLang language: messagesLang.values()) {
-            //System.out.println(language.toString());
             if(lang.toLowerCase().contains(language.toString())) {
                 ConsoleLogger.info("Set Language: "+lang);
                 return lang;
@@ -641,8 +561,9 @@ public void mergeConfig() {
         ConsoleLogger.info("Set Default Language: En ");
         return "en";
     }
-    
+
     public enum messagesLang {
         en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn
-    } 
+    }
+
 }

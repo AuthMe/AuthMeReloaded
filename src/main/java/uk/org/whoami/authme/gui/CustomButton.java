@@ -6,7 +6,7 @@ import org.getspout.spoutapi.gui.GenericButton;
 public class CustomButton extends GenericButton
 {
 	public Clickable handleRef = null;
-	
+
 	public CustomButton(Clickable c) {
 		handleRef = c;
 	}
@@ -15,7 +15,7 @@ public class CustomButton extends GenericButton
 	public void onButtonClick(ButtonClickEvent event) {
 		handleRef.handleClick(event);
 	}
-	
+
 	public CustomButton setMidPos(int x, int y)
 	{
 		this.setX(x)
@@ -24,4 +24,5 @@ public class CustomButton extends GenericButton
 			.shiftYPos(-(height / 2));
 		return this;
 	}
+
 }

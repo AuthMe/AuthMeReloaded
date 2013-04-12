@@ -23,7 +23,7 @@ public class PasspartuCommand implements CommandExecutor {
     private Utils utils = new Utils();
     private DataSource database;
     public AuthMe plugin;
-    
+
     public PasspartuCommand(DataSource database, AuthMe plugin) {
         this.database = database;
         this.plugin = plugin;
@@ -31,20 +31,18 @@ public class PasspartuCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmnd, String label, String[] args) { 
-        
+
        if (PlayerCache.getInstance().isAuthenticated(sender.getName().toLowerCase())) {
             return true;
         }
-        
+
        if ((sender instanceof Player) && args.length == 1) {
            if(utils.readToken(args[0])) {
                  //bypass login!
                 Management bypass = new Management(database,true, plugin);
-                String result = bypass.performLogin((Player)sender, "dontneed");
-                if (result != "") sender.sendMessage(result); 
+                bypass.performLogin((Player)sender, "dontneed");
                     return true;
            }
-           
            sender.sendMessage("Time is expired or Token is Wrong!");
            return true;
        }

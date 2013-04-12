@@ -3,12 +3,16 @@ package uk.org.whoami.authme.events;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+/**
+*
+* @author Xephi59
+*/
 public class AuthMeTeleportEvent extends CustomEvent {
-	
+
 	private Player player;
 	private Location to;
 	private Location from;
-	
+
 	public AuthMeTeleportEvent(Player player, Location to) {
 		this.player = player;
 		this.from = player.getLocation();

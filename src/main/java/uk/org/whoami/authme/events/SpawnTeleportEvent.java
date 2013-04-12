@@ -3,13 +3,17 @@ package uk.org.whoami.authme.events;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+/**
+*
+* @author Xephi59
+*/
 public class SpawnTeleportEvent extends CustomEvent {
-	
+
 	private Player player;
 	private Location to;
 	private Location from;
 	private boolean isAuthenticated;
-	
+
 	public SpawnTeleportEvent(Player player, Location from, Location to, boolean isAuthenticated) {
 		this.player = player;
 		this.from = from;

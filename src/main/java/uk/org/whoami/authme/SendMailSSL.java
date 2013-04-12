@@ -14,24 +14,28 @@ import org.bukkit.Bukkit;
 
 import uk.org.whoami.authme.cache.auth.PlayerAuth;
 import uk.org.whoami.authme.settings.Settings;
- 
+
+/**
+*
+* @author Xephi59
+*/
 public class SendMailSSL {
-	
+
 	public AuthMe instance;
-	
+
 	public SendMailSSL(AuthMe instance) {
 		this.instance = instance;
 	}
 	public void main(final PlayerAuth auth, final String newPass) {
-				
+
 				String sendername;
-				
+
 				if (Settings.getmailSenderName.isEmpty() || Settings.getmailSenderName == null) {
 					sendername = Settings.getmailAccount;
 				} else {
 					sendername = Settings.getmailSenderName;
 				}
-		
+
 				Properties props = new Properties();
 				props.put("mail.smtp.host", Settings.getmailSMTP);
 				props.put("mail.smtp.socketFactory.port", String.valueOf(Settings.getMailPort));
@@ -39,7 +43,7 @@ public class SendMailSSL {
 						"javax.net.ssl.SSLSocketFactory");
 				props.put("mail.smtp.auth", "true");
 				props.put("mail.smtp.port", String.valueOf(Settings.getMailPort));
-		 
+
 				Session session = Session.getInstance(props,
 					new javax.mail.Authenticator() {
 						protected PasswordAuthentication getPasswordAuthentication() {
@@ -48,7 +52,7 @@ public class SendMailSSL {
 					});
 
 				try {
-		 
+
 					final Message message = new MimeMessage(session);
 					try {
 						message.setFrom(new InternetAddress(Settings.getmailAccount, sendername));
@@ -63,9 +67,7 @@ public class SendMailSSL {
 					text = text.replaceAll("<servername>", instance.getServer().getServerName());
 					text = text.replaceAll("<generatedpass>", newPass);
 					message.setText(text);
-					
 					Bukkit.getScheduler().runTaskAsynchronously(instance, new Runnable() {
-
 						@Override
 						public void run() {
 							try {
@@ -73,16 +75,13 @@ public class SendMailSSL {
 							} catch (MessagingException e) {
 								e.printStackTrace();
 							}
-							
 						}
-						
 					});
-					
 					if(!Settings.noConsoleSpam)
 					ConsoleLogger.info("Email sent to : " + auth.getNickname());
-		 
 				} catch (MessagingException e) {
 					throw new RuntimeException(e);
 				}
 			}
+
 }

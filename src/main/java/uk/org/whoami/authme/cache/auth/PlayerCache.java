@@ -54,4 +54,5 @@ public class PlayerCache {
         }
         return singleton;
     }
+
 }

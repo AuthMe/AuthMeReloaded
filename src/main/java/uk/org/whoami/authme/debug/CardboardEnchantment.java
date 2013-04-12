@@ -22,4 +22,5 @@ public class CardboardEnchantment implements Serializable {
     public Enchantment unbox() {
         return Enchantment.getById(this.id);
     }
+
 }

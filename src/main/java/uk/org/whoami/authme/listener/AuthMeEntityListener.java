@@ -38,14 +38,13 @@ public class AuthMeEntityListener implements Listener{
 
     private DataSource data;
     public AuthMe instance;
-    //private Settings settings = Settings.getInstance();
 
     public AuthMeEntityListener(DataSource data, AuthMe instance) {
         this.data = data;
         this.instance = instance;
     }
 
-   @EventHandler
+    @EventHandler
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.isCancelled()) {
             return;
@@ -55,14 +54,7 @@ public class AuthMeEntityListener implements Listener{
         if (!(entity instanceof Player)) {
             return;
         }
-        /*
-         System.out.println("[ Entity Damage ] "+event.getEntity().toString());
-         @Future implementation till CombatTag dont release any apis
-        if(event.getEntity().toString().indexOf("PvPLogger") != -1 ) {
-            System.out.println("la stringa contiene PvPLogger 2");
-            return;
-        }
-        */
+
         if(instance.getCitizensCommunicator().isNPC(entity, instance) || Utils.getInstance().isUnrestricted((Player)entity) || CombatTagComunicator.isNPC(entity)) {
             return;
         }
@@ -79,7 +71,6 @@ public class AuthMeEntityListener implements Listener{
                 return;
             }
         }
-
         player.setFireTicks(0);
         event.setCancelled(true);
     }
@@ -171,11 +162,11 @@ public class AuthMeEntityListener implements Listener{
     	if (event.isCancelled() || event == null) {
     		return;
     	}
-    	
+
     	if (!(event.getEntity() instanceof Player)) {
     		return;
     	}
-    	
+
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
@@ -193,19 +184,18 @@ public class AuthMeEntityListener implements Listener{
             }
         }
         event.setCancelled(true);
-    	
     }
-    
+
     @EventHandler (priority = EventPriority.LOWEST)
     public void onLowestEntityInteract(EntityInteractEvent event) {
     	if (event.isCancelled() || event == null) {
     		return;
     	}
-    	
+
     	if (!(event.getEntity() instanceof Player)) {
     		return;
     	}
-    	
+
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
@@ -222,8 +212,6 @@ public class AuthMeEntityListener implements Listener{
                 return;
             }
         }
-        
         event.setCancelled(true);
-    	
     }
 }

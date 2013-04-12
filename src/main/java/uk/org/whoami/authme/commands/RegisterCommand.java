@@ -21,6 +21,7 @@ import java.util.Date;
 
 import me.muizers.Notifications.Notification;
 import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -75,21 +76,24 @@ public class RegisterCommand implements CommandExecutor {
             sender.sendMessage(m._("no_perm"));
             return true;
         }
-        
+
         final Player player = (Player) sender;
         final String name = player.getName().toLowerCase();
         String ipA = player.getAddress().getAddress().getHostAddress();
-        
+
         if (Settings.bungee) {
         	try {
-        		ipA = BungeeCord.getInstance().getPlayer(player.getName()).getAddress().getAddress().getHostAddress();
+        		for (ProxiedPlayer pp : BungeeCord.getInstance().getPlayers()) {
+        			if (pp.getName().toLowerCase() == name) {
+        				ipA = pp.getAddress().getAddress().getHostAddress();
+        				break;
+        			}
+        		}
         	} catch (NoClassDefFoundError ncdfe) {
-        		ConsoleLogger.showError("Your BungeeCord version is outdated, you need a version with the latest API");
         	}
         }
-        
-        final String ip = ipA;
 
+        final String ip = ipA;
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             player.sendMessage(m._("logged_in"));
             return true;
@@ -107,18 +111,14 @@ public class RegisterCommand implements CommandExecutor {
             }
             return true;
         }
-        //
-        // Check if player exeded the max number of registration
-        //
-        
+
         if(Settings.getmaxRegPerIp > 0 ){
-        
-         if(!sender.hasPermission("authme.allow2accounts") && database.getAllAuthsByIp(ipA).size() >= Settings.getmaxRegPerIp) {
-                player.sendMessage(m._("max_reg"));
+        	if(!sender.hasPermission("authme.allow2accounts") && database.getAllAuthsByIp(ipA).size() >= Settings.getmaxRegPerIp) {
+        		player.sendMessage(m._("max_reg"));
                 return true;
-                }
-         }
-        
+        	}
+        }
+
         if(Settings.emailRegistration && !Settings.getmailAccount.isEmpty()) {
         	if(!args[0].contains("@")) {
                 player.sendMessage(m._("usage_reg"));
@@ -143,10 +143,8 @@ public class RegisterCommand implements CommandExecutor {
         	}
 			RandomString rand = new RandomString(Settings.getRecoveryPassLength);
 			final String thePass = rand.nextString();
-
             if (!thePass.isEmpty()) {
             	Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
 					@Override
 					public void run() {
 		            	if (PasswordSecurity.userSalt.containsKey(name)) {
@@ -173,10 +171,8 @@ public class RegisterCommand implements CommandExecutor {
 		        			}
 		            	}
 					}
-            		
             	});
 
-     
                 if(!Settings.getRegisteredGroup.isEmpty()){
                     Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
                 }
@@ -202,16 +198,12 @@ public class RegisterCommand implements CommandExecutor {
                 		try {
                 			loca = plugin.mv.getMVWorldManager().getMVWorld(world).getSpawnLocation();
                 		} catch (NullPointerException npe) {
-                			
                 		} catch (ClassCastException cce) {
-                			
                 		} catch (NoClassDefFoundError ncdfe) {
-                			
                 		}
                 	}
                 	if (Spawn.getInstance().getLocation() != null)
                 		loca = Spawn.getInstance().getLocation();
-                	
                     RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if(!tpEvent.isCancelled()) {
@@ -231,20 +223,16 @@ public class RegisterCommand implements CommandExecutor {
             	return true;
             }
         }
-        
+
         if (args.length == 0 || (Settings.getEnablePasswordVerifier && args.length < 2) ) {
             player.sendMessage(m._("usage_reg"));
             return true;
         }
-        //System.out.println("pass legth "+args[0].length());
-        //System.out.println("pass length permit"+Settings.passwordMaxLength);
+
         if(args[0].length() < Settings.getPasswordMinLen || args[0].length() > Settings.passwordMaxLength) {
             player.sendMessage(m._("pass_len"));
             return true;
         }
-                   
-        
-
         try {
             String hash;
             if(Settings.getEnablePasswordVerifier) {
@@ -256,7 +244,6 @@ public class RegisterCommand implements CommandExecutor {
                   }
             } else
                 hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[0], name);
-            
             if (Settings.getMySQLColumnSalt.isEmpty())
             {
             	auth = new PlayerAuth(name, hash, ip, new Date().getTime());
@@ -268,7 +255,6 @@ public class RegisterCommand implements CommandExecutor {
                 return true;
             }
             PlayerCache.getInstance().addPlayer(auth);
-
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
             if (limbo != null) {
                 player.setGameMode(GameMode.getByValue(limbo.getGameMode()));      
@@ -297,13 +283,11 @@ public class RegisterCommand implements CommandExecutor {
                   	  	player.teleport(tpEvent.getTo());
                     }
                 }
-                
                 sender.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
                 sender.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
                 LimboCache.getInstance().deleteLimboPlayer(name);
             }
-  
- 
+
             if(!Settings.getRegisteredGroup.isEmpty()){
                 Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
             }
@@ -317,7 +301,6 @@ public class RegisterCommand implements CommandExecutor {
             if(plugin.notifications != null) {
             	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " has registered!"));
             }
-
         } catch (NoSuchAlgorithmException ex) {
             ConsoleLogger.showError(ex.getMessage());
             sender.sendMessage(m._("error"));

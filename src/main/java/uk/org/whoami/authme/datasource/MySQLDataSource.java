@@ -58,7 +58,6 @@ public class MySQLDataSource implements DataSource {
         this.port = Settings.getMySQLPort;
         this.username = Settings.getMySQLUsername;
         this.password = Settings.getMySQLPassword;
-
         this.database = Settings.getMySQLDatabase;
         this.tableName = Settings.getMySQLTablename;
         this.columnName = Settings.getMySQLColumnName;
@@ -73,7 +72,7 @@ public class MySQLDataSource implements DataSource {
         this.columnEmail = Settings.getMySQLColumnEmail;
         this.columnOthers = Settings.getMySQLOtherUsernameColumn;
         this.columnID = Settings.getMySQLColumnId;
-        
+
         connect();
         setup();
     }
@@ -87,7 +86,6 @@ public class MySQLDataSource implements DataSource {
         dataSource.setPort(Integer.parseInt(port));
         dataSource.setUser(username);
         dataSource.setPassword(password);
-
         conPool = new MiniConnectionPoolManager(dataSource, 10);
         ConsoleLogger.info("Connection pool ready");
     }
@@ -110,7 +108,6 @@ public class MySQLDataSource implements DataSource {
                     + lastlocZ + " smallint(6) DEFAULT '0',"
                     + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com',"
                     + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
-            
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
@@ -343,7 +340,7 @@ public class MySQLDataSource implements DataSource {
         }
         return true;
     }
-    
+
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
         Connection con = null;
@@ -368,11 +365,7 @@ public class MySQLDataSource implements DataSource {
         }
         return true;
     }
-    
-    //
-    // Check how many registration by given ip has been done
-    //
-    
+
     @Override
     public int getIps(String ip) {
         Connection con = null;
@@ -401,7 +394,7 @@ public class MySQLDataSource implements DataSource {
             close(con);
         }         
     }
-    
+
     @Override
     public boolean updateEmail(PlayerAuth auth) {
         Connection con = null;
@@ -424,7 +417,7 @@ public class MySQLDataSource implements DataSource {
         }
         return true;
     }
-    
+
 	@Override
 	public boolean updateSalt(PlayerAuth auth) {
 		if (columnSalt.isEmpty()) {
@@ -450,7 +443,7 @@ public class MySQLDataSource implements DataSource {
         }
         return true;
     }
-    
+
     @Override
     public synchronized void close() {
         try {
@@ -551,7 +544,7 @@ public class MySQLDataSource implements DataSource {
             close(con);
         }    
 	}
-	
+
 	@Override
 	public List<String> getAllAuthsByEmail(String email) {
         Connection con = null;
@@ -581,5 +574,23 @@ public class MySQLDataSource implements DataSource {
         }    
 	}
 
+	@Override
+	public void purgeBanned(List<String> banned) {
+        Connection con = null;
+        PreparedStatement pst = null;
+        try {
+           for (String name : banned) {
+        	   con = conPool.getValidConnection();
+        	   pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
+        	   pst.setString(1, name);
+        	   pst.executeUpdate();
+           }
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+        } finally {
+            close(pst);
+            close(con);
+        }
+	}
 
 }

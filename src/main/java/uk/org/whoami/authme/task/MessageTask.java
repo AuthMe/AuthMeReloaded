@@ -43,17 +43,14 @@ public class MessageTask implements Runnable {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
                 player.sendMessage(msg);
-
                 BukkitScheduler sched = plugin.getServer().getScheduler();
                 BukkitTask late = sched.runTaskLater(plugin, this, interval * 20);
                 if(LimboCache.getInstance().hasLimboPlayer(name)) {
                 	LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(late.getTaskId());
                 }
-                
             }
         }
     }

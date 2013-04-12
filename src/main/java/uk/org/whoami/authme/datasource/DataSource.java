@@ -40,23 +40,25 @@ public interface DataSource {
     int purgeDatabase(long until);
 
     boolean removeAuth(String user);
-   
+
     boolean updateQuitLoc(PlayerAuth auth);
-    
+
     int getIps(String ip);
-    
+
     List<String> getAllAuthsByName(PlayerAuth auth);
-    
+
     List<String> getAllAuthsByIp(String ip);
-    
+
     List<String> getAllAuthsByEmail(String email);
-    
+
     boolean updateEmail(PlayerAuth auth);
-    
+
     boolean updateSalt(PlayerAuth auth);
-    
+
     void close();
 
     void reload();
-    
+
+    void purgeBanned(List<String> banned);
+
 }

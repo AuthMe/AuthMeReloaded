@@ -37,7 +37,6 @@ import uk.org.whoami.authme.settings.Settings;
 public class ChangePasswordCommand implements CommandExecutor {
 
     private Messages m = Messages.getInstance();
-    //private Settings settings = Settings.getInstance();
     private DataSource database;
     public AuthMe plugin;
 
@@ -63,7 +62,7 @@ public class ChangePasswordCommand implements CommandExecutor {
             player.sendMessage(m._("not_logged_in"));
             return true;
         }
-        
+
         if (args.length != 2) {
             player.sendMessage(m._("usage_changepassword"));
             return true;

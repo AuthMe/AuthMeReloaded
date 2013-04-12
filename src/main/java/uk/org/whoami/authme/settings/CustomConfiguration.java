@@ -19,10 +19,10 @@ public class CustomConfiguration extends YamlConfiguration{
 	public CustomConfiguration(File file)
 	{
 		this.configFile = file;
-		
+
 		load();
 	}
-	
+
 	public void load()
 	{
 		try {
@@ -36,7 +36,7 @@ public class CustomConfiguration extends YamlConfiguration{
 			Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, configFile.getName() + " is no valid configuration file", e);
 		}
 	}
-	
+
 	public boolean reload() {
 		boolean out = true;
 		if (!configFile.exists())
@@ -46,7 +46,7 @@ public class CustomConfiguration extends YamlConfiguration{
 		if (out) load();
 		return out;
 	}
-	
+
 	public void save() {
 	    try {
 	        super.save(configFile);
@@ -54,7 +54,7 @@ public class CustomConfiguration extends YamlConfiguration{
 	        Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not save config to " + configFile.getName(), ex);
 	    }
 	}
-	
+
 	public boolean loadRessource(File file) {
 		boolean out = true;
 		if (!file.exists()) {
@@ -64,7 +64,6 @@ public class CustomConfiguration extends YamlConfiguration{
 				fos = new FileOutputStream(file);
 				byte[] buf = new byte[1024];
 				int i = 0;
-
 				while ((i = fis.read(buf)) != -1) {
 					fos.write(buf, 0, i);
 				}

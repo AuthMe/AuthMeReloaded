@@ -12,15 +12,18 @@ import uk.org.whoami.authme.AuthMe;
 import uk.org.whoami.authme.ConsoleLogger;
 import uk.org.whoami.authme.settings.Settings;
 
-
+/**
+*
+* @author Xephi59
+*/
 public class FlatToSql {
-	
+
 	public AuthMe instance;
-	
+
 	public FlatToSql (AuthMe instance) {
 		this.instance = instance;
 	}
-	
+
 	public FlatToSql getInstance() {
 		return this;
 	}
@@ -34,10 +37,9 @@ public class FlatToSql {
     private static String lastlocY;
     private static String lastlocZ;
     private static String columnEmail;
-	
 	private static File source;
 	private static File output;
-	
+
 	public static void FlatToSqlConverter() throws IOException {
 	    tableName = Settings.getMySQLTablename;
 	    columnName = Settings.getMySQLColumnName;
@@ -76,9 +78,9 @@ public class FlatToSql {
             	sql.newLine();
                 String[] args = line.split(":");
                 if (args.length == 4)
-                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", 0, 0, 0, " + "your@email.com" + ");";
+                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", 0, 0, 0, " + "'your@email.com'" + ");";
                 else if (args.length == 7)
-                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", " + "your@email.com" + ");";
+                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", " + "'your@email.com'" + ");";
                 else
                 	newline = "";
                 if (newline != "")
@@ -87,8 +89,7 @@ public class FlatToSql {
             }
             sql.close();
             br.close();
-            System.out.println("[AuthMe] The FlatFile has been converted to authme.sql file");
-            
+            ConsoleLogger.info("The FlatFile has been converted to authme.sql file");
         } catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {

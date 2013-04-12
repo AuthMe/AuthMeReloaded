@@ -50,13 +50,11 @@ public class TimeoutTask implements Runnable {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
                 if (LimboCache.getInstance().hasLimboPlayer(name)) {
                     LimboPlayer inv = LimboCache.getInstance().getLimboPlayer(name);
                     player.getServer().getScheduler().cancelTask(inv.getTimeoutTaskId());
-                    
                     if(playerCache.doesCacheExist(name)) {
                         playerCache.removeCache(name);
                     } 

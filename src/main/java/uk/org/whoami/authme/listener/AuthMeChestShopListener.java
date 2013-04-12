@@ -12,29 +12,28 @@ import uk.org.whoami.authme.AuthMe;
 import uk.org.whoami.authme.Utils;
 import uk.org.whoami.authme.cache.auth.PlayerCache;
 import uk.org.whoami.authme.datasource.DataSource;
-import uk.org.whoami.authme.plugin.manager.CombatTagComunicator;
 import uk.org.whoami.authme.settings.Settings;
 
 public class AuthMeChestShopListener implements Listener {
-	
+
 	public DataSource database;
 	public AuthMe plugin;
-	
+
 	public AuthMeChestShopListener(DataSource database, AuthMe plugin) {
 		this.database = database;
 		this.plugin = plugin;
 	}
-	
-    @EventHandler(priority = EventPriority.HIGHEST)
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPreTransaction(PreTransactionEvent event) {
         if (event.isCancelled() || event.getClient() == null || event == null) {
             return;
         }
-        
+
         Player player = event.getClient();
         String name = player.getName().toLowerCase();
 
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
@@ -48,7 +47,5 @@ public class AuthMeChestShopListener implements Listener {
             }
         }
         event.setCancelled(TransactionOutcome.OTHER);
-        
     }
-
 }

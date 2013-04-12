@@ -7,8 +7,12 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+/**
+*
+* @author Xephi59
+*/
 public class Spawn extends CustomConfiguration {
-	
+
 	private static Spawn spawn;
 	private static List<String> emptyList = new ArrayList<String>();
 
@@ -19,7 +23,7 @@ public class Spawn extends CustomConfiguration {
 		save();
 		saveDefault();
 	}
-	
+
 	private void saveDefault() {
 		if (!contains("spawn")) {
 			set("spawn", emptyList);
@@ -31,7 +35,6 @@ public class Spawn extends CustomConfiguration {
 			set("spawn.pitch", "");
 			save();
 		}
-		
 	}
 
 	public static Spawn getInstance() {
@@ -40,7 +43,7 @@ public class Spawn extends CustomConfiguration {
         }        
         return spawn;
     }
-	
+
 	public boolean setSpawn(Location location) {
 		try {
 			set("spawn.world", location.getWorld().getName());
@@ -55,7 +58,7 @@ public class Spawn extends CustomConfiguration {
 			return false;
 		}
 	}
-	
+
 	public Location getLocation() {
 		try {
 			if (this.getString("spawn.world").isEmpty() || this.getString("spawn.world") == "") return null;
@@ -65,4 +68,5 @@ public class Spawn extends CustomConfiguration {
 			return null;
 		}
 	}
+
 }

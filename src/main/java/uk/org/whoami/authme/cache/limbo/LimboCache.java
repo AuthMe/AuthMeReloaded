@@ -35,7 +35,7 @@ public class LimboCache {
     private HashMap<String, LimboPlayer> cache;
     private FileCache playerData = new FileCache();
     public AuthMe plugin;
-    
+
     private LimboCache(AuthMe plugin) {
     	this.plugin = plugin;
         this.cache = new HashMap<String, LimboPlayer>();
@@ -49,7 +49,7 @@ public class LimboCache {
         ItemStack[] inv;
         boolean operator;
         String playerGroup = "";
-        
+
         if (playerData.doesCacheExist(name)) {
         	StoreInventoryEvent event = new StoreInventoryEvent(player, playerData);
         	Bukkit.getServer().getPluginManager().callEvent(event);
@@ -72,7 +72,6 @@ public class LimboCache {
         		inv = null;
         		arm = null;
         	}
-   
             if(player.isOp() ) {
                 operator = true;
                 } else {
@@ -80,8 +79,6 @@ public class LimboCache {
                 }
         }
 
-       
-        
         if(Settings.isForceSurvivalModeEnabled) {
             if(Settings.isResetInventoryIfCreative && gameMode != 0 ) {
             	ResetInventoryEvent event = new ResetInventoryEvent(player);
@@ -100,7 +97,6 @@ public class LimboCache {
         				loc = plugin.mv.getMVWorldManager().getMVWorld(player.getWorld().getName()).getSpawnLocation();
         			} catch (NullPointerException npe) {}
         		}
-
         }
         try {
             if(cache.containsKey(name) && playerGroup.isEmpty()) {
@@ -109,15 +105,13 @@ public class LimboCache {
             }
         } catch (NullPointerException ex) {
         }
-        
         cache.put(player.getName().toLowerCase(), new LimboPlayer(name, loc, inv, arm, gameMode, operator, playerGroup));
     }
-    
+
     public void addLimboPlayer(Player player, String group) {
-        
         cache.put(player.getName().toLowerCase(), new LimboPlayer(player.getName().toLowerCase(), group));
     }
-    
+
     public void deleteLimboPlayer(String name) {
         cache.remove(name);
     }
@@ -129,8 +123,7 @@ public class LimboCache {
     public boolean hasLimboPlayer(String name) {
         return cache.containsKey(name);
     }
-    
-    
+
     public static LimboCache getInstance() {
         if (singleton == null) {
             singleton = new LimboCache(AuthMe.getInstance());
@@ -144,4 +137,5 @@ public class LimboCache {
 		}
 		this.addLimboPlayer(player);
 	}
+
 }

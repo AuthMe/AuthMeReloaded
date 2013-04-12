@@ -3,10 +3,14 @@ package uk.org.whoami.authme.filter;
 import java.util.logging.Filter;
 import java.util.logging.LogRecord;
 
+/**
+*
+* @author Xephi59
+*/
 public class ConsoleFilter implements Filter {
 
     public ConsoleFilter() {}
-    
+
     @Override
     public boolean isLoggable(LogRecord record) {
         String logM = record.getMessage().toLowerCase();
@@ -17,7 +21,5 @@ public class ConsoleFilter implements Filter {
         record.setMessage(playername + " issued an AuthMe command!");
         return true;
     }
-    
-    
-    
+
 }

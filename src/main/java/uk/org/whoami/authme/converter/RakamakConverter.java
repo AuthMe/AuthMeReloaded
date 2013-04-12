@@ -17,15 +17,18 @@ import uk.org.whoami.authme.security.PasswordSecurity;
 import uk.org.whoami.authme.security.PasswordSecurity.HashAlgorithm;
 import uk.org.whoami.authme.settings.Settings;
 
-
+/**
+*
+* @author Xephi59
+*/
 public class RakamakConverter {
-	
+
 	public AuthMe instance;
-	
+
 	public RakamakConverter (AuthMe instance) {
 		this.instance = instance;
 	}
-	
+
 	public RakamakConverter getInstance() {
 		return this;
 	}
@@ -34,12 +37,11 @@ public class RakamakConverter {
 	private static Boolean useIP;
 	private static String fileName;
 	private static String ipFileName;
-	
 	private static File source;
 	private static File output;
 	private static File ipfiles;
 	private static boolean alreadyExist = false;
-	
+
 	public static void RakamakConvert() throws IOException {
 		hash = Settings.rakamakHash;
 		useIP = Settings.rakamakUseIp;
@@ -47,8 +49,6 @@ public class RakamakConverter {
 		ipFileName = Settings.rakamakUsersIp;
 		HashMap<String, String> playerIP = new HashMap<String, String>();
 		HashMap<String, String> playerPSW = new HashMap<String, String>();
-        
-
         try {
             source = new File(AuthMe.getInstance().getDataFolder() + File.separator + fileName);
             ipfiles = new File(AuthMe.getInstance().getDataFolder() + File.separator + ipFileName);
@@ -86,8 +86,6 @@ public class RakamakConverter {
 					}
             	}
             }
-            
-
             users.close();
             outputDB = new BufferedWriter(new FileWriter(output));
 				for (Entry<String, String> m : playerPSW.entrySet()) {
@@ -96,7 +94,6 @@ public class RakamakConverter {
 						String psw = playerPSW.get(player);
 						String ip = playerIP.get(player);
 						newLine = player + ":" + psw + ":" + ip + ":1325376060:0:0:0";
-
 					} else {
 						String player = m.getKey();
 						String psw = playerPSW.get(player);
@@ -108,14 +105,8 @@ public class RakamakConverter {
 					System.out.println("Write line");
 					outputDB.newLine();
 				}
-				
-			
 			outputDB.close();
-
-			System.out.println("[AuthMe] Rakamak database has been converted to auths.db");
-            
-
-            
+			ConsoleLogger.info("Rakamak database has been converted to auths.db");
         } catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {

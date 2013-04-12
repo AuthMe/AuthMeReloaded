@@ -12,33 +12,31 @@ import uk.org.whoami.authme.settings.Messages;
 import uk.org.whoami.authme.settings.Settings;
 
 public class CaptchaCommand implements CommandExecutor {
-	
+
 	public AuthMe plugin;
     private Messages m = Messages.getInstance();
     public static RandomString rdm = new RandomString(Settings.captchaLength);
-    
+
     public CaptchaCommand(AuthMe plugin) {
     	this.plugin = plugin;
     }
-    
-    
+
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmnd,
 			String label, String[] args) {
-		
+
         if (!(sender instanceof Player)) {
             return true;
         }
-        
+
         Player player = (Player) sender;
         String name = player.getName().toLowerCase();
-        
-        
+
         if (args.length == 0) {
             player.sendMessage(m._("usage_captcha"));
             return true;
         }
-        
+
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             player.sendMessage(m._("logged_in"));
             return true;
@@ -48,12 +46,12 @@ public class CaptchaCommand implements CommandExecutor {
             player.sendMessage(m._("no_perm"));
             return true;
         }
-        
+
         if (!Settings.useCaptcha) {
         	player.sendMessage(m._("usage_log"));
         	return true;
         }
-	
+
 		if(!plugin.cap.containsKey(name)) {
         	player.sendMessage(m._("usage_log"));
         	return true;
@@ -70,12 +68,9 @@ public class CaptchaCommand implements CommandExecutor {
             plugin.cap.remove(name);
         } catch (NullPointerException npe) {
         }
-
         player.sendMessage("Your captcha is correct");
         player.sendMessage(m._("login_msg"));
         return true;
-        
-        
 	}
 
 }

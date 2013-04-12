@@ -19,7 +19,6 @@ package uk.org.whoami.authme.cache.auth;
 import uk.org.whoami.authme.security.PasswordSecurity;
 import uk.org.whoami.authme.settings.Settings;
 
-
 public class PlayerAuth {
 
     private String nickname;
@@ -33,14 +32,14 @@ public class PlayerAuth {
     private String vBhash = null;
     private int groupId;
     private String email = "your@email.com";
-    
+
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
         this.lastLogin = lastLogin;
     }
-    
+
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String email) {
         this.nickname = nickname;
         this.hash = hash;
@@ -48,14 +47,14 @@ public class PlayerAuth {
         this.lastLogin = lastLogin;
         this.email = email;
     }
-    
+
     public PlayerAuth(String nickname, int x, int y, int z) {
         this.nickname = nickname;
         this.x = x;
         this.y = y;
         this.z = z;
     }
-    
+
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z, String email) {
         this.nickname = nickname;
         this.hash = hash;
@@ -66,10 +65,7 @@ public class PlayerAuth {
         this.z = z;
         this.email = email;
     }
-    
-    //
-    // This constructor is needed for Vbulletin board Auth!
-    //
+
     public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, int x, int y, int z, String email) {
         this.nickname = nickname;
         this.hash = hash;
@@ -82,8 +78,7 @@ public class PlayerAuth {
         this.groupId = groupId;
         this.email = email; 
     }
-    
-    // IPB Constructor with groups
+
     public PlayerAuth(String nickname, String hash, String salt, int groupId , String ip, long lastLogin) {
         this.nickname = nickname;
         this.hash = hash;
@@ -92,8 +87,7 @@ public class PlayerAuth {
         this.salt = salt;
         this.groupId = groupId;
     }
-    
-    // IPB Constructor without groups
+
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin) {
         this.nickname = nickname;
         this.hash = hash;
@@ -101,7 +95,7 @@ public class PlayerAuth {
         this.lastLogin = lastLogin;  
         this.salt = salt;
     }
-    
+
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, int x, int y, int z, String email) {
         this.nickname = nickname;
         this.hash = hash;
@@ -114,7 +108,6 @@ public class PlayerAuth {
         this.email = email; 
     }
 
-    
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z) {
         this.nickname = nickname;
         this.hash = hash;
@@ -125,7 +118,6 @@ public class PlayerAuth {
         this.z = z;
         this.email = "your@email.com";
     }
-
 
 	public String getIp() {
         return ip;
@@ -138,26 +130,21 @@ public class PlayerAuth {
     public String getHash() {
         if(!salt.isEmpty() && Settings.getPasswordHash == PasswordSecurity.HashAlgorithm.MD5VB) {
         	vBhash = "$MD5vb$"+salt+"$"+hash;
-            // Compose Vbullettin Hash System!
             return vBhash;
         }
         else {
         	return hash;
         } 
     }
-    
-    //Get Salt
+
     public String getSalt() {
     	return this.salt;
     }
-    
-    //
-    // GroupId for unactivated User on Vbullettin Board
-    //
+
     public int getGroupId() {
         return groupId;
     }
-    
+
     public int getQuitLocX() {
         return x;
     }
@@ -194,11 +181,11 @@ public class PlayerAuth {
     public void setLastLogin(long lastLogin) {
         this.lastLogin = lastLogin;
     }
-    
+
     public void setEmail(String email) {
     	this.email = email;
     }
-    
+
     public void setSalt(String salt) {
     	this.salt = salt;
     }
@@ -209,7 +196,6 @@ public class PlayerAuth {
             return false;
         }
         PlayerAuth other = (PlayerAuth) obj;
-        
         return other.getIp().equals(this.ip) && other.getNickname().equals(this.nickname);
     }
 
@@ -220,4 +206,5 @@ public class PlayerAuth {
         hashCode = 71 * hashCode + (this.ip != null ? this.ip.hashCode() : 0);
         return hashCode;
     }
+
 }

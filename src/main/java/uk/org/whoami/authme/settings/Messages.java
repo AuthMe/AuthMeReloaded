@@ -21,17 +21,14 @@ import java.io.File;
 public class Messages extends CustomConfiguration {
 
     private static Messages singleton = null;
-    
 
     public Messages() {
-        
         super(new File(Settings.MESSAGE_FILE+"_"+Settings.messagesLanguage+".yml"));
         loadDefaults();
         loadFile();
         singleton = this;
-        
     }
-    
+
     private void loadDefaults() {
         this.set("logged_in", "&cAlready logged in!");
         this.set("not_logged_in", "&cNot logged in!");
@@ -80,7 +77,6 @@ public class Messages extends CustomConfiguration {
 	private void loadFile() {
         this.load();
         this.save();
-       
     }
 
     public String _(String msg) {
@@ -90,13 +86,12 @@ public class Messages extends CustomConfiguration {
         }
         return msg;
     }
-    
-    
+
     public static Messages getInstance() {
         if (singleton == null) {
             singleton = new Messages();
         }        
         return singleton;
     }
-       
+
 }

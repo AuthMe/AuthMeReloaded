@@ -35,7 +35,7 @@ public class CacheDataSource implements DataSource {
     	this.plugin = plugin;
         this.source = source;
     }
-        
+
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         return cache.containsKey(user) ? true : source.isAuthAvailable(user);
@@ -79,30 +79,26 @@ public class CacheDataSource implements DataSource {
         }
         return false;
     }
-    
+
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
-       //System.out.println("[debug name chace non work]"+auth.getNickname()+"[debug loc]"+auth.getQuitLocX());
         if (source.updateQuitLoc(auth)) {
-            //System.out.println("[debug name chace]"+auth.getNickname()+"[debug loc]"+auth.getQuitLocX());
             cache.get(auth.getNickname()).setQuitLocX(auth.getQuitLocX());
             cache.get(auth.getNickname()).setQuitLocY(auth.getQuitLocY());
             cache.get(auth.getNickname()).setQuitLocZ(auth.getQuitLocZ());
             return true;
-            
         }
         return false;
     }
-    
+
     @Override
     public int getIps(String ip) {
         return source.getIps(ip);
     }
-    
+
     @Override
     public int purgeDatabase(long until) {
         int cleared = source.purgeDatabase(until);
-
         if (cleared > 0) {
             for (PlayerAuth auth : cache.values()) {
                 if(auth.getLastLogin() < until) {
@@ -151,7 +147,7 @@ public class CacheDataSource implements DataSource {
 		}
 		return false;
 	}
-	
+
 	@Override
 	public boolean updateSalt(PlayerAuth auth) {
 		if(source.updateSalt(auth)) {
@@ -170,9 +166,19 @@ public class CacheDataSource implements DataSource {
 	public List<String> getAllAuthsByIp(String ip) {
 		return source.getAllAuthsByIp(ip);
 	}
-	
+
 	@Override
 	public List<String> getAllAuthsByEmail(String email) {
 		return source.getAllAuthsByEmail(email);
+	}
+
+	@Override
+	public void purgeBanned(List<String> banned) {
+		source.purgeBanned(banned);
+		for (PlayerAuth auth : cache.values()) {
+			if (banned.contains(auth.getNickname())) {
+				cache.remove(auth.getNickname());
+			}
+		}
 	}
 }

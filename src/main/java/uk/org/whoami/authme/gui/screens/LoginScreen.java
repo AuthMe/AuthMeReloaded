@@ -27,7 +27,6 @@ public class LoginScreen extends GenericPopup implements Clickable{
 
 	public AuthMe plugin = AuthMe.getInstance();
 	private SpoutCfg spoutCfg = SpoutCfg.getInstance();
-	
 	private CustomButton exitBtn;
 	private CustomButton loginBtn;
 	private GenericTextField passBox;
@@ -35,17 +34,16 @@ public class LoginScreen extends GenericPopup implements Clickable{
 	private GenericLabel textLbl;
 	private GenericLabel errorLbl;
 	
-	String exitTxt = spoutCfg.getString("LoginScreen.exit button"); //"Quit";
-	String loginTxt = spoutCfg.getString("LoginScreen.login button"); //"Login";
-	String exitMsg = spoutCfg.getString("LoginScreen.exit message"); //"Good Bye";
-	String title = spoutCfg.getString("LoginScreen.title"); //"LOGIN"
+	String exitTxt = spoutCfg.getString("LoginScreen.exit button");
+	String loginTxt = spoutCfg.getString("LoginScreen.login button");
+	String exitMsg = spoutCfg.getString("LoginScreen.exit message");
+	String title = spoutCfg.getString("LoginScreen.title");
 	@SuppressWarnings("unchecked")
 	List<String> textlines = (List<String>) spoutCfg.getList("LoginScreen.text");
 	public SpoutPlayer splayer;
-	
+
 	public LoginScreen(SpoutPlayer player) {
 		this.splayer = player;
-		
 		createScreen();
 	}
 
@@ -53,7 +51,6 @@ public class LoginScreen extends GenericPopup implements Clickable{
 		int objects = textlines.size() + 4;
 		int part = !(textlines.size() <= 5) ? 195 / objects : 20;
 		int h = 3*part/4, w = 8*part;
-		
 		titleLbl = new GenericLabel();
 		titleLbl
 			.setText(title)
@@ -64,7 +61,6 @@ public class LoginScreen extends GenericPopup implements Clickable{
 			.setX(maxWidth / 2 )
 			.setY(25);
 		this.attachWidget(plugin, titleLbl);
-		
 		int ystart = 25 + h + part/2;
 		for (int x=0; x<textlines.size();x++)
 		{
@@ -78,7 +74,6 @@ public class LoginScreen extends GenericPopup implements Clickable{
 				.setY(ystart + x*part);
 			this.attachWidget(plugin, textLbl);
 		}
-		
 		passBox = new GenericTextField();
 		passBox
 			.setMaximumCharacters(18)
@@ -89,7 +84,6 @@ public class LoginScreen extends GenericPopup implements Clickable{
 		passBox.setPasswordField(true);
 		setXToMid(passBox);
 		this.attachWidget(plugin, passBox);
-		
 		errorLbl = new GenericLabel();
 		errorLbl
 			.setText("")
@@ -99,7 +93,6 @@ public class LoginScreen extends GenericPopup implements Clickable{
 			.setX(passBox.getX() + passBox.getWidth() + 2)
 			.setY(passBox.getY());
 		this.attachWidget(plugin, errorLbl);
-		
 		loginBtn = new CustomButton(this);
 		loginBtn
 			.setText(loginTxt)
@@ -108,7 +101,6 @@ public class LoginScreen extends GenericPopup implements Clickable{
 			.setY(220-h-part);
 		setXToMid(loginBtn);
 		this.attachWidget(plugin, loginBtn);
-		
 		exitBtn = new CustomButton(this);
 		exitBtn
 			.setText(exitTxt)
@@ -118,10 +110,8 @@ public class LoginScreen extends GenericPopup implements Clickable{
 		setXToMid(exitBtn);
 		this.attachWidget(plugin, exitBtn);
 		this.setPriority(RenderPriority.Highest);
-		
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler (priority = EventPriority.HIGHEST)
 	public void handleClick(ButtonClickEvent event) {
 		Button b = event.getButton();
@@ -129,25 +119,15 @@ public class LoginScreen extends GenericPopup implements Clickable{
 		if (event.isCancelled() || event == null || event.getPlayer() == null) return;
 		if (b.equals(loginBtn))
 		{
-				String result = plugin.management.performLogin(player, passBox.getText());
-				if(result == "") {
-					player.closeActiveWindow();
-				}
-				else
-				{
-					errorLbl.setText(result);
-					passBox.setText("");
-				}
+				plugin.management.performLogin(player, passBox.getText());
 		}else if(b.equals(exitBtn))
 		{
 			event.getPlayer().kickPlayer(exitMsg);
-			
 		}
 	}
 
 	private void setXToMid(Widget w) {
 		w.setX( (maxWidth - w.getWidth()) / 2);
 	}
-	
 
 }

@@ -40,7 +40,7 @@ public class LimboPlayer {
         this.operator = operator;
         this.group = group;
     }
-    
+
     public LimboPlayer(String name, Location loc, int gameMode, boolean operator, String group) {
         this.name = name;
         this.loc = loc;
@@ -48,13 +48,12 @@ public class LimboPlayer {
         this.operator = operator;
         this.group = group;
     }
-    
+
     public LimboPlayer(String name, String group) {
         this.name = name;
         this.group = group;
     }
-    
-    
+
     public String getName() {
         return name;
     }
@@ -74,11 +73,11 @@ public class LimboPlayer {
     public int getGameMode() {
         return gameMode;
     }
-    
+
     public boolean getOperator() {
         return operator;
     }
-    
+
     public String getGroup() {
         return group;
     }

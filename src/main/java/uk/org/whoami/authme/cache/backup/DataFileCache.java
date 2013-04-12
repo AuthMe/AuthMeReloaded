@@ -12,24 +12,22 @@ import org.bukkit.inventory.ItemStack;
 
 public class DataFileCache {
 
-
 	private ItemStack[] inventory;
 	private ItemStack[] armor;	
-        private String group;
-        private boolean operator;
+	private String group;
+	private boolean operator;
 
 	public DataFileCache(ItemStack[] inventory, ItemStack[] armor){
 		this.inventory = inventory;
 		this.armor = armor;
-                
 	}
 
 	public DataFileCache(ItemStack[] inventory, ItemStack[] armor, String group, boolean operator){
 		this.inventory = inventory;
 		this.armor = armor;
-                this.group = group;
-                this.operator = operator;
-	}        
+		this.group = group;
+		this.operator = operator;
+	}
 	public ItemStack[] getInventory(){
 		return inventory;
 	}
@@ -37,13 +35,13 @@ public class DataFileCache {
 	public ItemStack[] getArmour(){
 		return armor;
 	}
-        
+
 	public String getGroup(){
 		return group;
 	}
-        
+
 	public Boolean getOperator(){
                 return operator;
-	}         
-}    
+	}
 
+}

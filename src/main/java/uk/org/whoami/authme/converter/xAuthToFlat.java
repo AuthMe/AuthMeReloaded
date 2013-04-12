@@ -18,16 +18,20 @@ import uk.org.whoami.authme.AuthMe;
 import uk.org.whoami.authme.cache.auth.PlayerAuth;
 import uk.org.whoami.authme.datasource.DataSource;
 
+/**
+*
+* @author Xephi59
+*/
 public class xAuthToFlat {
 
 	public AuthMe instance;
 	public DataSource database;
-	
+
 	public xAuthToFlat(AuthMe instance, DataSource database) {
 		this.instance = instance;
 		this.database = database;
 	}
-	
+
 	public boolean convert(CommandSender sender) {
 		if (instance.getServer().getPluginManager().getPlugin("xAuth") == null) {
 			sender.sendMessage("[AuthMe] xAuth plugin not found");
@@ -41,7 +45,6 @@ public class xAuthToFlat {
 			sender.sendMessage("[AuthMe] Error while import xAuthPlayers");
 			return false;
 		}
-
 		sender.sendMessage("[AuthMe] Starting import...");
 		for (int id : players) {
 			String pl = getIdPlayer(id);
@@ -54,13 +57,12 @@ public class xAuthToFlat {
 		sender.sendMessage("[AuthMe] Import done!");
 		return true;
 	}
-	
+
 	public String getIdPlayer(int id) {
 		String realPass = "";
 		Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-
         try {
             String sql = String.format("SELECT `playername` FROM `%s` WHERE `id` = ?",
                     xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
@@ -69,7 +71,6 @@ public class xAuthToFlat {
             rs = ps.executeQuery();
             if (!rs.next())
                 return null;
-
             realPass = rs.getString("playername").toLowerCase();
         } catch (SQLException e) {
             xAuthLog.severe("Failed to retrieve name for account: " + id, e);
@@ -107,7 +108,6 @@ public class xAuthToFlat {
 		Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
-
         try {
             String sql = String.format("SELECT `password`, `pwtype` FROM `%s` WHERE `id` = ?",
                     xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
@@ -116,7 +116,6 @@ public class xAuthToFlat {
             rs = ps.executeQuery();
             if (!rs.next())
                 return null;
-
             realPass = rs.getString("password");
         } catch (SQLException e) {
             xAuthLog.severe("Failed to retrieve password hash for account: " + accountId, e);

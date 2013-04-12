@@ -8,9 +8,9 @@ import org.bukkit.entity.Entity;
 import uk.org.whoami.authme.AuthMe;
 
 public class CitizensCommunicator {
-	
+
     public AuthMe instance;
-    
+
     public CitizensCommunicator(AuthMe instance) {
     	this.instance = instance;
     }

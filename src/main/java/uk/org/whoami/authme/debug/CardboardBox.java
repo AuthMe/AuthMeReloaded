@@ -15,10 +15,8 @@ import org.bukkit.inventory.ItemStack;
 
 public class CardboardBox implements Serializable {
     private static final long serialVersionUID = 729890133797629668L;
-
     private final int type, amount;
     private final short damage;
-
     private final HashMap<CardboardEnchantment, Integer> enchants;
 
     public CardboardBox(ItemStack item) {
