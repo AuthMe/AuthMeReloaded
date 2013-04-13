@@ -483,15 +483,17 @@ public class AuthMe extends JavaPlugin {
 		for (i = 0 ; i <= players.length ; i++) {
 			Random rdm = new Random();
 			int a = rdm.nextInt(players.length);
-			if (!players[a].hasPermission("authme.vip")) {
+			if (!(players[a].hasPermission("authme.vip"))) {
 				player = players[a];
 				break;
-			}	
+			}
 		}
 		if (player == null) {
-			for (Player p : this.getServer().getOnlinePlayers()) {
-				if (p.hasPermission("authme.vip"))
+			for (Player p : players) {
+				if (!(p.hasPermission("authme.vip"))) {
 					player = p;
+					break;
+				}
 			}
 		}
 		return player;

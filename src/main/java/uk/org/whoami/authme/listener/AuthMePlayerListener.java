@@ -597,25 +597,25 @@ public class AuthMePlayerListener implements Listener {
 
         if (name.length() > max || name.length() < min) {
 
-            event.disallow(Result.KICK_OTHER, m._("name_len"));
+            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("name_len"));
             return;
         }
         if (!player.getName().matches(regex) || name.equals("Player")) {
             try {
-            	event.disallow(Result.KICK_OTHER, m._("regex").replaceAll("REG_EX", regex));
+            	event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("regex").replaceAll("REG_EX", regex));
             } catch (StringIndexOutOfBoundsException exc) {
-            	event.disallow(Result.KICK_OTHER, "allowed char : " + regex);
+            	event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "allowed char : " + regex);
             }
             return;
         }
 
         if (Settings.isKickNonRegisteredEnabled) {
             if (!data.isAuthAvailable(name)) {    
-                event.disallow(Result.KICK_OTHER, m._("reg_only"));
+                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("reg_only"));
                 return;
             }
         }
-        if (event.getResult() != Result.KICK_FULL) return;
+        if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL) return;
         if (player.isBanned()) return;
         if (!player.hasPermission("authme.vip")) {
         	event.disallow(Result.KICK_FULL, m._("kick_fullserver"));
