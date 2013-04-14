@@ -155,58 +155,58 @@ public class Management {
 		                          utils.packCoords(getAuth.getQuitLocX(), getAuth.getQuitLocY(), getAuth.getQuitLocZ(), player);
 		                                  }
 		                                  else {
-
-		                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-		                          pm.callEvent(tpEvent);
-		                          if(!tpEvent.isCancelled()) {
-		                          	final Location fLoc = tpEvent.getTo();
 		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
 										@Override
 										public void run() {
-				                          	if (!fLoc.getChunk().isLoaded()) {
-				                        		fLoc.getChunk().load();
-				                        	}
-											player.teleport(fLoc);
+					                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
+					                          pm.callEvent(tpEvent);
+					                          Location fLoc = tpEvent.getTo();
+					                          if (!tpEvent.isCancelled()) {
+					                        	  if (!fLoc.getChunk().isLoaded()) {
+					                        		  fLoc.getChunk().load();
+					                        	  }
+					                        	  player.teleport(fLoc);
+					                          }
 										}
 		                          	});
-		                          }
 		                                  }
 		                                }
 		                      else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
-		                          SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, true);
-		                          pm.callEvent(tpEvent);
-		                          if(!tpEvent.isCancelled()) {
-			                          	final Location fLoc = tpEvent.getTo();
+		                    	  		final Location spawnL = spawnLoc;
 			                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
 											@Override
 											public void run() {
-					                          	if (!fLoc.getChunk().isLoaded()) {
-					                        		fLoc.getChunk().load();
-					                        	}
-												player.teleport(fLoc);
+						                          SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnL, true);
+						                          pm.callEvent(tpEvent);
+												if(!tpEvent.isCancelled()) {
+													Location fLoc = tpEvent.getTo();
+													if (!fLoc.getChunk().isLoaded()) {
+														fLoc.getChunk().load();
+													}
+													player.teleport(fLoc);
+												}
 											}
 			                          	});
-		                          }
-		                                }
+		                      }
 		                      else if ((Settings.isSaveQuitLocationEnabled) && (getAuth.getQuitLocY() != 0))
 		                                {
 		                        utils.packCoords(getAuth.getQuitLocX(), getAuth.getQuitLocY(), getAuth.getQuitLocZ(), player);
 		                                }
 		                                else {
-		                        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-		                        pm.callEvent(tpEvent);
-		                        if(!tpEvent.isCancelled()) {
-		                          	final Location fLoc = tpEvent.getTo();
-		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
-										@Override
-										public void run() {
-				                          	if (!fLoc.getChunk().isLoaded()) {
-				                        		fLoc.getChunk().load();
-				                        	}
-											player.teleport(fLoc);
-										}
-		                          	});
-		                        }
+				                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+												@Override
+												public void run() {
+							                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
+							                          pm.callEvent(tpEvent);
+							                          Location fLoc = tpEvent.getTo();
+							                          if (!tpEvent.isCancelled()) {
+							                        	  if (!fLoc.getChunk().isLoaded()) {
+							                        		  fLoc.getChunk().load();
+							                        	  }
+							                        	  player.teleport(fLoc);
+							                          }
+												}
+				                          	});
 		                                }
 
 		                      Bukkit.getScheduler().runTask(plugin, new Runnable() {
@@ -315,90 +315,90 @@ public class Management {
 		                      if ((Settings.isTeleportToSpawnEnabled) && (!Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())))
 		                                {
 		                        if ((Settings.isSaveQuitLocationEnabled) && (database.getAuth(name).getQuitLocY() != 0)) {
-		                          Location quitLoc = new Location(player.getWorld(), database.getAuth(name).getQuitLocX() + 0.5D, database.getAuth(name).getQuitLocY() + 0.5D, database.getAuth(name).getQuitLocZ() + 0.5D);
-		                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
-		                          pm.callEvent(tpEvent);
-		                          if(!tpEvent.isCancelled()) {
-			                          	final Location fLoc = tpEvent.getTo();
-			                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
-											@Override
-											public void run() {
-					                          	if (!fLoc.getChunk().isLoaded()) {
-					                        		fLoc.getChunk().load();
-					                        	}
-												player.teleport(fLoc);
-											}
-			                          	});
-		                          }
+		                          final Location quitLoc = new Location(player.getWorld(), database.getAuth(name).getQuitLocX() + 0.5D, database.getAuth(name).getQuitLocY() + 0.5D, database.getAuth(name).getQuitLocZ() + 0.5D);
+		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+					                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
+					                          pm.callEvent(tpEvent);
+					                          Location fLoc = tpEvent.getTo();
+					                          if (!tpEvent.isCancelled()) {
+					                        	  if (!fLoc.getChunk().isLoaded()) {
+					                        		  fLoc.getChunk().load();
+					                        	  }
+					                        	  player.teleport(fLoc);
+					                          }
+										}
+		                          	});
 		                                  }
 		                                  else
 		                                  {
-		                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-		                          pm.callEvent(tpEvent);
-		                          if(!tpEvent.isCancelled()) {
-			                          	final Location fLoc = tpEvent.getTo();
-			                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
-											@Override
-											public void run() {
-					                          	if (!fLoc.getChunk().isLoaded()) {
-					                        		fLoc.getChunk().load();
-					                        	}
-												player.teleport(fLoc);
-											}
-			                          	});
-		                          }
+		  		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+												@Override
+												public void run() {
+							                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
+							                          pm.callEvent(tpEvent);
+							                          Location fLoc = tpEvent.getTo();
+							                          if (!tpEvent.isCancelled()) {
+							                        	  if (!fLoc.getChunk().isLoaded()) {
+							                        		  fLoc.getChunk().load();
+							                        	  }
+							                        	  player.teleport(fLoc);
+							                          }
+												}
+				                          	});
 		                                  }
 		                                }
 		                      else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
-
-		                          SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, true);
-		                          pm.callEvent(tpEvent);
-		                          if(!tpEvent.isCancelled()) {
-			                          	final Location fLoc = tpEvent.getTo();
-			                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
-											@Override
-											public void run() {
-					                          	if (!fLoc.getChunk().isLoaded()) {
-					                        		fLoc.getChunk().load();
-					                        	}
-												player.teleport(fLoc);
-											}
-			                          	});
-		                          }
-		                                }
-		                      else if ((Settings.isSaveQuitLocationEnabled) && (database.getAuth(name).getQuitLocY() != 0)) {
-		                        Location quitLoc = new Location(player.getWorld(), database.getAuth(name).getQuitLocX() + 0.5D, database.getAuth(name).getQuitLocY() + 0.5D, database.getAuth(name).getQuitLocZ() + 0.5D);
-		                        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
-		                        pm.callEvent(tpEvent);
-		                        if(!tpEvent.isCancelled()) {
-		                          	final Location fLoc = tpEvent.getTo();
+	                    	  		final Location spawnL = spawnLoc;
 		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
 										@Override
 										public void run() {
-				                          	if (!fLoc.getChunk().isLoaded()) {
-				                        		fLoc.getChunk().load();
-				                        	}
-											player.teleport(fLoc);
+					                          SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnL, true);
+					                          pm.callEvent(tpEvent);
+											if(!tpEvent.isCancelled()) {
+												Location fLoc = tpEvent.getTo();
+												if (!fLoc.getChunk().isLoaded()) {
+													fLoc.getChunk().load();
+												}
+												player.teleport(fLoc);
+											}
 										}
 		                          	});
-		                        }
+		                                }
+		                      else if ((Settings.isSaveQuitLocationEnabled) && (database.getAuth(name).getQuitLocY() != 0)) {
+		                        final Location quitLoc = new Location(player.getWorld(), database.getAuth(name).getQuitLocX() + 0.5D, database.getAuth(name).getQuitLocY() + 0.5D, database.getAuth(name).getQuitLocZ() + 0.5D);
+	                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+									@Override
+									public void run() {
+				                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, quitLoc);
+				                          pm.callEvent(tpEvent);
+				                          Location fLoc = tpEvent.getTo();
+				                          if (!tpEvent.isCancelled()) {
+				                        	  if (!fLoc.getChunk().isLoaded()) {
+				                        		  fLoc.getChunk().load();
+				                        	  }
+				                        	  player.teleport(fLoc);
+				                          }
+									}
+	                          	});
 		                                }
 		                                else
 		                                {
-		                        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-		                        pm.callEvent(tpEvent);
-		                        if(!tpEvent.isCancelled()) {
-		                          	final Location fLoc = tpEvent.getTo();
-		                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
-										@Override
-										public void run() {
-				                          	if (!fLoc.getChunk().isLoaded()) {
-				                        		fLoc.getChunk().load();
-				                        	}
-											player.teleport(fLoc);
-										}
-		                          	});
-		                        }
+				                          	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+												@Override
+												public void run() {
+							                          AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
+							                          pm.callEvent(tpEvent);
+							                          Location fLoc = tpEvent.getTo();
+							                          if (!tpEvent.isCancelled()) {
+							                        	  if (!fLoc.getChunk().isLoaded()) {
+							                        		  fLoc.getChunk().load();
+							                        	  }
+							                        	  player.teleport(fLoc);
+							                          }
+												}
+				                          	});
 		                                }
 
 		                      Bukkit.getScheduler().runTask(plugin, new Runnable() {
