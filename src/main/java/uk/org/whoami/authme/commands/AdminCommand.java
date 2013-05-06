@@ -91,7 +91,7 @@ public class AdminCommand implements CommandExecutor {
             return true;
        }
 
-       if (!sender.hasPermission("authme.admin." + args[0].toLowerCase())) {
+       if (!plugin.authmePermissible(sender, "authme.admin." + args[0].toLowerCase())) {
             sender.sendMessage(m._("no_perm"));
             return true;
         }

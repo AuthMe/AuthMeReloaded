@@ -14,6 +14,7 @@ import uk.org.whoami.authme.Management;
 import uk.org.whoami.authme.Utils;
 import uk.org.whoami.authme.cache.auth.PlayerCache;
 import uk.org.whoami.authme.datasource.DataSource;
+import uk.org.whoami.authme.settings.Messages;
 
 /**
  *
@@ -23,6 +24,7 @@ public class PasspartuCommand implements CommandExecutor {
     private Utils utils = new Utils();
     private DataSource database;
     public AuthMe plugin;
+	private Messages m;
 
     public PasspartuCommand(DataSource database, AuthMe plugin) {
         this.database = database;
@@ -30,7 +32,12 @@ public class PasspartuCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmnd, String label, String[] args) { 
+    public boolean onCommand(CommandSender sender, Command cmnd, String label, String[] args) {
+    	
+        if (!plugin.authmePermissible(sender, "authme.admin." + args[0].toLowerCase())) {
+            sender.sendMessage(m._("no_perm"));
+            return true;
+        }
 
        if (PlayerCache.getInstance().isAuthenticated(sender.getName().toLowerCase())) {
             return true;

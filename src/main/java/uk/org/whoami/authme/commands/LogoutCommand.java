@@ -64,7 +64,7 @@ public class LogoutCommand implements CommandExecutor {
             return true;
         }
 
-        if (!sender.hasPermission("authme." + label.toLowerCase())) {
+        if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
             sender.sendMessage(m._("no_perm"));
             return true;
         }

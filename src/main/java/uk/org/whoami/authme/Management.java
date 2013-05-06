@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 
 import me.muizers.Notifications.Notification;
-import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -68,15 +66,8 @@ public class Management {
 			public void run() {
 		        String ip = player.getAddress().getAddress().getHostAddress();
 		        if (Settings.bungee) {
-		        	try {
-		        		for (ProxiedPlayer pp : BungeeCord.getInstance().getPlayers()) {
-		        			if (pp.getName().toLowerCase() == name) {
-		        				ip = pp.getAddress().getAddress().getHostAddress();
-		        				break;
-		        			}
-		        		}
-		        	} catch (NoClassDefFoundError ncdfe) {
-		        	}
+		        	if (plugin.realIp.containsKey(name))
+		        		ip = plugin.realIp.get(name);
 		        }
 		        World world = player.getWorld();
 		        Location spawnLoc = world.getSpawnLocation();
@@ -502,7 +493,7 @@ public class Management {
 
     	}
     	for (Player player : AuthMe.getInstance().getServer().getOnlinePlayers()) {
-    		if (player.hasPermission("authme.seeOtherAccounts")) {
+    		if (plugin.authmePermissible(player, "authme.seeOtherAccounts")) {
     			player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + String.valueOf(accountList.size()) + " accounts");
     			player.sendMessage(message);
     		}

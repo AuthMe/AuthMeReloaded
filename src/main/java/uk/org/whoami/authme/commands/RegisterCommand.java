@@ -20,8 +20,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 
 import me.muizers.Notifications.Notification;
-import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -72,7 +70,7 @@ public class RegisterCommand implements CommandExecutor {
             return true;
         }
 
-        if (!sender.hasPermission("authme." + label.toLowerCase())) {
+        if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
             sender.sendMessage(m._("no_perm"));
             return true;
         }
@@ -82,15 +80,8 @@ public class RegisterCommand implements CommandExecutor {
         String ipA = player.getAddress().getAddress().getHostAddress();
 
         if (Settings.bungee) {
-        	try {
-        		for (ProxiedPlayer pp : BungeeCord.getInstance().getPlayers()) {
-        			if (pp.getName().toLowerCase() == name) {
-        				ipA = pp.getAddress().getAddress().getHostAddress();
-        				break;
-        			}
-        		}
-        	} catch (NoClassDefFoundError ncdfe) {
-        	}
+        	if (plugin.realIp.containsKey(name))
+        		ipA = plugin.realIp.get(name);
         }
 
         final String ip = ipA;
@@ -113,7 +104,7 @@ public class RegisterCommand implements CommandExecutor {
         }
 
         if(Settings.getmaxRegPerIp > 0 ){
-        	if(!sender.hasPermission("authme.allow2accounts") && database.getAllAuthsByIp(ipA).size() >= Settings.getmaxRegPerIp) {
+        	if(!plugin.authmePermissible(sender, "authme.allow2accounts") && database.getAllAuthsByIp(ipA).size() >= Settings.getmaxRegPerIp) {
         		player.sendMessage(m._("max_reg"));
                 return true;
         	}
@@ -136,7 +127,7 @@ public class RegisterCommand implements CommandExecutor {
         	}
         	final String email = args[0];
         	if(Settings.getmaxRegPerEmail > 0) {
-        		if (!sender.hasPermission("authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
+        		if (!plugin.authmePermissible(sender, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
         			player.sendMessage(m._("max_reg"));
         			return true;
         		}
@@ -144,7 +135,7 @@ public class RegisterCommand implements CommandExecutor {
 			RandomString rand = new RandomString(Settings.getRecoveryPassLength);
 			final String thePass = rand.nextString();
             if (!thePass.isEmpty()) {
-            	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+            	Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 					@Override
 					public void run() {
 		            	if (PasswordSecurity.userSalt.containsKey(name)) {

@@ -173,7 +173,7 @@ public class Utils {
                         String token = generateToken();
                         writer.write(token+":"+System.currentTimeMillis()/1000+"\r\n");
                         writer.flush();
-                        System.out.println("[AuthMe] Security passpartu token: "+ token);
+                        ConsoleLogger.info("[AuthMe] Security passpartu token: "+ token);
                         writer.close();
                         return true;
                 } catch(Exception e) {

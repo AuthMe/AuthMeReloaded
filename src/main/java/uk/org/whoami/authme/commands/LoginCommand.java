@@ -46,7 +46,7 @@ public class LoginCommand implements CommandExecutor {
             return true;
         }
 
-        if (!player.hasPermission("authme." + label.toLowerCase())) {
+        if (!plugin.authmePermissible(player, "authme." + label.toLowerCase())) {
             player.sendMessage(m._("no_perm"));
             return true;
         }

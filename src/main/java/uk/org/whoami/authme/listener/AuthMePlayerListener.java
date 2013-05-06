@@ -16,11 +16,11 @@
 
 package uk.org.whoami.authme.listener;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
-
-import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -582,7 +582,6 @@ public class AuthMePlayerListener implements Listener {
         //Check if forceSingleSession is set to true, so kick player that has joined with same nick of online player
         if(player.isOnline() && Settings.isForceSingleSessionEnabled ) {
              LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase()); 
-             //System.out.println(" limbo ? "+limbo.getGroup());
              event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("same_nick"));
                     if(PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
                         utils.addNormal(player, limbo.getGroup());
@@ -615,9 +614,19 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
+        if (Settings.bungee) {
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(b);
+             
+            try {
+                out.writeUTF("IP");
+            } catch (IOException e) {
+            }
+            player.sendPluginMessage(this.plugin, "BungeeCord", b.toByteArray());
+        }
         if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL) return;
         if (player.isBanned()) return;
-        if (!player.hasPermission("authme.vip")) {
+        if (!plugin.authmePermissible(player, "authme.vip")) {
         	event.disallow(Result.KICK_FULL, m._("kick_fullserver"));
         	return;
         }
@@ -661,15 +670,8 @@ public class AuthMePlayerListener implements Listener {
 
         String ip = player.getAddress().getAddress().getHostAddress();
         if (Settings.bungee) {
-        	try {
-        		for (ProxiedPlayer pp : BungeeCord.getInstance().getPlayers()) {
-        			if (pp.getName().toLowerCase() == name) {
-        				ip = pp.getAddress().getAddress().getHostAddress();
-        				break;
-        			}
-        		}
-        	} catch (NoClassDefFoundError ncdfe) {
-        	}
+        	if (plugin.realIp.containsKey(name))
+        		ip = plugin.realIp.get(name);
         }
             if(Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
                 int gM = gameMode.get(name);
@@ -774,7 +776,7 @@ public class AuthMePlayerListener implements Listener {
         	});
     }
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (event.getPlayer() == null) {
             return;
@@ -789,7 +791,7 @@ public class AuthMePlayerListener implements Listener {
 
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) { 
         	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
-        		final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(),(int)player.getLocation().getX(),(int)player.getLocation().getY(),(int)player.getLocation().getZ());
+        		final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(),player.getLocation().getBlock().getX(),player.getLocation().getBlock().getY(),player.getLocation().getBlock().getZ());
         		try {
         			Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
         				@Override
@@ -802,7 +804,6 @@ public class AuthMePlayerListener implements Listener {
         } 
 
         if (LimboCache.getInstance().hasLimboPlayer(name)) {
-            //System.out.println("e' nel quit");
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
             if(Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
             	RestoreInventoryEvent ev = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
@@ -813,7 +814,6 @@ public class AuthMePlayerListener implements Listener {
             }
             utils.addNormal(player, limbo.getGroup());
             player.setOp(limbo.getOperator());
-            //System.out.println("debug quit group reset "+limbo.getGroup());
             this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
             LimboCache.getInstance().deleteLimboPlayer(name);
             if(playerBackup.doesCacheExist(name)) {
@@ -937,7 +937,6 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) return;
-        if (event.getClickedBlock() == null) return;
 
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
@@ -955,18 +954,13 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-
-        try {
-        	final int sign = event.getClickedBlock().getTypeId();
-        	if (sign == Material.SIGN_POST.getId() || sign == Material.WALL_SIGN.getId()) {
-        		event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
-        	}
-        } catch (NullPointerException npe) {
-        }
+        if (event.getClickedBlock() != null && event.getClickedBlock().getType() != Material.AIR)
+        	event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+        event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
@@ -991,7 +985,7 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
@@ -1015,7 +1009,7 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
@@ -1062,4 +1056,5 @@ public class AuthMePlayerListener implements Listener {
         }
         event.setCancelled(true);
     }
+
 }
