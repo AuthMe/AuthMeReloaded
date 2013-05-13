@@ -73,7 +73,7 @@ public class ConsoleLogger {
 			w.newLine();
 			w.close();
 		} catch (IOException e) {
-			ConsoleLogger.showError(e.getMessage());
+			e.printStackTrace();
 		}
 	}
 

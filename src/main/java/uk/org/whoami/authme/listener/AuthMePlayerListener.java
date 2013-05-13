@@ -159,7 +159,6 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            //System.out.println("debug chat: chat isnt allowed");
             event.setCancelled(true);
             return;
         }
@@ -221,7 +220,6 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            //System.out.println("debug chat: chat isnt allowed");
             event.setCancelled(true);
             return;
         }
@@ -283,7 +281,6 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            //System.out.println("debug chat: chat isnt allowed");
             event.setCancelled(true);
             return;
         }
@@ -345,7 +342,6 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            //System.out.println("debug chat: chat isnt allowed");
             event.setCancelled(true);
             return;
         }
@@ -407,7 +403,6 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            //System.out.println("debug chat: chat isnt allowed");
             event.setCancelled(true);
             return;
         }
@@ -469,7 +464,6 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            //System.out.println("debug chat: chat isnt allowed");
             event.setCancelled(true);
             return;
         }
@@ -562,23 +556,17 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        //Run that asynchronous
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			@Override
-			public void run() {
-		        if(data.isAuthAvailable(name) && !LimboCache.getInstance().hasLimboPlayer(name)) {
-		        	if(!Settings.isSessionsEnabled) {
-		        	LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
-		        	} else if(PlayerCache.getInstance().isAuthenticated(name)) {
-		        		if(!Settings.sessionExpireOnIpChange)
-		        			if(LimboCache.getInstance().hasLimboPlayer(player.getName().toLowerCase())) {
-		        				LimboCache.getInstance().deleteLimboPlayer(name);  
-		        			}
-		        		LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
-		        	}
-		        }
-			}
-        });
+        if(data.isAuthAvailable(name) && !LimboCache.getInstance().hasLimboPlayer(name)) {
+        	if(!Settings.isSessionsEnabled) {
+        	LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
+        	} else if(PlayerCache.getInstance().isAuthenticated(name)) {
+        		if(!Settings.sessionExpireOnIpChange)
+        			if(LimboCache.getInstance().hasLimboPlayer(player.getName().toLowerCase())) {
+        				LimboCache.getInstance().deleteLimboPlayer(name);  
+        			}
+        		LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
+        	}
+        }
         //Check if forceSingleSession is set to true, so kick player that has joined with same nick of online player
         if(player.isOnline() && Settings.isForceSingleSessionEnabled ) {
              LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase()); 
@@ -614,16 +602,6 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-        if (Settings.bungee) {
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
-            DataOutputStream out = new DataOutputStream(b);
-             
-            try {
-                out.writeUTF("IP");
-            } catch (IOException e) {
-            }
-            player.sendPluginMessage(this.plugin, "BungeeCord", b.toByteArray());
-        }
         if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL) return;
         if (player.isBanned()) return;
         if (!plugin.authmePermissible(player, "authme.vip")) {
@@ -647,6 +625,27 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerLowestJoin(PlayerJoinEvent event) {
+    	if (event.getPlayer() == null) return;
+    	Player player = event.getPlayer();
+
+        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+            return;
+        }
+
+        if (Settings.bungee) {
+            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            DataOutputStream out = new DataOutputStream(b);
+             
+            try {
+                out.writeUTF("IP");
+            } catch (IOException e) {
+            }
+            player.sendPluginMessage(this.plugin, "BungeeCord", b.toByteArray());
+        }
+    }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (event.getPlayer() == null) {
@@ -667,6 +666,9 @@ public class AuthMePlayerListener implements Listener {
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
+
+        if (plugin.ess != null && Settings.disableSocialSpy)
+        	plugin.ess.getUser(player.getName()).setSocialSpyEnabled(false);
 
         String ip = player.getAddress().getAddress().getHostAddress();
         if (Settings.bungee) {
@@ -776,7 +778,7 @@ public class AuthMePlayerListener implements Listener {
         	});
     }
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (event.getPlayer() == null) {
             return;
@@ -784,6 +786,9 @@ public class AuthMePlayerListener implements Listener {
 
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
+        Location loc = player.getLocation();
+        if (loc.getY() % 1 != 0)
+        	loc.add(0, 0.5, 0);
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
@@ -791,7 +796,7 @@ public class AuthMePlayerListener implements Listener {
 
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) { 
         	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
-        		final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(),player.getLocation().getBlock().getX(),player.getLocation().getBlock().getY(),player.getLocation().getBlock().getZ());
+        		final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(),loc.getBlockX(),loc.getBlockY(),loc.getBlockZ());
         		try {
         			Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
         				@Override
@@ -831,7 +836,7 @@ public class AuthMePlayerListener implements Listener {
         player.saveData();
     }
 
-    @EventHandler(priority=EventPriority.MONITOR)
+	@EventHandler(priority=EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
       if (event.getPlayer() == null) {
         return;
@@ -841,6 +846,9 @@ public class AuthMePlayerListener implements Listener {
       }
 
       Player player = event.getPlayer();
+      Location loc = player.getLocation();
+      if (loc.getY() % 1 != 0)
+      	loc.add(0, 0.5, 0);
 
       if ((plugin.getCitizensCommunicator().isNPC(player, plugin)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
         return;
@@ -855,7 +863,7 @@ public class AuthMePlayerListener implements Listener {
       String name = player.getName().toLowerCase();
       if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead()) && 
         (Settings.isSaveQuitLocationEnabled.booleanValue())  && data.isAuthAvailable(name)) {
-        final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), (int)player.getLocation().getX(), (int)player.getLocation().getY(), (int)player.getLocation().getZ());
+        final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			@Override
 			public void run() {

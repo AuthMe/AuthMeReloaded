@@ -28,7 +28,7 @@
 		</plugin>
 	</plugins>
 	</build>
-    <version>2.7.16</version>
+    <version>2.7.16b1</version>
     <dependencies>
     	<dependency>
     		<groupId>org.bukkit</groupId>
@@ -118,6 +118,13 @@
     		<version>2.5-b654</version>
     		<scope>system</scope>
     		<systemPath>${project.basedir}/lib/Multiverse-Core-2.5.jar</systemPath>
+    	</dependency>
+		<dependency>
+    		<groupId>com.earth2me.essentials</groupId>
+    		<artifactId>Essentials</artifactId>
+    		<version>Pre2.9.4.1</version>
+    		<scope>system</scope>
+    		<systemPath>${project.basedir}/lib/Essentials.jar</systemPath>
     	</dependency>
 		<dependency>
     		<groupId>com.sun.mail</groupId>

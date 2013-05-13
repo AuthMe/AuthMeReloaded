@@ -23,6 +23,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Random;
 
+import com.earth2me.essentials.Essentials;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -94,6 +96,7 @@ public class AuthMe extends JavaPlugin {
 	public int CombatTag = 0;
 	public double ChestShop = 0;
 	public boolean BungeeCord = false;
+	public Essentials ess;
 	public Notifications notifications;
 	public API api;
     public HashMap<String, Integer> captcha = new HashMap<String, Integer>();
@@ -143,6 +146,9 @@ public class AuthMe extends JavaPlugin {
 
 		//Check ChestShop
 		checkChestShop();
+		
+		//Check Essentials
+		checkEssentials();
 
         /*
          *  Back style on start if avaible
@@ -343,6 +349,21 @@ public class AuthMe extends JavaPlugin {
     			mv = null;
     		} catch (NoClassDefFoundError ncdfe) {
     			mv = null;
+    		}
+    	}
+	}
+	
+	private void checkEssentials() {
+    	if (this.getServer().getPluginManager().getPlugin("Essentials") != null && this.getServer().getPluginManager().getPlugin("Essentials").isEnabled()) {
+    		try {
+    			ess  = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
+    			ConsoleLogger.info("Hook with Essentials plugin");
+    		} catch (NullPointerException npe) {
+    			ess = null;
+    		} catch (ClassCastException cce) {
+    			ess = null;
+    		} catch (NoClassDefFoundError ncdfe) {
+    			ess = null;
     		}
     	}
 	}

@@ -66,6 +66,8 @@ public class Spawn extends CustomConfiguration {
 			return location;
 		} catch (NullPointerException npe) {
 			return null;
+		} catch (NumberFormatException nfe) {
+			return null;
 		}
 	}
 

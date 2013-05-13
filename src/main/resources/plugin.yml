@@ -1,10 +1,10 @@
 name: AuthMe
-author: darkwarriros,Xephi
+author: darkwarriors,Xephi
 website: http://www.multiplayer-italia.com/
 description: AuthMe prevents people, which aren't logged in, from doing stuff like placing blocks, moving, typing commands or seeing the inventory of the current player.
 main: uk.org.whoami.authme.AuthMe
-version: 2.7.16
-softdepend: [Vault, ChestShop, Spout, Multiverse-Core, Notifications, Citizens, CombatTag]
+version: 2.7.16b1
+softdepend: [Vault, ChestShop, Spout, Multiverse-Core, Notifications, Citizens, CombatTag, Essentials]
 commands:
     register:
         description: Register an account

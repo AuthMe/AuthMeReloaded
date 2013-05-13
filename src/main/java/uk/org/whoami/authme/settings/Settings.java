@@ -59,7 +59,8 @@ public final class Settings extends YamlConfiguration {
             isForceSurvivalModeEnabled, isResetInventoryIfCreative, isCachingEnabled, isKickOnWrongPasswordEnabled,
             getEnablePasswordVerifier, protectInventoryBeforeLogInEnabled, isBackupActivated, isBackupOnStart,
             isBackupOnStop, enablePasspartu, isStopEnabled, reloadSupport, rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-            useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange;
+            useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
+            disableSocialSpy;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -204,6 +205,7 @@ public void loadConfigOptions() {
         doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
+        disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
 
         saveDefaults();
    }
@@ -323,6 +325,7 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
+        disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
 
    }
 
@@ -391,6 +394,8 @@ public void mergeConfig() {
     	   set("settings.sessions.sessionExpireOnIpChange", false);
        if(!contains("Security.console.logConsole"))
     	   set("Security.console.logConsole", false);
+       if(!contains("Hooks.disableSocialSpy"))
+    	   set("Hooks.disableSocialSpy", true);
 
        plugin.getLogger().info("Merge new Config Options if needed..");
        plugin.saveConfig();
