@@ -120,7 +120,7 @@ public class RegisterCommand implements CommandExecutor {
                     player.sendMessage(m._("usage_reg"));
                     return true;
         		}
-        		if(args[0] != args[1]) {
+        		if(!args[0].equals(args[1])) {
                     player.sendMessage(m._("usage_reg"));
                     return true;
         		}
