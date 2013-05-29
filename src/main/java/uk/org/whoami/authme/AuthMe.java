@@ -254,8 +254,10 @@ public class AuthMe extends JavaPlugin {
         	pm.registerEvents(new AuthMeChestShopListener(database, this), this);
         	ConsoleLogger.info("Successfully hook with ChestShop!");
         }
-        if (Settings.bungee)
+        if (Settings.bungee) {
+        	Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         	Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
+        }
 
         //Find Permissions
         if (pm.getPlugin("Vault") != null) {
