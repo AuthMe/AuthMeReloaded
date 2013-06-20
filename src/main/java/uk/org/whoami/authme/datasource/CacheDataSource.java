@@ -86,6 +86,7 @@ public class CacheDataSource implements DataSource {
             cache.get(auth.getNickname()).setQuitLocX(auth.getQuitLocX());
             cache.get(auth.getNickname()).setQuitLocY(auth.getQuitLocY());
             cache.get(auth.getNickname()).setQuitLocZ(auth.getQuitLocZ());
+            cache.get(auth.getNickname()).setWorld(auth.getWorld());
             return true;
         }
         return false;

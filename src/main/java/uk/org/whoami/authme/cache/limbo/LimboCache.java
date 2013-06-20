@@ -28,6 +28,7 @@ import uk.org.whoami.authme.cache.backup.FileCache;
 import uk.org.whoami.authme.events.ResetInventoryEvent;
 import uk.org.whoami.authme.events.StoreInventoryEvent;
 import uk.org.whoami.authme.settings.Settings;
+import uk.org.whoami.authme.settings.Spawn;
 
 public class LimboCache {
 
@@ -97,6 +98,8 @@ public class LimboCache {
         				loc = plugin.mv.getMVWorldManager().getMVWorld(player.getWorld().getName()).getSpawnLocation();
         			} catch (NullPointerException npe) {}
         		}
+	        if (Spawn.getInstance().getLocation() != null)
+	        	loc = Spawn.getInstance().getLocation();
         }
         try {
             if(cache.containsKey(name) && playerGroup.isEmpty()) {

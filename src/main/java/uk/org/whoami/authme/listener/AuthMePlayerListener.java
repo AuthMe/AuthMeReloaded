@@ -21,6 +21,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -28,7 +29,13 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -41,23 +48,20 @@ import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import uk.org.whoami.authme.api.API;
-import uk.org.whoami.authme.cache.backup.DataFileCache;
-import uk.org.whoami.authme.cache.backup.FileCache;
 import uk.org.whoami.authme.AuthMe;
 import uk.org.whoami.authme.ConsoleLogger;
 import uk.org.whoami.authme.Utils;
+import uk.org.whoami.authme.api.API;
 import uk.org.whoami.authme.cache.auth.PlayerAuth;
 import uk.org.whoami.authme.cache.auth.PlayerCache;
-import uk.org.whoami.authme.cache.limbo.LimboPlayer;
+import uk.org.whoami.authme.cache.backup.DataFileCache;
+import uk.org.whoami.authme.cache.backup.FileCache;
 import uk.org.whoami.authme.cache.limbo.LimboCache;
+import uk.org.whoami.authme.cache.limbo.LimboPlayer;
 import uk.org.whoami.authme.datasource.DataSource;
 import uk.org.whoami.authme.events.AuthMeTeleportEvent;
 import uk.org.whoami.authme.events.ProtectInventoryEvent;
@@ -136,18 +140,6 @@ public class AuthMePlayerListener implements Listener {
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
 
-        if(plugin.CitizensVersion != 0) {
-        	if (plugin.getCitizensCommunicator().isNPC(player, plugin)) {
-        		return;
-        	}
-        }
-
-        if(plugin.CombatTag != 0) {
-        	if (CombatTagComunicator.isNPC(player)) {
-        		return;
-        	}
-        }
-
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
@@ -196,18 +188,6 @@ public class AuthMePlayerListener implements Listener {
 
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
-
-        if(plugin.CitizensVersion != 0) {
-        	if (plugin.getCitizensCommunicator().isNPC(player, plugin)) {
-        		return;
-        	}
-        }
-
-        if(plugin.CombatTag != 0) {
-        	if (CombatTagComunicator.isNPC(player)) {
-        		return;
-        	}
-        }
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
@@ -258,18 +238,6 @@ public class AuthMePlayerListener implements Listener {
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
 
-        if(plugin.CitizensVersion != 0) {
-        	if (plugin.getCitizensCommunicator().isNPC(player, plugin)) {
-        		return;
-        	}
-        }
-
-        if(plugin.CombatTag != 0) {
-        	if (CombatTagComunicator.isNPC(player)) {
-        		return;
-        	}
-        }
-
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
@@ -281,6 +249,7 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
+            //System.out.println("debug chat: chat isnt allowed");
             event.setCancelled(true);
             return;
         }
@@ -318,18 +287,6 @@ public class AuthMePlayerListener implements Listener {
 
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
-
-        if(plugin.CitizensVersion != 0) {
-        	if (plugin.getCitizensCommunicator().isNPC(player, plugin)) {
-        		return;
-        	}
-        }
-
-        if(plugin.CombatTag != 0) {
-        	if (CombatTagComunicator.isNPC(player)) {
-        		return;
-        	}
-        }
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
@@ -380,18 +337,6 @@ public class AuthMePlayerListener implements Listener {
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
 
-        if(plugin.CitizensVersion != 0) {
-        	if (plugin.getCitizensCommunicator().isNPC(player, plugin)) {
-        		return;
-        	}
-        }
-
-        if(plugin.CombatTag != 0) {
-        	if (CombatTagComunicator.isNPC(player)) {
-        		return;
-        	}
-        }
-
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
@@ -440,18 +385,6 @@ public class AuthMePlayerListener implements Listener {
 
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
-
-        if(plugin.CitizensVersion != 0) {
-        	if (plugin.getCitizensCommunicator().isNPC(player, plugin)) {
-        		return;
-        	}
-        }
-
-        if(plugin.CombatTag != 0) {
-        	if (CombatTagComunicator.isNPC(player)) {
-        		return;
-        	}
-        }
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
@@ -533,7 +466,10 @@ public class AuthMePlayerListener implements Listener {
     		} catch (NoClassDefFoundError ncdfe) {
     		}
         }
-        if (Spawn.getInstance().getLocation() != null)
+        if (plugin.essentialsSpawn != null) {
+        	spawn = plugin.essentialsSpawn;
+        }
+        if (Spawn.getInstance().getLocation() != null && Spawn.getInstance().getLocation().getWorld().equals(player.getWorld()))
         	spawn = Spawn.getInstance().getLocation();
 
         if ((spawn.distance(player.getLocation()) > radius) ) {
@@ -587,7 +523,20 @@ public class AuthMePlayerListener implements Listener {
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("name_len"));
             return;
         }
-        if (!player.getName().matches(regex) || name.equals("Player")) {
+        try {
+            if (!player.getName().matches(regex) || name.equals("Player")) {
+                try {
+                	event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("regex").replaceAll("REG_EX", regex));
+                } catch (StringIndexOutOfBoundsException exc) {
+                	event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "allowed char : " + regex);
+                }
+                return;
+            }
+        } catch (PatternSyntaxException pse) {
+        	if (regex == null || regex.isEmpty()) {
+        		event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Your nickname do not match");
+        		return;
+        	}
             try {
             	event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("regex").replaceAll("REG_EX", regex));
             } catch (StringIndexOutOfBoundsException exc) {
@@ -655,6 +604,17 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         World world = player.getWorld();
         Location spawnLoc = world.getSpawnLocation();
+        if (plugin.mv != null) {
+        	try {
+        		spawnLoc = plugin.mv.getMVWorldManager().getMVWorld(player.getWorld()).getSpawnLocation();
+        	} catch (NullPointerException npe) {
+    		} catch (ClassCastException cce) {
+    		} catch (NoClassDefFoundError ncdfe) {
+    		}
+        }
+        if (plugin.essentialsSpawn != null) {
+        	spawnLoc = plugin.essentialsSpawn;
+        }
         if (Spawn.getInstance().getLocation() != null)
         	spawnLoc = Spawn.getInstance().getLocation();
         gm = player.getGameMode().getValue();
@@ -796,7 +756,7 @@ public class AuthMePlayerListener implements Listener {
 
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) { 
         	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
-        		final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(),loc.getBlockX(),loc.getBlockY(),loc.getBlockZ());
+        		final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(),loc.getBlockX(),loc.getBlockY(),loc.getBlockZ(),loc.getWorld().getName());
         		try {
         			Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
         				@Override
@@ -833,6 +793,7 @@ public class AuthMePlayerListener implements Listener {
         } catch (NullPointerException ex) {
         }
         if (gameMode.containsKey(name)) gameMode.remove(name);
+        plugin.premium.remove(player.getName());
         player.saveData();
     }
 
@@ -863,7 +824,7 @@ public class AuthMePlayerListener implements Listener {
       String name = player.getName().toLowerCase();
       if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead()) && 
         (Settings.isSaveQuitLocationEnabled.booleanValue())  && data.isAuthAvailable(name)) {
-        final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ());
+        final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),loc.getWorld().getName());
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			@Override
 			public void run() {
@@ -913,6 +874,7 @@ public class AuthMePlayerListener implements Listener {
       	if (gameMode.containsKey(name)) gameMode.remove(name);
       	player.getVehicle().eject();
       	player.saveData();
+      	plugin.premium.remove(player.getName());
       } catch (NullPointerException ex) {}
     }
 
@@ -925,7 +887,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
@@ -949,7 +911,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
@@ -965,6 +927,53 @@ public class AuthMePlayerListener implements Listener {
         if (event.getClickedBlock() != null && event.getClickedBlock().getType() != Material.AIR)
         	event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
         event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerInventoryOpen(InventoryOpenEvent event) {
+        if (event.isCancelled() || event.getPlayer() == null) return;
+        if (!(event.getPlayer() instanceof Player)) return;
+        Player player = (Player) event.getPlayer();
+        String name = player.getName().toLowerCase();
+
+        if (Utils.getInstance().isUnrestricted(player)) {
+            return;
+        }
+
+        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+            return;
+        }
+
+        if (!data.isAuthAvailable(name)) {
+            if (!Settings.isForcedRegistrationEnabled) {
+                return;
+            }
+        }
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerInventoryClick(InventoryClickEvent event) {
+        if (event.isCancelled() || event.getWhoClicked() == null) return;
+        if (!(event.getWhoClicked() instanceof Player)) return;
+        Player player = (Player) event.getWhoClicked();
+        String name = player.getName().toLowerCase();
+
+        if (Utils.getInstance().isUnrestricted(player)) {
+            return;
+        }
+
+        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+            return;
+        }
+
+        if (!data.isAuthAvailable(name)) {
+            if (!Settings.isForcedRegistrationEnabled) {
+                return;
+            }
+        }
+        event.setResult(org.bukkit.event.Event.Result.DENY);
         event.setCancelled(true);
     }
 
@@ -1001,7 +1010,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
@@ -1025,7 +1034,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
@@ -1048,21 +1057,64 @@ public class AuthMePlayerListener implements Listener {
         }
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
-
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
-
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-
         if (!data.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
         }
         event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if (event.getPlayer() == null || event == null) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        String name = player.getName().toLowerCase();
+
+        if (Utils.getInstance().isUnrestricted(player))
+            return;
+
+        if (PlayerCache.getInstance().isAuthenticated(name))
+            return;
+
+        if (!data.isAuthAvailable(name))
+            if (!Settings.isForcedRegistrationEnabled)
+                return;
+
+        if (!Settings.isTeleportToSpawnEnabled && !Settings.isForceSpawnLocOnJoinEnabled)
+        	return;
+        
+        Location spawn = player.getWorld().getSpawnLocation();
+        if (plugin.mv != null) {
+        	try {
+        		spawn = plugin.mv.getMVWorldManager().getMVWorld(player.getWorld()).getSpawnLocation();
+        	} catch (NullPointerException npe) {
+    		} catch (ClassCastException cce) {
+    		} catch (NoClassDefFoundError ncdfe) {
+    		}
+        }
+        if (plugin.essentialsSpawn != null) {
+        	spawn = plugin.essentialsSpawn;
+        }
+        if (Spawn.getInstance().getLocation() != null && Spawn.getInstance().getLocation().getWorld().equals(player.getWorld()))
+        	spawn = Spawn.getInstance().getLocation();
+        final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(),spawn.getWorld().getName());
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+			@Override
+			public void run() {
+				data.updateQuitLoc(auth);
+			}
+        });
+        event.setRespawnLocation(spawn);
     }
 
 }

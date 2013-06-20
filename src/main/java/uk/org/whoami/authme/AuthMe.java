@@ -19,8 +19,10 @@ package uk.org.whoami.authme;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import com.earth2me.essentials.Essentials;
@@ -59,6 +61,7 @@ import uk.org.whoami.authme.listener.AuthMeSpoutListener;
 import uk.org.whoami.authme.plugin.manager.BungeeCordMessage;
 import uk.org.whoami.authme.plugin.manager.CitizensCommunicator;
 import uk.org.whoami.authme.plugin.manager.CombatTagComunicator;
+import uk.org.whoami.authme.plugin.manager.EssSpawn;
 import uk.org.whoami.authme.settings.Messages;
 import uk.org.whoami.authme.settings.PlayersLogs;
 import uk.org.whoami.authme.settings.Settings;
@@ -68,13 +71,13 @@ import net.citizensnpcs.Citizens;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Server;
 
 import com.onarandombox.MultiverseCore.MultiverseCore;
 
 import uk.org.whoami.authme.commands.PasspartuCommand;
 import uk.org.whoami.authme.datasource.SqliteDataSource;
-import uk.org.whoami.authme.filter.ConsoleFilter;
 
 public class AuthMe extends JavaPlugin {
 
@@ -82,7 +85,6 @@ public class AuthMe extends JavaPlugin {
     private Settings settings;
 	private Messages m;
     private PlayersLogs pllog;
-	public Management management;
     public static Server server;
     public static Plugin authme;
     public static Permission permission;
@@ -99,10 +101,13 @@ public class AuthMe extends JavaPlugin {
 	public Essentials ess;
 	public Notifications notifications;
 	public API api;
+	public Management management;
     public HashMap<String, Integer> captcha = new HashMap<String, Integer>();
     public HashMap<String, String> cap = new HashMap<String, String>();
     public HashMap<String, String> realIp = new HashMap<String, String>();
+    public List<String> premium = new ArrayList<String>();
 	public MultiverseCore mv = null;
+	public Location essentialsSpawn;
 
     @Override
     public void onEnable() {
@@ -238,9 +243,11 @@ public class AuthMe extends JavaPlugin {
             database = new CacheDataSource(this, database);
         }
 
+        // Setup API
     	api = new API(this, database);
 
-        management =  new Management(database, this);
+		// Setup Management
+		management = new Management(database, this);
 
         PluginManager pm = getServer().getPluginManager();
         if (pm.isPluginEnabled("Spout")) {
@@ -368,6 +375,10 @@ public class AuthMe extends JavaPlugin {
     			ess = null;
     		}
     	}
+    	if (this.getServer().getPluginManager().getPlugin("EssentialsSpawn") != null && this.getServer().getPluginManager().getPlugin("EssentialsSpawn").isEnabled()) {
+    		this.essentialsSpawn = new EssSpawn().getLocation();
+    		ConsoleLogger.info("Hook with EssentialsSpawn plugin");
+    	}
 	}
 
 	private void checkNotifications() {
@@ -461,7 +472,7 @@ public class AuthMe extends JavaPlugin {
 	        String name = player.getName().toLowerCase();
 	        if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead()) && 
 	          (Settings.isSaveQuitLocationEnabled.booleanValue())) {
-	          final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), (int)player.getLocation().getX(), (int)player.getLocation().getY(), (int)player.getLocation().getZ());
+	          final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), (int)player.getLocation().getX(), (int)player.getLocation().getY(), (int)player.getLocation().getZ(), player.getWorld().getName());
 	          Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 				@Override
 				public void run() {

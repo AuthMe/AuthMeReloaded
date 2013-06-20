@@ -37,6 +37,7 @@ public class SqliteDataSource implements DataSource {
     private String lastlocX;
     private String lastlocY;
     private String lastlocZ;
+    private String lastlocWorld;
     private String columnEmail;
     private String columnID;
     private Connection con;
@@ -57,6 +58,7 @@ public class SqliteDataSource implements DataSource {
         this.lastlocX = Settings.getMySQLlastlocX;
         this.lastlocY = Settings.getMySQLlastlocY;
         this.lastlocZ = Settings.getMySQLlastlocZ;
+        this.lastlocWorld = Settings.getMySQLlastlocWorld;
         this.nonActivatedGroup = Settings.getNonActivatedGroup;
         this.columnEmail = Settings.getMySQLColumnEmail;
         this.columnID = Settings.getMySQLColumnId;
@@ -86,6 +88,7 @@ public class SqliteDataSource implements DataSource {
                     + lastlocX + " smallint(6) DEFAULT '0',"
                     + lastlocY + " smallint(6) DEFAULT '0',"
                     + lastlocZ + " smallint(6) DEFAULT '0',"
+                    + lastlocWorld + " VARCHAR(255) DEFAULT 'world',"
                     + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com',"
                     + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
@@ -111,6 +114,10 @@ public class SqliteDataSource implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocX + " smallint(6) NOT NULL DEFAULT '0'; " 
                         + "ALTER TABLE " + tableName + " ADD COLUMN " + lastlocY + " smallint(6) NOT NULL DEFAULT '0'; "
                         + "ALTER TABLE " + tableName + " ADD COLUMN " + lastlocZ + " smallint(6) NOT NULL DEFAULT '0';");
+            }
+            rs.close();
+            if (!rs.next()) {
+            	st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER " + lastlocZ + ";");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnEmail);
@@ -153,12 +160,12 @@ public class SqliteDataSource implements DataSource {
             rs = pst.executeQuery();
             if (rs.next()) {
                 if (rs.getString(columnIp).isEmpty() ) {
-                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(columnEmail));
+                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld) , rs.getString(columnEmail));
                 } else {
                         if(!columnSalt.isEmpty()){
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(columnEmail));
+                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld) , rs.getString(columnEmail));
                         } else {
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(columnEmail));
+                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld) , rs.getString(columnEmail));
                         }
                  }
             } else {
@@ -273,11 +280,12 @@ public class SqliteDataSource implements DataSource {
     public boolean updateQuitLoc(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + "=?, "+ lastlocY +"=?, "+ lastlocZ +"=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + "=?, "+ lastlocY +"=?, "+ lastlocZ +"=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
             pst.setLong(1, auth.getQuitLocX());
             pst.setLong(2, auth.getQuitLocY());
             pst.setLong(3, auth.getQuitLocZ());
-            pst.setString(4, auth.getNickname());
+            pst.setString(4, auth.getWorld());
+            pst.setString(5, auth.getNickname());
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());

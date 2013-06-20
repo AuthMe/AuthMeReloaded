@@ -12,8 +12,9 @@ DataSource:
     mySQLPassword: '12345'
     caching: true
     mySQLlastlocX: x
-    mySQLlastlocY : y
-    mySQLlastlocZ : z
+    mySQLlastlocY: y
+    mySQLlastlocZ: z
+    mySQLlastlocWorld: world
     mySQLColumnEmail: email
     mySQLColumnId: id
 GroupOptions:
@@ -81,6 +82,7 @@ ExternalBoardOptions:
     mySQLColumnGroup: ''
     nonActivedUserGroup: -1
     mySQLOtherUsernameColumns: []
+    bCryptLog2Round: 10
 Xenoforo:
     predefinedSalt: ''
 permission:
@@ -119,10 +121,12 @@ Email:
     mailSenderName: ''
     RecoveryPasswordLength: 8
     mailSubject: 'Your new AuthMe Password'
-    mailText: 'Dear <playername>, \n\n This is your new AuthMe password for the server \n\n <servername> : \n\n <generatedpass>\n\nDo not forget to change password after login! \n /changepassword <generatedpass> newPassword'
+    mailText: 'Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword'
     maxRegPerEmail: 1
 Hooks:
     multiverse: true
     chestshop: true
     bungeecord: false
     notifications: true
+Performances:
+    useMultiThreading: false

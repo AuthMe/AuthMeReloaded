@@ -31,7 +31,6 @@ import uk.org.whoami.authme.AuthMe;
 import uk.org.whoami.authme.Utils;
 import uk.org.whoami.authme.cache.auth.PlayerCache;
 import uk.org.whoami.authme.datasource.DataSource;
-import uk.org.whoami.authme.plugin.manager.CombatTagComunicator;
 import uk.org.whoami.authme.settings.Settings;
 
 public class AuthMeEntityListener implements Listener{
@@ -55,7 +54,7 @@ public class AuthMeEntityListener implements Listener{
             return;
         }
 
-        if(instance.getCitizensCommunicator().isNPC(entity, instance) || Utils.getInstance().isUnrestricted((Player)entity) || CombatTagComunicator.isNPC(entity)) {
+        if(Utils.getInstance().isUnrestricted((Player)entity)) {
             return;
         }
 
@@ -170,7 +169,7 @@ public class AuthMeEntityListener implements Listener{
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
-        if (instance.getCitizensCommunicator().isNPC(player, instance) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
@@ -199,7 +198,7 @@ public class AuthMeEntityListener implements Listener{
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
-        if (instance.getCitizensCommunicator().isNPC(player, instance) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 

@@ -19,7 +19,7 @@ public class AuthMeSpoutListener implements Listener {
 
     public AuthMeSpoutListener(DataSource data) {
         this.data = data; 
-        }
+    }
 
 	@EventHandler
 	public void onSpoutCraftEnable(final SpoutCraftEnableEvent event) {

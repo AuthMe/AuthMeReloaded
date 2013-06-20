@@ -114,11 +114,20 @@ public class Utils {
         } return false;
     }
 
-    public void packCoords(int x, int y, int z, final Player pl)
+    public void packCoords(int x, int y, int z, String w, final Player pl)
     {
-    	final World world = pl.getWorld();
+    	World theWorld;
+    	if (w.equals("unavailableworld")) {
+    		theWorld = pl.getWorld();
+    	} else {
+    		theWorld = Bukkit.getWorld(w);
+    	}
+    	if (theWorld == null)
+			theWorld = pl.getWorld();
+    	final World world = theWorld;
     	final int fY = y;
-    	final Location loc = new Location(world, x, y + 0.6D, z);
+    	final Location locat = new Location(world, x, y + 0.6D, z);
+    	final Location loc = locat.getBlock().getLocation();
 
     	Bukkit.getScheduler().runTask(AuthMe.getInstance(), new Runnable() {
 
@@ -132,7 +141,7 @@ public class Utils {
 		      	  pl.teleport(tpEvent.getTo());
 		        }
 			}
-    		
+
     	});
 
     	id = Bukkit.getScheduler().runTaskTimer(AuthMe.authme, new Runnable()
@@ -146,12 +155,11 @@ public class Utils {
     			}
     		}
     	}, 1L, 20L);
-    	Bukkit.getScheduler().runTaskLaterAsynchronously(AuthMe.authme, new Runnable()
+    	Bukkit.getScheduler().runTaskLater(AuthMe.authme, new Runnable()
     	{
 		@Override
 		public void run() {
 			id.cancel();
-			
 		}
       }, 60L);
       }

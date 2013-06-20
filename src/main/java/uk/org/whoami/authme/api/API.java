@@ -131,7 +131,7 @@ public class API {
     		PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName());
         	
         	if (auth != null) {
-        		Location loc = new Location(player.getWorld(), auth.getQuitLocX(), auth.getQuitLocY() , auth.getQuitLocZ());
+        		Location loc = new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY() , auth.getQuitLocZ());
         		return loc;
         	} else {
         		return null;
@@ -181,6 +181,18 @@ public class API {
 				database.saveAuth(auth);
 			}
     	});
+    }
+    
+    /**
+     * 
+     * @param playerName
+     * @return true if player is registered
+     */
+    public static boolean isRegistered(String playerName) {
+		PlayerAuth auth = PlayerCache.getInstance().getAuth(playerName);
+    	if (auth != null)
+    		return true;
+    	return false;
     }
 
 }

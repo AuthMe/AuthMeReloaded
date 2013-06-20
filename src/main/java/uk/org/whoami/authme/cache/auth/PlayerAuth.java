@@ -28,6 +28,7 @@ public class PlayerAuth {
     private int x = 0;
     private int y = 0;
     private int z = 0;
+    private String world = "world";
     private String salt = "";
     private String vBhash = null;
     private int groupId;
@@ -48,14 +49,15 @@ public class PlayerAuth {
         this.email = email;
     }
 
-    public PlayerAuth(String nickname, int x, int y, int z) {
+    public PlayerAuth(String nickname, int x, int y, int z, String world) {
         this.nickname = nickname;
         this.x = x;
         this.y = y;
         this.z = z;
+        this.world = world;
     }
 
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z, String email) {
+    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z, String world, String email) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
@@ -63,17 +65,19 @@ public class PlayerAuth {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.world = world;
         this.email = email;
     }
 
-    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, int x, int y, int z, String email) {
+    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, int x, int y, int z, String world,  String email) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
         this.lastLogin = lastLogin;
         this.x = x;
         this.y = y;
-        this.z = z;   
+        this.z = z;
+        this.world = world;
         this.salt = salt;
         this.groupId = groupId;
         this.email = email; 
@@ -96,19 +100,7 @@ public class PlayerAuth {
         this.salt = salt;
     }
 
-    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, int x, int y, int z, String email) {
-        this.nickname = nickname;
-        this.hash = hash;
-        this.ip = ip;
-        this.lastLogin = lastLogin;
-        this.x = x;
-        this.y = y;
-        this.z = z;   
-        this.salt = salt;
-        this.email = email; 
-    }
-
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z) {
+    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, int x, int y, int z, String world, String email) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
@@ -116,6 +108,20 @@ public class PlayerAuth {
         this.x = x;
         this.y = y;
         this.z = z;
+        this.world = world;
+        this.salt = salt;
+        this.email = email; 
+    }
+
+    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z, String world) {
+        this.nickname = nickname;
+        this.hash = hash;
+        this.ip = ip;
+        this.lastLogin = lastLogin;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.world = world;
         this.email = "your@email.com";
     }
 
@@ -206,5 +212,13 @@ public class PlayerAuth {
         hashCode = 71 * hashCode + (this.ip != null ? this.ip.hashCode() : 0);
         return hashCode;
     }
+
+	public void setWorld(String world) {
+		this.world = world;
+	}
+
+	public String getWorld() {
+		return world;
+	}
 
 }

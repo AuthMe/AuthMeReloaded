@@ -17,11 +17,11 @@
 package uk.org.whoami.authme.settings;
 
 import java.io.File;
-
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
@@ -60,7 +60,7 @@ public final class Settings extends YamlConfiguration {
             getEnablePasswordVerifier, protectInventoryBeforeLogInEnabled, isBackupActivated, isBackupOnStart,
             isBackupOnStop, enablePasspartu, isStopEnabled, reloadSupport, rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
             useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-            disableSocialSpy;
+            disableSocialSpy, useMultiThreading;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -68,11 +68,12 @@ public final class Settings extends YamlConfiguration {
             getMySQLColumnSalt, getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup, backupWindowsPath,
             getcUnrestrictedName, getRegisteredGroup, messagesLanguage, getMySQLlastlocX, getMySQLlastlocY, getMySQLlastlocZ,
             rakamakUsers, rakamakUsersIp, getmailAccount, getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName, 
-            getPredefinedSalt, getMailSubject, getMailText;
+            getPredefinedSalt, getMailSubject, getMailText, getMySQLlastlocWorld;
 
     public static int getWarnMessageInterval, getSessionTimeout, getRegistrationTimeout, getMaxNickLength,
             getMinNickLength, getPasswordMinLen, getMovementRadius, getmaxRegPerIp, getNonActivatedGroup,
-            passwordMaxLength, getRecoveryPassLength, getMailPort, maxLoginTry, captchaLength, saltLength, getmaxRegPerEmail;
+            passwordMaxLength, getRecoveryPassLength, getMailPort, maxLoginTry, captchaLength, saltLength, getmaxRegPerEmail,
+            bCryptLog2Rounds;
 
     protected static YamlConfiguration configFile;
 
@@ -141,6 +142,7 @@ public void loadConfigOptions() {
         getMySQLlastlocX = configFile.getString("DataSource.mySQLlastlocX","x");
         getMySQLlastlocY = configFile.getString("DataSource.mySQLlastlocY","y");
         getMySQLlastlocZ = configFile.getString("DataSource.mySQLlastlocZ","z");
+        getMySQLlastlocWorld = configFile.getString("DataSource.mySQLlastlocWorld", "world");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup","");
         getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
@@ -192,7 +194,7 @@ public void loadConfigOptions() {
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
         getMailSubject = configFile.getString("Email.mailSubject", "Your new AuthMe Password");
-        getMailText = configFile.getString("Email.mailText", "Dear <playername>, \n\n This is your new AuthMe password for the server : \n\n <servername> \n\n <generatedpass>\n\n 	 Do not forget to change password after login! \n /changepassword <generatedpass> newPassword");
+        getMailText = configFile.getString("Email.mailText", "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
         emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
@@ -206,6 +208,8 @@ public void loadConfigOptions() {
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
+        useMultiThreading = configFile.getBoolean("Performances.useMultiThreading", false);
+        bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
 
         saveDefaults();
    }
@@ -259,6 +263,7 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         getMySQLlastlocX = configFile.getString("DataSource.mySQLlastlocX","x");
         getMySQLlastlocY = configFile.getString("DataSource.mySQLlastlocY","y");
         getMySQLlastlocZ = configFile.getString("DataSource.mySQLlastlocZ","z");
+        getMySQLlastlocWorld = configFile.getString("DataSource.mySQLlastlocWorld", "world");
         getMySQLColumnSalt = configFile.getString("ExternalBoardOptions.mySQLColumnSalt","");
         getMySQLColumnGroup = configFile.getString("ExternalBoardOptions.mySQLColumnGroup","");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
@@ -312,7 +317,7 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
         getMailSubject = configFile.getString("Email.mailSubject", "Your new AuthMe Password");
-        getMailText = configFile.getString("Email.mailText", "Dear <playername>, \n\n This is your new AuthMe password for the server : \n\n <servername> \n\n <generatedpass>\n\n 	 Do not forget to change password after login! \n /changepassword <generatedpass> newPassword");
+        getMailText = configFile.getString("Email.mailText", "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
         emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
@@ -326,7 +331,8 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
-
+        useMultiThreading = configFile.getBoolean("Performances.useMultiThreading", false);
+        bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
    }
 
 public void mergeConfig() {
@@ -371,7 +377,15 @@ public void mergeConfig() {
        if(!contains("Email.mailSubject"))
     	   set("Email.mailSubject", "");
        if(!contains("Email.mailText"))
-    	   set("Email.mailText", "Dear <playername>, \n\n This is your new AuthMe password for the server : \n\n <servername> \n\n <generatedpass>\n\n 	 Do not forget to change password after login! \n /changepassword <generatedpass> newPassword");
+    	   set("Email.mailText", "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
+       if(contains("Email.mailText")) {
+    	   try {
+        	   String s = getString("Email.mailText");
+        	   s = s.replaceAll("\n", "<br />");
+        	   set("Email.mailText", null);
+        	   set("Email.mailText", s);
+    	   } catch (Exception e) {}
+       }
        if(!contains("settings.registration.enableEmailRegistrationSystem"))
     	   set("settings.registration.enableEmailRegistrationSystem", false);
        if(!contains("settings.security.doubleMD5SaltLength"))
@@ -396,6 +410,12 @@ public void mergeConfig() {
     	   set("Security.console.logConsole", false);
        if(!contains("Hooks.disableSocialSpy"))
     	   set("Hooks.disableSocialSpy", true);
+       if(!contains("Performances.useMultiThreading"))
+    	   set("Performances.useMultiThreading", false);
+       if(!contains("ExternalBoardOptions.bCryptLog2Round"))
+    	   set("ExternalBoardOptions.bCryptLog2Round", 10);
+       if(!contains("DataSource.mySQLlastlocWorld"))
+    	   set("DataSource.mySQLlastlocWorld", "world");
 
        plugin.getLogger().info("Merge new Config Options if needed..");
        plugin.saveConfig();

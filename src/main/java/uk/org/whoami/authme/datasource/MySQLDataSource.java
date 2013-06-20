@@ -48,6 +48,7 @@ public class MySQLDataSource implements DataSource {
     private String lastlocX;
     private String lastlocY;
     private String lastlocZ;
+    private String lastlocWorld;
     private String columnEmail;
     private String columnID;
     private List<String> columnOthers;
@@ -67,6 +68,7 @@ public class MySQLDataSource implements DataSource {
         this.lastlocX = Settings.getMySQLlastlocX;
         this.lastlocY = Settings.getMySQLlastlocY;
         this.lastlocZ = Settings.getMySQLlastlocZ;
+        this.lastlocWorld = Settings.getMySQLlastlocWorld;
         this.columnSalt = Settings.getMySQLColumnSalt;
         this.columnGroup = Settings.getMySQLColumnGroup;
         this.columnEmail = Settings.getMySQLColumnEmail;
@@ -106,6 +108,7 @@ public class MySQLDataSource implements DataSource {
                     + lastlocX + " smallint(6) DEFAULT '0',"
                     + lastlocY + " smallint(6) DEFAULT '0',"
                     + lastlocZ + " smallint(6) DEFAULT '0',"
+                    + lastlocWorld + " VARCHAR(255) DEFAULT 'world',"
                     + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com',"
                     + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
@@ -130,6 +133,11 @@ public class MySQLDataSource implements DataSource {
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocX + " smallint(6) NOT NULL DEFAULT '0' AFTER "
                         + columnLastLogin +" , ADD " + lastlocY + " smallint(6) NOT NULL DEFAULT '0' AFTER " + lastlocX + " , ADD " + lastlocZ + " smallint(6) NOT NULL DEFAULT '0' AFTER " + lastlocY + ";");
+            }
+            rs.close();
+            rs = con.getMetaData().getColumns(null, null, tableName, lastlocWorld);
+            if (!rs.next()) {
+            	st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER " + lastlocZ + ";");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnEmail);
@@ -182,14 +190,14 @@ public class MySQLDataSource implements DataSource {
             rs = pst.executeQuery();
             if (rs.next()) {
                 if (rs.getString(columnIp).isEmpty() ) {
-                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(columnEmail));
+                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail));
                 } else {
                         if(!columnSalt.isEmpty()){
                             if(!columnGroup.isEmpty())
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(columnEmail));
-                            else return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(columnEmail));
+                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                            else return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail));
                         } else {
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(columnEmail));
+                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
                         }
                  }
             } else {
@@ -347,11 +355,12 @@ public class MySQLDataSource implements DataSource {
         PreparedStatement pst = null;
         try {
             con = conPool.getValidConnection();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "+ lastlocX + " =?, "+ lastlocY +"=?, "+ lastlocZ +"=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET "+ lastlocX + " =?, "+ lastlocY +"=?, "+ lastlocZ +"=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
             pst.setLong(1, auth.getQuitLocX());
             pst.setLong(2, auth.getQuitLocY());
             pst.setLong(3, auth.getQuitLocZ());
-            pst.setString(4, auth.getNickname());
+            pst.setString(4, auth.getWorld());
+            pst.setString(5, auth.getNickname());
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());

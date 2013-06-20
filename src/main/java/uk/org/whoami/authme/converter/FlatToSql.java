@@ -36,6 +36,7 @@ public class FlatToSql {
     private static String lastlocX;
     private static String lastlocY;
     private static String lastlocZ;
+    private static String lastlocWorld;
     private static String columnEmail;
 	private static File source;
 	private static File output;
@@ -49,6 +50,7 @@ public class FlatToSql {
 	    lastlocX = Settings.getMySQLlastlocX;
 	    lastlocY = Settings.getMySQLlastlocY;
 	    lastlocZ = Settings.getMySQLlastlocZ;
+	    lastlocWorld = Settings.getMySQLlastlocWorld;
 	    columnEmail = Settings.getMySQLColumnEmail;
 
         try {
@@ -68,6 +70,7 @@ public class FlatToSql {
                     + lastlocX + " smallint(6) DEFAULT '0',"
                     + lastlocY + " smallint(6) DEFAULT '0',"
                     + lastlocZ + " smallint(6) DEFAULT '0',"
+                    + lastlocWorld + " VARCHAR(255) DEFAULT 'world',"
                     + columnEmail + " VARCHAR(255) NOT NULL,"
                     + "CONSTRAINT table_const_prim PRIMARY KEY (id));";
             sql.write(createDB);
@@ -78,9 +81,11 @@ public class FlatToSql {
             	sql.newLine();
                 String[] args = line.split(":");
                 if (args.length == 4)
-                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", 0, 0, 0, " + "'your@email.com'" + ");";
+                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", 0, 0, 0, 'world', 'your@email.com');";
                 else if (args.length == 7)
-                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", " + "'your@email.com'" + ");";
+                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", 'world', 'your@email.com');";
+                else if (args.length == 8)
+                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", " + args[7] + ", 'your@email.com');";
                 else
                 	newline = "";
                 if (newline != "")

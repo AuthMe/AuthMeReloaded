@@ -1,6 +1,7 @@
 package uk.org.whoami.authme;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Date;
 import java.util.Properties;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -62,11 +63,12 @@ public class SendMailSSL {
 					message.setRecipients(Message.RecipientType.TO,
 							InternetAddress.parse(auth.getEmail()));
 					message.setSubject(Settings.getMailSubject);
+					message.setSentDate(new Date());
 					String text = Settings.getMailText;
 					text = text.replaceAll("<playername>", auth.getNickname());
 					text = text.replaceAll("<servername>", instance.getServer().getServerName());
 					text = text.replaceAll("<generatedpass>", newPass);
-					message.setText(text);
+					message.setContent(text, "text/html");
 					Bukkit.getScheduler().runTaskAsynchronously(instance, new Runnable() {
 						@Override
 						public void run() {

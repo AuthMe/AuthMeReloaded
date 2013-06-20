@@ -23,6 +23,8 @@ import org.bukkit.entity.Player;
 
 import uk.org.whoami.authme.AuthMe;
 import uk.org.whoami.authme.settings.Messages;
+import uk.org.whoami.authme.settings.Settings;
+import uk.org.whoami.authme.threads.LoginThread;
 
 public class LoginCommand implements CommandExecutor {
 
@@ -50,8 +52,12 @@ public class LoginCommand implements CommandExecutor {
             player.sendMessage(m._("no_perm"));
             return true;
         }
-
-		plugin.management.performLogin(player, args[0]);
+        if (Settings.useMultiThreading) {
+    		plugin.management.performLogin(player, args[0], false);
+        } else {
+    		Thread mThread = new LoginThread(plugin.database, plugin, player, args[0]);
+    		mThread.run();
+        }
         return true;
     }
 }

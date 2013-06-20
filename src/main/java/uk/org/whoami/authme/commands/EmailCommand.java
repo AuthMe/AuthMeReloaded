@@ -103,11 +103,11 @@ public class EmailCommand implements CommandExecutor {
         } else if(args[0].equalsIgnoreCase("change") && args.length == 3 ) {
             if(PlayerCache.getInstance().isAuthenticated(name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
-                if (auth.getEmail() == null || auth.getEmail() == "your@email.com") {
+                if (auth.getEmail() == null || auth.getEmail().equals("your@email.com")) {
                 	player.sendMessage("[AuthMe] Please use : /email add <email> <confirmEmail>");
                 	return true;
                 }
-                if (args[1] != auth.getEmail()) {
+                if (!args[1].equals(auth.getEmail())) {
                 	player.sendMessage("[AuthMe] Invalid Email !");
                 	return true;
                 }
@@ -161,7 +161,7 @@ public class EmailCommand implements CommandExecutor {
 		                    sender.sendMessage(m._("unknown_user"));
 		                    return true;
 		                }
-		        		if (Settings.getmailAccount == "" || Settings.getmailAccount.isEmpty()) {
+		        		if (Settings.getmailAccount.equals("") || Settings.getmailAccount.isEmpty()) {
 		        			player.sendMessage(m._("error"));
 		        			return true;
 		        		}

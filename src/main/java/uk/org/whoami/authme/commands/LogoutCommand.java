@@ -94,6 +94,9 @@ public class LogoutCommand implements CommandExecutor {
         }
         if (Settings.isTeleportToSpawnEnabled) {
         	Location spawnLoc = player.getWorld().getSpawnLocation();
+            if (plugin.essentialsSpawn != null) {
+            	spawnLoc = plugin.essentialsSpawn;
+            }
             if (Spawn.getInstance().getLocation() != null)
             	spawnLoc = Spawn.getInstance().getLocation();
             AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawnLoc);

@@ -89,6 +89,10 @@ public class PasswordSecurity {
     private static String getSaltedIPB3(String message, String salt) throws NoSuchAlgorithmException {
     	return getMD5(getMD5(salt) + getMD5(message));
     }
+    
+    private static String getBCrypt(String message, String salt) {
+    	return BCrypt.hashpw(message, salt);
+    }
 
     private static String createSalt(int length) throws NoSuchAlgorithmException {
         byte[] msg = new byte[40];
@@ -182,6 +186,18 @@ public class PasswordSecurity {
             		userSalt.put(name, saltj);
             	}
             	return getMD5(password + saltj) + ":" + saltj;
+            case BCRYPT:
+            	String saltbcrypt = "";
+            	try {
+            		saltbcrypt = AuthMe.getInstance().database.getAuth(name).getSalt();
+            		} catch (NullPointerException npe) {
+            		} catch (ArrayIndexOutOfBoundsException aioobe) {
+            		}
+            		if(saltbcrypt.isEmpty() || saltbcrypt == null) {
+            			saltbcrypt = BCrypt.gensalt(Settings.bCryptLog2Rounds);
+            			userSalt.put(name, saltbcrypt);
+            		}
+            		return getBCrypt(password, saltbcrypt);
             default:
                 throw new NoSuchAlgorithmException("Unknown hash algorithm");
         }
@@ -195,6 +211,10 @@ public class PasswordSecurity {
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.IPB3) {
         	String saltipb = AuthMe.getInstance().database.getAuth(playername).getSalt();
         	return hash.equals(getSaltedIPB3(password, saltipb));
+        }
+        if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.BCRYPT) {
+        	String saltbcrypt = AuthMe.getInstance().database.getAuth(playername).getSalt();
+        	return hash.equals(BCrypt.hashpw(password, saltbcrypt));
         }
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.PHPFUSION) {
         	String saltfusion = AuthMe.getInstance().database.getAuth(playername).getSalt();
@@ -285,7 +305,7 @@ public class PasswordSecurity {
 
     public enum HashAlgorithm {
 
-        MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB, PLAINTEXT, MYBB, IPB3, PHPFUSION, SMF, XFSHA1, XFSHA256, SALTED2MD5, JOOMLA
+        MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB, PLAINTEXT, MYBB, IPB3, PHPFUSION, SMF, XFSHA1, XFSHA256, SALTED2MD5, JOOMLA, BCRYPT
     }
 
 }

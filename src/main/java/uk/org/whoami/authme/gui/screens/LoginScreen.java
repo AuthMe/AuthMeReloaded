@@ -21,7 +21,9 @@ import org.getspout.spoutapi.player.SpoutPlayer;
 import uk.org.whoami.authme.AuthMe;
 import uk.org.whoami.authme.gui.Clickable;
 import uk.org.whoami.authme.gui.CustomButton;
+import uk.org.whoami.authme.settings.Settings;
 import uk.org.whoami.authme.settings.SpoutCfg;
+import uk.org.whoami.authme.threads.LoginThread;
 
 public class LoginScreen extends GenericPopup implements Clickable{
 
@@ -119,7 +121,12 @@ public class LoginScreen extends GenericPopup implements Clickable{
 		if (event.isCancelled() || event == null || event.getPlayer() == null) return;
 		if (b.equals(loginBtn))
 		{
-				plugin.management.performLogin(player, passBox.getText());
+			if (Settings.useMultiThreading) {
+				Thread mT = new LoginThread(plugin.database, plugin, player, passBox.getText());
+				mT.run();
+			} else {
+				plugin.management.performLogin(player, passBox.getText(), false);
+			}
 		}else if(b.equals(exitBtn))
 		{
 			event.getPlayer().kickPlayer(exitMsg);

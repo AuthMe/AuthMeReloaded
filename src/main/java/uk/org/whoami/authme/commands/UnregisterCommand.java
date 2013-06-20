@@ -138,6 +138,9 @@ public class UnregisterCommand implements CommandExecutor {
                  		} catch (NoClassDefFoundError ncdfe) {
                  		}
                      }
+                     if (plugin.essentialsSpawn != null) {
+                     	spawn = plugin.essentialsSpawn;
+                     }
                      if (Spawn.getInstance().getLocation() != null)
                      	spawn = Spawn.getInstance().getLocation();
                      SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
