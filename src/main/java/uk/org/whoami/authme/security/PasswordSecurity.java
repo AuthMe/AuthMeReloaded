@@ -90,8 +90,13 @@ public class PasswordSecurity {
     	return getMD5(getMD5(salt) + getMD5(message));
     }
     
-    private static String getBCrypt(String message, String salt) {
+    private static String getBCrypt(String message, String salt) throws NoSuchAlgorithmException {
     	return BCrypt.hashpw(message, salt);
+    }
+    
+    private static String getWBB3(String message, String salt) throws NoSuchAlgorithmException {
+    	
+    	return getSHA1(salt.concat(getSHA1(salt.concat(getSHA1(message)))));
     }
 
     private static String createSalt(int length) throws NoSuchAlgorithmException {
@@ -198,6 +203,18 @@ public class PasswordSecurity {
             			userSalt.put(name, saltbcrypt);
             		}
             		return getBCrypt(password, saltbcrypt);
+            case WBB3:
+            	String saltwbb = "";
+            	try {
+            		saltbcrypt = AuthMe.getInstance().database.getAuth(name).getSalt();
+            		} catch (NullPointerException npe) {
+            		} catch (ArrayIndexOutOfBoundsException aioobe) {
+            		}
+            		if(saltwbb.isEmpty() || saltwbb == null) {
+            			saltwbb = createSalt(40);
+            			userSalt.put(name, saltwbb);
+            		}
+            		return getWBB3(password, saltwbb);
             default:
                 throw new NoSuchAlgorithmException("Unknown hash algorithm");
         }
@@ -207,6 +224,10 @@ public class PasswordSecurity {
         if(hash.contains("$H$")) {
         	PhpBB checkHash = new PhpBB();
         	return checkHash.phpbb_check_hash(password, hash);
+        }
+        if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.WBB3) {
+        	String saltwbb3 = AuthMe.getInstance().database.getAuth(playername).getSalt();
+        	return hash.equals(getWBB3(password, saltwbb3));
         }
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.IPB3) {
         	String saltipb = AuthMe.getInstance().database.getAuth(playername).getSalt();
@@ -305,7 +326,8 @@ public class PasswordSecurity {
 
     public enum HashAlgorithm {
 
-        MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB, PLAINTEXT, MYBB, IPB3, PHPFUSION, SMF, XFSHA1, XFSHA256, SALTED2MD5, JOOMLA, BCRYPT
+        MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB, PLAINTEXT, MYBB, IPB3, PHPFUSION, SMF, XFSHA1,
+        XFSHA256, SALTED2MD5, JOOMLA, BCRYPT, WBB3
     }
 
 }

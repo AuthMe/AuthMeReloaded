@@ -49,7 +49,7 @@ public class API {
      * @return true if player is authenticate
      */
     public static boolean isAuthenticated(Player player) {
-    	return PlayerCache.getInstance().isAuthenticated(player.getName());
+    	return PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase());
     }
 
     /**

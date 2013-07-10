@@ -1010,7 +1010,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player)) {
+        if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
 
@@ -1080,7 +1080,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player))
+        if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(name))

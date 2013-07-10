@@ -129,8 +129,7 @@ public class Utils {
     	final Location locat = new Location(world, x, y + 0.6D, z);
     	final Location loc = locat.getBlock().getLocation();
 
-    	Bukkit.getScheduler().runTask(AuthMe.getInstance(), new Runnable() {
-
+    	Bukkit.getScheduler().scheduleSyncDelayedTask(AuthMe.getInstance(), new Runnable() {
 			@Override
 			public void run() {
 		        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, loc);
@@ -141,7 +140,6 @@ public class Utils {
 		      	  pl.teleport(tpEvent.getTo());
 		        }
 			}
-
     	});
 
     	id = Bukkit.getScheduler().runTaskTimer(AuthMe.authme, new Runnable()
@@ -155,7 +153,7 @@ public class Utils {
     			}
     		}
     	}, 1L, 20L);
-    	Bukkit.getScheduler().runTaskLater(AuthMe.authme, new Runnable()
+    	Bukkit.getScheduler().scheduleSyncDelayedTask(AuthMe.authme, new Runnable()
     	{
 		@Override
 		public void run() {
