@@ -132,7 +132,7 @@ public class Management {
 							PlayerCache.getInstance().addPlayer(auth);
 							final LimboPlayer limbo = LimboCache.getInstance()
 									.getLimboPlayer(name);
-							PlayerAuth getAuth = database.getAuth(name);
+							final PlayerAuth getAuth = database.getAuth(name);
 							if (limbo != null) {
 								Bukkit.getScheduler().runTask(plugin,
 										new Runnable() {
@@ -151,10 +151,15 @@ public class Management {
 														.getName()))) {
 									if ((Settings.isSaveQuitLocationEnabled)
 											&& (getAuth.getQuitLocY() != 0)) {
-										utils.packCoords(getAuth.getQuitLocX(),
-												getAuth.getQuitLocY(),
-												getAuth.getQuitLocZ(),
-												getAuth.getWorld(), player);
+										Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+											@Override
+											public void run() {
+												utils.packCoords(getAuth.getQuitLocX(),
+														getAuth.getQuitLocY(),
+														getAuth.getQuitLocZ(),
+														getAuth.getWorld(), player);
+											}
+										});
 									} else {
 										Bukkit.getScheduler().runTask(plugin,
 												new Runnable() {
@@ -207,10 +212,15 @@ public class Management {
 											});
 								} else if ((Settings.isSaveQuitLocationEnabled)
 										&& (getAuth.getQuitLocY() != 0)) {
-									utils.packCoords(getAuth.getQuitLocX(),
-											getAuth.getQuitLocY(),
-											getAuth.getQuitLocZ(),
-											getAuth.getWorld(), player);
+									Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+										@Override
+										public void run() {
+											utils.packCoords(getAuth.getQuitLocX(),
+													getAuth.getQuitLocY(),
+													getAuth.getQuitLocZ(),
+													getAuth.getWorld(), player);
+										}
+									});
 								} else {
 									Bukkit.getScheduler().runTask(plugin,
 											new Runnable() {
