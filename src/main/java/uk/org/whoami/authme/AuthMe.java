@@ -65,6 +65,9 @@ import uk.org.whoami.authme.plugin.manager.EssSpawn;
 import uk.org.whoami.authme.settings.Messages;
 import uk.org.whoami.authme.settings.PlayersLogs;
 import uk.org.whoami.authme.settings.Settings;
+import uk.org.whoami.authme.threads.FlatFileThread;
+import uk.org.whoami.authme.threads.MySQLThread;
+import uk.org.whoami.authme.threads.SQLiteThread;
 
 import me.muizers.Notifications.Notifications;
 import net.citizensnpcs.Citizens;
@@ -108,6 +111,7 @@ public class AuthMe extends JavaPlugin {
     public List<String> premium = new ArrayList<String>();
 	public MultiverseCore mv = null;
 	public Location essentialsSpawn;
+	public Thread databaseThread = null;
 
     @Override
     public void onEnable() {
@@ -169,6 +173,13 @@ public class AuthMe extends JavaPlugin {
          */
         switch (Settings.getDataSource) {
             case FILE:
+            	if (Settings.useMultiThreading) {
+                    FlatFileThread fileThread = new FlatFileThread();
+                    fileThread.run();
+                    database = fileThread;
+                    databaseThread = fileThread;
+                    break;
+            	}
                 try {
                     database = new FileDataSource();
                 } catch (IOException ex) {
@@ -183,6 +194,13 @@ public class AuthMe extends JavaPlugin {
                 }
                 break;
             case MYSQL:
+            	if (Settings.useMultiThreading) {
+                    MySQLThread sqlThread = new MySQLThread();
+                    sqlThread.run();
+                    database = sqlThread;
+                    databaseThread = sqlThread;
+                    break;
+            	}
                 try {
                     database = new MySQLDataSource();
                 } catch (ClassNotFoundException ex) {
@@ -215,6 +233,13 @@ public class AuthMe extends JavaPlugin {
                 }
                 break;
             case SQLITE:
+            	if (Settings.useMultiThreading) {
+                    SQLiteThread sqliteThread = new SQLiteThread();
+                    sqliteThread.run();
+                    database = sqliteThread;
+                    databaseThread = sqliteThread;
+                    break;
+            	}
                 try {
                      database = new SqliteDataSource();
                 } catch (ClassNotFoundException ex) {
@@ -285,7 +310,7 @@ public class AuthMe extends JavaPlugin {
         this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(database, this));
         this.getCommand("logout").setExecutor(new LogoutCommand(this,database));
         this.getCommand("unregister").setExecutor(new UnregisterCommand(this, database));
-        this.getCommand("passpartu").setExecutor(new PasspartuCommand(database, this));
+        this.getCommand("passpartu").setExecutor(new PasspartuCommand(this));
         this.getCommand("email").setExecutor(new EmailCommand(this, database));
         this.getCommand("captcha").setExecutor(new CaptchaCommand(this));
 
@@ -427,6 +452,10 @@ public class AuthMe extends JavaPlugin {
 
         if (database != null) {
             database.close();
+        }
+        
+        if (databaseThread != null) {
+        	databaseThread.interrupt();
         }
 
         if(Settings.isBackupActivated && Settings.isBackupOnStop) {

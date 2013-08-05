@@ -97,7 +97,7 @@ public class EmailCommand implements CommandExecutor {
             	if (!data.isAuthAvailable(name)) {
             		player.sendMessage(m._("login_msg"));
             	} else {
-            		player.sendMessage(m._("reg_msg"));
+            		player.sendMessage(m._("reg_email_msg"));
             	}
             }
         } else if(args[0].equalsIgnoreCase("change") && args.length == 3 ) {
@@ -129,7 +129,7 @@ public class EmailCommand implements CommandExecutor {
             	if (!data.isAuthAvailable(name)) {
             		player.sendMessage(m._("login_msg"));
             	} else {
-            		player.sendMessage(m._("reg_msg"));
+            		player.sendMessage(m._("reg_email_msg"));
             	}
             }
         }
@@ -189,7 +189,7 @@ public class EmailCommand implements CommandExecutor {
 			            sender.sendMessage(m._("error"));
 					}
         		} else {
-        		player.sendMessage(m._("reg_msg"));
+        		player.sendMessage(m._("reg_email_msg"));
         	}
         }
         return true;

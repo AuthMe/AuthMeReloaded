@@ -16,6 +16,7 @@ no_perm: '&cNessun Permesso'
 error: "Errore; Perfavore, contatta l'admin"
 login_msg: '&cPerfavore, loggati con "/login password"'
 reg_msg: '&cPerfavore, registrati con "/register password confermaPassword"'
+reg_email_msg: '&cPlease register with "/register <email> <confirmEmail>"'
 usage_unreg: '&cUtilizzo: /unregister password'
 pwd_changed: '&cPassword cambiata!'
 user_unknown: '&cUtente non registrato'

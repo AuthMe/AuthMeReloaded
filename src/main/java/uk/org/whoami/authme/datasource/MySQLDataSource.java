@@ -88,7 +88,7 @@ public class MySQLDataSource implements DataSource {
         dataSource.setPort(Integer.parseInt(port));
         dataSource.setUser(username);
         dataSource.setPassword(password);
-        conPool = new MiniConnectionPoolManager(dataSource, 10);
+        conPool = new MiniConnectionPoolManager(dataSource, 20);
         ConsoleLogger.info("Connection pool ready");
     }
 

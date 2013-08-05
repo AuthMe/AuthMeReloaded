@@ -28,6 +28,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -162,7 +163,11 @@ public class AuthMePlayerListener implements Listener {
         		if (!Settings.isForcedRegistrationEnabled) {
         			return;
         		}
-        		player.sendMessage(m._("reg_msg"));
+                if (Settings.emailRegistration) {
+                    player.sendMessage(m._("reg_email_msg"));
+                    } else {
+                    player.sendMessage(m._("reg_msg"));
+                    }
         	}
         } else {
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
@@ -173,7 +178,11 @@ public class AuthMePlayerListener implements Listener {
         				player.sendMessage(m._("login_msg"));
         				} else {
         					if (Settings.isForcedRegistrationEnabled) {
-        						player.sendMessage(m._("reg_msg"));
+        				         if (Settings.emailRegistration) {
+        				             player.sendMessage(m._("reg_email_msg"));
+        				             } else {
+        				             player.sendMessage(m._("reg_msg"));
+        				             }
         					}
         				}
         		}});
@@ -211,7 +220,11 @@ public class AuthMePlayerListener implements Listener {
         		if (!Settings.isForcedRegistrationEnabled) {
         			return;
         		}
-        		player.sendMessage(m._("reg_msg"));
+                if (Settings.emailRegistration) {
+                    player.sendMessage(m._("reg_email_msg"));
+                    } else {
+                    player.sendMessage(m._("reg_msg"));
+                    }
         	}
         } else {
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
@@ -222,7 +235,11 @@ public class AuthMePlayerListener implements Listener {
         				player.sendMessage(m._("login_msg"));
         				} else {
         					if (Settings.isForcedRegistrationEnabled) {
-        						player.sendMessage(m._("reg_msg"));
+        				         if (Settings.emailRegistration) {
+        				             player.sendMessage(m._("reg_email_msg"));
+        				             } else {
+        				             player.sendMessage(m._("reg_msg"));
+        				             }
         					}
         				}
         		}});
@@ -261,7 +278,11 @@ public class AuthMePlayerListener implements Listener {
         		if (!Settings.isForcedRegistrationEnabled) {
         			return;
         		}
-        		player.sendMessage(m._("reg_msg"));
+                if (Settings.emailRegistration) {
+                    player.sendMessage(m._("reg_email_msg"));
+                    } else {
+                    player.sendMessage(m._("reg_msg"));
+                    }
         	}
         } else {
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
@@ -272,7 +293,11 @@ public class AuthMePlayerListener implements Listener {
         				player.sendMessage(m._("login_msg"));
         				} else {
         					if (Settings.isForcedRegistrationEnabled) {
-        						player.sendMessage(m._("reg_msg"));
+        				         if (Settings.emailRegistration) {
+        				             player.sendMessage(m._("reg_email_msg"));
+        				             } else {
+        				             player.sendMessage(m._("reg_msg"));
+        				             }
         					}
         				}
         		}});
@@ -310,7 +335,11 @@ public class AuthMePlayerListener implements Listener {
         		if (!Settings.isForcedRegistrationEnabled) {
         			return;
         		}
-        		player.sendMessage(m._("reg_msg"));
+                if (Settings.emailRegistration) {
+                    player.sendMessage(m._("reg_email_msg"));
+                    } else {
+                    player.sendMessage(m._("reg_msg"));
+                    }
         	}
         } else {
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
@@ -321,7 +350,11 @@ public class AuthMePlayerListener implements Listener {
         				player.sendMessage(m._("login_msg"));
         				} else {
         					if (Settings.isForcedRegistrationEnabled) {
-        						player.sendMessage(m._("reg_msg"));
+        				         if (Settings.emailRegistration) {
+        				             player.sendMessage(m._("reg_email_msg"));
+        				             } else {
+        				             player.sendMessage(m._("reg_msg"));
+        				             }
         					}
         				}
         		}});
@@ -359,7 +392,11 @@ public class AuthMePlayerListener implements Listener {
         		if (!Settings.isForcedRegistrationEnabled) {
         			return;
         		}
-        		player.sendMessage(m._("reg_msg"));
+                if (Settings.emailRegistration) {
+                    player.sendMessage(m._("reg_email_msg"));
+                    } else {
+                    player.sendMessage(m._("reg_msg"));
+                    }
         	}
         } else {
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
@@ -370,7 +407,11 @@ public class AuthMePlayerListener implements Listener {
         				player.sendMessage(m._("login_msg"));
         				} else {
         					if (Settings.isForcedRegistrationEnabled) {
-        						player.sendMessage(m._("reg_msg"));
+        				         if (Settings.emailRegistration) {
+        				             player.sendMessage(m._("reg_email_msg"));
+        				             } else {
+        				             player.sendMessage(m._("reg_msg"));
+        				             }
         					}
         				}
         		}});
@@ -408,7 +449,11 @@ public class AuthMePlayerListener implements Listener {
         		if (!Settings.isForcedRegistrationEnabled) {
         			return;
         		}
-        		player.sendMessage(m._("reg_msg"));
+                if (Settings.emailRegistration) {
+                    player.sendMessage(m._("reg_email_msg"));
+                    } else {
+                    player.sendMessage(m._("reg_msg"));
+                    }
         	}
         } else {
         		Bukkit.getScheduler().runTask(plugin, new Runnable()
@@ -419,7 +464,11 @@ public class AuthMePlayerListener implements Listener {
         				player.sendMessage(m._("login_msg"));
         				} else {
         					if (Settings.isForcedRegistrationEnabled) {
-        						player.sendMessage(m._("reg_msg"));
+        				         if (Settings.emailRegistration) {
+        				             player.sendMessage(m._("reg_email_msg"));
+        				             } else {
+        				             player.sendMessage(m._("reg_msg"));
+        				             }
         					}
         				}
         		}});
@@ -576,22 +625,27 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerLowestJoin(PlayerJoinEvent event) {
-    	if (event.getPlayer() == null) return;
-    	Player player = event.getPlayer();
+     if (event.getPlayer() == null) return;
+     final Player player = event.getPlayer();
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
 
         if (Settings.bungee) {
-            ByteArrayOutputStream b = new ByteArrayOutputStream();
+            final ByteArrayOutputStream b = new ByteArrayOutputStream();
             DataOutputStream out = new DataOutputStream(b);
              
             try {
                 out.writeUTF("IP");
             } catch (IOException e) {
             }
-            player.sendPluginMessage(this.plugin, "BungeeCord", b.toByteArray());
+            Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
+                }
+            });
         }
     }
 
@@ -705,8 +759,6 @@ public class AuthMePlayerListener implements Listener {
         	} catch (NullPointerException ex) {
         	}
         }
-        if(player.isOp()) 
-            player.setOp(false);
         if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
             SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
             plugin.getServer().getPluginManager().callEvent(tpEvent);
@@ -717,7 +769,12 @@ public class AuthMePlayerListener implements Listener {
           	  player.teleport(tpEvent.getTo());
             }
         }
-        String msg = data.isAuthAvailable(name) ? m._("login_msg") : m._("reg_msg");
+        String msg = "";
+        if(Settings.emailRegistration) {
+        	msg = data.isAuthAvailable(name) ? m._("login_msg") : m._("reg_email_msg");
+        } else {
+        	msg = data.isAuthAvailable(name) ? m._("login_msg") : m._("reg_msg");
+        }
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
         if (time != 0) {
@@ -728,15 +785,26 @@ public class AuthMePlayerListener implements Listener {
         }
         if(!LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().addLimboPlayer(player);
+        if(player.isOp())
+            player.setOp(false);
         BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT.getTaskId());
         if (Settings.isForceSurvivalModeEnabled)
-        	sched.runTask(plugin, new Runnable() {
+        	sched.scheduleSyncDelayedTask(plugin, new Runnable() {
         		public void run() {
         			e.getPlayer().setGameMode(GameMode.SURVIVAL);
         		}
         	});
+        placePlayerSafely(player, spawnLoc);
     }
+
+	private void placePlayerSafely(Player player, Location spawnLoc) {
+		Block b = player.getLocation().getBlock();
+		if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL) {
+			player.sendMessage(m._("unsafe_spawn"));
+			player.teleport(spawnLoc);
+		}
+	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {

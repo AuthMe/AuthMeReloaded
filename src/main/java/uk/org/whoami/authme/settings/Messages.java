@@ -42,6 +42,7 @@ public class Messages extends CustomConfiguration {
         this.set("valid_session", "&cSession login");
         this.set("login_msg", "&cPlease login with \"/login password\"");
         this.set("reg_msg", "&cPlease register with \"/register password ConfirmPassword\"");
+        this.set("reg_email_msg", "&cPlease register with \"/register <email> <confirmEmail>\"");
         this.set("timeout", "&fLogin Timeout");
         this.set("wrong_pwd", "&cWrong password");
         this.set("logout", "&cSuccessful logout");

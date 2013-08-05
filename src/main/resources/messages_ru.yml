@@ -19,6 +19,7 @@ error: '&cЧто-то пошло не так... &5Свяжись с админи
 login_msg: '&eВойди в игру - &d/l ПАРОЛЬ &eили &d/login ПАРОЛЬ'
 reg_msg: '&eЗарегистрируйся - &d/reg ПАРОЛЬ ПОВТОР_ПАРОЛЯ &eили &d/register ПАРОЛЬ
   ПОВТОР_ПАРОЛЯ'
+reg_email_msg: '&cPlease register with "/register <email> <confirmEmail>"'
 usage_unreg: '&eСинтаксис: &d/unregister ПАРОЛЬ'
 pwd_changed: '&aПароль изменён'
 user_unknown: '&cТакой игрок не зарегистрирован'

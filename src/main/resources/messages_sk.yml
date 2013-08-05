@@ -14,6 +14,7 @@ reg_only: '&fVstup iba pre registrovanych! Navstiv http://www.cs-gaming.eu pre r
 valid_session: '&cZapamätané prihlásenie'
 login_msg: '&cPrihlás sa príkazom "/login heslo"'
 reg_msg: '&cZaregistruj sa príkazom "/register heslo zopakujHeslo"'
+reg_email_msg: '&cPlease register with "/register <email> <confirmEmail>"'
 timeout: '&fVyprsal cas na prihlásenie'
 wrong_pwd: '&cZadal si zlé heslo'
 logout: '&cBol si úspesne odhláseny'

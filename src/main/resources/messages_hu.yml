@@ -23,6 +23,7 @@ login: '&aSikeresen Beléptél! Üdvözöllek!!!'
 wrong_pwd: '&4Hibás jelszó'
 user_unknown: '&cJátékosnév nem regisztrált'
 reg_msg: '&cKérlek Regisztrálj: "/register jelszó jelszóújra"'
+reg_email_msg: '&cPlease register with "/register <email> <confirmEmail>"'
 unsafe_spawn: A kilépési helyzeted nem biztonságos, teleportálás a kezdö Spawnra.
 max_reg: Csak egy karakterrel Registrálhatsz!!!
 password_error: A jelszó nem illik össze

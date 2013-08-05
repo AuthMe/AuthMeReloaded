@@ -1,25 +1,22 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package uk.org.whoami.authme.datasource;
+package uk.org.whoami.authme.threads;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.sqlite.*;
+import uk.org.whoami.authme.AuthMe;
 import uk.org.whoami.authme.ConsoleLogger;
 import uk.org.whoami.authme.cache.auth.PlayerAuth;
+import uk.org.whoami.authme.datasource.DataSource;
 import uk.org.whoami.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import uk.org.whoami.authme.settings.Settings;
 
-/**
- *
- * @author stefano
- */
-@SuppressWarnings("unused")
-public class SqliteDataSource implements DataSource {
+public class SQLiteThread extends Thread implements DataSource {
 
     private String database;
     private String tableName;
@@ -37,8 +34,8 @@ public class SqliteDataSource implements DataSource {
     private String columnID;
     private Connection con;
 
-    public SqliteDataSource() throws ClassNotFoundException, SQLException {
-    	this.database = Settings.getMySQLDatabase;
+    public void run() {
+        this.database = Settings.getMySQLDatabase;
         this.tableName = Settings.getMySQLTablename;
         this.columnName = Settings.getMySQLColumnName;
         this.columnPassword = Settings.getMySQLColumnPassword;
@@ -53,8 +50,28 @@ public class SqliteDataSource implements DataSource {
         this.columnEmail = Settings.getMySQLColumnEmail;
         this.columnID = Settings.getMySQLColumnId;
 
-        connect();
-        setup();
+        try {
+			this.connect();
+			this.setup();
+		} catch (ClassNotFoundException e) {
+            ConsoleLogger.showError(e.getMessage());
+            if (Settings.isStopEnabled) {
+            	ConsoleLogger.showError("Can't use SQLITE... ! SHUTDOWN...");
+            	AuthMe.getInstance().getServer().shutdown();
+            }
+            if (!Settings.isStopEnabled)
+            	AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            return;
+		} catch (SQLException e) {
+            ConsoleLogger.showError(e.getMessage());
+            if (Settings.isStopEnabled) {
+            	ConsoleLogger.showError("Can't use SQLITE... ! SHUTDOWN...");
+            	AuthMe.getInstance().getServer().shutdown();
+            }
+            if (!Settings.isStopEnabled)
+            	AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            return;
+		}
     }
 
     private synchronized void connect() throws ClassNotFoundException, SQLException {
@@ -373,16 +390,6 @@ public class SqliteDataSource implements DataSource {
         if (rs != null) {
             try {
                 rs.close();
-            } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-            }
-        }
-    }
-
-    private void close(Connection con) {
-        if (con != null) {
-            try {
-                con.close();
             } catch (SQLException ex) {
                 ConsoleLogger.showError(ex.getMessage());
             }

@@ -12,10 +12,7 @@ import org.bukkit.entity.Player;
 import uk.org.whoami.authme.AuthMe;
 import uk.org.whoami.authme.Utils;
 import uk.org.whoami.authme.cache.auth.PlayerCache;
-import uk.org.whoami.authme.datasource.DataSource;
 import uk.org.whoami.authme.settings.Messages;
-import uk.org.whoami.authme.settings.Settings;
-import uk.org.whoami.authme.threads.LoginThread;
 
 /**
  *
@@ -23,12 +20,10 @@ import uk.org.whoami.authme.threads.LoginThread;
  */
 public class PasspartuCommand implements CommandExecutor {
     private Utils utils = new Utils();
-    private DataSource database;
     public AuthMe plugin;
 	private Messages m;
 
-    public PasspartuCommand(DataSource database, AuthMe plugin) {
-        this.database = database;
+    public PasspartuCommand(AuthMe plugin) {
         this.plugin = plugin;
     }
 
@@ -47,12 +42,7 @@ public class PasspartuCommand implements CommandExecutor {
        if ((sender instanceof Player) && args.length == 1) {
            if(utils.readToken(args[0])) {
                  //bypass login!
-        	   if (Settings.useMultiThreading) {
-        		   Thread bypass = new LoginThread(database, false, plugin, (Player) sender, "dontneed");
-        		   bypass.run();  
-        	   } else {
-        		   plugin.management.performLogin((Player) sender, "dontneed", true);
-        	   }
+        	   plugin.management.performLogin((Player) sender, "dontneed", true);
                return true;
            }
            sender.sendMessage("Time is expired or Token is Wrong!");

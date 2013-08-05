@@ -58,6 +58,14 @@ public class PasswordSecurity {
         byte[] digest = sha256.digest();
         return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1,digest));
     }
+    
+    private static String getSHA512(String message) throws NoSuchAlgorithmException {
+        MessageDigest sha512 = MessageDigest.getInstance("SHA-512");
+        sha512.reset();
+        sha512.update(message.getBytes());
+        byte[] digest = sha512.digest();
+        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1,digest));
+    }
 
     public static String getWhirlpool(String message) {
         Whirlpool w = new Whirlpool();
@@ -93,9 +101,8 @@ public class PasswordSecurity {
     private static String getBCrypt(String message, String salt) throws NoSuchAlgorithmException {
     	return BCrypt.hashpw(message, salt);
     }
-    
+
     private static String getWBB3(String message, String salt) throws NoSuchAlgorithmException {
-    	
     	return getSHA1(salt.concat(getSHA1(salt.concat(getSHA1(message)))));
     }
 
@@ -215,6 +222,8 @@ public class PasswordSecurity {
             			userSalt.put(name, saltwbb);
             		}
             		return getWBB3(password, saltwbb);
+            case SHA512:
+            	return getSHA512(password);
             default:
                 throw new NoSuchAlgorithmException("Unknown hash algorithm");
         }
@@ -262,17 +271,20 @@ public class PasswordSecurity {
         	String saltj = hash.split(":")[1];
         	return hash.equals(getMD5(password + saltj) + ":" + saltj);
         }
+        if(Settings.getPasswordHash == HashAlgorithm.SHA512) {
+        	return hash.equals(getSHA512(password));
+        }
         // PlainText Password
-        if(hash.length() < 32 ) {
+        if(Settings.getPasswordHash == HashAlgorithm.PLAINTEXT) {
             return hash.equals(password);
         }
-        if (hash.length() == 32) {
+        if (Settings.getPasswordHash == HashAlgorithm.MD5) {
             return hash.equals(getMD5(password));
         }
-        if (hash.length() == 40) {
+        if (Settings.getPasswordHash == HashAlgorithm.SHA1) {
             return hash.equals(getSHA1(password));
         }
-        if (hash.length() == 140) {
+        if (Settings.getPasswordHash == HashAlgorithm.XAUTH) {
             int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
             String salt = hash.substring(saltPos, saltPos + 12);
             return hash.equals(getXAuth(password, salt));
@@ -327,7 +339,7 @@ public class PasswordSecurity {
     public enum HashAlgorithm {
 
         MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB, PLAINTEXT, MYBB, IPB3, PHPFUSION, SMF, XFSHA1,
-        XFSHA256, SALTED2MD5, JOOMLA, BCRYPT, WBB3
+        XFSHA256, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512
     }
 
 }

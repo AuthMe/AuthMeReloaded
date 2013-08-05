@@ -1,6 +1,7 @@
 package uk.org.whoami.authme.api;
 
 import java.lang.reflect.Array;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -15,17 +16,18 @@ import uk.org.whoami.authme.cache.auth.PlayerAuth;
 import uk.org.whoami.authme.cache.auth.PlayerCache;
 import uk.org.whoami.authme.datasource.DataSource;
 import uk.org.whoami.authme.datasource.DataSource.DataSourceType;
+import uk.org.whoami.authme.security.PasswordSecurity;
 import uk.org.whoami.authme.security.PasswordSecurity.HashAlgorithm;
 import uk.org.whoami.authme.settings.Settings;
 
 public class API {
 
-	public AuthMe instance;
-	public DataSource database;
+	public static AuthMe instance;
+	public static DataSource database;
 
 	public API(AuthMe instance, DataSource database) {
-		this.instance = instance;
-		this.database = database;
+		API.instance = instance;
+		API.database = database;
 	}
 	/**
 	 * Hook into AuthMe
@@ -173,15 +175,6 @@ public class API {
     	} catch (NullPointerException npe) {
     	}
     }
-
-    public void saveAuth(final PlayerAuth auth) {
-    	instance.getServer().getScheduler().runTask(instance, new Runnable() {
-			@Override
-			public void run() {
-				database.saveAuth(auth);
-			}
-    	});
-    }
     
     /**
      * 
@@ -189,10 +182,26 @@ public class API {
      * @return true if player is registered
      */
     public static boolean isRegistered(String playerName) {
-		PlayerAuth auth = PlayerCache.getInstance().getAuth(playerName);
+    	String player = playerName.toLowerCase();
+    	PlayerAuth auth = database.getAuth(player);
     	if (auth != null)
     		return true;
     	return false;
+    }
+    
+    /**
+     * @param String playerName, String passwordToCheck
+     * @return true if the password is correct , false else
+     */
+    public static boolean checkPassword(String playerName, String passwordToCheck) {
+    	if (!isRegistered(playerName)) return false;
+    	String player = playerName.toLowerCase();
+    	PlayerAuth auth = database.getAuth(player);
+    	try {
+			return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), player);
+		} catch (NoSuchAlgorithmException e) {
+			return false;
+		}
     }
 
 }

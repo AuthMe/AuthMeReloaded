@@ -30,7 +30,7 @@ public class SpoutCfg extends CustomConfiguration{
 		    add("Sample text");
 		    add("Change this at spout.yml");
 		    add("--- AuthMe Reloaded by ---");
-		    add("d4rkwarriors and Xephi59");
+		    add("Xephi59");
 		}});
 	}
 
