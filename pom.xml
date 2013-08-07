@@ -122,12 +122,5 @@
     		<scope>system</scope>
     		<systemPath>${project.basedir}/lib/Essentials.jar</systemPath>
     	</dependency>
-		<dependency>
-    		<groupId>com.sun.mail</groupId>
-    		<artifactId>javax.mail</artifactId>
-    		<version>1.4.5</version>
-    		<scope>system</scope>
-    		<systemPath>${project.basedir}/lib/mail.jar</systemPath>
-    	</dependency>
     </dependencies>
 </project>
