@@ -80,7 +80,7 @@ public class SendMailSSL {
 						}
 					});
 					if(!Settings.noConsoleSpam)
-					ConsoleLogger.info("Email sent to : " + auth.getNickname());
+						ConsoleLogger.info("Email sent to : " + auth.getNickname());
 				} catch (MessagingException e) {
 					throw new RuntimeException(e);
 				}

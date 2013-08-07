@@ -275,16 +275,16 @@ public class PasswordSecurity {
         	return hash.equals(getSHA512(password));
         }
         // PlainText Password
-        if(Settings.getPasswordHash == HashAlgorithm.PLAINTEXT) {
+        if(hash.length() < 32 ) {
             return hash.equals(password);
         }
-        if (Settings.getPasswordHash == HashAlgorithm.MD5) {
+        if (hash.length() == 32) {
             return hash.equals(getMD5(password));
         }
-        if (Settings.getPasswordHash == HashAlgorithm.SHA1) {
+        if (hash.length() == 40) {
             return hash.equals(getSHA1(password));
         }
-        if (Settings.getPasswordHash == HashAlgorithm.XAUTH) {
+        if (hash.length() == 140) {
             int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
             String salt = hash.substring(saltPos, saltPos + 12);
             return hash.equals(getXAuth(password, salt));

@@ -133,13 +133,8 @@ public class AuthMe extends JavaPlugin {
         Bukkit.getLogger().setFilter(new ConsoleFilter());
 
         //Load MailApi
-		File mailFile = new File("lib", "mail.jar");
-		if (mailFile.exists()) {
-	        //Set SMTP
-			mail = new SendMailSSL(this);
-		} else {
-			mail = null;
-		}
+        if(!Settings.getmailAccount.isEmpty() && !Settings.getmailPassword.isEmpty())
+        	mail = new SendMailSSL(this);
 
 		//Check Citizens Version
 		citizensVersion();
