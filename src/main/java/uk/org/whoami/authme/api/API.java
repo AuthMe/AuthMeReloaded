@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import uk.org.whoami.authme.AuthMe;
+import uk.org.whoami.authme.ConsoleLogger;
 import uk.org.whoami.authme.Utils;
 import uk.org.whoami.authme.cache.auth.PlayerAuth;
 import uk.org.whoami.authme.cache.auth.PlayerCache;
@@ -202,6 +203,28 @@ public class API {
 		} catch (NoSuchAlgorithmException e) {
 			return false;
 		}
+    }
+    
+    /**
+     * Register a player
+     * @param String playerName, String password
+     * @return true if the player is register correctly
+     */
+    public static boolean registerPlayer(String playerName, String password) {
+        try {
+            String name = playerName.toLowerCase();
+            String hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
+            if (database.isAuthAvailable(name)) {
+                return false;
+            }
+            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0);
+            if (!database.saveAuth(auth)) {
+            	return false;
+            }
+            return true;
+        } catch (NoSuchAlgorithmException ex) {
+        	return false;
+        }
     }
 
 }

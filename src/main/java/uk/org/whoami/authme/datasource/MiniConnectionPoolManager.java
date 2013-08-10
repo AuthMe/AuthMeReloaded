@@ -153,8 +153,8 @@ private synchronized Connection getConnection3() throws SQLException {
     else {
       pconn = dataSource.getPooledConnection();
       pconn.addConnectionEventListener(poolConnectionEventListener); }
-   Connection conn = pconn.getConnection();
    activeConnections++;
+   Connection conn = pconn.getConnection();
    assertInnerState();
    return conn; }
 

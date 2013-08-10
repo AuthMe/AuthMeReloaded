@@ -521,8 +521,13 @@ public class AuthMePlayerListener implements Listener {
         if (Spawn.getInstance().getLocation() != null && Spawn.getInstance().getLocation().getWorld().equals(player.getWorld()))
         	spawn = Spawn.getInstance().getLocation();
 
+        if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
+        	event.getPlayer().teleport(spawn);
+        	return;
+        }
         if ((spawn.distance(player.getLocation()) > radius) ) {
             event.getPlayer().teleport(spawn);
+            return;
         }
     }
 

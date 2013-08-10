@@ -68,7 +68,7 @@ public class CaptchaCommand implements CommandExecutor {
             plugin.cap.remove(name);
         } catch (NullPointerException npe) {
         }
-        player.sendMessage("Your captcha is correct");
+        player.sendMessage(m._("valid_captcha"));
         player.sendMessage(m._("login_msg"));
         return true;
 	}

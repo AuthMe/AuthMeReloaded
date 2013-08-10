@@ -224,6 +224,8 @@ public class PasswordSecurity {
             		return getWBB3(password, saltwbb);
             case SHA512:
             	return getSHA512(password);
+            case DOUBLEMD5:
+            	return getMD5(getMD5(password));
             default:
                 throw new NoSuchAlgorithmException("Unknown hash algorithm");
         }
@@ -254,15 +256,14 @@ public class PasswordSecurity {
         	String saltmybb = AuthMe.getInstance().database.getAuth(playername).getSalt();
         	return hash.equals(getSaltedMyBB(password, saltmybb));
         }
-        if(Settings.getPasswordHash == HashAlgorithm.SMF) {
+        if(Settings.getPasswordHash == HashAlgorithm.SMF)
         	return hash.equals(getSHA1(playername.toLowerCase() + password));
-        }
-        if(Settings.getPasswordHash == HashAlgorithm.XFSHA1) {
+        if(Settings.getPasswordHash == HashAlgorithm.XFSHA1)
         	return hash.equals(getSHA1(getSHA1(password) + Settings.getPredefinedSalt));
-        }
-        if(Settings.getPasswordHash == HashAlgorithm.XFSHA256) {
+        if(Settings.getPasswordHash == HashAlgorithm.XFSHA256)
         	return hash.equals(getSHA256(getSHA256(password)+ Settings.getPredefinedSalt));
-        }
+        if(Settings.getPasswordHash == HashAlgorithm.DOUBLEMD5)
+        	return hash.equals(getMD5(getMD5(password)));
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.SALTED2MD5) {
         	String salt2md5 = AuthMe.getInstance().database.getAuth(playername).getSalt();
         	return hash.equals(getMD5(getMD5(password) + salt2md5));
@@ -271,19 +272,15 @@ public class PasswordSecurity {
         	String saltj = hash.split(":")[1];
         	return hash.equals(getMD5(password + saltj) + ":" + saltj);
         }
-        if(Settings.getPasswordHash == HashAlgorithm.SHA512) {
+        if(Settings.getPasswordHash == HashAlgorithm.SHA512)
         	return hash.equals(getSHA512(password));
-        }
         // PlainText Password
-        if(hash.length() < 32 ) {
+        if(hash.length() < 32 )
             return hash.equals(password);
-        }
-        if (hash.length() == 32) {
+        if (hash.length() == 32)
             return hash.equals(getMD5(password));
-        }
-        if (hash.length() == 40) {
+        if (hash.length() == 40)
             return hash.equals(getSHA1(password));
-        }
         if (hash.length() == 140) {
             int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
             String salt = hash.substring(saltPos, saltPos + 12);
@@ -339,7 +336,7 @@ public class PasswordSecurity {
     public enum HashAlgorithm {
 
         MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB, PLAINTEXT, MYBB, IPB3, PHPFUSION, SMF, XFSHA1,
-        XFSHA256, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512
+        XFSHA256, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512, DOUBLEMD5
     }
 
 }

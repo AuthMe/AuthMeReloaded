@@ -73,6 +73,17 @@ public class Messages extends CustomConfiguration {
         this.set("valid_captcha", "&cYour captcha is valid !");
         this.set("kick_forvip", "&cA VIP Player join the full server!");
         this.set("kick_fullserver", "&cThe server is actually full, Sorry!");
+        this.set("usage_email_add", "&fUsage: /email add <Email> <confirmEmail> ");
+        this.set("usage_email_change", "&Usage: /email change <old> <new> ");
+        this.set("usage_email_recovery", "&Usage: /email recovery <Email>");
+        this.set("email_add", "[AuthMe] /email add <Email> <confirmEmail>");
+        this.set("new_email_invalid", "[AuthMe] New email invalid!");
+        this.set("old_email_invalid", "[AuthMe] Old email invalid!");
+        this.set("email_invalid", "[AuthMe] Invalid Email !");
+        this.set("email_added", "[AuthMe] Email Added !");
+        this.set("email_confirm", "[AuthMe] Confirm your Email !");
+        this.set("email_changed", "[AuthMe] Email Change !");
+        this.set("email_send", "[AuthMe] Recovery Email Send !");
     }
 
 	private void loadFile() {
