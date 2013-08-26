@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package uk.org.whoami.authme.datasource;
 
 import java.sql.*;
@@ -106,6 +102,7 @@ public class SqliteDataSource implements DataSource {
                         + "ALTER TABLE " + tableName + " ADD COLUMN " + lastlocZ + " smallint(6) NOT NULL DEFAULT '0';");
             }
             rs.close();
+            rs = con.getMetaData().getColumns(null, null, tableName, lastlocWorld);
             if (!rs.next()) {
             	st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER " + lastlocZ + ";");
             }

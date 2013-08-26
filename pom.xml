@@ -24,7 +24,7 @@
 		</plugin>
 	</plugins>
 	</build>
-    <version>2.9.2</version>
+    <version>2.9.3</version>
     <dependencies>
     	<dependency>
     		<groupId>org.bukkit</groupId>

@@ -41,13 +41,13 @@ wrong_captcha: '&cCaptcha sbagliato, perfavore fai: /captcha THE_CAPTCHA'
 valid_captcha: "&cIl tuo captcha è valido!"
 kick_forvip: "&cUn player VIP è entrato mentre il server era pieno!"
 kick_fullserver: "&cIl server è attualmente pieno, ci dispiace!"
-usage_email_add: '&fUsage: /email add <Email> <ConfirmeEmail> '
-usage_email_change: '&fUsage: /email change <EmailAntigo> <NovoEmail> '
-usage_email_recovery: '&fUsage: /email recovery <Email>'
-new_email_invalid: '[AuthMe] New email invalid!'
-old_email_invalid: '[AuthMe] Old email invalid!'
-email_invalid: '[AuthMe] Invalid Email'
-email_added: '[AuthMe] Email Added !'
-email_confirm: '[AuthMe] Confirm your Email !'
-email_changed: '[AuthMe] Email Change !'
-email_send: '[AuthMe] Recovery Email Send !'
+usage_email_add: '&fUtilizzo: /email add <email> <confermaEmail>'
+usage_email_change: '&fUtilizzo: /email change <vecchiaEmail> <nuovaEmail>'
+usage_email_recovery: '&fUtilizzo: /email recovery <email>'
+new_email_invalid: '[AuthMe] La nuova email non è valida!'
+old_email_invalid: '[AuthMe] La vecchia email non è valida!'
+email_invalid: "[AuthMe] L'email non è valida"
+email_added: '[AuthMe] Email Aggiunta!'
+email_confirm: '[AuthMe] Conferma la tua Email!'
+email_changed: '[AuthMe] Email cambiata!'
+email_send: '[AuthMe] Email di recupero inviata!'

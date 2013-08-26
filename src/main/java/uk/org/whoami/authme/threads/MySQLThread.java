@@ -299,7 +299,7 @@ public class MySQLThread extends Thread implements DataSource {
     }
 
     @Override
-    public boolean updateSession(PlayerAuth auth) {
+    public synchronized boolean updateSession(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
@@ -323,7 +323,7 @@ public class MySQLThread extends Thread implements DataSource {
     }
 
     @Override
-    public int purgeDatabase(long until) {
+    public synchronized int purgeDatabase(long until) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
@@ -366,7 +366,7 @@ public class MySQLThread extends Thread implements DataSource {
     }
 
     @Override
-    public boolean updateQuitLoc(PlayerAuth auth) {
+    public synchronized boolean updateQuitLoc(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
@@ -392,7 +392,7 @@ public class MySQLThread extends Thread implements DataSource {
     }
 
     @Override
-    public int getIps(String ip) {
+    public synchronized int getIps(String ip) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -421,7 +421,7 @@ public class MySQLThread extends Thread implements DataSource {
     }
 
     @Override
-    public boolean updateEmail(PlayerAuth auth) {
+    public synchronized boolean updateEmail(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
@@ -444,7 +444,7 @@ public class MySQLThread extends Thread implements DataSource {
     }
 
     @Override
-	public boolean updateSalt(PlayerAuth auth) {
+	public synchronized boolean updateSalt(PlayerAuth auth) {
 		if (columnSalt.isEmpty()) {
 			return false;
 		}
@@ -513,7 +513,7 @@ public class MySQLThread extends Thread implements DataSource {
     }
 
     @Override
-	public List<String> getAllAuthsByName(PlayerAuth auth) {
+	public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -542,7 +542,7 @@ public class MySQLThread extends Thread implements DataSource {
 	}
 
     @Override
-	public List<String> getAllAuthsByIp(String ip) {
+	public synchronized List<String> getAllAuthsByIp(String ip) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -571,7 +571,7 @@ public class MySQLThread extends Thread implements DataSource {
 	}
 
     @Override
-	public List<String> getAllAuthsByEmail(String email) {
+	public synchronized List<String> getAllAuthsByEmail(String email) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -600,7 +600,7 @@ public class MySQLThread extends Thread implements DataSource {
 	}
 
     @Override
-	public void purgeBanned(List<String> banned) {
+	public synchronized void purgeBanned(List<String> banned) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
@@ -617,4 +617,35 @@ public class MySQLThread extends Thread implements DataSource {
             close(con);
         }
 	}
+    
+/*    public synchronized boolean makeSureConnectionIsReady() {
+        try {
+        	conPool.getValidConnection();
+        	return true;
+        } catch (TimeoutException te) {
+        	try {
+				reconnect();
+			} catch (TimeoutException e) {
+				return false;
+			} catch (ClassNotFoundException e) {
+				return false;
+			} catch (SQLException e) {
+				return false;
+			}
+        	return true;
+        }
+    }
+    
+    private synchronized void reconnect() throws ClassNotFoundException, SQLException, TimeoutException {
+    	conPool.dispose();
+        Class.forName("com.mysql.jdbc.Driver");
+        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
+        dataSource.setDatabaseName(database);
+        dataSource.setServerName(host);
+        dataSource.setPort(Integer.parseInt(port));
+        dataSource.setUser(username);
+        dataSource.setPassword(password);
+        conPool = new MiniConnectionPoolManager(dataSource, 10);
+        ConsoleLogger.info("Connection pool reconnected");
+    } */
 }

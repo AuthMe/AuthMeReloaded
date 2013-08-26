@@ -123,6 +123,7 @@ public class SQLiteThread extends Thread implements DataSource {
                         + "ALTER TABLE " + tableName + " ADD COLUMN " + lastlocZ + " smallint(6) NOT NULL DEFAULT '0';");
             }
             rs.close();
+            rs = con.getMetaData().getColumns(null, null, tableName, lastlocWorld);
             if (!rs.next()) {
             	st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER " + lastlocZ + ";");
             }

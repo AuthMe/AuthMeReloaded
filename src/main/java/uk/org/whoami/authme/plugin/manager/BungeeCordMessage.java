@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
 import uk.org.whoami.authme.AuthMe;
-import uk.org.whoami.authme.ConsoleLogger;
  
 public class BungeeCordMessage implements PluginMessageListener {
 
@@ -24,7 +23,6 @@ public class BungeeCordMessage implements PluginMessageListener {
         try {
             final DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
             if (in.readUTF().equals("IP")) { //We need only the IP channel
-                ConsoleLogger.info("PluginMessage send to " + player.getName() + " , the message was : " + message.toString());
                 plugin.realIp.put(player.getName().toLowerCase(), in.readUTF()); //Put the IP (only the ip not the port) in the hashmap
             }
         } catch (IOException ex) {

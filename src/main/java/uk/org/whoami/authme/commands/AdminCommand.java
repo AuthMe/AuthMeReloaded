@@ -176,7 +176,7 @@ public class AdminCommand implements CommandExecutor {
         	if (!args[1].contains(".")) {
             	final CommandSender fSender = sender;
             	final String[] arguments = args;
-            	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+            	Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
     				@Override
     				public void run() {
     		        	PlayerAuth pAuth = null;
@@ -219,7 +219,7 @@ public class AdminCommand implements CommandExecutor {
         	} else {
             	final CommandSender fSender = sender;
             	final String[] arguments = args;
-            	Bukkit.getScheduler().runTask(plugin, new Runnable() {
+            	Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
     				@Override
     				public void run() {
     		        	String message = "[AuthMe] ";
@@ -344,12 +344,16 @@ public class AdminCommand implements CommandExecutor {
         		bannedPlayers.add(off.getName().toLowerCase());
         	}
         	final List<String> bP = bannedPlayers;
-        	Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-				@Override
-				public void run() {
-					database.purgeBanned(bP);
-				}
-        	});
+        	if (database instanceof Thread) {
+        		database.purgeBanned(bP);
+        	} else {
+            	Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    				@Override
+    				public void run() {
+    					database.purgeBanned(bP);
+    				}
+            	});
+        	}
         } else if (args[0].equalsIgnoreCase("spawn")) {
     		try {
     			if (sender instanceof Player) {

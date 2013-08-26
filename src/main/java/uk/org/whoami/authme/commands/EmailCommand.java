@@ -172,13 +172,18 @@ public class EmailCommand implements CommandExecutor {
 		        		}
 		        		final String finalhashnew = hashnew;
 		        		final PlayerAuth finalauth = auth;
-		        		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-							@Override
-							public void run() {
-								finalauth.setHash(finalhashnew);
-								data.updatePassword(finalauth);
-							}
-		        		});
+		        		if (data instanceof Thread) {
+		        			finalauth.setHash(hashnew);
+		        			data.updatePassword(auth);
+		        		} else {
+			        		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+								@Override
+								public void run() {
+									finalauth.setHash(finalhashnew);
+									data.updatePassword(finalauth);
+								}
+			        		});
+		        		}
 		                plugin.mail.main(auth, thePass);
 		                player.sendMessage(m._("email_send"));
 					} catch (NoSuchAlgorithmException ex) {

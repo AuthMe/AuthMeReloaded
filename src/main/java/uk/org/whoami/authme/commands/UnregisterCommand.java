@@ -100,7 +100,7 @@ public class UnregisterCommand implements CommandExecutor {
                         BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
                         LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id.getTaskId());
                     }
-                    sched.runTask(plugin, new MessageTask(plugin, name, m._("reg_msg"), interval));
+                    sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("reg_msg"), interval));
                         if(!Settings.unRegisteredGroup.isEmpty()){
                             Utils.getInstance().setGroup(player, Utils.groupType.UNREGISTERED);
                         }

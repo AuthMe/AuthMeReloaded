@@ -28,6 +28,8 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import uk.org.whoami.authme.AuthMe;
+import uk.org.whoami.authme.security.pbkdf2.PBKDF2Engine;
+import uk.org.whoami.authme.security.pbkdf2.PBKDF2Parameters;
 import uk.org.whoami.authme.settings.Settings;
 
 public class PasswordSecurity {
@@ -104,6 +106,13 @@ public class PasswordSecurity {
 
     private static String getWBB3(String message, String salt) throws NoSuchAlgorithmException {
     	return getSHA1(salt.concat(getSHA1(salt.concat(getSHA1(message)))));
+    }
+    
+    private static String getPBKDF2(String password, String salt) throws NoSuchAlgorithmException {
+    	String result = "pbkdf2_sha256$10000$"+salt+"$";
+    	PBKDF2Parameters params = new PBKDF2Parameters("SHA-256", "UTF-8", salt.getBytes(), 10000);
+    	PBKDF2Engine engine = new PBKDF2Engine(params);
+    	return result + engine.deriveKey(password,57).toString();
     }
 
     private static String createSalt(int length) throws NoSuchAlgorithmException {
@@ -226,6 +235,9 @@ public class PasswordSecurity {
             	return getSHA512(password);
             case DOUBLEMD5:
             	return getMD5(getMD5(password));
+            case PBKDF2:
+            	String saltpbkdf2 = createSalt(12);
+            	return getPBKDF2(password, saltpbkdf2);
             default:
                 throw new NoSuchAlgorithmException("Unknown hash algorithm");
         }
@@ -237,24 +249,24 @@ public class PasswordSecurity {
         	return checkHash.phpbb_check_hash(password, hash);
         }
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.WBB3) {
-        	String saltwbb3 = AuthMe.getInstance().database.getAuth(playername).getSalt();
-        	return hash.equals(getWBB3(password, saltwbb3));
+        	String salt = AuthMe.getInstance().database.getAuth(playername).getSalt();
+        	return hash.equals(getWBB3(password, salt));
         }
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.IPB3) {
-        	String saltipb = AuthMe.getInstance().database.getAuth(playername).getSalt();
-        	return hash.equals(getSaltedIPB3(password, saltipb));
+        	String salt = AuthMe.getInstance().database.getAuth(playername).getSalt();
+        	return hash.equals(getSaltedIPB3(password, salt));
         }
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.BCRYPT) {
-        	String saltbcrypt = AuthMe.getInstance().database.getAuth(playername).getSalt();
-        	return hash.equals(BCrypt.hashpw(password, saltbcrypt));
+        	String salt = AuthMe.getInstance().database.getAuth(playername).getSalt();
+        	return hash.equals(BCrypt.hashpw(password, salt));
         }
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.PHPFUSION) {
-        	String saltfusion = AuthMe.getInstance().database.getAuth(playername).getSalt();
-        	return hash.equals(getPhPFusion(password, saltfusion));
+        	String salt = AuthMe.getInstance().database.getAuth(playername).getSalt();
+        	return hash.equals(getPhPFusion(password, salt));
         }
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MYBB) {
-        	String saltmybb = AuthMe.getInstance().database.getAuth(playername).getSalt();
-        	return hash.equals(getSaltedMyBB(password, saltmybb));
+        	String salt = AuthMe.getInstance().database.getAuth(playername).getSalt();
+        	return hash.equals(getSaltedMyBB(password, salt));
         }
         if(Settings.getPasswordHash == HashAlgorithm.SMF)
         	return hash.equals(getSHA1(playername.toLowerCase() + password));
@@ -265,15 +277,23 @@ public class PasswordSecurity {
         if(Settings.getPasswordHash == HashAlgorithm.DOUBLEMD5)
         	return hash.equals(getMD5(getMD5(password)));
         if(!Settings.getMySQLColumnSalt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.SALTED2MD5) {
-        	String salt2md5 = AuthMe.getInstance().database.getAuth(playername).getSalt();
-        	return hash.equals(getMD5(getMD5(password) + salt2md5));
+        	String salt = AuthMe.getInstance().database.getAuth(playername).getSalt();
+        	return hash.equals(getMD5(getMD5(password) + salt));
         }
         if(Settings.getPasswordHash == HashAlgorithm.JOOMLA) {
-        	String saltj = hash.split(":")[1];
-        	return hash.equals(getMD5(password + saltj) + ":" + saltj);
+        	String salt = hash.split(":")[1];
+        	return hash.equals(getMD5(password + salt) + ":" + salt);
         }
         if(Settings.getPasswordHash == HashAlgorithm.SHA512)
         	return hash.equals(getSHA512(password));
+        if(Settings.getPasswordHash == HashAlgorithm.PBKDF2) {
+        	String[] line = hash.split("\\$");
+        	String salt = line[2];
+        	String derivedKey = line[3];
+        	PBKDF2Parameters params = new PBKDF2Parameters("SHA-256", "UTF-8", salt.getBytes(), 10000, derivedKey.getBytes());
+        	PBKDF2Engine engine = new PBKDF2Engine(params);
+        	return engine.verifyKey(password);
+        }
         // PlainText Password
         if(hash.length() < 32 )
             return hash.equals(password);
@@ -336,7 +356,7 @@ public class PasswordSecurity {
     public enum HashAlgorithm {
 
         MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB, PLAINTEXT, MYBB, IPB3, PHPFUSION, SMF, XFSHA1,
-        XFSHA256, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512, DOUBLEMD5
+        XFSHA256, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512, DOUBLEMD5, PBKDF2
     }
 
 }

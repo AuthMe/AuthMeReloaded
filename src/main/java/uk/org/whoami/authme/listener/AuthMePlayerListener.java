@@ -170,7 +170,7 @@ public class AuthMePlayerListener implements Listener {
                     }
         	}
         } else {
-        		Bukkit.getScheduler().runTask(plugin, new Runnable()
+        		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         		{
         			@Override
         			public void run() {
@@ -227,7 +227,7 @@ public class AuthMePlayerListener implements Listener {
                     }
         	}
         } else {
-        		Bukkit.getScheduler().runTask(plugin, new Runnable()
+        		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         		{
         			@Override
         			public void run() {
@@ -285,7 +285,7 @@ public class AuthMePlayerListener implements Listener {
                     }
         	}
         } else {
-        		Bukkit.getScheduler().runTask(plugin, new Runnable()
+        		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         		{
         			@Override
         			public void run() {
@@ -342,7 +342,7 @@ public class AuthMePlayerListener implements Listener {
                     }
         	}
         } else {
-        		Bukkit.getScheduler().runTask(plugin, new Runnable()
+        		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         		{
         			@Override
         			public void run() {
@@ -399,7 +399,7 @@ public class AuthMePlayerListener implements Listener {
                     }
         	}
         } else {
-        		Bukkit.getScheduler().runTask(plugin, new Runnable()
+        		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         		{
         			@Override
         			public void run() {
@@ -456,7 +456,7 @@ public class AuthMePlayerListener implements Listener {
                     }
         	}
         } else {
-        		Bukkit.getScheduler().runTask(plugin, new Runnable()
+        		Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
         		{
         			@Override
         			public void run() {
@@ -827,16 +827,20 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) { 
+        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) {
         	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
         		final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(),loc.getBlockX(),loc.getBlockY(),loc.getBlockZ(),loc.getWorld().getName());
         		try {
-        			Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-        				@Override
-        				public void run() {
-        					data.updateQuitLoc(auth);
-        				}
-        			});
+        	        if (data instanceof Thread) {
+        	        	data.updateQuitLoc(auth);
+        	        } else {
+        	            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+        	    			@Override
+        	    			public void run() {
+        	    				data.updateQuitLoc(auth);
+        	    			}
+        	            });
+        	        }
         		} catch (NullPointerException npe) { }
         	}
         } 
@@ -898,12 +902,18 @@ public class AuthMePlayerListener implements Listener {
       if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead()) && 
         (Settings.isSaveQuitLocationEnabled.booleanValue())  && data.isAuthAvailable(name)) {
         final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),loc.getWorld().getName());
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			@Override
-			public void run() {
-				data.updateQuitLoc(auth);
-			}
-        });
+		try {
+	        if (data instanceof Thread) {
+	        	data.updateQuitLoc(auth);
+	        } else {
+	            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+	    			@Override
+	    			public void run() {
+	    				data.updateQuitLoc(auth);
+	    			}
+	            });
+	        }
+		} catch (NullPointerException npe) { }
       }
 
       if (LimboCache.getInstance().hasLimboPlayer(name))
@@ -1181,12 +1191,18 @@ public class AuthMePlayerListener implements Listener {
         if (Spawn.getInstance().getLocation() != null && Spawn.getInstance().getLocation().getWorld().equals(player.getWorld()))
         	spawn = Spawn.getInstance().getLocation();
         final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(),spawn.getWorld().getName());
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
-			@Override
-			public void run() {
-				data.updateQuitLoc(auth);
-			}
-        });
+		try {
+	        if (data instanceof Thread) {
+	        	data.updateQuitLoc(auth);
+	        } else {
+	            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+	    			@Override
+	    			public void run() {
+	    				data.updateQuitLoc(auth);
+	    			}
+	            });
+	        }
+		} catch (NullPointerException npe) { }
         event.setRespawnLocation(spawn);
     }
 

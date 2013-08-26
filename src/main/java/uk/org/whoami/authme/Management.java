@@ -134,7 +134,7 @@ public class Management {
 									.getLimboPlayer(name);
 							final PlayerAuth getAuth = database.getAuth(name);
 							if (limbo != null) {
-								Bukkit.getScheduler().runTask(plugin,
+								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 										new Runnable() {
 											@Override
 											public void run() {
@@ -161,7 +161,7 @@ public class Management {
 											}
 										});
 									} else {
-										Bukkit.getScheduler().runTask(plugin,
+										Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 												new Runnable() {
 													@Override
 													public void run() {
@@ -189,7 +189,7 @@ public class Management {
 												.contains(player.getWorld()
 														.getName())) {
 									final Location spawnL = spawnLoc;
-									Bukkit.getScheduler().runTask(plugin,
+									Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 											new Runnable() {
 												@Override
 												public void run() {
@@ -222,7 +222,7 @@ public class Management {
 										}
 									});
 								} else {
-									Bukkit.getScheduler().runTask(plugin,
+									Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 											new Runnable() {
 												@Override
 												public void run() {
@@ -244,7 +244,7 @@ public class Management {
 											});
 								}
 
-								Bukkit.getScheduler().runTask(plugin,
+								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 										new Runnable() {
 											@Override
 											public void run() {
@@ -256,7 +256,7 @@ public class Management {
 
 								if (Settings.protectInventoryBeforeLogInEnabled
 										&& player.hasPlayedBefore()) {
-									Bukkit.getScheduler().runTask(plugin,
+									Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 											new Runnable() {
 												@Override
 												public void run() {
@@ -312,7 +312,7 @@ public class Management {
 								pllog.save();
 							} catch (NullPointerException ex) {
 							}
-							Bukkit.getScheduler().runTask(plugin,
+							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 									new Runnable() {
 										@Override
 										public void run() {
@@ -343,7 +343,7 @@ public class Management {
 												"[AuthMe] " + player.getName()
 														+ " logged in!"));
 							}
-							Bukkit.getScheduler().runTask(plugin,
+							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 									new Runnable() {
 										@Override
 										public void run() {
@@ -359,7 +359,7 @@ public class Management {
 								try {
 									final int gm = AuthMePlayerListener.gameMode
 											.get(name);
-									Bukkit.getScheduler().runTask(plugin,
+									Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 											new Runnable() {
 												@Override
 												public void run() {
@@ -369,7 +369,7 @@ public class Management {
 											});
 								} catch (NullPointerException npe) {
 								}
-								Bukkit.getScheduler().runTask(plugin,
+								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 										new Runnable() {
 											@Override
 											public void run() {
@@ -393,7 +393,7 @@ public class Management {
 								.getLimboPlayer(name);
 						if (limbo != null) {
 
-							Bukkit.getScheduler().runTask(plugin,
+							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 									new Runnable() {
 										@Override
 										public void run() {
@@ -428,7 +428,7 @@ public class Management {
 											database.getAuth(name)
 													.getQuitLocZ() + 0.5D);
 
-									Bukkit.getScheduler().runTask(plugin,
+									Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 											new Runnable() {
 												@Override
 												public void run() {
@@ -448,7 +448,7 @@ public class Management {
 												}
 											});
 								} else {
-									Bukkit.getScheduler().runTask(plugin,
+									Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 											new Runnable() {
 												@Override
 												public void run() {
@@ -473,7 +473,7 @@ public class Management {
 									&& Settings.getForcedWorlds.contains(player
 											.getWorld().getName())) {
 								final Location spawnL = spawnLoc;
-								Bukkit.getScheduler().runTask(plugin,
+								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 										new Runnable() {
 											@Override
 											public void run() {
@@ -510,7 +510,7 @@ public class Management {
 										database.getAuth(name).getQuitLocX() + 0.5D,
 										database.getAuth(name).getQuitLocY() + 0.5D,
 										database.getAuth(name).getQuitLocZ() + 0.5D);
-								Bukkit.getScheduler().runTask(plugin,
+								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 										new Runnable() {
 											@Override
 											public void run() {
@@ -528,7 +528,7 @@ public class Management {
 											}
 										});
 							} else {
-								Bukkit.getScheduler().runTask(plugin,
+								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 										new Runnable() {
 											@Override
 											public void run() {
@@ -547,7 +547,7 @@ public class Management {
 										});
 							}
 
-							Bukkit.getScheduler().runTask(plugin,
+							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 									new Runnable() {
 										@Override
 										public void run() {
@@ -559,7 +559,7 @@ public class Management {
 
 							if (Settings.protectInventoryBeforeLogInEnabled
 									&& player.hasPlayedBefore()) {
-								Bukkit.getScheduler().runTask(plugin,
+								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 										new Runnable() {
 											@Override
 											public void run() {
@@ -612,7 +612,7 @@ public class Management {
 							pllog.save();
 						} catch (NullPointerException ex) {
 						}
-						Bukkit.getScheduler().runTask(plugin, new Runnable() {
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							@Override
 							public void run() {
 								Bukkit.getServer()
@@ -638,7 +638,7 @@ public class Management {
 											"[AuthMe] " + player.getName()
 													+ " logged in!"));
 						}
-						Bukkit.getScheduler().runTask(plugin, new Runnable() {
+						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							@Override
 							public void run() {
 								player.saveData();

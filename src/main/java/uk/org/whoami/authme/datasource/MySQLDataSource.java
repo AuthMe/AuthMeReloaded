@@ -283,7 +283,7 @@ public class MySQLDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateSession(PlayerAuth auth) {
+    public synchronized boolean updateSession(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
@@ -307,7 +307,7 @@ public class MySQLDataSource implements DataSource {
     }
 
     @Override
-    public int purgeDatabase(long until) {
+    public synchronized int purgeDatabase(long until) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
@@ -350,7 +350,7 @@ public class MySQLDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateQuitLoc(PlayerAuth auth) {
+    public synchronized boolean updateQuitLoc(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
@@ -376,7 +376,7 @@ public class MySQLDataSource implements DataSource {
     }
 
     @Override
-    public int getIps(String ip) {
+    public synchronized int getIps(String ip) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -405,7 +405,7 @@ public class MySQLDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateEmail(PlayerAuth auth) {
+    public synchronized boolean updateEmail(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
@@ -428,7 +428,7 @@ public class MySQLDataSource implements DataSource {
     }
 
 	@Override
-	public boolean updateSalt(PlayerAuth auth) {
+	public synchronized boolean updateSalt(PlayerAuth auth) {
 		if (columnSalt.isEmpty()) {
 			return false;
 		}
@@ -497,7 +497,7 @@ public class MySQLDataSource implements DataSource {
     }
 
 	@Override
-	public List<String> getAllAuthsByName(PlayerAuth auth) {
+	public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -526,7 +526,7 @@ public class MySQLDataSource implements DataSource {
 	}
 
 	@Override
-	public List<String> getAllAuthsByIp(String ip) {
+	public synchronized List<String> getAllAuthsByIp(String ip) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -555,7 +555,7 @@ public class MySQLDataSource implements DataSource {
 	}
 
 	@Override
-	public List<String> getAllAuthsByEmail(String email) {
+	public synchronized List<String> getAllAuthsByEmail(String email) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -584,7 +584,7 @@ public class MySQLDataSource implements DataSource {
 	}
 
 	@Override
-	public void purgeBanned(List<String> banned) {
+	public synchronized void purgeBanned(List<String> banned) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
