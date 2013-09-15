@@ -1,9 +1,6 @@
 package uk.org.whoami.authme.api;
 
-import java.lang.reflect.Array;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,9 +12,8 @@ import uk.org.whoami.authme.Utils;
 import uk.org.whoami.authme.cache.auth.PlayerAuth;
 import uk.org.whoami.authme.cache.auth.PlayerCache;
 import uk.org.whoami.authme.datasource.DataSource;
-import uk.org.whoami.authme.datasource.DataSource.DataSourceType;
+import uk.org.whoami.authme.plugin.manager.CombatTagComunicator;
 import uk.org.whoami.authme.security.PasswordSecurity;
-import uk.org.whoami.authme.security.PasswordSecurity.HashAlgorithm;
 import uk.org.whoami.authme.settings.Settings;
 
 public class API {
@@ -59,8 +55,22 @@ public class API {
      * @param player
      * @return true if player is a npc
      */
+    @Deprecated
     public boolean isaNPC(Player player) {
-    	return instance.getCitizensCommunicator().isNPC(player, instance);
+    	if (instance.getCitizensCommunicator().isNPC(player, instance))
+    		return true;
+    	return CombatTagComunicator.isNPC(player);
+    }
+    
+    /**
+     * 
+     * @param player
+     * @return true if player is a npc
+     */
+    public boolean isNPC(Player player) {
+    	if (instance.getCitizensCommunicator().isNPC(player, instance))
+    		return true;
+    	return CombatTagComunicator.isNPC(player);
     }
 
     /**
@@ -95,7 +105,7 @@ public class API {
     	} catch (NullPointerException npe) {
     	}
     }
-    
+
     /**
      * 
      * @param playerName
@@ -103,12 +113,9 @@ public class API {
      */
     public static boolean isRegistered(String playerName) {
     	String player = playerName.toLowerCase();
-    	PlayerAuth auth = database.getAuth(player);
-    	if (auth != null)
-    		return true;
-    	return false;
+    	return database.isAuthAvailable(player);
     }
-    
+
     /**
      * @param String playerName, String passwordToCheck
      * @return true if the password is correct , false else
@@ -123,7 +130,7 @@ public class API {
 			return false;
 		}
     }
-    
+
     /**
      * Register a player
      * @param String playerName, String password

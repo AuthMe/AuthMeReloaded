@@ -57,7 +57,6 @@ public class SqliteDataSource implements DataSource {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/"+database+".db");
-
     }
 
     private synchronized void setup() throws SQLException {

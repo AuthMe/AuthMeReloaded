@@ -63,6 +63,7 @@ settings:
     GameMode:
         ForceSurvivalMode: false
         ResetInventoryIfCreative: false
+        ForceOnlyAfterLogin: false
     security:
         minPasswordLength: 4
         unLoggedinGroup: unLoggedinGroup
@@ -128,5 +129,7 @@ Hooks:
     chestshop: true
     bungeecord: false
     notifications: true
+    disableSocialSpy: true
+    useEssentialsMotd: false
 Performances:
     useMultiThreading: false

@@ -90,7 +90,7 @@ public class LogoutCommand implements CommandExecutor {
             player.getInventory().setContents(new ItemStack[36]);
             // create cache file for handling lost of inventories on unlogged in status
             DataFileCache playerData = new DataFileCache(player.getInventory().getContents(),player.getInventory().getArmorContents());      
-            playerBackup.createCache(name, playerData, LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator());            
+            playerBackup.createCache(name, playerData, LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator(),LimboCache.getInstance().getLimboPlayer(name).isFlying());            
         }
         if (Settings.isTeleportToSpawnEnabled) {
         	Location spawnLoc = player.getWorld().getSpawnLocation();

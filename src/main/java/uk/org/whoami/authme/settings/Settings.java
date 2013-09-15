@@ -60,7 +60,7 @@ public final class Settings extends YamlConfiguration {
             getEnablePasswordVerifier, protectInventoryBeforeLogInEnabled, isBackupActivated, isBackupOnStart,
             isBackupOnStop, enablePasspartu, isStopEnabled, reloadSupport, rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
             useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-            disableSocialSpy, useMultiThreading;
+            disableSocialSpy, useMultiThreading, forceOnlyAfterLogin, useEssentialsMotd;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -210,6 +210,8 @@ public void loadConfigOptions() {
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
         useMultiThreading = configFile.getBoolean("Performances.useMultiThreading", false);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
+        forceOnlyAfterLogin = configFile.getBoolean("settings.GameMode.ForceOnlyAfterLogin", false);
+        useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
 
         saveDefaults();
    }
@@ -333,7 +335,9 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
         useMultiThreading = configFile.getBoolean("Performances.useMultiThreading", false);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
-   }
+        forceOnlyAfterLogin = configFile.getBoolean("settings.GameMode.ForceOnlyAfterLogin", false);
+        useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
+}
 
 public void mergeConfig() {
        if (contains("settings.restrictions.allowedPluginTeleportHandler"))
@@ -416,6 +420,10 @@ public void mergeConfig() {
     	   set("ExternalBoardOptions.bCryptLog2Round", 10);
        if(!contains("DataSource.mySQLlastlocWorld"))
     	   set("DataSource.mySQLlastlocWorld", "world");
+       if(!contains("settings.GameMode.ForceOnlyAfterLogin"))
+    	   set("settings.GameMode.ForceOnlyAfterLogin", false);
+       if(!contains("Hooks.useEssentialsMotd"))
+    	   set("Hooks.useEssentialsMotd", false);
 
        plugin.getLogger().info("Merge new Config Options if needed..");
        plugin.saveConfig();

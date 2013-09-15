@@ -44,6 +44,7 @@ import uk.org.whoami.authme.Utils;
 import uk.org.whoami.authme.cache.auth.PlayerAuth;
 import uk.org.whoami.authme.cache.auth.PlayerCache;
 import uk.org.whoami.authme.converter.FlatToSql;
+import uk.org.whoami.authme.converter.FlatToSqlite;
 import uk.org.whoami.authme.converter.RakamakConverter;
 import uk.org.whoami.authme.converter.xAuthToFlat;
 import uk.org.whoami.authme.datasource.DataSource;
@@ -110,6 +111,7 @@ public class AdminCommand implements CommandExecutor {
                 long days = Long.parseLong(args[1]) * 86400000;
                 long until = new Date().getTime() - days;
                 sender.sendMessage("Deleted " + database.purgeDatabase(until) + " user accounts");
+                return true;
             } catch (NumberFormatException e) {
                 sender.sendMessage("Usage: /authme purge <DAYS>");
                 return true;
@@ -286,6 +288,16 @@ public class AdminCommand implements CommandExecutor {
 				} catch (NullPointerException ex) {
 					System.out.println(ex.getMessage());
 				}
+        } else if (args[0].equalsIgnoreCase("flattosqlite")) {
+    		try {
+    			String s = FlatToSqlite.convert();
+    			if (sender instanceof Player)
+    				sender.sendMessage(s);
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (NullPointerException ex) {
+				System.out.println(ex.getMessage());
+			}
         } else if (args[0].equalsIgnoreCase("xauthimport")) {
             	xAuthToFlat converter = new xAuthToFlat(plugin, database);
             	if (converter.convert(sender)) {

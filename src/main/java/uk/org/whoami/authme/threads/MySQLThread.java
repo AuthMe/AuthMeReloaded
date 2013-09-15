@@ -113,7 +113,7 @@ public class MySQLThread extends Thread implements DataSource {
         Statement st = null;
         ResultSet rs = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             st = con.createStatement();
             st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " ("
                     + columnID + " INTEGER AUTO_INCREMENT,"
@@ -173,7 +173,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
                     + columnName + "=?;");               
             
@@ -199,7 +199,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
                     + columnName + "=?;");
             pst.setString(1, user);
@@ -237,7 +237,7 @@ public class MySQLThread extends Thread implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             if ((columnSalt.isEmpty() || columnSalt == null) && (auth.getSalt().isEmpty() || auth.getSalt() == null)) {
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + ") VALUES (?,?,?,?);");
                 pst.setString(1, auth.getNickname());
@@ -280,7 +280,7 @@ public class MySQLThread extends Thread implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
@@ -303,7 +303,7 @@ public class MySQLThread extends Thread implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
@@ -327,7 +327,7 @@ public class MySQLThread extends Thread implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             return pst.executeUpdate();
@@ -348,7 +348,7 @@ public class MySQLThread extends Thread implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
             pst.setString(1, user);
             pst.executeUpdate();
@@ -370,7 +370,7 @@ public class MySQLThread extends Thread implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("UPDATE " + tableName + " SET "+ lastlocX + " =?, "+ lastlocY +"=?, "+ lastlocZ +"=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
             pst.setLong(1, auth.getQuitLocX());
             pst.setLong(2, auth.getQuitLocY());
@@ -398,7 +398,7 @@ public class MySQLThread extends Thread implements DataSource {
         ResultSet rs = null;
         int countIp=0;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
                     + columnIp + "=?;");
             pst.setString(1, ip);
@@ -425,7 +425,7 @@ public class MySQLThread extends Thread implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("UPDATE " + tableName + " SET "+ columnEmail + " =? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
@@ -451,7 +451,7 @@ public class MySQLThread extends Thread implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("UPDATE " + tableName + " SET "+ columnSalt + " =? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
@@ -519,7 +519,7 @@ public class MySQLThread extends Thread implements DataSource {
         ResultSet rs = null;
         List<String> countIp = new ArrayList<String>();
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
                     + columnIp + "=?;");
             pst.setString(1, auth.getIp());
@@ -548,7 +548,7 @@ public class MySQLThread extends Thread implements DataSource {
         ResultSet rs = null;
         List<String> countIp = new ArrayList<String>();
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
                     + columnIp + "=?;");
             pst.setString(1, ip);
@@ -577,7 +577,7 @@ public class MySQLThread extends Thread implements DataSource {
         ResultSet rs = null;
         List<String> countEmail = new ArrayList<String>();
         try {
-            con = conPool.getValidConnection();
+            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
                     + columnEmail + "=?;");
             pst.setString(1, email);
@@ -605,7 +605,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
            for (String name : banned) {
-        	   con = conPool.getValidConnection();
+        	   con = makeSureConnectionIsReady();
         	   pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
         	   pst.setString(1, name);
         	   pst.executeUpdate();
@@ -617,25 +617,46 @@ public class MySQLThread extends Thread implements DataSource {
             close(con);
         }
 	}
-    
-/*    public synchronized boolean makeSureConnectionIsReady() {
+
+    private synchronized Connection makeSureConnectionIsReady() {
+    	Connection con = null;
         try {
-        	conPool.getValidConnection();
-        	return true;
-        } catch (TimeoutException te) {
+        	con = conPool.getValidConnection();
+        } catch (Exception te) {
         	try {
+        		con = null;
 				reconnect();
-			} catch (TimeoutException e) {
-				return false;
-			} catch (ClassNotFoundException e) {
-				return false;
-			} catch (SQLException e) {
-				return false;
+			} catch (Exception e) {
+	            ConsoleLogger.showError(e.getMessage());
+	            if (Settings.isStopEnabled) {
+	            	ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
+	            	AuthMe.getInstance().getServer().shutdown();
+	            }
+	            if (!Settings.isStopEnabled)
+	            	AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
 			}
-        	return true;
+        } catch (AssertionError ae) {
+        	// Make sure assertionerror is caused by the connectionpoolmanager, else re-throw it
+        	if (!ae.getMessage().equalsIgnoreCase("AuthMeDatabaseError"))
+        		throw new AssertionError(ae.getMessage());
+        	try {
+        		con = null;
+				reconnect();
+			} catch (Exception e) {
+	            ConsoleLogger.showError(e.getMessage());
+	            if (Settings.isStopEnabled) {
+	            	ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
+	            	AuthMe.getInstance().getServer().shutdown();
+	            }
+	            if (!Settings.isStopEnabled)
+	            	AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+			}
         }
+        if (con == null)
+        	con = conPool.getValidConnection();
+    	return con;
     }
-    
+
     private synchronized void reconnect() throws ClassNotFoundException, SQLException, TimeoutException {
     	conPool.dispose();
         Class.forName("com.mysql.jdbc.Driver");
@@ -646,6 +667,7 @@ public class MySQLThread extends Thread implements DataSource {
         dataSource.setUser(username);
         dataSource.setPassword(password);
         conPool = new MiniConnectionPoolManager(dataSource, 10);
-        ConsoleLogger.info("Connection pool reconnected");
-    } */
+        ConsoleLogger.info("ConnectionPool was unavailable... Reconnected!");
+    }
+
 }

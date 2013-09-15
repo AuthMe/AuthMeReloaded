@@ -50,6 +50,7 @@ public class LimboCache {
         ItemStack[] inv;
         boolean operator;
         String playerGroup = "";
+        boolean flying;
 
         if (playerData.doesCacheExist(name)) {
         	StoreInventoryEvent event = new StoreInventoryEvent(player, playerData);
@@ -63,6 +64,7 @@ public class LimboCache {
         	}
              playerGroup = playerData.readCache(name).getGroup();
              operator = playerData.readCache(name).getOperator();
+             flying = playerData.readCache(name).isFlying();
         } else {
         	StoreInventoryEvent event = new StoreInventoryEvent(player);
         	Bukkit.getServer().getPluginManager().callEvent(event);
@@ -73,11 +75,12 @@ public class LimboCache {
         		inv = null;
         		arm = null;
         	}
-            if(player.isOp() ) {
+            if(player.isOp())
                 operator = true;
-                } else {
-                	operator = false;      
-                }
+            else operator = false;
+            if(player.isFlying())
+            	flying = true;
+            else flying = false;
         }
 
         if(Settings.isForceSurvivalModeEnabled) {
@@ -108,7 +111,7 @@ public class LimboCache {
             }
         } catch (NullPointerException ex) {
         }
-        cache.put(player.getName().toLowerCase(), new LimboPlayer(name, loc, inv, arm, gameMode, operator, playerGroup));
+        cache.put(player.getName().toLowerCase(), new LimboPlayer(name, loc, inv, arm, gameMode, operator, playerGroup, flying));
     }
 
     public void addLimboPlayer(Player player, String group) {

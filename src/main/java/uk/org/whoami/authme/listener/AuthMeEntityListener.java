@@ -83,8 +83,8 @@ public class AuthMeEntityListener implements Listener{
         if (event.isCancelled()) {
             return;
         }
-
-        Entity entity = event.getEntity();
+        if (event.getTarget() == null) return;
+        Entity entity = event.getTarget();
         if (!(entity instanceof Player)) {
             return;
         }
@@ -101,7 +101,7 @@ public class AuthMeEntityListener implements Listener{
                 return;
             }
         }
-
+        event.setTarget(null);
         event.setCancelled(true);
     }
 

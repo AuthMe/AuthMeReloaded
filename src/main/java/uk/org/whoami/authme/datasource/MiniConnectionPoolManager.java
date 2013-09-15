@@ -37,14 +37,18 @@ public class MiniConnectionPoolManager {
 
 private ConnectionPoolDataSource       dataSource;
 private int                            maxConnections;
-private long                           timeoutMs = 100 * 1000L;
+private long                           timeoutMs;
 private PrintWriter                    logWriter;
 private Semaphore                      semaphore;
-private LinkedList<PooledConnection>   recycledConnections;
-private int                            activeConnections;
 private PoolConnectionEventListener    poolConnectionEventListener;
-private boolean                        isDisposed;
-private boolean                        doPurgeConnection;
+
+// The following variables must only be accessed within synchronized blocks.
+// @GuardedBy("this") could by used in the future.
+private LinkedList<PooledConnection>   recycledConnections;          // list of inactive PooledConnections
+private int                            activeConnections;            // number of active (open) connections of this pool
+private boolean                        isDisposed;                   // true if this connection pool has been disposed
+private boolean                        doPurgeConnection;            // flag to purge the connection currently beeing closed instead of recycling it
+private PooledConnection               connectionInTransition;       // a PooledConnection which is currently within a PooledConnection.getConnection() call, or null
 
 /**
 * Thrown in {@link #getConnection()} or {@link #getValidConnection()} when no free connection becomes
@@ -66,7 +70,7 @@ public static class TimeoutException extends RuntimeException {
 *    the maximum number of connections.
 */
 public MiniConnectionPoolManager (ConnectionPoolDataSource dataSource, int maxConnections) {
-   this(dataSource, maxConnections, 100); }
+   this(dataSource, maxConnections, 60); }
 
 /**
 * Constructs a MiniConnectionPoolManager object.
@@ -146,15 +150,23 @@ private Connection getConnection2 (long timeoutMs) throws SQLException {
 
 private synchronized Connection getConnection3() throws SQLException {
    if (isDisposed) {
-      throw new IllegalStateException("Connection pool has been disposed."); }  // test again with lock
+      throw new IllegalStateException("Connection pool has been disposed."); }
    PooledConnection pconn;
    if (!recycledConnections.isEmpty()) {
       pconn = recycledConnections.remove(); }
     else {
       pconn = dataSource.getPooledConnection();
       pconn.addConnectionEventListener(poolConnectionEventListener); }
-   Connection conn = pconn.getConnection();
-   activeConnections++;
+   Connection conn;
+   try {
+      // The JDBC driver may call ConnectionEventListener.connectionErrorOccurred()
+      // from within PooledConnection.getConnection(). To detect this within
+      // disposeConnection(), we temporarily set connectionInTransition.
+      connectionInTransition = pconn;
+      activeConnections++;
+      conn = pconn.getConnection(); }
+    finally {
+      connectionInTransition = null; }
    assertInnerState();
    return conn; }
 
@@ -170,7 +182,6 @@ private synchronized Connection getConnection3() throws SQLException {
 *
 * <p>This method is slower than {@link #getConnection()} because the JDBC
 * driver has to send an extra command to the database server to test the connection.
-*
 *
 * <p>This method requires Java 1.6 or newer.
 *
@@ -189,17 +200,12 @@ public Connection getValidConnection() {
       if (triesWithoutDelay <= 0) {
          triesWithoutDelay = 0;
          try {
-            Thread.sleep(250); 
-         } catch (InterruptedException e) {
-            throw new RuntimeException("Interrupted while waiting for a valid database connection.", e); 
-         }
-      }
+            Thread.sleep(250); }
+          catch (InterruptedException e) {
+            throw new RuntimeException("Interrupted while waiting for a valid database connection.", e); }}
       time = System.currentTimeMillis();
       if (time >= timeoutTime) {
-         throw new TimeoutException("Timeout while waiting for a valid database connection."); 
-      }
-   }
-}
+         throw new TimeoutException("Timeout while waiting for a valid database connection."); }}}
 
 private Connection getValidConnection2 (long time, long timeoutTime) {
    long rtime = Math.max(1, timeoutTime - time);
@@ -241,7 +247,7 @@ private synchronized void recycleConnection (PooledConnection pconn) {
       disposeConnection(pconn);
       return; }
    if (activeConnections <= 0) {
-      throw new AssertionError(); }
+      throw new AssertionError("AuthMeDatabaseError"); }
    activeConnections--;
    semaphore.release();
    recycledConnections.add(pconn);
@@ -249,11 +255,12 @@ private synchronized void recycleConnection (PooledConnection pconn) {
 
 private synchronized void disposeConnection (PooledConnection pconn) {
    pconn.removeConnectionEventListener(poolConnectionEventListener);
-   if (!recycledConnections.remove(pconn)) {
-      // If the PooledConnection is not in the recycledConnections list,
+   if (!recycledConnections.remove(pconn) && pconn != connectionInTransition) {
+      // If the PooledConnection is not in the recycledConnections list
+      // and is not currently within a PooledConnection.getConnection() call,
       // we assume that the connection was active.
       if (activeConnections <= 0) {
-         throw new AssertionError(); }
+         throw new AssertionError("AuthMeDatabaseError"); }
       activeConnections--;
       semaphore.release(); }
    closeConnectionAndIgnoreException(pconn);
@@ -274,13 +281,13 @@ private void log (String msg) {
          logWriter.println(s); }}
     catch (Exception e) {}}
 
-private void assertInnerState() {
+private synchronized void assertInnerState() {
    if (activeConnections < 0) {
-      throw new AssertionError(); }
+      throw new AssertionError("AuthMeDatabaseError"); }
    if (activeConnections + recycledConnections.size() > maxConnections) {
-      throw new AssertionError(); }
+      throw new AssertionError("AuthMeDatabaseError"); }
    if (activeConnections + semaphore.availablePermits() > maxConnections) {
-      throw new AssertionError(); }}
+      throw new AssertionError("AuthMeDatabaseError"); }}
 
 private class PoolConnectionEventListener implements ConnectionEventListener {
    public void connectionClosed (ConnectionEvent event) {

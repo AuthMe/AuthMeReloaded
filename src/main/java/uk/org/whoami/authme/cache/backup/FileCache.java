@@ -24,7 +24,7 @@ public class FileCache {
 		}
 	}
 
-	public void createCache(String playername, DataFileCache playerData, String group, boolean operator) {
+	public void createCache(String playername, DataFileCache playerData, String group, boolean operator, boolean flying) {
 		final File file = new File("cache/" + playername
 				+ ".cache");
 
@@ -38,10 +38,15 @@ public class FileCache {
 
 			writer = new FileWriter(file);
 
-			// line format Group|OperatorStatus
-			if(operator)
-				writer.write(group+";1\r\n");
-			else writer.write(group+";0\r\n");
+			String s = group+";";
+			if (operator)
+				s = s + "1";
+			else s = s + "0";
+			
+			// line format Group|OperatorStatus|isFlying
+			if(flying)
+				writer.write(s+";1\r\n");
+			else writer.write(s+";0\r\n");
 			writer.flush();
 
 			ItemStack[] invstack = playerData.getInventory();
@@ -98,6 +103,7 @@ public class FileCache {
 		ItemStack[] stacka = new ItemStack[4];
 		String group = null;
 		boolean op = false;
+		boolean flying = false;
 		if (!file.exists()) {
 			return new DataFileCache(stacki, stacka);
 		}
@@ -112,14 +118,19 @@ public class FileCache {
 				final String line = reader.nextLine();
 
 				if (!line.contains(":")) {
-                                   // the fist line rapresent the player group and operator status
+                                   // the fist line represent the player group, operator status and flying status
                                     final String[] playerInfo = line.split(";");
                                     group = playerInfo[0];
-                                    
+
                                         if (Integer.parseInt(playerInfo[1]) == 1) {
                                             op = true;
                                         } else op = false;
-                                        
+                                        if (playerInfo.length > 2) {
+                                        	if (Integer.parseInt(playerInfo[2]) == 1)
+                                        		flying = true;
+                                        	else flying = false;
+                                        }
+
                                     continue;
 				}
 
@@ -157,7 +168,7 @@ public class FileCache {
 				reader.close();
 			}
 		}
-		return new DataFileCache(stacki, stacka, group, op);
+		return new DataFileCache(stacki, stacka, group, op, flying);
 	}
 
 	public void removeCache(String playername) {

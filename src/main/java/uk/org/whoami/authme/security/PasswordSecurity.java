@@ -28,6 +28,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 import uk.org.whoami.authme.AuthMe;
+import uk.org.whoami.authme.security.pbkdf2.BinTools;
 import uk.org.whoami.authme.security.pbkdf2.PBKDF2Engine;
 import uk.org.whoami.authme.security.pbkdf2.PBKDF2Parameters;
 import uk.org.whoami.authme.settings.Settings;
@@ -110,9 +111,10 @@ public class PasswordSecurity {
     
     private static String getPBKDF2(String password, String salt) throws NoSuchAlgorithmException {
     	String result = "pbkdf2_sha256$10000$"+salt+"$";
-    	PBKDF2Parameters params = new PBKDF2Parameters("SHA-256", "UTF-8", salt.getBytes(), 10000);
+    	PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", BinTools.hex2bin(salt), 10000);
     	PBKDF2Engine engine = new PBKDF2Engine(params);
-    	return result + engine.deriveKey(password,57).toString();
+    	
+    	return result + BinTools.bin2hex(engine.deriveKey(password,64));
     }
 
     private static String createSalt(int length) throws NoSuchAlgorithmException {
@@ -290,7 +292,7 @@ public class PasswordSecurity {
         	String[] line = hash.split("\\$");
         	String salt = line[2];
         	String derivedKey = line[3];
-        	PBKDF2Parameters params = new PBKDF2Parameters("SHA-256", "UTF-8", salt.getBytes(), 10000, derivedKey.getBytes());
+        	PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", BinTools.hex2bin(salt), 10000, BinTools.hex2bin(derivedKey));
         	PBKDF2Engine engine = new PBKDF2Engine(params);
         	return engine.verifyKey(password);
         }

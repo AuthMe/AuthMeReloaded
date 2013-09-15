@@ -18,16 +18,6 @@ import uk.org.whoami.authme.settings.Settings;
 */
 public class FlatToSql {
 
-	public AuthMe instance;
-
-	public FlatToSql (AuthMe instance) {
-		this.instance = instance;
-	}
-
-	public FlatToSql getInstance() {
-		return this;
-	}
-
     private static String tableName;
     private static String columnName;
     private static String columnPassword;
@@ -85,7 +75,7 @@ public class FlatToSql {
                 else if (args.length == 7)
                 	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", 'world', 'your@email.com');";
                 else if (args.length == 8)
-                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", " + args[7] + ", 'your@email.com');";
+                	newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", '" + args[7] + "', 'your@email.com');";
                 else
                 	newline = "";
                 if (newline != "")

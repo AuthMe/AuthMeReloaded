@@ -94,60 +94,52 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
+        if (event.isCancelled() || event.getPlayer() == null)
             return;
-        }
 
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player)) {
+        if (Utils.getInstance().isUnrestricted(player))
             return;
-        }
 
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+        if (PlayerCache.getInstance().isAuthenticated(name))
             return;
-        }
 
-        if (!data.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
+        if (!data.isAuthAvailable(name))
+            if (!Settings.isForcedRegistrationEnabled)
                 return;
-            }
-        }
 
         String msg = event.getMessage();
         //WorldEdit GUI Shit
-        if (msg.equalsIgnoreCase("/worldedit cui")) {
+        if (msg.equalsIgnoreCase("/worldedit cui"))
             return;
-        }
 
         String cmd = msg.split(" ")[0];
-        if (cmd.equalsIgnoreCase("/login") || cmd.equalsIgnoreCase("/register") || cmd.equalsIgnoreCase("/passpartu") || cmd.equalsIgnoreCase("/l") || cmd.equalsIgnoreCase("/reg") || cmd.equalsIgnoreCase("/email") || cmd.equalsIgnoreCase("/captcha")) {
+        if (cmd.equalsIgnoreCase("/login") || cmd.equalsIgnoreCase("/register") || cmd.equalsIgnoreCase("/passpartu") || cmd.equalsIgnoreCase("/l") || cmd.equalsIgnoreCase("/reg") || cmd.equalsIgnoreCase("/email") || cmd.equalsIgnoreCase("/captcha"))
             return;
-        }
-        if (Settings.allowCommands.contains(cmd)) {
+        if (Settings.useEssentialsMotd && cmd.equalsIgnoreCase("/motd"))
         	return;
-        }
+        if (Settings.allowCommands.contains(cmd))
+        	return;
+
         event.setMessage("/notloggedin");
         event.setCancelled(true);
     }
 
     @EventHandler( priority = EventPriority.NORMAL)
     public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
+        if (event.isCancelled() || event.getPlayer() == null)
             return;
-        }
 
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player)) {
+        if (Utils.getInstance().isUnrestricted(player))
             return;
-        }
 
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+        if (PlayerCache.getInstance().isAuthenticated(name))
             return;
-        }
 
         String cmd = event.getMessage().split(" ")[0];
 
@@ -266,7 +258,6 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            //System.out.println("debug chat: chat isnt allowed");
             event.setCancelled(true);
             return;
         }
@@ -702,8 +693,7 @@ public class AuthMePlayerListener implements Listener {
                 plugin.getServer().banIP(ip);
                 return;           
             }
-
-        if (data.isAuthAvailable(name)) {    
+        if (data.isAuthAvailable(name)) {
             if (Settings.isSessionsEnabled) {
                 PlayerAuth auth = data.getAuth(name);
                 long timeout = Settings.getSessionTimeout * 60000;
@@ -725,6 +715,12 @@ public class AuthMePlayerListener implements Listener {
                      	player.kickPlayer(m._("unvalid_session"));
                      	return;
                      } else if (auth.getNickname().equalsIgnoreCase(name)){
+                         if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin)
+                         	sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+                         		public void run() {
+                         			e.getPlayer().setGameMode(GameMode.SURVIVAL);
+                         		}
+                         	});
                 		 //Player change his IP between 2 relog-in
                          PlayerCache.getInstance().removePlayer(name);
                          LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
@@ -739,12 +735,16 @@ public class AuthMePlayerListener implements Listener {
                 PlayerCache.getInstance().removePlayer(name);
                 LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
                 }
-          } 
+          }
           // isent in session or session was ended correctly
-          LimboCache.getInstance().addLimboPlayer(player);
+            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin)
+             			e.getPlayer().setGameMode(GameMode.SURVIVAL);
+          LimboCache.getInstance().updateLimboPlayer(player);
           DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(),LimboCache.getInstance().getLimboPlayer(name).getArmour());
-          playerBackup.createCache(name, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator());
-        } else {  
+          playerBackup.createCache(name, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator(),LimboCache.getInstance().getLimboPlayer(name).isFlying());
+        } else {
+            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin)
+             			e.getPlayer().setGameMode(GameMode.SURVIVAL);
             if(!Settings.unRegisteredGroup.isEmpty()){
                utils.setGroup(player, Utils.groupType.UNREGISTERED);
             }
@@ -752,6 +752,7 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
+        
         if(Settings.protectInventoryBeforeLogInEnabled) {
         	try {
         		LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
@@ -774,6 +775,7 @@ public class AuthMePlayerListener implements Listener {
           	  player.teleport(tpEvent.getTo());
             }
         }
+        placePlayerSafely(player, spawnLoc);
         String msg = "";
         if(Settings.emailRegistration) {
         	msg = data.isAuthAvailable(name) ? m._("login_msg") : m._("reg_email_msg");
@@ -792,22 +794,23 @@ public class AuthMePlayerListener implements Listener {
             LimboCache.getInstance().addLimboPlayer(player);
         if(player.isOp())
             player.setOp(false);
+        player.setAllowFlight(true);
+        player.setFlying(true);
         BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT.getTaskId());
-        if (Settings.isForceSurvivalModeEnabled)
-        	sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-        		public void run() {
-        			e.getPlayer().setGameMode(GameMode.SURVIVAL);
-        		}
-        	});
-        placePlayerSafely(player, spawnLoc);
+        player.setNoDamageTicks(Settings.getRegistrationTimeout * 20);
+        if (Settings.useEssentialsMotd)
+        	player.performCommand("motd");
     }
 
 	private void placePlayerSafely(Player player, Location spawnLoc) {
+		if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName())))
+			return;
 		Block b = player.getLocation().getBlock();
-		if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL) {
+		if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL || b.getType() == Material.LAVA || b.getType() == Material.STATIONARY_LAVA) {
 			player.sendMessage(m._("unsafe_spawn"));
 			player.teleport(spawnLoc);
+			return;
 		}
 	}
 
@@ -856,6 +859,9 @@ public class AuthMePlayerListener implements Listener {
             }
             utils.addNormal(player, limbo.getGroup());
             player.setOp(limbo.getOperator());
+            if (player.getGameMode() != GameMode.CREATIVE)
+            	player.setAllowFlight(limbo.isFlying());
+            player.setFlying(limbo.isFlying());
             this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
             LimboCache.getInstance().deleteLimboPlayer(name);
             if(playerBackup.doesCacheExist(name)) {
@@ -900,7 +906,7 @@ public class AuthMePlayerListener implements Listener {
 
       String name = player.getName().toLowerCase();
       if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead()) && 
-        (Settings.isSaveQuitLocationEnabled.booleanValue())  && data.isAuthAvailable(name)) {
+        (Settings.isSaveQuitLocationEnabled)  && data.isAuthAvailable(name)) {
         final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),loc.getWorld().getName());
 		try {
 	        if (data instanceof Thread) {
@@ -919,7 +925,7 @@ public class AuthMePlayerListener implements Listener {
       if (LimboCache.getInstance().hasLimboPlayer(name))
       {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-        if (Settings.protectInventoryBeforeLogInEnabled.booleanValue()) {
+        if (Settings.protectInventoryBeforeLogInEnabled) {
         	try {
             	RestoreInventoryEvent ev = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
             	plugin.getServer().getPluginManager().callEvent(ev);
@@ -943,7 +949,9 @@ public class AuthMePlayerListener implements Listener {
         }
         this.utils.addNormal(player, limbo.getGroup());
         player.setOp(limbo.getOperator());
-
+        if (player.getGameMode() != GameMode.CREATIVE)
+        	player.setAllowFlight(limbo.isFlying());
+        player.setFlying(limbo.isFlying());
         this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
         LimboCache.getInstance().deleteLimboPlayer(name);
         if (this.playerBackup.doesCacheExist(name)) {
@@ -1190,19 +1198,6 @@ public class AuthMePlayerListener implements Listener {
         }
         if (Spawn.getInstance().getLocation() != null && Spawn.getInstance().getLocation().getWorld().equals(player.getWorld()))
         	spawn = Spawn.getInstance().getLocation();
-        final PlayerAuth auth = new PlayerAuth(event.getPlayer().getName().toLowerCase(), spawn.getBlockX(), spawn.getBlockY(), spawn.getBlockZ(),spawn.getWorld().getName());
-		try {
-	        if (data instanceof Thread) {
-	        	data.updateQuitLoc(auth);
-	        } else {
-	            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
-	    			@Override
-	    			public void run() {
-	    				data.updateQuitLoc(auth);
-	    			}
-	            });
-	        }
-		} catch (NullPointerException npe) { }
         event.setRespawnLocation(spawn);
     }
 

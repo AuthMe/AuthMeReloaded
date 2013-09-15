@@ -30,8 +30,9 @@ public class LimboPlayer {
     private int gameMode = 0;
     private boolean operator = false;
     private String group = null;
+    private boolean flying = false;
 
-    public LimboPlayer(String name, Location loc, ItemStack[] inventory, ItemStack[] armour, int gameMode, boolean operator, String group) {
+    public LimboPlayer(String name, Location loc, ItemStack[] inventory, ItemStack[] armour, int gameMode, boolean operator, String group, boolean flying) {
         this.name = name;
         this.loc = loc;
         this.inventory = inventory;
@@ -39,14 +40,16 @@ public class LimboPlayer {
         this.gameMode = gameMode;
         this.operator = operator;
         this.group = group;
+        this.flying = flying;
     }
 
-    public LimboPlayer(String name, Location loc, int gameMode, boolean operator, String group) {
+    public LimboPlayer(String name, Location loc, int gameMode, boolean operator, String group, boolean flying) {
         this.name = name;
         this.loc = loc;
         this.gameMode = gameMode;
         this.operator = operator;
         this.group = group;
+        this.flying = flying;
     }
 
     public LimboPlayer(String name, String group) {
@@ -96,6 +99,10 @@ public class LimboPlayer {
 
 	public int getMessageTaskId() {
 		return messageTaskId;
+	}
+
+	public boolean isFlying() {
+		return flying;
 	}
 
 }

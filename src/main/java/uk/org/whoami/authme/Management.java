@@ -125,11 +125,10 @@ public class Management {
 							}
 						}
 						if (PasswordSecurity.comparePasswordWithHash(password,
-								hash, name)) {
+								hash, name) && player.isOnline()) {
 							PlayerAuth auth = new PlayerAuth(name, hash, ip,
 									new Date().getTime(), email);
 							database.updateSession(auth);
-							PlayerCache.getInstance().addPlayer(auth);
 							final LimboPlayer limbo = LimboCache.getInstance()
 									.getLimboPlayer(name);
 							final PlayerAuth getAuth = database.getAuth(name);
@@ -138,8 +137,10 @@ public class Management {
 										new Runnable() {
 											@Override
 											public void run() {
-												player.setOp(limbo
-														.getOperator());
+												player.setOp(limbo.getOperator());
+										        if (player.getGameMode() != GameMode.CREATIVE)
+										        	player.setAllowFlight(limbo.isFlying());
+												player.setFlying(limbo.isFlying());
 											}
 										});
 
@@ -244,7 +245,8 @@ public class Management {
 											});
 								}
 
-								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
+								if(!Settings.forceOnlyAfterLogin)
+									Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 										new Runnable() {
 											@Override
 											public void run() {
@@ -253,6 +255,14 @@ public class Management {
 																.getGameMode()));
 											}
 										});
+								else 
+									Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
+											new Runnable() {
+												@Override
+												public void run() {
+													player.setGameMode(GameMode.SURVIVAL);
+												}
+											});
 
 								if (Settings.protectInventoryBeforeLogInEnabled
 										&& player.hasPlayedBefore()) {
@@ -332,6 +342,7 @@ public class Management {
 									plugin.cap.containsKey(name);
 								}
 							}
+							player.setNoDamageTicks(0);
 							player.sendMessage(m._("login"));
 							displayOtherAccounts(auth);
 							if (!Settings.noConsoleSpam)
@@ -343,6 +354,7 @@ public class Management {
 												"[AuthMe] " + player.getName()
 														+ " logged in!"));
 							}
+							PlayerCache.getInstance().addPlayer(auth);
 							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 									new Runnable() {
 										@Override
@@ -351,7 +363,7 @@ public class Management {
 										}
 									});
 
-						} else {
+						} else if (player.isOnline()) {
 							if (!Settings.noConsoleSpam)
 								ConsoleLogger.info(player.getName()
 										+ " used the wrong password");
@@ -381,6 +393,8 @@ public class Management {
 								player.sendMessage(m._("wrong_pwd"));
 								return;
 							}
+						} else {
+							ConsoleLogger.showError("Player " + name + " wasn't online during login process , aborded... ");
 						}
 					} else {
 						// need for bypass password check if passpartu command
@@ -388,7 +402,6 @@ public class Management {
 						PlayerAuth auth = new PlayerAuth(name, hash, ip,
 								new Date().getTime(), email);
 						database.updateSession(auth);
-						PlayerCache.getInstance().addPlayer(auth);
 						final LimboPlayer limbo = LimboCache.getInstance()
 								.getLimboPlayer(name);
 						if (limbo != null) {
@@ -398,6 +411,9 @@ public class Management {
 										@Override
 										public void run() {
 											player.setOp(limbo.getOperator());
+									        if (player.getGameMode() != GameMode.CREATIVE)
+									        	player.setAllowFlight(limbo.isFlying());
+											player.setFlying(limbo.isFlying());
 										}
 									});
 
@@ -546,8 +562,9 @@ public class Management {
 											}
 										});
 							}
-
-							Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
+							
+							if(!Settings.forceOnlyAfterLogin)
+								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
 									new Runnable() {
 										@Override
 										public void run() {
@@ -556,6 +573,14 @@ public class Management {
 															.getGameMode()));
 										}
 									});
+							else 
+								Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
+										new Runnable() {
+											@Override
+											public void run() {
+												player.setGameMode(GameMode.SURVIVAL);
+											}
+										});
 
 							if (Settings.protectInventoryBeforeLogInEnabled
 									&& player.hasPlayedBefore()) {
@@ -628,6 +653,7 @@ public class Management {
 								plugin.cap.containsKey(name);
 							}
 						}
+						player.setNoDamageTicks(0);
 						player.sendMessage(m._("login"));
 						displayOtherAccounts(auth);
 						if (!Settings.noConsoleSpam)
@@ -638,6 +664,7 @@ public class Management {
 											"[AuthMe] " + player.getName()
 													+ " logged in!"));
 						}
+						PlayerCache.getInstance().addPlayer(auth);
 						Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							@Override
 							public void run() {
