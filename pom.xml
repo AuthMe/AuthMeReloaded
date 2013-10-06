@@ -122,5 +122,12 @@
     		<scope>system</scope>
     		<systemPath>${project.basedir}/lib/Essentials.jar</systemPath>
     	</dependency>
+		<dependency>
+    		<groupId>net.md-5</groupId>
+    		<artifactId>bungeecord-api</artifactId>
+    		<version>1.6.4-SNAPSHOT</version>
+    		<scope>system</scope>
+    		<systemPath>${project.basedir}/lib/BungeeCord.jar</systemPath>
+    	</dependency>
     </dependencies>
 </project>
