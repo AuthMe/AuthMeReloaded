@@ -41,4 +41,8 @@ public class PasswordEncryptionEvent extends Event {
 		return playerName;
 	}
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
 }

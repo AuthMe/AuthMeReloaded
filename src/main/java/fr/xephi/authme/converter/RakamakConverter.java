@@ -94,12 +94,12 @@ public class RakamakConverter {
 						String player = m.getKey();
 						String psw = playerPSW.get(player);
 						String ip = playerIP.get(player);
-						newLine = player + ":" + psw + ":" + ip + ":1325376060:0:0:0";
+						newLine = player + ":" + psw + ":" + ip + ":1325376060:0:0:0:world:your@email.com";
 					} else {
 						String player = m.getKey();
 						String psw = playerPSW.get(player);
 						String ip = "127.0.0.1";
-						newLine = player + ":" + psw + ":" + ip + ":1325376060:0:0:0";
+						newLine = player + ":" + psw + ":" + ip + ":1325376060:0:0:0:world:your@email.com";
 					}
 					if (alreadyExist) outputDB.newLine();
 					outputDB.write(newLine);

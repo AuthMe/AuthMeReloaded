@@ -7,11 +7,13 @@ import java.util.Random;
 import java.util.Scanner;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.api.API;
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Settings;
 
@@ -126,24 +128,28 @@ public class Utils {
 			}
     	});
 
-    	id = Bukkit.getScheduler().scheduleSyncRepeatingTask(AuthMe.getInstance(), new Runnable()
-    	{
-    		@Override
-    		public void run() {
-    			int current = (int)pl.getLocation().getY();
-    			World currentWorld = pl.getWorld();
-    			if (current != fY && world.getName() == currentWorld.getName()) {
-    				pl.teleport(loc);
-    			}
-    		}
-    	}, 1L, 20L);
-    	Bukkit.getScheduler().scheduleSyncDelayedTask(AuthMe.getInstance(), new Runnable()
-    	{
-    		@Override
-    		public void run() {
-    			Bukkit.getScheduler().cancelTask(id);
-    		}
-      }, 60L);
+    	if (!PlayerCache.getInstance().isAuthenticated(pl.getName().toLowerCase())) {
+        	id = Bukkit.getScheduler().scheduleSyncRepeatingTask(AuthMe.getInstance(), new Runnable()
+        	{
+        		@Override
+        		public void run() {
+        			if (!PlayerCache.getInstance().isAuthenticated(pl.getName().toLowerCase())) {
+            			int current = (int)pl.getLocation().getY();
+            			World currentWorld = pl.getWorld();
+            			if (current != fY && world.getName() == currentWorld.getName()) {
+            				pl.teleport(loc);
+            			}
+        			}
+        		}
+        	}, 1L, 20L);
+        	Bukkit.getScheduler().scheduleSyncDelayedTask(AuthMe.getInstance(), new Runnable()
+        	{
+        		@Override
+        		public void run() {
+        			Bukkit.getScheduler().cancelTask(id);
+        		}
+          }, 60L);
+    	}
       }
 
 	/*
@@ -216,6 +222,14 @@ public class Utils {
     	}
     	return new String(arr);
 	}
+
+    /*
+     * Used for force player GameMode
+     */
+    public static void forceGM(Player player) {
+    	if (!AuthMe.getInstance().authmePermissible(player, "authme.bypassforcesurvival"))
+    		player.setGameMode(GameMode.SURVIVAL);
+    }
 
     public enum groupType {
         UNREGISTERED, REGISTERED, NOTLOGGEDIN, LOGGEDIN

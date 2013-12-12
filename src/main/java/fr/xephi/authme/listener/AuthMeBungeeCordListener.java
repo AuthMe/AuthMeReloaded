@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -16,9 +17,11 @@ import fr.xephi.authme.settings.Settings;
 
 public class AuthMeBungeeCordListener implements Listener {
 	private DataSource data;
+	private AuthMe plugin;
 
-    public AuthMeBungeeCordListener(DataSource data) {
-        this.data = data; 
+    public AuthMeBungeeCordListener(DataSource data, AuthMe plugin) {
+        this.data = data;
+        this.plugin = plugin;
     }
 
 	@EventHandler (priority = EventPriority.LOWEST)
@@ -27,9 +30,20 @@ public class AuthMeBungeeCordListener implements Listener {
 		if (event.isCancelled()) return;
 		if (!event.isCommand()) return;
 		Player player = null;
-		for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-			if (p.getAddress().getAddress().equals(event.getReceiver().getAddress().getAddress())) {
-				player = p;
+		try {
+			for (String p : plugin.realIp.keySet()) {
+				Player pl = Bukkit.getPlayer(p);
+				if (pl != null) {
+					if (plugin.realIp.get(p).equalsIgnoreCase(event.getSender().getAddress().getAddress().getHostAddress()))
+						player = pl;
+				}
+			}
+		} catch (Exception e) {}
+		if (player == null) {
+			for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+				if (p.getAddress().getAddress().equals(event.getSender().getAddress().getAddress())) {
+					player = p;
+				}
 			}
 		}
         String name = player.getName().toLowerCase();

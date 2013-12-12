@@ -25,9 +25,9 @@ public class MessageTask implements Runnable {
 
     @Override
     public void run() {
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+        if (PlayerCache.getInstance().isAuthenticated(name))
             return;
-        }
+
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
                 player.sendMessage(msg);

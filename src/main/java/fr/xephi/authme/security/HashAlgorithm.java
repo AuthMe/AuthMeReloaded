@@ -36,4 +36,5 @@ public enum HashAlgorithm {
     public Class<?> getclass() {
     	return classe;
     }
+
 }

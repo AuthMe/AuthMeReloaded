@@ -5,10 +5,10 @@ import fr.xephi.authme.settings.Settings;
 
 public class PlayerAuth {
 
-    private String nickname;
-    private String hash;
+    private String nickname = "";
+    private String hash = "";
     private String ip = "198.18.0.1";
-    private long lastLogin;
+    private long lastLogin = 0;
     private int x = 0;
     private int y = 0;
     private int z = 0;
@@ -17,20 +17,15 @@ public class PlayerAuth {
     private String vBhash = null;
     private int groupId;
     private String email = "your@email.com";
+    private String realName = "";
 
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin) {
-        this.nickname = nickname;
-        this.hash = hash;
-        this.ip = ip;
-        this.lastLogin = lastLogin;
-    }
-
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String email) {
+    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String email, String realName) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
         this.lastLogin = lastLogin;
         this.email = email;
+        this.realName = realName;
     }
 
     public PlayerAuth(String nickname, int x, int y, int z, String world) {
@@ -41,7 +36,7 @@ public class PlayerAuth {
         this.world = world;
     }
 
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z, String world, String email) {
+    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z, String world, String email, String realName) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
@@ -51,9 +46,10 @@ public class PlayerAuth {
         this.z = z;
         this.world = world;
         this.email = email;
+        this.realName = realName;
     }
 
-    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, int x, int y, int z, String world,  String email) {
+    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, int x, int y, int z, String world,  String email, String realName) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
@@ -64,27 +60,30 @@ public class PlayerAuth {
         this.world = world;
         this.salt = salt;
         this.groupId = groupId;
-        this.email = email; 
+        this.email = email;
+        this.realName = realName;
     }
 
-    public PlayerAuth(String nickname, String hash, String salt, int groupId , String ip, long lastLogin) {
+    public PlayerAuth(String nickname, String hash, String salt, int groupId , String ip, long lastLogin, String realName) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
         this.lastLogin = lastLogin;  
         this.salt = salt;
         this.groupId = groupId;
+        this.realName = realName;
     }
 
-    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin) {
+    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, String realName) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
         this.lastLogin = lastLogin;  
         this.salt = salt;
+        this.realName = realName;
     }
 
-    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, int x, int y, int z, String world, String email) {
+    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, int x, int y, int z, String world, String email, String realName) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
@@ -94,19 +93,8 @@ public class PlayerAuth {
         this.z = z;
         this.world = world;
         this.salt = salt;
-        this.email = email; 
-    }
-
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z, String world) {
-        this.nickname = nickname;
-        this.hash = hash;
-        this.ip = ip;
-        this.lastLogin = lastLogin;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-        this.world = world;
-        this.email = "your@email.com";
+        this.email = email;
+        this.realName = realName;
     }
 
 	public String getIp() {
@@ -118,7 +106,7 @@ public class PlayerAuth {
     }
 
     public String getHash() {
-        if(!salt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
+        if(salt != null && !salt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
         	vBhash = "$MD5vb$"+salt+"$"+hash;
             return vBhash;
         }
@@ -208,9 +196,13 @@ public class PlayerAuth {
 	@Override
 	public String toString() {
 		String s = "Player : " + nickname + " ! IP : " + ip + " ! LastLogin : " + lastLogin + " ! LastPosition : " + x + "," + y + "," + z + "," + world
-		+ " ! Email : " + email + " ! Hash : " + hash + " ! Salt : " + salt;
+		+ " ! Email : " + email + " ! Hash : " + hash + " ! Salt : " + salt + " ! RealName : " + realName;
 		return s;
 			
+	}
+
+	public String getRealname() {
+		return realName;
 	}
 
 }

@@ -65,18 +65,14 @@ public class LogoutCommand implements CommandExecutor {
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
         auth.setIp("198.18.0.1");
         database.updateSession(auth);
+        auth.setQuitLocX(player.getLocation().getBlockX());
+        auth.setQuitLocY(player.getLocation().getBlockY());
+        auth.setQuitLocZ(player.getLocation().getBlockZ());
+        auth.setWorld(player.getWorld().getName());
+        database.updateQuitLoc(auth);
 
         PlayerCache.getInstance().removePlayer(name);
 
-        LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
-        LimboCache.getInstance().addLimboPlayer(player);
-        if(Settings.protectInventoryBeforeLogInEnabled) {
-            player.getInventory().setArmorContents(new ItemStack[4]);
-            player.getInventory().setContents(new ItemStack[36]);
-            // create cache file for handling lost of inventories on unlogged in status
-            DataFileCache playerData = new DataFileCache(player.getInventory().getContents(),player.getInventory().getArmorContents());      
-            playerBackup.createCache(name, playerData, LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator(),LimboCache.getInstance().getLimboPlayer(name).isFlying());            
-        }
         if (Settings.isTeleportToSpawnEnabled) {
         	Location spawnLoc = player.getWorld().getSpawnLocation();
             if (plugin.essentialsSpawn != null) {
@@ -92,6 +88,17 @@ public class LogoutCommand implements CommandExecutor {
             	}
           	  	player.teleport(tpEvent.getTo());
             }
+        }
+
+        if (LimboCache.getInstance().hasLimboPlayer(name))
+        	LimboCache.getInstance().deleteLimboPlayer(name);
+        LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
+        LimboCache.getInstance().addLimboPlayer(player);
+        if(Settings.protectInventoryBeforeLogInEnabled) {
+        	player.getInventory().clear();
+            // create cache file for handling lost of inventories on unlogged in status
+            DataFileCache playerData = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(),LimboCache.getInstance().getLimboPlayer(name).getArmour());      
+            playerBackup.createCache(name, playerData, LimboCache.getInstance().getLimboPlayer(name).getGroup(),LimboCache.getInstance().getLimboPlayer(name).getOperator(),LimboCache.getInstance().getLimboPlayer(name).isFlying());            
         }
 
         int delay = Settings.getRegistrationTimeout * 20;

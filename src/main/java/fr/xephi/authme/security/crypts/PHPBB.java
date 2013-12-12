@@ -18,14 +18,14 @@ public class PHPBB implements EncryptionMethod {
   private String itoa64 = 
 "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-  public String phpbb_hash(String password) {
-    String random_state = unique_id();
+  public String phpbb_hash(String password, String salt) {
+    String random_state = salt;
     String random = "";
     int count = 6;
     if (random.length() < count) {
       random = "";
       for (int i = 0; i < count; i += 16) {
-        random_state = md5(unique_id() + random_state);
+        random_state = md5(salt + random_state);
         random += pack(md5(random_state));
       }
       random = random.substring(0, count);
@@ -35,15 +35,6 @@ public class PHPBB implements EncryptionMethod {
     if (hash.length() == 34)
       return hash;
     return md5(password);
-  }
-
-  private String unique_id() {
-    return unique_id("c");
-  }
-
-  private String unique_id(String extra) {
-	  //TODO: Maybe check the salt?
-	  return "1234567890abcdef";
   }
 
   private String _hash_gensalt_private(String input, String itoa64) {
@@ -162,7 +153,7 @@ private String _hash_gensalt_private(
 @Override
 public String getHash(String password, String salt)
 		throws NoSuchAlgorithmException {
-	return phpbb_hash(password);
+	return phpbb_hash(password, salt);
 }
 
 @Override

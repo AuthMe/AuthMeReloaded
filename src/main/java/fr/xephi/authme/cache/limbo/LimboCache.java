@@ -3,12 +3,12 @@ package fr.xephi.authme.cache.limbo;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.events.ResetInventoryEvent;
 import fr.xephi.authme.events.StoreInventoryEvent;
@@ -30,6 +30,7 @@ public class LimboCache {
     public void addLimboPlayer(Player player) {
         String name = player.getName().toLowerCase();
         Location loc = player.getLocation();
+        loc.setY(loc.getY() + 0.4D);
         int gameMode = player.getGameMode().getValue();
         ItemStack[] arm;
         ItemStack[] inv;
@@ -69,11 +70,11 @@ public class LimboCache {
         }
 
         if(Settings.isForceSurvivalModeEnabled) {
-            if(Settings.isResetInventoryIfCreative && gameMode != 0 ) {
+            if(Settings.isResetInventoryIfCreative && player.getGameMode() == GameMode.CREATIVE ) {
             	ResetInventoryEvent event = new ResetInventoryEvent(player);
             	Bukkit.getServer().getPluginManager().callEvent(event);
             	if (!event.isCancelled()) {
-            		API.setPlayerInventory(player, new ItemStack[36], new ItemStack[4]); 
+            		player.getInventory().clear();
             		player.sendMessage("Your inventory has been cleaned!");
             	}
             }

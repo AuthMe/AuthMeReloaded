@@ -117,7 +117,7 @@ public class LoginScreen extends GenericPopup implements Clickable{
 		if (event.isCancelled() || event == null || event.getPlayer() == null) return;
 		if (b.equals(loginBtn))
 		{
-			plugin.management.performLogin(player, passBox.getText(), false);
+			plugin.management.performLogin(player, passBox.getText(), false, false);
 		}else if(b.equals(exitBtn))
 		{
 			event.getPlayer().kickPlayer(exitMsg);

@@ -61,8 +61,6 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 public class WHIRLPOOL implements EncryptionMethod {
-	
-	public WHIRLPOOL() {}
 
     /**
      * The message digest size (in bits)
@@ -180,6 +178,9 @@ public class WHIRLPOOL implements EncryptionMethod {
     protected long[] L     = new long[8];
     protected long[] block = new long[8];
     protected long[] state = new long[8];
+
+    public WHIRLPOOL() {
+    }
 
     /**
      * The core Whirlpool transform.

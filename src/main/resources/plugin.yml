@@ -3,7 +3,7 @@ author: Xephi59
 website: http://dev.bukkit.org/bukkit-plugins/authme-recoded/
 description: AuthMe prevents people, which aren't logged in, from doing stuff like placing blocks, moving, typing commands or seeing the inventory of the current player.
 main: fr.xephi.authme.AuthMe
-version: 3.0
+version: 3.1.1
 softdepend: [Vault, ChestShop, Spout, Multiverse-Core, Notifications, Citizens, CombatTag, Essentials, EssentialsSpawn]
 commands:
     register:
@@ -60,6 +60,9 @@ permissions:
              authme.admin.lastlogin: true
              authme.admin.getemail: true
              authme.admin.chgemail: true
+             authme.admin.purgelastpos: true
+             authme.admin.switchantibot: true
+             authme.bypassantibot: true
     authme.register:
         description: Register an account
         default: true
@@ -77,7 +80,7 @@ permissions:
         default: true
     authme.passpartu:
         description: passpartu
-        default: true        
+        default: true
     authme.allow2accounts:
         description: allow more accounts for same ip
         default: false
@@ -140,4 +143,16 @@ permissions:
         default: op
     authme.admin.flattosqlite:
         description: Convert File to Sqlite method
+        default: op
+    authme.bypassforcesurvival:
+        description: Bypass all ForceSurvival features
+        default: false
+    authme.admin.purgelastpos:
+        description: Purge last pos of players
+        default: op
+    authme.admin.switchantibot:
+        description: Switch AntiBot mode on/off
+        default: op
+    authme.bypassantibot:
+        description: Bypass the AntiBot check
         default: op

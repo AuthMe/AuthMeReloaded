@@ -145,7 +145,7 @@ public class API {
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0);
+            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com", getPlayerRealName(name));
             if (!database.saveAuth(auth)) {
             	return false;
             }
@@ -154,5 +154,26 @@ public class API {
         	return false;
         }
     }
+    
+    /**
+     * Get Player realName from lowerCase nickname
+     * @param String playerName
+     * return String player real name
+     */
+    public static String getPlayerRealName(String nickname) {
+    	try {
+        	String realName = Bukkit.getOfflinePlayer(nickname).getName();
+        	if (realName != null && !realName.isEmpty())
+        		return realName;
+    	} catch (NullPointerException npe) {}
+    	return nickname;
+    }
 
+    /**
+     * Force a player to login
+     * @param Player player
+     */
+    public static void forceLogin(Player player) {
+    	instance.management.performLogin(player, "dontneed", false, true);
+    }
 }

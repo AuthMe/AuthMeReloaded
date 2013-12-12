@@ -224,6 +224,8 @@ settings:
         UnrestrictedName: []
     # Message language, available : en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, lt, it, ko, pt
     messagesLanguage: en
+    #Force these commands after /login, without any '/', use %p for replace with player name
+    forceCommands: []
 ExternalBoardOptions:
     # MySQL column for the salt , needed for some forum/cms support
     mySQLColumnSalt: ''
@@ -343,7 +345,24 @@ Purge:
     daysBeforeRemovePlayer: 60
     # Do we need to remove the player.dat file during purge process ?
     removePlayerDat: false
-    # Do we need to remove the Essentials/users/player.yml file during purge proecess ?
+    # Do we need to remove the Essentials/users/player.yml file during purge process ?
     removeEssentialsFile: false
     # World where are players.dat stores
     defaultWorld: 'world'
+    # Do we need to remove LimitedCreative/inventories/player.yml , player_creative.yml files during purge process ?
+    removeLimitedCreativesInventories: false
+    # Do we need to remove the AntiXRayData/PlayerData/player file during purge process ?
+    removeAntiXRayFile: false
+Protection:
+    # Enable some servers protection ( country based login, antibot )
+    enableProtection: false
+    # Countries allowed to join the server and register, see http://dev.maxmind.com/geoip/legacy/codes/iso3166/ for countries' codes
+    countries:
+    - US
+    - GB
+    # Do we need to enable automatic antibot system?
+    enableAntiBot: false
+    # Max number of player allowed to login in 5 secs before enable AntiBot system automatically
+    antiBotSensibility: 5
+    # Duration in minutes of the antibot automatic system
+    antiBotDuration: 10

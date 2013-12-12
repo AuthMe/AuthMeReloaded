@@ -24,12 +24,12 @@
 		</plugin>
 	</plugins>
 	</build>
-    <version>3.0</version>
+    <version>3.1.1</version>
     <dependencies>
     	<dependency>
     		<groupId>org.bukkit</groupId>
     		<artifactId>bukkit</artifactId>
-    		<version>1.6.4-R0.1-SNAPSHOT</version>
+    		<version>1.7.2-R0.1-SNAPSHOT</version>
     	</dependency>
     	<dependency>
     		<groupId>net.milkbowl.vault</groupId>
@@ -109,6 +109,13 @@
     		<systemPath>${project.basedir}/lib/xAuth.jar</systemPath>
     	</dependency>
 		<dependency>
+    		<groupId>de.luricos.bukkit</groupId>
+    		<artifactId>xAuth</artifactId>
+    		<version>2.4.4</version>
+    		<scope>system</scope>
+    		<systemPath>${project.basedir}/lib/xAuth-2.4.4.jar</systemPath>
+    	</dependency>
+		<dependency>
     		<groupId>com.onarandombox</groupId>
     		<artifactId>MultiverseCore</artifactId>
     		<version>2.5-b654</version>
@@ -125,9 +132,9 @@
 		<dependency>
     		<groupId>net.md-5</groupId>
     		<artifactId>bungeecord-api</artifactId>
-    		<version>1.6.4-SNAPSHOT</version>
+    		<version>1.7.2-SNAPSHOT</version>
     		<scope>system</scope>
-    		<systemPath>${project.basedir}/lib/BungeeCord.jar</systemPath>
+    		<systemPath>${project.basedir}/lib/bungeecord-api.jar</systemPath>
     	</dependency>
     </dependencies>
 </project>

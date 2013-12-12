@@ -18,9 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
-import fr.xephi.authme.AuthMe;
-
-
 /**
  * BCrypt implements OpenBSD-style Blowfish password hashing using
  * the scheme described in "A Future-Adaptable Password Scheme" by
@@ -762,7 +759,6 @@ public class BCRYPT implements EncryptionMethod {
 	@Override
 	public boolean comparePassword(String hash, String password,
 			String playerName) throws NoSuchAlgorithmException {
-    	String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-    	return hash.equals(hashpw(password, salt));
+    	return checkpw(password, hash);
 	}
 }

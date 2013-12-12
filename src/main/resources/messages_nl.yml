@@ -1,0 +1,55 @@
+unknown_user: Gebruiker is niet gevonden in database
+unsafe_spawn: De locatie waar je de vorige keer het spel verlied was gevaarlijk, je bent geteleporteert naar de Spawn
+not_logged_in: '&cNiet ingelogt!'
+reg_voluntarily: Je kunt je gebruikersnaam registreren met "/register <wachtwoord> <herhaalWachtwoord>"
+usage_log: '&cGebruik: /login <wachtwoord>'
+wrong_pwd: '&cFout wachtwoord'
+unregistered: '&cRegistratie succesvol ongedaan gemaakt!'
+reg_disabled: '&cRegistratie is uitgeschakeld'
+valid_session: '&cSessie ingelogt'
+login: '&cSuccesvol ingelogt!'
+vb_nonActiv: Je accound is nog niet geactiveerd, controleer je mailbox!
+user_regged: '&cGebruikersnaam is al geregistreerd'
+usage_reg: '&cGebruik: /register <wachtwoord> <herhaalWachtwoord>'
+max_reg: Je hebt de maximale registraties van jouw account overschreden.
+no_perm: '&cGeen toegang!'
+error: Error; neem contact op met een ADMIN!
+login_msg: '&cLog in met "/login <wachtwoord>"'
+reg_msg: '&cRegistreer met "/register <wachtwoord> <herhaalWachtwoord>"'
+usage_unreg: '&cGebruik: /unregister password'
+pwd_changed: '&cWachtwoord aangepast!'
+user_unknown: '&cGebruikersnaam niet geregistreerd'
+password_error: Wachtwoord incorrect!
+unvalid_session: Sessie beschadigt, wacht tot de sessie is verlopen en join opnieuw.
+reg_only: Alleen voor geregistreerde spelers! Bezoek http://example.com om te registreren
+logged_in: '&cJe bent al ingelogt!'
+logout: '&cJe bent succesvol uitgelogt'
+same_nick: Er is al iemand met jou gebruikersnaam online.
+registered: '&cSuccesvol geregistreerd!'
+pass_len: Je gekozen wachtwoord voldoet niet aan de minimum of maximum lengte
+reload: Configuratie en database is opnieuw opgestard
+timeout: Login time-out; het duurde telang voor je je inlogde.
+usage_changepassword: 'Gebruik: /changepassword <oudWachtwoord> <nieuwWachtwoord>'
+name_len: '&cJouw gebruikersnaam is te kort'
+regex: '&cJouw gebruikersnaam bestaat uit illegale tekens. tegestaan chars: REG_EX'
+add_email: '&cVoeg uw email toe Alstublieft met: /email add jouw wachtwoord herhaalwachtwoord'
+bad_database_email: '[AuthMe] deze /email command is alleen beschikbaar met MySQL en SQLite, neem contact op met een Admin'
+recovery_email: '&cWachtwoord vergeten? gebruik alstublieft  /email recovery <Jouwemail>'
+usage_captcha: '&cGebruik: /captcha <deCaptcha>'
+wrong_captcha: '&cverkeerde Captcha, Gebruik alstublieft : /captcha THE_CAPTCHA'
+valid_captcha: '&cJouw captcha is geldig!'
+kick_forvip: '&cA VIP Gebruiker ga naar de volledige server!'
+kick_fullserver: '&cDe server is eigenlijk vol, Sorry!'
+usage_email_add: '&fGebruik: /email add <email> <herhaalEmail> '
+usage_email_change: '&fGebruik: /email change <oudeEmail> <nieuweEmail> '
+usage_email_recovery: '&fGebruik: /email recovery <Email>'
+new_email_invalid: '[AuthMe] Nieuw email ongeldig!'
+old_email_invalid: '[AuthMe] Oud email ongeldig!'
+email_invalid: '[AuthMe] ongeldig Email'
+email_added: '[AuthMe] Bevestig jouw Email !'
+email_confirm: '[AuthMe] Bevestig jouw Email !'
+email_changed: '[AuthMe] Email Veranderd !'
+email_send: '[AuthMe] Herstel Email Verzonden !'
+country_banned: 'Your country is banned from this server'
+antibot_auto_enabled: '[AuthMe] AntiBotMod automatically enabled due to massive connections!'
+antibot_auto_disabled: '[AuthMe] AntiBotMod automatically disabled after %m Minutes, hope invasion stopped'

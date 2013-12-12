@@ -41,4 +41,8 @@ public class LoginEvent extends Event {
 		return handlers;
 	}
 
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
 }

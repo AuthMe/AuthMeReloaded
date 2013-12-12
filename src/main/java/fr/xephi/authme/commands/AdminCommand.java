@@ -25,12 +25,14 @@ import org.bukkit.plugin.java.JavaPlugin;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
+import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.converter.FlatToSql;
 import fr.xephi.authme.converter.FlatToSqlite;
 import fr.xephi.authme.converter.RakamakConverter;
-import fr.xephi.authme.converter.xAuthToFlat;
+import fr.xephi.authme.converter.newxAuthToFlat;
+import fr.xephi.authme.converter.oldxAuthToFlat;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
@@ -66,6 +68,8 @@ public class AdminCommand implements CommandExecutor {
             sender.sendMessage("/authme spawn - Teleport you to the AuthMe SpawnPoint");
             sender.sendMessage("/authme chgemail <playername> <email> - Change player email");
             sender.sendMessage("/authme getemail <playername> - Get player email");
+            sender.sendMessage("/authme purgelastpos <playername> - Purge last position for a player");
+            sender.sendMessage("/authme switchantibot on/off - Enable/Disable antibot method");
             return true;
         }
 
@@ -100,7 +104,16 @@ public class AdminCommand implements CommandExecutor {
             try {
                 long days = Long.parseLong(args[1]) * 86400000;
                 long until = new Date().getTime() - days;
-                sender.sendMessage("Deleted " + database.purgeDatabase(until) + " user accounts");
+                List<String> purged = database.autoPurgeDatabase(until);
+                sender.sendMessage("Deleted " + purged.size() + " user accounts");
+        		if (Settings.purgeEssentialsFile && plugin.ess != null)
+        			plugin.purgeEssentials(purged);
+        		if (Settings.purgePlayerDat)
+        			plugin.purgeDat(purged);
+        		if (Settings.purgeLimitedCreative)
+        			plugin.purgeLimitedCreative(purged);
+        		if (Settings.purgeAntiXray)
+        			plugin.purgeAntiXray(purged);
                 return true;
             } catch (NumberFormatException e) {
                 sender.sendMessage("Usage: /authme purge <DAYS>");
@@ -256,24 +269,27 @@ public class AdminCommand implements CommandExecutor {
             }
             try {
                 String name = args[1].toLowerCase();
-                String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
                 if (database.isAuthAvailable(name)) {
                     sender.sendMessage(m._("user_regged"));
                     return true;
                 }
-                PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0);
-                auth.setSalt(PasswordSecurity.userSalt.get(name));
+                String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
+                PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0L, "your@email.com", API.getPlayerRealName(name));
+                if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
+                	auth.setSalt(PasswordSecurity.userSalt.get(name));
+                else
+                	auth.setSalt("");
                 if (!database.saveAuth(auth)) {
                     sender.sendMessage(m._("error"));
                     return true;
                 }
-                database.updateSalt(auth);
                 sender.sendMessage(m._("registered"));
                 ConsoleLogger.info(args[1] + " registered");
             } catch (NoSuchAlgorithmException ex) {
                 ConsoleLogger.showError(ex.getMessage());
                 sender.sendMessage(m._("error"));
             }
+            return true;
         } else if (args[0].equalsIgnoreCase("convertflattosql")) {
         		try {
         			FlatToSql.FlatToSqlConverter();
@@ -294,13 +310,22 @@ public class AdminCommand implements CommandExecutor {
 			} catch (NullPointerException ex) {
 				System.out.println(ex.getMessage());
 			}
+			return true;
         } else if (args[0].equalsIgnoreCase("xauthimport")) {
-            	xAuthToFlat converter = new xAuthToFlat(plugin, database);
-            	if (converter.convert(sender)) {
-            		sender.sendMessage("[AuthMe] Successfull convert from xAuth database");
-            	} else {
-            		sender.sendMessage("[AuthMe] Error while trying to convert from xAuth database");
-            	}
+        	try {
+        		Class.forName("com.cypherx.xauth.xAuth");
+            	oldxAuthToFlat converter = new oldxAuthToFlat(plugin, database, sender);
+            	converter.run();
+        	} catch (ClassNotFoundException e) {
+        		try {
+        			Class.forName("de.luricos.bukkit.xAuth.xAuth");
+        			newxAuthToFlat converter = new newxAuthToFlat(plugin, database, sender);
+        			converter.run();
+        		} catch (ClassNotFoundException ce) {
+        			sender.sendMessage("[AuthMe] No version of xAuth found or xAuth isn't enable! ");
+        		}
+        	}
+        	return true;
         } else if (args[0].equalsIgnoreCase("getemail")) {
             if (args.length != 2) {
                 sender.sendMessage("Usage: /authme getemail playername");
@@ -343,6 +368,7 @@ public class AdminCommand implements CommandExecutor {
 			} catch (NullPointerException ex) {
 				ConsoleLogger.showError(ex.getMessage());
 			}
+			return true;
         } else if (args[0].equalsIgnoreCase("setspawn")) {
     		try {
     			if (sender instanceof Player) {
@@ -355,6 +381,7 @@ public class AdminCommand implements CommandExecutor {
 			} catch (NullPointerException ex) {
 				ConsoleLogger.showError(ex.getMessage());
 			}
+			return true;
         } else if (args[0].equalsIgnoreCase("purgebannedplayers")) {
         	List<String> bannedPlayers = new ArrayList<String>();
         	for (OfflinePlayer off : plugin.getServer().getBannedPlayers()) {
@@ -371,6 +398,15 @@ public class AdminCommand implements CommandExecutor {
     				}
             	});
         	}
+    		if (Settings.purgeEssentialsFile && plugin.ess != null)
+    			plugin.purgeEssentials(bannedPlayers);
+    		if (Settings.purgePlayerDat)
+    			plugin.purgeDat(bannedPlayers);
+    		if (Settings.purgeLimitedCreative)
+    			plugin.purgeLimitedCreative(bannedPlayers);
+    		if (Settings.purgeAntiXray)
+    			plugin.purgeAntiXray(bannedPlayers);
+    		return true;
         } else if (args[0].equalsIgnoreCase("spawn")) {
     		try {
     			if (sender instanceof Player) {
@@ -383,6 +419,7 @@ public class AdminCommand implements CommandExecutor {
 			} catch (NullPointerException ex) {
 				ConsoleLogger.showError(ex.getMessage());
 			}
+			return true;
         } else if (args[0].equalsIgnoreCase("changepassword") || args[0].equalsIgnoreCase("cp")) {
             if (args.length != 3) {
                 sender.sendMessage("Usage: /authme changepassword playername newpassword");
@@ -413,6 +450,7 @@ public class AdminCommand implements CommandExecutor {
                 ConsoleLogger.showError(ex.getMessage());
                 sender.sendMessage(m._("error"));
             }
+            return true;
         } else if (args[0].equalsIgnoreCase("unregister") || args[0].equalsIgnoreCase("unreg") || args[0].equalsIgnoreCase("del") ) {
             if (args.length != 2) {
                 sender.sendMessage("Usage: /authme unregister playername");
@@ -426,6 +464,49 @@ public class AdminCommand implements CommandExecutor {
             PlayerCache.getInstance().removePlayer(name);
             sender.sendMessage("unregistered");
             ConsoleLogger.info(args[1] + " unregistered");
+            return true;
+        } else if (args[0].equalsIgnoreCase("purgelastpos")){
+            if (args.length != 2) {
+                sender.sendMessage("Usage: /authme purgelastpos playername");
+                return true;
+            }
+            try {
+                String name = args[1].toLowerCase();
+                PlayerAuth auth = database.getAuth(name);
+                if (auth == null) {
+                	sender.sendMessage("The player " + name + " is not registered ");
+                	return true;
+                }
+                auth.setQuitLocX(0);
+                auth.setQuitLocY(0);
+                auth.setQuitLocZ(0);
+                auth.setWorld("world");
+                database.updateQuitLoc(auth);
+                sender.sendMessage(name + " 's last pos location is now reset");
+            } catch (Exception e) {
+            	ConsoleLogger.showError("An error occured while trying to reset location or player do not exist, please see below: ");
+            	ConsoleLogger.showError(e.getMessage());
+            	if (sender instanceof Player)
+            		sender.sendMessage("An error occured while trying to reset location or player do not exist, please see logs");
+            }
+            return true;
+        } else if (args[0].equalsIgnoreCase("switchantibot")) {
+        	if (args.length != 2) {
+        		sender.sendMessage("Usage : /authme switchantibot on/off");
+        		return true;
+        	}
+        	if (args[1].equalsIgnoreCase("on")) {
+        		plugin.switchAntiBotMod(true);
+        		sender.sendMessage("[AuthMe] AntiBotMod enabled");
+        		return true;
+        	}
+        	if (args[1].equalsIgnoreCase("off")) {
+        		plugin.switchAntiBotMod(false);
+        		sender.sendMessage("[AuthMe] AntiBotMod disabled");
+        		return true;
+        	}
+    		sender.sendMessage("Usage : /authme switchantibot on/off");
+    		return true;
         } else {
             sender.sendMessage("Usage: /authme reload|register playername password|changepassword playername password|unregister playername");
         }

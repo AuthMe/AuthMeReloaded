@@ -29,8 +29,10 @@ public final class Settings extends YamlConfiguration {
     private static List<String> getRestrictedIp;
     public static List<String> getMySQLOtherUsernameColumn = null;
     public static List<String> getForcedWorlds = null;
+    public static List<String> countries = null;
+    public static List<String> forceCommands = null;
     public final Plugin plugin;
-    private final File file;    
+    private final File file;
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
     public static HashAlgorithm rakamakHash;
@@ -39,13 +41,14 @@ public final class Settings extends YamlConfiguration {
     public static Boolean isPermissionCheckEnabled, isRegistrationEnabled, isForcedRegistrationEnabled,
             isTeleportToSpawnEnabled, isSessionsEnabled, isChatAllowed, isAllowRestrictedIp, 
             isMovementAllowed, isKickNonRegisteredEnabled, isForceSingleSessionEnabled,
-            isForceSpawnLocOnJoinEnabled, isForceExactSpawnEnabled, isSaveQuitLocationEnabled,
+            isForceSpawnLocOnJoinEnabled, isSaveQuitLocationEnabled,
             isForceSurvivalModeEnabled, isResetInventoryIfCreative, isCachingEnabled, isKickOnWrongPasswordEnabled,
             getEnablePasswordVerifier, protectInventoryBeforeLogInEnabled, isBackupActivated, isBackupOnStart,
             isBackupOnStop, enablePasspartu, isStopEnabled, reloadSupport, rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
             useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
             disableSocialSpy, useMultiThreading, forceOnlyAfterLogin, useEssentialsMotd,
-            usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword;
+            usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword, purgeLimitedCreative,
+            purgeAntiXray, purgePermissions, enableProtection, enableAntiBot;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -59,7 +62,7 @@ public final class Settings extends YamlConfiguration {
     public static int getWarnMessageInterval, getSessionTimeout, getRegistrationTimeout, getMaxNickLength,
             getMinNickLength, getPasswordMinLen, getMovementRadius, getmaxRegPerIp, getNonActivatedGroup,
             passwordMaxLength, getRecoveryPassLength, getMailPort, maxLoginTry, captchaLength, saltLength, getmaxRegPerEmail,
-            bCryptLog2Rounds, purgeDelay, getPhpbbGroup;
+            bCryptLog2Rounds, purgeDelay, getPhpbbGroup, antiBotSensibility, antiBotDuration;
 
     protected static YamlConfiguration configFile;
 
@@ -187,7 +190,7 @@ public void loadConfigOptions() {
         chestshop = configFile.getBoolean("Hooks.chestshop", true);
         notifications = configFile.getBoolean("Hooks.notifications", true);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
-        getForcedWorlds = (List<String>) configFile.getList("settings.restrictions.ForceSpawnOnTheseWorlds");
+        getForcedWorlds = (List<String>) configFile.getList("settings.restrictions.ForceSpawnOnTheseWorlds", new ArrayList<String>());
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
         doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
@@ -206,6 +209,15 @@ public void loadConfigOptions() {
         getPhpbbGroup = configFile.getInt("ExternalBoardOptions.phpbbActivatedGroupId", 2);
         supportOldPassword = configFile.getBoolean("settings.security.supportOldPasswordHash", false);
         getWordPressPrefix = configFile.getString("ExternalBoardOptions.wordpressTablePrefix", "wp_");
+        purgeLimitedCreative = configFile.getBoolean("Purge.removeLimitedCreativesInventories", false);
+        purgeAntiXray = configFile.getBoolean("Purge.removeAntiXRayFile", false);
+        //purgePermissions = configFile.getBoolean("Purge.removePermissions", false);
+        enableProtection = configFile.getBoolean("Protection.enableProtection", false);
+        countries = (List<String>) configFile.getList("Protection.countries", new ArrayList<String>());
+        enableAntiBot = configFile.getBoolean("Protection.enableAntiBot", false);
+        antiBotSensibility = configFile.getInt("Protection.antiBotSensibility", 5);
+        antiBotDuration = configFile.getInt("Protection.antiBotDuration", 10);
+        forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
 
         saveDefaults();
    }
@@ -339,6 +351,15 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         getPhpbbGroup = configFile.getInt("ExternalBoardOptions.phpbbActivatedGroupId", 2);
         supportOldPassword = configFile.getBoolean("settings.security.supportOldPasswordHash", false);
         getWordPressPrefix = configFile.getString("ExternalBoardOptions.wordpressTablePrefix", "wp_");
+        purgeLimitedCreative = configFile.getBoolean("Purge.removeLimitedCreativesInventories", false);
+        purgeAntiXray = configFile.getBoolean("Purge.removeAntiXRayFile", false);
+        //purgePermissions = configFile.getBoolean("Purge.removePermissions", false);
+        enableProtection = configFile.getBoolean("Protection.enableProtection", false);
+        countries = (List<String>) configFile.getList("Protection.countries");
+        enableAntiBot = configFile.getBoolean("Protection.enableAntiBot", false);
+        antiBotSensibility = configFile.getInt("Protection.antiBotSensibility", 5);
+        antiBotDuration = configFile.getInt("Protection.antiBotDuration", 10);
+        forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
 }
 
 public void mergeConfig() {
@@ -433,7 +454,29 @@ public void mergeConfig() {
     	   set("Xenoforo.predefinedSalt", null);
        if(configFile.getString("settings.security.passwordHash","SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash","SHA256").toUpperCase().equals("XFSHA256"))
     	   set("settings.security.passwordHash", "XENFORO");
-
+       if(!contains("Purge.removeLimitedCreativesInventories"))
+    	   set("Purge.removeLimitedCreativesInventories", false);
+       if(!contains("Purge.removeAntiXRayFile"))
+    	   set("Purge.removeAntiXRayFile", false);
+       /*if(!contains("Purge.removePermissions"))
+    	   set("Purge.removePermissions", false);*/
+       if(!contains("Protection.enableProtection"))
+    	   set("Protection.enableProtection", false);
+       if(!contains("Protection.countries")) {
+    	   countries = new ArrayList<String>();
+    	   countries.add("US");
+    	   countries.add("GB");
+    	   set("Protection.countries", countries);
+       }
+       if(!contains("Protection.enableAntiBot"))
+    	   set("Protection.enableAntiBot", false);
+       if(!contains("Protection.antiBotSensibility"))
+    	   set("Protection.antiBotSensibility", 5);
+       if(!contains("Protection.antiBotDuration"))
+    	   set("Protection.antiBotDuration", 10);
+       if(!contains("settings.forceCommands"))
+    	   set("settings.forceCommands", new ArrayList<String>());
+       
        plugin.getLogger().info("Merge new Config Options if needed..");
        plugin.saveConfig();
 
@@ -581,11 +624,11 @@ public void mergeConfig() {
         setDefaults(new MemoryConfiguration());
     }
 
-/**
-* Check loaded defaults against current configuration
-*
-* @return false When all defaults aren't present in config
-*/
+    /**
+     * Check loaded defaults against current configuration
+     *
+     * @return false When all defaults aren't present in config
+     */
     public boolean checkDefaults() {
         if (getDefaults() == null) {
             return true;
@@ -604,8 +647,14 @@ public void mergeConfig() {
         return "en";
     }
 
-    public enum messagesLang {
-        en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, lt, it, ko, pt
+    public static void switchAntiBotMod(boolean mode) {
+    	if (mode)
+    		isKickNonRegisteredEnabled = true;
+    	else
+    		isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered",false);
     }
 
+    public enum messagesLang {
+        en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, lt, it, ko, pt, nl
+    }
 }

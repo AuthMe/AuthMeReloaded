@@ -4,6 +4,7 @@ import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -177,14 +178,14 @@ public class MySQLDataSource implements DataSource {
             rs = pst.executeQuery();
             if (rs.next()) {
                 if (rs.getString(columnIp).isEmpty() ) {
-                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail));
+                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                 } else {
                         if(!columnSalt.isEmpty()){
                             if(!columnGroup.isEmpty())
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                            else return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail));
+                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
+                            else return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                         } else {
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                         }
                  }
             } else {
@@ -209,7 +210,7 @@ public class MySQLDataSource implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            if ((columnSalt.isEmpty() || columnSalt == null) && (auth.getSalt().isEmpty() || auth.getSalt() == null)) {
+            if ((columnSalt == null || columnSalt.isEmpty()) && (auth.getSalt() == null || auth.getSalt().isEmpty())) {
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + ") VALUES (?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getHash());
@@ -227,8 +228,8 @@ public class MySQLDataSource implements DataSource {
             }
             if (!columnOthers.isEmpty()) {
             	for(String column : columnOthers) {
-            		pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + "." + column + "=? WHERE " + columnName + "=?;");
-                    pst.setString(1, auth.getNickname());
+            		pst = con.prepareStatement("UPDATE " + tableName + " SET " + column + "=? WHERE " + columnName + "=?;");
+                    pst.setString(1, auth.getRealname());
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
             	}
@@ -241,12 +242,30 @@ public class MySQLDataSource implements DataSource {
                 rs = pst.executeQuery();
                 if (rs.next()) {
                 	id = rs.getInt(columnID);
+                	// Insert player in phpbb_user_group
                 	pst = con.prepareStatement("INSERT INTO " + Settings.getPhpbbPrefix + "user_group (group_id, user_id, group_leader, user_pending) VALUES (?,?,?,?);");
                 	pst.setInt(1, Settings.getPhpbbGroup);
                 	pst.setInt(2, id);
                 	pst.setInt(3, 0);
                 	pst.setInt(4, 0);
                 	pst.executeUpdate();
+                	// Update player group in phpbb_users
+            		pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".group_id=? WHERE " + columnName + "=?;");
+                    pst.setInt(1, Settings.getPhpbbGroup);
+                    pst.setString(2, auth.getNickname());
+                    pst.executeUpdate();
+                    // Get current time without ms
+                    long time = System.currentTimeMillis()/1000;
+                    // Update user_regdate
+            		pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".user_regdate=? WHERE " + columnName + "=?;");
+                    pst.setLong(1, time);
+                    pst.setString(2, auth.getNickname());
+                    pst.executeUpdate();
+                    // Update user_lastvisit
+            		pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".user_lastvisit=? WHERE " + columnName + "=?;");
+                    pst.setLong(1, time);
+                    pst.setString(2, auth.getNickname());
+                    pst.executeUpdate();
                 }
             }
             if (Settings.getPasswordHash == HashAlgorithm.WORDPRESS) {
@@ -426,6 +445,9 @@ public class MySQLDataSource implements DataSource {
             while (rs.next()) {
             	list.add(rs.getString(columnName));
             }
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
+            pst.setLong(1, until);
+            pst.executeUpdate();
             return list;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());

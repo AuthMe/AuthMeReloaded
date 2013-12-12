@@ -20,10 +20,15 @@ public class BungeeCordMessage implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
+        if (!channel.equals("BungeeCord")) {
+            return;
+        }
         try {
             final DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-            if (in.readUTF().equals("IP")) { //We need only the IP channel
-                plugin.realIp.put(player.getName().toLowerCase(), in.readUTF()); //Put the IP (only the ip not the port) in the hashmap
+            String subchannel = in.readUTF();
+            if (subchannel.equals("IP")) { //We need only the IP channel
+            	String ip = in.readUTF();
+                plugin.realIp.put(player.getName().toLowerCase(), ip); //Put the IP (only the ip not the port) in the hashmap
             }
         } catch (IOException ex) {
         }

@@ -126,7 +126,7 @@ public class RegisterCommand implements CommandExecutor {
     		            	if (PasswordSecurity.userSalt.containsKey(name)) {
     		        			try {
     		        				final String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, thePass, name);
-    			            		final PlayerAuth fAuth = new PlayerAuth(name, hashnew, PasswordSecurity.userSalt.get(name), ip, new Date().getTime(), (int) player.getLocation().getX() , (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email);
+    			            		final PlayerAuth fAuth = new PlayerAuth(name, hashnew, PasswordSecurity.userSalt.get(name), ip, new Date().getTime(), (int) player.getLocation().getX() , (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email, player.getName());
     		        	            database.saveAuth(fAuth);
     								database.updateEmail(fAuth);
     								database.updateSession(fAuth);
@@ -137,7 +137,7 @@ public class RegisterCommand implements CommandExecutor {
     		            	} else {
     		        			try {
     		        				final String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, thePass, name);
-    		        				final PlayerAuth fAuth = new PlayerAuth(name, hashnew, ip, new Date().getTime(), (int) player.getLocation().getX() , (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email);
+    		        				final PlayerAuth fAuth = new PlayerAuth(name, hashnew, ip, new Date().getTime(), (int) player.getLocation().getX() , (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email, player.getName());
     		        				database.saveAuth(fAuth);
     								database.updateEmail(fAuth);
     								database.updateSession(fAuth);
@@ -216,9 +216,9 @@ public class RegisterCommand implements CommandExecutor {
                     hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[0], name);
                 if (Settings.getMySQLColumnSalt.isEmpty())
                 {
-                	auth = new PlayerAuth(name, hash, ip, new Date().getTime());
+                	auth = new PlayerAuth(name, hash, ip, new Date().getTime(), "your@email.com",  player.getName());
                 } else {
-                	auth = new PlayerAuth(name, hash, PasswordSecurity.userSalt.get(name), ip, new Date().getTime());
+                	auth = new PlayerAuth(name, hash, PasswordSecurity.userSalt.get(name), ip, new Date().getTime(), player.getName());
                 }
                 if (!database.saveAuth(auth)) {
                     player.sendMessage(m._("error"));

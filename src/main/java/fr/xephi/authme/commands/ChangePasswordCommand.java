@@ -59,7 +59,10 @@ public class ChangePasswordCommand implements CommandExecutor {
             if (PasswordSecurity.comparePasswordWithHash(args[0], PlayerCache.getInstance().getAuth(name).getHash(), name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
                 auth.setHash(hashnew);
-                auth.setSalt(PasswordSecurity.userSalt.get(name));
+                if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
+                	auth.setSalt(PasswordSecurity.userSalt.get(name));
+                else
+                	auth.setSalt("");
                 if (!database.updatePassword(auth)) {
                     player.sendMessage(m._("error"));
                     return true;
