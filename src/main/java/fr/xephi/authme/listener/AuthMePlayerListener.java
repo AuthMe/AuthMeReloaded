@@ -746,7 +746,7 @@ public class AuthMePlayerListener implements Listener {
             	RestoreInventoryEvent ev = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
             	plugin.getServer().getPluginManager().callEvent(ev);
             	if (!ev.isCancelled()) {
-            		API.setPlayerInventory(player, limbo.getInventory(), limbo.getArmour());
+            		API.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
             	}
             }
             utils.addNormal(player, limbo.getGroup());
