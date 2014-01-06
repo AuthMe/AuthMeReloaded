@@ -1,15 +1,15 @@
-unknown_user: "L'utente non è nel database"
+unknown_user: "L'utente non è presente nel database"
 unsafe_spawn: 'Il tuo punto di logout non era sicuro, sei stato teletrasportato allo Spawn'
 not_logged_in: '&cNon loggato!'
 reg_voluntarily: 'Puoi registrare il tuo nickname nel server con "/register <password> <ConfermaPassword>"'
 usage_log: '&cUtilizzo: /login <password>'
 wrong_pwd: '&cPassword sbagliata'
-unregistered: '&cDe-registrato correttamente!'
+unregistered: '&cCancellato correttamente!'
 reg_disabled: '&cLe registrazioni sono disabilitate'
 valid_session: '&cLoggato attraverso la sessione'
 login: '&cLoggato correttamente!'
-vb_nonActiv: "Il tuo account non è ancora attivo, controlla le tue Email!"
-user_regged: "&cUtente già registrato"
+vb_nonActiv: 'Il tuo account non è ancora attivo, controlla le tue Email!'
+user_regged: '&cUtente già registrato'
 usage_reg: '&cUtilizzo: /register <password> <confermaPassword>'
 max_reg: 'Hai raggiunto il numero massimo di registrazioni per il tuo account'
 no_perm: '&cNessun Permesso'
@@ -18,39 +18,39 @@ login_msg: '&cPerfavore, loggati con "/login <password>"'
 reg_msg: '&cPerfavore, registrati con "/register <password> <confermaPassword>"'
 reg_email_msg: '&cPerfavore, registrati con "/register <email> <confermaEmail>"'
 usage_unreg: '&cUtilizzo: /unregister <password>'
-pwd_changed: '&cPassword cambiata!'
+pwd_changed: '&cPassword cambiata correttamente!'
 user_unknown: '&cUtente non registrato'
-password_error: 'La Password non corrisponde'
+password_error: 'Le Password non corrispondono'
 unvalid_session: "I tuoi dati non combaciano con l'ultima sessione. Per favore attendi la fine della sessione attuale"
-reg_only: "Possono entrare solo utenti registrati! Perfavore, vai su http://example.com per registrarti"
-logged_in: "&cSei già loggato!"
+reg_only: 'Possono entrare solo utenti registrati! Perfavore, vai su http://example.com per registrarti'
+logged_in: '&cSei già loggato!'
 logout: '&cDisconnesso correttamente'
-same_nick: "Lo stesso nickname è già online"
+same_nick: 'Lo stesso nickname è già online'
 registered: '&cRegistrato correttamente!'
-pass_len: "La tua password è troppo corta o troppo lunga"
+pass_len: 'La tua password è troppo corta o troppo lunga'
 reload: 'La configurazione e il database sono stati ricaricati'
 timeout: 'Timeout di Login'
 usage_changepassword: 'Utilizzo: /changepassword <vecchiaPassword> <nuovaPassword>'
-name_len: "&cIl tuo nickname è troppo corto o troppo lungo"
+name_len: '&cIl tuo nickname è troppo corto o troppo lungo'
 regex: '&cIl tuo nickname contiene caratteri strani. Caratteri abilitati: REG_EX'
 add_email: '&cPer una maggiore sicurezza, aggiungi una mail con : /email add <tuaEmail> <confermaEmail>'
-bad_database_email: "[AuthMe] Il comando /email è utilizzabile solo con MySQL o SQLite, contatta un admin"
+bad_database_email: '[AuthMe] Il comando /email è utilizzabile solo con MySQL o SQLite, contatta un admin'
 recovery_email: '&cDimenticata la tua password? Perfavore, fai /email recovery <tuaEmail>'
 usage_captcha: '&cUtilizzo: /captcha <ilCaptcha>'
 wrong_captcha: '&cCaptcha sbagliato, perfavore fai: /captcha THE_CAPTCHA'
-valid_captcha: "&cIl tuo captcha è valido!"
-kick_forvip: "&cUn player VIP è entrato mentre il server era pieno!"
-kick_fullserver: "&cIl server è attualmente pieno, ci dispiace!"
+valid_captcha: '&cIl tuo captcha è valido!'
+kick_forvip: '&cUn utente VIP è entrato mentre il server era pieno!'
+kick_fullserver: '&cIl server è attualmente pieno, riprova più tardi!'
 usage_email_add: '&fUtilizzo: /email add <email> <confermaEmail>'
 usage_email_change: '&fUtilizzo: /email change <vecchiaEmail> <nuovaEmail>'
 usage_email_recovery: '&fUtilizzo: /email recovery <email>'
-new_email_invalid: '[AuthMe] La nuova email non è valida!'
-old_email_invalid: '[AuthMe] La vecchia email non è valida!'
-email_invalid: "[AuthMe] L'email non è valida"
-email_added: '[AuthMe] Email Aggiunta!'
+new_email_invalid: '[AuthMe] La nuova Email non è valida!'
+old_email_invalid: '[AuthMe] La vecchia Email non è valida!'
+email_invalid: "[AuthMe] L'Email non è valida"
+email_added: '[AuthMe] Email aggiunta!'
 email_confirm: '[AuthMe] Conferma la tua Email!'
 email_changed: '[AuthMe] Email cambiata!'
 email_send: '[AuthMe] Email di recupero inviata!'
-country_banned: 'Your country is banned from this server'
-antibot_auto_enabled: '[AuthMe] AntiBotMod automatically enabled due to massive connections!'
-antibot_auto_disabled: '[AuthMe] AntiBotMod automatically disabled after %m Minutes, hope invasion stopped'
+country_banned: 'Il tuo paese è bannato su questo server'
+antibot_auto_enabled: '[AuthMe] AntiBotMod è stato automaticamente abilitato a seguito delle numerose connessioni!'
+antibot_auto_disabled: "[AuthMe] AntiBotMod è stato automaticamente disabilitato dopo %m Minuti, sperando che l'invasione sia finita"

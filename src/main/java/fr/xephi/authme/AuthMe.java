@@ -145,7 +145,6 @@ public class AuthMe extends JavaPlugin {
         	*/
         }
 
-
         //Load MailApi
         if(!Settings.getmailAccount.isEmpty() && !Settings.getmailPassword.isEmpty())
         	mail = new SendMailSSL(this);
@@ -184,7 +183,7 @@ public class AuthMe extends JavaPlugin {
             case FILE:
             	if (Settings.useMultiThreading) {
                     FlatFileThread fileThread = new FlatFileThread();
-                    fileThread.run();
+                    fileThread.start();
                     database = fileThread;
                     databaseThread = fileThread;
                     break;
@@ -205,7 +204,7 @@ public class AuthMe extends JavaPlugin {
             case MYSQL:
             	if (Settings.useMultiThreading) {
                     MySQLThread sqlThread = new MySQLThread();
-                    sqlThread.run();
+                    sqlThread.start();
                     database = sqlThread;
                     databaseThread = sqlThread;
                     break;
@@ -226,7 +225,7 @@ public class AuthMe extends JavaPlugin {
             case SQLITE:
             	if (Settings.useMultiThreading) {
                     SQLiteThread sqliteThread = new SQLiteThread();
-                    sqliteThread.run();
+                    sqliteThread.start();
                     database = sqliteThread;
                     databaseThread = sqliteThread;
                     break;
@@ -255,6 +254,7 @@ public class AuthMe extends JavaPlugin {
 
 		// Setup Management
 		management = new Management(database, this);
+		management.start();
 
         PluginManager pm = getServer().getPluginManager();
         if (Settings.bungee) {
@@ -325,6 +325,10 @@ public class AuthMe extends JavaPlugin {
         	enableProtection();
         if (Settings.usePurge)
         	autoPurge();
+
+        // Start Email recall task if needed
+        recallEmail();
+
         ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
     }
 
@@ -354,9 +358,7 @@ public class AuthMe extends JavaPlugin {
 					} catch (NumberFormatException nfee) {
 					}
 				}
-    		} catch (NullPointerException npe) {}
-    		catch (NoClassDefFoundError ncdfe) {}
-    		catch (ClassCastException cce) {}
+    		} catch (Exception e) {}
     	}
 	}
 
@@ -737,6 +739,27 @@ public class AuthMe extends JavaPlugin {
     public void switchAntiBotMod(boolean mode) {
     	this.antibotMod = mode;
     	Settings.switchAntiBotMod(mode);
+    }
+
+    private void recallEmail() {
+    	if (!Settings.recallEmail)
+    		return;
+    	Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
+			@Override
+			public void run() {
+		    	for (Player player : Bukkit.getOnlinePlayers()) {
+		    		if (player.isOnline()) {
+		    			String name = player.getName().toLowerCase();
+		    			if (database.isAuthAvailable(name))
+		    				if (PlayerCache.getInstance().isAuthenticated(name)) {
+		    					String email = database.getAuth(name).getEmail();
+		    					if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
+		    						m._(player, "add_email");
+		    				}
+		    		}
+		    	}
+			}
+    	}, 1, 1200 * Settings.delayRecall);
     }
 
 }

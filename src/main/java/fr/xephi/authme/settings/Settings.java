@@ -48,7 +48,7 @@ public final class Settings extends YamlConfiguration {
             useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
             disableSocialSpy, useMultiThreading, forceOnlyAfterLogin, useEssentialsMotd,
             usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword, purgeLimitedCreative,
-            purgeAntiXray, purgePermissions, enableProtection, enableAntiBot;
+            purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -62,7 +62,7 @@ public final class Settings extends YamlConfiguration {
     public static int getWarnMessageInterval, getSessionTimeout, getRegistrationTimeout, getMaxNickLength,
             getMinNickLength, getPasswordMinLen, getMovementRadius, getmaxRegPerIp, getNonActivatedGroup,
             passwordMaxLength, getRecoveryPassLength, getMailPort, maxLoginTry, captchaLength, saltLength, getmaxRegPerEmail,
-            bCryptLog2Rounds, purgeDelay, getPhpbbGroup, antiBotSensibility, antiBotDuration;
+            bCryptLog2Rounds, purgeDelay, getPhpbbGroup, antiBotSensibility, antiBotDuration, delayRecall;
 
     protected static YamlConfiguration configFile;
 
@@ -218,6 +218,8 @@ public void loadConfigOptions() {
         antiBotSensibility = configFile.getInt("Protection.antiBotSensibility", 5);
         antiBotDuration = configFile.getInt("Protection.antiBotDuration", 10);
         forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
+        recallEmail = configFile.getBoolean("Email.recallPlayers", false);
+        delayRecall = configFile.getInt("Email.delayRecall", 5);
 
         saveDefaults();
    }
@@ -360,6 +362,8 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         antiBotSensibility = configFile.getInt("Protection.antiBotSensibility", 5);
         antiBotDuration = configFile.getInt("Protection.antiBotDuration", 10);
         forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
+        recallEmail = configFile.getBoolean("Email.recallPlayers", false);
+        delayRecall = configFile.getInt("Email.delayRecall", 5);
 }
 
 public void mergeConfig() {
@@ -476,8 +480,13 @@ public void mergeConfig() {
     	   set("Protection.antiBotDuration", 10);
        if(!contains("settings.forceCommands"))
     	   set("settings.forceCommands", new ArrayList<String>());
+       if(!contains("Email.recallPlayers"))
+    	   set("Email.recallPlayers", false);
+       if(!contains("Email.delayRecall"))
+    	   set("Email.delayRecall", 5);
        
-       plugin.getLogger().info("Merge new Config Options if needed..");
+       plugin.getLogger().warning("Merge new Config Options if needed..");
+       plugin.getLogger().warning("Please check your config.yml file!");
        plugin.saveConfig();
 
        return;
@@ -655,6 +664,6 @@ public void mergeConfig() {
     }
 
     public enum messagesLang {
-        en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, lt, it, ko, pt, nl
+    	en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl
     }
 }

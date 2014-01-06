@@ -40,7 +40,7 @@ public class EmailCommand implements CommandExecutor {
         }  
 
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            sender.sendMessage(m._("no_perm"));
+        	m._(sender, "no_perm");
             return true;
         }
 
@@ -48,89 +48,89 @@ public class EmailCommand implements CommandExecutor {
        String name = player.getName().toLowerCase();
 
        if (args.length == 0) {
-           player.sendMessage(m._("usage_email_add"));
-           player.sendMessage(m._("usage_email_change"));
-           player.sendMessage(m._("usage_email_recovery"));
+           m._(player, "usage_email_add");
+           m._(player, "usage_email_change");
+           m._(player, "usage_email_recovery");
            return true;
        }
 
         if(args[0].equalsIgnoreCase("add")) {
         	if (args.length != 3) {
-        		player.sendMessage(m._("usage_email_add"));
+        		m._(player, "usage_email_add");
         		return true;
         	}
             if(args[1].equals(args[2]) && PlayerCache.getInstance().isAuthenticated(name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
                 if (auth.getEmail() == null || (!auth.getEmail().equals("your@email.com") && !auth.getEmail().isEmpty())) {
-                	player.sendMessage("usage_email_change");
+                	m._(player, "usage_email_change");
                 	return true;
                 }
                 if (!args[1].contains("@")) {
-                	player.sendMessage(m._("email_invalid"));
+                	m._(player, "email_invalid");
                 	return true;
                 }
                 auth.setEmail(args[1]);
                 if (!data.updateEmail(auth)) {
-                    player.sendMessage(m._("error"));
+                    m._(player, "error");
                     return true;
                 }
                 PlayerCache.getInstance().updatePlayer(auth);
-                player.sendMessage(m._("email_added"));
+                m._(player, "email_added");
                 player.sendMessage(auth.getEmail());
             } else if (PlayerCache.getInstance().isAuthenticated(name)){
-                player.sendMessage(m._("email_confirm"));
+                m._(player, "email_confirm");
             } else {
             	if (!data.isAuthAvailable(name)) {
-            		player.sendMessage(m._("login_msg"));
+            		m._(player, "login_msg");
             	} else {
-            		player.sendMessage(m._("reg_email_msg"));
+            		m._(player, "reg_email_msg");
             	}
             }
         } else if(args[0].equalsIgnoreCase("change") && args.length == 3 ) {
             if(PlayerCache.getInstance().isAuthenticated(name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
                 if (auth.getEmail() == null || auth.getEmail().equals("your@email.com") || auth.getEmail().isEmpty()) {
-                	player.sendMessage(m._("usage_email_add"));
+                	m._(player, "usage_email_add");
                 	return true;
                 }
                 if (!args[1].equals(auth.getEmail())) { 
-                	player.sendMessage(m._("old_email_invalid"));
+                	m._(player, "old_email_invalid");
                 	return true;
                 }
                 if (!args[2].contains("@")) {
-                	player.sendMessage(m._("new_email_invalid"));
+                	m._(player, "new_email_invalid");
                 	return true;
                 }
                 auth.setEmail(args[2]);
                 if (!data.updateEmail(auth)) {
-                    player.sendMessage(m._("bad_database_email"));
+                    m._(player, "error");
                     return true;
                 }
                 PlayerCache.getInstance().updatePlayer(auth);
-                player.sendMessage(m._("email_changed"));
+                m._(player, "email_changed");
                 player.sendMessage(m._("email_defined") + auth.getEmail());
             } else if (PlayerCache.getInstance().isAuthenticated(name)){
-                player.sendMessage(m._("email_confirm"));
+                m._(player, "email_confirm");
             } else {
             	if (!data.isAuthAvailable(name)) {
-            		player.sendMessage(m._("login_msg"));
+            		m._(player, "login_msg");
             	} else {
-            		player.sendMessage(m._("reg_email_msg"));
+            		m._(player, "reg_email_msg");
             	}
             }
         }
         if(args[0].equalsIgnoreCase("recovery")) {
         	if (args.length != 2) {
-        		player.sendMessage(m._("usage_email_recovery"));
+        		m._(player, "usage_email_recovery");
         		return true;
         	}
         	if (plugin.mail == null) {
-        		player.sendMessage(m._("error"));
+        		m._(player, "error");
         		return true;
         	}
         	if (data.isAuthAvailable(name)) {
         		if (PlayerCache.getInstance().isAuthenticated(name)) {
-        			player.sendMessage(m._("logged_in"));
+        			m._(player, "logged_in");
         			return true;
         		}
         			try {
@@ -143,16 +143,16 @@ public class EmailCommand implements CommandExecutor {
 		                } else if (data.isAuthAvailable(name)) {
 		                    auth = data.getAuth(name);
 		                } else {
-		                    sender.sendMessage(m._("unknown_user"));
+		                    m._(player, "unknown_user");
 		                    return true;
 		                }
 		        		if (Settings.getmailAccount.equals("") || Settings.getmailAccount.isEmpty()) {
-		        			player.sendMessage(m._("error"));
+		        			m._(player, "error");
 		        			return true;
 		        		}
 		        		
 		        		if (!args[1].equalsIgnoreCase(auth.getEmail())) { 
-		        			player.sendMessage(m._("email_invalid"));
+		        			m._(player, "email_invalid");
 		        			return true;
 		        		}
 		        		final String finalhashnew = hashnew;
@@ -170,16 +170,16 @@ public class EmailCommand implements CommandExecutor {
 			        		});
 		        		}
 		                plugin.mail.main(auth, thePass);
-		                player.sendMessage(m._("email_send"));
+		                m._(player, "email_send");
 					} catch (NoSuchAlgorithmException ex) {
 			            ConsoleLogger.showError(ex.getMessage());
-			            sender.sendMessage(m._("error"));
+			            m._(sender, "error");
 					} catch (NoClassDefFoundError ncdfe) {
 						ConsoleLogger.showError(ncdfe.getMessage());
-			            sender.sendMessage(m._("error"));
+						m._(sender, "error");
 					}
         		} else {
-        		player.sendMessage(m._("reg_email_msg"));
+        		m._(player, "reg_email_msg");
         	}
         }
         return true;

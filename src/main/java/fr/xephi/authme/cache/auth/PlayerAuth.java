@@ -106,13 +106,13 @@ public class PlayerAuth {
     }
 
     public String getHash() {
-        if(salt != null && !salt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
-        	vBhash = "$MD5vb$"+salt+"$"+hash;
-            return vBhash;
-        }
-        else {
-        	return hash;
-        } 
+    	if (Settings.getPasswordHash == HashAlgorithm.MD5VB) {
+            if(salt != null && !salt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
+            	vBhash = "$MD5vb$"+salt+"$"+hash;
+                return vBhash;
+            }
+    	}
+        return hash;
     }
 
     public String getSalt() {

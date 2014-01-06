@@ -34,7 +34,7 @@ import fr.xephi.authme.settings.Settings;
  * @authors Xephi59, <a href="http://dev.bukkit.org/profiles/Possible/">Possible</a>
  *
  */
-public class Management {
+public class Management extends Thread {
     private Messages m = Messages.getInstance();
     private PlayersLogs pllog = PlayersLogs.getInstance();
     private Utils utils = Utils.getInstance();
@@ -48,6 +48,9 @@ public class Management {
         this.database = database;
         this.plugin = plugin;
         this.pm = plugin.getServer().getPluginManager();
+    }
+    
+    public void run() {
     }
 
     public void performLogin(final Player player, final String password, final boolean passpartu, final boolean forceLogin) {
@@ -111,20 +114,20 @@ public class Management {
          */
         protected PlayerAuth preAuth() {
             if (PlayerCache.getInstance().isAuthenticated(name)) {
-                player.sendMessage(m._("logged_in"));
+            	m._(player, "logged_in");
                 return null;
             }
             if (!database.isAuthAvailable(name)) {
-                player.sendMessage(m._("user_unknown"));
+            	m._(player, "user_unknown");
                 return null;
             }
             PlayerAuth pAuth = database.getAuth(name);
             if (pAuth == null) {
-                player.sendMessage(m._("user_unknown"));
+            	m._(player, "user_unknown");
                 return null;
             }
             if (!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
-                player.sendMessage(m._("vb_nonActiv"));
+            	m._(player, "vb_nonActiv");
                 return null;
             }
             return pAuth;
@@ -143,7 +146,7 @@ public class Management {
             		passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, name);
             	} catch (Exception ex) {
             		ConsoleLogger.showError(ex.getMessage());
-            		player.sendMessage(m._("error"));
+            		m._(player, "error");
             		return;
             	}
             if (passwordVerified && player.isOnline()) {
@@ -174,7 +177,7 @@ public class Management {
                 }
 
                 player.setNoDamageTicks(0);
-                player.sendMessage(m._("login"));
+                m._(player, "login");
 
                 displayOtherAccounts(auth);
 
@@ -204,13 +207,13 @@ public class Management {
                         @Override
                         public void run() {
                             if (AuthMePlayerListener.gameMode != null && AuthMePlayerListener.gameMode.containsKey(name)) {
-                                player.setGameMode(GameMode.getByValue(AuthMePlayerListener.gameMode.get(name)));
+                                player.setGameMode(AuthMePlayerListener.gameMode.get(name));
                             }
                             player.kickPlayer(m._("wrong_pwd"));
                         }
                     });
                 } else {
-                    player.sendMessage(m._("wrong_pwd"));
+                	m._(player, "wrong_pwd");
                     return;
                 }
             } else {
@@ -259,7 +262,7 @@ public class Management {
             }
 
             player.setNoDamageTicks(0);
-            player.sendMessage(m._("login"));
+            m._(player, "login");
 
             displayOtherAccounts(auth);
 
@@ -362,7 +365,7 @@ public class Management {
                  * Also it's the current world inventory !
                  */
                 if (!Settings.forceOnlyAfterLogin) {
-                	player.setGameMode(GameMode.getByValue(limbo.getGameMode()));
+                	player.setGameMode(limbo.getGameMode());
                     // Inventory - Make it after restore GameMode , cause we need to restore the
                     // right inventory in the right gamemode
                     if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
@@ -410,6 +413,7 @@ public class Management {
             		if (p.isOnline())
             			p.sendMessage(AuthMePlayerListener.joinMessage.get(name));
             	}
+            	AuthMePlayerListener.joinMessage.remove(name);
             }
             
             // The Loginevent now fires (as intended) after everything is processed

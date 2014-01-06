@@ -2,9 +2,8 @@ package fr.xephi.authme.settings;
 
 import java.io.File;
 import java.io.InputStream;
-
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
-
 import fr.xephi.authme.AuthMe;
 
 public class Messages extends CustomConfiguration {
@@ -66,11 +65,8 @@ public class Messages extends CustomConfiguration {
         this.save();
     }
 
-    public String _(String msg) {
+    public void _(CommandSender sender, String msg) {
         String loc = (String) this.get(msg, this.getDefault(msg));
-        if (loc != null) {
-            return loc.replace("&", "\u00a7");
-        }
         if (loc == null && !contains(msg)) {
         	set(msg, this.getDefault(msg));
         	save();
@@ -78,7 +74,22 @@ public class Messages extends CustomConfiguration {
         	loc = (String) this.get(msg, this.getDefault(msg));
         }
         if (loc == null)
-        	return "Error with Translation files; Please contact the admin ";
+        	loc =  "Error with Translation files; Please contact the admin ";
+        for (String l : loc.split("&n")) {
+        	sender.sendMessage(l.replace("&", "\u00a7"));
+        }
+    }
+
+    public String _(String msg) {
+        String loc = (String) this.get(msg, this.getDefault(msg));
+        if (loc == null && !contains(msg)) {
+        	set(msg, this.getDefault(msg));
+        	save();
+        	load();
+        	loc = (String) this.get(msg, this.getDefault(msg));
+        }
+        if (loc == null)
+        	loc =  "Error with Translation files; Please contact the admin ";
         return loc.replace("&", "\u00a7");
     }
 

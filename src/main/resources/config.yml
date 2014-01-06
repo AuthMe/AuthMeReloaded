@@ -321,6 +321,10 @@ Email:
     mailText: 'Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword'
     # Like maxRegPerIp but with email
     maxRegPerEmail: 1
+    # Recall players to add an email ?
+    recallPlayers: false
+    # Delay in minute for the recall scheduler
+    delayRecall: 5
 Hooks:
     # Do we need to hook with multiverse for spawn checking?
     multiverse: true

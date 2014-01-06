@@ -7,7 +7,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -50,7 +49,7 @@ public class LogoutCommand implements CommandExecutor {
         }
 
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            sender.sendMessage(m._("no_perm"));
+        	m._(sender, "no_perm");
             return true;
         }
 
@@ -58,7 +57,7 @@ public class LogoutCommand implements CommandExecutor {
         String name = player.getName().toLowerCase();
 
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
-            player.sendMessage(m._("not_logged_in"));
+        	m._(player, "not_logged_in");
             return true;
         }
 
@@ -119,7 +118,7 @@ public class LogoutCommand implements CommandExecutor {
 	        	 player.getVehicle().eject();
         } catch (NullPointerException npe) {
         }
-        player.sendMessage(m._("logout"));
+        m._(player, "logout");
         ConsoleLogger.info(player.getDisplayName() + " logged out");
         if(plugin.notifications != null) {
         	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged out!"));

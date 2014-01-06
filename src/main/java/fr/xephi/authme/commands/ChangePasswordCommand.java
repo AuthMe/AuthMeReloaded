@@ -37,19 +37,19 @@ public class ChangePasswordCommand implements CommandExecutor {
         }
 
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            sender.sendMessage(m._("no_perm"));
+        	m._(sender, "no_perm");
             return true;
         }
 
         Player player = (Player) sender;
         String name = player.getName().toLowerCase();
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
-            player.sendMessage(m._("not_logged_in"));
+        	m._(player, "not_logged_in");
             return true;
         }
 
         if (args.length != 2) {
-            player.sendMessage(m._("usage_changepassword"));
+        	m._(player, "usage_changepassword");
             return true;
         }
 
@@ -64,22 +64,22 @@ public class ChangePasswordCommand implements CommandExecutor {
                 else
                 	auth.setSalt("");
                 if (!database.updatePassword(auth)) {
-                    player.sendMessage(m._("error"));
+                	m._(player, "error");
                     return true;
                 }
                 database.updateSalt(auth);
                 PlayerCache.getInstance().updatePlayer(auth);
-                player.sendMessage(m._("pwd_changed"));
+                m._(player, "pwd_changed");
                 ConsoleLogger.info(player.getName() + " changed his password");
                 if(plugin.notifications != null) {
                 	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " change his password!"));
                 }
             } else {
-                player.sendMessage(m._("wrong_pwd"));
+            	m._(player, "wrong_pwd");
             }
         } catch (NoSuchAlgorithmException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            sender.sendMessage(m._("error"));
+            m._(sender, "error");
         }
         return true;
     }

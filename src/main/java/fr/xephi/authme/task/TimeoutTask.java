@@ -45,9 +45,9 @@ public class TimeoutTask implements Runnable {
                         playerCache.removeCache(name);
                     } 
                 } 
-                int gm = AuthMePlayerListener.gameMode.get(name);
-            	player.setGameMode(GameMode.getByValue(gm));
-            	ConsoleLogger.info("Set " + player.getName() + " to gamemode: " + GameMode.getByValue(gm).name());
+                GameMode gm = AuthMePlayerListener.gameMode.get(name);
+            	player.setGameMode(gm);
+            	ConsoleLogger.info("Set " + player.getName() + " to gamemode: " + gm.name());
                 player.kickPlayer(m._("timeout"));
                 break;
             }

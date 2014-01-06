@@ -27,12 +27,12 @@ public class LoginCommand implements CommandExecutor {
         final Player player = (Player) sender;
 
         if (args.length == 0) {
-            player.sendMessage(m._("usage_log"));
+        	m._(player, "usage_log");
             return true;
         }
 
         if (!plugin.authmePermissible(player, "authme." + label.toLowerCase())) {
-            player.sendMessage(m._("no_perm"));
+        	m._(player, "no_perm");
             return true;
         }
     	plugin.management.performLogin(player, args[0], false, false);

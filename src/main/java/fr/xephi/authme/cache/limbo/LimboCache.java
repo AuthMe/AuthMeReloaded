@@ -31,7 +31,7 @@ public class LimboCache {
         String name = player.getName().toLowerCase();
         Location loc = player.getLocation();
         loc.setY(loc.getY() + 0.4D);
-        int gameMode = player.getGameMode().getValue();
+        GameMode gameMode = player.getGameMode();
         ItemStack[] arm;
         ItemStack[] inv;
         boolean operator;
@@ -78,7 +78,7 @@ public class LimboCache {
             		player.sendMessage("Your inventory has been cleaned!");
             	}
             }
-            gameMode = 0;
+            gameMode = GameMode.SURVIVAL;
         }
         if(player.isDead()) {
         	loc = plugin.getSpawnLocation(player.getWorld());

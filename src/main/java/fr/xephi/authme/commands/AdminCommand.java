@@ -55,6 +55,10 @@ public class AdminCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmnd, String label, String[] args) {
+        if (!plugin.authmePermissible(sender, "authme.admin." + args[0].toLowerCase())) {
+     	   m._(sender, "no_perm");
+            return true;
+        }
         if (args.length == 0) {
             sender.sendMessage("Usage: /authme reload - Reload the config");
             sender.sendMessage("/authme register <playername> <password> - Register a player");
@@ -85,11 +89,6 @@ public class AdminCommand implements CommandExecutor {
             }
             return true;
        }
-
-       if (!plugin.authmePermissible(sender, "authme.admin." + args[0].toLowerCase())) {
-            sender.sendMessage(m._("no_perm"));
-            return true;
-        }
 
         if (args[0].equalsIgnoreCase("version")) {
             sender.sendMessage("AuthMe Version: "+AuthMe.getInstance().getDescription().getVersion());
@@ -151,7 +150,7 @@ public class AdminCommand implements CommandExecutor {
             Settings.reloadConfigOptions(newConfig);
             m.reLoad();
             s.reLoad();
-            sender.sendMessage(m._("reload"));
+            m._(sender, "reload");
         } else if (args[0].equalsIgnoreCase("lastlogin")) {
         	if (args.length != 2) {
         		sender.sendMessage("Usage: /authme lastlogin <playername>");
@@ -270,7 +269,7 @@ public class AdminCommand implements CommandExecutor {
             try {
                 String name = args[1].toLowerCase();
                 if (database.isAuthAvailable(name)) {
-                    sender.sendMessage(m._("user_regged"));
+                	m._(sender, "user_regged");
                     return true;
                 }
                 String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
@@ -280,14 +279,14 @@ public class AdminCommand implements CommandExecutor {
                 else
                 	auth.setSalt("");
                 if (!database.saveAuth(auth)) {
-                    sender.sendMessage(m._("error"));
+                	m._(sender, "error");
                     return true;
                 }
-                sender.sendMessage(m._("registered"));
+                m._(sender, "registered");
                 ConsoleLogger.info(args[1] + " registered");
             } catch (NoSuchAlgorithmException ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                sender.sendMessage(m._("error"));
+                m._(sender, "error");
             }
             return true;
         } else if (args[0].equalsIgnoreCase("convertflattosql")) {
@@ -352,7 +351,7 @@ public class AdminCommand implements CommandExecutor {
     		}
     		getAuth.setEmail(args[2]);
             if (!database.updateEmail(getAuth)) {
-                sender.sendMessage(m._("error"));
+            	m._(sender, "error");
                 return true;
             }
             if (PlayerCache.getInstance().getAuth(playername) != null)
@@ -434,13 +433,13 @@ public class AdminCommand implements CommandExecutor {
                 } else if (database.isAuthAvailable(name)) {
                     auth = database.getAuth(name);
                 } else {
-                    sender.sendMessage(m._("unknown_user"));
+                	m._(sender, "unknown_user");
                     return true;
                 }
                 auth.setHash(hash);
                 auth.setSalt(PasswordSecurity.userSalt.get(name));
                 if (!database.updatePassword(auth)) {
-                    sender.sendMessage(m._("error"));
+                	m._(sender, "error");
                     return true;
                 }
                 database.updateSalt(auth);
@@ -448,7 +447,7 @@ public class AdminCommand implements CommandExecutor {
                 ConsoleLogger.info(args[1] + "'s password changed");
             } catch (NoSuchAlgorithmException ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                sender.sendMessage(m._("error"));
+                m._(sender, "error");
             }
             return true;
         } else if (args[0].equalsIgnoreCase("unregister") || args[0].equalsIgnoreCase("unreg") || args[0].equalsIgnoreCase("del") ) {
@@ -458,7 +457,7 @@ public class AdminCommand implements CommandExecutor {
             }
             String name = args[1].toLowerCase();
             if (!database.removeAuth(name)) {
-                sender.sendMessage(m._("error"));
+            	m._(sender, "error");
                 return true;
             }
             PlayerCache.getInstance().removePlayer(name);

@@ -34,27 +34,27 @@ public class CaptchaCommand implements CommandExecutor {
         String name = player.getName().toLowerCase();
 
         if (args.length == 0) {
-            player.sendMessage(m._("usage_captcha"));
+        	m._(player, "usage_captcha");
             return true;
         }
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
-            player.sendMessage(m._("logged_in"));
+        	m._(player, "logged_in");
             return true;
         }
 
         if (!plugin.authmePermissible(player, "authme." + label.toLowerCase())) {
-            player.sendMessage(m._("no_perm"));
+        	m._(player, "no_perm");
             return true;
         }
 
         if (!Settings.useCaptcha) {
-        	player.sendMessage(m._("usage_log"));
+        	m._(player, "usage_log");
         	return true;
         }
 
 		if(!plugin.cap.containsKey(name)) {
-        	player.sendMessage(m._("usage_log"));
+			m._(player, "usage_log");
         	return true;
 		}
 
@@ -69,8 +69,8 @@ public class CaptchaCommand implements CommandExecutor {
             plugin.cap.remove(name);
         } catch (NullPointerException npe) {
         }
-        player.sendMessage(m._("valid_captcha"));
-        player.sendMessage(m._("login_msg"));
+        m._(player, "valid_captcha");
+        m._(player, "login_msg");
         return true;
 	}
 

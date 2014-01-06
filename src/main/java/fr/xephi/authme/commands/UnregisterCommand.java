@@ -49,7 +49,7 @@ public class UnregisterCommand implements CommandExecutor {
         }
 
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            sender.sendMessage(m._("no_perm"));
+        	m._(sender, "no_perm");
             return true;
         }
 
@@ -57,12 +57,12 @@ public class UnregisterCommand implements CommandExecutor {
         String name = player.getName().toLowerCase();
 
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
-            player.sendMessage(m._("not_logged_in"));
+        	m._(player, "not_logged_in");
             return true;
         }
 
         if (args.length != 1) {
-            player.sendMessage(m._("usage_unreg"));
+        	m._(player, "usage_unreg");
             return true;
         }
         try {
@@ -125,7 +125,7 @@ public class UnregisterCommand implements CommandExecutor {
                  }
                 return true;
             } else {
-                player.sendMessage(m._("wrong_pwd"));
+            	m._(player, "wrong_pwd");
             }
         } catch (NoSuchAlgorithmException ex) {
             ConsoleLogger.showError(ex.getMessage());

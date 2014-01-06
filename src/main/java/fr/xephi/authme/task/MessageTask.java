@@ -30,7 +30,9 @@ public class MessageTask implements Runnable {
 
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
-                player.sendMessage(msg);
+            	for (String ms : msg.split("\u00a7n")) {
+            		player.sendMessage(ms);
+            	}
                 BukkitScheduler sched = plugin.getServer().getScheduler();
                 BukkitTask late = sched.runTaskLater(plugin, this, interval * 20);
                 if(LimboCache.getInstance().hasLimboPlayer(name)) {

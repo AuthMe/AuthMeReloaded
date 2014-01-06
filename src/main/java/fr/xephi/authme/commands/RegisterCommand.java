@@ -55,7 +55,7 @@ public class RegisterCommand implements CommandExecutor {
         }
 
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            sender.sendMessage(m._("no_perm"));
+        	m._(sender, "no_perm");
             return true;
         }
 
@@ -71,17 +71,17 @@ public class RegisterCommand implements CommandExecutor {
         final String ip = ipA;
         
         	if (PlayerCache.getInstance().isAuthenticated(name)) {
-                player.sendMessage(m._("logged_in"));
+                m._(player, "logged_in");
                 return true;
             }
 
             if (!Settings.isRegistrationEnabled) {
-                player.sendMessage(m._("reg_disabled"));
+                m._(player, "reg_disabled");
                 return true;
             }
 
             if (database.isAuthAvailable(player.getName().toLowerCase())) {
-                player.sendMessage(m._("user_regged"));
+                m._(player, "user_regged");
                 if (pllog.getStringList("players").contains(player.getName())) {
                	 pllog.getStringList("players").remove(player.getName());
                 }
@@ -90,30 +90,30 @@ public class RegisterCommand implements CommandExecutor {
 
             if(Settings.getmaxRegPerIp > 0 ){
             	if(!plugin.authmePermissible(sender, "authme.allow2accounts") && database.getAllAuthsByIp(ipA).size() >= Settings.getmaxRegPerIp) {
-            		player.sendMessage(m._("max_reg"));
+            		m._(player, "max_reg");
                     return true;
             	}
             }
 
             if(Settings.emailRegistration && !Settings.getmailAccount.isEmpty()) {
             	if(!args[0].contains("@")) {
-                    player.sendMessage(m._("usage_reg"));
+                    m._(player, "usage_reg");
                     return true;
             	}
             	if(Settings.doubleEmailCheck) {
             		if(args.length < 2) {
-                        player.sendMessage(m._("usage_reg"));
+                        m._(player, "usage_reg");
                         return true;
             		}
             		if(!args[0].equals(args[1])) {
-                        player.sendMessage(m._("usage_reg"));
+                        m._(player, "usage_reg");
                         return true;
             		}
             	}
             	final String email = args[0];
             	if(Settings.getmaxRegPerEmail > 0) {
             		if (!plugin.authmePermissible(sender, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
-            			player.sendMessage(m._("max_reg"));
+            			m._(player, "max_reg");
             			return true;
             		}
             	}
@@ -152,7 +152,7 @@ public class RegisterCommand implements CommandExecutor {
                     if(!Settings.getRegisteredGroup.isEmpty()){
                         Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
                     }
-                	player.sendMessage(m._("vb_nonActiv"));
+                    m._(player, "vb_nonActiv");
                 	String msg = m._("login_msg");
                 	int time = Settings.getRegistrationTimeout * 20;
                 	int msgInterval = Settings.getWarnMessageInterval;
@@ -195,12 +195,12 @@ public class RegisterCommand implements CommandExecutor {
             }
 
             if (args.length == 0 || (Settings.getEnablePasswordVerifier && args.length < 2) ) {
-                player.sendMessage(m._("usage_reg"));
+                m._(player, "usage_reg");
                 return true;
             }
 
             if(args[0].length() < Settings.getPasswordMinLen || args[0].length() > Settings.passwordMaxLength) {
-                player.sendMessage(m._("pass_len"));
+            	m._(player, "pass_len");
                 return true;
             }
             try {
@@ -209,7 +209,7 @@ public class RegisterCommand implements CommandExecutor {
                     if (args[0].equals(args[1])) {
                         hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[0], name);
                      } else {
-                        player.sendMessage(m._("password_error"));
+                    	 m._(player, "password_error");
                         return true;
                       }
                 } else
@@ -221,13 +221,13 @@ public class RegisterCommand implements CommandExecutor {
                 	auth = new PlayerAuth(name, hash, PasswordSecurity.userSalt.get(name), ip, new Date().getTime(), player.getName());
                 }
                 if (!database.saveAuth(auth)) {
-                    player.sendMessage(m._("error"));
+                	m._(player, "error");
                     return true;
                 }
                 PlayerCache.getInstance().addPlayer(auth);
                 LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
                 if (limbo != null) {
-                    player.setGameMode(GameMode.getByValue(limbo.getGameMode()));      
+                    player.setGameMode(limbo.getGameMode());      
                     if (Settings.isTeleportToSpawnEnabled) {
                     	World world = player.getWorld();
                     	Location loca = plugin.getSpawnLocation(world);
@@ -248,9 +248,9 @@ public class RegisterCommand implements CommandExecutor {
                 if(!Settings.getRegisteredGroup.isEmpty()){
                     Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
                 }
-                player.sendMessage(m._("registered"));
+                m._(player, "registered");
                 if (!Settings.getmailAccount.isEmpty())
-                player.sendMessage(m._("add_email"));
+                	m._(player, "add_email");
                 this.isFirstTimeJoin = true;
                 if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
                     player.setAllowFlight(false);
@@ -264,7 +264,7 @@ public class RegisterCommand implements CommandExecutor {
                 }
             } catch (NoSuchAlgorithmException ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                sender.sendMessage(m._("error"));
+                m._(sender, "error");
             }
         return true;
     }

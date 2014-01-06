@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 
 import java.util.Scanner;
+
+import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemStack;
 
@@ -134,7 +136,7 @@ public class FileCache {
 				}
                         // can enchant item? size ofstring in file - 4  all / 2 = number of enchant
 				if (in[0].equals("i")) {
-					stacki[i] = new ItemStack(Integer.parseInt(in[1]),
+					stacki[i] = new ItemStack(Material.getMaterial(Integer.parseInt(in[1])),
 					Integer.parseInt(in[2]), Short.parseShort((in[3])));
 					if(in.length > 4 && !in[4].isEmpty()) {
 						for(int k=4;k<in.length-1;k++) {
@@ -144,7 +146,7 @@ public class FileCache {
 					}
 					i++;
 				} else {
-					stacka[a] = new ItemStack(Integer.parseInt(in[1]),
+					stacka[a] = new ItemStack(Material.getMaterial(Integer.parseInt(in[1])),
 							Integer.parseInt(in[2]), Short.parseShort((in[3])));
 					if(in.length > 4 && !in[4].isEmpty()) {
 						for(int k=4;k<in.length-1;k++) {

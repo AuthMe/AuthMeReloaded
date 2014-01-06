@@ -64,8 +64,8 @@ import fr.xephi.authme.task.TimeoutTask;
 
 public class AuthMePlayerListener implements Listener {
 
-    public static int gm = 0;
-    public static HashMap<String, Integer> gameMode = new HashMap<String, Integer>();
+    public static GameMode gm = GameMode.SURVIVAL;
+    public static HashMap<String, GameMode> gameMode = new HashMap<String, GameMode>();
     public static HashMap<String, String> joinMessage = new HashMap<String, String>();
 	private Utils utils = Utils.getInstance();
     private Messages m = Messages.getInstance();
@@ -132,16 +132,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
         
     	if (data.isAuthAvailable(name)) {
-    		player.sendMessage(m._("login_msg"));
+    		m._(player, "login_msg");
     	} else {
     		if (!Settings.isForcedRegistrationEnabled) {
     			return;
     		}
             if (Settings.emailRegistration) {
-                player.sendMessage(m._("reg_email_msg"));
+            	m._(player, "reg_email_msg");
                 return;
                 } else {
-                player.sendMessage(m._("reg_msg"));
+                	m._(player, "reg_msg");
                 return;
                 }
     	}
@@ -169,16 +169,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
         
     	if (data.isAuthAvailable(name)) {
-    		player.sendMessage(m._("login_msg"));
+    		m._(player, "login_msg");
     	} else {
     		if (!Settings.isForcedRegistrationEnabled) {
     			return;
     		}
             if (Settings.emailRegistration) {
-                player.sendMessage(m._("reg_email_msg"));
+                m._(player, "reg_email_msg");
                 return;
                 } else {
-                player.sendMessage(m._("reg_msg"));
+                m._(player, "reg_msg");
                 return;
                 }
     	}
@@ -206,16 +206,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
         
     	if (data.isAuthAvailable(name)) {
-    		player.sendMessage(m._("login_msg"));
+    		m._(player, "login_msg");
     	} else {
     		if (!Settings.isForcedRegistrationEnabled) {
     			return;
     		}
             if (Settings.emailRegistration) {
-                player.sendMessage(m._("reg_email_msg"));
+                m._(player, "reg_email_msg");
                 return;
                 } else {
-                player.sendMessage(m._("reg_msg"));
+                m._(player, "reg_msg");
                 return;
                 }
     	}
@@ -243,16 +243,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
         
     	if (data.isAuthAvailable(name)) {
-    		player.sendMessage(m._("login_msg"));
+    		m._(player, "login_msg");
     	} else {
     		if (!Settings.isForcedRegistrationEnabled) {
     			return;
     		}
             if (Settings.emailRegistration) {
-                player.sendMessage(m._("reg_email_msg"));
+                m._(player, "reg_email_msg");
                 return;
                 } else {
-                player.sendMessage(m._("reg_msg"));
+                m._(player, "reg_msg");
                 return;
                 }
     	}
@@ -280,16 +280,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
         
     	if (data.isAuthAvailable(name)) {
-    		player.sendMessage(m._("login_msg"));
+    		m._(player, "login_msg");
     	} else {
     		if (!Settings.isForcedRegistrationEnabled) {
     			return;
     		}
             if (Settings.emailRegistration) {
-                player.sendMessage(m._("reg_email_msg"));
+                m._(player, "reg_email_msg");
                 return;
                 } else {
-                player.sendMessage(m._("reg_msg"));
+                m._(player, "reg_msg");
                 return;
                 }
     	}
@@ -317,15 +317,15 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
         
     	if (data.isAuthAvailable(name)) {
-    		player.sendMessage(m._("login_msg"));
+    		m._(player, "login_msg");
     	} else {
     		if (!Settings.isForcedRegistrationEnabled) {
     			return;
     		}
             if (Settings.emailRegistration) {
-                player.sendMessage(m._("reg_email_msg"));
+                m._(player, "reg_email_msg");
                 } else {
-                player.sendMessage(m._("reg_msg"));
+                m._(player, "reg_msg");
                 }
     	}
 
@@ -537,7 +537,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         World world = player.getWorld();
         Location spawnLoc = plugin.getSpawnLocation(world);
-        gm = player.getGameMode().getValue();
+        gm = player.getGameMode();
         final String name = player.getName().toLowerCase();
         gameMode.put(name, gm);
         BukkitScheduler sched = plugin.getServer().getScheduler();
@@ -558,9 +558,9 @@ public class AuthMePlayerListener implements Listener {
         		ip = plugin.realIp.get(name);
         }
             if(Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
-                int gM = gameMode.get(name);
+                GameMode gM = gameMode.get(name);
                 this.causeByAuthMe = true;
-            	player.setGameMode(GameMode.getByValue(gM));
+            	player.setGameMode(gM);
             	this.causeByAuthMe = false;
                 player.kickPlayer("You are not the Owner of this account, please try another name!");
                 if (Settings.banUnsafeIp)
@@ -581,12 +581,12 @@ public class AuthMePlayerListener implements Listener {
                      	} else {
                      		PlayerCache.getInstance().addPlayer(auth);
                      	}
-                         player.sendMessage(m._("valid_session"));
+                     	m._(player, "valid_session");
                          return;
                      } else if (!Settings.sessionExpireOnIpChange){
-                     	int gM = gameMode.get(name);
+                     	GameMode gM = gameMode.get(name);
                      	this.causeByAuthMe = true;
-                     	player.setGameMode(GameMode.getByValue(gM));
+                     	player.setGameMode(gM);
                      	this.causeByAuthMe = false;
                      	player.kickPlayer(m._("unvalid_session"));
                      	return;
@@ -600,9 +600,9 @@ public class AuthMePlayerListener implements Listener {
                          PlayerCache.getInstance().removePlayer(name);
                          LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
                 	 } else {
-                      	int gM = gameMode.get(name);
+                      	GameMode gM = gameMode.get(name);
                       	this.causeByAuthMe = true;
-                     	player.setGameMode(GameMode.getByValue(gM));
+                     	player.setGameMode(gM);
                      	this.causeByAuthMe = false;
                      	player.kickPlayer(m._("unvalid_session"));
                      	return;
@@ -698,7 +698,7 @@ public class AuthMePlayerListener implements Listener {
 			return;
 		Block b = player.getLocation().getBlock();
 		if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL || b.getType() == Material.LAVA || b.getType() == Material.STATIONARY_LAVA) {
-			player.sendMessage(m._("unsafe_spawn"));
+			m._(player, "unsafe_spawn");
 			player.teleport(spawnLoc);
 			return;
 		}
@@ -827,7 +827,7 @@ public class AuthMePlayerListener implements Listener {
             		API.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
             	}
         	} catch (NullPointerException npe){
-        		ConsoleLogger.showError("Problem while restore " + name + "inventory after a kick");
+        		ConsoleLogger.showError("Problem while restore " + name + " inventory after a kick");
         	}
         }
         try {
