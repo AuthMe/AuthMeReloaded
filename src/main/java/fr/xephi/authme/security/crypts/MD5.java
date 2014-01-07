@@ -8,11 +8,7 @@ public class MD5 implements EncryptionMethod {
 
 	@Override
 	public String getHash(String password, String salt) throws NoSuchAlgorithmException {
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        md5.reset();
-        md5.update(password.getBytes());
-        byte[] digest = md5.digest();
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1,digest));
+        return getMD5(password);
 	}
 
 	@Override
@@ -20,4 +16,11 @@ public class MD5 implements EncryptionMethod {
 		return hash.equals(getHash(password, ""));
 	}
 
+    private static String getMD5(String message) throws NoSuchAlgorithmException {
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        md5.reset();
+        md5.update(message.getBytes());
+        byte[] digest = md5.digest();
+        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1,digest));
+    }
 }

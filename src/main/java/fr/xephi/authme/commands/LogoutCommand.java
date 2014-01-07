@@ -64,9 +64,9 @@ public class LogoutCommand implements CommandExecutor {
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
         auth.setIp("198.18.0.1");
         database.updateSession(auth);
-        auth.setQuitLocX(player.getLocation().getBlockX());
-        auth.setQuitLocY(player.getLocation().getBlockY());
-        auth.setQuitLocZ(player.getLocation().getBlockZ());
+        auth.setQuitLocX(player.getLocation().getX());
+        auth.setQuitLocY(player.getLocation().getY());
+        auth.setQuitLocZ(player.getLocation().getZ());
         auth.setWorld(player.getWorld().getName());
         database.updateQuitLoc(auth);
 

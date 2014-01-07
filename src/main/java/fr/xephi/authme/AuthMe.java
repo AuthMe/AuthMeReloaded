@@ -11,10 +11,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
 import com.earth2me.essentials.Essentials;
 
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -81,6 +83,7 @@ public class AuthMe extends JavaPlugin {
 	private Messages m;
     private PlayersLogs pllog;
     public static Server server;
+    public static Logger authmeLogger = Logger.getLogger("AuthMe");
     public static Plugin authme;
     public static Permission permission;
 	private static AuthMe instance;
@@ -107,15 +110,21 @@ public class AuthMe extends JavaPlugin {
 	public boolean antibotMod = false;
 	public boolean delayedAntiBot = true;
 
-    @Override
+	public Settings getSettings() {
+		return settings;
+	}
+
+	@Override
     public void onEnable() {
     	instance = this;
     	authme = instance;
+    	
+    	authmeLogger.setParent(this.getLogger());
 
     	citizens = new CitizensCommunicator(this);
 
-        settings = new Settings(this);
-        settings.loadConfigOptions();
+    	settings = new Settings(this);
+    	settings.loadConfigOptions();
 
         if (Settings.enableAntiBot) {
         	Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -135,14 +144,15 @@ public class AuthMe extends JavaPlugin {
 
         //Set Console Filter
         if (Settings.removePassword) {
+        	this.getLogger().setFilter(new ConsoleFilter());
         	Bukkit.getLogger().setFilter(new ConsoleFilter());
-        	/*// Check the log4j usage and apply a filter
+        	Logger.getLogger("Minecraft").setFilter(new ConsoleFilter());
+        	Logger.getLogger("AuthMe").setFilter(new ConsoleFilter());
         	try {
-            	if (Class.forName("org.apache.logging.log4j.LogManager") != null) {
-            		
-            	}
-        	} catch (Exception e) {}
-        	*/
+        	    org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        	    coreLogger.addFilter(new Log4JFilter());
+        	} catch (Exception e) {
+        	} catch (NoClassDefFoundError e) {}
         }
 
         //Load MailApi

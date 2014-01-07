@@ -129,8 +129,11 @@ public class PasswordSecurity {
         if (method == null)
         	throw new NoSuchAlgorithmException("Unknown hash algorithm");
 
-    	if (method.comparePassword(hash, password, playerName))
-    		return true;
+        try {
+        	if (method.comparePassword(hash, password, playerName))
+        		return true;
+        } catch (Exception e) {
+        }
         if (Settings.supportOldPassword) {
         	try {
             	if (compareWithAllEncryptionMethod(password, hash, playerName))
@@ -142,9 +145,9 @@ public class PasswordSecurity {
 
     private static boolean compareWithAllEncryptionMethod(String password, String hash, String playerName) throws NoSuchAlgorithmException {
     	for (HashAlgorithm algo : HashAlgorithm.values()) {
-    		try {
-    			EncryptionMethod method = (EncryptionMethod) algo.getclass().newInstance();
-    			if (algo != HashAlgorithm.CUSTOM) {
+    		if (algo != HashAlgorithm.CUSTOM)
+        		try {
+        			EncryptionMethod method = (EncryptionMethod) algo.getclass().newInstance();
     				if (method.comparePassword(hash, password, playerName)) {
     					PlayerAuth nAuth = AuthMe.getInstance().database.getAuth(playerName);
     					if (nAuth != null) {
@@ -155,8 +158,7 @@ public class PasswordSecurity {
     					}
     					return true;
     				}
-    			}
-			} catch (Exception e) {}
+    			} catch (Exception e) {}
     	}
     	return false;
     }

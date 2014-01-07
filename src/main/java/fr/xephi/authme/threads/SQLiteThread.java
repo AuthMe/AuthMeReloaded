@@ -94,9 +94,9 @@ public class SQLiteThread extends Thread implements DataSource {
                     + columnPassword + " VARCHAR(255) NOT NULL,"
                     + columnIp + " VARCHAR(40) NOT NULL,"
                     + columnLastLogin + " BIGINT,"
-                    + lastlocX + " smallint(6) DEFAULT '0',"
-                    + lastlocY + " smallint(6) DEFAULT '0',"
-                    + lastlocZ + " smallint(6) DEFAULT '0',"
+                    + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0',"
+                    + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0',"
+                    + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0',"
                     + lastlocWorld + " VARCHAR(255) DEFAULT 'world',"
                     + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com',"
                     + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
@@ -120,9 +120,9 @@ public class SQLiteThread extends Thread implements DataSource {
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocX + " smallint(6) NOT NULL DEFAULT '0'; " 
-                        + "ALTER TABLE " + tableName + " ADD COLUMN " + lastlocY + " smallint(6) NOT NULL DEFAULT '0'; "
-                        + "ALTER TABLE " + tableName + " ADD COLUMN " + lastlocZ + " smallint(6) NOT NULL DEFAULT '0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, lastlocWorld);
@@ -133,6 +133,13 @@ public class SQLiteThread extends Thread implements DataSource {
             rs = con.getMetaData().getColumns(null, null, tableName, columnEmail);
             if (!rs.next()) {
             	st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnEmail + "  VARCHAR(255) DEFAULT 'your@email.com';");
+            }
+            rs.close();
+            rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
+            if (rs.next()) {
+                st.executeUpdate("ALTER TABLE " + tableName + " MODIFY " + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " MODIFY " + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " MODIFY " + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
             }
         } finally {
             close(rs);
@@ -170,12 +177,12 @@ public class SQLiteThread extends Thread implements DataSource {
             rs = pst.executeQuery();
             if (rs.next()) {
                 if (rs.getString(columnIp).isEmpty() ) {
-                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld) , rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
+                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld) , rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                 } else {
                         if(!columnSalt.isEmpty()){
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld) , rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
+                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld) , rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                         } else {
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getInt(lastlocX), rs.getInt(lastlocY), rs.getInt(lastlocZ), rs.getString(lastlocWorld) , rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
+                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld) , rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                         }
                  }
             } else {
@@ -313,9 +320,9 @@ public class SQLiteThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + "=?, "+ lastlocY +"=?, "+ lastlocZ +"=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
-            pst.setLong(1, auth.getQuitLocX());
-            pst.setLong(2, auth.getQuitLocY());
-            pst.setLong(3, auth.getQuitLocZ());
+            pst.setDouble(1, auth.getQuitLocX());
+            pst.setDouble(2, auth.getQuitLocY());
+            pst.setDouble(3, auth.getQuitLocZ());
             pst.setString(4, auth.getWorld());
             pst.setString(5, auth.getNickname());
             pst.executeUpdate();

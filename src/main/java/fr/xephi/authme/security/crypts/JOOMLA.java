@@ -19,7 +19,7 @@ public class JOOMLA implements EncryptionMethod {
     	return hash.equals(getMD5(password + salt) + ":" + salt);
 	}
 
-    private String getMD5(String message) throws NoSuchAlgorithmException {
+    private static String getMD5(String message) throws NoSuchAlgorithmException {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
         md5.reset();
         md5.update(message.getBytes());

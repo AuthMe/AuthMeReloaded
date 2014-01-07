@@ -18,7 +18,7 @@ public class SMF implements EncryptionMethod {
 		return hash.equals(getHash(password, playerName.toLowerCase()));
 	}
 
-    private String getSHA1(String message) throws NoSuchAlgorithmException {
+    private static String getSHA1(String message) throws NoSuchAlgorithmException {
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");
         sha1.reset();
         sha1.update(message.getBytes());

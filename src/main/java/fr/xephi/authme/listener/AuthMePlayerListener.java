@@ -36,7 +36,6 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -669,10 +668,10 @@ public class AuthMePlayerListener implements Listener {
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
         if (time != 0) {
-            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), time);
+            int id = sched.scheduleSyncDelayedTask(plugin, new TimeoutTask(plugin, name), time);
             if(!LimboCache.getInstance().hasLimboPlayer(name))
                  LimboCache.getInstance().addLimboPlayer(player);
-            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id.getTaskId());
+            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
         if(!LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().addLimboPlayer(player);
@@ -682,8 +681,8 @@ public class AuthMePlayerListener implements Listener {
             player.setAllowFlight(true);
             player.setFlying(true);
         }
-        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
-        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT.getTaskId());
+        int msgT = sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
+        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         player.setNoDamageTicks(Settings.getRegistrationTimeout * 20);
         if (Settings.useEssentialsMotd)
         	player.performCommand("motd");
@@ -722,7 +721,7 @@ public class AuthMePlayerListener implements Listener {
 
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) {
         	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
-        		final PlayerAuth auth = new PlayerAuth(name,loc.getBlockX(),loc.getBlockY(),loc.getBlockZ(),loc.getWorld().getName());
+        		final PlayerAuth auth = new PlayerAuth(name,loc.getX(),loc.getY(),loc.getZ(),loc.getWorld().getName());
         		try {
         	        if (data instanceof Thread) {
         	        	data.updateQuitLoc(auth);
@@ -799,7 +798,7 @@ public class AuthMePlayerListener implements Listener {
       String name = player.getName().toLowerCase();
       if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead()) && 
         (Settings.isSaveQuitLocationEnabled)  && data.isAuthAvailable(name)) {
-        final PlayerAuth auth = new PlayerAuth(name, loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(),loc.getWorld().getName());
+        final PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(),loc.getWorld().getName());
 		try {
 	        if (data instanceof Thread) {
 	        	data.updateQuitLoc(auth);
@@ -924,7 +923,6 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) return;
-        if (!(event.getPlayer() instanceof Player)) return;
         Player player = (Player) event.getPlayer();
         String name = player.getName().toLowerCase();
 
@@ -945,6 +943,7 @@ public class AuthMePlayerListener implements Listener {
             }
         }
         event.setCancelled(true);
+        player.closeInventory();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -1095,7 +1094,7 @@ public class AuthMePlayerListener implements Listener {
         
         Location spawn = plugin.getSpawnLocation(player.getWorld());
     	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
-    		final PlayerAuth auth = new PlayerAuth(name,spawn.getBlockX(),spawn.getBlockY(),spawn.getBlockZ(),spawn.getWorld().getName());
+    		final PlayerAuth auth = new PlayerAuth(name,spawn.getX(),spawn.getY(),spawn.getZ(),spawn.getWorld().getName());
     		try {
     			data.updateQuitLoc(auth);
     		} catch (NullPointerException npe) { }

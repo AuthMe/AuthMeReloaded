@@ -49,12 +49,12 @@ public class FileCache {
 
 			for (int i = 0; i < invstack.length; i++) {
 
-				int itemid = 0;
+				String itemid = "AIR";
 				int amount = 0;
 				int durability = 0;
 				String enchList = "";
 				if (invstack[i] != null) {
-					itemid = invstack[i].getTypeId();
+					itemid = invstack[i].getType().name();
 					amount = invstack[i].getAmount();
 					durability = invstack[i].getDurability();
 					for(Enchantment e : invstack[i].getEnchantments().keySet()) {
@@ -69,12 +69,12 @@ public class FileCache {
 			ItemStack[] armorstack = playerData.getArmour();
 
 			for (int i = 0; i < armorstack.length; i++) {
-				int itemid = 0;
+				String itemid = "AIR";
 				int amount = 0;
 				int durability = 0;
 				String enchList = "";
 				if (armorstack[i] != null) {
-					itemid = armorstack[i].getTypeId();
+					itemid = armorstack[i].getType().name();
 					amount = armorstack[i].getAmount();
 					durability = armorstack[i].getDurability();
 					for(Enchantment e : armorstack[i].getEnchantments().keySet()) {
@@ -136,7 +136,7 @@ public class FileCache {
 				}
                         // can enchant item? size ofstring in file - 4  all / 2 = number of enchant
 				if (in[0].equals("i")) {
-					stacki[i] = new ItemStack(Material.getMaterial(Integer.parseInt(in[1])),
+					stacki[i] = new ItemStack(Material.getMaterial(in[1]),
 					Integer.parseInt(in[2]), Short.parseShort((in[3])));
 					if(in.length > 4 && !in[4].isEmpty()) {
 						for(int k=4;k<in.length-1;k++) {
@@ -146,7 +146,7 @@ public class FileCache {
 					}
 					i++;
 				} else {
-					stacka[a] = new ItemStack(Material.getMaterial(Integer.parseInt(in[1])),
+					stacka[a] = new ItemStack(Material.getMaterial(in[1]),
 							Integer.parseInt(in[2]), Short.parseShort((in[3])));
 					if(in.length > 4 && !in[4].isEmpty()) {
 						for(int k=4;k<in.length-1;k++) {

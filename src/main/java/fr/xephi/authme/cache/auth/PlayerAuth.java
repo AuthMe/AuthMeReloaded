@@ -9,9 +9,9 @@ public class PlayerAuth {
     private String hash = "";
     private String ip = "198.18.0.1";
     private long lastLogin = 0;
-    private int x = 0;
-    private int y = 0;
-    private int z = 0;
+    private double x = 0;
+    private double y = 0;
+    private double z = 0;
     private String world = "world";
     private String salt = "";
     private String vBhash = null;
@@ -28,7 +28,7 @@ public class PlayerAuth {
         this.realName = realName;
     }
 
-    public PlayerAuth(String nickname, int x, int y, int z, String world) {
+    public PlayerAuth(String nickname, double x, double y, double z, String world) {
         this.nickname = nickname;
         this.x = x;
         this.y = y;
@@ -36,7 +36,7 @@ public class PlayerAuth {
         this.world = world;
     }
 
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, int x, int y, int z, String world, String email, String realName) {
+    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
@@ -49,7 +49,7 @@ public class PlayerAuth {
         this.realName = realName;
     }
 
-    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, int x, int y, int z, String world,  String email, String realName) {
+    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, double x, double y, double z, String world,  String email, String realName) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
@@ -83,7 +83,7 @@ public class PlayerAuth {
         this.realName = realName;
     }
 
-    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, int x, int y, int z, String world, String email, String realName) {
+    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
         this.nickname = nickname;
         this.hash = hash;
         this.ip = ip;
@@ -123,26 +123,26 @@ public class PlayerAuth {
         return groupId;
     }
 
-    public int getQuitLocX() {
+    public double getQuitLocX() {
         return x;
     }
-    public int getQuitLocY() {
+    public double getQuitLocY() {
         return y;
     }
-    public int getQuitLocZ() {
+    public double getQuitLocZ() {
         return z;
     }
     public String getEmail() {
     	return email;
     }
-    public void setQuitLocX(int x) {
-        this.x = x;
+    public void setQuitLocX(double d) {
+        this.x = d;
     }
-    public void setQuitLocY(int y) {
-        this.y = y;
+    public void setQuitLocY(double d) {
+        this.y = d;
     }
-    public void setQuitLocZ(int z) {
-        this.z = z;
+    public void setQuitLocZ(double d) {
+        this.z = d;
     }  
     public long getLastLogin() {
         return lastLogin;

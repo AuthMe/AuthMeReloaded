@@ -24,11 +24,11 @@
 		</plugin>
 	</plugins>
 	</build>
-    <version>3.1.2-DEV-3</version>
+    <version>3.2</version>
     <dependencies>
     	<dependency>
     		<groupId>org.bukkit</groupId>
-    		<artifactId>bukkit</artifactId>
+    		<artifactId>craftbukkit</artifactId>
     		<version>1.7.2-R0.2</version>
     	</dependency>
     	<dependency>

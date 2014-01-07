@@ -13,7 +13,6 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.api.API;
-import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Settings;
 
@@ -100,7 +99,7 @@ public class Utils {
         } return false;
     }
 
-    public void packCoords(int x, int y, int z, String w, final Player pl)
+    public void packCoords(double x, double y, double z, String w, final Player pl)
     {
     	World theWorld;
     	if (w.equals("unavailableworld")) {
@@ -111,14 +110,12 @@ public class Utils {
     	if (theWorld == null)
 			theWorld = pl.getWorld();
     	final World world = theWorld;
-    	final int fY = y;
-    	final Location locat = new Location(world, x, y + 0.4D, z);
-    	final Location loc = locat.getBlock().getLocation();
+    	final Location locat = new Location(world, x, y, z);
 
     	Bukkit.getScheduler().scheduleSyncDelayedTask(AuthMe.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-		        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, loc);
+		        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, locat);
 		        AuthMe.getInstance().getServer().getPluginManager().callEvent(tpEvent);
 		        if(!tpEvent.isCancelled()) {
 		        	if (!tpEvent.getTo().getChunk().isLoaded())
@@ -127,29 +124,6 @@ public class Utils {
 		        }
 			}
     	});
-
-    	if (!PlayerCache.getInstance().isAuthenticated(pl.getName().toLowerCase())) {
-        	id = Bukkit.getScheduler().scheduleSyncRepeatingTask(AuthMe.getInstance(), new Runnable()
-        	{
-        		@Override
-        		public void run() {
-        			if (!PlayerCache.getInstance().isAuthenticated(pl.getName().toLowerCase())) {
-            			int current = (int)pl.getLocation().getY();
-            			World currentWorld = pl.getWorld();
-            			if (current != fY && world.getName() == currentWorld.getName()) {
-            				pl.teleport(loc);
-            			}
-        			}
-        		}
-        	}, 1L, 20L);
-        	Bukkit.getScheduler().scheduleSyncDelayedTask(AuthMe.getInstance(), new Runnable()
-        	{
-        		@Override
-        		public void run() {
-        			Bukkit.getScheduler().cancelTask(id);
-        		}
-          }, 60L);
-    	}
       }
 
 	/*

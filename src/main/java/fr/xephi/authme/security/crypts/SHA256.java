@@ -8,7 +8,7 @@ public class SHA256 implements EncryptionMethod {
 
 	@Override
 	public String getHash(String password, String salt) throws NoSuchAlgorithmException {
-		return "$SHA$" + salt + "$" + getSha256(getSha256(password) + salt);
+		return "$SHA$" + salt + "$" + getSHA256(getSHA256(password) + salt);
 	}
 
 	@Override
@@ -18,12 +18,12 @@ public class SHA256 implements EncryptionMethod {
 		return hash.equals(getHash(password, line[2]));
 	}
 	
-	private String getSha256(String password) throws NoSuchAlgorithmException {
+    private static String getSHA256(String message) throws NoSuchAlgorithmException {
         MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
         sha256.reset();
-        sha256.update(password.getBytes());
+        sha256.update(message.getBytes());
         byte[] digest = sha256.digest();
         return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1,digest));
-	}
+    }
 
 }
