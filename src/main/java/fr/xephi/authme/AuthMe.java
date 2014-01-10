@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -118,7 +119,7 @@ public class AuthMe extends JavaPlugin {
     public void onEnable() {
     	instance = this;
     	authme = instance;
-    	
+
     	authmeLogger.setParent(this.getLogger());
 
     	citizens = new CitizensCommunicator(this);
@@ -147,12 +148,11 @@ public class AuthMe extends JavaPlugin {
         	this.getLogger().setFilter(new ConsoleFilter());
         	Bukkit.getLogger().setFilter(new ConsoleFilter());
         	Logger.getLogger("Minecraft").setFilter(new ConsoleFilter());
-        	Logger.getLogger("AuthMe").setFilter(new ConsoleFilter());
-        	try {
-        	    org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-        	    coreLogger.addFilter(new Log4JFilter());
-        	} catch (Exception e) {
-        	} catch (NoClassDefFoundError e) {}
+        	authmeLogger.setFilter(new ConsoleFilter());
+
+        	// Set Log4J Filter
+        	org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+        	coreLogger.addFilter(new Log4JFilter());
         }
 
         //Load MailApi
@@ -173,7 +173,7 @@ public class AuthMe extends JavaPlugin {
 
 		//Check ChestShop
 		checkChestShop();
-		
+
 		//Check Essentials
 		checkEssentials();
 
@@ -593,8 +593,9 @@ public class AuthMe extends JavaPlugin {
 		if (!Settings.usePurge) {
 			return;
 		}
-        long days = Settings.purgeDelay * 86400000;
-        long until = new Date().getTime() - days;
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -(Settings.purgeDelay));
+        long until = calendar.getTimeInMillis();
 		List<String> cleared = this.database.autoPurgeDatabase(until);
 		ConsoleLogger.info("AutoPurgeDatabase : " + cleared.size() + " accounts removed.");
 		if (cleared.isEmpty())
@@ -734,7 +735,7 @@ public class AuthMe extends JavaPlugin {
         	} catch (Exception e) {}
     	}
     }
-    
+
     public String getCountryCode(InetAddress ip) {
     	try {
     		if (ls == null)
@@ -745,7 +746,7 @@ public class AuthMe extends JavaPlugin {
     	} catch (Exception e) {}
     	return null;
     }
-    
+
     public void switchAntiBotMod(boolean mode) {
     	this.antibotMod = mode;
     	Settings.switchAntiBotMod(mode);

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
@@ -102,8 +103,9 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             try {
-                long days = Long.parseLong(args[1]) * 86400000;
-                long until = new Date().getTime() - days;
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, -(Integer.parseInt(args[1])));
+                long until = calendar.getTimeInMillis();
                 List<String> purged = database.autoPurgeDatabase(until);
                 sender.sendMessage("Deleted " + purged.size() + " user accounts");
         		if (Settings.purgeEssentialsFile && plugin.ess != null)
