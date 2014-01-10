@@ -55,10 +55,6 @@ public class AdminCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmnd, String label, String[] args) {
-        if (!plugin.authmePermissible(sender, "authme.admin." + args[0].toLowerCase())) {
-     	   m._(sender, "no_perm");
-            return true;
-        }
         if (args.length == 0) {
             sender.sendMessage("Usage: /authme reload - Reload the config");
             sender.sendMessage("/authme register <playername> <password> - Register a player");
@@ -76,6 +72,11 @@ public class AdminCommand implements CommandExecutor {
             sender.sendMessage("/authme switchantibot on/off - Enable/Disable antibot method");
             return true;
         }
+        
+        if (!plugin.authmePermissible(sender, "authme.admin." + args[0].toLowerCase())) {
+      	   m._(sender, "no_perm");
+             return true;
+         }
 
        if((sender instanceof ConsoleCommandSender) && args[0].equalsIgnoreCase("passpartuToken")) {
            if(args.length > 1) {  
