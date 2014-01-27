@@ -12,13 +12,13 @@ public class MessageTask implements Runnable {
 
     private AuthMe plugin;
     private String name;
-    private String msg;
+    private String[] msg;
     private int interval;
 
-    public MessageTask(AuthMe plugin, String name, String msg, int interval) {
+    public MessageTask(AuthMe plugin, String name, String[] strings, int interval) {
         this.plugin = plugin;
         this.name = name;
-        this.msg = msg;
+        this.msg = strings;
         this.interval = interval;
     }
 
@@ -29,7 +29,7 @@ public class MessageTask implements Runnable {
 
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
-            	for (String ms : msg.split("\u00a7n")) {
+            	for (String ms : msg) {
             		player.sendMessage(ms);
             	}
                 BukkitScheduler sched = plugin.getServer().getScheduler();

@@ -24,12 +24,12 @@
 		</plugin>
 	</plugins>
 	</build>
-    <version>3.2.1-DEV-2</version>
+    <version>3.3.1-DEV-1</version>
     <dependencies>
     	<dependency>
     		<groupId>org.bukkit</groupId>
     		<artifactId>craftbukkit</artifactId>
-    		<version>1.7.2-R0.2</version>
+    		<version>1.7.2-R0.3-SNAPSHOT</version>
     	</dependency>
     	<dependency>
     		<groupId>net.milkbowl.vault</groupId>

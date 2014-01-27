@@ -190,7 +190,7 @@ settings:
         # possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB,
         # PLAINTEXT ( unhashed password),
         # MYBB, IPB3, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,
-        # DOUBLEMD5, PBKDF2, WORDPRESS, CUSTOM(for developpers only)
+        # DOUBLEMD5, PBKDF2, WORDPRESS, ROYALAUTH, CUSTOM(for developpers only)
         passwordHash: SHA256
         # salt length for the SALTED2MD5 MD5(MD5(password)+salt)
         doubleMD5SaltLength: 8
@@ -198,6 +198,11 @@ settings:
         # other password algorithm to check an old password ?
         # AuthMe will update the password to the new passwordHash !
         supportOldPasswordHash: false
+        # Cancel unsafe passwords for being used, put them on lowercase!
+        unsafePasswords: []
+        #unsafePasswords:
+        #- '123456'
+        #- 'password'
     registration:
         # enable registration on the server?
         enabled: true
@@ -224,8 +229,14 @@ settings:
         UnrestrictedName: []
     # Message language, available : en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, lt, it, ko, pt
     messagesLanguage: en
-    #Force these commands after /login, without any '/', use %p for replace with player name
+    # Force these commands after /login, without any '/', use %p for replace with player name
     forceCommands: []
+    # Do we need to display the welcome message (welcome.txt) after a register or a login?
+    # You can use colors in this welcome.txt + some replaced strings : 
+    # {PLAYER} : player name, {ONLINE} : display number of online players, {MAXPLAYERS} : display server slots,
+    # {IP} : player ip, {LOGINS} : number of players logged, {WORLD} : player current world, {SERVER} : server name
+    # {VERSION} : get current bukkit version, {COUNTRY} : player country
+    useWelcomeMessage: true
 ExternalBoardOptions:
     # MySQL column for the salt , needed for some forum/cms support
     mySQLColumnSalt: ''
@@ -236,7 +247,7 @@ ExternalBoardOptions:
     # u can put in this options the group number
     # of unactivated user, needed for some forum/cms support
     nonActivedUserGroup: -1
-    # Other MySQL columns where we need to put the Username
+    # Other MySQL columns where we need to put the Username (case sensitive)
     mySQLOtherUsernameColumns: []
     # How much Log to Round needed in BCrypt(do not change it if you do not know what's your doing)
     bCryptLog2Round: 10
@@ -360,10 +371,13 @@ Purge:
 Protection:
     # Enable some servers protection ( country based login, antibot )
     enableProtection: false
-    # Countries allowed to join the server and register, see http://dev.maxmind.com/geoip/legacy/codes/iso3166/ for countries' codes
+    # Countries allowed to join the server and register, see http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/ for countries' codes
     countries:
     - US
     - GB
+    # Countries blacklisted automatically ( without any needed to enable protection )
+    countriesBlacklist:
+    - A1
     # Do we need to enable automatic antibot system?
     enableAntiBot: false
     # Max number of player allowed to login in 5 secs before enable AntiBot system automatically

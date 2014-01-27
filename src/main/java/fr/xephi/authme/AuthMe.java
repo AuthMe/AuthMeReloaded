@@ -15,26 +15,22 @@ import java.util.Random;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
-import com.earth2me.essentials.Essentials;
-
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
-
-
 import me.muizers.Notifications.Notifications;
 import net.citizensnpcs.Citizens;
 import net.milkbowl.vault.permission.Permission;
 
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
 
+import com.earth2me.essentials.Essentials;
 import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 
@@ -63,6 +59,7 @@ import fr.xephi.authme.listener.AuthMeBungeeCordListener;
 import fr.xephi.authme.listener.AuthMeChestShopListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.listener.AuthMeSpoutListener;
 import fr.xephi.authme.plugin.manager.BungeeCordMessage;
 import fr.xephi.authme.plugin.manager.CitizensCommunicator;
@@ -85,8 +82,8 @@ public class AuthMe extends JavaPlugin {
     private PlayersLogs pllog;
     public static Server server;
     public static Logger authmeLogger = Logger.getLogger("AuthMe");
-    public static Plugin authme;
-    public static Permission permission;
+    public static AuthMe authme;
+    public Permission permission;
 	private static AuthMe instance;
     private Utils utils = Utils.getInstance();
     private JavaPlugin plugin;
@@ -149,10 +146,15 @@ public class AuthMe extends JavaPlugin {
         	Bukkit.getLogger().setFilter(new ConsoleFilter());
         	Logger.getLogger("Minecraft").setFilter(new ConsoleFilter());
         	authmeLogger.setFilter(new ConsoleFilter());
-
         	// Set Log4J Filter
-        	org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-        	coreLogger.addFilter(new Log4JFilter());
+        	try {
+        		Class.forName("org.apache.logging.log4j.core.Filter");
+            	setLog4JFilter();
+        	} catch (ClassNotFoundException e) {
+        		ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
+        	} catch (NoClassDefFoundError e) {
+        		ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
+        	}
         }
 
         //Load MailApi
@@ -271,11 +273,12 @@ public class AuthMe extends JavaPlugin {
         	Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
         	Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
         	try {
-				if (Class.forName("net.md_5.bungee.api.event.ChatEvent") != null)
+				if (Class.forName("net.md_5.bungee.api.event.ChatEvent") != null) {
 					pm.registerEvents(new AuthMeBungeeCordListener(database, this), this);
+					ConsoleLogger.info("Successfully hook with BungeeCord!");
+				}
 			} catch (ClassNotFoundException e) {
 			}
-        	ConsoleLogger.info("Successfully hook with BungeeCord!");
         }
         if (pm.isPluginEnabled("Spout")) {
         	pm.registerEvents(new AuthMeSpoutListener(database), this);
@@ -284,23 +287,14 @@ public class AuthMe extends JavaPlugin {
         pm.registerEvents(new AuthMePlayerListener(this,database),this);
         pm.registerEvents(new AuthMeBlockListener(database, this),this);
         pm.registerEvents(new AuthMeEntityListener(database, this),this);
+        pm.registerEvents(new AuthMeServerListener(this), this);
         if (ChestShop != 0) {
         	pm.registerEvents(new AuthMeChestShopListener(database, this), this);
         	ConsoleLogger.info("Successfully hook with ChestShop!");
         }
 
         //Find Permissions
-        if (pm.getPlugin("Vault") != null) {
-            RegisteredServiceProvider<Permission> permissionProvider =
-                getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-            if (permissionProvider != null) {
-            	permission = permissionProvider.getProvider();
-            	ConsoleLogger.info("Vault plugin detected, hook with " + permission.getName() + " system");
-            }
-            else {
-            	ConsoleLogger.showError("Vault plugin is detected but not the permissions plugin!");
-            }
-        }
+        checkVault();
 
         this.getCommand("authme").setExecutor(new AdminCommand(this, database));
         this.getCommand("register").setExecutor(new RegisterCommand(database, this));
@@ -331,10 +325,12 @@ public class AuthMe extends JavaPlugin {
                 }
         	} catch (NullPointerException ex) {
         	}
-        if (Settings.enableProtection)
-        	enableProtection();
+
         if (Settings.usePurge)
         	autoPurge();
+
+        // Download GeoIp.dat file
+        downloadGeoIp();
 
         // Start Email recall task if needed
         recallEmail();
@@ -342,12 +338,38 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
     }
 
-	private void checkChestShop() {
+	private void setLog4JFilter() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+			@Override
+			public void run() {
+	        	org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+	        	coreLogger.addFilter(new Log4JFilter());
+			}
+		});
+	}
+
+	public void checkVault() {
+        if (this.getServer().getPluginManager().getPlugin("Vault") != null && this.getServer().getPluginManager().getPlugin("Vault").isEnabled()) {
+            RegisteredServiceProvider<Permission> permissionProvider =
+                getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
+            if (permissionProvider != null) {
+            	permission = permissionProvider.getProvider();
+            	ConsoleLogger.info("Vault plugin detected, hook with " + permission.getName() + " system");
+            }
+            else {
+            	ConsoleLogger.showError("Vault plugin is detected but not the permissions plugin!");
+            }
+        } else {
+        	permission = null;
+        }
+	}
+
+	public void checkChestShop() {
     	if (!Settings.chestshop) {
     		this.ChestShop = 0;
     		return;
     	}
-    	if (this.getServer().getPluginManager().isPluginEnabled("ChestShop")) {
+    	if (this.getServer().getPluginManager().getPlugin("ChestShop") != null && this.getServer().getPluginManager().getPlugin("ChestShop").isEnabled()) {
     		try {
 				String ver = com.Acrobot.ChestShop.ChestShop.getVersion();
 				try {
@@ -369,10 +391,12 @@ public class AuthMe extends JavaPlugin {
 					}
 				}
     		} catch (Exception e) {}
+    	} else {
+    		this.ChestShop = 0;
     	}
 	}
 
-	private void checkMultiverse() {
+	public void checkMultiverse() {
 		if(!Settings.multiverse) {
 			multiverse = null;
 			return;
@@ -388,10 +412,12 @@ public class AuthMe extends JavaPlugin {
     		} catch (NoClassDefFoundError ncdfe) {
     			multiverse = null;
     		}
+    	} else {
+    		multiverse = null;
     	}
 	}
 
-	private void checkEssentials() {
+	public void checkEssentials() {
     	if (this.getServer().getPluginManager().getPlugin("Essentials") != null && this.getServer().getPluginManager().getPlugin("Essentials").isEnabled()) {
     		try {
     			ess  = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
@@ -403,14 +429,18 @@ public class AuthMe extends JavaPlugin {
     		} catch (NoClassDefFoundError ncdfe) {
     			ess = null;
     		}
+    	} else {
+    		ess = null;
     	}
     	if (this.getServer().getPluginManager().getPlugin("EssentialsSpawn") != null && this.getServer().getPluginManager().getPlugin("EssentialsSpawn").isEnabled()) {
     		this.essentialsSpawn = new EssSpawn().getLocation();
     		ConsoleLogger.info("Hook with EssentialsSpawn plugin");
+    	} else {
+    		ess = null;
     	}
 	}
 
-	private void checkNotifications() {
+	public void checkNotifications() {
 		if (!Settings.notifications) {
 			this.notifications = null;
 			return;
@@ -423,7 +453,7 @@ public class AuthMe extends JavaPlugin {
 		}
 	}
 
-	private void combatTag() {
+	public void combatTag() {
 		if (this.getServer().getPluginManager().getPlugin("CombatTag") != null && this.getServer().getPluginManager().getPlugin("CombatTag").isEnabled()) {
 			this.CombatTag = 1;
 		} else {
@@ -431,7 +461,7 @@ public class AuthMe extends JavaPlugin {
 		}
 	}
 
-	private void citizensVersion() {
+	public void citizensVersion() {
 		if (this.getServer().getPluginManager().getPlugin("Citizens") != null && this.getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
 			Citizens cit = (Citizens) this.getServer().getPluginManager().getPlugin("Citizens");
             String ver = cit.getDescription().getVersion();
@@ -710,7 +740,7 @@ public class AuthMe extends JavaPlugin {
         return spawnLoc;
     }
 
-    private void enableProtection() {
+    public void downloadGeoIp() {
     	ConsoleLogger.info(" This product includes GeoLite data created by MaxMind, available from http://www.maxmind.com");
     	File file = new File(getDataFolder(), "GeoIP.dat");
     	if (!file.exists()) {
@@ -747,6 +777,17 @@ public class AuthMe extends JavaPlugin {
     	return null;
     }
 
+    public String getCountryName(InetAddress ip) {
+    	try {
+    		if (ls == null)
+    			ls = new LookupService(new File(getDataFolder(), "GeoIP.dat"));
+        	String code = ls.getCountry(ip).getName();
+        	if (code != null && !code.isEmpty())
+        		return code;
+    	} catch (Exception e) {}
+    	return null;
+    }
+
     public void switchAntiBotMod(boolean mode) {
     	this.antibotMod = mode;
     	Settings.switchAntiBotMod(mode);
@@ -773,4 +814,17 @@ public class AuthMe extends JavaPlugin {
     	}, 1, 1200 * Settings.delayRecall);
     }
 
+    public String replaceAllInfos(String message, Player player) {
+    	message = message.replace("&", "\u00a7");
+    	message = message.replace("{PLAYER}", player.getName());
+    	message = message.replace("{ONLINE}", ""+this.getServer().getOnlinePlayers().length);
+    	message = message.replace("{MAXPLAYERS}", ""+this.getServer().getMaxPlayers());
+    	message = message.replace("{IP}", player.getAddress().getAddress().getHostAddress());
+    	message = message.replace("{LOGINS}", ""+PlayerCache.getInstance().getLogged());
+    	message = message.replace("{WORLD}", player.getWorld().getName());
+    	message = message.replace("{SERVER}", this.getServer().getServerName());
+    	message = message.replace("{VERSION}", this.getServer().getBukkitVersion());
+    	message = message.replace("{COUNTRY}", this.getCountryName(player.getAddress().getAddress()));
+    	return message;
+    }
 }

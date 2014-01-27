@@ -1,9 +1,9 @@
 name: AuthMe
 author: Xephi59
-website: http://dev.bukkit.org/bukkit-plugins/authme-recoded/
+website: http://dev.bukkit.org/bukkit-plugins/authme-reloaded/
 description: AuthMe prevents people, which aren't logged in, from doing stuff like placing blocks, moving, typing commands or seeing the inventory of the current player.
 main: fr.xephi.authme.AuthMe
-version: 3.2.1-DEV-2
+version: 3.3.1
 softdepend: [Vault, ChestShop, Spout, Multiverse-Core, Notifications, Citizens, CombatTag, Essentials, EssentialsSpawn]
 commands:
     register:
@@ -155,4 +155,7 @@ permissions:
         default: op
     authme.bypassantibot:
         description: Bypass the AntiBot check
+        default: op
+    authme.admin.royalauth:
+        description: Import RoyalAuth database into AuthMe
         default: op

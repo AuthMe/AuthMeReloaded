@@ -1,6 +1,12 @@
 package fr.xephi.authme.settings;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -8,8 +14,8 @@ import java.util.List;
 
 import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.Plugin;
 
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
@@ -30,14 +36,18 @@ public final class Settings extends YamlConfiguration {
     public static List<String> getMySQLOtherUsernameColumn = null;
     public static List<String> getForcedWorlds = null;
     public static List<String> countries = null;
+    public static List<String> countriesBlacklist = null;
     public static List<String> forceCommands = null;
-    public final Plugin plugin;
+    private AuthMe plugin;
     private final File file;
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
     public static HashAlgorithm rakamakHash;
     public static Boolean useLogging = false;
-
+    public static int purgeDelay = 60;
+    public static List<String> welcomeMsg = null;
+    public static List<String> unsafePasswords;
+    
     public static Boolean isPermissionCheckEnabled, isRegistrationEnabled, isForcedRegistrationEnabled,
             isTeleportToSpawnEnabled, isSessionsEnabled, isChatAllowed, isAllowRestrictedIp, 
             isMovementAllowed, isKickNonRegisteredEnabled, isForceSingleSessionEnabled,
@@ -48,7 +58,7 @@ public final class Settings extends YamlConfiguration {
             useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
             disableSocialSpy, useMultiThreading, forceOnlyAfterLogin, useEssentialsMotd,
             usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword, purgeLimitedCreative,
-            purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail;
+            purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail, useWelcomeMessage;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -62,11 +72,11 @@ public final class Settings extends YamlConfiguration {
     public static int getWarnMessageInterval, getSessionTimeout, getRegistrationTimeout, getMaxNickLength,
             getMinNickLength, getPasswordMinLen, getMovementRadius, getmaxRegPerIp, getNonActivatedGroup,
             passwordMaxLength, getRecoveryPassLength, getMailPort, maxLoginTry, captchaLength, saltLength, getmaxRegPerEmail,
-            bCryptLog2Rounds, purgeDelay, getPhpbbGroup, antiBotSensibility, antiBotDuration, delayRecall;
+            bCryptLog2Rounds, getPhpbbGroup, antiBotSensibility, antiBotDuration, delayRecall;
 
     protected static YamlConfiguration configFile;
 
-   public Settings(Plugin plugin) {
+   public Settings(AuthMe plugin) {
         this.file = new File(plugin.getDataFolder(),"config.yml");
         this.plugin = plugin;
         if(exists()) {
@@ -220,6 +230,12 @@ public void loadConfigOptions() {
         forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         delayRecall = configFile.getInt("Email.delayRecall", 5);
+        useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
+        unsafePasswords = (List<String>) configFile.getList("settings.security.unsafePasswords", new ArrayList<String>());
+        countriesBlacklist = (List<String>) configFile.getList("Protection.countriesBlacklist", new ArrayList<String>());
+
+        // Load the welcome message
+        getWelcomeMessage(plugin);
 
         saveDefaults();
    }
@@ -364,6 +380,13 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         delayRecall = configFile.getInt("Email.delayRecall", 5);
+        useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
+        unsafePasswords = (List<String>) configFile.getList("settings.security.unsafePasswords", new ArrayList<String>());
+        countriesBlacklist = (List<String>) configFile.getList("Protection.countriesBlacklist", new ArrayList<String>());
+
+        // Reload the welcome message
+        getWelcomeMessage(AuthMe.getInstance());
+        
 }
 
 public void mergeConfig() {
@@ -484,7 +507,16 @@ public void mergeConfig() {
     	   set("Email.recallPlayers", false);
        if(!contains("Email.delayRecall"))
     	   set("Email.delayRecall", 5);
-       
+       if(!contains("settings.useWelcomeMessage"))
+    	   set("settings.useWelcomeMessage", true);
+       if(!contains("settings.security.unsafePasswords"))
+    	   set("settings.security.unsafePasswords", new ArrayList<String>());
+       if(!contains("Protection.countriesBlacklist")) {
+    	   countriesBlacklist = new ArrayList<String>();
+    	   countriesBlacklist.add("A1");
+    	   set("Protection.countriesBlacklist", countriesBlacklist);
+       }
+
        plugin.getLogger().warning("Merge new Config Options if needed..");
        plugin.getLogger().warning("Please check your config.yml file!");
        plugin.saveConfig();
@@ -661,6 +693,35 @@ public void mergeConfig() {
     		isKickNonRegisteredEnabled = true;
     	else
     		isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered",false);
+    }
+
+    private static void getWelcomeMessage(AuthMe plugin) {
+    	if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt").exists())) {
+            try {
+            	FileWriter fw = new FileWriter(plugin.getDataFolder() + File.separator + "welcome.txt", true);
+        		BufferedWriter w = new BufferedWriter(fw);
+    			w.write("Welcome {PLAYER} on {SERVER} server");
+    			w.newLine();
+    			w.write("This server use AuthMe protection!");
+    			w.close();
+    		} catch (IOException e) {
+    			e.printStackTrace();
+    		}
+    	}
+    	List<String> msg = new ArrayList<String>();
+    	try {
+			FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
+			BufferedReader br = new BufferedReader(fr);
+			String line = "";
+			while((line = br.readLine()) != null) {
+				msg.add(line);
+			}
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		welcomeMsg = msg;
     }
 
     public enum messagesLang {

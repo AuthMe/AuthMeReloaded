@@ -192,7 +192,7 @@ public class PlayerAuth {
 	public String getWorld() {
 		return world;
 	}
-	
+
 	@Override
 	public String toString() {
 		String s = "Player : " + nickname + " ! IP : " + ip + " ! LastLogin : " + lastLogin + " ! LastPosition : " + x + "," + y + "," + z + "," + world

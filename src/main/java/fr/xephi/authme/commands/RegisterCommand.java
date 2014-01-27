@@ -38,13 +38,11 @@ public class RegisterCommand implements CommandExecutor {
     private Messages m = Messages.getInstance();
     private PlayersLogs pllog = PlayersLogs.getInstance();
     private DataSource database;
-    public boolean isFirstTimeJoin;
 	public PlayerAuth auth;
 	public AuthMe plugin;
 
     public RegisterCommand(DataSource database, AuthMe plugin) {
         this.database = database;
-        this.isFirstTimeJoin = false;
         this.plugin = plugin;
     }
 
@@ -69,7 +67,7 @@ public class RegisterCommand implements CommandExecutor {
         }
 
         final String ip = ipA;
-        
+
         	if (PlayerCache.getInstance().isAuthenticated(name)) {
                 m._(player, "logged_in");
                 return true;
@@ -153,7 +151,6 @@ public class RegisterCommand implements CommandExecutor {
                         Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
                     }
                     m._(player, "vb_nonActiv");
-                	String msg = m._("login_msg");
                 	int time = Settings.getRegistrationTimeout * 20;
                 	int msgInterval = Settings.getWarnMessageInterval;
                     if (time != 0) {
@@ -163,10 +160,9 @@ public class RegisterCommand implements CommandExecutor {
                     }
 
                     Bukkit.getScheduler().cancelTask(LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId());
-                    int nwMsg = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
+                    int nwMsg = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("login_msg"), msgInterval));
                     LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg);
 
-                	LimboCache.getInstance().deleteLimboPlayer(name);
                     if (Settings.isTeleportToSpawnEnabled) {
                     	World world = player.getWorld();
                     	Location loca = plugin.getSpawnLocation(world);
@@ -179,7 +175,6 @@ public class RegisterCommand implements CommandExecutor {
                       	  	player.teleport(tpEvent.getTo());
                         }
                     }
-                    this.isFirstTimeJoin = true;
                     if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
                         player.setAllowFlight(false);
                         player.setFlying(false);
@@ -188,7 +183,7 @@ public class RegisterCommand implements CommandExecutor {
                     if (!Settings.noConsoleSpam)
                     ConsoleLogger.info(player.getName() + " registered "+player.getAddress().getAddress().getHostAddress());
                     if(plugin.notifications != null) {
-                    	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " has registered!"));
+                    	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " has registered by email!"));
                     }
                 	return true;
                 }
@@ -202,6 +197,13 @@ public class RegisterCommand implements CommandExecutor {
             if(args[0].length() < Settings.getPasswordMinLen || args[0].length() > Settings.passwordMaxLength) {
             	m._(player, "pass_len");
                 return true;
+            }
+            if(!Settings.unsafePasswords.isEmpty()) {
+            	if (Settings.unsafePasswords.contains(args[0].toLowerCase())) {
+           	 	m._(player, "password_error");
+           	 	return true;
+            	}
+
             }
             try {
                 String hash;
@@ -251,7 +253,6 @@ public class RegisterCommand implements CommandExecutor {
                 m._(player, "registered");
                 if (!Settings.getmailAccount.isEmpty())
                 	m._(player, "add_email");
-                this.isFirstTimeJoin = true;
                 if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
                     player.setAllowFlight(false);
                     player.setFlying(false);
@@ -260,6 +261,10 @@ public class RegisterCommand implements CommandExecutor {
                 Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
                 player.saveData();
                 
+                // Register is finish and player is logged, display welcome message
+                for (String s : Settings.welcomeMsg)
+                	player.sendMessage(plugin.replaceAllInfos(s, player));
+
                 // Register is now finish , we can force all commands
                 forceCommands(player);
                 if (!Settings.noConsoleSpam)
@@ -273,7 +278,7 @@ public class RegisterCommand implements CommandExecutor {
             }
         return true;
     }
-    
+
     protected void forceCommands(Player player) {
     	for (String command : Settings.forceCommands) {
     		try {

@@ -11,6 +11,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
+import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -49,7 +50,7 @@ public class Management extends Thread {
         this.plugin = plugin;
         this.pm = plugin.getServer().getPluginManager();
     }
-    
+
     public void run() {
     }
 
@@ -96,7 +97,9 @@ public class Management extends Thread {
                 }
                 if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
                     plugin.cap.put(name, rdm.nextString());
-                    player.sendMessage(m._("need_captcha").replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
+                    for (String s : m._("need_captcha")) {
+                    	player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
+                    }
                     return true;
                 } else if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
                     try {
@@ -153,18 +156,6 @@ public class Management extends Thread {
                 PlayerAuth auth = new PlayerAuth(name, hash, getIP(), new Date().getTime(), email, realName);
                 database.updateSession(auth);
 
-                /*
-                 * Little Work Around under Registration Group Switching for
-                 * admins that add Registration thru a web Scripts.
-                 */
-                if (Settings.isPermissionCheckEnabled
-                        && AuthMe.permission.playerInGroup(player, Settings.unRegisteredGroup)
-                        && !Settings.unRegisteredGroup.isEmpty()) {
-                    AuthMe.permission
-                            .playerRemoveGroup(player.getWorld(), player.getName(), Settings.unRegisteredGroup);
-                    AuthMe.permission.playerAddGroup(player.getWorld(), player.getName(), Settings.getRegisteredGroup);
-                }
-
                 pllog.addPlayer(player);
 
                 if (Settings.useCaptcha) {
@@ -209,7 +200,7 @@ public class Management extends Thread {
                             if (AuthMePlayerListener.gameMode != null && AuthMePlayerListener.gameMode.containsKey(name)) {
                                 player.setGameMode(AuthMePlayerListener.gameMode.get(name));
                             }
-                            player.kickPlayer(m._("wrong_pwd"));
+                            player.kickPlayer(m._("wrong_pwd")[0]);
                         }
                     });
                 } else {
@@ -237,18 +228,6 @@ public class Management extends Thread {
 
             PlayerAuth auth = new PlayerAuth(name, hash, getIP(), new Date().getTime(), email, realName);
             database.updateSession(auth);
-
-            /*
-             * Little Work Around under Registration Group Switching for
-             * admins that add Registration thru a web Scripts.
-             */
-            if (Settings.isPermissionCheckEnabled
-                    && AuthMe.permission.playerInGroup(player, Settings.unRegisteredGroup)
-                    && !Settings.unRegisteredGroup.isEmpty()) {
-                AuthMe.permission
-                        .playerRemoveGroup(player.getWorld(), player.getName(), Settings.unRegisteredGroup);
-                AuthMe.permission.playerAddGroup(player.getWorld(), player.getName(), Settings.getRegisteredGroup);
-            }
 
             pllog.addPlayer(player);
 
@@ -381,6 +360,23 @@ public class Management extends Thread {
                     player.setGameMode(GameMode.SURVIVAL);
                 }
 
+                // Teleport the player
+                if(Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                	// If we have force the spawn location on join
+                	teleportToSpawn();
+                } else {
+                	if (Settings.isTeleportToSpawnEnabled) {
+                		// If and only if teleport unauthed to spawn is activate
+                		teleportBackFromSpawn();
+                	} else {
+                		if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
+                			// Teleport the player on the saved location
+                			packQuitLocation();
+                		} else {
+                			// Do not move the player from his position
+                		}
+                	}
+                }
                 // Teleport
                 if (Settings.isTeleportToSpawnEnabled && !Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
                     if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
@@ -395,31 +391,38 @@ public class Management extends Thread {
                 } else {
                     teleportBackFromSpawn();
                 }
-                
+
                 // Re-Force Survival GameMode if we need due to world change specification
                 if (Settings.isForceSurvivalModeEnabled)
                 	Utils.forceGM(player);
                 
+                // Restore Permission Group
+                utils.setGroup(player, groupType.LOGGEDIN);
+
                 // Cleanup no longer used temporary data
                 LimboCache.getInstance().deleteLimboPlayer(name);
                 if (playerCache.doesCacheExist(name)) {
                     playerCache.removeCache(name);
                 }
             }
-            
+
             // We can now display the join message
-            if (AuthMePlayerListener.joinMessage.containsKey(name) && AuthMePlayerListener.joinMessage.get(name) != null) {
+            if (AuthMePlayerListener.joinMessage.containsKey(name) && AuthMePlayerListener.joinMessage.get(name) != null && !AuthMePlayerListener.joinMessage.get(name).isEmpty()) {
             	for (Player p : Bukkit.getServer().getOnlinePlayers()) {
             		if (p.isOnline())
             			p.sendMessage(AuthMePlayerListener.joinMessage.get(name));
             	}
             	AuthMePlayerListener.joinMessage.remove(name);
             }
-            
+
             // The Loginevent now fires (as intended) after everything is processed
             Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
             player.saveData();
             
+            // Login is finish, display welcome message
+            for (String s : Settings.welcomeMsg)
+            	player.sendMessage(plugin.replaceAllInfos(s, player));
+
             // Login is now finish , we can force all commands
             forceCommands();
         }

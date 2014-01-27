@@ -329,11 +329,9 @@ public class FileDataSource implements DataSource {
                     if (Long.parseLong(args[3]) >= until) {
                         lines.add(line);
                         continue;
-                    } else {
-                    	cleared.add(args[0]);
                     }
                 }
-
+                cleared.add(args[0]);
             }
             bw = new BufferedWriter(new FileWriter(source));
             for (String l : lines) {

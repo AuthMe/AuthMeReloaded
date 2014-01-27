@@ -32,6 +32,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.converter.FlatToSql;
 import fr.xephi.authme.converter.FlatToSqlite;
 import fr.xephi.authme.converter.RakamakConverter;
+import fr.xephi.authme.converter.RoyalAuthConverter;
 import fr.xephi.authme.converter.newxAuthToFlat;
 import fr.xephi.authme.converter.oldxAuthToFlat;
 import fr.xephi.authme.datasource.DataSource;
@@ -435,17 +436,20 @@ public class AdminCommand implements CommandExecutor {
                     auth = PlayerCache.getInstance().getAuth(name);
                 } else if (database.isAuthAvailable(name)) {
                     auth = database.getAuth(name);
-                } else {
+                }
+                if (auth == null) {
                 	m._(sender, "unknown_user");
                     return true;
                 }
                 auth.setHash(hash);
-                auth.setSalt(PasswordSecurity.userSalt.get(name));
+                if (PasswordSecurity.userSalt.containsKey(name)) {
+                	auth.setSalt(PasswordSecurity.userSalt.get(name));
+                    database.updateSalt(auth);
+                }
                 if (!database.updatePassword(auth)) {
                 	m._(sender, "error");
                     return true;
                 }
-                database.updateSalt(auth);
                 sender.sendMessage("pwd_changed");
                 ConsoleLogger.info(args[1] + "'s password changed");
             } catch (NoSuchAlgorithmException ex) {
@@ -509,6 +513,10 @@ public class AdminCommand implements CommandExecutor {
         	}
     		sender.sendMessage("Usage : /authme switchantibot on/off");
     		return true;
+        } else if (args[0].equalsIgnoreCase("royalauth")) {
+        	new RoyalAuthConverter(plugin);
+        	sender.sendMessage("[AuthMe] RoyalAuth database has been imported correctly");
+        	return true;
         } else {
             sender.sendMessage("Usage: /authme reload|register playername password|changepassword playername password|unregister playername");
         }

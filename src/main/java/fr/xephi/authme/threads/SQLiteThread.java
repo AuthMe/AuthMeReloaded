@@ -134,13 +134,6 @@ public class SQLiteThread extends Thread implements DataSource {
             if (!rs.next()) {
             	st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnEmail + "  VARCHAR(255) DEFAULT 'your@email.com';");
             }
-            rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
-            if (rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " MODIFY " + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " MODIFY " + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " MODIFY " + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
-            }
         } finally {
             close(rs);
             close(st);

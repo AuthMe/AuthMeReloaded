@@ -35,7 +35,7 @@ public class ConsoleLogger {
 
     public static void showError(String message) {
     	if (AuthMe.getInstance().isEnabled()) {
-            log.severe(" ERROR: " + message);
+            log.warning(" ERROR: " + message);
             if (Settings.useLogging) {
                 Calendar date = Calendar.getInstance();
                 final String actually = "[" + DateFormat.getDateInstance().format(date.getTime()) + ", " + date.get(Calendar.HOUR_OF_DAY) + ":" + date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND) + "] ERROR : " + message;
@@ -52,8 +52,7 @@ public class ConsoleLogger {
 	public static void writeLog(String string) {
         try {
         	FileWriter fw = new FileWriter(AuthMe.getInstance().getDataFolder() + File.separator + "authme.log", true);
-    		BufferedWriter w = null;
-			w = new BufferedWriter(fw);
+    		BufferedWriter w = new BufferedWriter(fw);
 			w.write(string);
 			w.newLine();
 			w.close();

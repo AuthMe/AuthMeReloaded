@@ -63,7 +63,7 @@ public class API {
     		return true;
     	return CombatTagComunicator.isNPC(player);
     }
-    
+
     /**
      * 
      * @param player
@@ -154,7 +154,7 @@ public class API {
         	return false;
         }
     }
-    
+
     /**
      * Get Player realName from lowerCase nickname
      * @param String playerName

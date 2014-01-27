@@ -14,11 +14,11 @@ import fr.xephi.authme.security.crypts.EncryptionMethod;
  * @author Xephi59
  */
 public class PasswordEncryptionEvent extends Event {
-	
+
 	private static final HandlerList handlers = new HandlerList();
 	private EncryptionMethod method = null;
 	private String playerName = "";
-	
+
 	public PasswordEncryptionEvent(EncryptionMethod method, String playerName) {
 		this.method = method;
 		this.playerName = playerName;

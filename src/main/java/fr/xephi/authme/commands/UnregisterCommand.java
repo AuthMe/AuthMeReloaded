@@ -11,11 +11,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
+import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -77,12 +77,13 @@ public class UnregisterCommand implements CommandExecutor {
                     player.saveData();
                     PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                     LimboCache.getInstance().addLimboPlayer(player);
+                    Utils.getInstance().setGroup(player, groupType.UNREGISTERED);
                     int delay = Settings.getRegistrationTimeout * 20;
                     int interval = Settings.getWarnMessageInterval;
                     BukkitScheduler sched = sender.getServer().getScheduler();
                     if (delay != 0) {
-                        BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
-                        LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id.getTaskId());
+                        int id = sched.scheduleSyncDelayedTask(plugin, new TimeoutTask(plugin, name), delay);
+                        LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
                     sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("reg_msg"), interval));
                         if(!Settings.unRegisteredGroup.isEmpty()){

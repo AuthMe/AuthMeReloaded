@@ -38,7 +38,7 @@ public class FileCache {
 			if (operator)
 				s = s + "1";
 			else s = s + "0";
-			
+
 			// line format Group|OperatorStatus|isFlying
 			if(flying)
 				writer.write(s+";1" + API.newline);
@@ -134,7 +134,7 @@ public class FileCache {
 				if (!in[0].equals("i") && !in[0].equals("w")) {
 					continue;
 				}
-                        // can enchant item? size ofstring in file - 4  all / 2 = number of enchant
+                // can enchant item? size ofstring in file - 4  all / 2 = number of enchant
 				if (in[0].equals("i")) {
 					stacki[i] = new ItemStack(Material.getMaterial(in[1]),
 					Integer.parseInt(in[2]), Short.parseShort((in[3])));

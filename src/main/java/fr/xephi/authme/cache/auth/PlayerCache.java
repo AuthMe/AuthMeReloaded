@@ -39,4 +39,8 @@ public class PlayerCache {
         return singleton;
     }
 
+    public int getLogged() {
+    	return cache.size();
+    }
+
 }

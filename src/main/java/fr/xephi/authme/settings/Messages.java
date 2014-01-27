@@ -5,6 +5,7 @@ import java.io.InputStream;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 
 public class Messages extends CustomConfiguration {
 
@@ -66,31 +67,28 @@ public class Messages extends CustomConfiguration {
     }
 
     public void _(CommandSender sender, String msg) {
-        String loc = (String) this.get(msg, this.getDefault(msg));
-        if (loc == null && !contains(msg)) {
-        	set(msg, this.getDefault(msg));
-        	save();
-        	load();
-        	loc = (String) this.get(msg, this.getDefault(msg));
+        String loc = (String) this.get(msg);
+        if (loc == null) {
+        	loc =  "Error with Translation files; Please contact the admin for verify or update translation";
+        	ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage +  ".yml !");
         }
-        if (loc == null)
-        	loc =  "Error with Translation files; Please contact the admin ";
         for (String l : loc.split("&n")) {
         	sender.sendMessage(l.replace("&", "\u00a7"));
         }
     }
 
-    public String _(String msg) {
-        String loc = (String) this.get(msg, this.getDefault(msg));
-        if (loc == null && !contains(msg)) {
-        	set(msg, this.getDefault(msg));
-        	save();
-        	load();
-        	loc = (String) this.get(msg, this.getDefault(msg));
+    public String[] _(String msg) {
+    	int i = ((String) this.get(msg)).split("&n").length;
+        String[] loc = new String[i];
+        int a;
+        for (a = 0 ; a < i ; a++) {
+        	loc[a] = ((String) this.get(msg)).split("&n")[a].replace("&", "\u00a7");
         }
-        if (loc == null)
-        	loc =  "Error with Translation files; Please contact the admin ";
-        return loc.replace("&", "\u00a7");
+        if (loc == null || loc.length == 0) {
+        	loc[0] =  "Error with " + msg + " translation; Please contact the admin for verify or update translation files";
+        	ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage +  ".yml !");
+        }
+        return loc;
     }
 
 	public static Messages getInstance() {

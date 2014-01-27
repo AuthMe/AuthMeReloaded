@@ -8,11 +8,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
+import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.DataFileCache;
@@ -91,8 +91,8 @@ public class LogoutCommand implements CommandExecutor {
 
         if (LimboCache.getInstance().hasLimboPlayer(name))
         	LimboCache.getInstance().deleteLimboPlayer(name);
-        LimboCache.getInstance().addLimboPlayer(player , utils.removeAll(player));
         LimboCache.getInstance().addLimboPlayer(player);
+        utils.setGroup(player, groupType.NOTLOGGEDIN);
         if(Settings.protectInventoryBeforeLogInEnabled) {
         	player.getInventory().clear();
             // create cache file for handling lost of inventories on unlogged in status
@@ -104,11 +104,11 @@ public class LogoutCommand implements CommandExecutor {
         int interval = Settings.getWarnMessageInterval;
         BukkitScheduler sched = sender.getServer().getScheduler();
         if (delay != 0) {
-            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
-            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id.getTaskId());
+            int id = sched.scheduleSyncDelayedTask(plugin, new TimeoutTask(plugin, name), delay);
+            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, m._("login_msg"), interval));
-        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT.getTaskId());
+        int msgT = sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("login_msg"), interval));
+        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         try {
 	         if (PlayersLogs.players.contains(player.getName())) {
 	        	 	PlayersLogs.players.remove(player.getName());

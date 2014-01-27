@@ -13,90 +13,103 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.api.API;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Settings;
 
 public class Utils {
      private String currentGroup;
      private static Utils singleton;
-     private String unLoggedGroup = Settings.getUnloggedinGroup;
      int id;
+     public AuthMe plugin;
 
-  public void setGroup(Player player, groupType group) {
-    if (!player.isOnline())
-        return;
-    if(!Settings.isPermissionCheckEnabled)
-        return;
+     public Utils(AuthMe plugin) {
+    	 this.plugin = plugin;
+     }
 
-        switch(group) {
-            case UNREGISTERED: {
-                currentGroup = AuthMe.permission.getPrimaryGroup(player);
-                AuthMe.permission.playerRemoveGroup(player, currentGroup);
-                AuthMe.permission.playerAddGroup(player, Settings.unRegisteredGroup);
-                break;
-            }
-            case REGISTERED: {
-                currentGroup = AuthMe.permission.getPrimaryGroup(player);
-                AuthMe.permission.playerRemoveGroup(player, currentGroup);
-                AuthMe.permission.playerAddGroup(player, Settings.getRegisteredGroup);
-                break;
-            }
-        }
-        return;
-    }
+     public void setGroup(Player player, groupType group) {
+ 	    if (!player.isOnline())
+ 	        return;
+ 	    if(!Settings.isPermissionCheckEnabled)
+ 	        return;
+ 	    if(plugin.permission == null)
+ 	    	return;
+ 	    currentGroup = plugin.permission.getPrimaryGroup(player);
+ 	    World world = null;
+ 	    String name = player.getName();
+         switch(group) {
+         case UNREGISTERED: {
+         	plugin.permission.playerRemoveGroup(world, name, currentGroup);
+             plugin.permission.playerAddGroup(world, name, Settings.unRegisteredGroup);
+             break;
+         }
+         case REGISTERED: {
+         	plugin.permission.playerRemoveGroup(world, name, currentGroup);
+             plugin.permission.playerAddGroup(world, name, Settings.getRegisteredGroup);
+             break;
+         }
+         case NOTLOGGEDIN: {
+         	if(!useGroupSystem()) break;
+         	plugin.permission.playerRemoveGroup(world, name, currentGroup);
+         	plugin.permission.playerAddGroup(world, name, Settings.getUnloggedinGroup);
+         	break;
+         }
+         case LOGGEDIN: {
+         	if(!useGroupSystem()) break;
+         	LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
+         	if (limbo == null) break;
+         	String realGroup = limbo.getGroup();
+         	plugin.permission.playerRemoveGroup(world, name, currentGroup);
+         	plugin.permission.playerAddGroup(world, name, realGroup);
+         	break;
+         }
+     }
+     return;
+   }
+     
+     public boolean addNormal(Player player, String group) {
+    	 if(!Utils.getInstance().useGroupSystem()){
+    		 return false;
+    	 }
+    	 if(plugin.permission == null) return false;
+    	 World world = null;
+    	 if(plugin.permission.playerRemoveGroup(world,player.getName().toString(),Settings.getUnloggedinGroup) && plugin.permission.playerAddGroup(world,player.getName().toString(),group)) {
+    		 return true;
+    	 }
+    	 return false;
+     }
 
-    public String removeAll(Player player) {
-        if(!Utils.getInstance().useGroupSystem()){
-            return null;
-        }
-        if( !Settings.getJoinPermissions.isEmpty() ) {
-            hasPermOnJoin(player);
-        }
-        this.currentGroup = AuthMe.permission.getPrimaryGroup(player.getWorld(),player.getName().toString());
-        if(AuthMe.permission.playerRemoveGroup(player.getWorld(),player.getName().toString(), currentGroup) && AuthMe.permission.playerAddGroup(player.getWorld(),player.getName().toString(),this.unLoggedGroup)) {
-            return currentGroup;
-        }
-        return null;
-    }
+     public void hasPermOnJoin(Player player) {
+    	 if (plugin.permission == null) return;
+    	 Iterator<String> iter = Settings.getJoinPermissions.iterator();
+    	 while (iter.hasNext()) {
+    		 String permission = iter.next();
+    		 if(plugin.permission.playerHas(player, permission)){
+    			 plugin.permission.playerAddTransient(player, permission);
+    		 }
+    	 }
+     }
 
-    public boolean addNormal(Player player, String group) {
-    	if(!Utils.getInstance().useGroupSystem()){
-            return false;
-        }
-        if(AuthMe.permission.playerRemoveGroup(player.getWorld(),player.getName().toString(),this.unLoggedGroup) && AuthMe.permission.playerAddGroup(player.getWorld(),player.getName().toString(),group)) {
-            return true;
-        }
-        return false;
-    }
-
-    private String hasPermOnJoin(Player player) {
-    	Iterator<String> iter = Settings.getJoinPermissions.iterator();
-    	while (iter.hasNext()) {
-    		String permission = iter.next();
-    		if(AuthMe.permission.playerHas(player, permission)){
-    			AuthMe.permission.playerAddTransient(player, permission);
-    		}
-    	}
-    	return null;
-    }
-
-    public boolean isUnrestricted(Player player) {
-        if(Settings.getUnrestrictedName.isEmpty() || Settings.getUnrestrictedName == null)
-            return false;
-        if(Settings.getUnrestrictedName.contains(player.getName()))
-            return true;
-        return false;
+     public boolean isUnrestricted(Player player) {
+    	 if(!Settings.isAllowRestrictedIp)
+    		 return false;
+    	 if(Settings.getUnrestrictedName.isEmpty() || Settings.getUnrestrictedName == null)
+    		 return false;
+    	 if(Settings.getUnrestrictedName.contains(player.getName()))
+    		 return true;
+    	 return false;
     }
 
      public static Utils getInstance() {
-    	 singleton = new Utils();
+    	 singleton = new Utils(AuthMe.getInstance());
     	 return singleton;
     }
 
     private boolean useGroupSystem() {
-        if(Settings.isPermissionCheckEnabled && !Settings.getUnloggedinGroup.isEmpty()) {
+        if(Settings.isPermissionCheckEnabled && !Settings.getUnloggedinGroup.isEmpty())
             return true;
-        } return false;
+        return false;
     }
 
     public void packCoords(double x, double y, double z, String w, final Player pl)
@@ -112,11 +125,11 @@ public class Utils {
     	final World world = theWorld;
     	final Location locat = new Location(world, x, y, z);
 
-    	Bukkit.getScheduler().scheduleSyncDelayedTask(AuthMe.getInstance(), new Runnable() {
+    	Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			@Override
 			public void run() {
 		        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, locat);
-		        AuthMe.getInstance().getServer().getPluginManager().callEvent(tpEvent);
+		        plugin.getServer().getPluginManager().callEvent(tpEvent);
 		        if(!tpEvent.isCancelled()) {
 		        	if (!tpEvent.getTo().getChunk().isLoaded())
 		        		tpEvent.getTo().getChunk().load();

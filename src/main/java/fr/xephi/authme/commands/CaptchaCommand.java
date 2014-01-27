@@ -61,7 +61,9 @@ public class CaptchaCommand implements CommandExecutor {
         if(Settings.useCaptcha && !args[0].equals(plugin.cap.get(name))) {
         	plugin.cap.remove(name);
         	plugin.cap.put(name, rdm.nextString());
-        	player.sendMessage(m._("wrong_captcha").replaceAll("THE_CAPTCHA", plugin.cap.get(name)));
+        	for (String s : m._("wrong_captcha")) {
+        		player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)));
+        	}
         	return true;
         }
         try {

@@ -16,7 +16,7 @@ import fr.xephi.authme.settings.Messages;
  * @author stefano
  */
 public class PasspartuCommand implements CommandExecutor {
-    private Utils utils = new Utils();
+    private Utils utils = Utils.getInstance();
     public AuthMe plugin;
 	private Messages m = Messages.getInstance();
 
@@ -26,7 +26,7 @@ public class PasspartuCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmnd, String label, String[] args) {
-    	
+
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
         	m._(sender, "no_perm");
             return true;
