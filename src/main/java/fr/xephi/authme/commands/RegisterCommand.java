@@ -262,8 +262,16 @@ public class RegisterCommand implements CommandExecutor {
                 player.saveData();
                 
                 // Register is finish and player is logged, display welcome message
-                for (String s : Settings.welcomeMsg)
-                	player.sendMessage(plugin.replaceAllInfos(s, player));
+                if(Settings.useWelcomeMessage)
+                    if(Settings.broadcastWelcomeMessage) {
+                        for (String s : Settings.welcomeMsg) {
+                    		Bukkit.getServer().broadcastMessage(s);
+                        }
+                    } else {
+                        for (String s : Settings.welcomeMsg) {
+                        	player.sendMessage(plugin.replaceAllInfos(s, player));
+                        }
+                    }
 
                 // Register is now finish , we can force all commands
                 forceCommands(player);

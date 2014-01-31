@@ -433,8 +433,13 @@ public class AuthMe extends JavaPlugin {
     		ess = null;
     	}
     	if (this.getServer().getPluginManager().getPlugin("EssentialsSpawn") != null && this.getServer().getPluginManager().getPlugin("EssentialsSpawn").isEnabled()) {
-    		this.essentialsSpawn = new EssSpawn().getLocation();
-    		ConsoleLogger.info("Hook with EssentialsSpawn plugin");
+    		try {
+        		essentialsSpawn = new EssSpawn().getLocation();
+        		ConsoleLogger.info("Hook with EssentialsSpawn plugin");
+    		} catch (Exception e) {
+    			essentialsSpawn = null;
+    			ConsoleLogger.showError("Error while reading /plugins/Essentials/spawn.yml file ");
+    		}
     	} else {
     		ess = null;
     	}

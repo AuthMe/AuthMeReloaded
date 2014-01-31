@@ -26,6 +26,7 @@ public class EssSpawn extends CustomConfiguration {
 
 	public Location getLocation() {
 		try {
+			if (!this.contains("spawns.default.world")) return null;
 			if (this.getString("spawns.default.world").isEmpty() || this.getString("spawns.default.world") == "") return null;
 			Location location = new Location(Bukkit.getWorld(this.getString("spawns.default.world")), this.getDouble("spawns.default.x"), this.getDouble("spawns.default.y"), this.getDouble("spawns.default.z"), Float.parseFloat(this.getString("spawns.default.yaw")), Float.parseFloat(this.getString("spawns.default.pitch")));
 			return location;

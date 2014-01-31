@@ -58,7 +58,8 @@ public final class Settings extends YamlConfiguration {
             useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
             disableSocialSpy, useMultiThreading, forceOnlyAfterLogin, useEssentialsMotd,
             usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword, purgeLimitedCreative,
-            purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail, useWelcomeMessage;
+            purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
+            broadcastWelcomeMessage;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -233,6 +234,7 @@ public void loadConfigOptions() {
         useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
         unsafePasswords = (List<String>) configFile.getList("settings.security.unsafePasswords", new ArrayList<String>());
         countriesBlacklist = (List<String>) configFile.getList("Protection.countriesBlacklist", new ArrayList<String>());
+        broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -383,6 +385,7 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
         unsafePasswords = (List<String>) configFile.getList("settings.security.unsafePasswords", new ArrayList<String>());
         countriesBlacklist = (List<String>) configFile.getList("Protection.countriesBlacklist", new ArrayList<String>());
+        broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -516,6 +519,8 @@ public void mergeConfig() {
     	   countriesBlacklist.add("A1");
     	   set("Protection.countriesBlacklist", countriesBlacklist);
        }
+       if(!contains("settings.broadcastWelcomeMessage"))
+    	   set("settings.broadcastWelcomeMessage", false);
 
        plugin.getLogger().warning("Merge new Config Options if needed..");
        plugin.getLogger().warning("Please check your config.yml file!");
@@ -696,6 +701,10 @@ public void mergeConfig() {
     }
 
     private static void getWelcomeMessage(AuthMe plugin) {
+    	welcomeMsg = new ArrayList<String>();
+    	if(!useWelcomeMessage) {
+    		return;
+    	}
     	if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt").exists())) {
             try {
             	FileWriter fw = new FileWriter(plugin.getDataFolder() + File.separator + "welcome.txt", true);
@@ -708,20 +717,18 @@ public void mergeConfig() {
     			e.printStackTrace();
     		}
     	}
-    	List<String> msg = new ArrayList<String>();
     	try {
 			FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
 			BufferedReader br = new BufferedReader(fr);
 			String line = "";
 			while((line = br.readLine()) != null) {
-				msg.add(line);
+				welcomeMsg.add(line);
 			}
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		welcomeMsg = msg;
     }
 
     public enum messagesLang {

@@ -418,10 +418,18 @@ public class Management extends Thread {
             // The Loginevent now fires (as intended) after everything is processed
             Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
             player.saveData();
-            
+
             // Login is finish, display welcome message
-            for (String s : Settings.welcomeMsg)
-            	player.sendMessage(plugin.replaceAllInfos(s, player));
+            if(Settings.useWelcomeMessage)
+                if(Settings.broadcastWelcomeMessage) {
+                    for (String s : Settings.welcomeMsg) {
+                		Bukkit.getServer().broadcastMessage(s);
+                    }
+                } else {
+                    for (String s : Settings.welcomeMsg) {
+                    	player.sendMessage(plugin.replaceAllInfos(s, player));
+                    }
+                }
 
             // Login is now finish , we can force all commands
             forceCommands();
