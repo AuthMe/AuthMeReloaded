@@ -72,9 +72,9 @@ public class UnregisterCommand implements CommandExecutor {
                     return true;
                 }
                 if(Settings.isForcedRegistrationEnabled) {
-                    player.getInventory().setArmorContents(new ItemStack[4]);
-                    player.getInventory().setContents(new ItemStack[36]); 
-                    player.saveData();
+                	player.getInventory().setContents(new ItemStack[36]);
+                	player.getInventory().setArmorContents(new ItemStack[4]);
+                	player.saveData();
                     PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                     LimboCache.getInstance().addLimboPlayer(player);
                     Utils.getInstance().setGroup(player, groupType.UNREGISTERED);
@@ -85,11 +85,11 @@ public class UnregisterCommand implements CommandExecutor {
                         int id = sched.scheduleSyncDelayedTask(plugin, new TimeoutTask(plugin, name), delay);
                         LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
-                    sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("reg_msg"), interval));
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("reg_msg"), interval)));
                         if(!Settings.unRegisteredGroup.isEmpty()){
                             Utils.getInstance().setGroup(player, Utils.groupType.UNREGISTERED);
                         }
-                        player.sendMessage("unregistered");
+                        m._(player, "unregistered");
                         ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                         if(plugin.notifications != null) {
                         	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
@@ -108,7 +108,7 @@ public class UnregisterCommand implements CommandExecutor {
                 	 PlayersLogs.players.remove(player.getName());
                 	 pllog.save();
                  }
-                 player.sendMessage("unregistered");
+                 m._(player, "unregistered");
                  ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                  if(plugin.notifications != null) {
                  	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));

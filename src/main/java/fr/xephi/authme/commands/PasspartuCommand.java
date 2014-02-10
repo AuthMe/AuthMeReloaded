@@ -39,7 +39,7 @@ public class PasspartuCommand implements CommandExecutor {
        if ((sender instanceof Player) && args.length == 1) {
            if(utils.readToken(args[0])) {
                  //bypass login!
-        	   plugin.management.performLogin((Player) sender, "dontneed", true, false);
+        	   plugin.management.performLogin((Player) sender, "dontneed", true);
                return true;
            }
            sender.sendMessage("Time is expired or Token is Wrong!");

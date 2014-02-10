@@ -65,6 +65,7 @@ import fr.xephi.authme.plugin.manager.BungeeCordMessage;
 import fr.xephi.authme.plugin.manager.CitizensCommunicator;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.plugin.manager.EssSpawn;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
@@ -79,7 +80,7 @@ public class AuthMe extends JavaPlugin {
     public DataSource database = null;
     private Settings settings;
 	private Messages m;
-    private PlayersLogs pllog;
+    public PlayersLogs pllog;
     public static Server server;
     public static Logger authmeLogger = Logger.getLogger("AuthMe");
     public static AuthMe authme;
@@ -135,10 +136,12 @@ public class AuthMe extends JavaPlugin {
 
     	m = Messages.getInstance();
 
-        setMessages(Messages.getInstance());
         pllog = PlayersLogs.getInstance();
 
         server = getServer();
+
+        //Find Permissions
+        checkVault();
 
         //Set Console Filter
         if (Settings.removePassword) {
@@ -293,11 +296,8 @@ public class AuthMe extends JavaPlugin {
         	ConsoleLogger.info("Successfully hook with ChestShop!");
         }
 
-        //Find Permissions
-        checkVault();
-
         this.getCommand("authme").setExecutor(new AdminCommand(this, database));
-        this.getCommand("register").setExecutor(new RegisterCommand(database, this));
+        this.getCommand("register").setExecutor(new RegisterCommand(this));
         this.getCommand("login").setExecutor(new LoginCommand(this));
         this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(database, this));
         this.getCommand("logout").setExecutor(new LogoutCommand(this,database));
@@ -355,8 +355,7 @@ public class AuthMe extends JavaPlugin {
             if (permissionProvider != null) {
             	permission = permissionProvider.getProvider();
             	ConsoleLogger.info("Vault plugin detected, hook with " + permission.getName() + " system");
-            }
-            else {
+            } else {
             	ConsoleLogger.showError("Vault plugin is detected but not the permissions plugin!");
             }
         } else {
@@ -483,7 +482,7 @@ public class AuthMe extends JavaPlugin {
 
 	@Override
     public void onDisable() {
-        if (Bukkit.getOnlinePlayers() != null)
+        if (Bukkit.getOnlinePlayers().length != 0)
         for(Player player : Bukkit.getOnlinePlayers()) {
         		this.savePlayer(player);
         }
@@ -538,15 +537,9 @@ public class AuthMe extends JavaPlugin {
 		} catch (Exception e) { }
 		try {
 	        String name = player.getName().toLowerCase();
-	        if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead()) && 
-	          (Settings.isSaveQuitLocationEnabled.booleanValue())) {
-	          final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), (int)player.getLocation().getX(), (int)player.getLocation().getY(), (int)player.getLocation().getZ(), player.getWorld().getName());
-	          Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-				@Override
-				public void run() {
-					database.updateQuitLoc(auth);
-				}
-	          });
+	        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
+	        	final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName());
+				database.updateQuitLoc(auth);
 	        }
 	        if (LimboCache.getInstance().hasLimboPlayer(name))
 	        {
@@ -820,16 +813,18 @@ public class AuthMe extends JavaPlugin {
     }
 
     public String replaceAllInfos(String message, Player player) {
-    	message = message.replace("&", "\u00a7");
-    	message = message.replace("{PLAYER}", player.getName());
-    	message = message.replace("{ONLINE}", ""+this.getServer().getOnlinePlayers().length);
-    	message = message.replace("{MAXPLAYERS}", ""+this.getServer().getMaxPlayers());
-    	message = message.replace("{IP}", player.getAddress().getAddress().getHostAddress());
-    	message = message.replace("{LOGINS}", ""+PlayerCache.getInstance().getLogged());
-    	message = message.replace("{WORLD}", player.getWorld().getName());
-    	message = message.replace("{SERVER}", this.getServer().getServerName());
-    	message = message.replace("{VERSION}", this.getServer().getBukkitVersion());
-    	message = message.replace("{COUNTRY}", this.getCountryName(player.getAddress().getAddress()));
+    	try {
+        	message = message.replace("&", "\u00a7");
+        	message = message.replace("{PLAYER}", player.getName());
+        	message = message.replace("{ONLINE}", ""+this.getServer().getOnlinePlayers().length);
+        	message = message.replace("{MAXPLAYERS}", ""+this.getServer().getMaxPlayers());
+        	message = message.replace("{IP}", player.getAddress().getAddress().getHostAddress());
+        	message = message.replace("{LOGINS}", ""+PlayerCache.getInstance().getLogged());
+        	message = message.replace("{WORLD}", player.getWorld().getName());
+        	message = message.replace("{SERVER}", this.getServer().getServerName());
+        	message = message.replace("{VERSION}", this.getServer().getBukkitVersion());
+        	message = message.replace("{COUNTRY}", this.getCountryName(player.getAddress().getAddress()));
+    	} catch (Exception e) {}
     	return message;
     }
 }

@@ -512,8 +512,12 @@ public void mergeConfig() {
     	   set("Email.delayRecall", 5);
        if(!contains("settings.useWelcomeMessage"))
     	   set("settings.useWelcomeMessage", true);
-       if(!contains("settings.security.unsafePasswords"))
-    	   set("settings.security.unsafePasswords", new ArrayList<String>());
+       if(!contains("settings.security.unsafePasswords")) {
+    	   List<String> str = new ArrayList<String>();
+    	   str.add("123456");
+    	   str.add("password");
+    	   set("settings.security.unsafePasswords", str);
+       }
        if(!contains("Protection.countriesBlacklist")) {
     	   countriesBlacklist = new ArrayList<String>();
     	   countriesBlacklist.add("A1");

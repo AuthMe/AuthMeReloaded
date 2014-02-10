@@ -588,7 +588,7 @@ public class AuthMePlayerListener implements Listener {
                      		PlayerCache.getInstance().addPlayer(auth);
                      	}
                      	m._(player, "valid_session");
-                         return;
+                        return;
                      } else if (!Settings.sessionExpireOnIpChange){
                      	GameMode gM = gameMode.get(name);
                      	this.causeByAuthMe = true;
@@ -615,7 +615,7 @@ public class AuthMePlayerListener implements Listener {
             } else {
             	//Session is ended correctly
                 PlayerCache.getInstance().removePlayer(name);
-                }
+            }
           }
           // isent in session or session was ended correctly
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
@@ -698,8 +698,10 @@ public class AuthMePlayerListener implements Listener {
         	player.performCommand("motd");
         
         // Remove the join message while the player isn't logging in
-        joinMessage.put(name, event.getJoinMessage());
-        event.setJoinMessage(null);
+        if (Settings.enableProtection) {
+            joinMessage.put(name, event.getJoinMessage());
+            event.setJoinMessage(null);
+        }
     }
 
 	private void placePlayerSafely(Player player, Location spawnLoc) {
@@ -736,7 +738,7 @@ public class AuthMePlayerListener implements Listener {
         	}
         }
         
-    	if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name))
+    	if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
     		event.setQuitMessage(null);
 
         if (LimboCache.getInstance().hasLimboPlayer(name)) {
@@ -755,6 +757,7 @@ public class AuthMePlayerListener implements Listener {
                 player.setFlying(limbo.isFlying());
             }
             this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
+            this.plugin.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
             LimboCache.getInstance().deleteLimboPlayer(name);
             if(playerBackup.doesCacheExist(name)) {
             	playerBackup.removeCache(name);
@@ -802,7 +805,7 @@ public class AuthMePlayerListener implements Listener {
 		} catch (NullPointerException npe) { }
       }
 
-  	if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name))
+  	if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
 		event.setLeaveMessage(null);
 
       if (LimboCache.getInstance().hasLimboPlayer(name))
@@ -837,6 +840,7 @@ public class AuthMePlayerListener implements Listener {
             player.setFlying(limbo.isFlying());
         }
         this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
+        this.plugin.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
         LimboCache.getInstance().deleteLimboPlayer(name);
         if (this.playerBackup.doesCacheExist(name)) {
           this.playerBackup.removeCache(name);

@@ -15,7 +15,7 @@ public class PlayerAuth {
     private String world = "world";
     private String salt = "";
     private String vBhash = null;
-    private int groupId;
+    private int groupId = -1;
     private String email = "your@email.com";
     private String realName = "";
 

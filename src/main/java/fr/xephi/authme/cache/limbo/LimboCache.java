@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.events.ResetInventoryEvent;
 import fr.xephi.authme.events.StoreInventoryEvent;
@@ -66,8 +67,14 @@ public class LimboCache {
             if(player.isFlying())
             	flying = true;
             else flying = false;
-            if (plugin.permission != null)
-            	playerGroup = plugin.permission.getPrimaryGroup(player);
+            if (plugin.permission != null) {
+            	try {
+            		playerGroup = plugin.permission.getPrimaryGroup(player);
+            	} catch (UnsupportedOperationException e) {
+         	    	ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
+         	    	plugin.permission = null;
+         	    }
+            }
         }
 
         if(Settings.isForceSurvivalModeEnabled) {

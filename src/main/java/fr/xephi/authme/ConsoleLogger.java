@@ -19,7 +19,7 @@ public class ConsoleLogger {
 
     public static void info(String message) {
     	if (AuthMe.getInstance().isEnabled()) {
-    		log.info(message);
+    		log.info("[AuthMe] " + message);
     		if (Settings.useLogging) {
     			Calendar date = Calendar.getInstance();
     			final String actually = "[" + DateFormat.getDateInstance().format(date.getTime()) + ", " + date.get(Calendar.HOUR_OF_DAY) + ":" + date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND) + "] " + message;
@@ -35,7 +35,7 @@ public class ConsoleLogger {
 
     public static void showError(String message) {
     	if (AuthMe.getInstance().isEnabled()) {
-            log.warning(" ERROR: " + message);
+            log.warning("[AuthMe] ERROR: " + message);
             if (Settings.useLogging) {
                 Calendar date = Calendar.getInstance();
                 final String actually = "[" + DateFormat.getDateInstance().format(date.getTime()) + ", " + date.get(Calendar.HOUR_OF_DAY) + ":" + date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND) + "] ERROR : " + message;

@@ -35,7 +35,13 @@ public class Utils {
  	        return;
  	    if(plugin.permission == null)
  	    	return;
- 	    currentGroup = plugin.permission.getPrimaryGroup(player);
+ 	    try {
+ 	 	    currentGroup = plugin.permission.getPrimaryGroup(player);
+ 	    } catch (UnsupportedOperationException e) {
+ 	    	ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
+ 	    	plugin.permission = null;
+ 	    	return;
+ 	    }
  	    World world = null;
  	    String name = player.getName();
          switch(group) {
@@ -69,14 +75,20 @@ public class Utils {
    }
      
      public boolean addNormal(Player player, String group) {
-    	 if(!Utils.getInstance().useGroupSystem()){
+    	 if(!useGroupSystem()){
     		 return false;
     	 }
     	 if(plugin.permission == null) return false;
     	 World world = null;
-    	 if(plugin.permission.playerRemoveGroup(world,player.getName().toString(),Settings.getUnloggedinGroup) && plugin.permission.playerAddGroup(world,player.getName().toString(),group)) {
-    		 return true;
-    	 }
+    	 try {
+        	 if(plugin.permission.playerRemoveGroup(world,player.getName().toString(),Settings.getUnloggedinGroup) && plugin.permission.playerAddGroup(world,player.getName().toString(),group)) {
+        		 return true;
+        	 }
+    	 } catch (UnsupportedOperationException e) {
+   	    	ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
+ 	    	plugin.permission = null;
+ 	    	return false;
+ 	    }
     	 return false;
      }
 

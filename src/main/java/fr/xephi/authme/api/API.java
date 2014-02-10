@@ -174,6 +174,6 @@ public class API {
      * @param Player player
      */
     public static void forceLogin(Player player) {
-    	instance.management.performLogin(player, "dontneed", false, true);
+    	instance.management.performLogin(player, "dontneed", true);
     }
 }

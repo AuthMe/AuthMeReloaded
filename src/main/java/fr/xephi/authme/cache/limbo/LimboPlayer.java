@@ -14,7 +14,7 @@ public class LimboPlayer {
     private int messageTaskId = -1;
     private GameMode gameMode = GameMode.SURVIVAL;
     private boolean operator = false;
-    private String group = null;
+    private String group = "";
     private boolean flying = false;
 
     public LimboPlayer(String name, Location loc, ItemStack[] inventory, ItemStack[] armour, GameMode gameMode, boolean operator, String group, boolean flying) {
