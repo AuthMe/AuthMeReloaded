@@ -194,19 +194,19 @@ public class AsyncronousLogin {
         if (auth == null) {
             return;
         }
-        if (this.database.getAllAuthsByName(auth).isEmpty() || this.database.getAllAuthsByName(auth) == null) {
+        List<String> auths = this.database.getAllAuthsByName(auth);
+        if (auths.isEmpty() || auths == null) {
             return;
         }
-        if (this.database.getAllAuthsByName(auth).size() == 1) {
+        if (auths.size() == 1) {
             return;
         }
-        List<String> accountList = this.database.getAllAuthsByName(auth);
         String message = "[AuthMe] ";
         int i = 0;
-        for (String account : accountList) {
+        for (String account : auths) {
             i++;
             message = message + account;
-            if (i != accountList.size()) {
+            if (i != auths.size()) {
                 message = message + ", ";
             } else {
                 message = message + ".";
@@ -215,7 +215,7 @@ public class AsyncronousLogin {
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (plugin.authmePermissible(player, "authme.seeOtherAccounts")) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has "
-                        + accountList.size() + " accounts");
+                        + auths.size() + " accounts");
                 player.sendMessage(message);
             }
         }

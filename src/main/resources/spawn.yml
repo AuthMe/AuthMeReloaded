@@ -5,3 +5,10 @@ spawn:
   z: ''
   yaw: ''
   pitch: ''
+firstspawn:
+  world: ''
+  x: ''
+  y: ''
+  z: ''
+  yaw: ''
+  pitch: ''

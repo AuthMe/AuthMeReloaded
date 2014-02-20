@@ -59,6 +59,12 @@ public class EmailCommand implements CommandExecutor {
         		m._(player, "usage_email_add");
         		return true;
         	}
+        	if(Settings.getmaxRegPerEmail > 0) {
+        		if (!plugin.authmePermissible(sender, "authme.allow2accounts") && data.getAllAuthsByEmail(args[1]).size() >= Settings.getmaxRegPerEmail) {
+        			m._(player, "max_reg");
+        			return true;
+        		}
+        	}
             if(args[1].equals(args[2]) && PlayerCache.getInstance().isAuthenticated(name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
                 if (auth.getEmail() == null || (!auth.getEmail().equals("your@email.com") && !auth.getEmail().isEmpty())) {
@@ -87,6 +93,12 @@ public class EmailCommand implements CommandExecutor {
             	}
             }
         } else if(args[0].equalsIgnoreCase("change") && args.length == 3 ) {
+        	if(Settings.getmaxRegPerEmail > 0) {
+        		if (!plugin.authmePermissible(sender, "authme.allow2accounts") && data.getAllAuthsByEmail(args[1]).size() >= Settings.getmaxRegPerEmail) {
+        			m._(player, "max_reg");
+        			return true;
+        		}
+        	}
             if(PlayerCache.getInstance().isAuthenticated(name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
                 if (auth.getEmail() == null || auth.getEmail().equals("your@email.com") || auth.getEmail().isEmpty()) {

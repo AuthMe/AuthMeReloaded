@@ -604,6 +604,17 @@ public class MySQLDataSource implements DataSource {
 
     @Override
     public void reload() {
+    	try {
+			reconnect(true);
+		} catch (Exception e) {
+            ConsoleLogger.showError(e.getMessage());
+            if (Settings.isStopEnabled) {
+            	ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
+            	AuthMe.getInstance().getServer().shutdown();
+            }
+            if (!Settings.isStopEnabled)
+            	AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+		}
     }
 
     private void close(Statement st) {
@@ -749,7 +760,7 @@ public class MySQLDataSource implements DataSource {
         } catch (Exception te) {
         	try {
         		con = null;
-				reconnect();
+				reconnect(false);
 			} catch (Exception e) {
 	            ConsoleLogger.showError(e.getMessage());
 	            if (Settings.isStopEnabled) {
@@ -765,7 +776,7 @@ public class MySQLDataSource implements DataSource {
         		throw new AssertionError(ae.getMessage());
         	try {
         		con = null;
-				reconnect();
+				reconnect(false);
 			} catch (Exception e) {
 	            ConsoleLogger.showError(e.getMessage());
 	            if (Settings.isStopEnabled) {
@@ -781,7 +792,7 @@ public class MySQLDataSource implements DataSource {
     	return con;
     }
 
-    private synchronized void reconnect() throws ClassNotFoundException, SQLException, TimeoutException {
+    private synchronized void reconnect(boolean reload) throws ClassNotFoundException, SQLException, TimeoutException {
     	conPool.dispose();
         Class.forName("com.mysql.jdbc.Driver");
         MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
@@ -791,7 +802,8 @@ public class MySQLDataSource implements DataSource {
         dataSource.setUser(username);
         dataSource.setPassword(password);
         conPool = new MiniConnectionPoolManager(dataSource, 10);
-        ConsoleLogger.info("ConnectionPool was unavailable... Reconnected!");
+        if(!reload)
+        	ConsoleLogger.info("ConnectionPool was unavailable... Reconnected!");
     }
 
 }

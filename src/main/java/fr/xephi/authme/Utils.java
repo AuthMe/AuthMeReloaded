@@ -19,60 +19,63 @@ import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Settings;
 
 public class Utils {
-     private String currentGroup;
-     private static Utils singleton;
-     int id;
-     public AuthMe plugin;
+    private String currentGroup;
+    private static Utils singleton;
+    int id;
+    public AuthMe plugin;
 
-     public Utils(AuthMe plugin) {
-    	 this.plugin = plugin;
-     }
+    public Utils(AuthMe plugin) {
+    	this.plugin = plugin;
+    }
 
-     public void setGroup(Player player, groupType group) {
- 	    if (!player.isOnline())
- 	        return;
- 	    if(!Settings.isPermissionCheckEnabled)
- 	        return;
- 	    if(plugin.permission == null)
- 	    	return;
- 	    try {
- 	 	    currentGroup = plugin.permission.getPrimaryGroup(player);
- 	    } catch (UnsupportedOperationException e) {
- 	    	ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
- 	    	plugin.permission = null;
- 	    	return;
- 	    }
- 	    World world = null;
- 	    String name = player.getName();
-         switch(group) {
-         case UNREGISTERED: {
-         	plugin.permission.playerRemoveGroup(world, name, currentGroup);
-             plugin.permission.playerAddGroup(world, name, Settings.unRegisteredGroup);
-             break;
-         }
-         case REGISTERED: {
-         	plugin.permission.playerRemoveGroup(world, name, currentGroup);
-             plugin.permission.playerAddGroup(world, name, Settings.getRegisteredGroup);
-             break;
-         }
-         case NOTLOGGEDIN: {
-         	if(!useGroupSystem()) break;
-         	plugin.permission.playerRemoveGroup(world, name, currentGroup);
-         	plugin.permission.playerAddGroup(world, name, Settings.getUnloggedinGroup);
-         	break;
-         }
-         case LOGGEDIN: {
-         	if(!useGroupSystem()) break;
-         	LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-         	if (limbo == null) break;
-         	String realGroup = limbo.getGroup();
-         	plugin.permission.playerRemoveGroup(world, name, currentGroup);
-         	plugin.permission.playerAddGroup(world, name, realGroup);
-         	break;
-         }
-     }
-     return;
-   }
+    public void setGroup(Player player, groupType group) {
+    	setGroup(player.getName(), group);
+	}
+
+     public void setGroup(String player, groupType group) {
+  	    if(!Settings.isPermissionCheckEnabled)
+  	        return;
+  	    if(plugin.permission == null)
+  	    	return;
+  	    try {
+  	    	World world = null;
+  	 	    currentGroup = plugin.permission.getPrimaryGroup(world, player);
+  	    } catch (UnsupportedOperationException e) {
+  	    	ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
+  	    	plugin.permission = null;
+  	    	return;
+  	    }
+  	    World world = null;
+  	    String name = player;
+          switch(group) {
+          case UNREGISTERED: {
+          	plugin.permission.playerRemoveGroup(world, name, currentGroup);
+              plugin.permission.playerAddGroup(world, name, Settings.unRegisteredGroup);
+              break;
+          }
+          case REGISTERED: {
+          	plugin.permission.playerRemoveGroup(world, name, currentGroup);
+              plugin.permission.playerAddGroup(world, name, Settings.getRegisteredGroup);
+              break;
+          }
+          case NOTLOGGEDIN: {
+          	if(!useGroupSystem()) break;
+          	plugin.permission.playerRemoveGroup(world, name, currentGroup);
+          	plugin.permission.playerAddGroup(world, name, Settings.getUnloggedinGroup);
+          	break;
+          }
+          case LOGGEDIN: {
+          	if(!useGroupSystem()) break;
+          	LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name.toLowerCase());
+          	if (limbo == null) break;
+          	String realGroup = limbo.getGroup();
+          	plugin.permission.playerRemoveGroup(world, name, currentGroup);
+          	plugin.permission.playerAddGroup(world, name, realGroup);
+          	break;
+          }
+      }
+      return;
+    }
      
      public boolean addNormal(Player player, String group) {
     	 if(!useGroupSystem()){

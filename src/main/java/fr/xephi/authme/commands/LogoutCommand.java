@@ -23,7 +23,6 @@ import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 
@@ -73,12 +72,7 @@ public class LogoutCommand implements CommandExecutor {
         PlayerCache.getInstance().removePlayer(name);
 
         if (Settings.isTeleportToSpawnEnabled) {
-        	Location spawnLoc = player.getWorld().getSpawnLocation();
-            if (plugin.essentialsSpawn != null) {
-            	spawnLoc = plugin.essentialsSpawn;
-            }
-            if (Spawn.getInstance().getLocation() != null)
-            	spawnLoc = Spawn.getInstance().getLocation();
+        	Location spawnLoc = plugin.getSpawnLocation(name, player.getWorld());
             AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawnLoc);
             plugin.getServer().getPluginManager().callEvent(tpEvent);
             if(!tpEvent.isCancelled()) {

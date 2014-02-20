@@ -89,7 +89,7 @@ public class LimboCache {
             gameMode = GameMode.SURVIVAL;
         }
         if(player.isDead()) {
-        	loc = plugin.getSpawnLocation(player.getWorld());
+        	loc = plugin.getSpawnLocation(player.getName().toLowerCase(), player.getWorld());
         }
         cache.put(player.getName().toLowerCase(), new LimboPlayer(name, loc, inv, arm, gameMode, operator, playerGroup, flying));
     }

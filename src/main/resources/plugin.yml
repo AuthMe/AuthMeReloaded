@@ -3,7 +3,7 @@ author: Xephi59
 website: http://dev.bukkit.org/bukkit-plugins/authme-reloaded/
 description: AuthMe prevents people, which aren't logged in, from doing stuff like placing blocks, moving, typing commands or seeing the inventory of the current player.
 main: fr.xephi.authme.AuthMe
-version: 3.3.2
+version: 3.3.3
 softdepend: [Vault, ChestShop, Spout, Multiverse-Core, Notifications, Citizens, CombatTag, Essentials, EssentialsSpawn]
 commands:
     register:
@@ -158,4 +158,10 @@ permissions:
         default: op
     authme.admin.royalauth:
         description: Import RoyalAuth database into AuthMe
+        default: op
+    authme.admin.setfirstspawn:
+        description: Set the AuthMe First Spawn Point
+        default: op
+    authme.admin.firstspawn:
+        description: Teleport to AuthMe First Spawn Point
         default: op

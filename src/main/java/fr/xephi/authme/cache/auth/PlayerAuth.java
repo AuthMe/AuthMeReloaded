@@ -98,7 +98,9 @@ public class PlayerAuth {
     }
 
 	public String getIp() {
-        return ip;
+		if (ip == null || ip.isEmpty())
+			ip = "127.0.0.1";
+		return ip;
     }
 
     public String getNickname() {
@@ -145,6 +147,12 @@ public class PlayerAuth {
         this.z = d;
     }  
     public long getLastLogin() {
+    	try {
+    		if (Long.valueOf(lastLogin) == null)
+    			lastLogin = 0L;
+    	} catch (NullPointerException e) {
+    		lastLogin = 0L;
+    	}
         return lastLogin;
     }
 

@@ -66,17 +66,24 @@ public class AsyncronousRegister {
         }
 
         if(Settings.getmaxRegPerIp > 0 ){
-        	if(!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByIp(getIp()).size() >= Settings.getmaxRegPerIp) {
+        	if(!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByIp(getIp()).size() >= Settings.getmaxRegPerIp && !getIp().equalsIgnoreCase("127.0.0.1") && !getIp().equalsIgnoreCase("localhost")) {
         		m._(player, "max_reg");
                 allowRegister =  false;
         	}
         }
+        
     }
 
     public void process() {
     	preRegister();
     	if(!allowRegister) return;
     	if(!email.isEmpty() && email != "") {
+        	if(Settings.getmaxRegPerEmail > 0) {
+        		if (!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
+        			m._(player, "max_reg");
+        			return;
+        		}
+        	}
     		emailRegister();
     		return;
     	}

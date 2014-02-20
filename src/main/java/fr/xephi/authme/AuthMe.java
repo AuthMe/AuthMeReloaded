@@ -720,7 +720,7 @@ public class AuthMe extends JavaPlugin {
 		ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
 	}
 
-    public Location getSpawnLocation(World world) {
+    public Location getSpawnLocation(String name, World world) {
         Location spawnLoc = world.getSpawnLocation();
         if (multiverse != null && Settings.multiverse) {
             try {
@@ -733,8 +733,10 @@ public class AuthMe extends JavaPlugin {
         if (essentialsSpawn != null) {
             spawnLoc = essentialsSpawn;
         }
-        if (Spawn.getInstance().getLocation() != null)
-            spawnLoc = Spawn.getInstance().getLocation();
+        if (Spawn.getInstance().getSpawn() != null)
+            spawnLoc = Spawn.getInstance().getSpawn();
+        if (!database.isAuthAvailable(name) && Spawn.getInstance().getFirstSpawn() != null)
+        	spawnLoc = Spawn.getInstance().getFirstSpawn();
         return spawnLoc;
     }
 

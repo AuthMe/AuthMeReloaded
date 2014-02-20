@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,13 +23,16 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
+import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.converter.FlatToSql;
 import fr.xephi.authme.converter.FlatToSqlite;
 import fr.xephi.authme.converter.RakamakConverter;
@@ -36,11 +40,14 @@ import fr.xephi.authme.converter.RoyalAuthConverter;
 import fr.xephi.authme.converter.newxAuthToFlat;
 import fr.xephi.authme.converter.oldxAuthToFlat;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.settings.SpoutCfg;
+import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.task.TimeoutTask;
 
 
 public class AdminCommand implements CommandExecutor {
@@ -385,6 +392,19 @@ public class AdminCommand implements CommandExecutor {
 				ConsoleLogger.showError(ex.getMessage());
 			}
 			return true;
+        } else if (args[0].equalsIgnoreCase("setfirstspawn")) {
+    		try {
+    			if (sender instanceof Player) {
+    				if (Spawn.getInstance().setFirstSpawn(((Player) sender).getLocation()))
+    				sender.sendMessage("[AuthMe] Correctly define new first spawn");
+    				else sender.sendMessage("[AuthMe] SetFirstSpawn fail , please retry");
+    			} else {
+    				sender.sendMessage("[AuthMe] Please use that command in game");
+    			}
+			} catch (NullPointerException ex) {
+				ConsoleLogger.showError(ex.getMessage());
+			}
+			return true;
         } else if (args[0].equalsIgnoreCase("purgebannedplayers")) {
         	List<String> bannedPlayers = new ArrayList<String>();
         	for (OfflinePlayer off : plugin.getServer().getBannedPlayers()) {
@@ -413,9 +433,22 @@ public class AdminCommand implements CommandExecutor {
         } else if (args[0].equalsIgnoreCase("spawn")) {
     		try {
     			if (sender instanceof Player) {
-    				if (Spawn.getInstance().getLocation() != null)
-    				((Player) sender).teleport(Spawn.getInstance().getLocation());
+    				if (Spawn.getInstance().getSpawn() != null)
+    				((Player) sender).teleport(Spawn.getInstance().getSpawn());
     				else sender.sendMessage("[AuthMe] Spawn fail , please try to define the spawn");
+    			} else {
+    				sender.sendMessage("[AuthMe] Please use that command in game");
+    			}
+			} catch (NullPointerException ex) {
+				ConsoleLogger.showError(ex.getMessage());
+			}
+			return true;
+        } else if (args[0].equalsIgnoreCase("firstspawn")) {
+    		try {
+    			if (sender instanceof Player) {
+    				if (Spawn.getInstance().getFirstSpawn() != null)
+    				((Player) sender).teleport(Spawn.getInstance().getFirstSpawn());
+    				else sender.sendMessage("[AuthMe] Spawn fail , please try to define the first spawn");
     			} else {
     				sender.sendMessage("[AuthMe] Please use that command in game");
     			}
@@ -467,8 +500,36 @@ public class AdminCommand implements CommandExecutor {
             	m._(sender, "error");
                 return true;
             }
+            Player target = Bukkit.getPlayer(name);
             PlayerCache.getInstance().removePlayer(name);
-            sender.sendMessage("unregistered");
+            Utils.getInstance().setGroup(name, groupType.UNREGISTERED);
+            if (target != null) {
+            	if (target.isOnline()) {
+                    if (Settings.isTeleportToSpawnEnabled) {
+                    	Location spawn = plugin.getSpawnLocation(name, target.getWorld());
+                    	SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(target, target.getLocation(), spawn, false);
+                    	plugin.getServer().getPluginManager().callEvent(tpEvent);
+                    	if(!tpEvent.isCancelled()) {
+                    		target.teleport(tpEvent.getTo());
+                    	}
+                    }
+                    LimboCache.getInstance().addLimboPlayer(target);
+                    int delay = Settings.getRegistrationTimeout * 20;
+                    int interval = Settings.getWarnMessageInterval;
+                    BukkitScheduler sched = sender.getServer().getScheduler();
+                    if (delay != 0) {
+                        int id = sched.scheduleSyncDelayedTask(plugin, new TimeoutTask(plugin, name), delay);
+                        LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
+                    }
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("reg_msg"), interval)));
+                    m._(target, "unregistered");
+            	} else {
+            		// Player isn't online, do nothing else
+            	}
+            } else {
+            	// Player does not exist, do nothing else
+            }
+            m._(sender, "unregistered");
             ConsoleLogger.info(args[1] + " unregistered");
             return true;
         } else if (args[0].equalsIgnoreCase("purgelastpos")){

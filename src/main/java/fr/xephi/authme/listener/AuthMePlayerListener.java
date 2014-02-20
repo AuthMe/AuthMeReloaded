@@ -366,7 +366,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         int radius = Settings.getMovementRadius;
-        Location spawn = plugin.getSpawnLocation(player.getWorld());
+        Location spawn = plugin.getSpawnLocation(name, player.getWorld());
 
         if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
         	event.getPlayer().teleport(spawn);
@@ -542,9 +542,9 @@ public class AuthMePlayerListener implements Listener {
         }
         Player player = event.getPlayer();
         World world = player.getWorld();
-        Location spawnLoc = plugin.getSpawnLocation(world);
-        gm = player.getGameMode();
         final String name = player.getName().toLowerCase();
+        Location spawnLoc = plugin.getSpawnLocation(name, world);
+        gm = player.getGameMode();
         gameMode.put(name, gm);
         BukkitScheduler sched = plugin.getServer().getScheduler();
 
@@ -588,6 +588,8 @@ public class AuthMePlayerListener implements Listener {
                      		PlayerCache.getInstance().addPlayer(auth);
                      	}
                      	m._(player, "valid_session");
+                     	// Restore Permission Group
+                        utils.setGroup(player, Utils.groupType.LOGGEDIN);
                         return;
                      } else if (!Settings.sessionExpireOnIpChange){
                      	GameMode gM = gameMode.get(name);
@@ -646,9 +648,20 @@ public class AuthMePlayerListener implements Listener {
             if(!Settings.unRegisteredGroup.isEmpty()){
                utils.setGroup(player, Utils.groupType.UNREGISTERED);
             }
+            if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
+                SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
+                plugin.getServer().getPluginManager().callEvent(tpEvent);
+                if(!tpEvent.isCancelled()) {
+                	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+                		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+                	}
+              	  player.teleport(tpEvent.getTo());
+                }
+            }
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
+            
         }
         if(Settings.protectInventoryBeforeLogInEnabled) {
         	try {
@@ -763,8 +776,8 @@ public class AuthMePlayerListener implements Listener {
             	playerBackup.removeCache(name);
             }
         }
+    	PlayerCache.getInstance().removePlayer(name);
         try {
-        	PlayerCache.getInstance().removePlayer(name);
         	PlayersLogs.players.remove(player.getName());
         	PlayersLogs.getInstance().save();
         	player.getVehicle().eject();
@@ -1086,7 +1099,7 @@ public class AuthMePlayerListener implements Listener {
             if (!Settings.isForcedRegistrationEnabled)
                 return;
         
-        Location spawn = plugin.getSpawnLocation(player.getWorld());
+        Location spawn = plugin.getSpawnLocation(name, player.getWorld());
     	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
     		final PlayerAuth auth = new PlayerAuth(name,spawn.getX(),spawn.getY(),spawn.getZ(),spawn.getWorld().getName());
     		try {
