@@ -59,7 +59,7 @@ public final class Settings extends YamlConfiguration {
             disableSocialSpy, useMultiThreading, forceOnlyAfterLogin, useEssentialsMotd,
             usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword, purgeLimitedCreative,
             purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
-            broadcastWelcomeMessage;
+            broadcastWelcomeMessage, forceRegKick, forceRegLogin;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -68,12 +68,12 @@ public final class Settings extends YamlConfiguration {
             getcUnrestrictedName, getRegisteredGroup, messagesLanguage, getMySQLlastlocX, getMySQLlastlocY, getMySQLlastlocZ,
             rakamakUsers, rakamakUsersIp, getmailAccount, getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName, 
             getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
-            getPhpbbPrefix, getWordPressPrefix;
+            getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged, spawnPriority;
 
     public static int getWarnMessageInterval, getSessionTimeout, getRegistrationTimeout, getMaxNickLength,
             getMinNickLength, getPasswordMinLen, getMovementRadius, getmaxRegPerIp, getNonActivatedGroup,
             passwordMaxLength, getRecoveryPassLength, getMailPort, maxLoginTry, captchaLength, saltLength, getmaxRegPerEmail,
-            bCryptLog2Rounds, getPhpbbGroup, antiBotSensibility, antiBotDuration, delayRecall;
+            bCryptLog2Rounds, getPhpbbGroup, antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp, getMaxJoinPerIp;
 
     protected static YamlConfiguration configFile;
 
@@ -235,6 +235,12 @@ public void loadConfigOptions() {
         unsafePasswords = (List<String>) configFile.getList("settings.security.unsafePasswords", new ArrayList<String>());
         countriesBlacklist = (List<String>) configFile.getList("Protection.countriesBlacklist", new ArrayList<String>());
         broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
+        forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
+        forceRegLogin = configFile.getBoolean("settings.registration.forceLoginAfterRegister", false);
+        getMySQLColumnLogged = configFile.getString("DataSource.mySQLColumnLogged","isLogged");
+        spawnPriority = configFile.getString("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+        getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
+        getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -386,6 +392,12 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         unsafePasswords = (List<String>) configFile.getList("settings.security.unsafePasswords", new ArrayList<String>());
         countriesBlacklist = (List<String>) configFile.getList("Protection.countriesBlacklist", new ArrayList<String>());
         broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
+        forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
+        forceRegLogin = configFile.getBoolean("settings.registration.forceLoginAfterRegister", false);
+        getMySQLColumnLogged = configFile.getString("DataSource.mySQLColumnLogged","isLogged");
+        spawnPriority = configFile.getString("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+        getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
+        getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -525,6 +537,18 @@ public void mergeConfig() {
        }
        if(!contains("settings.broadcastWelcomeMessage"))
     	   set("settings.broadcastWelcomeMessage", false);
+       if(!contains("settings.registration.forceKickAfterRegister"))
+    	   set("settings.registration.forceKickAfterRegister", false);
+       if(!contains("settings.registration.forceLoginAfterRegister"))
+    	   set("settings.registration.forceLoginAfterRegister", false);
+       if(!contains("DataSource.mySQLColumnLogged"))
+    	   set("DataSource.mySQLColumnLogged", "isLogged");
+       if(!contains("settings.restrictions.spawnPriority"))
+    	   set("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+       if(!contains("settings.restrictions.maxLoginPerIp"))
+    	   set("settings.restrictions.maxLoginPerIp", 0);
+       if(!contains("settings.restrictions.maxJoinPerIp"))
+    	   set("settings.restrictions.maxJoinPerIp", 0);
 
        plugin.getLogger().warning("Merge new Config Options if needed..");
        plugin.getLogger().warning("Please check your config.yml file!");
@@ -728,6 +752,7 @@ public void mergeConfig() {
 			while((line = br.readLine()) != null) {
 				welcomeMsg.add(line);
 			}
+			br.close();
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

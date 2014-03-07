@@ -15,6 +15,7 @@ import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
+import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 
 
@@ -521,4 +522,28 @@ public class SQLiteThread extends Thread implements DataSource {
         }
 	}
 
+	@Override
+	public DataSourceType getType() {
+		return DataSourceType.SQLITE;
+	}
+
+	@Override
+	public boolean isLogged(String user) {
+		return PlayersLogs.getInstance().players.contains(user.toLowerCase());
+	}
+
+	@Override
+	public void setLogged(String user) {
+		PlayersLogs.getInstance().addPlayer(user);
+	}
+
+	@Override
+	public void setUnlogged(String user) {
+		PlayersLogs.getInstance().removePlayer(user);
+	}
+
+	@Override
+	public void purgeLogged() {
+		PlayersLogs.getInstance().clear();
+	}
 }

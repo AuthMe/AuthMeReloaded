@@ -1,10 +1,16 @@
 package fr.xephi.authme.settings;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -58,8 +64,24 @@ public class CustomConfiguration extends YamlConfiguration{
 	public boolean loadRessource(File file) {
 		boolean out = true;
 		if (!file.exists()) {
-			InputStream fis = getClass().getResourceAsStream("/" + file.getName());
-			FileOutputStream fos = null;
+			try {
+				InputStream fis = getClass().getResourceAsStream("/" + file.getName());
+				BufferedReader reader = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8").newDecoder()));
+				String str;
+				Writer writer = new BufferedWriter(new OutputStreamWriter(
+						new FileOutputStream(file), Charset.forName("UTF-8").newEncoder()));
+				while ((str = reader.readLine()) != null) {
+					writer.append(str).append("\r\n");
+				}
+				writer.flush();
+				writer.close();
+				reader.close();
+				fis.close();
+			} catch (Exception e) {
+				Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Failed to load config from JAR");
+				out = false;
+			}
+			/*FileOutputStream fos = null;
 			try {
 				fos = new FileOutputStream(file);
 				byte[] buf = new byte[1024];
@@ -81,6 +103,7 @@ public class CustomConfiguration extends YamlConfiguration{
 				} catch (Exception e) {                         
 				}
 			}
+		}*/
 		}
 		return out;
 	}

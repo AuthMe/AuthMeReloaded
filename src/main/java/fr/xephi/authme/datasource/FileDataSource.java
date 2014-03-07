@@ -13,6 +13,7 @@ import java.util.List;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 
 
@@ -627,6 +628,31 @@ public class FileDataSource implements DataSource {
             }
         }
         return;
+	}
+
+	@Override
+	public DataSourceType getType() {
+		return DataSourceType.FILE;
+	}
+
+	@Override
+	public boolean isLogged(String user) {
+		return PlayersLogs.getInstance().players.contains(user.toLowerCase());
+	}
+
+	@Override
+	public void setLogged(String user) {
+		PlayersLogs.getInstance().addPlayer(user);
+	}
+
+	@Override
+	public void setUnlogged(String user) {
+		PlayersLogs.getInstance().removePlayer(user);
+	}
+
+	@Override
+	public void purgeLogged() {
+		PlayersLogs.getInstance().clear();
 	}
 
 }

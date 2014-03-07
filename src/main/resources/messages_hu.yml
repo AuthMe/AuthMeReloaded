@@ -1,36 +1,36 @@
-reg_only: Csak regisztrált játékosoknak! Jelentkezni a yndicraft@freemail.hu e-mail címen lehet
-usage_unreg: '&cHasználat: /unregister jelszó'
-registered: '&aSikeres regisztráció. Üdvözöllek!'
-user_regged: '&cJátékosnév már regisztrálva'
-login_msg: '&cKérlek jelentkezz be: "/login jelszó"'
+reg_only: Csak regisztrÃ¡lt jÃ¡tÃ©kosoknak! Jelentkezni a yndicraft@freemail.hu e-mail cÃ­men lehet
+usage_unreg: '&cHasznÃ¡lat: /unregister jelszÃ³'
+registered: '&aSikeres regisztrÃ¡ciÃ³. ÃœdvÃ¶zÃ¶llek!'
+user_regged: '&cJÃ¡tÃ©kosnÃ©v mÃ¡r regisztrÃ¡lva'
+login_msg: '&cKÃ©rlek jelentkezz be: "/login jelszÃ³"'
 not_logged_in: '&cNem vagy bejelentkezve!'
-logout: '&cSikeresen kijelentkeztél'
-usage_log: '&cBejelentkezés: /login jelszó'
+logout: '&cSikeresen kijelentkeztÃ©l'
+usage_log: '&cBejelentkezÃ©s: /login jelszÃ³'
 unknown_user: User is not in database
-reg_voluntarily: Regisztrálhatod beceneved a szerveren a következö parancsal "/register jelszó jelszó"
-reg_disabled: '&cRegisztráció letiltva'
-no_perm: '&cNincs engedélyed'
-usage_reg: '&cHasználat: /register jelszó jelszóújra'
-unregistered: '&cRegisztráció sikeresen törölve!'
-same_nick: Ezen a játékosnéven már játszanak
+reg_voluntarily: RegisztrÃ¡lhatod beceneved a szerveren a kÃ¶vetkezÃ¶ parancsal "/register jelszÃ³ jelszÃ³"
+reg_disabled: '&cRegisztrÃ¡ciÃ³ letiltva'
+no_perm: '&cNincs engedÃ©lyed'
+usage_reg: '&cHasznÃ¡lat: /register jelszÃ³ jelszÃ³Ãºjra'
+unregistered: '&cRegisztrÃ¡ciÃ³ sikeresen tÃ¶rÃ¶lve!'
+same_nick: Ezen a jÃ¡tÃ©kosnÃ©ven mÃ¡r jÃ¡tszanak
 valid_session: '&cSession login'
-pwd_changed: '&cJelszó cserélve!'
-reload: Beálítások és adatbázis újratöltve!
-timeout: Bejelentkezési idötúllépés
-error: Hiba lépett fel; Lépj kapcsolatba a tulajjal'
-logged_in: '&cMár be vagy jelentkezve!'
-login: '&aSikeresen Beléptél! Üdvözöllek!!!'
-wrong_pwd: '&4Hibás jelszó'
-user_unknown: '&cJátékosnév nem regisztrált'
-reg_msg: '&cKérlek Regisztrálj: "/register jelszó jelszóújra"'
+pwd_changed: '&cJelszÃ³ cserÃ©lve!'
+reload: BeÃ¡lÃ­tÃ¡sok Ã©s adatbÃ¡zis ÃºjratÃ¶ltve!
+timeout: BejelentkezÃ©si idÃ¶tÃºllÃ©pÃ©s
+error: Hiba lÃ©pett fel; LÃ©pj kapcsolatba a tulajjal'
+logged_in: '&cMÃ¡r be vagy jelentkezve!'
+login: '&aSikeresen BelÃ©ptÃ©l! ÃœdvÃ¶zÃ¶llek!!!'
+wrong_pwd: '&4HibÃ¡s jelszÃ³'
+user_unknown: '&cJÃ¡tÃ©kosnÃ©v nem regisztrÃ¡lt'
+reg_msg: '&cKÃ©rlek RegisztrÃ¡lj: "/register jelszÃ³ jelszÃ³Ãºjra"'
 reg_email_msg: '&cPlease register with "/register <email> <confirmEmail>"'
-unsafe_spawn: A kilépési helyzeted nem biztonságos, teleportálás a kezdö Spawnra.
-max_reg: Csak egy karakterrel Registrálhatsz!!!
-password_error: A jelszó nem illik össze
+unsafe_spawn: A kilÃ©pÃ©si helyzeted nem biztonsÃ¡gos, teleportÃ¡lÃ¡s a kezdÃ¶ Spawnra.
+max_reg: Csak egy karakterrel RegistrÃ¡lhatsz!!!
+password_error: A jelszÃ³ nem illik Ã¶ssze
 unvalid_session: Session Dataes doesnt corrispond Plaese wait the end of session
-pass_len: A jelszavad nem éri el a minimális hosszat
+pass_len: A jelszavad nem Ã©ri el a minimÃ¡lis hosszat
 vb_nonActiv: Your Account isent Activated yet check your Emails!
-usage_changepassword: 'használat: /changepassword régiJelszó újJelszó'
+usage_changepassword: 'hasznÃ¡lat: /changepassword rÃ©giJelszÃ³ ÃºjJelszÃ³'
 name_len: '&cYour nickname is too Short or too long'
 regex: '&cYour nickname contains illegal characters. Allowed chars: REG_EX'
 add_email: '&cPlease add your email with : /email add yourEmail confirmEmail'

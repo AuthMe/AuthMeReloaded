@@ -179,11 +179,11 @@ public class AdminCommand implements CommandExecutor {
                     sender.sendMessage("[AuthMe] The player : " + player.getNickname() + " is unlogged since " + msg);
                     sender.sendMessage("[AuthMe] LastPlayer IP : " + lastIP);
         		} else {
-            		sender.sendMessage("This player does not exist");
+            		m._(sender, "unknown_user"); 
             		return true;
         		}
         	} catch (NullPointerException e) {
-        		sender.sendMessage("This player does not exist");
+        		m._(sender, "unknown_user"); 
         		return true;
         	}
         } else if (args[0].equalsIgnoreCase("accounts")) {
@@ -344,7 +344,7 @@ public class AdminCommand implements CommandExecutor {
     		String playername = args[1].toLowerCase();
     		PlayerAuth getAuth = database.getAuth(playername);
     		if (getAuth == null) {
-        		sender.sendMessage("This player does not exist");
+        		m._(sender, "unknown_user"); 
         		return true;
     		}
     		sender.sendMessage("[AuthMe] " + args[1] + " email : " + getAuth.getEmail());
@@ -357,7 +357,7 @@ public class AdminCommand implements CommandExecutor {
     		String playername = args[1].toLowerCase();
     		PlayerAuth getAuth = database.getAuth(playername);
     		if (getAuth == null) {
-    			sender.sendMessage("This player does not exist");
+    			m._(sender, "unknown_user"); 
     			return true;
     		}
     		getAuth.setEmail(args[2]);
@@ -506,7 +506,7 @@ public class AdminCommand implements CommandExecutor {
             if (target != null) {
             	if (target.isOnline()) {
                     if (Settings.isTeleportToSpawnEnabled) {
-                    	Location spawn = plugin.getSpawnLocation(name, target.getWorld());
+                    	Location spawn = plugin.getSpawnLocation(target, target.getWorld());
                     	SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(target, target.getLocation(), spawn, false);
                     	plugin.getServer().getPluginManager().callEvent(tpEvent);
                     	if(!tpEvent.isCancelled()) {

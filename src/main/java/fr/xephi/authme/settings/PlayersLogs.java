@@ -1,9 +1,8 @@
 package fr.xephi.authme.settings;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.entity.Player;
 
 /**
 *
@@ -11,15 +10,19 @@ import org.bukkit.entity.Player;
 */
 public class PlayersLogs extends CustomConfiguration {
 	private static PlayersLogs pllog = null;
-	public static List<String> players;
+	public List<String> players;
 
-	@SuppressWarnings("unchecked")
 	public PlayersLogs() {
 		super(new File("./plugins/AuthMe/players.yml"));
 		pllog = this;
 		load();
 		save();
-		players = (List<String>) this.getList("players");
+		players = this.getStringList("players");
+	}
+
+	public void clear() {
+		set("players", new ArrayList<String>());
+		save();
 	}
 
 	public static PlayersLogs getInstance() {
@@ -28,13 +31,22 @@ public class PlayersLogs extends CustomConfiguration {
         }
         return pllog;
     }
-    
-    public void addPlayer(Player player) {
-        List<String> players = this.getStringList("players");
-        if (!players.contains(player.getName())) {
-            players.add(player.getName());
-            this.set("players", players);
+
+    public void addPlayer(String user) {
+        players = this.getStringList("players");
+        if (!players.contains(user.toLowerCase())) {
+            players.add(user.toLowerCase());
+            set("players", players);
             save();
         }
     }
+
+	public void removePlayer(String user) {
+        players = this.getStringList("players");
+        if (players.contains(user.toLowerCase())) {
+            players.remove(user.toLowerCase());
+            set("players", players);
+            save();
+        }
+	}
 }

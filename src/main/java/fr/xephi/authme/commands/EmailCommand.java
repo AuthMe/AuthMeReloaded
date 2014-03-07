@@ -92,9 +92,13 @@ public class EmailCommand implements CommandExecutor {
             		m._(player, "reg_email_msg");
             	}
             }
-        } else if(args[0].equalsIgnoreCase("change") && args.length == 3 ) {
+        } else if(args[0].equalsIgnoreCase("change")) {
+            if (args.length != 3) {
+                m._(player, "usage_email_change");
+                return true;
+                }
         	if(Settings.getmaxRegPerEmail > 0) {
-        		if (!plugin.authmePermissible(sender, "authme.allow2accounts") && data.getAllAuthsByEmail(args[1]).size() >= Settings.getmaxRegPerEmail) {
+        		if (!plugin.authmePermissible(sender, "authme.allow2accounts") && data.getAllAuthsByEmail(args[2]).size() >= Settings.getmaxRegPerEmail) {
         			m._(player, "max_reg");
         			return true;
         		}

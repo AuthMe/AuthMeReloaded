@@ -97,6 +97,12 @@ public class PlayerAuth {
         this.realName = realName;
     }
 
+    public PlayerAuth(String nickname, String ip, long lastLogin) {
+    	this.nickname = nickname;
+    	this.ip = ip;
+    	this.lastLogin = lastLogin;
+    }
+
 	public String getIp() {
 		if (ip == null || ip.isEmpty())
 			ip = "127.0.0.1";

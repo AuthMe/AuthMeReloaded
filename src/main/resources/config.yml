@@ -21,7 +21,7 @@ DataSource:
     mySQLColumnPassword: password
     # Password about Database Connection Infos
     mySQLPassword: '12345'
-    # Do we need to cache all things ? Not Recommanded with multiThreading enable
+    # Do we need to cache all query?
     caching: true
     # Column for SaveQuitLocation - X
     mySQLlastlocX: x
@@ -35,6 +35,8 @@ DataSource:
     mySQLColumnEmail: email
     # Column of IDs to sort data
     mySQLColumnId: id
+    # Column for Saving if a player is logged in or not
+    mySQLColumnLogged: isLogged
 GroupOptions:
     # if you want to set up a particulary Permission Group for
     # users that arent registered yet. Pay attention this option
@@ -154,6 +156,12 @@ settings:
         - world_the_end
         # Ban ip when the ip is not the ip registered in database
         banUnsafedIP: false
+        # Spawn Priority, Values : authme, essentials, multiverse, default
+        spawnPriority: authme,essentials,multiverse,default
+        # Maximum Login authorized by IP
+        maxLoginPerIp: 0
+        # Maximum Join authorized by IP
+        maxJoinPerIp: 0
     GameMode:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false
@@ -199,10 +207,10 @@ settings:
         # AuthMe will update the password to the new passwordHash !
         supportOldPasswordHash: false
         # Cancel unsafe passwords for being used, put them on lowercase!
-        unsafePasswords: []
         #unsafePasswords:
         #- '123456'
         #- 'password'
+        unsafePasswords: []
     registration:
         # enable registration on the server?
         enabled: true
@@ -218,6 +226,11 @@ settings:
         # when it's true, registration require that kind of command:
         # /register <email> <confirmEmail>
         doubleEmailCheck: false
+        # Do we force kicking player after a successful registration ?
+        # Do not use with login feature below
+        forceKickAfterRegister: false
+        # Does AuthMe need to enforce a /login after a successful registration ?
+        forceLoginAfterRegister: false
     unrestrictions:
         # below you can list all your account name, that
         # AuthMe will ignore for registration or login, configure it

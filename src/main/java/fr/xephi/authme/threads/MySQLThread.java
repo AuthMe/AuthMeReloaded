@@ -8,7 +8,6 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
 import fr.xephi.authme.AuthMe;
@@ -41,6 +40,7 @@ public class MySQLThread extends Thread implements DataSource {
     private String lastlocWorld;
     private String columnEmail;
     private String columnID;
+    private String columnLogged;
     private List<String> columnOthers;
     private MiniConnectionPoolManager conPool;
 
@@ -64,6 +64,7 @@ public class MySQLThread extends Thread implements DataSource {
         this.columnEmail = Settings.getMySQLColumnEmail;
         this.columnOthers = Settings.getMySQLOtherUsernameColumn;
         this.columnID = Settings.getMySQLColumnId;
+        this.columnLogged = Settings.getMySQLColumnLogged;
         try {
 			this.connect();
 			this.setup();
@@ -121,13 +122,14 @@ public class MySQLThread extends Thread implements DataSource {
                     + columnID + " INTEGER AUTO_INCREMENT,"
                     + columnName + " VARCHAR(255) NOT NULL UNIQUE,"
                     + columnPassword + " VARCHAR(255) NOT NULL,"
-                    + columnIp + " VARCHAR(40) NOT NULL,"
-                    + columnLastLogin + " BIGINT,"
+                    + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1',"
+                    + columnLastLogin + " BIGINT DEFAULT '0',"
                     + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0',"
                     + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0',"
                     + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0',"
                     + lastlocWorld + " VARCHAR(255) DEFAULT 'world',"
                     + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com',"
+                    + columnLogged + " SMALLINT NOT NULL DEFAULT '0',"
                     + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
             if (!rs.next()) {
@@ -160,7 +162,12 @@ public class MySQLThread extends Thread implements DataSource {
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnEmail);
             if (!rs.next()) {
-            	st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com' AFTER " + lastlocZ +";");
+            	st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com' AFTER " + lastlocWorld +";");
+            }
+            rs.close();
+            rs = con.getMetaData().getColumns(null, null, tableName, columnLogged);
+            if (!rs.next()) {
+            	st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLogged + " SMALLINT NOT NULL DEFAULT '0' AFTER " + columnEmail +";");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
@@ -835,5 +842,106 @@ public class MySQLThread extends Thread implements DataSource {
         if (!reload)
         	ConsoleLogger.info("ConnectionPool was unavailable... Reconnected!");
     }
+
+	@Override
+	public DataSourceType getType() {
+		return DataSourceType.MYSQL;
+	}
+
+	@Override
+	public boolean isLogged(String user) {
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            con = makeSureConnectionIsReady();
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
+                    + columnName + "=?;");
+            pst.setString(1, user);
+            rs = pst.executeQuery();
+            if (rs.next())
+            	return (rs.getInt(columnLogged) == 1);
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return false;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return false;
+        } finally {
+            close(rs);
+            close(pst);
+            close(con);
+        }
+        return false;
+	}
+
+	@Override
+	public void setLogged(String user) {
+        Connection con = null;
+        PreparedStatement pst = null;
+        try {
+            con = makeSureConnectionIsReady();
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnName + "=?;");
+            pst.setInt(1, 1);
+            pst.setString(2, user);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } finally {
+            close(pst);
+            close(con);
+        }
+        return;
+	}
+
+	@Override
+	public void setUnlogged(String user) {
+        Connection con = null;
+        PreparedStatement pst = null;
+        try {
+            con = makeSureConnectionIsReady();
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnName + "=?;");
+            pst.setInt(1, 0);
+            pst.setString(2, user);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } finally {
+            close(pst);
+            close(con);
+        }
+        return;
+	}
+
+	@Override
+	public void purgeLogged() {
+        Connection con = null;
+        PreparedStatement pst = null;
+        try {
+            con = makeSureConnectionIsReady();
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnLogged + "=?;");
+            pst.setInt(1, 0);
+            pst.setInt(2, 1);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } finally {
+            close(pst);
+            close(con);
+        }
+        return;
+	}
 
 }

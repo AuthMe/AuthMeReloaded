@@ -49,29 +49,29 @@ public class Utils {
   	    String name = player;
           switch(group) {
           case UNREGISTERED: {
-          	plugin.permission.playerRemoveGroup(world, name, currentGroup);
-              plugin.permission.playerAddGroup(world, name, Settings.unRegisteredGroup);
-              break;
+          		plugin.permission.playerRemoveGroup(world, name, currentGroup);
+          		plugin.permission.playerAddGroup(world, name, Settings.unRegisteredGroup);
+            	break;
           }
           case REGISTERED: {
-          	plugin.permission.playerRemoveGroup(world, name, currentGroup);
-              plugin.permission.playerAddGroup(world, name, Settings.getRegisteredGroup);
-              break;
+          		plugin.permission.playerRemoveGroup(world, name, currentGroup);
+          		plugin.permission.playerAddGroup(world, name, Settings.getRegisteredGroup);
+            	break;
           }
           case NOTLOGGEDIN: {
-          	if(!useGroupSystem()) break;
-          	plugin.permission.playerRemoveGroup(world, name, currentGroup);
-          	plugin.permission.playerAddGroup(world, name, Settings.getUnloggedinGroup);
-          	break;
+          		if(!useGroupSystem()) break;
+          		plugin.permission.playerRemoveGroup(world, name, currentGroup);
+          		plugin.permission.playerAddGroup(world, name, Settings.getUnloggedinGroup);
+          		break;
           }
           case LOGGEDIN: {
-          	if(!useGroupSystem()) break;
-          	LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name.toLowerCase());
-          	if (limbo == null) break;
-          	String realGroup = limbo.getGroup();
-          	plugin.permission.playerRemoveGroup(world, name, currentGroup);
-          	plugin.permission.playerAddGroup(world, name, realGroup);
-          	break;
+          		if(!useGroupSystem()) break;
+          		LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name.toLowerCase());
+          		if (limbo == null) break;
+          		String realGroup = limbo.getGroup();
+          		plugin.permission.playerRemoveGroup(world, name, currentGroup);
+          		plugin.permission.playerAddGroup(world, name, realGroup);
+          		break;
           }
       }
       return;

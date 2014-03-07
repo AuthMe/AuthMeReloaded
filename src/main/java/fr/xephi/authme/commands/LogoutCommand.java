@@ -21,7 +21,6 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
@@ -30,7 +29,6 @@ import fr.xephi.authme.task.TimeoutTask;
 public class LogoutCommand implements CommandExecutor {
 
     private Messages m = Messages.getInstance();
-    private PlayersLogs pllog = PlayersLogs.getInstance();
     private AuthMe plugin;
     private DataSource database;
     private Utils utils = Utils.getInstance();
@@ -61,7 +59,6 @@ public class LogoutCommand implements CommandExecutor {
         }
 
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
-        auth.setIp("198.18.0.1");
         database.updateSession(auth);
         auth.setQuitLocX(player.getLocation().getX());
         auth.setQuitLocY(player.getLocation().getY());
@@ -70,9 +67,10 @@ public class LogoutCommand implements CommandExecutor {
         database.updateQuitLoc(auth);
 
         PlayerCache.getInstance().removePlayer(name);
+        database.setUnlogged(name);
 
         if (Settings.isTeleportToSpawnEnabled) {
-        	Location spawnLoc = plugin.getSpawnLocation(name, player.getWorld());
+        	Location spawnLoc = plugin.getSpawnLocation(player, player.getWorld());
             AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawnLoc);
             plugin.getServer().getPluginManager().callEvent(tpEvent);
             if(!tpEvent.isCancelled()) {
@@ -104,10 +102,6 @@ public class LogoutCommand implements CommandExecutor {
         int msgT = sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         try {
-	         if (PlayersLogs.players.contains(player.getName())) {
-	        	 	PlayersLogs.players.remove(player.getName());
-	        	 	pllog.save();
-	         }
 	         if (player.isInsideVehicle())
 	        	 player.getVehicle().eject();
         } catch (NullPointerException npe) {

@@ -56,7 +56,6 @@ import fr.xephi.authme.events.SessionEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
@@ -366,7 +365,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         int radius = Settings.getMovementRadius;
-        Location spawn = plugin.getSpawnLocation(name, player.getWorld());
+        Location spawn = plugin.getSpawnLocation(player, player.getWorld());
 
         if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
         	event.getPlayer().teleport(spawn);
@@ -543,7 +542,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         World world = player.getWorld();
         final String name = player.getName().toLowerCase();
-        Location spawnLoc = plugin.getSpawnLocation(name, world);
+        Location spawnLoc = plugin.getSpawnLocation(player, world);
         gm = player.getGameMode();
         gameMode.put(name, gm);
         BukkitScheduler sched = plugin.getServer().getScheduler();
@@ -563,16 +562,22 @@ public class AuthMePlayerListener implements Listener {
         	if (plugin.realIp.containsKey(name))
         		ip = plugin.realIp.get(name);
         }
-            if(Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
-                GameMode gM = gameMode.get(name);
-                this.causeByAuthMe = true;
-            	player.setGameMode(gM);
-            	this.causeByAuthMe = false;
-                player.kickPlayer("You are not the Owner of this account, please try another name!");
-                if (Settings.banUnsafeIp)
-                plugin.getServer().banIP(ip);
-                return;           
-            }
+        if(Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
+            GameMode gM = gameMode.get(name);
+            this.causeByAuthMe = true;
+        	player.setGameMode(gM);
+        	this.causeByAuthMe = false;
+            player.kickPlayer("You are not the Owner of this account, please try another name!");
+            if (Settings.banUnsafeIp)
+            plugin.getServer().banIP(ip);
+            return;           
+        }
+        if(Settings.getMaxJoinPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
+        	if (plugin.hasJoinedIp(ip)) {
+        		player.kickPlayer("A player with the same IP is already in game!");
+        		return;
+        	}
+        }
         if (data.isAuthAvailable(name)) {
             if (Settings.isSessionsEnabled) {
                 PlayerAuth auth = data.getAuth(name);
@@ -586,6 +591,7 @@ public class AuthMePlayerListener implements Listener {
                      		PlayerCache.getInstance().updatePlayer(auth);
                      	} else {
                      		PlayerCache.getInstance().addPlayer(auth);
+                     		data.setLogged(name);
                      	}
                      	m._(player, "valid_session");
                      	// Restore Permission Group
@@ -606,6 +612,7 @@ public class AuthMePlayerListener implements Listener {
                          }
                 		 //Player change his IP between 2 relog-in
                          PlayerCache.getInstance().removePlayer(name);
+                         data.setUnlogged(name);
                 	 } else {
                       	GameMode gM = gameMode.get(name);
                       	this.causeByAuthMe = true;
@@ -617,6 +624,7 @@ public class AuthMePlayerListener implements Listener {
             } else {
             	//Session is ended correctly
                 PlayerCache.getInstance().removePlayer(name);
+                data.setUnlogged(name);
             }
           }
           // isent in session or session was ended correctly
@@ -742,6 +750,12 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
+        String ip = player.getAddress().getAddress().getHostAddress();
+        if (Settings.bungee) {
+        	if (plugin.realIp.containsKey(name))
+        		ip = plugin.realIp.get(name);
+        }
+
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) {
         	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
         		final PlayerAuth auth = new PlayerAuth(name,loc.getX(),loc.getY(),loc.getZ(),loc.getWorld().getName());
@@ -749,8 +763,10 @@ public class AuthMePlayerListener implements Listener {
         			data.updateQuitLoc(auth);
         		} catch (NullPointerException npe) { }
         	}
+        	PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis());
+        	data.updateSession(auth);
         }
-        
+
     	if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
     		event.setQuitMessage(null);
 
@@ -777,9 +793,8 @@ public class AuthMePlayerListener implements Listener {
             }
         }
     	PlayerCache.getInstance().removePlayer(name);
+    	data.setUnlogged(name);
         try {
-        	PlayersLogs.players.remove(player.getName());
-        	PlayersLogs.getInstance().save();
         	player.getVehicle().eject();
         } catch (NullPointerException ex) {
         }
@@ -810,12 +825,21 @@ public class AuthMePlayerListener implements Listener {
       }
 
       String name = player.getName().toLowerCase();
-      if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead()) && 
-        (Settings.isSaveQuitLocationEnabled)  && data.isAuthAvailable(name)) {
-        final PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(),loc.getWorld().getName());
-		try {
-			data.updateQuitLoc(auth);
-		} catch (NullPointerException npe) { }
+
+      String ip = player.getAddress().getAddress().getHostAddress();
+      if (Settings.bungee) {
+      	if (plugin.realIp.containsKey(name))
+      		ip = plugin.realIp.get(name);
+      }
+      if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead())) {
+    	  if ((Settings.isSaveQuitLocationEnabled)  && data.isAuthAvailable(name)){
+    		  final PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(),loc.getWorld().getName());
+    		  try {
+    			  data.updateQuitLoc(auth);
+    		  } catch (NullPointerException npe) { }
+    	  }
+    	  PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis());
+    	  data.updateSession(auth);
       }
 
   	if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
@@ -823,50 +847,49 @@ public class AuthMePlayerListener implements Listener {
 
       if (LimboCache.getInstance().hasLimboPlayer(name))
       {
-        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-        if (Settings.protectInventoryBeforeLogInEnabled) {
-        	try {
-            	RestoreInventoryEvent ev = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-            	plugin.getServer().getPluginManager().callEvent(ev);
-            	if (!ev.isCancelled()) {
-            		API.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
-            	}
-        	} catch (NullPointerException npe){
-        		ConsoleLogger.showError("Problem while restore " + name + " inventory after a kick");
-        	}
-        }
-        try {
-            AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-            plugin.getServer().getPluginManager().callEvent(tpEvent);
-            if(!tpEvent.isCancelled()) {
-            	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-            		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-            	}
-          	  player.teleport(tpEvent.getTo());
-            }
-        } catch (NullPointerException npe) {
-        }
-        this.utils.addNormal(player, limbo.getGroup());
-        player.setOp(limbo.getOperator());
-        if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
-            player.setAllowFlight(limbo.isFlying());
-            player.setFlying(limbo.isFlying());
-        }
-        this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
-        this.plugin.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
-        LimboCache.getInstance().deleteLimboPlayer(name);
-        if (this.playerBackup.doesCacheExist(name)) {
-          this.playerBackup.removeCache(name);
-        }
+    	  LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+    	  if (Settings.protectInventoryBeforeLogInEnabled) {
+    		  try {
+    			  RestoreInventoryEvent ev = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+    			  plugin.getServer().getPluginManager().callEvent(ev);
+    			  if (!ev.isCancelled()) {
+    				  API.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
+    			  }
+    		  } catch (NullPointerException npe){
+    			  ConsoleLogger.showError("Problem while restore " + name + " inventory after a kick");
+    		  }
+    	  }
+    	  try {
+    		  AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
+    		  plugin.getServer().getPluginManager().callEvent(tpEvent);
+    		  if(!tpEvent.isCancelled()) {
+    			  if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+    				  tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+    			  }
+    			  player.teleport(tpEvent.getTo());
+    		  }
+    	  } catch (NullPointerException npe) {
+    	  }
+    	  this.utils.addNormal(player, limbo.getGroup());
+    	  player.setOp(limbo.getOperator());
+    	  if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
+    		  player.setAllowFlight(limbo.isFlying());
+    		  player.setFlying(limbo.isFlying());
+    	  }
+    	  this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
+    	  this.plugin.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
+    	  LimboCache.getInstance().deleteLimboPlayer(name);
+    	  if (this.playerBackup.doesCacheExist(name)) {
+    		  this.playerBackup.removeCache(name);
+    	  }
       }
-      try {
-      	PlayerCache.getInstance().removePlayer(name);
-      	PlayersLogs.players.remove(player.getName());
-      	PlayersLogs.getInstance().save();
-      	if (gameMode.containsKey(name)) gameMode.remove(name);
-      	player.getVehicle().eject();
-      	player.saveData();
-      } catch (NullPointerException ex) {}
+      PlayerCache.getInstance().removePlayer(name);
+      data.setUnlogged(name);
+      if (gameMode.containsKey(name)) gameMode.remove(name);
+      	try {
+      		player.getVehicle().eject();
+      	} catch (NullPointerException ex) {}
+      player.saveData();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -1099,7 +1122,7 @@ public class AuthMePlayerListener implements Listener {
             if (!Settings.isForcedRegistrationEnabled)
                 return;
         
-        Location spawn = plugin.getSpawnLocation(name, player.getWorld());
+        Location spawn = plugin.getSpawnLocation(player, player.getWorld());
     	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
     		final PlayerAuth auth = new PlayerAuth(name,spawn.getX(),spawn.getY(),spawn.getZ(),spawn.getWorld().getName());
     		try {

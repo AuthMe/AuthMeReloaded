@@ -49,7 +49,7 @@ public class ProcessSyncronousEmailRegister implements Runnable {
 
         if (Settings.isTeleportToSpawnEnabled) {
         	World world = player.getWorld();
-        	Location loca = plugin.getSpawnLocation(name, world);
+        	Location loca = plugin.getSpawnLocation(player, world);
             RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
             plugin.getServer().getPluginManager().callEvent(tpEvent);
             if(!tpEvent.isCancelled()) {

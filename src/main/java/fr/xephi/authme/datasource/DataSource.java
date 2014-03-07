@@ -47,5 +47,15 @@ public interface DataSource {
     void reload();
 
     void purgeBanned(List<String> banned);
+    
+    DataSourceType getType();
+    
+    boolean isLogged(String user);
+    
+    void setLogged(String user);
+    
+    void setUnlogged(String user);
+    
+    void purgeLogged();
 
 }

@@ -61,7 +61,7 @@ public class AsyncronousLogin {
             }
             if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
                 plugin.cap.put(name, rdm.nextString());
-                for (String s : m._("need_captcha")) {
+                for (String s : m._("usage_captcha")) {
                 	player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
                 }
                 return true;
@@ -99,6 +99,12 @@ public class AsyncronousLogin {
         	}
             return null;
         }
+        if (Settings.getMaxLoginPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
+        	if (plugin.isLoggedIp(getIP())) {
+            	m._(player, "logged_in");
+            	return null;
+        	}
+        }
         PlayerAuth pAuth = database.getAuth(name);
         if (pAuth == null) {
         	m._(player, "user_unknown");
@@ -131,8 +137,6 @@ public class AsyncronousLogin {
             PlayerAuth auth = new PlayerAuth(name, hash, getIP(), new Date().getTime(), email, realName);
             database.updateSession(auth);
 
-            plugin.pllog.addPlayer(player);
-
             if (Settings.useCaptcha) {
                 if (plugin.captcha.containsKey(name)) {
                     plugin.captcha.remove(name);
@@ -156,6 +160,7 @@ public class AsyncronousLogin {
 
             // makes player isLoggedin via API
             PlayerCache.getInstance().addPlayer(auth);
+            database.setLogged(name);
 
             // As the scheduling executes the Task most likely after the current task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be processed in other order.

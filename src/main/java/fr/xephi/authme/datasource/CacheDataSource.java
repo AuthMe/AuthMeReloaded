@@ -191,4 +191,28 @@ public class CacheDataSource implements DataSource {
 		}
 	}
 
+	@Override
+	public DataSourceType getType() {
+		return source.getType();
+	}
+
+	@Override
+	public boolean isLogged(String user) {
+		return source.isLogged(user);
+	}
+
+	@Override
+	public void setLogged(String user) {
+		source.setLogged(user);
+	}
+
+	@Override
+	public void setUnlogged(String user) {
+		source.setUnlogged(user);
+	}
+
+	@Override
+	public void purgeLogged() {
+		source.purgeLogged();
+	}
 }

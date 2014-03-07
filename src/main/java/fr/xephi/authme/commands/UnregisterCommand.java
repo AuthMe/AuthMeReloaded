@@ -23,7 +23,6 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
@@ -32,7 +31,6 @@ import fr.xephi.authme.task.TimeoutTask;
 public class UnregisterCommand implements CommandExecutor {
 
     private Messages m = Messages.getInstance();
-    private PlayersLogs pllog = PlayersLogs.getInstance();
     public AuthMe plugin;
     private DataSource database;
     private FileCache playerCache = new FileCache();
@@ -73,7 +71,7 @@ public class UnregisterCommand implements CommandExecutor {
                 }
                 if(Settings.isForcedRegistrationEnabled) {
                     if (Settings.isTeleportToSpawnEnabled) {
-                   	 Location spawn = plugin.getSpawnLocation(name, player.getWorld());
+                   	 Location spawn = plugin.getSpawnLocation(player, player.getWorld());
                         SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
                         plugin.getServer().getPluginManager().callEvent(tpEvent);
                         if(!tpEvent.isCancelled()) {
@@ -110,17 +108,13 @@ public class UnregisterCommand implements CommandExecutor {
                  if(playerCache.doesCacheExist(name)) {
                         playerCache.removeCache(name);
                  }
-                 if (PlayersLogs.players.contains(player.getName())) {
-                	 PlayersLogs.players.remove(player.getName());
-                	 pllog.save();
-                 }
                  m._(player, "unregistered");
                  ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                  if(plugin.notifications != null) {
                  	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
                  }
                  if (Settings.isTeleportToSpawnEnabled) {
-                	 Location spawn = plugin.getSpawnLocation(name, player.getWorld());
+                	 Location spawn = plugin.getSpawnLocation(player, player.getWorld());
                      SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
                      plugin.getServer().getPluginManager().callEvent(tpEvent);
                      if(!tpEvent.isCancelled()) {
