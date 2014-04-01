@@ -167,7 +167,7 @@ public class EmailCommand implements CommandExecutor {
 		        			return true;
 		        		}
 		        		
-		        		if (!args[1].equalsIgnoreCase(auth.getEmail())) { 
+		        		if (!args[1].equalsIgnoreCase(auth.getEmail()) || args[1].equalsIgnoreCase("your@email.com") || auth.getEmail().equalsIgnoreCase("your@email.com")) { 
 		        			m._(player, "email_invalid");
 		        			return true;
 		        		}
@@ -195,7 +195,7 @@ public class EmailCommand implements CommandExecutor {
 						m._(sender, "error");
 					}
         		} else {
-        		m._(player, "reg_email_msg");
+        			m._(player, "reg_email_msg");
         	}
         }
         return true;

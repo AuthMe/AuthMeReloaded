@@ -38,6 +38,7 @@ public final class Settings extends YamlConfiguration {
     public static List<String> countries = null;
     public static List<String> countriesBlacklist = null;
     public static List<String> forceCommands = null;
+    public static List<String> forceCommandsAsConsole = null;
     private AuthMe plugin;
     private final File file;
     public static DataSourceType getDataSource;
@@ -229,6 +230,7 @@ public void loadConfigOptions() {
         antiBotSensibility = configFile.getInt("Protection.antiBotSensibility", 5);
         antiBotDuration = configFile.getInt("Protection.antiBotDuration", 10);
         forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
+        forceCommandsAsConsole = (List<String>) configFile.getList("settings.forceCommandsAsConsole", new ArrayList<String>());
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         delayRecall = configFile.getInt("Email.delayRecall", 5);
         useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
@@ -387,6 +389,7 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         antiBotSensibility = configFile.getInt("Protection.antiBotSensibility", 5);
         antiBotDuration = configFile.getInt("Protection.antiBotDuration", 10);
         forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
+        forceCommandsAsConsole = (List<String>) configFile.getList("settings.forceCommandsAsConsole", new ArrayList<String>());
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         delayRecall = configFile.getInt("Email.delayRecall", 5);
         useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
@@ -437,6 +440,10 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
 	    }
 	    if(!contains("settings.forceCommands")) {
 	    	set("settings.forceCommands", new ArrayList<String>());
+	    	changes = true;
+	    }
+	    if(!contains("settings.forceCommandsAsConsole")) {
+	    	set("settings.forceCommandsAsConsole", new ArrayList<String>());
 	    	changes = true;
 	    }
 	    if(!contains("Email.recallPlayers")) {

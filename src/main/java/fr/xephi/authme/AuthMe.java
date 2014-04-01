@@ -66,6 +66,7 @@ import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.plugin.manager.EssSpawn;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
@@ -79,6 +80,7 @@ public class AuthMe extends JavaPlugin {
     private Settings settings;
 	private Messages m;
     public PlayersLogs pllog;
+    public OtherAccounts otherAccounts;
     public static Server server;
     public static Logger authmeLogger = Logger.getLogger("AuthMe");
     public static AuthMe authme;
@@ -134,6 +136,8 @@ public class AuthMe extends JavaPlugin {
     	m = Messages.getInstance();
 
         pllog = PlayersLogs.getInstance();
+        
+        otherAccounts = OtherAccounts.getInstance();
 
         server = getServer();
 

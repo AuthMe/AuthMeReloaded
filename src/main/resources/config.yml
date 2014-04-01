@@ -244,6 +244,8 @@ settings:
     messagesLanguage: en
     # Force these commands after /login, without any '/', use %p for replace with player name
     forceCommands: []
+    # Force these commands after /login as a server console, without any '/', use %p for replace with player name
+    forceCommandsAsConsole: []
     # Do we need to display the welcome message (welcome.txt) after a register or a login?
     # You can use colors in this welcome.txt + some replaced strings : 
     # {PLAYER} : player name, {ONLINE} : display number of online players, {MAXPLAYERS} : display server slots,

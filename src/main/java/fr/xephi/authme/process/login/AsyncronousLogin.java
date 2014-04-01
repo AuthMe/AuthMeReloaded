@@ -144,7 +144,7 @@ public class AsyncronousLogin {
             player.setNoDamageTicks(0);
             m._(player, "login");
 
-            displayOtherAccounts(auth);
+            displayOtherAccounts(auth, player);
 
             if (!Settings.noConsoleSpam)
                 ConsoleLogger.info(player.getName() + " logged in!");
@@ -156,6 +156,7 @@ public class AsyncronousLogin {
             // makes player isLoggedin via API
             PlayerCache.getInstance().addPlayer(auth);
             database.setLogged(name);
+            plugin.otherAccounts.addPlayer(player.getUniqueId());
 
             // As the scheduling executes the Task most likely after the current task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be processed in other order.
@@ -187,7 +188,7 @@ public class AsyncronousLogin {
         }
     }
     
-    public void displayOtherAccounts(PlayerAuth auth) {
+    public void displayOtherAccounts(PlayerAuth auth, Player p) {
         if (!Settings.displayOtherAccounts) {
             return;
         }
@@ -195,6 +196,7 @@ public class AsyncronousLogin {
             return;
         }
         List<String> auths = this.database.getAllAuthsByName(auth);
+        //List<String> uuidlist = plugin.otherAccounts.getAllPlayersByUUID(player.getUniqueId());
         if (auths.isEmpty() || auths == null) {
             return;
         }
@@ -202,6 +204,7 @@ public class AsyncronousLogin {
             return;
         }
         String message = "[AuthMe] ";
+        //String uuidaccounts = "[AuthMe] PlayerNames has %size% links to this UUID : ";
         int i = 0;
         for (String account : auths) {
             i++;
@@ -212,11 +215,23 @@ public class AsyncronousLogin {
                 message = message + ".";
             }
         }
+        /*TODO: Active uuid system
+        i = 0;
+        for (String account : uuidlist) {
+            i++;
+            uuidaccounts = uuidaccounts + account;
+            if (i != auths.size()) {
+            	uuidaccounts = uuidaccounts + ", ";
+            } else {
+            	uuidaccounts = uuidaccounts + ".";
+            }
+        }*/
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (plugin.authmePermissible(player, "authme.seeOtherAccounts")) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has "
                         + auths.size() + " accounts");
                 player.sendMessage(message);
+                //player.sendMessage(uuidaccounts.replace("%size%", ""+uuidlist.size()));
             }
         }
     }

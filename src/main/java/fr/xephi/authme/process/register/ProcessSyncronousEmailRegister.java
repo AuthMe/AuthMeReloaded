@@ -5,7 +5,6 @@ import me.muizers.Notifications.Notification;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
@@ -48,7 +47,6 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg);
 
         if (Settings.isTeleportToSpawnEnabled) {
-        	World world = player.getWorld();
         	Location loca = plugin.getSpawnLocation(player);
             RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
             plugin.getServer().getPluginManager().callEvent(tpEvent);

@@ -147,6 +147,7 @@ public class AsyncronousRegister {
             PlayerCache.getInstance().addPlayer(auth);
         	database.setLogged(name);
         }
+        plugin.otherAccounts.addPlayer(player.getUniqueId());
 		ProcessSyncronousPasswordRegister syncronous = new ProcessSyncronousPasswordRegister(player, plugin);
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, syncronous);
         return;

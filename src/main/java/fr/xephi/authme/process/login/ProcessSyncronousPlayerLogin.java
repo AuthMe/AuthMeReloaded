@@ -53,9 +53,11 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             player.setFlying(limbo.isFlying());
         }
     }
+
     protected void packQuitLocation() {
         Utils.getInstance().packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
     }
+
     protected void teleportBackFromSpawn() {
         AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
         pm.callEvent(tpEvent);
@@ -67,6 +69,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             player.teleport(fLoc);
         }
     }
+
     protected void teleportToSpawn() {
         Location spawnL = plugin.getSpawnLocation(player);
         SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnL, true);
@@ -79,6 +82,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             player.teleport(fLoc);
         }
     }
+
     protected void restoreInventory() {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -86,11 +90,15 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             API.setPlayerInventory(player, event.getInventory(), event.getArmor());
         }
     }
+
     protected void forceCommands() {
     	for (String command : Settings.forceCommands) {
     		try {
     			player.performCommand(command.replace("%p", player.getName()));
     		} catch (Exception e) {}
+    	}
+    	for (String command : Settings.forceCommandsAsConsole) {
+    		Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
     	}
     }
 

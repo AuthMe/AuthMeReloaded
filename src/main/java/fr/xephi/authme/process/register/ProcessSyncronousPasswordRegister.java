@@ -5,7 +5,6 @@ import me.muizers.Notifications.Notification;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -80,7 +79,6 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 		if (limbo != null) {
 		    player.setGameMode(limbo.getGameMode());      
 		    if (Settings.isTeleportToSpawnEnabled) {
-		    	World world = player.getWorld();
 		    	Location loca = plugin.getSpawnLocation(player);
 		        RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
 		        plugin.getServer().getPluginManager().callEvent(tpEvent);
