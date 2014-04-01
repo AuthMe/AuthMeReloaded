@@ -15,6 +15,7 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 
 public class AsyncronousRegister {
+
     protected Player player;
     protected String name;
     protected String password;
@@ -37,13 +38,7 @@ public class AsyncronousRegister {
     }
 
     protected String getIp() {
-        String ip = player.getAddress().getAddress().getHostAddress();
-
-        if (Settings.bungee) {
-        	if (plugin.realIp.containsKey(name))
-        		ip = plugin.realIp.get(name);
-        }
-        return ip;
+    	return plugin.getIP(player);
     }
 
     protected void preRegister() {

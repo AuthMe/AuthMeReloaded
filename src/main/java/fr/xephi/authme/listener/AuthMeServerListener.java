@@ -26,10 +26,10 @@ public class AuthMeServerListener implements Listener {
     	if (!Settings.enableProtection) return;
     	if (Settings.countries.isEmpty()) return;
     	if (!Settings.countriesBlacklist.isEmpty()) {
-    		if(Settings.countriesBlacklist.contains(plugin.getCountryCode(event.getAddress())))
+    		if(Settings.countriesBlacklist.contains(plugin.getCountryCode(event.getAddress().getHostAddress())))
     			event.setMotd(m._("country_banned")[0]);
     	}
-    	if(Settings.countries.contains(plugin.getCountryCode(event.getAddress()))) {
+    	if(Settings.countries.contains(plugin.getCountryCode(event.getAddress().getHostAddress()))) {
     		event.setMotd(plugin.getServer().getMotd());
     	} else {
     		event.setMotd(m._("country_banned")[0]);

@@ -302,9 +302,13 @@ public class AdminCommand implements CommandExecutor {
             return true;
         } else if (args[0].equalsIgnoreCase("convertflattosql")) {
         		try {
-        			FlatToSql.FlatToSqlConverter();
-        			if (sender instanceof Player)
-        				sender.sendMessage("[AuthMe] FlatFile converted to authme.sql file");
+        			FlatToSql converter = new FlatToSql();
+        			if (sender instanceof Player) {
+        				if (converter.convert())
+        					sender.sendMessage("[AuthMe] FlatFile converted to authme.sql file");
+        				else sender.sendMessage("[AuthMe] Error while converting to authme.sql");
+        			}
+
 				} catch (IOException e) {
 					e.printStackTrace();
 				} catch (NullPointerException ex) {
@@ -506,7 +510,7 @@ public class AdminCommand implements CommandExecutor {
             if (target != null) {
             	if (target.isOnline()) {
                     if (Settings.isTeleportToSpawnEnabled) {
-                    	Location spawn = plugin.getSpawnLocation(target, target.getWorld());
+                    	Location spawn = plugin.getSpawnLocation(target);
                     	SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(target, target.getLocation(), spawn, false);
                     	plugin.getServer().getPluginManager().callEvent(tpEvent);
                     	if(!tpEvent.isCancelled()) {
@@ -578,6 +582,21 @@ public class AdminCommand implements CommandExecutor {
         	new RoyalAuthConverter(plugin);
         	sender.sendMessage("[AuthMe] RoyalAuth database has been imported correctly");
         	return true;
+        } else if (args[0].equalsIgnoreCase("getip")) {
+        	if (args.length < 2) {
+        		sender.sendMessage("Usage : /authme getip onlinePlayerName");
+        		return true;
+        	}
+    		if (Bukkit.getOfflinePlayer(args[1]).isOnline()) {
+    			Player player = Bukkit.getPlayer(args[1]);
+    			sender.sendMessage(player.getName() + " actual ip is : " + player.getAddress().getAddress().getHostAddress() + ":" + player.getAddress().getPort());
+    			sender.sendMessage(player.getName() + " real ip is : " + plugin.getIP(player));
+    			return true;
+    		} else {
+    			sender.sendMessage("This player is not actually online");
+        		sender.sendMessage("Usage : /authme getip onlinePlayerName");
+        		return true;
+    		}
         } else {
             sender.sendMessage("Usage: /authme reload|register playername password|changepassword playername password|unregister playername");
         }

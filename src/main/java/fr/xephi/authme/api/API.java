@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -176,4 +175,5 @@ public class API {
     public static void forceLogin(Player player) {
     	instance.management.performLogin(player, "dontneed", true);
     }
+
 }

@@ -43,12 +43,7 @@ public class AsyncronousLogin {
     }
 
     protected String getIP() {
-        String ip = player.getAddress().getAddress().getHostAddress();
-        if (Settings.bungee) {
-            if (plugin.realIp.containsKey(name))
-                ip = plugin.realIp.get(name);
-        }
-        return ip;
+    	return plugin.getIP(player);
     }
     protected boolean needsCaptcha() {
         if (Settings.useCaptcha) {
@@ -100,7 +95,7 @@ public class AsyncronousLogin {
             return null;
         }
         if (Settings.getMaxLoginPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
-        	if (plugin.isLoggedIp(getIP())) {
+        	if (plugin.isLoggedIp(realName, getIP())) {
             	m._(player, "logged_in");
             	return null;
         	}

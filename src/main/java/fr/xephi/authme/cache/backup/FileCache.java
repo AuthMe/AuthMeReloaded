@@ -3,6 +3,8 @@ package fr.xephi.authme.cache.backup;
 import java.io.File;
 import java.io.FileWriter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 import org.bukkit.Material;
@@ -53,6 +55,8 @@ public class FileCache {
 				int amount = 0;
 				int durability = 0;
 				String enchList = "";
+				String name = "";
+				String lores = "";
 				if (invstack[i] != null) {
 					itemid = invstack[i].getType().name();
 					amount = invstack[i].getAmount();
@@ -60,9 +64,22 @@ public class FileCache {
 					for(Enchantment e : invstack[i].getEnchantments().keySet()) {
 						enchList = enchList.concat(e.getName()+":"+invstack[i].getEnchantmentLevel(e)+":");
 					}
+					if (enchList.length() > 1)
+						enchList = enchList.substring(0, enchList.length() - 1);
+					if (invstack[i].hasItemMeta()) {
+						if (invstack[i].getItemMeta().hasDisplayName()) {
+							name = invstack[i].getItemMeta().getDisplayName();
+						}
+						if (invstack[i].getItemMeta().hasLore()) {
+							for (String lore : invstack[i].getItemMeta().getLore()) {
+								lores = lore + "%newline%";
+							}
+						}
+					}
 				}
-				writer.write("i" + ":" + itemid + ":" + amount + ":"
-						+ durability + ":"+ enchList + "\r\n");
+				String writeItem = "i" + ":" + itemid + ":" + amount + ":"
+				+ durability + ":"+ enchList + ";" + name + "\\*" + lores + "\r\n";
+				writer.write(writeItem);
 				writer.flush();
 			}
 
@@ -73,16 +90,31 @@ public class FileCache {
 				int amount = 0;
 				int durability = 0;
 				String enchList = "";
+				String name = "";
+				String lores = "";
 				if (armorstack[i] != null) {
 					itemid = armorstack[i].getType().name();
 					amount = armorstack[i].getAmount();
 					durability = armorstack[i].getDurability();
 					for(Enchantment e : armorstack[i].getEnchantments().keySet()) {
 						enchList = enchList.concat(e.getName()+":"+armorstack[i].getEnchantmentLevel(e)+":");
-					}                                        
+					}
+					if (enchList.length() > 1)
+						enchList = enchList.substring(0, enchList.length() - 1);
+					if (armorstack[i].hasItemMeta()) {
+						if (armorstack[i].getItemMeta().hasDisplayName()) {
+							name = armorstack[i].getItemMeta().getDisplayName();
+						}
+						if (armorstack[i].getItemMeta().hasLore()) {
+							for (String lore : armorstack[i].getItemMeta().getLore()) {
+								lores = lore + "%newline%";
+							}
+						}
+					}
 				}
-				writer.write("w" + ":" + itemid + ":" + amount + ":"
-						+ durability + ":"+ enchList + "\r\n");
+				String writeItem = "w" + ":" + itemid + ":" + amount + ":"
+				+ durability + ":"+ enchList + ";" + name + "\\*" + lores + "\r\n";
+				writer.write(writeItem);
 				writer.flush();
 			}
 			writer.close();
@@ -111,7 +143,7 @@ public class FileCache {
 			int i = 0;
 			int a = 0;
 			while (reader.hasNextLine()) {
-				final String line = reader.nextLine();
+				String line = reader.nextLine();
 
 				if (!line.contains(":")) {
                                    // the fist line represent the player group, operator status and flying status
@@ -130,10 +162,20 @@ public class FileCache {
                                     continue;
 				}
 
-				final String[] in = line.split(":");
-				if (!in[0].equals("i") && !in[0].equals("w")) {
+				if (!line.startsWith("i") && !line.startsWith("w")) {
 					continue;
 				}
+				String lores = "";
+				String name = "";
+				if (line.split("\\*").length > 1) {
+					lores = line.split("\\*")[1];
+					line = line.split("\\*")[0];
+				}
+				if (line.split(";").length > 1) {
+					name = line.split(";")[1];
+					line = line.split(";")[0];
+				}
+				final String[] in = line.split(":");
                 // can enchant item? size ofstring in file - 4  all / 2 = number of enchant
 				if (in[0].equals("i")) {
 					stacki[i] = new ItemStack(Material.getMaterial(in[1]),
@@ -144,6 +186,15 @@ public class FileCache {
 							k++;
 						}
 					}
+					if (!name.isEmpty())
+						stacki[i].getItemMeta().setDisplayName(name);
+					if (!lores.isEmpty()) {
+						List<String> loreList = new ArrayList<String>();
+						for (String s : lores.split("%newline%")) {
+							loreList.add(s);
+						}
+						stacki[i].getItemMeta().setLore(loreList);
+					}
 					i++;
 				} else {
 					stacka[a] = new ItemStack(Material.getMaterial(in[1]),
@@ -153,6 +204,15 @@ public class FileCache {
 							stacka[a].addUnsafeEnchantment(Enchantment.getByName(in[k]) ,Integer.parseInt(in[k+1]));
 							k++;
 						}
+					}
+					if (!name.isEmpty())
+						stacka[a].getItemMeta().setDisplayName(name);
+					if (!lores.isEmpty()) {
+						List<String> loreList = new ArrayList<String>();
+						for (String s : lores.split("%newline%")) {
+							loreList.add(s);
+						}
+						stacka[a].getItemMeta().setLore(loreList);
 					}
 					a++;
 				}

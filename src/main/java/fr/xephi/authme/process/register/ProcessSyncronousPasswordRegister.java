@@ -44,7 +44,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 
 	protected void forceLogin(Player player) {
         if (Settings.isTeleportToSpawnEnabled) {
-        	Location spawnLoc = plugin.getSpawnLocation(player, player.getWorld());
+        	Location spawnLoc = plugin.getSpawnLocation(player);
             AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawnLoc);
             plugin.getServer().getPluginManager().callEvent(tpEvent);
             if(!tpEvent.isCancelled()) {
@@ -81,7 +81,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 		    player.setGameMode(limbo.getGameMode());      
 		    if (Settings.isTeleportToSpawnEnabled) {
 		    	World world = player.getWorld();
-		    	Location loca = plugin.getSpawnLocation(player, world);
+		    	Location loca = plugin.getSpawnLocation(player);
 		        RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
 		        plugin.getServer().getPluginManager().callEvent(tpEvent);
 		        if(!tpEvent.isCancelled()) {
@@ -111,7 +111,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 		player.saveData();
 		
 		if (!Settings.noConsoleSpam)
-			ConsoleLogger.info(player.getName() + " registered "+player.getAddress().getAddress().getHostAddress());
+			ConsoleLogger.info(player.getName() + " registered "+plugin.getIP(player));
 		if(plugin.notifications != null) {
 			plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " has registered!"));
 		}

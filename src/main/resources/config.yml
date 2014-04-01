@@ -85,7 +85,7 @@ settings:
         - /passpartu
         - /email
         - /captcha
-        # Maximum Registraion per IP default: 1
+        # Maximum Registration per IP default: 1
         maxRegPerIp: 1
         # max allowed nick length (Warning when you use
         # mysql and choose a value >20 you have to 
@@ -136,7 +136,7 @@ settings:
         # should be kicked. Set to 0 to disable.
         timeout: 30
         # Regex sintax for allowed Char in player name.
-        allowedNicknameCharacters: '[a-zA-Z0-9_?]*'
+        allowedNicknameCharacters: '[a-zA-Z0-9_]*'
         # How far can unregistered players walk? Set to 0
         # for unlimited radius
         allowedMovementRadius: 100
@@ -399,3 +399,6 @@ Protection:
     antiBotSensibility: 5
     # Duration in minutes of the antibot automatic system
     antiBotDuration: 10
+VeryGames:
+    # These features are only available on VeryGames Server Provider
+    enableIpCheck: false

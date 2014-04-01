@@ -1,10 +1,11 @@
 package fr.xephi.authme;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
@@ -29,7 +30,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-
 import com.earth2me.essentials.Essentials;
 import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
@@ -105,6 +105,7 @@ public class AuthMe extends JavaPlugin {
 	public LookupService ls = null;
 	public boolean antibotMod = false;
 	public boolean delayedAntiBot = true;
+	protected static String vgUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
 
 	public Settings getSettings() {
 		return settings;
@@ -532,9 +533,6 @@ public class AuthMe extends JavaPlugin {
 	            player.getInventory().setArmorContents(limbo.getArmour());
 	            player.getInventory().setContents(limbo.getInventory());
 	          }
-	          if (!limbo.getLoc().getChunk().isLoaded()) {
-	        	  limbo.getLoc().getChunk().load();
-	          }
 	          player.teleport(limbo.getLoc());
 	          this.utils.addNormal(player, limbo.getGroup());
 	          player.setOp(limbo.getOperator());
@@ -690,7 +688,8 @@ public class AuthMe extends JavaPlugin {
 		ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
 	}
 
-    public Location getSpawnLocation(Player player, World world) {
+    public Location getSpawnLocation(Player player) {
+    	World world = player.getWorld();
     	String[] spawnPriority = Settings.spawnPriority.split(",");
         Location spawnLoc = world.getSpawnLocation();
         int i = 3;
@@ -727,9 +726,8 @@ public class AuthMe extends JavaPlugin {
     }
 
     private Location getEssentialsSpawn() {
-        if (essentialsSpawn != null) {
+        if (essentialsSpawn != null)
             return essentialsSpawn;
-        }
         return null;
     }
     
@@ -766,8 +764,8 @@ public class AuthMe extends JavaPlugin {
         	} catch (Exception e) {}
     	}
     }
-
-    public String getCountryCode(InetAddress ip) {
+    
+    public String getCountryCode(String ip) {
     	try {
     		if (ls == null)
     			ls = new LookupService(new File(getDataFolder(), "GeoIP.dat"));
@@ -778,7 +776,7 @@ public class AuthMe extends JavaPlugin {
     	return null;
     }
 
-    public String getCountryName(InetAddress ip) {
+    public String getCountryName(String ip) {
     	try {
     		if (ls == null)
     			ls = new LookupService(new File(getDataFolder(), "GeoIP.dat"));
@@ -821,38 +819,63 @@ public class AuthMe extends JavaPlugin {
         	message = message.replace("{PLAYER}", player.getName());
         	message = message.replace("{ONLINE}", ""+this.getServer().getOnlinePlayers().length);
         	message = message.replace("{MAXPLAYERS}", ""+this.getServer().getMaxPlayers());
-        	message = message.replace("{IP}", player.getAddress().getAddress().getHostAddress());
+        	message = message.replace("{IP}", getIP(player));
         	message = message.replace("{LOGINS}", ""+PlayerCache.getInstance().getLogged());
         	message = message.replace("{WORLD}", player.getWorld().getName());
         	message = message.replace("{SERVER}", this.getServer().getServerName());
         	message = message.replace("{VERSION}", this.getServer().getBukkitVersion());
-        	message = message.replace("{COUNTRY}", this.getCountryName(player.getAddress().getAddress()));
+        	message = message.replace("{COUNTRY}", this.getCountryName(getIP(player)));
     	} catch (Exception e) {}
     	return message;
     }
     
-    public String getIP(Player player, String name) {
+    public String getIP(Player player) {
+    	String name = player.getName().toLowerCase();
         String ip = player.getAddress().getAddress().getHostAddress();
         if (Settings.bungee) {
             if (realIp.containsKey(name))
                 ip = realIp.get(name);
         }
+        if (Settings.checkVeryGames)
+        	if (getVeryGamesIP(player) != null)
+        		ip = getVeryGamesIP(player);
         return ip;
     }
 
-	public boolean isLoggedIp(String ip) {
+	public boolean isLoggedIp(String name, String ip) {
 		for (Player player : this.getServer().getOnlinePlayers()) {
-			if(ip.equalsIgnoreCase(getIP(player, player.getName())) && database.isLogged(player.getName().toLowerCase()))
+			if(ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
 				return true;
 		}
 		return false;
 	}
 
-	public boolean hasJoinedIp(String ip) {
+	public boolean hasJoinedIp(String name, String ip) {
 		for (Player player : this.getServer().getOnlinePlayers()) {
-			if(ip.equalsIgnoreCase(getIP(player, player.getName())))
+			if(ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
 				return true;
 		}
 		return false;
+	}
+	
+    /**
+     * Get Player real IP through VeryGames method
+     * @param Player player
+     */
+	public String getVeryGamesIP(Player player) {
+		String realIP = null;
+		String sUrl = vgUrl;
+		sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", ""+player.getAddress().getPort());
+		try {
+			URL url = new URL(sUrl);
+	        URLConnection urlc = url.openConnection();
+	        BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
+	        String inputLine = in.readLine();
+	        if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error")) {
+	        	realIP = inputLine;
+	        }
+		} catch (Exception e) {
+		}
+		return realIP;
 	}
 }

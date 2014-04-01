@@ -70,7 +70,7 @@ public class LogoutCommand implements CommandExecutor {
         database.setUnlogged(name);
 
         if (Settings.isTeleportToSpawnEnabled) {
-        	Location spawnLoc = plugin.getSpawnLocation(player, player.getWorld());
+        	Location spawnLoc = plugin.getSpawnLocation(player);
             AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawnLoc);
             plugin.getServer().getPluginManager().callEvent(tpEvent);
             if(!tpEvent.isCancelled()) {

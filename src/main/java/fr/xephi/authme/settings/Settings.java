@@ -59,7 +59,7 @@ public final class Settings extends YamlConfiguration {
             disableSocialSpy, useMultiThreading, forceOnlyAfterLogin, useEssentialsMotd,
             usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword, purgeLimitedCreative,
             purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
-            broadcastWelcomeMessage, forceRegKick, forceRegLogin;
+            broadcastWelcomeMessage, forceRegKick, forceRegLogin, checkVeryGames;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -241,6 +241,7 @@ public void loadConfigOptions() {
         spawnPriority = configFile.getString("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
+        checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -398,163 +399,113 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         spawnPriority = configFile.getString("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
+        checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
         
 }
 
-public void mergeConfig() {
-       if(!contains("DataSource.mySQLColumnEmail"))
-    	   set("DataSource.mySQLColumnEmail","email");
-       if(!contains("Email.RecoveryPasswordLength"))
-    	   set("Email.RecoveryPasswordLength", 8);
-       if(!contains("Email.mailPort"))
-    	   set("Email.mailPort", 465);
-       if(!contains("Email.mailSMTP"))
-    	   set("Email.mailSMTP", "smtp.gmail.com");
-       if(!contains("Email.mailAccount"))
-    	   set("Email.mailAccount", "");
-       if(!contains("Email.mailPassword"))
-    	   set("Email.mailPassword", "");
-       if(!contains("ExternalBoardOptions.mySQLOtherUsernameColumns"))
-    	   set("ExternalBoardOptions.mySQLOtherUsernameColumns", new ArrayList<String>());
-       if(!contains("settings.restrictions.displayOtherAccounts"))
-    	   set("settings.restrictions.displayOtherAccounts", true);
-       if(!contains("DataSource.mySQLColumnId"))
-    	   set("DataSource.mySQLColumnId", "id");
-       if(!contains("Email.mailSenderName"))
-    	   set("Email.mailSenderName", "");
-       if(!contains("Security.captcha.useCaptcha"))
-    	   set("Security.captcha.useCaptcha", false);
-       if(!contains("Security.captcha.maxLoginTry"))
-    	   set("Security.captcha.maxLoginTry", 5);
-       if(!contains("Security.captcha.captchaLength"))
-    	   set("Security.captcha.captchaLength", 5);
-       if(!contains("Email.mailSubject"))
-    	   set("Email.mailSubject", "");
-       if(!contains("Email.mailText"))
-    	   set("Email.mailText", "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
-       if(contains("Email.mailText")) {
-    	   try {
-        	   String s = getString("Email.mailText");
-        	   s = s.replaceAll("\n", "<br />");
-        	   set("Email.mailText", null);
-        	   set("Email.mailText", s);
-    	   } catch (Exception e) {}
-       }
-       if(!contains("settings.registration.enableEmailRegistrationSystem"))
-    	   set("settings.registration.enableEmailRegistrationSystem", false);
-       if(!contains("settings.security.doubleMD5SaltLength"))
-    	   set("settings.security.doubleMD5SaltLength", 8);
-       if(!contains("Email.maxRegPerEmail"))
-    	   set("Email.maxRegPerEmail", 1);
-       if(!contains("Hooks.multiverse")) {
-    	   set("Hooks.multiverse", true);
-           set("Hooks.chestshop", true);
-           set("Hooks.notifications", true);
-           set("Hooks.bungeecord", false);
-       }
-       if(!contains("settings.restrictions.ForceSpawnOnTheseWorlds"))
-    	   set("settings.restrictions.ForceSpawnOnTheseWorlds", new ArrayList<String>());
-       if(!contains("settings.restrictions.banUnsafedIP"))
-    	   set("settings.restrictions.banUnsafedIP", false);
-       if(!contains("settings.registration.doubleEmailCheck"))
-    	   set("settings.registration.doubleEmailCheck", false);
-       if(!contains("settings.sessions.sessionExpireOnIpChange"))
-    	   set("settings.sessions.sessionExpireOnIpChange", false);
-       if(!contains("Security.console.logConsole"))
-    	   set("Security.console.logConsole", false);
-       if(!contains("Hooks.disableSocialSpy"))
-    	   set("Hooks.disableSocialSpy", true);
-       if(!contains("Performances.useMultiThreading"))
-    	   set("Performances.useMultiThreading", true);
-       if(!contains("ExternalBoardOptions.bCryptLog2Round"))
-    	   set("ExternalBoardOptions.bCryptLog2Round", 10);
-       if(!contains("DataSource.mySQLlastlocWorld"))
-    	   set("DataSource.mySQLlastlocWorld", "world");
-       if(!contains("settings.GameMode.ForceOnlyAfterLogin"))
-    	   set("settings.GameMode.ForceOnlyAfterLogin", false);
-       if(!contains("Hooks.useEssentialsMotd"))
-    	   set("Hooks.useEssentialsMotd", false);
-       if(!contains("Purge.useAutoPurge")) {
-    	   set("Purge.useAutoPurge", false);
-    	   set("Purge.daysBeforeRemovePlayer", 60);
-    	   set("Purge.removePlayerDat", false);
-    	   set("Purge.removeEssentialsFile", false);
-    	   set("Purge.defaultWorld", "world");
-       }
-       if(!contains("ExternalBoardOptions.phpbbTablePrefix")) {
-    	   set("ExternalBoardOptions.phpbbTablePrefix", "phpbb_");
-    	   set("ExternalBoardOptions.phpbbActivatedGroupId", 2);
-       }
-       if(!contains("settings.security.supportOldPasswordHash"))
-    	   set("settings.security.supportOldPasswordHash", false);
-       if(!contains("ExternalBoardOptions.wordpressTablePrefix"))
-    	   set("ExternalBoardOptions.wordpressTablePrefix", "wp_");
-       if(contains("Xenoforo.predefinedSalt"))
-    	   set("Xenoforo.predefinedSalt", null);
-       if(configFile.getString("settings.security.passwordHash","SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash","SHA256").toUpperCase().equals("XFSHA256"))
-    	   set("settings.security.passwordHash", "XENFORO");
-       if(!contains("Purge.removeLimitedCreativesInventories"))
-    	   set("Purge.removeLimitedCreativesInventories", false);
-       if(!contains("Purge.removeAntiXRayFile"))
-    	   set("Purge.removeAntiXRayFile", false);
-       /*if(!contains("Purge.removePermissions"))
-    	   set("Purge.removePermissions", false);*/
-       if(!contains("Protection.enableProtection"))
-    	   set("Protection.enableProtection", false);
-       if(!contains("Protection.countries")) {
-    	   countries = new ArrayList<String>();
-    	   countries.add("US");
-    	   countries.add("GB");
-    	   set("Protection.countries", countries);
-       }
-       if(!contains("Protection.enableAntiBot"))
-    	   set("Protection.enableAntiBot", false);
-       if(!contains("Protection.antiBotSensibility"))
-    	   set("Protection.antiBotSensibility", 5);
-       if(!contains("Protection.antiBotDuration"))
-    	   set("Protection.antiBotDuration", 10);
-       if(!contains("settings.forceCommands"))
-    	   set("settings.forceCommands", new ArrayList<String>());
-       if(!contains("Email.recallPlayers"))
-    	   set("Email.recallPlayers", false);
-       if(!contains("Email.delayRecall"))
-    	   set("Email.delayRecall", 5);
-       if(!contains("settings.useWelcomeMessage"))
-    	   set("settings.useWelcomeMessage", true);
-       if(!contains("settings.security.unsafePasswords")) {
-    	   List<String> str = new ArrayList<String>();
-    	   str.add("123456");
-    	   str.add("password");
-    	   set("settings.security.unsafePasswords", str);
-       }
-       if(!contains("Protection.countriesBlacklist")) {
-    	   countriesBlacklist = new ArrayList<String>();
-    	   countriesBlacklist.add("A1");
-    	   set("Protection.countriesBlacklist", countriesBlacklist);
-       }
-       if(!contains("settings.broadcastWelcomeMessage"))
-    	   set("settings.broadcastWelcomeMessage", false);
-       if(!contains("settings.registration.forceKickAfterRegister"))
-    	   set("settings.registration.forceKickAfterRegister", false);
-       if(!contains("settings.registration.forceLoginAfterRegister"))
-    	   set("settings.registration.forceLoginAfterRegister", false);
-       if(!contains("DataSource.mySQLColumnLogged"))
-    	   set("DataSource.mySQLColumnLogged", "isLogged");
-       if(!contains("settings.restrictions.spawnPriority"))
-    	   set("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
-       if(!contains("settings.restrictions.maxLoginPerIp"))
-    	   set("settings.restrictions.maxLoginPerIp", 0);
-       if(!contains("settings.restrictions.maxJoinPerIp"))
-    	   set("settings.restrictions.maxJoinPerIp", 0);
+	public void mergeConfig() {
+		boolean changes = false;
+	    if(contains("Xenoforo.predefinedSalt"))
+	    	set("Xenoforo.predefinedSalt", null);
+	    if(configFile.getString("settings.security.passwordHash","SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash","SHA256").toUpperCase().equals("XFSHA256"))
+	    	set("settings.security.passwordHash", "XENFORO");
+	    if(!contains("Protection.enableProtection")) {
+	    	set("Protection.enableProtection", false);
+	    	changes = true;
+	    }
+	    if(!contains("Protection.countries")) {
+	    	countries = new ArrayList<String>();
+	    	countries.add("US");
+	    	countries.add("GB");
+	    	set("Protection.countries", countries);
+	    	changes = true;
+	    }
+	    if(!contains("Protection.enableAntiBot")) {
+	    	set("Protection.enableAntiBot", false);
+	    	changes = true;
+	    }
+	    if(!contains("Protection.antiBotSensibility")) {
+	    	set("Protection.antiBotSensibility", 5);
+	    	changes = true;
+	    }
+	    if(!contains("Protection.antiBotDuration")) {
+	    	set("Protection.antiBotDuration", 10);
+	    	changes = true;
+	    }
+	    if(!contains("settings.forceCommands")) {
+	    	set("settings.forceCommands", new ArrayList<String>());
+	    	changes = true;
+	    }
+	    if(!contains("Email.recallPlayers")) {
+	    	set("Email.recallPlayers", false);
+	    	changes = true;
+	    }
+	    if(!contains("Email.delayRecall")) {
+	    	set("Email.delayRecall", 5);
+	    	changes = true;
+	    }
+	    if(!contains("settings.useWelcomeMessage")) {
+	    	set("settings.useWelcomeMessage", true);
+	    	changes = true;
+	    }
+	    if(!contains("settings.security.unsafePasswords")) {
+	    	List<String> str = new ArrayList<String>();
+	    	str.add("123456");
+	    	str.add("password");
+	    	set("settings.security.unsafePasswords", str);
+	    	changes = true;
+	    }
+	    if(!contains("Protection.countriesBlacklist")) {
+	    	countriesBlacklist = new ArrayList<String>();
+	    	countriesBlacklist.add("A1");
+	    	set("Protection.countriesBlacklist", countriesBlacklist);
+	    	changes = true;
+	    }
+	    if(!contains("settings.broadcastWelcomeMessage")) {
+	    	set("settings.broadcastWelcomeMessage", false);
+	    	changes = true;
+	    }
+	    if(!contains("settings.registration.forceKickAfterRegister")) {
+	    	set("settings.registration.forceKickAfterRegister", false);
+	    	changes = true;
+	    }
+	    if(!contains("settings.registration.forceLoginAfterRegister")) {
+	    	set("settings.registration.forceLoginAfterRegister", false);
+	    	changes = true;
+	    }
+	    if(!contains("DataSource.mySQLColumnLogged")) {
+	    	set("DataSource.mySQLColumnLogged", "isLogged");
+	    	changes = true;
+	    }
+	    if(!contains("settings.restrictions.spawnPriority")) {
+	    	set("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+	    	changes = true;
+	    }
+	    if(!contains("settings.restrictions.maxLoginPerIp")) {
+	    	set("settings.restrictions.maxLoginPerIp", 0);
+	    	changes = true;
+	    }
+	    if(!contains("settings.restrictions.maxJoinPerIp")) {
+	    	set("settings.restrictions.maxJoinPerIp", 0);
+	    	changes = true;
+	    }
+	    if(!contains("VeryGames.enableIpCheck")) {
+	    	set("VeryGames.enableIpCheck", false);
+	    	changes = true;
+	    }
+	    if(getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*"))
+	    	set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
 
-       plugin.getLogger().warning("Merge new Config Options if needed..");
-       plugin.getLogger().warning("Please check your config.yml file!");
-       plugin.saveConfig();
+	    if (changes) {
+	        plugin.getLogger().warning("Merge new Config Options if needed..");
+	        plugin.getLogger().warning("Please check your config.yml file!");
+	    }
+	    plugin.saveConfig();
 
-       return;
+	    return;
    }
 
     private static HashAlgorithm getPasswordHash() {

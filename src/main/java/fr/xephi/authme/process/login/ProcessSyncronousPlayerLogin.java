@@ -68,7 +68,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         }
     }
     protected void teleportToSpawn() {
-        Location spawnL = plugin.getSpawnLocation(player, player.getWorld());
+        Location spawnL = plugin.getSpawnLocation(player);
         SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnL, true);
         pm.callEvent(tpEvent);
         if (!tpEvent.isCancelled()) {

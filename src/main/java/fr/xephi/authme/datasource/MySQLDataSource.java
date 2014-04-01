@@ -183,6 +183,8 @@ public class MySQLDataSource implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
+        PlayerAuth pAuth = null;
+        int id = -1;
         try {
             con = makeSureConnectionIsReady();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
@@ -190,17 +192,26 @@ public class MySQLDataSource implements DataSource {
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next()) {
-                if (rs.getString(columnIp).isEmpty() ) {
-                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
+            	id = rs.getInt(columnID);
+                if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
+                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                 } else {
                         if(!columnSalt.isEmpty()){
                             if(!columnGroup.isEmpty())
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
-                            else return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
+                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
+                            else pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword),rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld),rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                         } else {
-                            return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
+                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                         }
                  }
+                if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                    rs.close();
+                    pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
+                    pst.setInt(1, id);
+                    if (rs.next()) {
+                    	pAuth.setHash(rs.getString(columnPassword));
+                    }
+                }
             } else {
                 return null;
             }
@@ -215,6 +226,7 @@ public class MySQLDataSource implements DataSource {
             close(pst);
             close(con);
         }
+        return pAuth;
     }
 
     @Override
@@ -363,6 +375,21 @@ public class MySQLDataSource implements DataSource {
                 	pst.executeUpdate();
                 }
             }
+            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            	int id;
+                ResultSet rs = null;
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
+                pst.setString(1, auth.getNickname());
+                rs = pst.executeQuery();
+                if (rs.next()) {
+                	id = rs.getInt(columnID);
+                	// Insert password in the correct table
+                	pst = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
+                	pst.setInt(1, id);
+                	pst.setString(2, "XenForo_Authentication_Core12");
+                	pst.setString(3, auth.getHash());
+                }
+            }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
@@ -386,6 +413,20 @@ public class MySQLDataSource implements DataSource {
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
+            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            	int id;
+                ResultSet rs = null;
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
+                pst.setString(1, auth.getNickname());
+                rs = pst.executeQuery();
+                if (rs.next()) {
+                	id = rs.getInt(columnID);
+                	// Insert password in the correct table
+                	pst = con.prepareStatement("UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;");
+                	pst.setString(1, auth.getHash());
+                	pst.setInt(2, id);
+                }
+            }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
@@ -481,6 +522,19 @@ public class MySQLDataSource implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
+            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            	int id;
+                ResultSet rs = null;
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
+                pst.setString(1, user);
+                rs = pst.executeQuery();
+                if (rs.next()) {
+                	id = rs.getInt(columnID);
+                	// Remove data
+                	pst = con.prepareStatement("DELETE FROM xf_user_authenticate WHERE " + columnID + "=?;");
+                	pst.setInt(1, id);
+                }
+            }
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
             pst.setString(1, user);
             pst.executeUpdate();

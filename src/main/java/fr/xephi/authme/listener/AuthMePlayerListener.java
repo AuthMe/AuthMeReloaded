@@ -11,7 +11,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -365,7 +364,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         int radius = Settings.getMovementRadius;
-        Location spawn = plugin.getSpawnLocation(player, player.getWorld());
+        Location spawn = plugin.getSpawnLocation(player);
 
         if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
         	event.getPlayer().teleport(spawn);
@@ -388,14 +387,14 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (!Settings.countriesBlacklist.isEmpty()) {
-        	String code = plugin.getCountryCode(event.getAddress());
+        	String code = plugin.getCountryCode(event.getAddress().getHostAddress());
         	if (((code == null) || (Settings.countriesBlacklist.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
         		event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("country_banned")[0]);
         		return;
         	}
         }
         if (Settings.enableProtection && !Settings.countries.isEmpty()) {
-        	String code = plugin.getCountryCode(event.getAddress());
+        	String code = plugin.getCountryCode(event.getAddress().getHostAddress());
         	if (((code == null) || (!Settings.countries.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
         		event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("country_banned")[0]);
         		return;
@@ -540,9 +539,8 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        World world = player.getWorld();
         final String name = player.getName().toLowerCase();
-        Location spawnLoc = plugin.getSpawnLocation(player, world);
+        Location spawnLoc = plugin.getSpawnLocation(player);
         gm = player.getGameMode();
         gameMode.put(name, gm);
         BukkitScheduler sched = plugin.getServer().getScheduler();
@@ -557,11 +555,7 @@ public class AuthMePlayerListener implements Listener {
         	} catch (Exception e) {}
         }
 
-        String ip = player.getAddress().getAddress().getHostAddress();
-        if (Settings.bungee) {
-        	if (plugin.realIp.containsKey(name))
-        		ip = plugin.realIp.get(name);
-        }
+        String ip = plugin.getIP(player);
         if(Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
             GameMode gM = gameMode.get(name);
             this.causeByAuthMe = true;
@@ -573,7 +567,7 @@ public class AuthMePlayerListener implements Listener {
             return;           
         }
         if(Settings.getMaxJoinPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
-        	if (plugin.hasJoinedIp(ip)) {
+        	if (plugin.hasJoinedIp(player.getName(), ip)) {
         		player.kickPlayer("A player with the same IP is already in game!");
         		return;
         	}
@@ -637,10 +631,9 @@ public class AuthMePlayerListener implements Listener {
                 SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
                 plugin.getServer().getPluginManager().callEvent(tpEvent);
                 if(!tpEvent.isCancelled()) {
-                	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                	}
-              	  player.teleport(tpEvent.getTo());
+                	if (player != null && player.isOnline() && tpEvent.getTo() != null) {
+                  	  player.teleport(tpEvent.getTo());
+              	}
                 }
             }
             placePlayerSafely(player, spawnLoc);
@@ -660,10 +653,9 @@ public class AuthMePlayerListener implements Listener {
                 SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
                 plugin.getServer().getPluginManager().callEvent(tpEvent);
                 if(!tpEvent.isCancelled()) {
-                	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
+                	if (player != null && player.isOnline() && tpEvent.getTo() != null) {
+                    	  player.teleport(tpEvent.getTo());
                 	}
-              	  player.teleport(tpEvent.getTo());
                 }
             }
             if (!Settings.isForcedRegistrationEnabled) {
@@ -750,11 +742,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        String ip = player.getAddress().getAddress().getHostAddress();
-        if (Settings.bungee) {
-        	if (plugin.realIp.containsKey(name))
-        		ip = plugin.realIp.get(name);
-        }
+        String ip = plugin.getIP(player);
 
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) {
         	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
@@ -826,11 +814,7 @@ public class AuthMePlayerListener implements Listener {
 
       String name = player.getName().toLowerCase();
 
-      String ip = player.getAddress().getAddress().getHostAddress();
-      if (Settings.bungee) {
-      	if (plugin.realIp.containsKey(name))
-      		ip = plugin.realIp.get(name);
-      }
+      String ip = plugin.getIP(player);
       if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead())) {
     	  if ((Settings.isSaveQuitLocationEnabled)  && data.isAuthAvailable(name)){
     		  final PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(),loc.getWorld().getName());
@@ -863,10 +847,9 @@ public class AuthMePlayerListener implements Listener {
     		  AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
     		  plugin.getServer().getPluginManager().callEvent(tpEvent);
     		  if(!tpEvent.isCancelled()) {
-    			  if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-    				  tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-    			  }
-    			  player.teleport(tpEvent.getTo());
+              	if (player != null && player.isOnline() && tpEvent.getTo() != null) {
+              	  player.teleport(tpEvent.getTo());
+          	}
     		  }
     	  } catch (NullPointerException npe) {
     	  }
@@ -1122,7 +1105,7 @@ public class AuthMePlayerListener implements Listener {
             if (!Settings.isForcedRegistrationEnabled)
                 return;
         
-        Location spawn = plugin.getSpawnLocation(player, player.getWorld());
+        Location spawn = plugin.getSpawnLocation(player);
     	if(Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
     		final PlayerAuth auth = new PlayerAuth(name,spawn.getX(),spawn.getY(),spawn.getZ(),spawn.getWorld().getName());
     		try {
