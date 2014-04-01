@@ -35,21 +35,30 @@ public class OtherAccounts extends CustomConfiguration {
     }
 
     public void addPlayer(UUID uuid) {
-    	Player player = Bukkit.getPlayer(uuid);
-    	if (player == null) return;
-    	if (!this.getStringList(uuid.toString()).contains(player.getName())) {
-    		this.getStringList(uuid.toString()).add(player.getName());
-    		save();
+    	try {
+        	Player player = Bukkit.getPlayer(uuid);
+        	if (player == null) return;
+        	if (!this.getStringList(uuid.toString()).contains(player.getName())) {
+        		this.getStringList(uuid.toString()).add(player.getName());
+        		save();
+        	}
+    	} catch (NoSuchMethodError e) {
+    	} catch (Exception e) {
     	}
     }
 
 	public void removePlayer(UUID uuid) {
-    	Player player = Bukkit.getPlayer(uuid);
-    	if (player == null) return;
-    	if (this.getStringList(uuid.toString()).contains(player.getName())) {
-    		this.getStringList(uuid.toString()).remove(player.getName());
-    		save();
+		try {
+			Player player = Bukkit.getPlayer(uuid);
+			if (player == null) return;
+			if (this.getStringList(uuid.toString()).contains(player.getName())) {
+				this.getStringList(uuid.toString()).remove(player.getName());
+				save();
+			}
+    	} catch (NoSuchMethodError e) {
+    	} catch (Exception e) {
     	}
+
 	}
 	
 	public List<String> getAllPlayersByUUID(UUID uuid) {
