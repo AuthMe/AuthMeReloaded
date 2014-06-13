@@ -13,7 +13,7 @@ import fr.xephi.authme.AuthMe;
 public class XF implements EncryptionMethod {
 
 	@Override
-	public String getHash(String password, String salt)
+	public String getHash(String password, String salt, String name)
 			throws NoSuchAlgorithmException {
 		return getSHA256(getSHA256(password) + regmatch("\"salt\";.:..:\"(.*)\";.:.:\"hashFunc\"", salt));
 	}

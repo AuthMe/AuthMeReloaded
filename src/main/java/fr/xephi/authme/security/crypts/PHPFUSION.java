@@ -15,7 +15,7 @@ import fr.xephi.authme.AuthMe;
 public class PHPFUSION implements EncryptionMethod {
 
 	@Override
-	public String getHash(String password, String salt)
+	public String getHash(String password, String salt, String name)
 			throws NoSuchAlgorithmException {
         String digest = null;
         String algo = "HmacSHA256";
@@ -45,7 +45,7 @@ public class PHPFUSION implements EncryptionMethod {
 	public boolean comparePassword(String hash, String password,
 			String playerName) throws NoSuchAlgorithmException {
     	String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-    	return hash.equals(getHash(password, salt));
+    	return hash.equals(getHash(password, salt, ""));
 	}
 	
     private static String getSHA1(String message) throws NoSuchAlgorithmException {

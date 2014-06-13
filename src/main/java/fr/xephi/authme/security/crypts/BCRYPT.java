@@ -750,8 +750,35 @@ public class BCRYPT implements EncryptionMethod {
 		return (hashed.compareTo(hashpw(plaintext, hashed)) == 0);
 	}
 
+    /**
+    * Check that a text password matches a previously hashed
+    * one with the specified number of rounds using recursion
+    *
+    * @param text plaintext or hashed text
+    * @param hashed the previously-hashed password
+    * @param rounds number of rounds to hash the password
+    * @return
+    */
+    public static boolean checkpw(String text, String hashed, int rounds) {
+        boolean matched = false;
+
+        if (rounds > 0) {
+            String hash = hashpw(text, hashed);
+
+            if (rounds > 1) {
+                matched = checkpw(hash, hashed, rounds - 1);
+            } else {
+                matched = hash.compareTo(hashed) == 0;
+            }
+        } else {
+	        matched = text.compareTo(hashed) == 0;
+	    }
+
+	    return matched;
+	}
+
 	@Override
-	public String getHash(String password, String salt)
+	public String getHash(String password, String salt, String name)
 			throws NoSuchAlgorithmException {
 		return hashpw(password, salt);
 	}
@@ -761,4 +788,9 @@ public class BCRYPT implements EncryptionMethod {
 			String playerName) throws NoSuchAlgorithmException {
     	return checkpw(password, hash);
 	}
+
+    public static String getDoubleHash(String text, String salt) {
+        String hash = hashpw(text, salt);
+        return hashpw(text, hash);
+    }
 }

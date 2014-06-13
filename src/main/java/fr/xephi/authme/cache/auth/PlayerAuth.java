@@ -26,6 +26,7 @@ public class PlayerAuth {
         this.lastLogin = lastLogin;
         this.email = email;
         this.realName = realName;
+
     }
 
     public PlayerAuth(String nickname, double x, double y, double z, String world) {
@@ -34,6 +35,8 @@ public class PlayerAuth {
         this.y = y;
         this.z = z;
         this.world = world;
+        this.lastLogin = System.currentTimeMillis();
+
     }
 
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
@@ -47,6 +50,7 @@ public class PlayerAuth {
         this.world = world;
         this.email = email;
         this.realName = realName;
+
     }
 
     public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, double x, double y, double z, String world,  String email, String realName) {
@@ -62,6 +66,7 @@ public class PlayerAuth {
         this.groupId = groupId;
         this.email = email;
         this.realName = realName;
+
     }
 
     public PlayerAuth(String nickname, String hash, String salt, int groupId , String ip, long lastLogin, String realName) {
@@ -72,6 +77,7 @@ public class PlayerAuth {
         this.salt = salt;
         this.groupId = groupId;
         this.realName = realName;
+
     }
 
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, String realName) {
@@ -81,6 +87,7 @@ public class PlayerAuth {
         this.lastLogin = lastLogin;  
         this.salt = salt;
         this.realName = realName;
+
     }
 
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
@@ -101,6 +108,14 @@ public class PlayerAuth {
     	this.nickname = nickname;
     	this.ip = ip;
     	this.lastLogin = lastLogin;
+
+    }
+
+    public PlayerAuth(String nickname, String hash, String ip, long lastLogin) {
+    	this.nickname = nickname;
+    	this.ip = ip;
+    	this.lastLogin = lastLogin;
+    	this.hash = hash;
     }
 
 	public String getIp() {
@@ -218,5 +233,4 @@ public class PlayerAuth {
 	public String getRealname() {
 		return realName;
 	}
-
 }

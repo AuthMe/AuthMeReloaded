@@ -46,7 +46,7 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         int nwMsg = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("login_msg"), msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg);
 
-        if (Settings.isTeleportToSpawnEnabled) {
+        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
         	Location loca = plugin.getSpawnLocation(player);
             RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
             plugin.getServer().getPluginManager().callEvent(tpEvent);

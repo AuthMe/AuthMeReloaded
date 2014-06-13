@@ -162,6 +162,8 @@ settings:
         maxLoginPerIp: 0
         # Maximum Join authorized by IP
         maxJoinPerIp: 0
+        # AuthMe will NEVER teleport players !
+        noTeleport: false
     GameMode:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false
@@ -254,6 +256,8 @@ settings:
     useWelcomeMessage: true
     # Do we need to broadcast the welcome message to all server or only to the player? set true for server or false for player
     broadcastWelcomeMessage: false
+    # Do we need to delay the X has joined the game after /login ?
+    delayJoinMessage: false
 ExternalBoardOptions:
     # MySQL column for the salt , needed for some forum/cms support
     mySQLColumnSalt: ''
@@ -325,11 +329,6 @@ Converter:
         useIP: false
         # IP file name for rakamak
         ipFileName: UsersIp.rak
-        # possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB,
-        # PLAINTEXT ( unhashed password),
-        # MYBB, IPB3, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,
-        # DOUBLEMD5, PBKDF2, WORDPRESS, CUSTOM(for developpers only)
-        newPasswordHash: SHA256
 Email:
     # Email SMTP server host
     mailSMTP: smtp.gmail.com

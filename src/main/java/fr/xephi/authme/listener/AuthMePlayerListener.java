@@ -580,7 +580,6 @@ public class AuthMePlayerListener implements Listener {
                 long cur = new Date().getTime();
              if((cur - lastLogin < timeout || timeout == 0) && !auth.getIp().equals("198.18.0.1") ) {
                      if (auth.getNickname().equalsIgnoreCase(name) && auth.getIp().equals(ip) ) {
-                     	plugin.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
                      	if(PlayerCache.getInstance().getAuth(name) != null) {
                      		PlayerCache.getInstance().updatePlayer(auth);
                      	} else {
@@ -590,6 +589,7 @@ public class AuthMePlayerListener implements Listener {
                      	m._(player, "valid_session");
                      	// Restore Permission Group
                         utils.setGroup(player, Utils.groupType.LOGGEDIN);
+                        plugin.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
                         return;
                      } else if (!Settings.sessionExpireOnIpChange){
                      	GameMode gM = gameMode.get(name);
@@ -627,15 +627,16 @@ public class AuthMePlayerListener implements Listener {
             	Utils.forceGM(player);
             	this.causeByAuthMe = false;
             }
-            if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
-                plugin.getServer().getPluginManager().callEvent(tpEvent);
-                if(!tpEvent.isCancelled()) {
-                	if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                  	  player.teleport(tpEvent.getTo());
-              	}
+            if (!Settings.noTeleport)
+                if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
+                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
+                    plugin.getServer().getPluginManager().callEvent(tpEvent);
+                    if(!tpEvent.isCancelled()) {
+                        if (player != null && player.isOnline() && tpEvent.getTo() != null) {
+                            player.teleport(tpEvent.getTo());
+                        }
+                    }
                 }
-            }
             placePlayerSafely(player, spawnLoc);
             LimboCache.getInstance().updateLimboPlayer(player);
             DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(),LimboCache.getInstance().getLimboPlayer(name).getArmour());
@@ -649,15 +650,16 @@ public class AuthMePlayerListener implements Listener {
             if(!Settings.unRegisteredGroup.isEmpty()){
                utils.setGroup(player, Utils.groupType.UNREGISTERED);
             }
-            if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
-                plugin.getServer().getPluginManager().callEvent(tpEvent);
-                if(!tpEvent.isCancelled()) {
-                	if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                    	  player.teleport(tpEvent.getTo());
-                	}
+            if (!Settings.noTeleport)
+                if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
+                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
+                    plugin.getServer().getPluginManager().callEvent(tpEvent);
+                    if(!tpEvent.isCancelled()) {
+                        if (player != null && player.isOnline() && tpEvent.getTo() != null) {
+                            player.teleport(tpEvent.getTo());
+                        }
+                    }
                 }
-            }
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -711,13 +713,14 @@ public class AuthMePlayerListener implements Listener {
         	player.performCommand("motd");
         
         // Remove the join message while the player isn't logging in
-        if (Settings.enableProtection) {
+        if (Settings.enableProtection || Settings.delayJoinMessage) {
             joinMessage.put(name, event.getJoinMessage());
             event.setJoinMessage(null);
         }
     }
 
 	private void placePlayerSafely(Player player, Location spawnLoc) {
+	    if (!Settings.noTeleport) return;
 		if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName())))
 			return;
 		Block b = player.getLocation().getBlock();
@@ -843,6 +846,7 @@ public class AuthMePlayerListener implements Listener {
     			  ConsoleLogger.showError("Problem while restore " + name + " inventory after a kick");
     		  }
     	  }
+    	  if (!Settings.noTeleport)
     	  try {
     		  AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
     		  plugin.getServer().getPluginManager().callEvent(tpEvent);

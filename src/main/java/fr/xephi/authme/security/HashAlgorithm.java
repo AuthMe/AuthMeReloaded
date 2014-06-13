@@ -21,11 +21,13 @@ public enum HashAlgorithm {
     JOOMLA(fr.xephi.authme.security.crypts.JOOMLA.class),
     BCRYPT(fr.xephi.authme.security.crypts.BCRYPT.class),
     WBB3(fr.xephi.authme.security.crypts.WBB3.class),
+    WBB4(fr.xephi.authme.security.crypts.WBB4.class),
     SHA512(fr.xephi.authme.security.crypts.SHA512.class),
     DOUBLEMD5(fr.xephi.authme.security.crypts.DOUBLEMD5.class),
     PBKDF2(fr.xephi.authme.security.crypts.CryptPBKDF2.class),
     WORDPRESS(fr.xephi.authme.security.crypts.WORDPRESS.class),
     ROYALAUTH(fr.xephi.authme.security.crypts.ROYALAUTH.class),
+    CRAZYCRYPT1(fr.xephi.authme.security.crypts.CRAZYCRYPT1.class),
     CUSTOM(Null.class);
     
     Class<?> classe;

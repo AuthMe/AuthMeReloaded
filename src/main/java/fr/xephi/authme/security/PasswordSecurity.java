@@ -80,12 +80,16 @@ public class PasswordSecurity {
         	salt = createSalt(40);
         	userSalt.put(playerName, salt);
         	break;
+        case WBB4:
+            salt = BCRYPT.gensalt(8);
+            userSalt.put(playerName, salt);
+            break;
         case PBKDF2:
         	salt = createSalt(12);
         	userSalt.put(playerName, salt);
         	break;
         case SMF:
-        	return method.getHash(password, playerName.toLowerCase());
+        	return method.getHash(password, null, playerName);
         case PHPBB:
         	salt = createSalt(16);
         	userSalt.put(playerName, salt);
@@ -96,6 +100,8 @@ public class PasswordSecurity {
         case PLAINTEXT:
         case XENFORO:
         case SHA512:
+        case ROYALAUTH:
+        case CRAZYCRYPT1:
         case DOUBLEMD5:
         case WORDPRESS:
         case CUSTOM:
@@ -108,7 +114,7 @@ public class PasswordSecurity {
         method = event.getMethod();
         if (method == null)
         	throw new NoSuchAlgorithmException("Unknown hash algorithm");
-        return method.getHash(password, salt);
+        return method.getHash(password, salt, playerName);
     }
 
     public static boolean comparePasswordWithHash(String password, String hash, String playerName) throws NoSuchAlgorithmException {

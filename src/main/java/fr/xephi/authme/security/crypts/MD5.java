@@ -7,13 +7,13 @@ import java.security.NoSuchAlgorithmException;
 public class MD5 implements EncryptionMethod {
 
 	@Override
-	public String getHash(String password, String salt) throws NoSuchAlgorithmException {
+	public String getHash(String password, String salt, String name) throws NoSuchAlgorithmException {
         return getMD5(password);
 	}
 
 	@Override
 	public boolean comparePassword(String hash, String password, String playerName) throws NoSuchAlgorithmException {
-		return hash.equals(getHash(password, ""));
+		return hash.equals(getHash(password, "", ""));
 	}
 
     private static String getMD5(String message) throws NoSuchAlgorithmException {

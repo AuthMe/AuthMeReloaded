@@ -7,15 +7,15 @@ import java.security.NoSuchAlgorithmException;
 public class SMF implements EncryptionMethod {
 
 	@Override
-	public String getHash(String password, String salt)
+	public String getHash(String password, String salt, String name)
 			throws NoSuchAlgorithmException {
-		return getSHA1(salt.toLowerCase() + password);
+		return getSHA1(name.toLowerCase() + password);
 	}
 
 	@Override
 	public boolean comparePassword(String hash, String password,
 			String playerName) throws NoSuchAlgorithmException {
-		return hash.equals(getHash(password, playerName.toLowerCase()));
+		return hash.equals(getHash(password, null, playerName));
 	}
 
     private static String getSHA1(String message) throws NoSuchAlgorithmException {

@@ -17,7 +17,7 @@ import fr.xephi.authme.settings.Settings;
 *
 * @author Xephi59
 */
-public class FlatToSql {
+public class FlatToSql implements Converter {
 
     private static String tableName;
     private static String columnName;
@@ -49,7 +49,7 @@ public class FlatToSql {
 	    columnID = Settings.getMySQLColumnId;
 	}
 	
-	public boolean convert() throws IOException {
+	public void convert() throws IOException {
         try {
             source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
             source.createNewFile();
@@ -93,12 +93,10 @@ public class FlatToSql {
             sql.close();
             br.close();
             ConsoleLogger.info("The FlatFile has been converted to authme.sql file");
-            return true;
         } catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
         }
-        return false;
 	}
 }

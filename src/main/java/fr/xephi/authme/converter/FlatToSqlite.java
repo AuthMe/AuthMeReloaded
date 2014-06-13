@@ -12,12 +12,20 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.bukkit.command.CommandSender;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
 
 
-public class FlatToSqlite {
+public class FlatToSqlite implements Converter {
+    
+    public CommandSender sender;
+
+    public FlatToSqlite(CommandSender sender) {
+        this.sender = sender;
+    }
 
     private static String tableName;
     private static String columnName;
@@ -34,7 +42,7 @@ public class FlatToSqlite {
 	private static String columnID;
 	private static Connection con;
 	
-	public static String convert() throws IOException {
+	public void convert() throws Exception {
         database = Settings.getMySQLDatabase;
         tableName = Settings.getMySQLTablename;
         columnName = Settings.getMySQLColumnName;
@@ -49,14 +57,16 @@ public class FlatToSqlite {
         columnID = Settings.getMySQLColumnId;
 	    ConsoleLogger.info("Converting FlatFile to SQLite ...");
         if (new File(AuthMe.getInstance().getDataFolder() + File.separator + database + ".db").exists()) {
-        	return "The Database " + database + ".db can't be created cause the file already exist";
+            sender.sendMessage("The Database " + database + ".db can't be created cause the file already exist");
+        	return;
         }
         try {
 			connect();
 			setup();
 		} catch (Exception e) {
 			ConsoleLogger.showError("Problem while trying to convert to sqlite !");
-			return "Problem while trying to convert to sqlite !";
+			sender.sendMessage("Problem while trying to convert to sqlite !");
+			return;
 		}
 		try {
 	        source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
@@ -84,13 +94,15 @@ public class FlatToSqlite {
 	        br.close();
 	        ConsoleLogger.info("The FlatFile has been converted to " + database + ".db file");
 	        close();
-	        return ("The FlatFile has been converted to " + database + ".db file");
+	        sender.sendMessage("The FlatFile has been converted to " + database + ".db file");
+	        return;
 		} catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
         }
-        return "Errors appears while trying to convert to SQLite";
+        sender.sendMessage("Errors appears while trying to convert to SQLite");
+        return;
 	}
 	
     private synchronized static void connect() throws ClassNotFoundException, SQLException {

@@ -10,7 +10,7 @@ import fr.xephi.authme.AuthMe;
 public class WBB3 implements EncryptionMethod {
 
 	@Override
-	public String getHash(String password, String salt)
+	public String getHash(String password, String salt, String name)
 			throws NoSuchAlgorithmException {
 		return getSHA1(salt.concat(getSHA1(salt.concat(getSHA1(password)))));
 	}
@@ -19,7 +19,7 @@ public class WBB3 implements EncryptionMethod {
 	public boolean comparePassword(String hash, String password,
 			String playerName) throws NoSuchAlgorithmException {
     	String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-    	return hash.equals(getHash(password, salt));
+    	return hash.equals(getHash(password, salt, ""));
 	}
 
     private static String getSHA1(String message) throws NoSuchAlgorithmException {

@@ -2,7 +2,6 @@ package fr.xephi.authme.commands;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -33,12 +32,12 @@ import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.converter.Converter;
 import fr.xephi.authme.converter.FlatToSql;
 import fr.xephi.authme.converter.FlatToSqlite;
 import fr.xephi.authme.converter.RakamakConverter;
 import fr.xephi.authme.converter.RoyalAuthConverter;
-import fr.xephi.authme.converter.newxAuthToFlat;
-import fr.xephi.authme.converter.oldxAuthToFlat;
+import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -301,44 +300,26 @@ public class AdminCommand implements CommandExecutor {
             }
             return true;
         } else if (args[0].equalsIgnoreCase("convertflattosql")) {
-        		try {
-        			FlatToSql converter = new FlatToSql();
-        			if (sender instanceof Player) {
-        				if (converter.convert())
-        					sender.sendMessage("[AuthMe] FlatFile converted to authme.sql file");
-        				else sender.sendMessage("[AuthMe] Error while converting to authme.sql");
-        			}
-
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (NullPointerException ex) {
-					System.out.println(ex.getMessage());
-				}
+            FlatToSql converter = new FlatToSql();
+            try {
+                converter.convert();
+            } catch (Exception e) {
+                sender.sendMessage("[AuthMe] Error while converting to authme.sql");
+            }
         } else if (args[0].equalsIgnoreCase("flattosqlite")) {
-    		try {
-    			String s = FlatToSqlite.convert();
-    			if (sender instanceof Player)
-    				sender.sendMessage(s);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (NullPointerException ex) {
-				System.out.println(ex.getMessage());
-			}
+            FlatToSqlite converter = new FlatToSqlite(sender);
+            try {
+                converter.convert();
+            } catch (Exception e) {
+            }
 			return true;
         } else if (args[0].equalsIgnoreCase("xauthimport")) {
-        	try {
-        		Class.forName("com.cypherx.xauth.xAuth");
-            	oldxAuthToFlat converter = new oldxAuthToFlat(plugin, database, sender);
-            	converter.run();
-        	} catch (ClassNotFoundException e) {
-        		try {
-        			Class.forName("de.luricos.bukkit.xAuth.xAuth");
-        			newxAuthToFlat converter = new newxAuthToFlat(plugin, database, sender);
-        			converter.run();
-        		} catch (ClassNotFoundException ce) {
-        			sender.sendMessage("[AuthMe] No version of xAuth found or xAuth isn't enable! ");
-        		}
-        	}
+            Converter converter = new xAuthConverter(plugin, database, sender);
+            try {
+                converter.convert();
+            } catch (Exception e) {
+                sender.sendMessage("Error while importing xAuth data, check your logs");
+            }
         	return true;
         } else if (args[0].equalsIgnoreCase("getemail")) {
             if (args.length != 2) {
@@ -373,15 +354,12 @@ public class AdminCommand implements CommandExecutor {
             	PlayerCache.getInstance().updatePlayer(getAuth);
     		return true;
         } else if (args[0].equalsIgnoreCase("convertfromrakamak")) {
-    		try {
-    			RakamakConverter.RakamakConvert();
-    			if (sender instanceof Player)
-    				sender.sendMessage("[AuthMe] Rakamak database converted to auths.db");
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (NullPointerException ex) {
-				ConsoleLogger.showError(ex.getMessage());
-			}
+            Converter converter = new RakamakConverter(plugin, database, sender);
+            try {
+                converter.convert();
+            } catch (Exception e) {
+                sender.sendMessage("Error while importing Rakamak data, check your logs");
+            }
 			return true;
         } else if (args[0].equalsIgnoreCase("setspawn")) {
     		try {
@@ -509,7 +487,7 @@ public class AdminCommand implements CommandExecutor {
             Utils.getInstance().setGroup(name, groupType.UNREGISTERED);
             if (target != null) {
             	if (target.isOnline()) {
-                    if (Settings.isTeleportToSpawnEnabled) {
+                    if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
                     	Location spawn = plugin.getSpawnLocation(target);
                     	SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(target, target.getLocation(), spawn, false);
                     	plugin.getServer().getPluginManager().callEvent(tpEvent);
@@ -587,7 +565,7 @@ public class AdminCommand implements CommandExecutor {
         		sender.sendMessage("Usage : /authme getip onlinePlayerName");
         		return true;
         	}
-    		if (Bukkit.getOfflinePlayer(args[1]).isOnline()) {
+    		if (Bukkit.getPlayer(args[1]) != null) {
     			Player player = Bukkit.getPlayer(args[1]);
     			sender.sendMessage(player.getName() + " actual ip is : " + player.getAddress().getAddress().getHostAddress() + ":" + player.getAddress().getPort());
     			sender.sendMessage(player.getName() + " real ip is : " + plugin.getIP(player));

@@ -43,7 +43,6 @@ public final class Settings extends YamlConfiguration {
     private final File file;
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
-    public static HashAlgorithm rakamakHash;
     public static Boolean useLogging = false;
     public static int purgeDelay = 60;
     public static List<String> welcomeMsg = null;
@@ -60,7 +59,8 @@ public final class Settings extends YamlConfiguration {
             disableSocialSpy, useMultiThreading, forceOnlyAfterLogin, useEssentialsMotd,
             usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword, purgeLimitedCreative,
             purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
-            broadcastWelcomeMessage, forceRegKick, forceRegLogin, checkVeryGames;
+            broadcastWelcomeMessage, forceRegKick, forceRegLogin, checkVeryGames, delayJoinMessage,
+            noTeleport;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -178,7 +178,6 @@ public void loadConfigOptions() {
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
-        rakamakHash = getRakamakHash();
         noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam", false);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
         getmailAccount = configFile.getString("Email.mailAccount", "");
@@ -244,6 +243,8 @@ public void loadConfigOptions() {
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
+        delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
+        noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -337,7 +338,6 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
-        rakamakHash = getRakamakHash();
         noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam", false);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
         getmailAccount = configFile.getString("Email.mailAccount", "");
@@ -403,6 +403,8 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
+        delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
+        noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -505,10 +507,20 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
 	    }
 	    if(getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*"))
 	    	set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
+	    if(!contains("settings.delayJoinMessage")) {
+	    	set("settings.delayJoinMessage", false);
+	    	changes = true;
+	    }
+	    if(!contains("settings.restrictions.noTeleport")) {
+	        set("settings.restrictions.noTeleport", false);
+	        changes = true;
+	    }
+	    if(contains("Converter.Rakamak.newPasswordHash"))
+	        set("Converter.Rakamak.newPasswordHash", null);
 
 	    if (changes) {
-	        plugin.getLogger().warning("Merge new Config Options if needed..");
-	        plugin.getLogger().warning("Please check your config.yml file!");
+	        plugin.getLogger().warning("Merge new Config Options - I'm not an error, please don't report me");
+	        plugin.getLogger().warning("Please check your config.yml file for new configs!");
 	    }
 	    plugin.saveConfig();
 
@@ -517,17 +529,6 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
 
     private static HashAlgorithm getPasswordHash() {
         String key = "settings.security.passwordHash";
-        try {
-            return HashAlgorithm.valueOf(configFile.getString(key,"SHA256").toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            ConsoleLogger.showError("Unknown Hash Algorithm; defaulting to SHA256");
-            return HashAlgorithm.SHA256;
-        }
-    }
-
-    private static HashAlgorithm getRakamakHash() {
-        String key = "Converter.Rakamak.newPasswordHash";
-
         try {
             return HashAlgorithm.valueOf(configFile.getString(key,"SHA256").toUpperCase());
         } catch (IllegalArgumentException ex) {

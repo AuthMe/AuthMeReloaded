@@ -151,7 +151,7 @@ private String _hash_gensalt_private(
   }
 
 @Override
-public String getHash(String password, String salt)
+public String getHash(String password, String salt, String name)
 		throws NoSuchAlgorithmException {
 	return phpbb_hash(password, salt);
 }

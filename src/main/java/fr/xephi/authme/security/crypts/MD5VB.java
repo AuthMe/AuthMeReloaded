@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 public class MD5VB implements EncryptionMethod {
 
 	@Override
-	public String getHash(String password, String salt)
+	public String getHash(String password, String salt, String name)
 			throws NoSuchAlgorithmException {
 		return "$MD5vb$" + salt + "$" + getMD5(getMD5(password) + salt);
 	}
@@ -16,7 +16,7 @@ public class MD5VB implements EncryptionMethod {
 	public boolean comparePassword(String hash, String password,
 			String playerName) throws NoSuchAlgorithmException {
         String[] line = hash.split("\\$");
-        return hash.equals(getHash(password, line[2]));
+        return hash.equals(getHash(password, line[2], ""));
 	}
 	
     private static String getMD5(String message) throws NoSuchAlgorithmException {

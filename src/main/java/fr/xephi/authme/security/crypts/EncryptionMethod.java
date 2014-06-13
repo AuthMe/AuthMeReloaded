@@ -16,7 +16,7 @@ public interface EncryptionMethod {
 	 * @return Hashing password
 	 * @throws NoSuchAlgorithmException
 	 */
-	String getHash(String password, String salt) throws NoSuchAlgorithmException;
+	String getHash(String password, String salt, String name) throws NoSuchAlgorithmException;
 
 	/**
 	 * @param hash

@@ -235,7 +235,7 @@ public class MySQLDataSource implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            if ((columnSalt == null || columnSalt.isEmpty()) && (auth.getSalt() == null || auth.getSalt().isEmpty())) {
+            if ((columnSalt == null || columnSalt.isEmpty()) || (auth.getSalt() == null || auth.getSalt().isEmpty())) {
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + ") VALUES (?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getHash());

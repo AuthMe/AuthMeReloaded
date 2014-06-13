@@ -408,7 +408,7 @@ public class WHIRLPOOL implements EncryptionMethod {
     }
 
 	@Override
-	public String getHash(String password, String salt)
+	public String getHash(String password, String salt, String name)
 			throws NoSuchAlgorithmException {
         byte[] digest = new byte[DIGESTBYTES];
         NESSIEinit();
@@ -420,6 +420,6 @@ public class WHIRLPOOL implements EncryptionMethod {
 	@Override
 	public boolean comparePassword(String hash, String password,
 			String playerName) throws NoSuchAlgorithmException {
-		return hash.equals(getHash(password, ""));
+		return hash.equals(getHash(password, "", ""));
 	}
 }

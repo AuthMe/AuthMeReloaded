@@ -70,7 +70,7 @@ public class UnregisterCommand implements CommandExecutor {
                     return true;
                 }
                 if(Settings.isForcedRegistrationEnabled) {
-                    if (Settings.isTeleportToSpawnEnabled) {
+                    if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
                    	 Location spawn = plugin.getSpawnLocation(player);
                         SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
                         plugin.getServer().getPluginManager().callEvent(tpEvent);
@@ -113,7 +113,7 @@ public class UnregisterCommand implements CommandExecutor {
                  if(plugin.notifications != null) {
                  	plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
                  }
-                 if (Settings.isTeleportToSpawnEnabled) {
+                 if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
                 	 Location spawn = plugin.getSpawnLocation(player);
                      SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
                      plugin.getServer().getPluginManager().callEvent(tpEvent);

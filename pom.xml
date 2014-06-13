@@ -24,12 +24,12 @@
 		</plugin>
 	</plugins>
 	</build>
-    <version>3.3.6</version>
+    <version>3.4</version>
     <dependencies>
     	<dependency>
     		<groupId>org.bukkit</groupId>
     		<artifactId>craftbukkit</artifactId>
-    		<version>1.7.5-R0.1-SNAPSHOT</version>
+    		<version>1.7.9-R0.2</version>
     	</dependency>
     	<dependency>
     		<groupId>net.milkbowl.vault</groupId>
@@ -128,13 +128,6 @@
     		<version>Pre2.9.4.1</version>
     		<scope>system</scope>
     		<systemPath>${project.basedir}/lib/Essentials.jar</systemPath>
-    	</dependency>
-		<dependency>
-    		<groupId>net.md-5</groupId>
-    		<artifactId>bungeecord-api</artifactId>
-    		<version>1.7.2-SNAPSHOT</version>
-    		<scope>system</scope>
-    		<systemPath>${project.basedir}/lib/bungeecord-api.jar</systemPath>
     	</dependency>
     </dependencies>
 </project>

@@ -42,7 +42,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
     }
 
 	protected void forceLogin(Player player) {
-        if (Settings.isTeleportToSpawnEnabled) {
+        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
         	Location spawnLoc = plugin.getSpawnLocation(player);
             AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawnLoc);
             plugin.getServer().getPluginManager().callEvent(tpEvent);
@@ -78,7 +78,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 		LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
 		if (limbo != null) {
 		    player.setGameMode(limbo.getGameMode());      
-		    if (Settings.isTeleportToSpawnEnabled) {
+		    if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
 		    	Location loca = plugin.getSpawnLocation(player);
 		        RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
 		        plugin.getServer().getPluginManager().callEvent(tpEvent);
