@@ -133,22 +133,19 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             }
 
             if (!Settings.noTeleport) {
-                // Teleport the player
-                if(Settings.isForceSpawnLocOnJoinEnabled  && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
-                    // If we have force the spawn location on join
-                    teleportToSpawn();
-                } else {
-                    if (Settings.isTeleportToSpawnEnabled) {
-                        // If and only if teleport unauthed to spawn is activate
-                        teleportBackFromSpawn();
+                // Teleport
+                if (Settings.isTeleportToSpawnEnabled && !Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                    if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
+                        packQuitLocation();
                     } else {
-                        if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
-                            // Teleport the player on the saved location
-                            packQuitLocation();
-                        } else {
-                            // Do not move the player from his position
-                        }
+                        teleportBackFromSpawn();
                     }
+                } else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                    teleportToSpawn();
+                } else if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
+                    packQuitLocation();
+                } else {
+                    teleportBackFromSpawn();
                 }
             }
 
