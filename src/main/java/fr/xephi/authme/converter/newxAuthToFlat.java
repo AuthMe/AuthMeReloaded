@@ -19,7 +19,7 @@ import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 
-public class newxAuthToFlat extends Thread {
+public class newxAuthToFlat {
 
 	public AuthMe instance;
 	public DataSource database;
@@ -29,12 +29,6 @@ public class newxAuthToFlat extends Thread {
 		this.instance = instance;
 		this.database = database;
 		this.sender = sender;
-	}
-	
-	public void run() {
-		convert();
-		if (isAlive())
-			interrupt();
 	}
 
 	public boolean convert() {

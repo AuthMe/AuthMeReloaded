@@ -33,6 +33,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.converter.CrazyLoginConverter;
 import fr.xephi.authme.converter.FlatToSql;
 import fr.xephi.authme.converter.FlatToSqlite;
 import fr.xephi.authme.converter.RakamakConverter;
@@ -302,25 +303,33 @@ public class AdminCommand implements CommandExecutor {
         } else if (args[0].equalsIgnoreCase("convertflattosql")) {
             FlatToSql converter = new FlatToSql();
             try {
-                converter.convert();
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, converter);
             } catch (Exception e) {
                 sender.sendMessage("[AuthMe] Error while converting to authme.sql");
             }
         } else if (args[0].equalsIgnoreCase("flattosqlite")) {
             FlatToSqlite converter = new FlatToSqlite(sender);
             try {
-                converter.convert();
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, converter);
             } catch (Exception e) {
             }
 			return true;
         } else if (args[0].equalsIgnoreCase("xauthimport")) {
             Converter converter = new xAuthConverter(plugin, database, sender);
             try {
-                converter.convert();
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, converter);
             } catch (Exception e) {
                 sender.sendMessage("Error while importing xAuth data, check your logs");
             }
         	return true;
+        } else if (args[0].equalsIgnoreCase("crazyloginimport")) {
+            Converter converter = new CrazyLoginConverter(plugin, database, sender);
+            try {
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, converter);
+            } catch (Exception e) {
+                sender.sendMessage("Error while importing CrazyLogin datas, check your logs");
+            }
+            return true;
         } else if (args[0].equalsIgnoreCase("getemail")) {
             if (args.length != 2) {
                 sender.sendMessage("Usage: /authme getemail playername");
@@ -356,7 +365,7 @@ public class AdminCommand implements CommandExecutor {
         } else if (args[0].equalsIgnoreCase("convertfromrakamak")) {
             Converter converter = new RakamakConverter(plugin, database, sender);
             try {
-                converter.convert();
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, converter);
             } catch (Exception e) {
                 sender.sendMessage("Error while importing Rakamak data, check your logs");
             }

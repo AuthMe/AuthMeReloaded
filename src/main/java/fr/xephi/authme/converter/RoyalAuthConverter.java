@@ -9,7 +9,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 
-public class RoyalAuthConverter extends Thread implements Converter {
+public class RoyalAuthConverter implements Converter {
 	
 	public AuthMe plugin;
 	private DataSource data;
@@ -17,14 +17,10 @@ public class RoyalAuthConverter extends Thread implements Converter {
 	public RoyalAuthConverter(AuthMe plugin) {
 		this.plugin = plugin;
 		this.data = plugin.database;
-		this.start();
-	}
-	
-	public void run() {
 	}
 
     @Override
-    public void convert() throws Exception {
+    public void run() {
         for (OfflinePlayer o : plugin.getServer().getOfflinePlayers()) {
             try {
                 String name = o.getName().toLowerCase();
@@ -41,7 +37,6 @@ public class RoyalAuthConverter extends Thread implements Converter {
                 ConsoleLogger.showError("Error while trying to import "+ o.getName() + " RoyalAuth datas");
             }
         }
-        this.interrupt();
     }
 
 }

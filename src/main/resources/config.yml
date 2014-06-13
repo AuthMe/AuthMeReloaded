@@ -329,6 +329,9 @@ Converter:
         useIP: false
         # IP file name for rakamak
         ipFileName: UsersIp.rak
+    CrazyLogin:
+        # CrazyLogin database file
+        fileName: accounts.db
 Email:
     # Email SMTP server host
     mailSMTP: smtp.gmail.com

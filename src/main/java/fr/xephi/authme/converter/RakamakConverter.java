@@ -45,7 +45,8 @@ public class RakamakConverter implements Converter {
 	private static File source;
 	private static File ipfiles;
 
-	public void convert() throws Exception {
+	@Override
+	public void run() {
 		HashAlgorithm hash = Settings.getPasswordHash;
 		useIP = Settings.rakamakUseIp;
 		fileName = Settings.rakamakUsers;
@@ -98,10 +99,13 @@ public class RakamakConverter implements Converter {
                     database.saveAuth(auth);
 				}
 			ConsoleLogger.info("Rakamak database has been imported correctly");
+			sender.sendMessage("Rakamak database has been imported correctly");
         } catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            sender.sendMessage("Error file not found");
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            sender.sendMessage("Error IOException");
         }
 	}
 }

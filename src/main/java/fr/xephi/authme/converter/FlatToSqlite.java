@@ -41,8 +41,9 @@ public class FlatToSqlite implements Converter {
 	private static String database;
 	private static String columnID;
 	private static Connection con;
-	
-	public void convert() throws Exception {
+
+	@Override
+	public void run() {
         database = Settings.getMySQLDatabase;
         tableName = Settings.getMySQLTablename;
         columnName = Settings.getMySQLColumnName;

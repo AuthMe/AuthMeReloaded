@@ -169,3 +169,6 @@ permissions:
     authme.admin.getip:
         description: Get IP from a player ( fake and real )
         default: op
+    authme.admin.crazyloginimport:
+        description: Import CrazyLogin database into AuthMe database
+        default: op

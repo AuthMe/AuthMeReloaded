@@ -48,8 +48,9 @@ public class FlatToSql implements Converter {
 	    columnLogged = Settings.getMySQLColumnLogged;
 	    columnID = Settings.getMySQLColumnId;
 	}
-	
-	public void convert() throws IOException {
+
+	@Override
+	public void run() {
         try {
             source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
             source.createNewFile();
@@ -58,7 +59,7 @@ public class FlatToSql implements Converter {
     		BufferedWriter sql = null;
             br = new BufferedReader(new FileReader(source));
             sql = new BufferedWriter(new FileWriter(output));
-            String createDB = " CREATE TABLE IF NOT EXISTS " + tableName + " ("
+            String createDB = "CREATE TABLE IF NOT EXISTS " + tableName + " ("
             + columnID + " INTEGER AUTO_INCREMENT,"
             + columnName + " VARCHAR(255) NOT NULL UNIQUE,"
             + columnPassword + " VARCHAR(255) NOT NULL,"

@@ -24,7 +24,7 @@ import fr.xephi.authme.datasource.DataSource;
 *
 * @author Xephi59
 */
-public class oldxAuthToFlat extends Thread {
+public class oldxAuthToFlat {
 
 	public AuthMe instance;
 	public DataSource database;
@@ -34,12 +34,6 @@ public class oldxAuthToFlat extends Thread {
 		this.instance = instance;
 		this.database = database;
 		this.sender = sender;
-	}
-	
-	public void run() {
-		convert();
-		if (isAlive())
-			interrupt();
 	}
 
 	public boolean convert() {

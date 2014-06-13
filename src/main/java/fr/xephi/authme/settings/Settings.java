@@ -69,7 +69,7 @@ public final class Settings extends YamlConfiguration {
             getcUnrestrictedName, getRegisteredGroup, messagesLanguage, getMySQLlastlocX, getMySQLlastlocY, getMySQLlastlocZ,
             rakamakUsers, rakamakUsersIp, getmailAccount, getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName, 
             getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
-            getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged, spawnPriority;
+            getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged, spawnPriority, crazyloginFileName;
 
     public static int getWarnMessageInterval, getSessionTimeout, getRegistrationTimeout, getMaxNickLength,
             getMinNickLength, getPasswordMinLen, getMovementRadius, getmaxRegPerIp, getNonActivatedGroup,
@@ -245,6 +245,7 @@ public void loadConfigOptions() {
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
         delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
+        crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -405,6 +406,7 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
         delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
+        crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -517,6 +519,10 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
 	    }
 	    if(contains("Converter.Rakamak.newPasswordHash"))
 	        set("Converter.Rakamak.newPasswordHash", null);
+	    if(!contains("Converter.CrazyLogin.fileName")) {
+	        set("Converter.CrazyLogin.fileName", "accounts.db");
+	        changes = true;
+	    }
 
 	    if (changes) {
 	        plugin.getLogger().warning("Merge new Config Options - I'm not an error, please don't report me");
