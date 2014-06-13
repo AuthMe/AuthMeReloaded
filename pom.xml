@@ -53,9 +53,9 @@
     		<systemPath>${project.basedir}/lib/Citizens.jar</systemPath>
     	</dependency>
     	<dependency>
-    		<groupId>org.getSpout</groupId>
-    		<artifactId>SpoutPlugin</artifactId>
-    		<version>1.5.1-R0.3-SNAPSHOT</version>
+    		<groupId>org.getspout</groupId>
+    		<artifactId>spoutapi</artifactId>
+    		<version>1.6.4-SNAPSHOT</version>
     		<scope>system</scope>
     		<systemPath>${project.basedir}/lib/SpoutPlugin.jar</systemPath>
     	</dependency>
