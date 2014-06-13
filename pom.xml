@@ -90,7 +90,7 @@
 		<dependency>
     		<groupId>com.Acrobot</groupId>
     		<artifactId>ChestShop</artifactId>
-    		<version>3.50 t0047</version>
+    		<version>3.7.9</version>
     		<scope>system</scope>
     		<systemPath>${project.basedir}/lib/ChestShop.jar</systemPath>
     	</dependency>
