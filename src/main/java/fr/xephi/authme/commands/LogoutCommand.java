@@ -74,9 +74,7 @@ public class LogoutCommand implements CommandExecutor {
             AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawnLoc);
             plugin.getServer().getPluginManager().callEvent(tpEvent);
             if(!tpEvent.isCancelled()) {
-            	if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-            		tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-            	}
+                if (tpEvent.getTo() != null)
           	  	player.teleport(tpEvent.getTo());
             }
         }
