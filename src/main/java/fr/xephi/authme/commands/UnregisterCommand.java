@@ -64,7 +64,7 @@ public class UnregisterCommand implements CommandExecutor {
             return true;
         }
         try {
-            if (PasswordSecurity.comparePasswordWithHash(args[0], PlayerCache.getInstance().getAuth(name).getHash(), name)) {
+            if (PasswordSecurity.comparePasswordWithHash(args[0], PlayerCache.getInstance().getAuth(name).getHash(), player.getName())) {
                 if (!database.removeAuth(name)) {
                     player.sendMessage("error");
                     return true;

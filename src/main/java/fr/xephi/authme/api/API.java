@@ -126,7 +126,7 @@ public class API {
     	String player = playerName.toLowerCase();
     	PlayerAuth auth = database.getAuth(player);
     	try {
-			return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), player);
+			return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), playerName);
 		} catch (NoSuchAlgorithmException e) {
 			return false;
 		}

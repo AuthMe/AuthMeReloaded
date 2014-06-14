@@ -122,7 +122,7 @@ public class AsyncronousLogin {
         boolean passwordVerified = true;
         if (!forceLogin)
         	try {
-        		passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, name);
+        		passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, realName);
         	} catch (Exception ex) {
         		ConsoleLogger.showError(ex.getMessage());
         		m._(player, "error");
