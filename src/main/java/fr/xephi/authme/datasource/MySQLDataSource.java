@@ -10,6 +10,7 @@ import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -209,7 +210,9 @@ public class MySQLDataSource implements DataSource {
                     pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
                     if (rs.next()) {
-                    	pAuth.setHash(rs.getString(columnPassword));
+                        Blob blob = rs.getBlob("data");
+                        byte[] bytes = blob.getBytes(1, (int) blob.length());
+                    	pAuth.setHash(new String(bytes));
                     }
                 }
             } else {
@@ -376,18 +379,22 @@ public class MySQLDataSource implements DataSource {
                 }
             }
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-            	int id;
+                int id;
                 ResultSet rs = null;
                 pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
-                	id = rs.getInt(columnID);
-                	// Insert password in the correct table
-                	pst = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
-                	pst.setInt(1, id);
-                	pst.setString(2, "XenForo_Authentication_Core12");
-                	pst.setString(3, auth.getHash());
+                    id = rs.getInt(columnID);
+                    // Insert password in the correct table
+                    pst = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
+                    pst.setInt(1, id);
+                    pst.setString(2, "XenForo_Authentication_Core12");
+                    byte[] bytes = auth.getHash().getBytes();
+                    Blob blob = con.createBlob();
+                    blob.setBytes(1, bytes);
+                    pst.setBlob(3, blob);
+                    pst.executeUpdate();
                 }
             }
         } catch (SQLException ex) {
@@ -420,11 +427,14 @@ public class MySQLDataSource implements DataSource {
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
-                	id = rs.getInt(columnID);
-                	// Insert password in the correct table
-                	pst = con.prepareStatement("UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;");
-                	pst.setString(1, auth.getHash());
-                	pst.setInt(2, id);
+                    id = rs.getInt(columnID);
+                    // Insert password in the correct table
+                    pst = con.prepareStatement("UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;");
+                    byte[] bytes = auth.getHash().getBytes();
+                    Blob blob = con.createBlob();
+                    blob.setBytes(1, bytes);
+                    pst.setBlob(1, blob);
+                    pst.setInt(2, id);
                 }
             }
         } catch (SQLException ex) {
