@@ -12,16 +12,13 @@ public class CRAZYCRYPT1 implements EncryptionMethod {
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
-        final String text = "ÜÄaeut//&/=I " + password + "7421€547" + name + "__+IÄIH§%NK " + password;
-        try
-        {
-        final MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.update(text.getBytes(charset), 0, text.length());
-        return byteArrayToHexString(md.digest());
-        }
-        catch (final NoSuchAlgorithmException e)
-        {
-        return null;
+        final String text = "ÃœÃ„aeut//&/=I " + password + "7421â‚¬547" + name + "__+IÃ„IHÂ§%NK " + password;
+        try {
+            final MessageDigest md = MessageDigest.getInstance("SHA-512");
+            md.update(text.getBytes(charset), 0, text.length());
+            return byteArrayToHexString(md.digest());
+        } catch (final NoSuchAlgorithmException e) {
+            return null;
         }
     }
 
@@ -31,8 +28,7 @@ public class CRAZYCRYPT1 implements EncryptionMethod {
         return hash.equals(getHash(password, null, playerName));
     }
     
-    public static String byteArrayToHexString(final byte... args)
-    {
+    public static String byteArrayToHexString(final byte... args) {
         final char[] chars = new char[args.length * 2];
         for (int i = 0; i < args.length; i++) {
             chars[i * 2] = CRYPTCHARS[(args[i] >> 4) & 0xF];
@@ -40,5 +36,4 @@ public class CRAZYCRYPT1 implements EncryptionMethod {
         }
         return new String(chars);
     }
-
 }
