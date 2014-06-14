@@ -566,8 +566,12 @@ public class AdminCommand implements CommandExecutor {
     		sender.sendMessage("Usage : /authme switchantibot on/off");
     		return true;
         } else if (args[0].equalsIgnoreCase("royalauth")) {
-        	new RoyalAuthConverter(plugin);
-        	sender.sendMessage("[AuthMe] RoyalAuth database has been imported correctly");
+        	Converter converter = new RoyalAuthConverter(plugin);
+            try {
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, converter);
+            } catch (Exception e) {
+                sender.sendMessage("Error while importing RoyalAuth data, check your logs");
+            }
         	return true;
         } else if (args[0].equalsIgnoreCase("getip")) {
         	if (args.length < 2) {
