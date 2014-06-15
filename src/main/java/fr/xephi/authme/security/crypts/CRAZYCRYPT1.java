@@ -12,7 +12,7 @@ public class CRAZYCRYPT1 implements EncryptionMethod {
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
-        final String text = "ÜÄaeut//&/=I " + password + "7421€547" + name + "__+IÄIH§%NK " + password;
+        final String text = "ÜÄaeut//&/=I " + password + "7421€547" + name.toLowerCase() + "__+IÄIH§%NK " + password;
         try {
             final MessageDigest md = MessageDigest.getInstance("SHA-512");
             md.update(text.getBytes(charset), 0, text.length());
