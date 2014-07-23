@@ -737,7 +737,7 @@ public class AuthMe extends JavaPlugin {
     }
     
     private Location getAuthMeSpawn(Player player) {
-        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && Spawn.getInstance().getFirstSpawn() != null)
+        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null))
         	return Spawn.getInstance().getFirstSpawn();
         if (Spawn.getInstance().getSpawn() != null)
             return Spawn.getInstance().getSpawn();
@@ -848,18 +848,24 @@ public class AuthMe extends JavaPlugin {
     }
 
 	public boolean isLoggedIp(String name, String ip) {
+	    int count = 0;
 		for (Player player : this.getServer().getOnlinePlayers()) {
 			if(ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
-				return true;
+				count++;
 		}
+		if (count >= Settings.getMaxLoginPerIp)
+		    return true;
 		return false;
 	}
 
 	public boolean hasJoinedIp(String name, String ip) {
+	    int count = 0;
 		for (Player player : this.getServer().getOnlinePlayers()) {
 			if(ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
-				return true;
+				count++;
 		}
+		if (count >= Settings.getMaxJoinPerIp)
+		    return true;
 		return false;
 	}
 	

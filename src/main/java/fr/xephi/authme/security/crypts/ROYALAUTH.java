@@ -7,10 +7,9 @@ public class ROYALAUTH implements EncryptionMethod {
 
 	@Override
 	public String getHash(String password, String salt, String name) throws NoSuchAlgorithmException {
-		String data = "";
 		for (int i = 0; i < 25; i++)
-			data = hash(data, salt);
-		return data;
+		    password = hash(password, salt);
+		return password;
 	}
 
 	public String hash(String password, String salt) throws NoSuchAlgorithmException {

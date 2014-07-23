@@ -729,6 +729,12 @@ public class AuthMePlayerListener implements Listener {
 			player.teleport(spawnLoc);
 			return;
 		}
+	    Block c = player.getLocation().add(0D, 1D, 0D).getBlock();
+	    if (c.getType() == Material.PORTAL || c.getType() == Material.ENDER_PORTAL || c.getType() == Material.LAVA || c.getType() == Material.STATIONARY_LAVA) {
+	        m._(player, "unsafe_spawn");
+	        player.teleport(spawnLoc);
+	        return;
+	    }
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)

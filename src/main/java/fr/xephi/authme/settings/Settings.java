@@ -726,6 +726,6 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
     }
 
     public enum messagesLang {
-    	en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl
+    	en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl
     }
 }
