@@ -52,6 +52,15 @@ public class AsyncronousRegister {
             allowRegister = false;
         }
 
+        String lowpass = password.toLowerCase();
+        if ((lowpass.contains("delete") || lowpass.contains("where")
+                || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from")
+                || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null"))
+                || !lowpass.matches(Settings.getPassRegex)) {
+            m._(player, "password_error");
+            allowRegister = false;
+        }
+
         if (database.isAuthAvailable(player.getName().toLowerCase())) {
             m._(player, "user_regged");
             if (plugin.pllog.getStringList("players").contains(player.getName())) {

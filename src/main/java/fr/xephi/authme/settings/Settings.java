@@ -69,7 +69,8 @@ public final class Settings extends YamlConfiguration {
             getcUnrestrictedName, getRegisteredGroup, messagesLanguage, getMySQLlastlocX, getMySQLlastlocY, getMySQLlastlocZ,
             rakamakUsers, rakamakUsersIp, getmailAccount, getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName, 
             getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
-            getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged, spawnPriority, crazyloginFileName;
+            getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged, spawnPriority, crazyloginFileName,
+            getPassRegex;
 
     public static int getWarnMessageInterval, getSessionTimeout, getRegistrationTimeout, getMaxNickLength,
             getMinNickLength, getPasswordMinLen, getMovementRadius, getmaxRegPerIp, getNonActivatedGroup,
@@ -246,6 +247,7 @@ public void loadConfigOptions() {
         delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
+        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters","[a-zA-Z0-9_?!@+&-]*");
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -407,6 +409,7 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
+        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters","[a-zA-Z0-9_?!@+&-]*");
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -522,6 +525,9 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
 	    if(!contains("Converter.CrazyLogin.fileName")) {
 	        set("Converter.CrazyLogin.fileName", "accounts.db");
 	        changes = true;
+	    }
+	    if(!contains("settings.restrictions.allowedPasswordCharacters")) {
+	        set("settings.restrictions.allowedPasswordCharacters", "[a-zA-Z0-9_?!@+&-]*");
 	    }
 
 	    if (changes) {
