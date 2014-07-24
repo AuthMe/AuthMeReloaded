@@ -119,7 +119,7 @@ public class AsyncronousLogin {
 
         String hash = pAuth.getHash();
         String email = pAuth.getEmail();
-        boolean passwordVerified = true;
+        boolean passwordVerified = false;
         if (!forceLogin)
         	try {
         		passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, realName);
