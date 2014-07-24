@@ -164,7 +164,7 @@ settings:
         maxJoinPerIp: 0
         # AuthMe will NEVER teleport players !
         noTeleport: false
-        # Regex sintax for allowed Char in player name.
+        # Regex sintax for allowed Chars in passwords.
         allowedPasswordCharacters: '[a-zA-Z0-9_?!@+&-]*'
     GameMode:
         # ForceSurvivalMode to player when join ?
