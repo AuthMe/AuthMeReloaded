@@ -60,7 +60,7 @@ public final class Settings extends YamlConfiguration {
             usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword, purgeLimitedCreative,
             purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
             broadcastWelcomeMessage, forceRegKick, forceRegLogin, checkVeryGames, delayJoinMessage,
-            noTeleport;
+            noTeleport, applyBlindEffect;
  
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost, getMySQLPort, 
             getMySQLUsername, getMySQLPassword, getMySQLDatabase, getMySQLTablename, 
@@ -248,6 +248,7 @@ public void loadConfigOptions() {
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters","[a-zA-Z0-9_?!@+&-]*");
+        applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -410,6 +411,7 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters","[a-zA-Z0-9_?!@+&-]*");
+        applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -528,6 +530,11 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
 	    }
 	    if(!contains("settings.restrictions.allowedPasswordCharacters")) {
 	        set("settings.restrictions.allowedPasswordCharacters", "[a-zA-Z0-9_?!@+&-]*");
+	        changes = true;
+	    }
+	    if(!contains("settings.applyBlindEffect")) {
+	        set("settings.applyBlindEffect", false);
+	        changes = true;
 	    }
 
 	    if (changes) {

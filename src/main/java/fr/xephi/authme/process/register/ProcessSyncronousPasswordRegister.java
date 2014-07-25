@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
@@ -104,6 +105,8 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 		    player.setAllowFlight(false);
 		    player.setFlying(false);
 		}
+        if (Settings.applyBlindEffect)
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
 		// The Loginevent now fires (as intended) after everything is processed
 		Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
 		player.saveData();

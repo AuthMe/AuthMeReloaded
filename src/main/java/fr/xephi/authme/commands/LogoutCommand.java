@@ -7,6 +7,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
@@ -104,6 +106,8 @@ public class LogoutCommand implements CommandExecutor {
 	        	 player.getVehicle().eject();
         } catch (NullPointerException npe) {
         }
+        if (Settings.applyBlindEffect)
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
         m._(player, "logout");
         ConsoleLogger.info(player.getDisplayName() + " logged out");
         if(plugin.notifications != null) {

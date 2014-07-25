@@ -10,6 +10,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
@@ -108,6 +110,8 @@ public class UnregisterCommand implements CommandExecutor {
                  if(playerCache.doesCacheExist(name)) {
                         playerCache.removeCache(name);
                  }
+                 if (Settings.applyBlindEffect)
+                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
                  m._(player, "unregistered");
                  ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                  if(plugin.notifications != null) {

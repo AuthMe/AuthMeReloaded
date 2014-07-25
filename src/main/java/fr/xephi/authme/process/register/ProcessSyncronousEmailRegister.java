@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -61,6 +62,8 @@ public class ProcessSyncronousEmailRegister implements Runnable {
             player.setAllowFlight(false);
             player.setFlying(false);
         }
+        if (Settings.applyBlindEffect)
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
         player.saveData();
         if (!Settings.noConsoleSpam)
         ConsoleLogger.info(player.getName() + " registered "+plugin.getIP(player));

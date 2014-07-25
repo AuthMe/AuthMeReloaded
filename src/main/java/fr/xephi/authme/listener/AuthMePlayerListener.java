@@ -34,6 +34,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
@@ -711,6 +713,8 @@ public class AuthMePlayerListener implements Listener {
         player.setNoDamageTicks(Settings.getRegistrationTimeout * 20);
         if (Settings.useEssentialsMotd)
         	player.performCommand("motd");
+        if (Settings.applyBlindEffect)
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
         
         // Remove the join message while the player isn't logging in
         if (Settings.enableProtection || Settings.delayJoinMessage) {

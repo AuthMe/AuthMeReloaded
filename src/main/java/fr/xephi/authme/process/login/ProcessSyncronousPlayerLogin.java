@@ -5,6 +5,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
+import org.bukkit.potion.PotionEffectType;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
@@ -171,6 +172,9 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         	}
         	AuthMePlayerListener.joinMessage.remove(name);
         }
+
+        if (Settings.applyBlindEffect)
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
 
         // The Loginevent now fires (as intended) after everything is processed
         Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));

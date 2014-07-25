@@ -260,6 +260,8 @@ settings:
     broadcastWelcomeMessage: false
     # Do we need to delay the X has joined the game after /login ?
     delayJoinMessage: false
+    # Do we need to add potion effect Blinding before login/register ?
+    applyBlindEffect: false
 ExternalBoardOptions:
     # MySQL column for the salt , needed for some forum/cms support
     mySQLColumnSalt: ''
