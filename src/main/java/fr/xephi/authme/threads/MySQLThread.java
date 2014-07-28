@@ -124,7 +124,7 @@ public class MySQLThread extends Thread implements DataSource {
                     + columnName + " VARCHAR(255) NOT NULL UNIQUE,"
                     + columnPassword + " VARCHAR(255) NOT NULL,"
                     + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1',"
-                    + columnLastLogin + " BIGINT DEFAULT '0',"
+                    + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "',"
                     + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0',"
                     + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0',"
                     + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0',"

@@ -30,6 +30,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.earth2me.essentials.Essentials;
 import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
@@ -43,6 +44,7 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.commands.AdminCommand;
 import fr.xephi.authme.commands.CaptchaCommand;
 import fr.xephi.authme.commands.ChangePasswordCommand;
+import fr.xephi.authme.commands.ConverterCommand;
 import fr.xephi.authme.commands.EmailCommand;
 import fr.xephi.authme.commands.LoginCommand;
 import fr.xephi.authme.commands.LogoutCommand;
@@ -299,6 +301,7 @@ public class AuthMe extends JavaPlugin {
         this.getCommand("passpartu").setExecutor(new PasspartuCommand(this));
         this.getCommand("email").setExecutor(new EmailCommand(this, database));
         this.getCommand("captcha").setExecutor(new CaptchaCommand(this));
+        this.getCommand("converter").setExecutor(new ConverterCommand(this, database));
 
         if(!Settings.isForceSingleSessionEnabled) {
             ConsoleLogger.showError("ATTENTION by disabling ForceSingleSession, your server protection is set to low");

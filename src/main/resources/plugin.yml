@@ -35,6 +35,9 @@ commands:
     captcha:
         description: Captcha
         usage: /captcha theCaptcha
+    converter:
+        description: Converter from different other auth plugins
+        usage: /converter <datatype>
 permissions:
     authme.player.*:
         description: Gives access to all authme player commands
@@ -64,6 +67,7 @@ permissions:
              authme.admin.switchantibot: true
              authme.bypassantibot: true
              authme.admin.getip: true
+             authme.admin.converter: true
     authme.register:
         description: Register an account
         default: true
@@ -106,12 +110,6 @@ permissions:
     authme.admin.purge:
         description: AuthMe unregister command
         default: op
-    authme.admin.convertflattosql:
-        description: Convert File to Sql method
-        default: op
-    authme.admin.convertfromrakamak:
-        description: Convert from Rakamak database to AuthMe
-        default: op
     authme.admin.lastlogin:
         description: Get last login date about a player
         default: op
@@ -123,9 +121,6 @@ permissions:
         default: op
     authme.admin.accounts:
         description: Display Players Accounts
-        default: op
-    authme.admin.xauthimport:
-        description: Import xAuth Database to AuthMe Database
         default: op
     authme.captcha:
         description: Captcha
@@ -142,9 +137,6 @@ permissions:
     authme.admin.purgebannedplayers:
         description: Purge banned players
         default: op
-    authme.admin.flattosqlite:
-        description: Convert File to Sqlite method
-        default: op
     authme.bypassforcesurvival:
         description: Bypass all ForceSurvival features
         default: false
@@ -157,9 +149,6 @@ permissions:
     authme.bypassantibot:
         description: Bypass the AntiBot check
         default: op
-    authme.admin.royalauth:
-        description: Import RoyalAuth database into AuthMe
-        default: op
     authme.admin.setfirstspawn:
         description: Set the AuthMe First Spawn Point
         default: op
@@ -169,6 +158,6 @@ permissions:
     authme.admin.getip:
         description: Get IP from a player ( fake and real )
         default: op
-    authme.admin.crazyloginimport:
-        description: Import CrazyLogin database into AuthMe database
+    authme.admin.converter:
+        description: Allow /converter command
         default: op
