@@ -28,6 +28,9 @@ public class RegisterCommand implements CommandExecutor {
         	sender.sendMessage("Player Only! Use 'authme register <playername> <password>' instead");
         	return true;
         }
+        if (args.length == 0) {
+            m._(sender, "usage_reg");
+        }
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
         	m._(sender, "no_perm");
             return true;
@@ -44,11 +47,11 @@ public class RegisterCommand implements CommandExecutor {
                     return true;
         		}
         	}
-        	if(!args[0].contains("@")) {
+            final String email = args[0];
+        	if(!Settings.isEmailCorrect(email)) {
                 m._(player, "usage_reg");
                 return true;
         	}
-        	final String email = args[0];
 			RandomString rand = new RandomString(Settings.getRecoveryPassLength);
 			final String thePass = rand.nextString();
             plugin.management.performRegister(player, thePass, email);

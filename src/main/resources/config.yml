@@ -359,6 +359,9 @@ Email:
     recallPlayers: false
     # Delay in minute for the recall scheduler
     delayRecall: 5
+    # Blacklist these domain for emails
+    emailBlacklisted:
+    - 10minutemail.com
 Hooks:
     # Do we need to hook with multiverse for spawn checking?
     multiverse: true

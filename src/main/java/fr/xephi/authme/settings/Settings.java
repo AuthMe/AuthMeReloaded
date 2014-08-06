@@ -47,6 +47,7 @@ public final class Settings extends YamlConfiguration {
     public static int purgeDelay = 60;
     public static List<String> welcomeMsg = null;
     public static List<String> unsafePasswords;
+    public static List<String> emailBlacklist = null;
     
     public static Boolean isPermissionCheckEnabled, isRegistrationEnabled, isForcedRegistrationEnabled,
             isTeleportToSpawnEnabled, isSessionsEnabled, isChatAllowed, isAllowRestrictedIp, 
@@ -249,6 +250,7 @@ public void loadConfigOptions() {
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters","[a-zA-Z0-9_?!@+&-]*");
         applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
+        emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -412,6 +414,7 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters","[a-zA-Z0-9_?!@+&-]*");
         applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
+        emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -535,6 +538,9 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
 	    if(!contains("settings.applyBlindEffect")) {
 	        set("settings.applyBlindEffect", false);
 	        changes = true;
+	    }
+	    if(!contains("Email.emailBlacklisted")) {
+	        set("Email.emailBlacklisted", new ArrayList<String>());
 	    }
 
 	    if (changes) {
@@ -736,6 +742,22 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+    }
+    
+    public static boolean isEmailCorrect(String email) {
+        boolean correct = true;
+        if (!email.contains("@"))
+            correct = false;
+        if (!email.equalsIgnoreCase("your@email.com"))
+            correct = false;
+        String emailDomain = email.split("@")[1];
+        for (String domain : emailBlacklist) {
+            if (domain.equalsIgnoreCase(emailDomain)) {
+                correct = false;
+                break;
+            }
+        }
+        return correct;
     }
 
     public enum messagesLang {
