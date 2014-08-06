@@ -699,6 +699,11 @@ public class AuthMe extends JavaPlugin {
     public Location getSpawnLocation(Player player) {
     	World world = player.getWorld();
     	String[] spawnPriority = Settings.spawnPriority.split(",");
+    	if (spawnPriority.length < 4) {
+    	    ConsoleLogger.showError("Check your config for spawnPriority, you need to put all of 4 spawn priorities");
+    	    ConsoleLogger.showError("Defaulting Spawn to world's one");
+    	    return world.getSpawnLocation();
+    	}
         Location spawnLoc = world.getSpawnLocation();
         int i = 3;
         for (i = 3 ; i >= 0 ; i--) {
