@@ -49,7 +49,7 @@ public class RegisterCommand implements CommandExecutor {
         	}
             final String email = args[0];
         	if(!Settings.isEmailCorrect(email)) {
-                m._(player, "usage_reg");
+                m._(player, "email_invalid");
                 return true;
         	}
 			RandomString rand = new RandomString(Settings.getRecoveryPassLength);

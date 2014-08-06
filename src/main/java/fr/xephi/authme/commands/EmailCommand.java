@@ -71,9 +71,9 @@ public class EmailCommand implements CommandExecutor {
                 	m._(player, "usage_email_change");
                 	return true;
                 }
-                if (!args[1].contains("@")) {
-                	m._(player, "email_invalid");
-                	return true;
+                if(!Settings.isEmailCorrect(args[1])) {
+                    m._(player, "email_invalid");
+                    return true;
                 }
                 auth.setEmail(args[1]);
                 if (!data.updateEmail(auth)) {
@@ -113,9 +113,9 @@ public class EmailCommand implements CommandExecutor {
                 	m._(player, "old_email_invalid");
                 	return true;
                 }
-                if (!args[2].contains("@")) {
-                	m._(player, "new_email_invalid");
-                	return true;
+                if(!Settings.isEmailCorrect(args[2])) {
+                    m._(player, "new_email_invalid");
+                    return true;
                 }
                 auth.setEmail(args[2]);
                 if (!data.updateEmail(auth)) {
