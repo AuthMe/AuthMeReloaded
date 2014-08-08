@@ -33,13 +33,6 @@ import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.converter.Converter;
-import fr.xephi.authme.converter.CrazyLoginConverter;
-import fr.xephi.authme.converter.FlatToSql;
-import fr.xephi.authme.converter.FlatToSqlite;
-import fr.xephi.authme.converter.RakamakConverter;
-import fr.xephi.authme.converter.RoyalAuthConverter;
-import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -545,6 +538,23 @@ public class AdminCommand implements CommandExecutor {
         		sender.sendMessage("Usage : /authme getip onlinePlayerName");
         		return true;
     		}
+        } else if (args[0].equalsIgnoreCase("resetposition")) {
+            if (args.length < 2) {
+                sender.sendMessage("Usage : /authme resetPosition <playerName>");
+                return true;
+            }
+            PlayerAuth auth = database.getAuth(args[1]);
+            if (auth == null) {
+                m._(sender, "unknown_user");
+                return true;
+            }
+            auth.setQuitLocX(0D);
+            auth.setQuitLocY(0D);
+            auth.setQuitLocZ(0D);
+            auth.setWorld("world");
+            database.updateQuitLoc(auth);
+            sender.sendMessage("[AuthMe] Successfully reset position for " + auth.getNickname());
+            return true;
         } else {
             sender.sendMessage("Usage: /authme reload|register playername password|changepassword playername password|unregister playername");
         }

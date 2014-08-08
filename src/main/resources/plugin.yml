@@ -68,6 +68,7 @@ permissions:
              authme.bypassantibot: true
              authme.admin.getip: true
              authme.admin.converter: true
+             authme.admin.resetposition: true
     authme.register:
         description: Register an account
         default: true
@@ -160,4 +161,7 @@ permissions:
         default: op
     authme.admin.converter:
         description: Allow /converter command
+        default: op
+    authme.admin.resetposition:
+        description: Reset last position for a player
         default: op
