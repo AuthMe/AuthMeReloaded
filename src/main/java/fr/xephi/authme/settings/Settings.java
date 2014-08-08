@@ -57,7 +57,7 @@ public final class Settings extends YamlConfiguration {
             getEnablePasswordVerifier, protectInventoryBeforeLogInEnabled, isBackupActivated, isBackupOnStart,
             isBackupOnStop, enablePasspartu, isStopEnabled, reloadSupport, rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
             useCaptcha, emailRegistration, multiverse, notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-            disableSocialSpy, useMultiThreading, forceOnlyAfterLogin, useEssentialsMotd,
+            disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd,
             usePurge, purgePlayerDat, purgeEssentialsFile, supportOldPassword, purgeLimitedCreative,
             purgeAntiXray, purgePermissions, enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
             broadcastWelcomeMessage, forceRegKick, forceRegLogin, checkVeryGames, delayJoinMessage,
@@ -209,7 +209,6 @@ public void loadConfigOptions() {
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
-        useMultiThreading = configFile.getBoolean("Performances.useMultiThreading", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
         forceOnlyAfterLogin = configFile.getBoolean("settings.GameMode.ForceOnlyAfterLogin", false);
         useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
@@ -373,7 +372,6 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
-        useMultiThreading = configFile.getBoolean("Performances.useMultiThreading", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
         forceOnlyAfterLogin = configFile.getBoolean("settings.GameMode.ForceOnlyAfterLogin", false);
         useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
@@ -541,7 +539,10 @@ public static void reloadConfigOptions(YamlConfiguration newConfig) {
 	    }
 	    if(!contains("Email.emailBlacklisted")) {
 	        set("Email.emailBlacklisted", new ArrayList<String>());
+	        changes = true;
 	    }
+	    if (contains("Performances.useMultiThreading"))
+	        set("Performances.useMultiThreading", null);
 
 	    if (changes) {
 	        plugin.getLogger().warning("Merge new Config Options - I'm not an error, please don't report me");

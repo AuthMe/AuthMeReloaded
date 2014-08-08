@@ -1,4 +1,4 @@
-package fr.xephi.authme.threads;
+package fr.xephi.authme.datasource;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -14,7 +14,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 

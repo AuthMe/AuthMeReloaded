@@ -53,9 +53,9 @@ import fr.xephi.authme.commands.RegisterCommand;
 import fr.xephi.authme.commands.UnregisterCommand;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.FileDataSource;
-import fr.xephi.authme.datasource.MySQLDataSource;
-import fr.xephi.authme.datasource.SqliteDataSource;
+import fr.xephi.authme.datasource.FlatFileThread;
+import fr.xephi.authme.datasource.MySQLThread;
+import fr.xephi.authme.datasource.SQLiteThread;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeChestShopListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
@@ -72,9 +72,6 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import fr.xephi.authme.threads.FlatFileThread;
-import fr.xephi.authme.threads.MySQLThread;
-import fr.xephi.authme.threads.SQLiteThread;
 
 public class AuthMe extends JavaPlugin {
 
@@ -200,67 +197,22 @@ public class AuthMe extends JavaPlugin {
          */
         switch (Settings.getDataSource) {
             case FILE:
-            	if (Settings.useMultiThreading) {
-                    FlatFileThread fileThread = new FlatFileThread();
-                    fileThread.start();
-                    database = fileThread;
-                    databaseThread = fileThread;
-                    break;
-            	}
-                try {
-                    database = new FileDataSource();
-                } catch (Exception ex) {
-                    ConsoleLogger.showError(ex.getMessage());
-                    if (Settings.isStopEnabled) {
-                    	ConsoleLogger.showError("Can't use FLAT FILE... SHUTDOWN...");
-                    	server.shutdown();
-                    }
-                    if (!Settings.isStopEnabled)
-                    this.getServer().getPluginManager().disablePlugin(this);
-                    return;
-                }
+                FlatFileThread fileThread = new FlatFileThread();
+                fileThread.start();
+                database = fileThread;
+                databaseThread = fileThread;
                 break;
             case MYSQL:
-            	if (Settings.useMultiThreading) {
-                    MySQLThread sqlThread = new MySQLThread();
-                    sqlThread.start();
-                    database = sqlThread;
-                    databaseThread = sqlThread;
-                    break;
-            	}
-                try {
-                    database = new MySQLDataSource();
-                } catch (Exception ex) {
-                    ConsoleLogger.showError(ex.getMessage());
-                    if (Settings.isStopEnabled) {
-                    	ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
-                    	server.shutdown();
-                    }
-                    if (!Settings.isStopEnabled)
-                    this.getServer().getPluginManager().disablePlugin(this);
-                    return;
-                }
+                MySQLThread sqlThread = new MySQLThread();
+                sqlThread.start();
+                database = sqlThread;
+                databaseThread = sqlThread;
                 break;
             case SQLITE:
-            	if (Settings.useMultiThreading) {
-                    SQLiteThread sqliteThread = new SQLiteThread();
-                    sqliteThread.start();
-                    database = sqliteThread;
-                    databaseThread = sqliteThread;
-                    break;
-            	}
-                try {
-                     database = new SqliteDataSource();
-                } catch (Exception ex) {
-                    ConsoleLogger.showError(ex.getMessage());
-                    if (Settings.isStopEnabled) {
-                    	ConsoleLogger.showError("Can't use SQLITE... ! SHUTDOWN...");
-                    	server.shutdown();
-                    }
-                    if (!Settings.isStopEnabled)
-                    this.getServer().getPluginManager().disablePlugin(this);
-                    return;
-                }
+                SQLiteThread sqliteThread = new SQLiteThread();
+                sqliteThread.start();
+                database = sqliteThread;
+                databaseThread = sqliteThread;
                 break;
         }
 
