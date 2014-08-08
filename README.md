@@ -1,4 +1,4 @@
 AuthMeReloaded-Jenkins
 ======================
 
-Maven project from AuthMeReloaded
+AuthMeReloaded Maven project
