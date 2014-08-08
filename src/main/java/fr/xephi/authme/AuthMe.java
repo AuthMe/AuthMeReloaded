@@ -110,6 +110,7 @@ public class AuthMe extends JavaPlugin {
 	public boolean antibotMod = false;
 	public boolean delayedAntiBot = true;
 	protected static String vgUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
+	public DataManager dataManager;
 
 	public Settings getSettings() {
 		return settings;
@@ -328,6 +329,9 @@ public class AuthMe extends JavaPlugin {
         // Start Email recall task if needed
         recallEmail();
 
+        dataManager = new DataManager(this, database);
+        dataManager.start();
+
         ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
     }
 
@@ -485,7 +489,13 @@ public class AuthMe extends JavaPlugin {
         }
 
         if (databaseThread != null) {
-        	databaseThread.interrupt();
+            if (databaseThread.isAlive())
+                databaseThread.interrupt();
+        }
+
+        if (dataManager != null) {
+            if (dataManager.isAlive())
+                dataManager.interrupt();
         }
 
         if(Settings.isBackupActivated && Settings.isBackupOnStop) {
@@ -620,80 +630,13 @@ public class AuthMe extends JavaPlugin {
 		if (cleared.isEmpty())
 			return;
 		if (Settings.purgeEssentialsFile && this.ess != null)
-			purgeEssentials(cleared);
+			dataManager.purgeEssentials(cleared);
 		if (Settings.purgePlayerDat)
-			purgeDat(cleared);
+		    dataManager.purgeDat(cleared);
 		if (Settings.purgeLimitedCreative)
-			purgeLimitedCreative(cleared);
+		    dataManager.purgeLimitedCreative(cleared);
 		if (Settings.purgeAntiXray)
-			purgeAntiXray(cleared);
-	}
-
-	public void purgeAntiXray(List<String> cleared) {
-		int i = 0;
-		for (String name : cleared) {
-			org.bukkit.OfflinePlayer player = Bukkit.getOfflinePlayer(name);
-			if (player == null) continue;
-			String playerName = player.getName();
-			File playerFile = new File("." + File.separator + "plugins" + File.separator + "AntiXRayData" + File.separator + "PlayerData" + File.separator + playerName);
-			if (playerFile.exists()) {
-				playerFile.delete();
-				i++;
-			}
-		}
-		ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " AntiXRayData Files");
-	}
-
-	public void purgeLimitedCreative(List<String> cleared) {
-		int i = 0;
-		for (String name : cleared) {
-			org.bukkit.OfflinePlayer player = Bukkit.getOfflinePlayer(name);
-			if (player == null) continue;
-			String playerName = player.getName();
-			File playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + ".yml");
-			if (playerFile.exists()) {
-				playerFile.delete();
-				i++;
-			}
-			playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator +  playerName + "_creative.yml");
-			if (playerFile.exists()) {
-				playerFile.delete();
-				i++;
-			}
-			playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator +  playerName + "_adventure.yml");
-			if (playerFile.exists()) {
-				playerFile.delete();
-				i++;
-			}
-		}
-		ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " LimitedCreative Survival, Creative and Adventure files");
-	}
-
-	public void purgeDat(List<String> cleared) {
-		int i = 0;
-		for (String name : cleared) {
-			org.bukkit.OfflinePlayer player = Bukkit.getOfflinePlayer(name);
-			if (player == null) continue;
-			String playerName = player.getName();
-			File playerFile = new File (this.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + playerName + ".dat");
-			if (playerFile.exists()) {
-				playerFile.delete();
-				i++;
-			}
-		}
-		ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " .dat Files");
-	}
-
-	public void purgeEssentials(List<String> cleared) {
-		int i = 0;
-		for (String name : cleared) {
-			File playerFile = new File(this.ess.getDataFolder() + File.separator + "userdata" + File.separator + name + ".yml");
-			if (playerFile.exists()) {
-				playerFile.delete();
-				i++;
-			}
-		}
-		ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
+		    dataManager.purgeAntiXray(cleared);
 	}
 
     public Location getSpawnLocation(Player player) {

@@ -161,7 +161,7 @@ public class API {
      */
     public static String getPlayerRealName(String nickname) {
     	try {
-        	String realName = Bukkit.getOfflinePlayer(nickname).getName();
+        	String realName = instance.dataManager.getOfflinePlayer(nickname).getName();
         	if (realName != null && !realName.isEmpty())
         		return realName;
     	} catch (NullPointerException npe) {}
