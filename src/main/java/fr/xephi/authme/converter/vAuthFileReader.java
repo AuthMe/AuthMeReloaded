@@ -15,23 +15,25 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 
 public class vAuthFileReader {
-    
+
     public AuthMe plugin;
     public DataSource database;
     public CommandSender sender;
 
-    public vAuthFileReader(AuthMe plugin, DataSource database, CommandSender sender) {
+    public vAuthFileReader(AuthMe plugin, DataSource database,
+            CommandSender sender) {
         this.plugin = plugin;
         this.database = database;
         this.sender = sender;
     }
-    
+
     public void convert() throws IOException {
-        final File file = new File(plugin.getDataFolder().getParent() + "/vAuth/passwords.yml");
+        final File file = new File(plugin.getDataFolder().getParent()
+                + "/vAuth/passwords.yml");
         Scanner scanner = null;
         try {
             scanner = new Scanner(file);
-            while(scanner.hasNextLine()) {
+            while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String name = line.split(": ")[0];
                 String password = line.split(": ")[1];
@@ -39,29 +41,34 @@ public class vAuthFileReader {
                 if (isUUIDinstance(password)) {
                     String pname = null;
                     try {
-                        pname = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
+                        pname = Bukkit.getOfflinePlayer(UUID.fromString(name))
+                                .getName();
                     } catch (Exception e) {
                         pname = getName(UUID.fromString(name));
                     } catch (NoSuchMethodError e) {
                         pname = getName(UUID.fromString(name));
                     }
                     if (pname == null) continue;
-                    auth = new PlayerAuth(pname.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", pname);
+                    auth = new PlayerAuth(pname.toLowerCase(), password,
+                            "127.0.0.1", System.currentTimeMillis(),
+                            "your@email.com", pname);
                 } else {
-                    auth = new PlayerAuth(name, password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", API.getPlayerRealName(name));
+                    auth = new PlayerAuth(name, password, "127.0.0.1",
+                            System.currentTimeMillis(), "your@email.com",
+                            API.getPlayerRealName(name));
                 }
                 if (auth != null) database.saveAuth(auth);
             }
         } catch (Exception e) {
         }
-        
+
     }
-    
+
     private boolean isUUIDinstance(String s) {
         if (String.valueOf(s.charAt(8)).equalsIgnoreCase("-")) return true;
         return true;
     }
-    
+
     private String getName(UUID uuid) {
         try {
             for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {

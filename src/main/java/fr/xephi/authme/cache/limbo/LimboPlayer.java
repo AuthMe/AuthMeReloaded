@@ -17,7 +17,9 @@ public class LimboPlayer {
     private String group = "";
     private boolean flying = false;
 
-    public LimboPlayer(String name, Location loc, ItemStack[] inventory, ItemStack[] armour, GameMode gameMode, boolean operator, String group, boolean flying) {
+    public LimboPlayer(String name, Location loc, ItemStack[] inventory,
+            ItemStack[] armour, GameMode gameMode, boolean operator,
+            String group, boolean flying) {
         this.name = name;
         this.loc = loc;
         this.inventory = inventory;
@@ -28,7 +30,8 @@ public class LimboPlayer {
         this.flying = flying;
     }
 
-    public LimboPlayer(String name, Location loc, GameMode gameMode, boolean operator, String group, boolean flying) {
+    public LimboPlayer(String name, Location loc, GameMode gameMode,
+            boolean operator, String group, boolean flying) {
         this.name = name;
         this.loc = loc;
         this.gameMode = gameMode;
@@ -59,11 +62,11 @@ public class LimboPlayer {
     }
 
     public void setArmour(ItemStack[] armour) {
-    	this.armour = armour;
+        this.armour = armour;
     }
 
     public void setInventory(ItemStack[] inventory) {
-    	this.inventory = inventory;
+        this.inventory = inventory;
     }
 
     public GameMode getGameMode() {
@@ -78,24 +81,24 @@ public class LimboPlayer {
         return group;
     }
 
-	public void setTimeoutTaskId(int i) {
-		this.timeoutTaskId = i;
-	}
+    public void setTimeoutTaskId(int i) {
+        this.timeoutTaskId = i;
+    }
 
-	public int getTimeoutTaskId() {
-		return timeoutTaskId;
-	}
+    public int getTimeoutTaskId() {
+        return timeoutTaskId;
+    }
 
-	public void setMessageTaskId(int messageTaskId) {
-		this.messageTaskId = messageTaskId;
-	}
+    public void setMessageTaskId(int messageTaskId) {
+        this.messageTaskId = messageTaskId;
+    }
 
-	public int getMessageTaskId() {
-		return messageTaskId;
-	}
+    public int getMessageTaskId() {
+        return messageTaskId;
+    }
 
-	public boolean isFlying() {
-		return flying;
-	}
+    public boolean isFlying() {
+        return flying;
+    }
 
 }

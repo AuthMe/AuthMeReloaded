@@ -24,14 +24,14 @@ package fr.xephi.authme.security.pbkdf2;
  * </p>
  * <p>
  * For Details, see <a
- * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
+ * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+ * >http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
  * </p>
  * 
  * @author Matthias G&auml;rtner
  * @version 1.0
  */
-public interface PBKDF2
-{
+public interface PBKDF2 {
     /**
      * Convert String-based input to internal byte array, then invoke PBKDF2.
      * Desired key length defaults to Pseudo Random Function block size.
@@ -60,8 +60,8 @@ public interface PBKDF2
      * 
      * @param inputPassword
      *            Candidate password to compute the derived key for.
-     * @return <code>true</code> password match; <code>false</code>
-     *         incorrect password
+     * @return <code>true</code> password match; <code>false</code> incorrect
+     *         password
      */
     public abstract boolean verifyKey(String inputPassword);
 

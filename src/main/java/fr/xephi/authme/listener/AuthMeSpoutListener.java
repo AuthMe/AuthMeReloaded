@@ -10,18 +10,21 @@ import fr.xephi.authme.gui.screens.LoginScreen;
 import fr.xephi.authme.settings.SpoutCfg;
 
 public class AuthMeSpoutListener implements Listener {
-	private DataSource data;
+    private DataSource data;
 
     public AuthMeSpoutListener(DataSource data) {
-        this.data = data; 
+        this.data = data;
     }
 
-	@EventHandler
-	public void onSpoutCraftEnable(final SpoutCraftEnableEvent event) {
-		if(SpoutCfg.getInstance().getBoolean("LoginScreen.enabled")) {
-			if (data.isAuthAvailable(event.getPlayer().getName().toLowerCase()) && !PlayerCache.getInstance().isAuthenticated(event.getPlayer().getName().toLowerCase()) ) {
-				event.getPlayer().getMainScreen().attachPopupScreen(new LoginScreen(event.getPlayer()));
-			}
-		}
-	}
+    @EventHandler
+    public void onSpoutCraftEnable(final SpoutCraftEnableEvent event) {
+        if (SpoutCfg.getInstance().getBoolean("LoginScreen.enabled")) {
+            if (data.isAuthAvailable(event.getPlayer().getName().toLowerCase())
+                    && !PlayerCache.getInstance().isAuthenticated(
+                            event.getPlayer().getName().toLowerCase())) {
+                event.getPlayer().getMainScreen()
+                        .attachPopupScreen(new LoginScreen(event.getPlayer()));
+            }
+        }
+    }
 }

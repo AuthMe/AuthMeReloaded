@@ -47,7 +47,8 @@ public class WORDPRESS implements EncryptionMethod {
 
     private String crypt(String password, String setting) {
         String output = "*0";
-        if (((setting.length() < 2) ? setting : setting.substring(0, 2)).equalsIgnoreCase(output)) {
+        if (((setting.length() < 2) ? setting : setting.substring(0, 2))
+                .equalsIgnoreCase(output)) {
             output = "*1";
         }
         String id = (setting.length() < 3) ? setting : setting.substring(0, 3);
@@ -94,22 +95,24 @@ public class WORDPRESS implements EncryptionMethod {
         try {
             return string.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException("This system doesn't support UTF-8!", e);
+            throw new UnsupportedOperationException(
+                    "This system doesn't support UTF-8!", e);
         }
     }
 
     @Override
-    public String getHash(String password, String salt, String name) throws NoSuchAlgorithmException {
+    public String getHash(String password, String salt, String name)
+            throws NoSuchAlgorithmException {
         byte random[] = new byte[6];
         this.randomGen.nextBytes(random);
         return crypt(password, gensaltPrivate(stringToUtf8(new String(random))));
     }
 
-	@Override
-	public boolean comparePassword(String hash, String password,
-			String playerName) throws NoSuchAlgorithmException {
-		String comparedHash = crypt(password, hash);
-		return comparedHash.equals(hash);
-	}
+    @Override
+    public boolean comparePassword(String hash, String password,
+            String playerName) throws NoSuchAlgorithmException {
+        String comparedHash = crypt(password, hash);
+        return comparedHash.equals(hash);
+    }
 
 }

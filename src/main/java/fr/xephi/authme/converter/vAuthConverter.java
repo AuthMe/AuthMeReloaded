@@ -12,7 +12,8 @@ public class vAuthConverter implements Converter {
     public DataSource database;
     public CommandSender sender;
 
-    public vAuthConverter(AuthMe plugin, DataSource database, CommandSender sender) {
+    public vAuthConverter(AuthMe plugin, DataSource database,
+            CommandSender sender) {
         this.plugin = plugin;
         this.database = database;
         this.sender = sender;

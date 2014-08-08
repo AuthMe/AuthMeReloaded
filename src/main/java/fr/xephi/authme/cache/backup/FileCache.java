@@ -18,117 +18,122 @@ import fr.xephi.authme.api.API;
 public class FileCache {
 
     private AuthMe plugin = AuthMe.getInstance();
-	public FileCache() {
-		final File folder = new File("cache");
-		if (!folder.exists()) {
-			folder.mkdirs();
-		}
-	}
 
-	public void createCache(String playername, DataFileCache playerData, String group, boolean operator, boolean flying) {
-		final File file = new File("cache/" + playername
-				+ ".cache");
+    public FileCache() {
+        final File folder = new File("cache");
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+    }
 
-		if (file.exists()) {
-			return;
-		}
+    public void createCache(String playername, DataFileCache playerData,
+            String group, boolean operator, boolean flying) {
+        final File file = new File("cache/" + playername + ".cache");
 
-		FileWriter writer = null;
-		try {
-			file.createNewFile();
+        if (file.exists()) {
+            return;
+        }
 
-			writer = new FileWriter(file);
+        FileWriter writer = null;
+        try {
+            file.createNewFile();
 
-			String s = group+";";
-			if (operator)
-				s = s + "1";
-			else s = s + "0";
+            writer = new FileWriter(file);
 
-			// line format Group|OperatorStatus|isFlying
-			if(flying)
-				writer.write(s+";1" + API.newline);
-			else writer.write(s+";0" + API.newline);
-			writer.flush();
+            String s = group + ";";
+            if (operator) s = s + "1";
+            else s = s + "0";
 
-			ItemStack[] invstack = playerData.getInventory();
+            // line format Group|OperatorStatus|isFlying
+            if (flying) writer.write(s + ";1" + API.newline);
+            else writer.write(s + ";0" + API.newline);
+            writer.flush();
 
-			for (int i = 0; i < invstack.length; i++) {
+            ItemStack[] invstack = playerData.getInventory();
 
-				String itemid = "AIR";
-				int amount = 0;
-				int durability = 0;
-				String enchList = "";
-				String name = "";
-				String lores = "";
-				if (invstack[i] != null) {
-					itemid = invstack[i].getType().name();
-					amount = invstack[i].getAmount();
-					durability = invstack[i].getDurability();
-					for(Enchantment e : invstack[i].getEnchantments().keySet()) {
-						enchList = enchList.concat(e.getName()+":"+invstack[i].getEnchantmentLevel(e)+":");
-					}
-					if (enchList.length() > 1)
-						enchList = enchList.substring(0, enchList.length() - 1);
-					if (invstack[i].hasItemMeta()) {
-						if (invstack[i].getItemMeta().hasDisplayName()) {
-							name = invstack[i].getItemMeta().getDisplayName();
-						}
-						if (invstack[i].getItemMeta().hasLore()) {
-							for (String lore : invstack[i].getItemMeta().getLore()) {
-								lores = lore + "%newline%";
-							}
-						}
-					}
-				}
-				String writeItem = "i" + ":" + itemid + ":" + amount + ":"
-				+ durability + ":"+ enchList + ";" + name + "\\*" + lores + "\r\n";
-				writer.write(writeItem);
-				writer.flush();
-			}
+            for (int i = 0; i < invstack.length; i++) {
 
-			ItemStack[] armorstack = playerData.getArmour();
+                String itemid = "AIR";
+                int amount = 0;
+                int durability = 0;
+                String enchList = "";
+                String name = "";
+                String lores = "";
+                if (invstack[i] != null) {
+                    itemid = invstack[i].getType().name();
+                    amount = invstack[i].getAmount();
+                    durability = invstack[i].getDurability();
+                    for (Enchantment e : invstack[i].getEnchantments().keySet()) {
+                        enchList = enchList.concat(e.getName() + ":"
+                                + invstack[i].getEnchantmentLevel(e) + ":");
+                    }
+                    if (enchList.length() > 1) enchList = enchList.substring(0,
+                            enchList.length() - 1);
+                    if (invstack[i].hasItemMeta()) {
+                        if (invstack[i].getItemMeta().hasDisplayName()) {
+                            name = invstack[i].getItemMeta().getDisplayName();
+                        }
+                        if (invstack[i].getItemMeta().hasLore()) {
+                            for (String lore : invstack[i].getItemMeta()
+                                    .getLore()) {
+                                lores = lore + "%newline%";
+                            }
+                        }
+                    }
+                }
+                String writeItem = "i" + ":" + itemid + ":" + amount + ":"
+                        + durability + ":" + enchList + ";" + name + "\\*"
+                        + lores + "\r\n";
+                writer.write(writeItem);
+                writer.flush();
+            }
 
-			for (int i = 0; i < armorstack.length; i++) {
-				String itemid = "AIR";
-				int amount = 0;
-				int durability = 0;
-				String enchList = "";
-				String name = "";
-				String lores = "";
-				if (armorstack[i] != null) {
-					itemid = armorstack[i].getType().name();
-					amount = armorstack[i].getAmount();
-					durability = armorstack[i].getDurability();
-					for(Enchantment e : armorstack[i].getEnchantments().keySet()) {
-						enchList = enchList.concat(e.getName()+":"+armorstack[i].getEnchantmentLevel(e)+":");
-					}
-					if (enchList.length() > 1)
-						enchList = enchList.substring(0, enchList.length() - 1);
-					if (armorstack[i].hasItemMeta()) {
-						if (armorstack[i].getItemMeta().hasDisplayName()) {
-							name = armorstack[i].getItemMeta().getDisplayName();
-						}
-						if (armorstack[i].getItemMeta().hasLore()) {
-							for (String lore : armorstack[i].getItemMeta().getLore()) {
-								lores = lore + "%newline%";
-							}
-						}
-					}
-				}
-				String writeItem = "w" + ":" + itemid + ":" + amount + ":"
-				+ durability + ":"+ enchList + ";" + name + "\\*" + lores + "\r\n";
-				writer.write(writeItem);
-				writer.flush();
-			}
-			writer.close();
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-	}
+            ItemStack[] armorstack = playerData.getArmour();
 
-	public DataFileCache readCache(String playername) {
-		final File file = new File("cache/" + playername
-				+ ".cache");
+            for (int i = 0; i < armorstack.length; i++) {
+                String itemid = "AIR";
+                int amount = 0;
+                int durability = 0;
+                String enchList = "";
+                String name = "";
+                String lores = "";
+                if (armorstack[i] != null) {
+                    itemid = armorstack[i].getType().name();
+                    amount = armorstack[i].getAmount();
+                    durability = armorstack[i].getDurability();
+                    for (Enchantment e : armorstack[i].getEnchantments()
+                            .keySet()) {
+                        enchList = enchList.concat(e.getName() + ":"
+                                + armorstack[i].getEnchantmentLevel(e) + ":");
+                    }
+                    if (enchList.length() > 1) enchList = enchList.substring(0,
+                            enchList.length() - 1);
+                    if (armorstack[i].hasItemMeta()) {
+                        if (armorstack[i].getItemMeta().hasDisplayName()) {
+                            name = armorstack[i].getItemMeta().getDisplayName();
+                        }
+                        if (armorstack[i].getItemMeta().hasLore()) {
+                            for (String lore : armorstack[i].getItemMeta()
+                                    .getLore()) {
+                                lores = lore + "%newline%";
+                            }
+                        }
+                    }
+                }
+                String writeItem = "w" + ":" + itemid + ":" + amount + ":"
+                        + durability + ":" + enchList + ";" + name + "\\*"
+                        + lores + "\r\n";
+                writer.write(writeItem);
+                writer.flush();
+            }
+            writer.close();
+        } catch (final Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public DataFileCache readCache(String playername) {
+        final File file = new File("cache/" + playername + ".cache");
 
         ItemStack[] stacki = new ItemStack[36];
         ItemStack[] stacka = new ItemStack[4];
@@ -149,20 +154,20 @@ public class FileCache {
                 String line = reader.nextLine();
 
                 if (!line.contains(":")) {
-                                   // the fist line represent the player group, operator status and flying status
-                                    final String[] playerInfo = line.split(";");
-                                    group = playerInfo[0];
+                    // the fist line represent the player group, operator status
+                    // and flying status
+                    final String[] playerInfo = line.split(";");
+                    group = playerInfo[0];
 
-                                        if (Integer.parseInt(playerInfo[1]) == 1) {
-                                            op = true;
-                                        } else op = false;
-                                        if (playerInfo.length > 2) {
-                                            if (Integer.parseInt(playerInfo[2]) == 1)
-                                                flying = true;
-                                            else flying = false;
-                                        }
+                    if (Integer.parseInt(playerInfo[1]) == 1) {
+                        op = true;
+                    } else op = false;
+                    if (playerInfo.length > 2) {
+                        if (Integer.parseInt(playerInfo[2]) == 1) flying = true;
+                        else flying = false;
+                    }
 
-                                    continue;
+                    continue;
                 }
 
                 if (!line.startsWith("i") && !line.startsWith("w")) {
@@ -179,18 +184,22 @@ public class FileCache {
                     line = line.split(";")[0];
                 }
                 final String[] in = line.split(":");
-                // can enchant item? size ofstring in file - 4  all / 2 = number of enchant
+                // can enchant item? size ofstring in file - 4 all / 2 = number
+                // of enchant
                 if (in[0].equals("i")) {
                     stacki[i] = new ItemStack(Material.getMaterial(in[1]),
-                    Integer.parseInt(in[2]), Short.parseShort((in[3])));
-                    if(in.length > 4 && !in[4].isEmpty()) {
-                        for(int k=4;k<in.length-1;k++) {
-                            stacki[i].addUnsafeEnchantment(Enchantment.getByName(in[k]) ,Integer.parseInt(in[k+1]));
+                            Integer.parseInt(in[2]), Short.parseShort((in[3])));
+                    if (in.length > 4 && !in[4].isEmpty()) {
+                        for (int k = 4; k < in.length - 1; k++) {
+                            stacki[i].addUnsafeEnchantment(
+                                    Enchantment.getByName(in[k]),
+                                    Integer.parseInt(in[k + 1]));
                             k++;
                         }
                     }
                     try {
-                        ItemMeta meta = plugin.getServer().getItemFactory().getItemMeta(stacki[i].getType());
+                        ItemMeta meta = plugin.getServer().getItemFactory()
+                                .getItemMeta(stacki[i].getType());
                         if (!name.isEmpty()) {
                             meta.setDisplayName(name);
                         }
@@ -201,23 +210,25 @@ public class FileCache {
                             }
                             meta.setLore(loreList);
                         }
-                        if (meta != null)
-                            stacki[i].setItemMeta(meta);
-                    } catch (Exception e) {}
+                        if (meta != null) stacki[i].setItemMeta(meta);
+                    } catch (Exception e) {
+                    }
                     i++;
                 } else {
                     stacka[a] = new ItemStack(Material.getMaterial(in[1]),
                             Integer.parseInt(in[2]), Short.parseShort((in[3])));
-                    if(in.length > 4 && !in[4].isEmpty()) {
-                        for(int k=4;k<in.length-1;k++) {
-                            stacka[a].addUnsafeEnchantment(Enchantment.getByName(in[k]) ,Integer.parseInt(in[k+1]));
+                    if (in.length > 4 && !in[4].isEmpty()) {
+                        for (int k = 4; k < in.length - 1; k++) {
+                            stacka[a].addUnsafeEnchantment(
+                                    Enchantment.getByName(in[k]),
+                                    Integer.parseInt(in[k + 1]));
                             k++;
                         }
                     }
                     try {
-                        ItemMeta meta = plugin.getServer().getItemFactory().getItemMeta(stacka[a].getType());
-                        if (!name.isEmpty())
-                            meta.setDisplayName(name);
+                        ItemMeta meta = plugin.getServer().getItemFactory()
+                                .getItemMeta(stacka[a].getType());
+                        if (!name.isEmpty()) meta.setDisplayName(name);
                         if (!lores.isEmpty()) {
                             List<String> loreList = new ArrayList<String>();
                             for (String s : lores.split("%newline%")) {
@@ -225,9 +236,9 @@ public class FileCache {
                             }
                             meta.setLore(loreList);
                         }
-                        if (meta != null)
-                            stacki[i].setItemMeta(meta);
-                    } catch (Exception e) {}
+                        if (meta != null) stacki[i].setItemMeta(meta);
+                    } catch (Exception e) {
+                    }
                     a++;
                 }
             }
@@ -239,25 +250,23 @@ public class FileCache {
             }
         }
         return new DataFileCache(stacki, stacka, group, op, flying);
-	}
+    }
 
-	public void removeCache(String playername) {
-		final File file = new File("cache/" + playername
-				+ ".cache");
+    public void removeCache(String playername) {
+        final File file = new File("cache/" + playername + ".cache");
 
-		if (file.exists()) {
-			file.delete();
-		}
-	}
+        if (file.exists()) {
+            file.delete();
+        }
+    }
 
-	public boolean doesCacheExist(String playername) {
-		final File file = new File("cache/" + playername
-				+ ".cache");
+    public boolean doesCacheExist(String playername) {
+        final File file = new File("cache/" + playername + ".cache");
 
-		if (file.exists()) {
-			return true;
-		}
-		return false;
-	}
+        if (file.exists()) {
+            return true;
+        }
+        return false;
+    }
 
 }

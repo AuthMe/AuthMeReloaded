@@ -12,7 +12,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Settings;
 
-
 public class AuthMeBlockListener implements Listener {
 
     private DataSource data;
@@ -32,7 +31,7 @@ public class AuthMeBlockListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if(Utils.getInstance().isUnrestricted(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
@@ -57,11 +56,12 @@ public class AuthMeBlockListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if(Utils.getInstance().isUnrestricted(player)) {
+        if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(
+                player.getName().toLowerCase())) {
             return;
         }
 

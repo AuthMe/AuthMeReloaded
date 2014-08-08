@@ -12,8 +12,6 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Messages;
 
-
-
 public class TimeoutTask implements Runnable {
 
     private JavaPlugin plugin;
@@ -32,22 +30,25 @@ public class TimeoutTask implements Runnable {
 
     @Override
     public void run() {
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
+        if (PlayerCache.getInstance().isAuthenticated(name)) return;
 
         for (Player player : plugin.getServer().getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
                 if (LimboCache.getInstance().hasLimboPlayer(name)) {
-                    LimboPlayer inv = LimboCache.getInstance().getLimboPlayer(name);
-                    player.getServer().getScheduler().cancelTask(inv.getMessageTaskId());
-                    player.getServer().getScheduler().cancelTask(inv.getTimeoutTaskId());
-                    if(playerCache.doesCacheExist(name)) {
+                    LimboPlayer inv = LimboCache.getInstance().getLimboPlayer(
+                            name);
+                    player.getServer().getScheduler()
+                            .cancelTask(inv.getMessageTaskId());
+                    player.getServer().getScheduler()
+                            .cancelTask(inv.getTimeoutTaskId());
+                    if (playerCache.doesCacheExist(name)) {
                         playerCache.removeCache(name);
-                    } 
-                } 
+                    }
+                }
                 GameMode gm = AuthMePlayerListener.gameMode.get(name);
-            	player.setGameMode(gm);
-            	ConsoleLogger.info("Set " + player.getName() + " to gamemode: " + gm.name());
+                player.setGameMode(gm);
+                ConsoleLogger.info("Set " + player.getName() + " to gamemode: "
+                        + gm.name());
                 player.kickPlayer(m._("timeout")[0]);
                 break;
             }

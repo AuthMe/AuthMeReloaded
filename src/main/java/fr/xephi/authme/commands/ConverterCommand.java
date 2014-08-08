@@ -18,7 +18,6 @@ import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Messages;
 
-
 public class ConverterCommand implements CommandExecutor {
 
     private AuthMe plugin;
@@ -26,12 +25,13 @@ public class ConverterCommand implements CommandExecutor {
     private DataSource database;
 
     public ConverterCommand(AuthMe plugin, DataSource database) {
-    	this.plugin = plugin;
-    	this.database = database;
+        this.plugin = plugin;
+        this.database = database;
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmnd, String label, final String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmnd, String label,
+            final String[] args) {
         if (!(sender instanceof Player)) {
             return true;
         }
@@ -45,7 +45,7 @@ public class ConverterCommand implements CommandExecutor {
             sender.sendMessage("Usage : /converter flattosql | flattosqlite | xauth | crazylogin | rakamak | royalauth | vauth");
             return true;
         }
-        
+
         ConvertType type = ConvertType.valueOf(args[0]);
         if (type == null) {
             m._(sender, "error");
@@ -53,7 +53,7 @@ public class ConverterCommand implements CommandExecutor {
         }
         Converter converter = null;
         switch (type) {
-            case ftsql: 
+            case ftsql:
                 converter = new FlatToSql();
                 break;
             case ftsqlite:
@@ -74,7 +74,8 @@ public class ConverterCommand implements CommandExecutor {
             case vauth:
                 converter = new vAuthConverter(plugin, database, sender);
                 break;
-            default: break;
+            default:
+                break;
         }
         if (converter == null) {
             m._(sender, "error");
@@ -84,27 +85,23 @@ public class ConverterCommand implements CommandExecutor {
         sender.sendMessage("[AuthMe] Successfully converted from " + args[0]);
         return true;
     }
-    
+
     public enum ConvertType {
 
-        ftsql("flattosql"),
-        ftsqlite("flattosqlite"),
-        xauth("xauth"),
-        crazylogin("crazylogin"),
-        rakamak("rakamak"),
-        royalauth("royalauth"),
-        vauth("vauth");
-        
+        ftsql("flattosql"), ftsqlite("flattosqlite"), xauth("xauth"), crazylogin(
+                "crazylogin"), rakamak("rakamak"), royalauth("royalauth"), vauth(
+                "vauth");
+
         String name;
-        
+
         ConvertType(String name) {
             this.name = name;
         }
-        
+
         String getName() {
             return this.name;
         }
-        
+
         ConvertType fromName(String name) {
             return ConvertType.valueOf(name);
         }

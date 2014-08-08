@@ -9,25 +9,25 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 /**
-*
-* @author Xephi59
-*/
+ *
+ * @author Xephi59
+ */
 public class OtherAccounts extends CustomConfiguration {
-	private static OtherAccounts others = null;
+    private static OtherAccounts others = null;
 
-	public OtherAccounts() {
-		super(new File("./plugins/AuthMe/otheraccounts.yml"));
-		others = this;
-		load();
-		save();
-	}
+    public OtherAccounts() {
+        super(new File("./plugins/AuthMe/otheraccounts.yml"));
+        others = this;
+        load();
+        save();
+    }
 
-	public void clear(UUID uuid) {
-		set(uuid.toString(), new ArrayList<String>());
-		save();
-	}
+    public void clear(UUID uuid) {
+        set(uuid.toString(), new ArrayList<String>());
+        save();
+    }
 
-	public static OtherAccounts getInstance() {
+    public static OtherAccounts getInstance() {
         if (others == null) {
             others = new OtherAccounts();
         }
@@ -35,33 +35,33 @@ public class OtherAccounts extends CustomConfiguration {
     }
 
     public void addPlayer(UUID uuid) {
-    	try {
-        	Player player = Bukkit.getPlayer(uuid);
-        	if (player == null) return;
-        	if (!this.getStringList(uuid.toString()).contains(player.getName())) {
-        		this.getStringList(uuid.toString()).add(player.getName());
-        		save();
-        	}
-    	} catch (NoSuchMethodError e) {
-    	} catch (Exception e) {
-    	}
+        try {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) return;
+            if (!this.getStringList(uuid.toString()).contains(player.getName())) {
+                this.getStringList(uuid.toString()).add(player.getName());
+                save();
+            }
+        } catch (NoSuchMethodError e) {
+        } catch (Exception e) {
+        }
     }
 
-	public void removePlayer(UUID uuid) {
-		try {
-			Player player = Bukkit.getPlayer(uuid);
-			if (player == null) return;
-			if (this.getStringList(uuid.toString()).contains(player.getName())) {
-				this.getStringList(uuid.toString()).remove(player.getName());
-				save();
-			}
-    	} catch (NoSuchMethodError e) {
-    	} catch (Exception e) {
-    	}
+    public void removePlayer(UUID uuid) {
+        try {
+            Player player = Bukkit.getPlayer(uuid);
+            if (player == null) return;
+            if (this.getStringList(uuid.toString()).contains(player.getName())) {
+                this.getStringList(uuid.toString()).remove(player.getName());
+                save();
+            }
+        } catch (NoSuchMethodError e) {
+        } catch (Exception e) {
+        }
 
-	}
-	
-	public List<String> getAllPlayersByUUID(UUID uuid) {
-		return this.getStringList(uuid.toString());
-	}
+    }
+
+    public List<String> getAllPlayersByUUID(UUID uuid) {
+        return this.getStringList(uuid.toString());
+    }
 }

@@ -29,14 +29,14 @@ package fr.xephi.authme.security.pbkdf2;
  * </p>
  * <p>
  * For Details, see <a
- * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
+ * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+ * >http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
  * </p>
  * 
  * @author Matthias G&auml;rtner
  * @version 1.0
  */
-public class PBKDF2Parameters
-{
+public class PBKDF2Parameters {
     protected byte[] salt;
 
     protected int iterationCount;
@@ -56,8 +56,7 @@ public class PBKDF2Parameters
      * character set and 1000 for iteration count.
      * 
      */
-    public PBKDF2Parameters()
-    {
+    public PBKDF2Parameters() {
         this.hashAlgorithm = null;
         this.hashCharset = "UTF-8";
         this.salt = null;
@@ -73,14 +72,12 @@ public class PBKDF2Parameters
      * @param hashCharset
      *            for example UTF-8
      * @param salt
-     *            Salt as byte array, may be <code>null</code> (not
-     *            recommended)
+     *            Salt as byte array, may be <code>null</code> (not recommended)
      * @param iterationCount
      *            Number of iterations to execute. Recommended value 1000.
      */
     public PBKDF2Parameters(String hashAlgorithm, String hashCharset,
-            byte[] salt, int iterationCount)
-    {
+            byte[] salt, int iterationCount) {
         this.hashAlgorithm = hashAlgorithm;
         this.hashCharset = hashCharset;
         this.salt = salt;
@@ -96,16 +93,14 @@ public class PBKDF2Parameters
      * @param hashCharset
      *            for example UTF-8
      * @param salt
-     *            Salt as byte array, may be <code>null</code> (not
-     *            recommended)
+     *            Salt as byte array, may be <code>null</code> (not recommended)
      * @param iterationCount
      *            Number of iterations to execute. Recommended value 1000.
      * @param derivedKey
      *            Convenience data holder, not used during computation.
      */
     public PBKDF2Parameters(String hashAlgorithm, String hashCharset,
-            byte[] salt, int iterationCount, byte[] derivedKey)
-    {
+            byte[] salt, int iterationCount, byte[] derivedKey) {
         this.hashAlgorithm = hashAlgorithm;
         this.hashCharset = hashCharset;
         this.salt = salt;
@@ -113,53 +108,43 @@ public class PBKDF2Parameters
         this.derivedKey = derivedKey;
     }
 
-    public int getIterationCount()
-    {
+    public int getIterationCount() {
         return iterationCount;
     }
 
-    public void setIterationCount(int iterationCount)
-    {
+    public void setIterationCount(int iterationCount) {
         this.iterationCount = iterationCount;
     }
 
-    public byte[] getSalt()
-    {
+    public byte[] getSalt() {
         return salt;
     }
 
-    public void setSalt(byte[] salt)
-    {
+    public void setSalt(byte[] salt) {
         this.salt = salt;
     }
 
-    public byte[] getDerivedKey()
-    {
+    public byte[] getDerivedKey() {
         return derivedKey;
     }
 
-    public void setDerivedKey(byte[] derivedKey)
-    {
+    public void setDerivedKey(byte[] derivedKey) {
         this.derivedKey = derivedKey;
     }
 
-    public String getHashAlgorithm()
-    {
+    public String getHashAlgorithm() {
         return hashAlgorithm;
     }
 
-    public void setHashAlgorithm(String hashAlgorithm)
-    {
+    public void setHashAlgorithm(String hashAlgorithm) {
         this.hashAlgorithm = hashAlgorithm;
     }
 
-    public String getHashCharset()
-    {
+    public String getHashCharset() {
         return hashCharset;
     }
 
-    public void setHashCharset(String hashCharset)
-    {
+    public void setHashCharset(String hashCharset) {
         this.hashCharset = hashCharset;
     }
 }

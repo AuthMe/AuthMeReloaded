@@ -15,31 +15,33 @@ import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 
-
 public class API {
 
-	public static final String newline = System.getProperty("line.separator");
-	public static AuthMe instance;
-	public static DataSource database;
+    public static final String newline = System.getProperty("line.separator");
+    public static AuthMe instance;
+    public static DataSource database;
 
-	public API(AuthMe instance, DataSource database) {
-		API.instance = instance;
-		API.database = database;
-	}
-	/**
-	 * Hook into AuthMe
-	 * @return AuthMe instance
-	 */
+    public API(AuthMe instance, DataSource database) {
+        API.instance = instance;
+        API.database = database;
+    }
+
+    /**
+     * Hook into AuthMe
+     * 
+     * @return AuthMe instance
+     */
     public static AuthMe hookAuthMe() {
-    	Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
+        Plugin plugin = Bukkit.getServer().getPluginManager()
+                .getPlugin("AuthMe");
         if (plugin == null || !(plugin instanceof AuthMe)) {
-        	return null;
-         }
-    	return (AuthMe) plugin;
+            return null;
+        }
+        return (AuthMe) plugin;
     }
 
     public AuthMe getPlugin() {
-    	return instance;
+        return instance;
     }
 
     /**
@@ -48,7 +50,8 @@ public class API {
      * @return true if player is authenticate
      */
     public static boolean isAuthenticated(Player player) {
-    	return PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase());
+        return PlayerCache.getInstance().isAuthenticated(
+                player.getName().toLowerCase());
     }
 
     /**
@@ -58,9 +61,8 @@ public class API {
      */
     @Deprecated
     public boolean isaNPC(Player player) {
-    	if (instance.getCitizensCommunicator().isNPC(player, instance))
-    		return true;
-    	return CombatTagComunicator.isNPC(player);
+        if (instance.getCitizensCommunicator().isNPC(player, instance)) return true;
+        return CombatTagComunicator.isNPC(player);
     }
 
     /**
@@ -69,9 +71,8 @@ public class API {
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
-    	if (instance.getCitizensCommunicator().isNPC(player, instance))
-    		return true;
-    	return CombatTagComunicator.isNPC(player);
+        if (instance.getCitizensCommunicator().isNPC(player, instance)) return true;
+        return CombatTagComunicator.isNPC(player);
     }
 
     /**
@@ -80,31 +81,35 @@ public class API {
      * @return true if the player is unrestricted
      */
     public static boolean isUnrestricted(Player player) {
-    	return Utils.getInstance().isUnrestricted(player);
+        return Utils.getInstance().isUnrestricted(player);
     }
 
     public static Location getLastLocation(Player player) {
-    	try {
-    		PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
-        	
-        	if (auth != null) {
-        		Location loc = new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY() , auth.getQuitLocZ());
-        		return loc;
-        	} else {
-        		return null;
-        	}
-        	
-    	} catch (NullPointerException ex) {
-    		return null;
-    	}
+        try {
+            PlayerAuth auth = PlayerCache.getInstance().getAuth(
+                    player.getName().toLowerCase());
+
+            if (auth != null) {
+                Location loc = new Location(Bukkit.getWorld(auth.getWorld()),
+                        auth.getQuitLocX(), auth.getQuitLocY(),
+                        auth.getQuitLocZ());
+                return loc;
+            } else {
+                return null;
+            }
+
+        } catch (NullPointerException ex) {
+            return null;
+        }
     }
 
-    public static void setPlayerInventory(Player player, ItemStack[] content, ItemStack[] armor) {
-    	try {
-        	player.getInventory().setContents(content);
-        	player.getInventory().setArmorContents(armor);
-    	} catch (NullPointerException npe) {
-    	}
+    public static void setPlayerInventory(Player player, ItemStack[] content,
+            ItemStack[] armor) {
+        try {
+            player.getInventory().setContents(content);
+            player.getInventory().setArmorContents(armor);
+        } catch (NullPointerException npe) {
+        }
     }
 
     /**
@@ -113,67 +118,78 @@ public class API {
      * @return true if player is registered
      */
     public static boolean isRegistered(String playerName) {
-    	String player = playerName.toLowerCase();
-    	return database.isAuthAvailable(player);
+        String player = playerName.toLowerCase();
+        return database.isAuthAvailable(player);
     }
 
     /**
-     * @param String playerName, String passwordToCheck
+     * @param String
+     *            playerName, String passwordToCheck
      * @return true if the password is correct , false else
      */
-    public static boolean checkPassword(String playerName, String passwordToCheck) {
-    	if (!isRegistered(playerName)) return false;
-    	String player = playerName.toLowerCase();
-    	PlayerAuth auth = database.getAuth(player);
-    	try {
-			return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), playerName);
-		} catch (NoSuchAlgorithmException e) {
-			return false;
-		}
+    public static boolean checkPassword(String playerName,
+            String passwordToCheck) {
+        if (!isRegistered(playerName)) return false;
+        String player = playerName.toLowerCase();
+        PlayerAuth auth = database.getAuth(player);
+        try {
+            return PasswordSecurity.comparePasswordWithHash(passwordToCheck,
+                    auth.getHash(), playerName);
+        } catch (NoSuchAlgorithmException e) {
+            return false;
+        }
     }
 
     /**
      * Register a player
-     * @param String playerName, String password
+     * 
+     * @param String
+     *            playerName, String password
      * @return true if the player is register correctly
      */
     public static boolean registerPlayer(String playerName, String password) {
         try {
             String name = playerName.toLowerCase();
-            String hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
+            String hash = PasswordSecurity.getHash(Settings.getPasswordHash,
+                    password, name);
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com", getPlayerRealName(name));
+            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0,
+                    "your@email.com", getPlayerRealName(name));
             if (!database.saveAuth(auth)) {
-            	return false;
+                return false;
             }
             return true;
         } catch (NoSuchAlgorithmException ex) {
-        	return false;
+            return false;
         }
     }
 
     /**
      * Get Player realName from lowerCase nickname
-     * @param String playerName
-     * return String player real name
+     * 
+     * @param String
+     *            playerName return String player real name
      */
     public static String getPlayerRealName(String nickname) {
-    	try {
-        	String realName = instance.dataManager.getOfflinePlayer(nickname).getName();
-        	if (realName != null && !realName.isEmpty())
-        		return realName;
-    	} catch (NullPointerException npe) {}
-    	return nickname;
+        try {
+            String realName = instance.dataManager.getOfflinePlayer(nickname)
+                    .getName();
+            if (realName != null && !realName.isEmpty()) return realName;
+        } catch (NullPointerException npe) {
+        }
+        return nickname;
     }
 
     /**
      * Force a player to login
-     * @param Player player
+     * 
+     * @param Player
+     *            player
      */
     public static void forceLogin(Player player) {
-    	instance.management.performLogin(player, "dontneed", true);
+        instance.management.performLogin(player, "dontneed", true);
     }
 
 }

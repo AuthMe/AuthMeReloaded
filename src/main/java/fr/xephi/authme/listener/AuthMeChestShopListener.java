@@ -14,16 +14,15 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Settings;
 
-
 public class AuthMeChestShopListener implements Listener {
 
-	public DataSource database;
-	public AuthMe plugin;
+    public DataSource database;
+    public AuthMe plugin;
 
-	public AuthMeChestShopListener(DataSource database, AuthMe plugin) {
-		this.database = database;
-		this.plugin = plugin;
-	}
+    public AuthMeChestShopListener(DataSource database, AuthMe plugin) {
+        this.database = database;
+        this.plugin = plugin;
+    }
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPreTransaction(PreTransactionEvent event) {

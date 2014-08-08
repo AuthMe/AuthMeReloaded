@@ -18,8 +18,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Settings;
 
-
-public class AuthMeEntityListener implements Listener{
+public class AuthMeEntityListener implements Listener {
 
     private DataSource data;
     public AuthMe instance;
@@ -35,23 +34,21 @@ public class AuthMeEntityListener implements Listener{
             return;
         }
         Entity entity = event.getEntity();
- 
+
         if (!(entity instanceof Player)) {
             return;
         }
 
-        if(Utils.getInstance().isUnrestricted((Player)entity)) {
+        if (Utils.getInstance().isUnrestricted((Player) entity)) {
             return;
         }
-        
-        if(instance.citizens.isNPC(entity, instance))
-        	return;
+
+        if (instance.citizens.isNPC(entity, instance)) return;
 
         Player player = (Player) entity;
         String name = player.getName().toLowerCase();
-        
-        if(CombatTagComunicator.isNPC(player))
-        	return;
+
+        if (CombatTagComunicator.isNPC(player)) return;
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
@@ -76,9 +73,8 @@ public class AuthMeEntityListener implements Listener{
         if (!(entity instanceof Player)) {
             return;
         }
-        
-        if(instance.citizens.isNPC(entity, instance))
-        	return;
+
+        if (instance.citizens.isNPC(entity, instance)) return;
 
         Player player = (Player) entity;
         String name = player.getName().toLowerCase();
@@ -106,9 +102,8 @@ public class AuthMeEntityListener implements Listener{
         if (!(entity instanceof Player)) {
             return;
         }
-        
-        if(instance.citizens.isNPC(entity, instance))
-        	return;
+
+        if (instance.citizens.isNPC(entity, instance)) return;
 
         Player player = (Player) entity;
         String name = player.getName().toLowerCase();
@@ -126,7 +121,7 @@ public class AuthMeEntityListener implements Listener{
         event.setCancelled(true);
 
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void EntityRegainHealthEvent(EntityRegainHealthEvent event) {
         if (event.isCancelled()) {
@@ -137,9 +132,8 @@ public class AuthMeEntityListener implements Listener{
         if (!(entity instanceof Player)) {
             return;
         }
-        
-        if(instance.citizens.isNPC(entity, instance))
-        	return;
+
+        if (instance.citizens.isNPC(entity, instance)) return;
 
         Player player = (Player) entity;
         String name = player.getName().toLowerCase();
@@ -154,30 +148,31 @@ public class AuthMeEntityListener implements Listener{
             }
         }
 
-        event.setCancelled(true);       
+        event.setCancelled(true);
     }
- 
-    @EventHandler (priority = EventPriority.MONITOR)
-    public void onEntityInteract(EntityInteractEvent event) {
-    	if (event.isCancelled() || event == null) {
-    		return;
-    	}
 
-    	if (!(event.getEntity() instanceof Player)) {
-    		return;
-    	}
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onEntityInteract(EntityInteractEvent event) {
+        if (event.isCancelled() || event == null) {
+            return;
+        }
+
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
 
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)
+                || CombatTagComunicator.isNPC(player)) {
             return;
         }
 
-        if(instance.citizens.isNPC(player, instance))
-        	return;
+        if (instance.citizens.isNPC(player, instance)) return;
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(
+                player.getName().toLowerCase())) {
             return;
         }
 
@@ -189,27 +184,28 @@ public class AuthMeEntityListener implements Listener{
         event.setCancelled(true);
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onLowestEntityInteract(EntityInteractEvent event) {
-    	if (event.isCancelled() || event == null) {
-    		return;
-    	}
+        if (event.isCancelled() || event == null) {
+            return;
+        }
 
-    	if (!(event.getEntity() instanceof Player)) {
-    		return;
-    	}
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
 
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.getInstance().isUnrestricted(player)
+                || CombatTagComunicator.isNPC(player)) {
             return;
         }
-        
-        if(instance.citizens.isNPC(player, instance))
-        	return;
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (instance.citizens.isNPC(player, instance)) return;
+
+        if (PlayerCache.getInstance().isAuthenticated(
+                player.getName().toLowerCase())) {
             return;
         }
 

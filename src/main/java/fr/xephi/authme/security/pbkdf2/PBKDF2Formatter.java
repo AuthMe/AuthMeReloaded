@@ -24,14 +24,14 @@ package fr.xephi.authme.security.pbkdf2;
  * </p>
  * <p>
  * For Details, see <a
- * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html">http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
+ * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
+ * >http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
  * </p>
  * 
  * @author Matthias G&auml;rtner
  * @version 1.0
  */
-public interface PBKDF2Formatter
-{
+public interface PBKDF2Formatter {
     /**
      * Convert parameters to String.
      * 

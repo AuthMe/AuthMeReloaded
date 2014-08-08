@@ -5,27 +5,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
-*
-* @author Xephi59
-*/
+ *
+ * @author Xephi59
+ */
 public class PlayersLogs extends CustomConfiguration {
-	private static PlayersLogs pllog = null;
-	public List<String> players;
+    private static PlayersLogs pllog = null;
+    public List<String> players;
 
-	public PlayersLogs() {
-		super(new File("./plugins/AuthMe/players.yml"));
-		pllog = this;
-		load();
-		save();
-		players = this.getStringList("players");
-	}
+    public PlayersLogs() {
+        super(new File("./plugins/AuthMe/players.yml"));
+        pllog = this;
+        load();
+        save();
+        players = this.getStringList("players");
+    }
 
-	public void clear() {
-		set("players", new ArrayList<String>());
-		save();
-	}
+    public void clear() {
+        set("players", new ArrayList<String>());
+        save();
+    }
 
-	public static PlayersLogs getInstance() {
+    public static PlayersLogs getInstance() {
         if (pllog == null) {
             pllog = new PlayersLogs();
         }
@@ -41,12 +41,12 @@ public class PlayersLogs extends CustomConfiguration {
         }
     }
 
-	public void removePlayer(String user) {
+    public void removePlayer(String user) {
         players = this.getStringList("players");
         if (players.contains(user.toLowerCase())) {
             players.remove(user.toLowerCase());
             set("players", players);
             save();
         }
-	}
+    }
 }

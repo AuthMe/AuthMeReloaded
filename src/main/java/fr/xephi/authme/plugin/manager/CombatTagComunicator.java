@@ -12,13 +12,15 @@ public abstract class CombatTagComunicator {
 
     /**
      * Returns if the entity is an NPC
+     * 
      * @param player
      * @return true if the player is an NPC
      */
     public static boolean isNPC(Entity player) {
         try {
-            if(Bukkit.getServer().getPluginManager().getPlugin("CombatTag") != null){
-                combatApi = new CombatTagApi((CombatTag) Bukkit.getServer().getPluginManager().getPlugin("CombatTag"));
+            if (Bukkit.getServer().getPluginManager().getPlugin("CombatTag") != null) {
+                combatApi = new CombatTagApi((CombatTag) Bukkit.getServer()
+                        .getPluginManager().getPlugin("CombatTag"));
                 try {
                     combatApi.getClass().getMethod("isNPC");
                 } catch (Exception e) {

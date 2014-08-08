@@ -9,7 +9,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
-
 public class CacheDataSource implements DataSource {
 
     private DataSource source;
@@ -17,24 +16,23 @@ public class CacheDataSource implements DataSource {
     private HashMap<String, PlayerAuth> cache = new HashMap<String, PlayerAuth>();
 
     public CacheDataSource(AuthMe plugin, DataSource source) {
-    	this.plugin = plugin;
+        this.plugin = plugin;
         this.source = source;
     }
 
     @Override
     public synchronized boolean isAuthAvailable(String user) {
-    	if (cache.containsKey(user.toLowerCase())) return true;
-    	return source.isAuthAvailable(user.toLowerCase());
+        if (cache.containsKey(user.toLowerCase())) return true;
+        return source.isAuthAvailable(user.toLowerCase());
     }
 
     @Override
     public synchronized PlayerAuth getAuth(String user) {
-        if(cache.containsKey(user.toLowerCase())) {
+        if (cache.containsKey(user.toLowerCase())) {
             return cache.get(user.toLowerCase());
         } else {
             PlayerAuth auth = source.getAuth(user.toLowerCase());
-            if (auth != null)
-            	cache.put(user.toLowerCase(), auth);
+            if (auth != null) cache.put(user.toLowerCase(), auth);
             return auth;
         }
     }
@@ -51,8 +49,8 @@ public class CacheDataSource implements DataSource {
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
         if (source.updatePassword(auth)) {
-        	if (cache.containsKey(auth.getNickname().toLowerCase()))
-        		cache.get(auth.getNickname()).setHash(auth.getHash());
+            if (cache.containsKey(auth.getNickname().toLowerCase())) cache.get(
+                    auth.getNickname()).setHash(auth.getHash());
             return true;
         }
         return false;
@@ -61,10 +59,10 @@ public class CacheDataSource implements DataSource {
     @Override
     public boolean updateSession(PlayerAuth auth) {
         if (source.updateSession(auth)) {
-        	if (cache.containsKey(auth.getNickname().toLowerCase())) {
-        		cache.get(auth.getNickname()).setIp(auth.getIp());
-        		cache.get(auth.getNickname()).setLastLogin(auth.getLastLogin());        		
-        	}
+            if (cache.containsKey(auth.getNickname().toLowerCase())) {
+                cache.get(auth.getNickname()).setIp(auth.getIp());
+                cache.get(auth.getNickname()).setLastLogin(auth.getLastLogin());
+            }
             return true;
         }
         return false;
@@ -73,12 +71,12 @@ public class CacheDataSource implements DataSource {
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
         if (source.updateQuitLoc(auth)) {
-        	if (cache.containsKey(auth.getNickname().toLowerCase())) {
-        		cache.get(auth.getNickname()).setQuitLocX(auth.getQuitLocX());
-        		cache.get(auth.getNickname()).setQuitLocY(auth.getQuitLocY());
-        		cache.get(auth.getNickname()).setQuitLocZ(auth.getQuitLocZ());
-        		cache.get(auth.getNickname()).setWorld(auth.getWorld());        		
-        	}
+            if (cache.containsKey(auth.getNickname().toLowerCase())) {
+                cache.get(auth.getNickname()).setQuitLocX(auth.getQuitLocX());
+                cache.get(auth.getNickname()).setQuitLocY(auth.getQuitLocY());
+                cache.get(auth.getNickname()).setQuitLocZ(auth.getQuitLocZ());
+                cache.get(auth.getNickname()).setWorld(auth.getWorld());
+            }
             return true;
         }
         return false;
@@ -94,7 +92,7 @@ public class CacheDataSource implements DataSource {
         int cleared = source.purgeDatabase(until);
         if (cleared > 0) {
             for (PlayerAuth auth : cache.values()) {
-                if(auth.getLastLogin() < until) {
+                if (auth.getLastLogin() < until) {
                     cache.remove(auth.getNickname());
                 }
             }
@@ -107,7 +105,7 @@ public class CacheDataSource implements DataSource {
         List<String> cleared = source.autoPurgeDatabase(until);
         if (cleared.size() > 0) {
             for (PlayerAuth auth : cache.values()) {
-                if(auth.getLastLogin() < until) {
+                if (auth.getLastLogin() < until) {
                     cache.remove(auth.getNickname());
                 }
             }
@@ -131,88 +129,88 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public void reload() {
-    	cache.clear();
-    	source.reload();
-    	for (Player player : plugin.getServer().getOnlinePlayers()) {
-    		String user = player.getName().toLowerCase();
-    		if (PlayerCache.getInstance().isAuthenticated(user)) {
-    			try {
+        cache.clear();
+        source.reload();
+        for (Player player : plugin.getServer().getOnlinePlayers()) {
+            String user = player.getName().toLowerCase();
+            if (PlayerCache.getInstance().isAuthenticated(user)) {
+                try {
                     PlayerAuth auth = source.getAuth(user);
                     cache.put(user, auth);
-    			} catch (NullPointerException npe) {
-    			}
+                } catch (NullPointerException npe) {
+                }
 
-    		}
-    	}
+            }
+        }
     }
 
-	@Override
-	public synchronized boolean updateEmail(PlayerAuth auth) {
-		if(source.updateEmail(auth)) {
-			if (cache.containsKey(auth.getNickname().toLowerCase()))
-				cache.get(auth.getNickname()).setEmail(auth.getEmail());
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public synchronized boolean updateEmail(PlayerAuth auth) {
+        if (source.updateEmail(auth)) {
+            if (cache.containsKey(auth.getNickname().toLowerCase())) cache.get(
+                    auth.getNickname()).setEmail(auth.getEmail());
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public synchronized boolean updateSalt(PlayerAuth auth) {
-		if(source.updateSalt(auth)) {
-			if (cache.containsKey(auth.getNickname().toLowerCase()))
-				cache.get(auth.getNickname()).setSalt(auth.getSalt());
-			return true;
-		}
-		return false;
-	}
+    @Override
+    public synchronized boolean updateSalt(PlayerAuth auth) {
+        if (source.updateSalt(auth)) {
+            if (cache.containsKey(auth.getNickname().toLowerCase())) cache.get(
+                    auth.getNickname()).setSalt(auth.getSalt());
+            return true;
+        }
+        return false;
+    }
 
-	@Override
-	public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
-		return source.getAllAuthsByName(auth);
-	}
+    @Override
+    public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
+        return source.getAllAuthsByName(auth);
+    }
 
-	@Override
-	public synchronized List<String> getAllAuthsByIp(String ip) {
-		return source.getAllAuthsByIp(ip);
-	}
+    @Override
+    public synchronized List<String> getAllAuthsByIp(String ip) {
+        return source.getAllAuthsByIp(ip);
+    }
 
-	@Override
-	public synchronized List<String> getAllAuthsByEmail(String email) {
-		return source.getAllAuthsByEmail(email);
-	}
+    @Override
+    public synchronized List<String> getAllAuthsByEmail(String email) {
+        return source.getAllAuthsByEmail(email);
+    }
 
-	@Override
-	public synchronized void purgeBanned(List<String> banned) {
-		source.purgeBanned(banned);
-		for (PlayerAuth auth : cache.values()) {
-			if (banned.contains(auth.getNickname())) {
-				cache.remove(auth.getNickname());
-			}
-		}
-	}
+    @Override
+    public synchronized void purgeBanned(List<String> banned) {
+        source.purgeBanned(banned);
+        for (PlayerAuth auth : cache.values()) {
+            if (banned.contains(auth.getNickname())) {
+                cache.remove(auth.getNickname());
+            }
+        }
+    }
 
-	@Override
-	public DataSourceType getType() {
-		return source.getType();
-	}
+    @Override
+    public DataSourceType getType() {
+        return source.getType();
+    }
 
-	@Override
-	public boolean isLogged(String user) {
-		return source.isLogged(user);
-	}
+    @Override
+    public boolean isLogged(String user) {
+        return source.isLogged(user);
+    }
 
-	@Override
-	public void setLogged(String user) {
-		source.setLogged(user);
-	}
+    @Override
+    public void setLogged(String user) {
+        source.setLogged(user);
+    }
 
-	@Override
-	public void setUnlogged(String user) {
-		source.setUnlogged(user);
-	}
+    @Override
+    public void setUnlogged(String user) {
+        source.setUnlogged(user);
+    }
 
-	@Override
-	public void purgeLogged() {
-		source.purgeLogged();
-	}
+    @Override
+    public void purgeLogged() {
+        source.purgeLogged();
+    }
 }

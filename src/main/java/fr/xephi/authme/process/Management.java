@@ -12,7 +12,8 @@ import fr.xephi.authme.settings.Settings;
 
 /**
  * 
- * @authors Xephi59, <a href="http://dev.bukkit.org/profiles/Possible/">Possible</a>
+ * @authors Xephi59, <a
+ *          href="http://dev.bukkit.org/profiles/Possible/">Possible</a>
  *
  */
 public class Management extends Thread {
@@ -30,11 +31,15 @@ public class Management extends Thread {
     public void run() {
     }
 
-    public void performLogin(final Player player, final String password, final boolean forceLogin) {
-    	new AsyncronousLogin(player, password, forceLogin, plugin, database).process();
+    public void performLogin(final Player player, final String password,
+            final boolean forceLogin) {
+        new AsyncronousLogin(player, password, forceLogin, plugin, database)
+                .process();
     }
 
-    public void performRegister(final Player player, final String password, final String email) {
-    	new AsyncronousRegister(player, password, email, plugin, database).process();
+    public void performRegister(final Player player, final String password,
+            final String email) {
+        new AsyncronousRegister(player, password, email, plugin, database)
+                .process();
     }
 }
