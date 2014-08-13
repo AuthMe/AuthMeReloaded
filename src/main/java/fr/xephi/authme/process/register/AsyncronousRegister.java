@@ -113,7 +113,7 @@ public class AsyncronousRegister {
         try {
             final String hashnew = PasswordSecurity.getHash(
                     Settings.getPasswordHash, password, name);
-            auth = new PlayerAuth(name, hashnew, getIp(), new Date().getTime(),
+            auth = new PlayerAuth(name, hashnew, getIp(), 0,
                     (int) player.getLocation().getX(), (int) player
                             .getLocation().getY(), (int) player.getLocation()
                             .getZ(), player.getLocation().getWorld().getName(),
