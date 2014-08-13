@@ -1011,10 +1011,10 @@ public final class Settings extends YamlConfiguration {
     }
 
     public static boolean isEmailCorrect(String email) {
-        boolean correct = true;
-        if (!email.contains("@")) correct = false;
-        if (!email.equalsIgnoreCase("your@email.com")) correct = false;
+        if (!email.contains("@")) return false;
+        if (email.equalsIgnoreCase("your@email.com")) return false;
         String emailDomain = email.split("@")[1];
+        boolean correct = true;
         if (emailWhitelist != null && !emailWhitelist.isEmpty()) {
             for (String domain : emailWhitelist) {
                 if (!domain.equalsIgnoreCase(emailDomain)) {
