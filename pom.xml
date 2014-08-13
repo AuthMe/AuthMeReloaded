@@ -133,4 +133,9 @@
     		<systemPath>${project.basedir}/lib/Essentials.jar</systemPath>
     	</dependency>
     </dependencies>
+	<distributionManagement>
+   		<snapshotRepository>
+        	<uniqueVersion>true</uniqueVersion>
+    	</snapshotRepository>
+	</distributionManagement>
 </project>
