@@ -18,7 +18,7 @@
 	<plugins>
 		<plugin>
 		<artifactId>maven-jar-plugin</artifactId>
-		<version>2.2</version>
+		<version>2.5</version>
 		<configuration>
 			<archive>
 			<manifestFile>${manifest.file}</manifestFile>
