@@ -49,6 +49,7 @@ public final class Settings extends YamlConfiguration {
     public static List<String> welcomeMsg = null;
     public static List<String> unsafePasswords;
     public static List<String> emailBlacklist = null;
+    public static List<String> emailWhitelist = null;
 
     public static Boolean isPermissionCheckEnabled, isRegistrationEnabled,
             isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
@@ -378,6 +379,7 @@ public final class Settings extends YamlConfiguration {
         applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect",
                 false);
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
+        emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -653,6 +655,7 @@ public final class Settings extends YamlConfiguration {
         applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect",
                 false);
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
+        emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -789,8 +792,12 @@ public final class Settings extends YamlConfiguration {
             set("Email.emailBlacklisted", new ArrayList<String>());
             changes = true;
         }
-        if (contains("Performances.useMultiThreading")) set(
-                "Performances.useMultiThreading", null);
+        if (contains("Performances.useMultiThreading"))
+            set("Performances.useMultiThreading", null);
+        if (!contains("Email.emailWhitelisted")) {
+            set("Email.emailWhitelisted", new ArrayList<String>());
+            changes = true;
+        }
 
         if (changes) {
             plugin.getLogger()
@@ -1008,10 +1015,23 @@ public final class Settings extends YamlConfiguration {
         if (!email.contains("@")) correct = false;
         if (!email.equalsIgnoreCase("your@email.com")) correct = false;
         String emailDomain = email.split("@")[1];
-        for (String domain : emailBlacklist) {
-            if (domain.equalsIgnoreCase(emailDomain)) {
-                correct = false;
-                break;
+        if (emailWhitelist != null && !emailWhitelist.isEmpty()) {
+            for (String domain : emailWhitelist) {
+                if (!domain.equalsIgnoreCase(emailDomain)) {
+                    correct = false;
+                } else {
+                    correct = true;
+                    break;
+                }
+            }
+            return correct;
+        }
+        if (emailBlacklist != null && !emailBlacklist.isEmpty()) {
+            for (String domain : emailBlacklist) {
+                if (domain.equalsIgnoreCase(emailDomain)) {
+                    correct = false;
+                    break;
+                }
             }
         }
         return correct;
