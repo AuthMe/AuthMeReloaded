@@ -135,6 +135,8 @@
     </dependencies>
 	<distributionManagement>
    		<snapshotRepository>
+			<id>snapshot</id>
+			<url>http://repository-authme.forge.cloudbees.com/snapshot/</url>
         	<uniqueVersion>true</uniqueVersion>
     	</snapshotRepository>
 	</distributionManagement>
