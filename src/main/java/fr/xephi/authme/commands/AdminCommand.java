@@ -492,6 +492,10 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             String name = args[1].toLowerCase();
+            if (!database.isAuthAvailable(name)) {
+                m._(sender, "user_unknown");
+                return true;
+            }
             if (!database.removeAuth(name)) {
                 m._(sender, "error");
                 return true;
