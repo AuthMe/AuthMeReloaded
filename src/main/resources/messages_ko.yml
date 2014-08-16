@@ -1,6 +1,6 @@
 #       Korean translate by wolfwork        #
 #           wolfdate25@gmail.com            #
-#         28.06.2014 Thanks for use         #
+#         16.08.2014 Thanks for use         #
 
 unknown_user: '&f사용자가 데이터베이스에 존재하지 않습니다'
 unsafe_spawn: '&f당신이 종료한 위치는 안전하지 않았습니다, 세계의 소환지점으로 이동합니다'
@@ -20,7 +20,7 @@ no_perm: '&c권한이 없습니다'
 error: '&f오류가 발생했습니다; 관리자에게 문의해주세요'
 login_msg: '&c접속 하실려면 "/login 비밀번호"를 치세요'
 reg_msg: '&c가입하실려면 "/register 비밀번호 비밀번호재입력"을 치세요'
-reg_email_msg: '&c가입하실려면 "/register <전자우편> <전자우편재입력>을 치세요"'
+reg_email_msg: '&c가입하실려면 "/register <이메일> <이메일재입력>을 치세요"'
 usage_unreg: '&c사용법: /unregister 비밀번호'
 pwd_changed: '&c비밀번호를 변경했습니다!'
 user_unknown: '&c사용자이름은 가입되지 않았습니다'
