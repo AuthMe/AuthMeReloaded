@@ -57,4 +57,6 @@ public interface DataSource {
 
     void purgeLogged();
 
+    int getAccountsRegistered();
+
 }

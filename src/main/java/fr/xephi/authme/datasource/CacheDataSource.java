@@ -213,4 +213,9 @@ public class CacheDataSource implements DataSource {
     public void purgeLogged() {
         source.purgeLogged();
     }
+
+    @Override
+    public int getAccountsRegistered() {
+        return source.getAccountsRegistered();
+    }
 }

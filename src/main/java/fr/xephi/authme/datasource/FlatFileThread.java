@@ -748,4 +748,31 @@ public class FlatFileThread extends Thread implements DataSource {
     public void purgeLogged() {
         PlayersLogs.getInstance().clear();
     }
+
+    @Override
+    public int getAccountsRegistered() {
+        BufferedReader br = null;
+        int result = 0;
+        try {
+            br = new BufferedReader(new FileReader(source));
+            String line;
+            while ((line = br.readLine()) != null) {
+                result++;
+            }
+        } catch (FileNotFoundException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return result;
+        } catch (IOException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return result;
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
+        return result;
+    }
 }

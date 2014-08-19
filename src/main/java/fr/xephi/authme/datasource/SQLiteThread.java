@@ -597,4 +597,27 @@ public class SQLiteThread extends Thread implements DataSource {
     public void purgeLogged() {
         PlayersLogs.getInstance().clear();
     }
+
+    @Override
+    public int getAccountsRegistered() {
+        int result = 0;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
+            rs = pst.executeQuery();
+            if (rs != null && rs.next()) {
+                result = rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return result;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return result;
+        } finally {
+            close(pst);
+        }
+        return result;
+    }
 }

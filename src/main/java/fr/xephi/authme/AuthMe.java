@@ -204,6 +204,10 @@ public class AuthMe extends JavaPlugin {
                 fileThread.start();
                 database = fileThread;
                 databaseThread = fileThread;
+                final int a = database.getAccountsRegistered();
+                if (a >= 1000) {
+                    ConsoleLogger.showError("YOUR USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
+                }
                 break;
             case MYSQL:
                 MySQLThread sqlThread = new MySQLThread();
@@ -216,6 +220,10 @@ public class AuthMe extends JavaPlugin {
                 sqliteThread.start();
                 database = sqliteThread;
                 databaseThread = sqliteThread;
+                final int b = database.getAccountsRegistered();
+                if (b >= 2000) {
+                    ConsoleLogger.showError("YOU'RE USING SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
+                }
                 break;
         }
 
