@@ -2,13 +2,13 @@ package fr.xephi.authme.cache.backup;
 
 import java.io.File;
 import java.io.FileWriter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -26,8 +26,9 @@ public class FileCache {
         }
     }
 
-    public void createCache(String playername, DataFileCache playerData,
+    public void createCache(Player player, DataFileCache playerData,
             String group, boolean operator, boolean flying) {
+        String playername = player.getName();
         final File file = new File("cache/" + playername + ".cache");
 
         if (file.exists()) {
@@ -132,8 +133,13 @@ public class FileCache {
         }
     }
 
-    public DataFileCache readCache(String playername) {
-        final File file = new File("cache/" + playername + ".cache");
+    public DataFileCache readCache(Player player) {
+        String playername = player.getName();
+        File file = new File("cache/" + playername + ".cache");
+        if (!file.exists()) {
+            playername = player.getName().toLowerCase();
+            file = new File("cache/" + playername + ".cache");
+        }
 
         ItemStack[] stacki = new ItemStack[36];
         ItemStack[] stacka = new ItemStack[4];
@@ -252,16 +258,26 @@ public class FileCache {
         return new DataFileCache(stacki, stacka, group, op, flying);
     }
 
-    public void removeCache(String playername) {
-        final File file = new File("cache/" + playername + ".cache");
+    public void removeCache(Player player) {
+        String playername = player.getName();
+        File file = new File("cache/" + playername + ".cache");
+        if (!file.exists()) {
+            playername = player.getName().toLowerCase();
+            file = new File("cache/" + playername + ".cache");
+        }
 
         if (file.exists()) {
             file.delete();
         }
     }
 
-    public boolean doesCacheExist(String playername) {
-        final File file = new File("cache/" + playername + ".cache");
+    public boolean doesCacheExist(Player player) {
+        String playername = player.getName();
+        File file = new File("cache/" + playername + ".cache");
+        if (!file.exists()) {
+            playername = player.getName().toLowerCase();
+            file = new File("cache/" + playername + ".cache");
+        }
 
         if (file.exists()) {
             return true;

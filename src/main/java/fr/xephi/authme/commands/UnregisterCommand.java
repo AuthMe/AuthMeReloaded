@@ -128,8 +128,8 @@ public class UnregisterCommand implements CommandExecutor {
                         player.getName().toLowerCase());
                 // check if Player cache File Exist and delete it, preventing
                 // duplication of items
-                if (playerCache.doesCacheExist(name)) {
-                    playerCache.removeCache(name);
+                if (playerCache.doesCacheExist(player)) {
+                    playerCache.removeCache(player);
                 }
                 if (Settings.applyBlindEffect) player
                         .addPotionEffect(new PotionEffect(

@@ -666,7 +666,7 @@ public class AuthMePlayerListener implements Listener {
             DataFileCache dataFile = new DataFileCache(LimboCache.getInstance()
                     .getLimboPlayer(name).getInventory(), LimboCache
                     .getInstance().getLimboPlayer(name).getArmour());
-            playerBackup.createCache(name, dataFile, LimboCache.getInstance()
+            playerBackup.createCache(player, dataFile, LimboCache.getInstance()
                     .getLimboPlayer(name).getGroup(), LimboCache.getInstance()
                     .getLimboPlayer(name).getOperator(), LimboCache
                     .getInstance().getLimboPlayer(name).isFlying());
@@ -848,8 +848,8 @@ public class AuthMePlayerListener implements Listener {
             this.plugin.getServer().getScheduler()
                     .cancelTask(limbo.getMessageTaskId());
             LimboCache.getInstance().deleteLimboPlayer(name);
-            if (playerBackup.doesCacheExist(name)) {
-                playerBackup.removeCache(name);
+            if (playerBackup.doesCacheExist(player)) {
+                playerBackup.removeCache(player);
             }
         }
         PlayerCache.getInstance().removePlayer(name);
@@ -950,8 +950,8 @@ public class AuthMePlayerListener implements Listener {
             this.plugin.getServer().getScheduler()
                     .cancelTask(limbo.getMessageTaskId());
             LimboCache.getInstance().deleteLimboPlayer(name);
-            if (this.playerBackup.doesCacheExist(name)) {
-                this.playerBackup.removeCache(name);
+            if (this.playerBackup.doesCacheExist(player)) {
+                this.playerBackup.removeCache(player);
             }
         }
         PlayerCache.getInstance().removePlayer(name);

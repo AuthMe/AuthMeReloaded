@@ -41,8 +41,8 @@ public class TimeoutTask implements Runnable {
                             .cancelTask(inv.getMessageTaskId());
                     player.getServer().getScheduler()
                             .cancelTask(inv.getTimeoutTaskId());
-                    if (playerCache.doesCacheExist(name)) {
-                        playerCache.removeCache(name);
+                    if (playerCache.doesCacheExist(player)) {
+                        playerCache.removeCache(player);
                     }
                 }
                 GameMode gm = AuthMePlayerListener.gameMode.get(name);

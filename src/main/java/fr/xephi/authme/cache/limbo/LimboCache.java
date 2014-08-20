@@ -37,7 +37,7 @@ public class LimboCache {
         String playerGroup = "";
         boolean flying;
 
-        if (playerData.doesCacheExist(name)) {
+        if (playerData.doesCacheExist(player)) {
             StoreInventoryEvent event = new StoreInventoryEvent(player,
                     playerData);
             Bukkit.getServer().getPluginManager().callEvent(event);
@@ -49,9 +49,9 @@ public class LimboCache {
                 inv = null;
                 arm = null;
             }
-            playerGroup = playerData.readCache(name).getGroup();
-            operator = playerData.readCache(name).getOperator();
-            flying = playerData.readCache(name).isFlying();
+            playerGroup = playerData.readCache(player).getGroup();
+            operator = playerData.readCache(player).getOperator();
+            flying = playerData.readCache(player).isFlying();
         } else {
             StoreInventoryEvent event = new StoreInventoryEvent(player);
             Bukkit.getServer().getPluginManager().callEvent(event);

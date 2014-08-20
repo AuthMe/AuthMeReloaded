@@ -92,7 +92,7 @@ public class LogoutCommand implements CommandExecutor {
             DataFileCache playerData = new DataFileCache(LimboCache
                     .getInstance().getLimboPlayer(name).getInventory(),
                     LimboCache.getInstance().getLimboPlayer(name).getArmour());
-            playerBackup.createCache(name, playerData, LimboCache.getInstance()
+            playerBackup.createCache(player, playerData, LimboCache.getInstance()
                     .getLimboPlayer(name).getGroup(), LimboCache.getInstance()
                     .getLimboPlayer(name).getOperator(), LimboCache
                     .getInstance().getLimboPlayer(name).isFlying());

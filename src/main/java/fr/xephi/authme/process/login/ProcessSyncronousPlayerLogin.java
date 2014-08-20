@@ -179,8 +179,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
             // Cleanup no longer used temporary data
             LimboCache.getInstance().deleteLimboPlayer(name);
-            if (playerCache.doesCacheExist(name)) {
-                playerCache.removeCache(name);
+            if (playerCache.doesCacheExist(player)) {
+                playerCache.removeCache(player);
             }
         }
 
