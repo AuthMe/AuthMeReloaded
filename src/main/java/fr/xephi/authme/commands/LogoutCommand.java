@@ -33,11 +33,12 @@ public class LogoutCommand implements CommandExecutor {
     private AuthMe plugin;
     private DataSource database;
     private Utils utils = Utils.getInstance();
-    private FileCache playerBackup = new FileCache();
+    private FileCache playerBackup;
 
     public LogoutCommand(AuthMe plugin, DataSource database) {
         this.plugin = plugin;
         this.database = database;
+        this.playerBackup = new FileCache(plugin);
     }
 
     @Override

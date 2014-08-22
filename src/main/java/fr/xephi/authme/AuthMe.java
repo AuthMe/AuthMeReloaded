@@ -86,7 +86,7 @@ public class AuthMe extends JavaPlugin {
     public Permission permission;
     private Utils utils = Utils.getInstance();
     private JavaPlugin plugin;
-    private FileCache playerBackup = new FileCache();
+    private FileCache playerBackup = new FileCache(this);
     public CitizensCommunicator citizens;
     public SendMailSSL mail = null;
     public int CitizensVersion = 0;

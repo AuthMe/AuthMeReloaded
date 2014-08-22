@@ -34,11 +34,12 @@ public class UnregisterCommand implements CommandExecutor {
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
     private DataSource database;
-    private FileCache playerCache = new FileCache();
+    private FileCache playerCache;
 
     public UnregisterCommand(AuthMe plugin, DataSource database) {
         this.plugin = plugin;
         this.database = database;
+        this.playerCache = new FileCache(plugin);
     }
 
     @Override

@@ -70,13 +70,14 @@ public class AuthMePlayerListener implements Listener {
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
     private DataSource data;
-    private FileCache playerBackup = new FileCache();
+    private FileCache playerBackup;
     public boolean causeByAuthMe = false;
     private HashMap<String, PlayerLoginEvent> antibot = new HashMap<String, PlayerLoginEvent>();
 
     public AuthMePlayerListener(AuthMe plugin, DataSource data) {
         this.plugin = plugin;
         this.data = data;
+        this.playerBackup = new FileCache(plugin);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)

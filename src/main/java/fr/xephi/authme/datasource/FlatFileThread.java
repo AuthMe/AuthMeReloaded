@@ -755,8 +755,7 @@ public class FlatFileThread extends Thread implements DataSource {
         int result = 0;
         try {
             br = new BufferedReader(new FileReader(source));
-            String line;
-            while ((line = br.readLine()) != null) {
+            while ((br.readLine()) != null) {
                 result++;
             }
         } catch (FileNotFoundException ex) {

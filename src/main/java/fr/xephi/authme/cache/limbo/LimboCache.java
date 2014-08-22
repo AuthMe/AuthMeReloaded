@@ -19,12 +19,13 @@ public class LimboCache {
 
     private static LimboCache singleton = null;
     public HashMap<String, LimboPlayer> cache;
-    private FileCache playerData = new FileCache();
+    private FileCache playerData;
     public AuthMe plugin;
 
     private LimboCache(AuthMe plugin) {
         this.plugin = plugin;
         this.cache = new HashMap<String, LimboPlayer>();
+        this.playerData = new FileCache(plugin);
     }
 
     public void addLimboPlayer(Player player) {

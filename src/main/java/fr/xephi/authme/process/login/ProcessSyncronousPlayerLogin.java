@@ -31,7 +31,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     private AuthMe plugin;
     private DataSource database;
     private PluginManager pm;
-    private FileCache playerCache = new FileCache();
+    private FileCache playerCache;
 
     public ProcessSyncronousPlayerLogin(Player player, AuthMe plugin,
             DataSource data) {
@@ -42,6 +42,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         this.name = player.getName().toLowerCase();
         this.limbo = LimboCache.getInstance().getLimboPlayer(name);
         this.auth = database.getAuth(name);
+        this.playerCache = new FileCache(plugin);
     }
 
     public LimboPlayer getLimbo() {
