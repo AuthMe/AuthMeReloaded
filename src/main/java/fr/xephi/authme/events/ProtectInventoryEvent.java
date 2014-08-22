@@ -4,6 +4,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
+ * 
+ * This event is call just after store inventory into cache and will
+ * empty the player inventory.
  *
  * @author Xephi59
  */

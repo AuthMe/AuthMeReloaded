@@ -4,6 +4,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
+ * 
+ * Called if a player is teleported to a specific spawn
  *
  * @author Xephi59
  */

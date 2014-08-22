@@ -5,6 +5,8 @@ import org.bukkit.inventory.ItemStack;
 
 /**
  *
+ * This event restore the inventory from cache
+ *
  * @author Xephi59
  */
 public class RestoreInventoryEvent extends CustomEvent {

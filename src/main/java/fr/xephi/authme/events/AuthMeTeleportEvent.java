@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 
 /**
  *
+ *  This event is call when AuthMe try to teleport a player
+ *
  * @author Xephi59
  */
 public class AuthMeTeleportEvent extends CustomEvent {

@@ -7,6 +7,8 @@ import fr.xephi.authme.cache.backup.FileCache;
 
 /**
  *
+ * This event is call just before write inventory content to cache
+ *
  * @author Xephi59
  */
 public class StoreInventoryEvent extends CustomEvent {

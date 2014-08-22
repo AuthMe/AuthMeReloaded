@@ -3,6 +3,8 @@ package fr.xephi.authme.events;
 import org.bukkit.entity.Player;
 
 /**
+ * 
+ * This event is call when a creative inventory is reseted.
  *
  * @author Xephi59
  */

@@ -4,6 +4,9 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
+ * 
+ * This event is call if, and only if, a player is teleported
+ * just after a register.
  *
  * @author Xephi59
  */

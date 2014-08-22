@@ -6,6 +6,9 @@ import org.bukkit.event.HandlerList;
 
 /**
 *
+* This event is called when a player login or register through AuthMe.
+* The boolean 'isLogin' will be false if, and only if, login/register failed.
+*
 * @author Xephi59
 */
 public class LoginEvent extends Event {

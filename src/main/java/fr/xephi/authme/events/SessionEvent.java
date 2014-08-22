@@ -4,6 +4,8 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 
 /**
  *
+ * This event is call when a player logging in through a timed session
+ *
  * @author Xephi59
  */
 public class SessionEvent extends CustomEvent {
