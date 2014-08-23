@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -12,6 +13,12 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import com.comphenix.attribute.Attributes;
+import com.comphenix.attribute.Attributes.Attribute;
+import com.comphenix.attribute.Attributes.Attribute.Builder;
+import com.comphenix.attribute.Attributes.AttributeType;
+import com.comphenix.attribute.Attributes.Operation;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.api.API;
@@ -92,6 +99,15 @@ public class FileCache {
                     writer.write("enchant=" + ench.getName() + ":"
                             + item.getEnchantments().get(ench) + API.newline);
                 }
+                Attributes attributes = new Attributes(item);
+                if (attributes != null)
+                    while (attributes.values().iterator().hasNext()) {
+                        Attribute a = attributes.values().iterator().next();
+                        if (a != null) {
+                            writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId()
+                                    + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                        }
+                    }
                 writer.close();
             }
 
@@ -129,6 +145,15 @@ public class FileCache {
                                 + item.getEnchantments().get(ench)
                                 + API.newline);
                     }
+                    Attributes attributes = new Attributes(item);
+                    if (attributes != null)
+                        while (attributes.values().iterator().hasNext()) {
+                            Attribute a = attributes.values().iterator().next();
+                            if (a != null) {
+                                writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId()
+                                        + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                            }
+                        }
                 } else {
                     writer.write("AIR" + API.newline);
                 }
@@ -305,6 +330,7 @@ public class FileCache {
                             + File.separator + "inventory" + File.separator + i + ".cache"));
                     ItemStack item = new ItemStack(Material.AIR);
                     ItemMeta meta = null;
+                    Attributes attributes = new Attributes(item);
                     count = 1;
                     boolean v = true;
                     while (reader.hasNextLine() && v == true) {
@@ -345,17 +371,32 @@ public class FileCache {
                             line = line.substring(8);
                             item.addEnchantment(Enchantment.getByName(line.split(":")[0]), Integer.parseInt(line.split(":")[1]));
                         }
+                        if (line.startsWith("attribute=")) {
+                            try {
+                                line = line.substring(10);
+                                String[] args = line.split(";");
+                                if (args.length != 5) continue;
+                                String name = args[0];
+                                AttributeType type = AttributeType.fromId(args[1]);
+                                double amount = Double.parseDouble(args[2]);
+                                Operation operation = Operation.fromId(Integer.parseInt(args[3]));
+                                UUID uuid = UUID.fromString(args[4]);
+                                Attribute attribute = new Attribute(new Builder(amount, operation, type, name, uuid));
+                                attributes.add(attribute);
+                            } catch (Exception e) {}
+                        }
                         count++;
                     }
                     if (reader != null)
                         reader.close();
-                    inv[i] = item;
+                    inv[i] = attributes.getStack();
                 }
                 for (int i = 0 ; i < armours.length; i++) {
                     reader = new Scanner(new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path
                             + File.separator + "armours" + File.separator + i + ".cache"));
                     ItemStack item = new ItemStack(Material.AIR);
                     ItemMeta meta = null;
+                    Attributes attributes = new Attributes(item);
                     count = 1;
                     boolean v = true;
                     while (reader.hasNextLine() && v == true) {
@@ -396,11 +437,25 @@ public class FileCache {
                             line = line.substring(8);
                             item.addEnchantment(Enchantment.getByName(line.split(":")[0]), Integer.parseInt(line.split(":")[1]));
                         }
+                        if (line.startsWith("attribute=")) {
+                            try {
+                                line = line.substring(10);
+                                String[] args = line.split(";");
+                                if (args.length != 5) continue;
+                                String name = args[0];
+                                AttributeType type = AttributeType.fromId(args[1]);
+                                double amount = Double.parseDouble(args[2]);
+                                Operation operation = Operation.fromId(Integer.parseInt(args[3]));
+                                UUID uuid = UUID.fromString(args[4]);
+                                Attribute attribute = new Attribute(new Builder(amount, operation, type, name, uuid));
+                                attributes.add(attribute);
+                            } catch (Exception e) {}
+                        }
                         count++;
                     }
                     if (reader != null)
                         reader.close();
-                    armours[i] = item;
+                    armours[i] = attributes.getStack();
                 }
 
             } catch (final Exception e) {
