@@ -25,8 +25,7 @@ public class SHA256 implements EncryptionMethod {
         sha256.reset();
         sha256.update(message.getBytes());
         byte[] digest = sha256.digest();
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(
-                1, digest));
+        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
     }
 
 }

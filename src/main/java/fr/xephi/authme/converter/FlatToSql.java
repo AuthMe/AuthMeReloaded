@@ -51,78 +51,35 @@ public class FlatToSql implements Converter {
     @Override
     public void run() {
         try {
-            source = new File(AuthMe.getInstance().getDataFolder()
-                    + File.separator + "auths.db");
+            source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
             source.createNewFile();
-            output = new File(AuthMe.getInstance().getDataFolder()
-                    + File.separator + "authme.sql");
+            output = new File(AuthMe.getInstance().getDataFolder() + File.separator + "authme.sql");
             BufferedReader br = null;
             BufferedWriter sql = null;
             br = new BufferedReader(new FileReader(source));
             sql = new BufferedWriter(new FileWriter(output));
-            String createDB = "CREATE TABLE IF NOT EXISTS " + tableName + " ("
-                    + columnID + " INTEGER AUTO_INCREMENT," + columnName
-                    + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword
-                    + " VARCHAR(255) NOT NULL," + columnIp
-                    + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1',"
-                    + columnLastLogin + " BIGINT NOT NULL DEFAULT '"
-                    + System.currentTimeMillis() + "'," + lastlocX
-                    + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY
-                    + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ
-                    + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld
-                    + " VARCHAR(255) DEFAULT 'world'," + columnEmail
-                    + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged
-                    + " SMALLINT NOT NULL DEFAULT '0',"
-                    + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID
-                    + "));";
+            String createDB = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1'," + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "'," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) DEFAULT 'world'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged + " SMALLINT NOT NULL DEFAULT '0'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));";
             sql.write(createDB);
             String line;
             String newline;
             while ((line = br.readLine()) != null) {
                 sql.newLine();
                 String[] args = line.split(":");
-                if (args.length == 4) newline = "INSERT INTO " + tableName
-                        + "(" + columnName + "," + columnPassword + ","
-                        + columnIp + "," + columnLastLogin + "," + lastlocX
-                        + "," + lastlocY + "," + lastlocZ + "," + lastlocWorld
-                        + "," + columnEmail + "," + columnLogged
-                        + ") VALUES ('" + args[0] + "', '" + args[1] + "', '"
-                        + args[2] + "', " + args[3]
-                        + ", 0.0, 0.0, 0.0, 'world', 'your@email.com', 0);";
-                else if (args.length == 7) newline = "INSERT INTO " + tableName
-                        + "(" + columnName + "," + columnPassword + ","
-                        + columnIp + "," + columnLastLogin + "," + lastlocX
-                        + "," + lastlocY + "," + lastlocZ + "," + lastlocWorld
-                        + "," + columnEmail + "," + columnLogged
-                        + ") VALUES ('" + args[0] + "', '" + args[1] + "', '"
-                        + args[2] + "', " + args[3] + ", " + args[4] + ", "
-                        + args[5] + ", " + args[6]
-                        + ", 'world', 'your@email.com', 0);";
-                else if (args.length == 8) newline = "INSERT INTO " + tableName
-                        + "(" + columnName + "," + columnPassword + ","
-                        + columnIp + "," + columnLastLogin + "," + lastlocX
-                        + "," + lastlocY + "," + lastlocZ + "," + lastlocWorld
-                        + "," + columnEmail + "," + columnLogged
-                        + ") VALUES ('" + args[0] + "', '" + args[1] + "', '"
-                        + args[2] + "', " + args[3] + ", " + args[4] + ", "
-                        + args[5] + ", " + args[6] + ", '" + args[7]
-                        + "', 'your@email.com', 0);";
-                else if (args.length == 9) newline = "INSERT INTO " + tableName
-                        + "(" + columnName + "," + columnPassword + ","
-                        + columnIp + "," + columnLastLogin + "," + lastlocX
-                        + "," + lastlocY + "," + lastlocZ + "," + lastlocWorld
-                        + "," + columnEmail + "," + columnLogged
-                        + ") VALUES ('" + args[0] + "', '" + args[1] + "', '"
-                        + args[2] + "', " + args[3] + ", " + args[4] + ", "
-                        + args[5] + ", " + args[6] + ", '" + args[7] + "', '"
-                        + args[8] + "', 0);";
+                if (args.length == 4)
+                    newline = "INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + lastlocX + "," + lastlocY + "," + lastlocZ + "," + lastlocWorld + "," + columnEmail + "," + columnLogged + ") VALUES ('" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", 0.0, 0.0, 0.0, 'world', 'your@email.com', 0);";
+                else if (args.length == 7)
+                    newline = "INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + lastlocX + "," + lastlocY + "," + lastlocZ + "," + lastlocWorld + "," + columnEmail + "," + columnLogged + ") VALUES ('" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", 'world', 'your@email.com', 0);";
+                else if (args.length == 8)
+                    newline = "INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + lastlocX + "," + lastlocY + "," + lastlocZ + "," + lastlocWorld + "," + columnEmail + "," + columnLogged + ") VALUES ('" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", '" + args[7] + "', 'your@email.com', 0);";
+                else if (args.length == 9)
+                    newline = "INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + lastlocX + "," + lastlocY + "," + lastlocZ + "," + lastlocWorld + "," + columnEmail + "," + columnLogged + ") VALUES ('" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", '" + args[7] + "', '" + args[8] + "', 0);";
                 else newline = "";
-                if (newline != "") sql.write(newline);
+                if (newline != "")
+                    sql.write(newline);
             }
             sql.close();
             br.close();
-            ConsoleLogger
-                    .info("The FlatFile has been converted to authme.sql file");
+            ConsoleLogger.info("The FlatFile has been converted to authme.sql file");
         } catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {

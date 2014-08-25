@@ -41,11 +41,9 @@ public class CrazyLoginConverter implements Converter {
     public void run() {
         fileName = Settings.crazyloginFileName;
         try {
-            source = new File(AuthMe.getInstance().getDataFolder()
-                    + File.separator + fileName);
+            source = new File(AuthMe.getInstance().getDataFolder() + File.separator + fileName);
             if (!source.exists()) {
-                sender.sendMessage("Error while trying to import datas, please put "
-                        + fileName + " in AuthMe folder!");
+                sender.sendMessage("Error while trying to import datas, please put " + fileName + " in AuthMe folder!");
                 return;
             }
             source.createNewFile();
@@ -55,14 +53,15 @@ public class CrazyLoginConverter implements Converter {
             while ((line = users.readLine()) != null) {
                 if (line.contains("|")) {
                     String[] args = line.split("\\|");
-                    if (args.length < 2) continue;
-                    if (args[0].equalsIgnoreCase("name")) continue;
+                    if (args.length < 2)
+                        continue;
+                    if (args[0].equalsIgnoreCase("name"))
+                        continue;
                     String player = args[0].toLowerCase();
                     String psw = args[1];
                     try {
                         if (player != null && psw != null) {
-                            PlayerAuth auth = new PlayerAuth(player, psw,
-                                    "127.0.0.1", System.currentTimeMillis());
+                            PlayerAuth auth = new PlayerAuth(player, psw, "127.0.0.1", System.currentTimeMillis());
                             database.saveAuth(auth);
                         }
                     } catch (Exception e) {
@@ -70,8 +69,7 @@ public class CrazyLoginConverter implements Converter {
                 }
             }
             users.close();
-            ConsoleLogger
-                    .info("CrazyLogin database has been imported correctly");
+            ConsoleLogger.info("CrazyLogin database has been imported correctly");
         } catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {

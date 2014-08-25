@@ -61,18 +61,14 @@ public class EmailCommand implements CommandExecutor {
                 return true;
             }
             if (Settings.getmaxRegPerEmail > 0) {
-                if (!plugin.authmePermissible(sender, "authme.allow2accounts")
-                        && data.getAllAuthsByEmail(args[1]).size() >= Settings.getmaxRegPerEmail) {
+                if (!plugin.authmePermissible(sender, "authme.allow2accounts") && data.getAllAuthsByEmail(args[1]).size() >= Settings.getmaxRegPerEmail) {
                     m._(player, "max_reg");
                     return true;
                 }
             }
-            if (args[1].equals(args[2])
-                    && PlayerCache.getInstance().isAuthenticated(name)) {
+            if (args[1].equals(args[2]) && PlayerCache.getInstance().isAuthenticated(name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
-                if (auth.getEmail() == null
-                        || (!auth.getEmail().equals("your@email.com") && !auth
-                                .getEmail().isEmpty())) {
+                if (auth.getEmail() == null || (!auth.getEmail().equals("your@email.com") && !auth.getEmail().isEmpty())) {
                     m._(player, "usage_email_change");
                     return true;
                 }
@@ -103,17 +99,14 @@ public class EmailCommand implements CommandExecutor {
                 return true;
             }
             if (Settings.getmaxRegPerEmail > 0) {
-                if (!plugin.authmePermissible(sender, "authme.allow2accounts")
-                        && data.getAllAuthsByEmail(args[2]).size() >= Settings.getmaxRegPerEmail) {
+                if (!plugin.authmePermissible(sender, "authme.allow2accounts") && data.getAllAuthsByEmail(args[2]).size() >= Settings.getmaxRegPerEmail) {
                     m._(player, "max_reg");
                     return true;
                 }
             }
             if (PlayerCache.getInstance().isAuthenticated(name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
-                if (auth.getEmail() == null
-                        || auth.getEmail().equals("your@email.com")
-                        || auth.getEmail().isEmpty()) {
+                if (auth.getEmail() == null || auth.getEmail().equals("your@email.com") || auth.getEmail().isEmpty()) {
                     m._(player, "usage_email_add");
                     return true;
                 }
@@ -158,11 +151,9 @@ public class EmailCommand implements CommandExecutor {
                     return true;
                 }
                 try {
-                    RandomString rand = new RandomString(
-                            Settings.getRecoveryPassLength);
+                    RandomString rand = new RandomString(Settings.getRecoveryPassLength);
                     String thePass = rand.nextString();
-                    String hashnew = PasswordSecurity.getHash(
-                            Settings.getPasswordHash, thePass, name);
+                    String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, thePass, name);
                     PlayerAuth auth = null;
                     if (PlayerCache.getInstance().isAuthenticated(name)) {
                         auth = PlayerCache.getInstance().getAuth(name);
@@ -172,16 +163,12 @@ public class EmailCommand implements CommandExecutor {
                         m._(player, "unknown_user");
                         return true;
                     }
-                    if (Settings.getmailAccount.equals("")
-                            || Settings.getmailAccount.isEmpty()) {
+                    if (Settings.getmailAccount.equals("") || Settings.getmailAccount.isEmpty()) {
                         m._(player, "error");
                         return true;
                     }
 
-                    if (!args[1].equalsIgnoreCase(auth.getEmail())
-                            || args[1].equalsIgnoreCase("your@email.com")
-                            || auth.getEmail().equalsIgnoreCase(
-                                    "your@email.com")) {
+                    if (!args[1].equalsIgnoreCase(auth.getEmail()) || args[1].equalsIgnoreCase("your@email.com") || auth.getEmail().equalsIgnoreCase("your@email.com")) {
                         m._(player, "email_invalid");
                         return true;
                     }
@@ -191,14 +178,14 @@ public class EmailCommand implements CommandExecutor {
                         finalauth.setHash(hashnew);
                         data.updatePassword(auth);
                     } else {
-                        Bukkit.getScheduler().runTaskAsynchronously(plugin,
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        finalauth.setHash(finalhashnew);
-                                        data.updatePassword(finalauth);
-                                    }
-                                });
+                        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+                            @Override
+                            public void run() {
+                                finalauth.setHash(finalhashnew);
+                                data.updatePassword(finalauth);
+                            }
+                        });
                     }
                     plugin.mail.main(auth, thePass);
                     m._(player, "email_send");

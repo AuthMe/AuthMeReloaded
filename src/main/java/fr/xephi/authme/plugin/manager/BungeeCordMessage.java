@@ -24,8 +24,7 @@ public class BungeeCordMessage implements PluginMessageListener {
             return;
         }
         try {
-            final DataInputStream in = new DataInputStream(
-                    new ByteArrayInputStream(message));
+            final DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
             String subchannel = in.readUTF();
             if (subchannel.equals("IP")) { // We need only the IP channel
                 String ip = in.readUTF();

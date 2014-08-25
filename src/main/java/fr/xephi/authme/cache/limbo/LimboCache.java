@@ -39,11 +39,9 @@ public class LimboCache {
         boolean flying;
 
         if (playerData.doesCacheExist(player)) {
-            StoreInventoryEvent event = new StoreInventoryEvent(player,
-                    playerData);
+            StoreInventoryEvent event = new StoreInventoryEvent(player, playerData);
             Bukkit.getServer().getPluginManager().callEvent(event);
-            if (!event.isCancelled() && event.getInventory() != null
-                    && event.getArmor() != null) {
+            if (!event.isCancelled() && event.getInventory() != null && event.getArmor() != null) {
                 inv = event.getInventory();
                 arm = event.getArmor();
             } else {
@@ -56,34 +54,31 @@ public class LimboCache {
         } else {
             StoreInventoryEvent event = new StoreInventoryEvent(player);
             Bukkit.getServer().getPluginManager().callEvent(event);
-            if (!event.isCancelled() && event.getInventory() != null
-                    && event.getArmor() != null) {
+            if (!event.isCancelled() && event.getInventory() != null && event.getArmor() != null) {
                 inv = event.getInventory();
                 arm = event.getArmor();
             } else {
                 inv = null;
                 arm = null;
             }
-            if (player.isOp()) operator = true;
+            if (player.isOp())
+                operator = true;
             else operator = false;
-            if (player.isFlying()) flying = true;
+            if (player.isFlying())
+                flying = true;
             else flying = false;
             if (plugin.permission != null) {
                 try {
                     playerGroup = plugin.permission.getPrimaryGroup(player);
                 } catch (UnsupportedOperationException e) {
-                    ConsoleLogger
-                            .showError("Your permission system ("
-                                    + plugin.permission.getName()
-                                    + ") do not support Group system with that config... unhook!");
+                    ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
                     plugin.permission = null;
                 }
             }
         }
 
         if (Settings.isForceSurvivalModeEnabled) {
-            if (Settings.isResetInventoryIfCreative
-                    && player.getGameMode() == GameMode.CREATIVE) {
+            if (Settings.isResetInventoryIfCreative && player.getGameMode() == GameMode.CREATIVE) {
                 ResetInventoryEvent event = new ResetInventoryEvent(player);
                 Bukkit.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
@@ -96,13 +91,11 @@ public class LimboCache {
         if (player.isDead()) {
             loc = plugin.getSpawnLocation(player);
         }
-        cache.put(player.getName().toLowerCase(), new LimboPlayer(name, loc,
-                inv, arm, gameMode, operator, playerGroup, flying));
+        cache.put(player.getName().toLowerCase(), new LimboPlayer(name, loc, inv, arm, gameMode, operator, playerGroup, flying));
     }
 
     public void addLimboPlayer(Player player, String group) {
-        cache.put(player.getName().toLowerCase(), new LimboPlayer(player
-                .getName().toLowerCase(), group));
+        cache.put(player.getName().toLowerCase(), new LimboPlayer(player.getName().toLowerCase(), group));
     }
 
     public void deleteLimboPlayer(String name) {

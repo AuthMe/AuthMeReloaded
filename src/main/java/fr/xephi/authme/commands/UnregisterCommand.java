@@ -67,20 +67,16 @@ public class UnregisterCommand implements CommandExecutor {
             return true;
         }
         try {
-            if (PasswordSecurity.comparePasswordWithHash(args[0], PlayerCache
-                    .getInstance().getAuth(name).getHash(), player.getName())) {
+            if (PasswordSecurity.comparePasswordWithHash(args[0], PlayerCache.getInstance().getAuth(name).getHash(), player.getName())) {
                 if (!database.removeAuth(name)) {
                     player.sendMessage("error");
                     return true;
                 }
                 if (Settings.isForcedRegistrationEnabled) {
-                    if (Settings.isTeleportToSpawnEnabled
-                            && !Settings.noTeleport) {
+                    if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
                         Location spawn = plugin.getSpawnLocation(player);
-                        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(
-                                player, player.getLocation(), spawn, false);
-                        plugin.getServer().getPluginManager()
-                                .callEvent(tpEvent);
+                        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
+                        plugin.getServer().getPluginManager().callEvent(tpEvent);
                         if (!tpEvent.isCancelled()) {
                             player.teleport(tpEvent.getTo());
                         }
@@ -88,72 +84,48 @@ public class UnregisterCommand implements CommandExecutor {
                     player.getInventory().setContents(new ItemStack[36]);
                     player.getInventory().setArmorContents(new ItemStack[4]);
                     player.saveData();
-                    PlayerCache.getInstance().removePlayer(
-                            player.getName().toLowerCase());
-                    if (!Settings.getRegisteredGroup.isEmpty()) Utils
-                            .getInstance().setGroup(player,
-                                    groupType.UNREGISTERED);
+                    PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
+                    if (!Settings.getRegisteredGroup.isEmpty())
+                        Utils.getInstance().setGroup(player, groupType.UNREGISTERED);
                     LimboCache.getInstance().addLimboPlayer(player);
                     int delay = Settings.getRegistrationTimeout * 20;
                     int interval = Settings.getWarnMessageInterval;
                     BukkitScheduler sched = sender.getServer().getScheduler();
                     if (delay != 0) {
-                        int id = sched.scheduleSyncDelayedTask(plugin,
-                                new TimeoutTask(plugin, name), delay);
-                        LimboCache.getInstance().getLimboPlayer(name)
-                                .setTimeoutTaskId(id);
+                        int id = sched.scheduleSyncDelayedTask(plugin, new TimeoutTask(plugin, name), delay);
+                        LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
-                    LimboCache
-                            .getInstance()
-                            .getLimboPlayer(name)
-                            .setMessageTaskId(
-                                    sched.scheduleSyncDelayedTask(
-                                            plugin,
-                                            new MessageTask(plugin, name, m
-                                                    ._("reg_msg"), interval)));
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("reg_msg"), interval)));
                     m._(player, "unregistered");
-                    ConsoleLogger.info(player.getDisplayName()
-                            + " unregistered himself");
+                    ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                     if (plugin.notifications != null) {
-                        plugin.notifications.showNotification(new Notification(
-                                "[AuthMe] " + player.getName()
-                                        + " unregistered himself!"));
+                        plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
                     }
                     return true;
                 }
                 if (!Settings.unRegisteredGroup.isEmpty()) {
-                    Utils.getInstance().setGroup(player,
-                            Utils.groupType.UNREGISTERED);
+                    Utils.getInstance().setGroup(player, Utils.groupType.UNREGISTERED);
                 }
-                PlayerCache.getInstance().removePlayer(
-                        player.getName().toLowerCase());
+                PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                 // check if Player cache File Exist and delete it, preventing
                 // duplication of items
                 if (playerCache.doesCacheExist(player)) {
                     playerCache.removeCache(player);
                 }
-                if (Settings.applyBlindEffect) player
-                        .addPotionEffect(new PotionEffect(
-                                PotionEffectType.BLINDNESS,
-                                Settings.getRegistrationTimeout * 20, 2));
+                if (Settings.applyBlindEffect)
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
                 m._(player, "unregistered");
-                ConsoleLogger.info(player.getDisplayName()
-                        + " unregistered himself");
+                ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                 if (plugin.notifications != null) {
-                    plugin.notifications.showNotification(new Notification(
-                            "[AuthMe] " + player.getName()
-                                    + " unregistered himself!"));
+                    plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
                 }
                 if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
                     Location spawn = plugin.getSpawnLocation(player);
-                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player,
-                            player.getLocation(), spawn, false);
+                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if (!tpEvent.isCancelled()) {
-                        if (!tpEvent.getTo().getWorld()
-                                .getChunkAt(tpEvent.getTo()).isLoaded()) {
-                            tpEvent.getTo().getWorld()
-                                    .getChunkAt(tpEvent.getTo()).load();
+                        if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+                            tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
                         }
                         player.teleport(tpEvent.getTo());
                     }

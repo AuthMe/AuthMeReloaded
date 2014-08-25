@@ -23,6 +23,7 @@ public class SpoutCfg extends CustomConfiguration {
         this.set("LoginScreen.login button", "Login");
         this.set("LoginScreen.title", "LOGIN");
         this.set("LoginScreen.text", new ArrayList<String>() {
+
             {
                 add("Sample text");
                 add("Change this at spout.yml");
@@ -33,8 +34,8 @@ public class SpoutCfg extends CustomConfiguration {
     }
 
     public static SpoutCfg getInstance() {
-        if (instance == null) instance = new SpoutCfg(new File(
-                "plugins/AuthMe", "spout.yml"));
+        if (instance == null)
+            instance = new SpoutCfg(new File("plugins" + File.separator + "AuthMe", "spout.yml"));
         return instance;
     }
 }

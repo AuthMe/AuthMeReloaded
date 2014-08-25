@@ -9,11 +9,12 @@ import java.util.List;
  * @author Xephi59
  */
 public class PlayersLogs extends CustomConfiguration {
+
     private static PlayersLogs pllog = null;
     public List<String> players;
 
     public PlayersLogs() {
-        super(new File("./plugins/AuthMe/players.yml"));
+        super(new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "players.yml"));
         pllog = this;
         load();
         save();

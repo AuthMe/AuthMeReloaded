@@ -19,6 +19,7 @@ import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Settings;
 
 public class Utils {
+
     private String currentGroup;
     private static Utils singleton;
     int id;
@@ -33,16 +34,15 @@ public class Utils {
     }
 
     public void setGroup(String player, groupType group) {
-        if (!Settings.isPermissionCheckEnabled) return;
-        if (plugin.permission == null) return;
+        if (!Settings.isPermissionCheckEnabled)
+            return;
+        if (plugin.permission == null)
+            return;
         try {
             World world = null;
             currentGroup = plugin.permission.getPrimaryGroup(world, player);
         } catch (UnsupportedOperationException e) {
-            ConsoleLogger
-                    .showError("Your permission system ("
-                            + plugin.permission.getName()
-                            + ") do not support Group system with that config... unhook!");
+            ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
             plugin.permission = null;
             return;
         }
@@ -51,28 +51,27 @@ public class Utils {
         switch (group) {
             case UNREGISTERED: {
                 plugin.permission.playerRemoveGroup(world, name, currentGroup);
-                plugin.permission.playerAddGroup(world, name,
-                        Settings.unRegisteredGroup);
+                plugin.permission.playerAddGroup(world, name, Settings.unRegisteredGroup);
                 break;
             }
             case REGISTERED: {
                 plugin.permission.playerRemoveGroup(world, name, currentGroup);
-                plugin.permission.playerAddGroup(world, name,
-                        Settings.getRegisteredGroup);
+                plugin.permission.playerAddGroup(world, name, Settings.getRegisteredGroup);
                 break;
             }
             case NOTLOGGEDIN: {
-                if (!useGroupSystem()) break;
+                if (!useGroupSystem())
+                    break;
                 plugin.permission.playerRemoveGroup(world, name, currentGroup);
-                plugin.permission.playerAddGroup(world, name,
-                        Settings.getUnloggedinGroup);
+                plugin.permission.playerAddGroup(world, name, Settings.getUnloggedinGroup);
                 break;
             }
             case LOGGEDIN: {
-                if (!useGroupSystem()) break;
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(
-                        name.toLowerCase());
-                if (limbo == null) break;
+                if (!useGroupSystem())
+                    break;
+                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name.toLowerCase());
+                if (limbo == null)
+                    break;
                 String realGroup = limbo.getGroup();
                 plugin.permission.playerRemoveGroup(world, name, currentGroup);
                 plugin.permission.playerAddGroup(world, name, realGroup);
@@ -86,20 +85,15 @@ public class Utils {
         if (!useGroupSystem()) {
             return false;
         }
-        if (plugin.permission == null) return false;
+        if (plugin.permission == null)
+            return false;
         World world = null;
         try {
-            if (plugin.permission.playerRemoveGroup(world, player.getName()
-                    .toString(), Settings.getUnloggedinGroup)
-                    && plugin.permission.playerAddGroup(world, player.getName()
-                            .toString(), group)) {
+            if (plugin.permission.playerRemoveGroup(world, player.getName().toString(), Settings.getUnloggedinGroup) && plugin.permission.playerAddGroup(world, player.getName().toString(), group)) {
                 return true;
             }
         } catch (UnsupportedOperationException e) {
-            ConsoleLogger
-                    .showError("Your permission system ("
-                            + plugin.permission.getName()
-                            + ") do not support Group system with that config... unhook!");
+            ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
             plugin.permission = null;
             return false;
         }
@@ -107,7 +101,8 @@ public class Utils {
     }
 
     public void hasPermOnJoin(Player player) {
-        if (plugin.permission == null) return;
+        if (plugin.permission == null)
+            return;
         Iterator<String> iter = Settings.getJoinPermissions.iterator();
         while (iter.hasNext()) {
             String permission = iter.next();
@@ -118,10 +113,12 @@ public class Utils {
     }
 
     public boolean isUnrestricted(Player player) {
-        if (!Settings.isAllowRestrictedIp) return false;
-        if (Settings.getUnrestrictedName.isEmpty()
-                || Settings.getUnrestrictedName == null) return false;
-        if (Settings.getUnrestrictedName.contains(player.getName())) return true;
+        if (!Settings.isAllowRestrictedIp)
+            return false;
+        if (Settings.getUnrestrictedName.isEmpty() || Settings.getUnrestrictedName == null)
+            return false;
+        if (Settings.getUnrestrictedName.contains(player.getName()))
+            return true;
         return false;
     }
 
@@ -131,8 +128,8 @@ public class Utils {
     }
 
     private boolean useGroupSystem() {
-        if (Settings.isPermissionCheckEnabled
-                && !Settings.getUnloggedinGroup.isEmpty()) return true;
+        if (Settings.isPermissionCheckEnabled && !Settings.getUnloggedinGroup.isEmpty())
+            return true;
         return false;
     }
 
@@ -144,18 +141,20 @@ public class Utils {
         } else {
             theWorld = Bukkit.getWorld(w);
         }
-        if (theWorld == null) theWorld = pl.getWorld();
+        if (theWorld == null)
+            theWorld = pl.getWorld();
         final World world = theWorld;
         final Location locat = new Location(world, x, y, z);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
             @Override
             public void run() {
                 AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, locat);
                 plugin.getServer().getPluginManager().callEvent(tpEvent);
                 if (!tpEvent.isCancelled()) {
-                    if (!tpEvent.getTo().getChunk().isLoaded()) tpEvent.getTo()
-                            .getChunk().load();
+                    if (!tpEvent.getTo().getChunk().isLoaded())
+                        tpEvent.getTo().getChunk().load();
                     pl.teleport(tpEvent.getTo());
                 }
             }
@@ -166,16 +165,16 @@ public class Utils {
      * Random Token for passpartu
      */
     public boolean obtainToken() {
-        File file = new File("plugins/AuthMe/passpartu.token");
-        if (file.exists()) file.delete();
+        File file = new File("plugins" + File.separator + "AuthMe" + File.separator + "passpartu.token");
+        if (file.exists())
+            file.delete();
 
         FileWriter writer = null;
         try {
             file.createNewFile();
             writer = new FileWriter(file);
             String token = generateToken();
-            writer.write(token + ":" + System.currentTimeMillis() / 1000
-                    + API.newline);
+            writer.write(token + ":" + System.currentTimeMillis() / 1000 + API.newline);
             writer.flush();
             ConsoleLogger.info("[AuthMe] Security passpartu token: " + token);
             writer.close();
@@ -190,11 +189,13 @@ public class Utils {
      * Read Token
      */
     public boolean readToken(String inputToken) {
-        File file = new File("plugins/AuthMe/passpartu.token");
+        File file = new File("plugins" + File.separator + "AuthMe" + File.separator + "passpartu.token");
 
-        if (!file.exists()) return false;
+        if (!file.exists())
+            return false;
 
-        if (inputToken.isEmpty()) return false;
+        if (inputToken.isEmpty())
+            return false;
         Scanner reader = null;
         try {
             reader = new Scanner(file);
@@ -202,9 +203,7 @@ public class Utils {
                 final String line = reader.nextLine();
                 if (line.contains(":")) {
                     String[] tokenInfo = line.split(":");
-                    if (tokenInfo[0].equals(inputToken)
-                            && System.currentTimeMillis() / 1000 - 30 <= Integer
-                                    .parseInt(tokenInfo[1])) {
+                    if (tokenInfo[0].equals(inputToken) && System.currentTimeMillis() / 1000 - 30 <= Integer.parseInt(tokenInfo[1])) {
                         file.delete();
                         reader.close();
                         return true;
@@ -236,13 +235,15 @@ public class Utils {
      * Used for force player GameMode
      */
     public static void forceGM(Player player) {
-        if (!AuthMe.getInstance().authmePermissible(player,
-                "authme.bypassforcesurvival")) player
-                .setGameMode(GameMode.SURVIVAL);
+        if (!AuthMe.getInstance().authmePermissible(player, "authme.bypassforcesurvival"))
+            player.setGameMode(GameMode.SURVIVAL);
     }
 
     public enum groupType {
-        UNREGISTERED, REGISTERED, NOTLOGGEDIN, LOGGEDIN
+        UNREGISTERED,
+        REGISTERED,
+        NOTLOGGEDIN,
+        LOGGEDIN
     }
 
 }

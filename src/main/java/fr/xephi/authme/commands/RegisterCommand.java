@@ -57,16 +57,15 @@ public class RegisterCommand implements CommandExecutor {
             plugin.management.performRegister(player, thePass, email);
             return true;
         }
-        if (args.length == 0
-                || (Settings.getEnablePasswordVerifier && args.length < 2)) {
+        if (args.length == 0 || (Settings.getEnablePasswordVerifier && args.length < 2)) {
             m._(player, "usage_reg");
             return true;
         }
-        if (args.length > 1 && Settings.getEnablePasswordVerifier) if (!args[0]
-                .equals(args[1])) {
-            m._(player, "password_error");
-            return true;
-        }
+        if (args.length > 1 && Settings.getEnablePasswordVerifier)
+            if (!args[0].equals(args[1])) {
+                m._(player, "password_error");
+                return true;
+            }
         plugin.management.performRegister(player, args[0], "");
         return true;
     }

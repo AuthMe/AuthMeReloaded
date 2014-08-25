@@ -23,8 +23,7 @@ public class PerformBackup {
     private String tblname = Settings.getMySQLTablename;
     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
     String dateString = format.format(new Date());
-    private String path = AuthMe.getInstance().getDataFolder()
-            + "/backups/backup" + dateString;
+    private String path = AuthMe.getInstance().getDataFolder() + File.separator + "backups" + File.separator + "backup" + dateString;
     private AuthMe instance;
 
     public PerformBackup(AuthMe instance) {
@@ -49,15 +48,12 @@ public class PerformBackup {
     }
 
     private boolean MySqlBackup() {
-        File dirBackup = new File(AuthMe.getInstance().getDataFolder()
-                + "/backups");
+        File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
-        if (!dirBackup.exists()) dirBackup.mkdir();
+        if (!dirBackup.exists())
+            dirBackup.mkdir();
         if (checkWindows(Settings.backupWindowsPath)) {
-            String executeCmd = Settings.backupWindowsPath
-                    + "\\bin\\mysqldump.exe -u " + dbUserName + " -p"
-                    + dbPassword + " " + dbName + " --tables " + tblname
-                    + " -r " + path + ".sql";
+            String executeCmd = Settings.backupWindowsPath + "\\bin\\mysqldump.exe -u " + dbUserName + " -p" + dbPassword + " " + dbName + " --tables " + tblname + " -r " + path + ".sql";
             Process runtimeProcess;
             try {
                 runtimeProcess = Runtime.getRuntime().exec(executeCmd);
@@ -72,9 +68,7 @@ public class PerformBackup {
                 ex.printStackTrace();
             }
         } else {
-            String executeCmd = "mysqldump -u " + dbUserName + " -p"
-                    + dbPassword + " " + dbName + " --tables " + tblname
-                    + " -r " + path + ".sql";
+            String executeCmd = "mysqldump -u " + dbUserName + " -p" + dbPassword + " " + dbName + " --tables " + tblname + " -r " + path + ".sql";
             Process runtimeProcess;
             try {
                 runtimeProcess = Runtime.getRuntime().exec(executeCmd);
@@ -93,13 +87,13 @@ public class PerformBackup {
     }
 
     private boolean FileBackup(String backend) {
-        File dirBackup = new File(AuthMe.getInstance().getDataFolder()
-                + "/backups");
+        File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
-        if (!dirBackup.exists()) dirBackup.mkdir();
+        if (!dirBackup.exists())
+            dirBackup.mkdir();
 
         try {
-            copy(new File("plugins/AuthMe/" + backend), new File(path + ".db"));
+            copy(new File("plugins" + File.separator + "AuthMe" + File.separator + backend), new File(path + ".db"));
             return true;
 
         } catch (Exception ex) {
@@ -118,8 +112,7 @@ public class PerformBackup {
             if (new File(windowsPath + "\\bin\\mysqldump.exe").exists()) {
                 return true;
             } else {
-                ConsoleLogger
-                        .showError("Mysql Windows Path is incorrect please check it");
+                ConsoleLogger.showError("Mysql Windows Path is incorrect please check it");
                 return true;
             }
         } else return false;

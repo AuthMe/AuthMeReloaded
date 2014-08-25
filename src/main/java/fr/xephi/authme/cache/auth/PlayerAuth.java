@@ -129,7 +129,8 @@ public class PlayerAuth {
     }
 
     public String getIp() {
-        if (ip == null || ip.isEmpty()) ip = "127.0.0.1";
+        if (ip == null || ip.isEmpty())
+            ip = "127.0.0.1";
         return ip;
     }
 
@@ -139,8 +140,7 @@ public class PlayerAuth {
 
     public String getHash() {
         if (Settings.getPasswordHash == HashAlgorithm.MD5VB) {
-            if (salt != null && !salt.isEmpty()
-                    && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
+            if (salt != null && !salt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
                 vBhash = "$MD5vb$" + salt + "$" + hash;
                 return vBhash;
             }
@@ -186,7 +186,8 @@ public class PlayerAuth {
 
     public long getLastLogin() {
         try {
-            if (Long.valueOf(lastLogin) == null) lastLogin = 0L;
+            if (Long.valueOf(lastLogin) == null)
+                lastLogin = 0L;
         } catch (NullPointerException e) {
             lastLogin = 0L;
         }
@@ -219,15 +220,13 @@ public class PlayerAuth {
             return false;
         }
         PlayerAuth other = (PlayerAuth) obj;
-        return other.getIp().equals(this.ip)
-                && other.getNickname().equals(this.nickname);
+        return other.getIp().equals(this.ip) && other.getNickname().equals(this.nickname);
     }
 
     @Override
     public int hashCode() {
         int hashCode = 7;
-        hashCode = 71 * hashCode
-                + (this.nickname != null ? this.nickname.hashCode() : 0);
+        hashCode = 71 * hashCode + (this.nickname != null ? this.nickname.hashCode() : 0);
         hashCode = 71 * hashCode + (this.ip != null ? this.ip.hashCode() : 0);
         return hashCode;
     }
@@ -242,10 +241,7 @@ public class PlayerAuth {
 
     @Override
     public String toString() {
-        String s = "Player : " + nickname + " ! IP : " + ip + " ! LastLogin : "
-                + lastLogin + " ! LastPosition : " + x + "," + y + "," + z
-                + "," + world + " ! Email : " + email + " ! Hash : " + hash
-                + " ! Salt : " + salt + " ! RealName : " + realName;
+        String s = "Player : " + nickname + " ! IP : " + ip + " ! LastLogin : " + lastLogin + " ! LastPosition : " + x + "," + y + "," + z + "," + world + " ! Email : " + email + " ! Hash : " + hash + " ! Salt : " + salt + " ! RealName : " + realName;
         return s;
 
     }

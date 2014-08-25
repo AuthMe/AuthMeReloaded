@@ -32,6 +32,7 @@ package fr.xephi.authme.security.pbkdf2;
  * @version 1.0
  */
 public interface PBKDF2Formatter {
+
     /**
      * Convert parameters to String.
      * 

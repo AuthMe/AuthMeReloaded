@@ -6,8 +6,10 @@ import org.bukkit.event.HandlerList;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 
 /**
- * <p>This event is called when we need to compare or get an hash password,
- * for set a custom EncryptionMethod</p>
+ * <p>
+ * This event is called when we need to compare or get an hash password, for set
+ * a custom EncryptionMethod
+ * </p>
  * 
  * @see fr.xephi.authme.security.crypts.EncryptionMethod
  * 
@@ -15,31 +17,31 @@ import fr.xephi.authme.security.crypts.EncryptionMethod;
  */
 public class PasswordEncryptionEvent extends Event {
 
-	private static final HandlerList handlers = new HandlerList();
-	private EncryptionMethod method = null;
-	private String playerName = "";
+    private static final HandlerList handlers = new HandlerList();
+    private EncryptionMethod method = null;
+    private String playerName = "";
 
-	public PasswordEncryptionEvent(EncryptionMethod method, String playerName) {
-		this.method = method;
-		this.playerName = playerName;
-	}
+    public PasswordEncryptionEvent(EncryptionMethod method, String playerName) {
+        this.method = method;
+        this.playerName = playerName;
+    }
 
-	@Override
-	public HandlerList getHandlers() {
-		return handlers;
-	}
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
 
-	public void setMethod(EncryptionMethod method) {
-		this.method = method;
-	}
+    public void setMethod(EncryptionMethod method) {
+        this.method = method;
+    }
 
-	public EncryptionMethod getMethod() {
-		return method;
-	}
+    public EncryptionMethod getMethod() {
+        return method;
+    }
 
-	public String getPlayerName() {
-		return playerName;
-	}
+    public String getPlayerName() {
+        return playerName;
+    }
 
     public static HandlerList getHandlerList() {
         return handlers;

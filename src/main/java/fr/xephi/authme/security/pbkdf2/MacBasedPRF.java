@@ -42,6 +42,7 @@ import javax.crypto.spec.SecretKeySpec;
  * @version 1.0
  */
 public class MacBasedPRF implements PRF {
+
     protected Mac mac;
 
     protected int hLen;

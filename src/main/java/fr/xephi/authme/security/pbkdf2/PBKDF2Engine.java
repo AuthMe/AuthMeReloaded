@@ -70,6 +70,7 @@ import java.security.SecureRandom;
  * @version 1.0
  */
 public class PBKDF2Engine implements PBKDF2 {
+
     protected PBKDF2Parameters parameters;
 
     protected PRF prf;
@@ -135,8 +136,7 @@ public class PBKDF2Engine implements PBKDF2 {
         if (dkLen == 0) {
             dkLen = prf.getHLen();
         }
-        r = PBKDF2(prf, parameters.getSalt(), parameters.getIterationCount(),
-                dkLen);
+        r = PBKDF2(prf, parameters.getSalt(), parameters.getIterationCount(), dkLen);
         return r;
     }
 
@@ -337,8 +337,7 @@ public class PBKDF2Engine implements PBKDF2 {
             byte[] salt = new byte[8];
             sr.nextBytes(salt);
             int iterations = 1000;
-            PBKDF2Parameters p = new PBKDF2Parameters("HmacSHA1", "ISO-8859-1",
-                    salt, iterations);
+            PBKDF2Parameters p = new PBKDF2Parameters("HmacSHA1", "ISO-8859-1", salt, iterations);
             PBKDF2Engine e = new PBKDF2Engine(p);
             p.setDerivedKey(e.deriveKey(password));
             candidate = formatter.toString(p);
@@ -349,9 +348,7 @@ public class PBKDF2Engine implements PBKDF2 {
             p.setHashAlgorithm("HmacSHA1");
             p.setHashCharset("ISO-8859-1");
             if (formatter.fromString(p, candidate)) {
-                throw new IllegalArgumentException(
-                        "Candidate data does not have correct format (\""
-                                + candidate + "\")");
+                throw new IllegalArgumentException("Candidate data does not have correct format (\"" + candidate + "\")");
             }
             PBKDF2Engine e = new PBKDF2Engine(p);
             boolean verifyOK = e.verifyKey(password);

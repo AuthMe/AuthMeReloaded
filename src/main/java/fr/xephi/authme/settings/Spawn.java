@@ -13,7 +13,7 @@ public class Spawn extends CustomConfiguration {
     private static Spawn spawn;
 
     public Spawn() {
-        super(new File("./plugins/AuthMe/spawn.yml"));
+        super(new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "spawn.yml"));
         spawn = this;
         load();
         save();
@@ -85,13 +85,9 @@ public class Spawn extends CustomConfiguration {
 
     public Location getSpawn() {
         try {
-            if (this.getString("spawn.world").isEmpty()
-                    || this.getString("spawn.world") == "") return null;
-            Location location = new Location(Bukkit.getWorld(this
-                    .getString("spawn.world")), this.getDouble("spawn.x"),
-                    this.getDouble("spawn.y"), this.getDouble("spawn.z"),
-                    Float.parseFloat(this.getString("spawn.yaw")),
-                    Float.parseFloat(this.getString("spawn.pitch")));
+            if (this.getString("spawn.world").isEmpty() || this.getString("spawn.world") == "")
+                return null;
+            Location location = new Location(Bukkit.getWorld(this.getString("spawn.world")), this.getDouble("spawn.x"), this.getDouble("spawn.y"), this.getDouble("spawn.z"), Float.parseFloat(this.getString("spawn.yaw")), Float.parseFloat(this.getString("spawn.pitch")));
             return location;
         } catch (NullPointerException npe) {
             return null;
@@ -102,15 +98,9 @@ public class Spawn extends CustomConfiguration {
 
     public Location getFirstSpawn() {
         try {
-            if (this.getString("firstspawn.world").isEmpty()
-                    || this.getString("firstspawn.world") == "") return null;
-            Location location = new Location(Bukkit.getWorld(this
-                    .getString("firstspawn.world")),
-                    this.getDouble("firstspawn.x"),
-                    this.getDouble("firstspawn.y"),
-                    this.getDouble("firstspawn.z"), Float.parseFloat(this
-                            .getString("firstspawn.yaw")),
-                    Float.parseFloat(this.getString("firstspawn.pitch")));
+            if (this.getString("firstspawn.world").isEmpty() || this.getString("firstspawn.world") == "")
+                return null;
+            Location location = new Location(Bukkit.getWorld(this.getString("firstspawn.world")), this.getDouble("firstspawn.x"), this.getDouble("firstspawn.y"), this.getDouble("firstspawn.z"), Float.parseFloat(this.getString("firstspawn.yaw")), Float.parseFloat(this.getString("firstspawn.pitch")));
             return location;
         } catch (NullPointerException npe) {
             return null;

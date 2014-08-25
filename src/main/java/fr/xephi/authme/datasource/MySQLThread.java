@@ -70,32 +70,29 @@ public class MySQLThread extends Thread implements DataSource {
         } catch (ClassNotFoundException e) {
             ConsoleLogger.showError(e.getMessage());
             if (Settings.isStopEnabled) {
-                ConsoleLogger
-                        .showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
+                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
             }
-            if (!Settings.isStopEnabled) AuthMe.getInstance().getServer()
-                    .getPluginManager().disablePlugin(AuthMe.getInstance());
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         } catch (SQLException e) {
             ConsoleLogger.showError(e.getMessage());
             if (Settings.isStopEnabled) {
-                ConsoleLogger
-                        .showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
+                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
             }
-            if (!Settings.isStopEnabled) AuthMe.getInstance().getServer()
-                    .getPluginManager().disablePlugin(AuthMe.getInstance());
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         } catch (TimeoutException e) {
             ConsoleLogger.showError(e.getMessage());
             if (Settings.isStopEnabled) {
-                ConsoleLogger
-                        .showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
+                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
             }
-            if (!Settings.isStopEnabled) AuthMe.getInstance().getServer()
-                    .getPluginManager().disablePlugin(AuthMe.getInstance());
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         }
     }
@@ -121,85 +118,45 @@ public class MySQLThread extends Thread implements DataSource {
         try {
             con = makeSureConnectionIsReady();
             st = con.createStatement();
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " ("
-                    + columnID + " INTEGER AUTO_INCREMENT," + columnName
-                    + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword
-                    + " VARCHAR(255) NOT NULL," + columnIp
-                    + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1',"
-                    + columnLastLogin + " BIGINT NOT NULL DEFAULT '"
-                    + System.currentTimeMillis() + "'," + lastlocX
-                    + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY
-                    + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ
-                    + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld
-                    + " VARCHAR(255) DEFAULT 'world'," + columnEmail
-                    + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged
-                    + " SMALLINT NOT NULL DEFAULT '0',"
-                    + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID
-                    + "));");
-            rs = con.getMetaData().getColumns(null, null, tableName,
-                    columnPassword);
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1'," + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "'," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) DEFAULT 'world'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged + " SMALLINT NOT NULL DEFAULT '0'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
+            rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + columnPassword + " VARCHAR(255) NOT NULL;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnPassword + " VARCHAR(255) NOT NULL;");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnIp);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + columnIp + " VARCHAR(40) NOT NULL;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnIp + " VARCHAR(40) NOT NULL;");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName,
-                    columnLastLogin);
+            rs = con.getMetaData().getColumns(null, null, tableName, columnLastLogin);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + columnLastLogin + " BIGINT;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLastLogin + " BIGINT;");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0' AFTER "
-                        + columnLastLogin + " , ADD " + lastlocY
-                        + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + lastlocX
-                        + " , ADD " + lastlocZ
-                        + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + lastlocY
-                        + ";");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + columnLastLogin + " , ADD " + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + lastlocX + " , ADD " + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0' AFTER " + lastlocY + ";");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName,
-                    lastlocWorld);
+            rs = con.getMetaData().getColumns(null, null, tableName, lastlocWorld);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + lastlocWorld
-                        + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER "
-                        + lastlocZ + ";");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER " + lastlocZ + ";");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName,
-                    columnEmail);
+            rs = con.getMetaData().getColumns(null, null, tableName, columnEmail);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + columnEmail
-                        + " VARCHAR(255) DEFAULT 'your@email.com' AFTER "
-                        + lastlocWorld + ";");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com' AFTER " + lastlocWorld + ";");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName,
-                    columnLogged);
+            rs = con.getMetaData().getColumns(null, null, tableName, columnLogged);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + columnLogged
-                        + " SMALLINT NOT NULL DEFAULT '0' AFTER " + columnEmail
-                        + ";");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLogged + " SMALLINT NOT NULL DEFAULT '0' AFTER " + columnEmail + ";");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
             if (rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " MODIFY "
-                        + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY "
-                        + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY "
-                        + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " MODIFY " + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY " + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY " + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
             }
         } finally {
             close(rs);
@@ -215,8 +172,7 @@ public class MySQLThread extends Thread implements DataSource {
         ResultSet rs = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnName + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
 
             pst.setString(1, user);
             rs = pst.executeQuery();
@@ -243,61 +199,25 @@ public class MySQLThread extends Thread implements DataSource {
         int id = -1;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnName + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next()) {
                 id = rs.getInt(columnID);
-                if (rs.getString(columnIp).isEmpty()
-                        && rs.getString(columnIp) != null) {
-                    pAuth = new PlayerAuth(rs.getString(columnName),
-                            rs.getString(columnPassword), "198.18.0.1",
-                            rs.getLong(columnLastLogin),
-                            rs.getDouble(lastlocX), rs.getDouble(lastlocY),
-                            rs.getDouble(lastlocZ), rs.getString(lastlocWorld),
-                            rs.getString(columnEmail), API.getPlayerRealName(rs
-                                    .getString(columnName)));
+                if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
+                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                 } else {
                     if (!columnSalt.isEmpty()) {
-                        if (!columnGroup.isEmpty()) pAuth = new PlayerAuth(
-                                rs.getString(columnName),
-                                rs.getString(columnPassword),
-                                rs.getString(columnSalt),
-                                rs.getInt(columnGroup), rs.getString(columnIp),
-                                rs.getLong(columnLastLogin),
-                                rs.getDouble(lastlocX), rs.getDouble(lastlocY),
-                                rs.getDouble(lastlocZ),
-                                rs.getString(lastlocWorld),
-                                rs.getString(columnEmail),
-                                API.getPlayerRealName(rs.getString(columnName)));
-                        else pAuth = new PlayerAuth(rs.getString(columnName),
-                                rs.getString(columnPassword),
-                                rs.getString(columnSalt),
-                                rs.getString(columnIp),
-                                rs.getLong(columnLastLogin),
-                                rs.getDouble(lastlocX), rs.getDouble(lastlocY),
-                                rs.getDouble(lastlocZ),
-                                rs.getString(lastlocWorld),
-                                rs.getString(columnEmail),
-                                API.getPlayerRealName(rs.getString(columnName)));
+                        if (!columnGroup.isEmpty())
+                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
+                        else pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                     } else {
-                        pAuth = new PlayerAuth(rs.getString(columnName),
-                                rs.getString(columnPassword),
-                                rs.getString(columnIp),
-                                rs.getLong(columnLastLogin),
-                                rs.getDouble(lastlocX), rs.getDouble(lastlocY),
-                                rs.getDouble(lastlocZ),
-                                rs.getString(lastlocWorld),
-                                rs.getString(columnEmail),
-                                API.getPlayerRealName(rs.getString(columnName)));
+                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                     }
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                     rs.close();
-                    pst = con
-                            .prepareStatement("SELECT * FROM xf_user_authenticate WHERE "
-                                    + columnID + "=?;");
+                    pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
                     rs = pst.executeQuery();
                     if (rs.next()) {
@@ -329,21 +249,15 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            if ((columnSalt == null || columnSalt.isEmpty())
-                    || (auth.getSalt() == null || auth.getSalt().isEmpty())) {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "("
-                        + columnName + "," + columnPassword + "," + columnIp
-                        + "," + columnLastLogin + ") VALUES (?,?,?,?);");
+            if ((columnSalt == null || columnSalt.isEmpty()) || (auth.getSalt() == null || auth.getSalt().isEmpty())) {
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + ") VALUES (?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
                 pst.executeUpdate();
             } else {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "("
-                        + columnName + "," + columnPassword + "," + columnIp
-                        + "," + columnLastLogin + "," + columnSalt
-                        + ") VALUES (?,?,?,?,?);");
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnSalt + ") VALUES (?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getHash());
                 pst.setString(3, auth.getIp());
@@ -353,8 +267,7 @@ public class MySQLThread extends Thread implements DataSource {
             }
             if (!columnOthers.isEmpty()) {
                 for (String column : columnOthers) {
-                    pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                            + column + "=? WHERE " + columnName + "=?;");
+                    pst = con.prepareStatement("UPDATE " + tableName + " SET " + column + "=? WHERE " + columnName + "=?;");
                     pst.setString(1, auth.getRealname());
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
@@ -363,42 +276,32 @@ public class MySQLThread extends Thread implements DataSource {
             if (Settings.getPasswordHash == HashAlgorithm.PHPBB) {
                 int id;
                 ResultSet rs = null;
-                pst = con.prepareStatement("SELECT * FROM " + tableName
-                        + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     id = rs.getInt(columnID);
                     // Insert player in phpbb_user_group
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getPhpbbPrefix
-                                    + "user_group (group_id, user_id, group_leader, user_pending) VALUES (?,?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getPhpbbPrefix + "user_group (group_id, user_id, group_leader, user_pending) VALUES (?,?,?,?);");
                     pst.setInt(1, Settings.getPhpbbGroup);
                     pst.setInt(2, id);
                     pst.setInt(3, 0);
                     pst.setInt(4, 0);
                     pst.executeUpdate();
                     // Update player group in phpbb_users
-                    pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                            + tableName + ".group_id=? WHERE " + columnName
-                            + "=?;");
+                    pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".group_id=? WHERE " + columnName + "=?;");
                     pst.setInt(1, Settings.getPhpbbGroup);
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
                     // Get current time without ms
                     long time = System.currentTimeMillis() / 1000;
                     // Update user_regdate
-                    pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                            + tableName + ".user_regdate=? WHERE " + columnName
-                            + "=?;");
+                    pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".user_regdate=? WHERE " + columnName + "=?;");
                     pst.setLong(1, time);
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
                     // Update user_lastvisit
-                    pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                            + tableName + ".user_lastvisit=? WHERE "
-                            + columnName + "=?;");
+                    pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".user_lastvisit=? WHERE " + columnName + "=?;");
                     pst.setLong(1, time);
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
@@ -407,116 +310,79 @@ public class MySQLThread extends Thread implements DataSource {
             if (Settings.getPasswordHash == HashAlgorithm.WORDPRESS) {
                 int id;
                 ResultSet rs = null;
-                pst = con.prepareStatement("SELECT * FROM " + tableName
-                        + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     id = rs.getInt(columnID);
                     // First Name
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "first_name");
                     pst.setString(3, "");
                     pst.executeUpdate();
                     // Last Name
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "last_name");
                     pst.setString(3, "");
                     pst.executeUpdate();
                     // Nick Name
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "nickname");
                     pst.setString(3, auth.getNickname());
                     pst.executeUpdate();
                     // Description
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "description");
                     pst.setString(3, "");
                     pst.executeUpdate();
                     // Rich_Editing
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "rich_editing");
                     pst.setString(3, "true");
                     pst.executeUpdate();
                     // Comments_Shortcuts
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "comment_shortcuts");
                     pst.setString(3, "false");
                     pst.executeUpdate();
                     // admin_color
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "admin_color");
                     pst.setString(3, "fresh");
                     pst.executeUpdate();
                     // use_ssl
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "use_ssl");
                     pst.setString(3, "0");
                     pst.executeUpdate();
                     // show_admin_bar_front
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "show_admin_bar_front");
                     pst.setString(3, "true");
                     pst.executeUpdate();
                     // wp_capabilities
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "wp_capabilities");
                     pst.setString(3, "a:1:{s:10:\"subscriber\";b:1;}");
                     pst.executeUpdate();
                     // wp_user_level
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "wp_user_level");
                     pst.setString(3, "0");
                     pst.executeUpdate();
                     // default_password_nag
-                    pst = con
-                            .prepareStatement("INSERT INTO "
-                                    + Settings.getWordPressPrefix
-                                    + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "default_password_nag");
                     pst.setString(3, "");
@@ -526,15 +392,13 @@ public class MySQLThread extends Thread implements DataSource {
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
                 ResultSet rs = null;
-                pst = con.prepareStatement("SELECT * FROM " + tableName
-                        + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     id = rs.getInt(columnID);
                     // Insert password in the correct table
-                    pst = con
-                            .prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
+                    pst = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "XenForo_Authentication_Core12");
                     byte[] bytes = auth.getHash().getBytes();
@@ -563,33 +427,27 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnPassword + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
                 ResultSet rs = null;
-                pst = con.prepareStatement("SELECT * FROM " + tableName
-                        + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     id = rs.getInt(columnID);
                     // Insert password in the correct table
-                    pst = con
-                            .prepareStatement("UPDATE xf_user_authenticate SET data=? WHERE "
-                                    + columnID + "=?;");
+                    pst = con.prepareStatement("UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;");
                     byte[] bytes = auth.getHash().getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
                     pst.setBlob(1, blob);
                     pst.setInt(2, id);
                     pst.executeUpdate();
-                    pst = con
-                            .prepareStatement("UPDATE xf_user_authenticate SET scheme_class=? WHERE "
-                                    + columnID + "=?;");
+                    pst = con.prepareStatement("UPDATE xf_user_authenticate SET scheme_class=? WHERE " + columnID + "=?;");
                     pst.setString(1, "XenForo_Authentication_Core12");
                     pst.setInt(2, id);
                     pst.executeUpdate();
@@ -614,9 +472,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnIp + "=?, " + columnLastLogin + "=? WHERE "
-                    + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
             pst.setString(3, auth.getNickname());
@@ -640,8 +496,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE "
-                    + columnLastLogin + "<?;");
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             return pst.executeUpdate();
         } catch (SQLException ex) {
@@ -664,15 +519,13 @@ public class MySQLThread extends Thread implements DataSource {
         List<String> list = new ArrayList<String>();
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnLastLogin + "<?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             rs = pst.executeQuery();
             while (rs.next()) {
                 list.add(rs.getString(columnName));
             }
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE "
-                    + columnLastLogin + "<?;");
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             pst.executeUpdate();
             return list;
@@ -698,21 +551,17 @@ public class MySQLThread extends Thread implements DataSource {
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
                 ResultSet rs = null;
-                pst = con.prepareStatement("SELECT * FROM " + tableName
-                        + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, user);
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     id = rs.getInt(columnID);
                     // Remove data
-                    pst = con
-                            .prepareStatement("DELETE FROM xf_user_authenticate WHERE "
-                                    + columnID + "=?;");
+                    pst = con.prepareStatement("DELETE FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
                 }
             }
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE "
-                    + columnName + "=?;");
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
             pst.setString(1, user);
             pst.executeUpdate();
         } catch (SQLException ex) {
@@ -734,9 +583,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + lastlocX + " =?, " + lastlocY + "=?, " + lastlocZ
-                    + "=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + " =?, " + lastlocY + "=?, " + lastlocZ + "=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
             pst.setDouble(3, auth.getQuitLocZ());
@@ -764,8 +611,7 @@ public class MySQLThread extends Thread implements DataSource {
         int countIp = 0;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnIp + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -791,8 +637,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnEmail + " =? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnEmail + " =? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
@@ -818,8 +663,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnSalt + " =? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + " =? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
@@ -852,12 +696,11 @@ public class MySQLThread extends Thread implements DataSource {
         } catch (Exception e) {
             ConsoleLogger.showError(e.getMessage());
             if (Settings.isStopEnabled) {
-                ConsoleLogger
-                        .showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
+                ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
             }
-            if (!Settings.isStopEnabled) AuthMe.getInstance().getServer()
-                    .getPluginManager().disablePlugin(AuthMe.getInstance());
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
         }
     }
 
@@ -899,8 +742,7 @@ public class MySQLThread extends Thread implements DataSource {
         List<String> countIp = new ArrayList<String>();
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnIp + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, auth.getIp());
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -928,8 +770,7 @@ public class MySQLThread extends Thread implements DataSource {
         List<String> countIp = new ArrayList<String>();
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnIp + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -957,8 +798,7 @@ public class MySQLThread extends Thread implements DataSource {
         List<String> countEmail = new ArrayList<String>();
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnEmail + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
             pst.setString(1, email);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -985,8 +825,7 @@ public class MySQLThread extends Thread implements DataSource {
         try {
             for (String name : banned) {
                 con = makeSureConnectionIsReady();
-                pst = con.prepareStatement("DELETE FROM " + tableName
-                        + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, name);
                 pst.executeUpdate();
             }
@@ -1009,33 +848,32 @@ public class MySQLThread extends Thread implements DataSource {
             } catch (Exception e) {
                 ConsoleLogger.showError(e.getMessage());
                 if (Settings.isStopEnabled) {
-                    ConsoleLogger
-                            .showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
+                    ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
                     AuthMe.getInstance().getServer().shutdown();
                 }
-                if (!Settings.isStopEnabled) AuthMe.getInstance().getServer()
-                        .getPluginManager().disablePlugin(AuthMe.getInstance());
+                if (!Settings.isStopEnabled)
+                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             }
         } catch (AssertionError ae) {
             // Make sure assertionerror is caused by the connectionpoolmanager,
             // else re-throw it
-            if (!ae.getMessage().equalsIgnoreCase("AuthMeDatabaseError")) throw new AssertionError(
-                    ae.getMessage());
+            if (!ae.getMessage().equalsIgnoreCase("AuthMeDatabaseError"))
+                throw new AssertionError(ae.getMessage());
             try {
                 con = null;
                 reconnect(false);
             } catch (Exception e) {
                 ConsoleLogger.showError(e.getMessage());
                 if (Settings.isStopEnabled) {
-                    ConsoleLogger
-                            .showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
+                    ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
                     AuthMe.getInstance().getServer().shutdown();
                 }
-                if (!Settings.isStopEnabled) AuthMe.getInstance().getServer()
-                        .getPluginManager().disablePlugin(AuthMe.getInstance());
+                if (!Settings.isStopEnabled)
+                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             }
         }
-        if (con == null) con = conPool.getValidConnection();
+        if (con == null)
+            con = conPool.getValidConnection();
         return con;
     }
 
@@ -1050,8 +888,8 @@ public class MySQLThread extends Thread implements DataSource {
         dataSource.setUser(username);
         dataSource.setPassword(password);
         conPool = new MiniConnectionPoolManager(dataSource, 10);
-        if (!reload) ConsoleLogger
-                .info("ConnectionPool was unavailable... Reconnected!");
+        if (!reload)
+            ConsoleLogger.info("ConnectionPool was unavailable... Reconnected!");
     }
 
     @Override
@@ -1066,11 +904,11 @@ public class MySQLThread extends Thread implements DataSource {
         ResultSet rs = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnName + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
             pst.setString(1, user);
             rs = pst.executeQuery();
-            if (rs.next()) return (rs.getInt(columnLogged) == 1);
+            if (rs.next())
+                return (rs.getInt(columnLogged) == 1);
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
@@ -1091,8 +929,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnLogged + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnName + "=?;");
             pst.setInt(1, 1);
             pst.setString(2, user);
             pst.executeUpdate();
@@ -1115,8 +952,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnLogged + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnName + "=?;");
             pst.setInt(1, 0);
             pst.setString(2, user);
             pst.executeUpdate();
@@ -1139,8 +975,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnLogged + "=? WHERE " + columnLogged + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnLogged + "=?;");
             pst.setInt(1, 0);
             pst.setInt(2, 1);
             pst.executeUpdate();

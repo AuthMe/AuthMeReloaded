@@ -14,17 +14,14 @@ public class XF implements EncryptionMethod {
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
-        return getSHA256(getSHA256(password)
-                + regmatch("\"salt\";.:..:\"(.*)\";.:.:\"hashFunc\"", salt));
+        return getSHA256(getSHA256(password) + regmatch("\"salt\";.:..:\"(.*)\";.:.:\"hashFunc\"", salt));
     }
 
     @Override
     public boolean comparePassword(String hash, String password,
             String playerName) throws NoSuchAlgorithmException {
-        String salt = AuthMe.getInstance().database.getAuth(playerName)
-                .getSalt();
-        return hash
-                .equals(regmatch("\"hash\";.:..:\"(.*)\";.:.:\"salt\"", salt));
+        String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
+        return hash.equals(regmatch("\"hash\";.:..:\"(.*)\";.:.:\"salt\"", salt));
     }
 
     public String getSHA256(String password) throws NoSuchAlgorithmException {
@@ -33,8 +30,7 @@ public class XF implements EncryptionMethod {
         byte byteData[] = md.digest();
         StringBuffer sb = new StringBuffer();
         for (byte element : byteData) {
-            sb.append(Integer.toString((element & 0xff) + 0x100, 16).substring(
-                    1));
+            sb.append(Integer.toString((element & 0xff) + 0x100, 16).substring(1));
         }
         StringBuffer hexString = new StringBuffer();
         for (byte element : byteData) {

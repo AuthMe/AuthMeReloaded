@@ -55,10 +55,8 @@ public class RakamakConverter implements Converter {
         HashMap<String, String> playerIP = new HashMap<String, String>();
         HashMap<String, String> playerPSW = new HashMap<String, String>();
         try {
-            source = new File(AuthMe.getInstance().getDataFolder()
-                    + File.separator + fileName);
-            ipfiles = new File(AuthMe.getInstance().getDataFolder()
-                    + File.separator + ipFileName);
+            source = new File(AuthMe.getInstance().getDataFolder() + File.separator + fileName);
+            ipfiles = new File(AuthMe.getInstance().getDataFolder() + File.separator + ipFileName);
             source.createNewFile();
             ipfiles.createNewFile();
             BufferedReader users = null;
@@ -80,8 +78,7 @@ public class RakamakConverter implements Converter {
                 if (line.contains("=")) {
                     String[] arguments = line.split("=");
                     try {
-                        playerPSW.put(arguments[0], PasswordSecurity.getHash(
-                                hash, arguments[1], arguments[0]));
+                        playerPSW.put(arguments[0], PasswordSecurity.getHash(hash, arguments[1], arguments[0]));
                     } catch (NoSuchAlgorithmException e) {
                         ConsoleLogger.showError(e.getMessage());
                     }
@@ -97,10 +94,9 @@ public class RakamakConverter implements Converter {
                 } else {
                     ip = "127.0.0.1";
                 }
-                PlayerAuth auth = new PlayerAuth(player, psw, ip,
-                        System.currentTimeMillis());
-                if (PasswordSecurity.userSalt.containsKey(player)) auth
-                        .setSalt(PasswordSecurity.userSalt.get(player));
+                PlayerAuth auth = new PlayerAuth(player, psw, ip, System.currentTimeMillis());
+                if (PasswordSecurity.userSalt.containsKey(player))
+                    auth.setSalt(PasswordSecurity.userSalt.get(player));
                 database.saveAuth(auth);
             }
             ConsoleLogger.info("Rakamak database has been imported correctly");

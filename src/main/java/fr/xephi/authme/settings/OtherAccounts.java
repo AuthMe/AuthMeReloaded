@@ -13,10 +13,11 @@ import org.bukkit.entity.Player;
  * @author Xephi59
  */
 public class OtherAccounts extends CustomConfiguration {
+
     private static OtherAccounts others = null;
 
     public OtherAccounts() {
-        super(new File("./plugins/AuthMe/otheraccounts.yml"));
+        super(new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "otheraccounts.yml"));
         others = this;
         load();
         save();
@@ -37,7 +38,8 @@ public class OtherAccounts extends CustomConfiguration {
     public void addPlayer(UUID uuid) {
         try {
             Player player = Bukkit.getPlayer(uuid);
-            if (player == null) return;
+            if (player == null)
+                return;
             if (!this.getStringList(uuid.toString()).contains(player.getName())) {
                 this.getStringList(uuid.toString()).add(player.getName());
                 save();
@@ -50,7 +52,8 @@ public class OtherAccounts extends CustomConfiguration {
     public void removePlayer(UUID uuid) {
         try {
             Player player = Bukkit.getPlayer(uuid);
-            if (player == null) return;
+            if (player == null)
+                return;
             if (this.getStringList(uuid.toString()).contains(player.getName())) {
                 this.getStringList(uuid.toString()).remove(player.getName());
                 save();

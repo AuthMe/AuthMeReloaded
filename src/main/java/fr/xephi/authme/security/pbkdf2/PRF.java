@@ -32,6 +32,7 @@ package fr.xephi.authme.security.pbkdf2;
  * @version 1.0
  */
 public interface PRF {
+
     /**
      * Initialize this instance with the user-supplied password.
      * 

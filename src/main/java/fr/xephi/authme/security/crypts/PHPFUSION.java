@@ -20,8 +20,7 @@ public class PHPFUSION implements EncryptionMethod {
         String algo = "HmacSHA256";
         String keyString = getSHA1(salt);
         try {
-            SecretKeySpec key = new SecretKeySpec(
-                    (keyString).getBytes("UTF-8"), algo);
+            SecretKeySpec key = new SecretKeySpec((keyString).getBytes("UTF-8"), algo);
             Mac mac = Mac.getInstance(algo);
             mac.init(key);
             byte[] bytes = mac.doFinal(password.getBytes("ASCII"));
@@ -44,8 +43,7 @@ public class PHPFUSION implements EncryptionMethod {
     @Override
     public boolean comparePassword(String hash, String password,
             String playerName) throws NoSuchAlgorithmException {
-        String salt = AuthMe.getInstance().database.getAuth(playerName)
-                .getSalt();
+        String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
         return hash.equals(getHash(password, salt, ""));
     }
 
@@ -55,8 +53,7 @@ public class PHPFUSION implements EncryptionMethod {
         sha1.reset();
         sha1.update(message.getBytes());
         byte[] digest = sha1.digest();
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(
-                1, digest));
+        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
     }
 
 }

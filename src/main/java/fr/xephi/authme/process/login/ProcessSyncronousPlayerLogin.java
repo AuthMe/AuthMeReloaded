@@ -24,6 +24,7 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 
 public class ProcessSyncronousPlayerLogin implements Runnable {
+
     private LimboPlayer limbo;
     private Player player;
     private String name;
@@ -51,21 +52,18 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
     protected void restoreOpState() {
         player.setOp(limbo.getOperator());
-        if (player.getGameMode() != GameMode.CREATIVE
-                && !Settings.isMovementAllowed) {
+        if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
             player.setAllowFlight(limbo.isFlying());
             player.setFlying(limbo.isFlying());
         }
     }
 
     protected void packQuitLocation() {
-        Utils.getInstance().packCoords(auth.getQuitLocX(), auth.getQuitLocY(),
-                auth.getQuitLocZ(), auth.getWorld(), player);
+        Utils.getInstance().packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
     }
 
     protected void teleportBackFromSpawn() {
-        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player,
-                limbo.getLoc());
+        AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
         pm.callEvent(tpEvent);
         if (!tpEvent.isCancelled()) {
             Location fLoc = tpEvent.getTo();
@@ -78,8 +76,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
     protected void teleportToSpawn() {
         Location spawnL = plugin.getSpawnLocation(player);
-        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player,
-                player.getLocation(), spawnL, true);
+        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnL, true);
         pm.callEvent(tpEvent);
         if (!tpEvent.isCancelled()) {
             Location fLoc = tpEvent.getTo();
@@ -91,12 +88,10 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     }
 
     protected void restoreInventory() {
-        RestoreInventoryEvent event = new RestoreInventoryEvent(player,
-                limbo.getInventory(), limbo.getArmour());
+        RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            API.setPlayerInventory(player, event.getInventory(),
-                    event.getArmor());
+            API.setPlayerInventory(player, event.getInventory(), event.getArmor());
         }
     }
 
@@ -108,9 +103,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             }
         }
         for (String command : Settings.forceCommandsAsConsole) {
-            Bukkit.getServer().dispatchCommand(
-                    Bukkit.getServer().getConsoleSender(),
-                    command.replace("%p", player.getName()));
+            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
         }
     }
 
@@ -132,16 +125,14 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
                 // Inventory - Make it after restore GameMode , cause we need to
                 // restore the
                 // right inventory in the right gamemode
-                if (Settings.protectInventoryBeforeLogInEnabled
-                        && player.hasPlayedBefore()) {
+                if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
                     restoreInventory();
                 }
             } else {
                 // Inventory - Make it before force the survival GameMode to
                 // cancel all
                 // inventory problem
-                if (Settings.protectInventoryBeforeLogInEnabled
-                        && player.hasPlayedBefore()) {
+                if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
                     restoreInventory();
                 }
                 player.setGameMode(GameMode.SURVIVAL);
@@ -149,22 +140,15 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
             if (!Settings.noTeleport) {
                 // Teleport
-                if (Settings.isTeleportToSpawnEnabled
-                        && !Settings.isForceSpawnLocOnJoinEnabled
-                        && Settings.getForcedWorlds.contains(player.getWorld()
-                                .getName())) {
-                    if (Settings.isSaveQuitLocationEnabled
-                            && auth.getQuitLocY() != 0) {
+                if (Settings.isTeleportToSpawnEnabled && !Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                    if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
                         packQuitLocation();
                     } else {
                         teleportBackFromSpawn();
                     }
-                } else if (Settings.isForceSpawnLocOnJoinEnabled
-                        && Settings.getForcedWorlds.contains(player.getWorld()
-                                .getName())) {
+                } else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
                     teleportToSpawn();
-                } else if (Settings.isSaveQuitLocationEnabled
-                        && auth.getQuitLocY() != 0) {
+                } else if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
                     packQuitLocation();
                 } else {
                     teleportBackFromSpawn();
@@ -173,7 +157,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
             // Re-Force Survival GameMode if we need due to world change
             // specification
-            if (Settings.isForceSurvivalModeEnabled) Utils.forceGM(player);
+            if (Settings.isForceSurvivalModeEnabled)
+                Utils.forceGM(player);
 
             // Restore Permission Group
             Utils.getInstance().setGroup(player, groupType.LOGGEDIN);
@@ -186,35 +171,32 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         }
 
         // We can now display the join message
-        if (AuthMePlayerListener.joinMessage.containsKey(name)
-                && AuthMePlayerListener.joinMessage.get(name) != null
-                && !AuthMePlayerListener.joinMessage.get(name).isEmpty()) {
+        if (AuthMePlayerListener.joinMessage.containsKey(name) && AuthMePlayerListener.joinMessage.get(name) != null && !AuthMePlayerListener.joinMessage.get(name).isEmpty()) {
             for (Player p : Bukkit.getServer().getOnlinePlayers()) {
-                if (p.isOnline()) p
-                        .sendMessage(AuthMePlayerListener.joinMessage.get(name));
+                if (p.isOnline())
+                    p.sendMessage(AuthMePlayerListener.joinMessage.get(name));
             }
             AuthMePlayerListener.joinMessage.remove(name);
         }
 
-        if (Settings.applyBlindEffect) player
-                .removePotionEffect(PotionEffectType.BLINDNESS);
+        if (Settings.applyBlindEffect)
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
 
         // The Loginevent now fires (as intended) after everything is processed
-        Bukkit.getServer().getPluginManager()
-                .callEvent(new LoginEvent(player, true));
+        Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
         player.saveData();
 
         // Login is finish, display welcome message
-        if (Settings.useWelcomeMessage) if (Settings.broadcastWelcomeMessage) {
-            for (String s : Settings.welcomeMsg) {
-                Bukkit.getServer().broadcastMessage(
-                        plugin.replaceAllInfos(s, player));
+        if (Settings.useWelcomeMessage)
+            if (Settings.broadcastWelcomeMessage) {
+                for (String s : Settings.welcomeMsg) {
+                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
+                }
+            } else {
+                for (String s : Settings.welcomeMsg) {
+                    player.sendMessage(plugin.replaceAllInfos(s, player));
+                }
             }
-        } else {
-            for (String s : Settings.welcomeMsg) {
-                player.sendMessage(plugin.replaceAllInfos(s, player));
-            }
-        }
 
         // Login is now finish , we can force all commands
         forceCommands();

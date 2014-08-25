@@ -54,29 +54,21 @@ public class AsyncronousRegister {
         }
 
         String lowpass = password.toLowerCase();
-        if ((lowpass.contains("delete") || lowpass.contains("where")
-                || lowpass.contains("insert") || lowpass.contains("modify")
-                || lowpass.contains("from") || lowpass.contains("select")
-                || lowpass.contains(";") || lowpass.contains("null"))
-                || !lowpass.matches(Settings.getPassRegex)) {
+        if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
             m._(player, "password_error");
             allowRegister = false;
         }
 
         if (database.isAuthAvailable(player.getName().toLowerCase())) {
             m._(player, "user_regged");
-            if (plugin.pllog.getStringList("players")
-                    .contains(player.getName())) {
+            if (plugin.pllog.getStringList("players").contains(player.getName())) {
                 plugin.pllog.getStringList("players").remove(player.getName());
             }
             allowRegister = false;
         }
 
         if (Settings.getmaxRegPerIp > 0) {
-            if (!plugin.authmePermissible(player, "authme.allow2accounts")
-                    && database.getAllAuthsByIp(getIp()).size() >= Settings.getmaxRegPerIp
-                    && !getIp().equalsIgnoreCase("127.0.0.1")
-                    && !getIp().equalsIgnoreCase("localhost")) {
+            if (!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByIp(getIp()).size() >= Settings.getmaxRegPerIp && !getIp().equalsIgnoreCase("127.0.0.1") && !getIp().equalsIgnoreCase("localhost")) {
                 m._(player, "max_reg");
                 allowRegister = false;
             }
@@ -86,11 +78,11 @@ public class AsyncronousRegister {
 
     public void process() {
         preRegister();
-        if (!allowRegister) return;
+        if (!allowRegister)
+            return;
         if (!email.isEmpty() && email != "") {
             if (Settings.getmaxRegPerEmail > 0) {
-                if (!plugin.authmePermissible(player, "authme.allow2accounts")
-                        && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
+                if (!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
                     m._(player, "max_reg");
                     return;
                 }
@@ -103,21 +95,15 @@ public class AsyncronousRegister {
 
     protected void emailRegister() {
         if (Settings.getmaxRegPerEmail > 0) {
-            if (!plugin.authmePermissible(player, "authme.allow2accounts")
-                    && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
+            if (!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
                 m._(player, "max_reg");
                 return;
             }
         }
         PlayerAuth auth = null;
         try {
-            final String hashnew = PasswordSecurity.getHash(
-                    Settings.getPasswordHash, password, name);
-            auth = new PlayerAuth(name, hashnew, getIp(), 0,
-                    (int) player.getLocation().getX(), (int) player
-                            .getLocation().getY(), (int) player.getLocation()
-                            .getZ(), player.getLocation().getWorld().getName(),
-                    email, realName);
+            final String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
+            auth = new PlayerAuth(name, hashnew, getIp(), 0, (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email, realName);
         } catch (NoSuchAlgorithmException e) {
             ConsoleLogger.showError(e.getMessage());
             m._(player, "error");
@@ -130,16 +116,13 @@ public class AsyncronousRegister {
         database.updateEmail(auth);
         database.updateSession(auth);
         plugin.mail.main(auth, password);
-        ProcessSyncronousEmailRegister syncronous = new ProcessSyncronousEmailRegister(
-                player, plugin);
-        plugin.getServer().getScheduler()
-                .scheduleSyncDelayedTask(plugin, syncronous);
+        ProcessSyncronousEmailRegister syncronous = new ProcessSyncronousEmailRegister(player, plugin);
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, syncronous);
         return;
     }
 
     protected void passwordRegister() {
-        if (password.length() < Settings.getPasswordMinLen
-                || password.length() > Settings.passwordMaxLength) {
+        if (password.length() < Settings.getPasswordMinLen || password.length() > Settings.passwordMaxLength) {
             m._(player, "pass_len");
             return;
         }
@@ -152,21 +135,16 @@ public class AsyncronousRegister {
         PlayerAuth auth = null;
         String hash = "";
         try {
-            hash = PasswordSecurity.getHash(Settings.getPasswordHash, password,
-                    name);
+            hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
         } catch (NoSuchAlgorithmException e) {
             ConsoleLogger.showError(e.getMessage());
             m._(player, "error");
             return;
         }
-        if (Settings.getMySQLColumnSalt.isEmpty()
-                && !PasswordSecurity.userSalt.containsKey(name)) {
-            auth = new PlayerAuth(name, hash, getIp(), new Date().getTime(),
-                    "your@email.com", player.getName());
+        if (Settings.getMySQLColumnSalt.isEmpty() && !PasswordSecurity.userSalt.containsKey(name)) {
+            auth = new PlayerAuth(name, hash, getIp(), new Date().getTime(), "your@email.com", player.getName());
         } else {
-            auth = new PlayerAuth(name, hash,
-                    PasswordSecurity.userSalt.get(name), getIp(),
-                    new Date().getTime(), player.getName());
+            auth = new PlayerAuth(name, hash, PasswordSecurity.userSalt.get(name), getIp(), new Date().getTime(), player.getName());
         }
         if (!database.saveAuth(auth)) {
             m._(player, "error");
@@ -177,10 +155,8 @@ public class AsyncronousRegister {
             database.setLogged(name);
         }
         plugin.otherAccounts.addPlayer(player.getUniqueId());
-        ProcessSyncronousPasswordRegister syncronous = new ProcessSyncronousPasswordRegister(
-                player, plugin);
-        plugin.getServer().getScheduler()
-                .scheduleSyncDelayedTask(plugin, syncronous);
+        ProcessSyncronousPasswordRegister syncronous = new ProcessSyncronousPasswordRegister(player, plugin);
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, syncronous);
         return;
     }
 }

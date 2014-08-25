@@ -24,7 +24,6 @@ public class SHA512 implements EncryptionMethod {
         sha512.reset();
         sha512.update(message.getBytes());
         byte[] digest = sha512.digest();
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(
-                1, digest));
+        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
     }
 }

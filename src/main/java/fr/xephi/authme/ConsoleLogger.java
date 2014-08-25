@@ -21,18 +21,13 @@ public class ConsoleLogger {
             log.info("[AuthMe] " + message);
             if (Settings.useLogging) {
                 Calendar date = Calendar.getInstance();
-                final String actually = "["
-                        + DateFormat.getDateInstance().format(date.getTime())
-                        + ", " + date.get(Calendar.HOUR_OF_DAY) + ":"
-                        + date.get(Calendar.MINUTE) + ":"
-                        + date.get(Calendar.SECOND) + "] " + message;
-                Bukkit.getScheduler().runTaskAsynchronously(
-                        AuthMe.getInstance(), new Runnable() {
-                            @Override
-                            public void run() {
-                                writeLog(actually);
-                            }
-                        });
+                final String actually = "[" + DateFormat.getDateInstance().format(date.getTime()) + ", " + date.get(Calendar.HOUR_OF_DAY) + ":" + date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND) + "] " + message;
+                Bukkit.getScheduler().runTaskAsynchronously(AuthMe.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        writeLog(actually);
+                    }
+                });
             }
         }
     }
@@ -42,26 +37,20 @@ public class ConsoleLogger {
             log.warning("[AuthMe] ERROR: " + message);
             if (Settings.useLogging) {
                 Calendar date = Calendar.getInstance();
-                final String actually = "["
-                        + DateFormat.getDateInstance().format(date.getTime())
-                        + ", " + date.get(Calendar.HOUR_OF_DAY) + ":"
-                        + date.get(Calendar.MINUTE) + ":"
-                        + date.get(Calendar.SECOND) + "] ERROR : " + message;
-                Bukkit.getScheduler().runTaskAsynchronously(
-                        AuthMe.getInstance(), new Runnable() {
-                            @Override
-                            public void run() {
-                                writeLog(actually);
-                            }
-                        });
+                final String actually = "[" + DateFormat.getDateInstance().format(date.getTime()) + ", " + date.get(Calendar.HOUR_OF_DAY) + ":" + date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND) + "] ERROR : " + message;
+                Bukkit.getScheduler().runTaskAsynchronously(AuthMe.getInstance(), new Runnable() {
+                    @Override
+                    public void run() {
+                        writeLog(actually);
+                    }
+                });
             }
         }
     }
 
     public static void writeLog(String string) {
         try {
-            FileWriter fw = new FileWriter(AuthMe.getInstance().getDataFolder()
-                    + File.separator + "authme.log", true);
+            FileWriter fw = new FileWriter(AuthMe.getInstance().getDataFolder() + File.separator + "authme.log", true);
             BufferedWriter w = new BufferedWriter(fw);
             w.write(string);
             w.newLine();

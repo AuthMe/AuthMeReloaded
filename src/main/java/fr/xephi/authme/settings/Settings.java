@@ -23,13 +23,11 @@ import fr.xephi.authme.security.HashAlgorithm;
 
 public final class Settings extends YamlConfiguration {
 
-    public static final String PLUGIN_FOLDER = "./plugins/AuthMe";
-    public static final String CACHE_FOLDER = Settings.PLUGIN_FOLDER + "/cache";
-    public static final String AUTH_FILE = Settings.PLUGIN_FOLDER + "/auths.db";
-    public static final String MESSAGE_FILE = Settings.PLUGIN_FOLDER
-            + "/messages";
-    public static final String SETTINGS_FILE = Settings.PLUGIN_FOLDER
-            + "/config.yml";
+    public static final String PLUGIN_FOLDER = "." + File.separator + "plugins" + File.separator + "AuthMe";
+    public static final String CACHE_FOLDER = Settings.PLUGIN_FOLDER + File.separator + "cache";
+    public static final String AUTH_FILE = Settings.PLUGIN_FOLDER + File.separator + "auths.db";
+    public static final String MESSAGE_FILE = Settings.PLUGIN_FOLDER + File.separator + "messages";
+    public static final String SETTINGS_FILE = Settings.PLUGIN_FOLDER + File.separator + "config.yml";
     public static List<String> allowCommands = null;
     public static List<String> getJoinPermissions = null;
     public static List<String> getUnrestrictedName = null;
@@ -113,271 +111,158 @@ public final class Settings extends YamlConfiguration {
         plugin.getLogger().info("Loading Configuration File...");
         mergeConfig();
 
-        messagesLanguage = checkLang(configFile.getString(
-                "settings.messagesLanguage", "en"));
-        isPermissionCheckEnabled = configFile.getBoolean(
-                "permission.EnablePermissionCheck", false);
-        isForcedRegistrationEnabled = configFile.getBoolean(
-                "settings.registration.force", true);
-        isRegistrationEnabled = configFile.getBoolean(
-                "settings.registration.enabled", true);
-        isTeleportToSpawnEnabled = configFile.getBoolean(
-                "settings.restrictions.teleportUnAuthedToSpawn", false);
-        getWarnMessageInterval = configFile.getInt(
-                "settings.registration.messageInterval", 5);
-        isSessionsEnabled = configFile.getBoolean("settings.sessions.enabled",
-                false);
+        messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en"));
+        isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
+        isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
+        isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
+        isTeleportToSpawnEnabled = configFile.getBoolean("settings.restrictions.teleportUnAuthedToSpawn", false);
+        getWarnMessageInterval = configFile.getInt("settings.registration.messageInterval", 5);
+        isSessionsEnabled = configFile.getBoolean("settings.sessions.enabled", false);
         getSessionTimeout = configFile.getInt("settings.sessions.timeout", 10);
-        getRegistrationTimeout = configFile.getInt(
-                "settings.restrictions.timeout", 30);
-        isChatAllowed = configFile.getBoolean(
-                "settings.restrictions.allowChat", false);
-        getMaxNickLength = configFile.getInt(
-                "settings.restrictions.maxNicknameLength", 20);
-        getMinNickLength = configFile.getInt(
-                "settings.restrictions.minNicknameLength", 3);
-        getPasswordMinLen = configFile.getInt(
-                "settings.security.minPasswordLength", 4);
-        getNickRegex = configFile.getString(
-                "settings.restrictions.allowedNicknameCharacters",
-                "[a-zA-Z0-9_?]*");
-        isAllowRestrictedIp = configFile.getBoolean(
-                "settings.restrictions.AllowRestrictedUser", false);
-        getRestrictedIp = configFile
-                .getStringList("settings.restrictions.AllowedRestrictedUser");
-        isMovementAllowed = configFile.getBoolean(
-                "settings.restrictions.allowMovement", false);
-        getMovementRadius = configFile.getInt(
-                "settings.restrictions.allowedMovementRadius", 100);
-        getJoinPermissions = configFile
-                .getStringList("GroupOptions.Permissions.PermissionsOnJoin");
-        isKickOnWrongPasswordEnabled = configFile.getBoolean(
-                "settings.restrictions.kickOnWrongPassword", false);
-        isKickNonRegisteredEnabled = configFile.getBoolean(
-                "settings.restrictions.kickNonRegistered", false);
-        isForceSingleSessionEnabled = configFile.getBoolean(
-                "settings.restrictions.ForceSingleSession", true);
-        isForceSpawnLocOnJoinEnabled = configFile.getBoolean(
-                "settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
-        isSaveQuitLocationEnabled = configFile.getBoolean(
-                "settings.restrictions.SaveQuitLocation", false);
-        isForceSurvivalModeEnabled = configFile.getBoolean(
-                "settings.GameMode.ForceSurvivalMode", false);
-        isResetInventoryIfCreative = configFile.getBoolean(
-                "settings.GameMode.ResetInventoryIfCreative", false);
-        getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp",
-                1);
+        getRegistrationTimeout = configFile.getInt("settings.restrictions.timeout", 30);
+        isChatAllowed = configFile.getBoolean("settings.restrictions.allowChat", false);
+        getMaxNickLength = configFile.getInt("settings.restrictions.maxNicknameLength", 20);
+        getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
+        getPasswordMinLen = configFile.getInt("settings.security.minPasswordLength", 4);
+        getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
+        isAllowRestrictedIp = configFile.getBoolean("settings.restrictions.AllowRestrictedUser", false);
+        getRestrictedIp = configFile.getStringList("settings.restrictions.AllowedRestrictedUser");
+        isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
+        getMovementRadius = configFile.getInt("settings.restrictions.allowedMovementRadius", 100);
+        getJoinPermissions = configFile.getStringList("GroupOptions.Permissions.PermissionsOnJoin");
+        isKickOnWrongPasswordEnabled = configFile.getBoolean("settings.restrictions.kickOnWrongPassword", false);
+        isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
+        isForceSingleSessionEnabled = configFile.getBoolean("settings.restrictions.ForceSingleSession", true);
+        isForceSpawnLocOnJoinEnabled = configFile.getBoolean("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
+        isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
+        isForceSurvivalModeEnabled = configFile.getBoolean("settings.GameMode.ForceSurvivalMode", false);
+        isResetInventoryIfCreative = configFile.getBoolean("settings.GameMode.ResetInventoryIfCreative", false);
+        getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp", 1);
         getPasswordHash = getPasswordHash();
-        getUnloggedinGroup = configFile.getString(
-                "settings.security.unLoggedinGroup", "unLoggedInGroup");
+        getUnloggedinGroup = configFile.getString("settings.security.unLoggedinGroup", "unLoggedInGroup");
         getDataSource = getDataSource();
         isCachingEnabled = configFile.getBoolean("DataSource.caching", true);
-        getMySQLHost = configFile
-                .getString("DataSource.mySQLHost", "127.0.0.1");
+        getMySQLHost = configFile.getString("DataSource.mySQLHost", "127.0.0.1");
         getMySQLPort = configFile.getString("DataSource.mySQLPort", "3306");
-        getMySQLUsername = configFile.getString("DataSource.mySQLUsername",
-                "authme");
-        getMySQLPassword = configFile.getString("DataSource.mySQLPassword",
-                "12345");
-        getMySQLDatabase = configFile.getString("DataSource.mySQLDatabase",
-                "authme");
-        getMySQLTablename = configFile.getString("DataSource.mySQLTablename",
-                "authme");
-        getMySQLColumnEmail = configFile.getString(
-                "DataSource.mySQLColumnEmail", "email");
-        getMySQLColumnName = configFile.getString("DataSource.mySQLColumnName",
-                "username");
-        getMySQLColumnPassword = configFile.getString(
-                "DataSource.mySQLColumnPassword", "password");
-        getMySQLColumnIp = configFile.getString("DataSource.mySQLColumnIp",
-                "ip");
-        getMySQLColumnLastLogin = configFile.getString(
-                "DataSource.mySQLColumnLastLogin", "lastlogin");
-        getMySQLColumnSalt = configFile
-                .getString("ExternalBoardOptions.mySQLColumnSalt");
-        getMySQLColumnGroup = configFile.getString(
-                "ExternalBoardOptions.mySQLColumnGroup", "");
-        getMySQLlastlocX = configFile
-                .getString("DataSource.mySQLlastlocX", "x");
-        getMySQLlastlocY = configFile
-                .getString("DataSource.mySQLlastlocY", "y");
-        getMySQLlastlocZ = configFile
-                .getString("DataSource.mySQLlastlocZ", "z");
-        getMySQLlastlocWorld = configFile.getString(
-                "DataSource.mySQLlastlocWorld", "world");
-        getNonActivatedGroup = configFile.getInt(
-                "ExternalBoardOptions.nonActivedUserGroup", -1);
-        unRegisteredGroup = configFile.getString(
-                "GroupOptions.UnregisteredPlayerGroup", "");
-        getUnrestrictedName = configFile
-                .getStringList("settings.unrestrictions.UnrestrictedName");
-        getRegisteredGroup = configFile.getString(
-                "GroupOptions.RegisteredPlayerGroup", "");
-        getEnablePasswordVerifier = configFile.getBoolean(
-                "settings.restrictions.enablePasswordVerifier", true);
-        protectInventoryBeforeLogInEnabled = configFile.getBoolean(
-                "settings.restrictions.ProtectInventoryBeforeLogIn", true);
-        passwordMaxLength = configFile.getInt(
-                "settings.security.passwordMaxLength", 20);
-        isBackupActivated = configFile.getBoolean(
-                "BackupSystem.ActivateBackup", false);
-        isBackupOnStart = configFile.getBoolean("BackupSystem.OnServerStart",
-                false);
-        isBackupOnStop = configFile.getBoolean("BackupSystem.OnServeStop",
-                false);
-        backupWindowsPath = configFile.getString(
-                "BackupSystem.MysqlWindowsPath",
-                "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
-        enablePasspartu = configFile.getBoolean("Passpartu.enablePasspartu",
-                false);
-        isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer",
-                true);
-        reloadSupport = configFile.getBoolean(
-                "Security.ReloadCommand.useReloadCommandSupport", true);
-        allowCommands = (List<String>) configFile
-                .getList("settings.restrictions.allowCommands");
+        getMySQLUsername = configFile.getString("DataSource.mySQLUsername", "authme");
+        getMySQLPassword = configFile.getString("DataSource.mySQLPassword", "12345");
+        getMySQLDatabase = configFile.getString("DataSource.mySQLDatabase", "authme");
+        getMySQLTablename = configFile.getString("DataSource.mySQLTablename", "authme");
+        getMySQLColumnEmail = configFile.getString("DataSource.mySQLColumnEmail", "email");
+        getMySQLColumnName = configFile.getString("DataSource.mySQLColumnName", "username");
+        getMySQLColumnPassword = configFile.getString("DataSource.mySQLColumnPassword", "password");
+        getMySQLColumnIp = configFile.getString("DataSource.mySQLColumnIp", "ip");
+        getMySQLColumnLastLogin = configFile.getString("DataSource.mySQLColumnLastLogin", "lastlogin");
+        getMySQLColumnSalt = configFile.getString("ExternalBoardOptions.mySQLColumnSalt");
+        getMySQLColumnGroup = configFile.getString("ExternalBoardOptions.mySQLColumnGroup", "");
+        getMySQLlastlocX = configFile.getString("DataSource.mySQLlastlocX", "x");
+        getMySQLlastlocY = configFile.getString("DataSource.mySQLlastlocY", "y");
+        getMySQLlastlocZ = configFile.getString("DataSource.mySQLlastlocZ", "z");
+        getMySQLlastlocWorld = configFile.getString("DataSource.mySQLlastlocWorld", "world");
+        getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
+        unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
+        getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
+        getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
+        getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
+        protectInventoryBeforeLogInEnabled = configFile.getBoolean("settings.restrictions.ProtectInventoryBeforeLogIn", true);
+        passwordMaxLength = configFile.getInt("settings.security.passwordMaxLength", 20);
+        isBackupActivated = configFile.getBoolean("BackupSystem.ActivateBackup", false);
+        isBackupOnStart = configFile.getBoolean("BackupSystem.OnServerStart", false);
+        isBackupOnStop = configFile.getBoolean("BackupSystem.OnServeStop", false);
+        backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
+        enablePasspartu = configFile.getBoolean("Passpartu.enablePasspartu", false);
+        isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
+        reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
+        allowCommands = (List<String>) configFile.getList("settings.restrictions.allowCommands");
         if (configFile.contains("allowCommands")) {
-            if (!allowCommands.contains("/login")) allowCommands.add("/login");
-            if (!allowCommands.contains("/register")) allowCommands
-                    .add("/register");
-            if (!allowCommands.contains("/l")) allowCommands.add("/l");
-            if (!allowCommands.contains("/reg")) allowCommands.add("/reg");
-            if (!allowCommands.contains("/passpartu")) allowCommands
-                    .add("/passpartu");
-            if (!allowCommands.contains("/email")) allowCommands.add("/email");
-            if (!allowCommands.contains("/captcha")) allowCommands
-                    .add("/captcha");
+            if (!allowCommands.contains("/login"))
+                allowCommands.add("/login");
+            if (!allowCommands.contains("/register"))
+                allowCommands.add("/register");
+            if (!allowCommands.contains("/l"))
+                allowCommands.add("/l");
+            if (!allowCommands.contains("/reg"))
+                allowCommands.add("/reg");
+            if (!allowCommands.contains("/passpartu"))
+                allowCommands.add("/passpartu");
+            if (!allowCommands.contains("/email"))
+                allowCommands.add("/email");
+            if (!allowCommands.contains("/captcha"))
+                allowCommands.add("/captcha");
         }
-        rakamakUsers = configFile.getString("Converter.Rakamak.fileName",
-                "users.rak");
-        rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName",
-                "UsersIp.rak");
+        rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
+        rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
-        noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam",
-                false);
-        removePassword = configFile.getBoolean(
-                "Security.console.removePassword", true);
+        noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam", false);
+        removePassword = configFile.getBoolean("Security.console.removePassword", true);
         getmailAccount = configFile.getString("Email.mailAccount", "");
         getmailPassword = configFile.getString("Email.mailPassword", "");
         getmailSMTP = configFile.getString("Email.mailSMTP", "smtp.gmail.com");
         getMailPort = configFile.getInt("Email.mailPort", 465);
-        getRecoveryPassLength = configFile.getInt(
-                "Email.RecoveryPasswordLength", 8);
-        getMySQLOtherUsernameColumn = (List<String>) configFile.getList(
-                "ExternalBoardOptions.mySQLOtherUsernameColumns",
-                new ArrayList<String>());
-        displayOtherAccounts = configFile.getBoolean(
-                "settings.restrictions.displayOtherAccounts", true);
-        getMySQLColumnId = configFile.getString("DataSource.mySQLColumnId",
-                "id");
+        getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
+        getMySQLOtherUsernameColumn = (List<String>) configFile.getList("ExternalBoardOptions.mySQLOtherUsernameColumns", new ArrayList<String>());
+        displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
+        getMySQLColumnId = configFile.getString("DataSource.mySQLColumnId", "id");
         getmailSenderName = configFile.getString("Email.mailSenderName", "");
-        useCaptcha = configFile
-                .getBoolean("Security.captcha.useCaptcha", false);
+        useCaptcha = configFile.getBoolean("Security.captcha.useCaptcha", false);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        getMailSubject = configFile.getString("Email.mailSubject",
-                "Your new AuthMe Password");
-        getMailText = configFile
-                .getString(
-                        "Email.mailText",
-                        "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
-        emailRegistration = configFile.getBoolean(
-                "settings.registration.enableEmailRegistrationSystem", false);
-        saltLength = configFile.getInt("settings.security.doubleMD5SaltLength",
-                8);
+        getMailSubject = configFile.getString("Email.mailSubject", "Your new AuthMe Password");
+        getMailText = configFile.getString("Email.mailText", "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
+        emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
+        saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = configFile.getBoolean("Hooks.multiverse", true);
         chestshop = configFile.getBoolean("Hooks.chestshop", true);
         notifications = configFile.getBoolean("Hooks.notifications", true);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
-        getForcedWorlds = (List<String>) configFile.getList(
-                "settings.restrictions.ForceSpawnOnTheseWorlds",
-                new ArrayList<String>());
-        banUnsafeIp = configFile.getBoolean(
-                "settings.restrictions.banUnsafedIP", false);
-        doubleEmailCheck = configFile.getBoolean(
-                "settings.registration.doubleEmailCheck", false);
-        sessionExpireOnIpChange = configFile.getBoolean(
-                "settings.sessions.sessionExpireOnIpChange", false);
-        useLogging = configFile
-                .getBoolean("Security.console.logConsole", false);
-        disableSocialSpy = configFile
-                .getBoolean("Hooks.disableSocialSpy", true);
-        bCryptLog2Rounds = configFile.getInt(
-                "ExternalBoardOptions.bCryptLog2Round", 10);
-        forceOnlyAfterLogin = configFile.getBoolean(
-                "settings.GameMode.ForceOnlyAfterLogin", false);
-        useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd",
-                false);
+        getForcedWorlds = (List<String>) configFile.getList("settings.restrictions.ForceSpawnOnTheseWorlds", new ArrayList<String>());
+        banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
+        doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
+        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
+        useLogging = configFile.getBoolean("Security.console.logConsole", false);
+        disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
+        bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
+        forceOnlyAfterLogin = configFile.getBoolean("settings.GameMode.ForceOnlyAfterLogin", false);
+        useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
         usePurge = configFile.getBoolean("Purge.useAutoPurge", false);
         purgeDelay = configFile.getInt("Purge.daysBeforeRemovePlayer", 60);
         purgePlayerDat = configFile.getBoolean("Purge.removePlayerDat", false);
-        purgeEssentialsFile = configFile.getBoolean(
-                "Purge.removeEssentialsFile", false);
+        purgeEssentialsFile = configFile.getBoolean("Purge.removeEssentialsFile", false);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
-        getPhpbbPrefix = configFile.getString(
-                "ExternalBoardOptions.phpbbTablePrefix", "phpbb_");
-        getPhpbbGroup = configFile.getInt(
-                "ExternalBoardOptions.phpbbActivatedGroupId", 2);
-        supportOldPassword = configFile.getBoolean(
-                "settings.security.supportOldPasswordHash", false);
-        getWordPressPrefix = configFile.getString(
-                "ExternalBoardOptions.wordpressTablePrefix", "wp_");
-        purgeLimitedCreative = configFile.getBoolean(
-                "Purge.removeLimitedCreativesInventories", false);
-        purgeAntiXray = configFile
-                .getBoolean("Purge.removeAntiXRayFile", false);
+        getPhpbbPrefix = configFile.getString("ExternalBoardOptions.phpbbTablePrefix", "phpbb_");
+        getPhpbbGroup = configFile.getInt("ExternalBoardOptions.phpbbActivatedGroupId", 2);
+        supportOldPassword = configFile.getBoolean("settings.security.supportOldPasswordHash", false);
+        getWordPressPrefix = configFile.getString("ExternalBoardOptions.wordpressTablePrefix", "wp_");
+        purgeLimitedCreative = configFile.getBoolean("Purge.removeLimitedCreativesInventories", false);
+        purgeAntiXray = configFile.getBoolean("Purge.removeAntiXRayFile", false);
         // purgePermissions = configFile.getBoolean("Purge.removePermissions",
         // false);
-        enableProtection = configFile.getBoolean("Protection.enableProtection",
-                false);
-        countries = (List<String>) configFile.getList("Protection.countries",
-                new ArrayList<String>());
-        enableAntiBot = configFile
-                .getBoolean("Protection.enableAntiBot", false);
-        antiBotSensibility = configFile.getInt("Protection.antiBotSensibility",
-                5);
+        enableProtection = configFile.getBoolean("Protection.enableProtection", false);
+        countries = (List<String>) configFile.getList("Protection.countries", new ArrayList<String>());
+        enableAntiBot = configFile.getBoolean("Protection.enableAntiBot", false);
+        antiBotSensibility = configFile.getInt("Protection.antiBotSensibility", 5);
         antiBotDuration = configFile.getInt("Protection.antiBotDuration", 10);
-        forceCommands = (List<String>) configFile.getList(
-                "settings.forceCommands", new ArrayList<String>());
-        forceCommandsAsConsole = (List<String>) configFile.getList(
-                "settings.forceCommandsAsConsole", new ArrayList<String>());
+        forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
+        forceCommandsAsConsole = (List<String>) configFile.getList("settings.forceCommandsAsConsole", new ArrayList<String>());
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         delayRecall = configFile.getInt("Email.delayRecall", 5);
-        useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage",
-                true);
-        unsafePasswords = (List<String>) configFile.getList(
-                "settings.security.unsafePasswords", new ArrayList<String>());
-        countriesBlacklist = (List<String>) configFile.getList(
-                "Protection.countriesBlacklist", new ArrayList<String>());
-        broadcastWelcomeMessage = configFile.getBoolean(
-                "settings.broadcastWelcomeMessage", false);
-        forceRegKick = configFile.getBoolean(
-                "settings.registration.forceKickAfterRegister", false);
-        forceRegLogin = configFile.getBoolean(
-                "settings.registration.forceLoginAfterRegister", false);
-        getMySQLColumnLogged = configFile.getString(
-                "DataSource.mySQLColumnLogged", "isLogged");
-        spawnPriority = configFile.getString(
-                "settings.restrictions.spawnPriority",
-                "authme,essentials,multiverse,default");
-        getMaxLoginPerIp = configFile.getInt(
-                "settings.restrictions.maxLoginPerIp", 0);
-        getMaxJoinPerIp = configFile.getInt(
-                "settings.restrictions.maxJoinPerIp", 0);
-        checkVeryGames = configFile
-                .getBoolean("VeryGames.enableIpCheck", false);
-        delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage",
-                false);
-        noTeleport = configFile.getBoolean("settings.restrictions.noTeleport",
-                false);
-        crazyloginFileName = configFile.getString(
-                "Converter.CrazyLogin.fileName", "accounts.db");
-        getPassRegex = configFile.getString(
-                "settings.restrictions.allowedPasswordCharacters",
-                "[a-zA-Z0-9_?!@+&-]*");
-        applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect",
-                false);
+        useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
+        unsafePasswords = (List<String>) configFile.getList("settings.security.unsafePasswords", new ArrayList<String>());
+        countriesBlacklist = (List<String>) configFile.getList("Protection.countriesBlacklist", new ArrayList<String>());
+        broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
+        forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
+        forceRegLogin = configFile.getBoolean("settings.registration.forceLoginAfterRegister", false);
+        getMySQLColumnLogged = configFile.getString("DataSource.mySQLColumnLogged", "isLogged");
+        spawnPriority = configFile.getString("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+        getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
+        getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
+        checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
+        delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
+        noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
+        crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
+        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[a-zA-Z0-9_?!@+&-]*");
+        applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
 
@@ -391,269 +276,158 @@ public final class Settings extends YamlConfiguration {
     public static void reloadConfigOptions(YamlConfiguration newConfig) {
         configFile = newConfig;
 
-        messagesLanguage = checkLang(configFile.getString(
-                "settings.messagesLanguage", "en"));
-        isPermissionCheckEnabled = configFile.getBoolean(
-                "permission.EnablePermissionCheck", false);
-        isForcedRegistrationEnabled = configFile.getBoolean(
-                "settings.registration.force", true);
-        isRegistrationEnabled = configFile.getBoolean(
-                "settings.registration.enabled", true);
-        isTeleportToSpawnEnabled = configFile.getBoolean(
-                "settings.restrictions.teleportUnAuthedToSpawn", false);
-        getWarnMessageInterval = configFile.getInt(
-                "settings.registration.messageInterval", 5);
-        isSessionsEnabled = configFile.getBoolean("settings.sessions.enabled",
-                false);
+        messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en"));
+        isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
+        isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
+        isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
+        isTeleportToSpawnEnabled = configFile.getBoolean("settings.restrictions.teleportUnAuthedToSpawn", false);
+        getWarnMessageInterval = configFile.getInt("settings.registration.messageInterval", 5);
+        isSessionsEnabled = configFile.getBoolean("settings.sessions.enabled", false);
         getSessionTimeout = configFile.getInt("settings.sessions.timeout", 10);
-        getRegistrationTimeout = configFile.getInt(
-                "settings.restrictions.timeout", 30);
-        isChatAllowed = configFile.getBoolean(
-                "settings.restrictions.allowChat", false);
-        getMaxNickLength = configFile.getInt(
-                "settings.restrictions.maxNicknameLength", 20);
-        getMinNickLength = configFile.getInt(
-                "settings.restrictions.minNicknameLength", 3);
-        getPasswordMinLen = configFile.getInt(
-                "settings.security.minPasswordLength", 4);
-        getNickRegex = configFile.getString(
-                "settings.restrictions.allowedNicknameCharacters",
-                "[a-zA-Z0-9_?]*");
-        isAllowRestrictedIp = configFile.getBoolean(
-                "settings.restrictions.AllowRestrictedUser", false);
-        getRestrictedIp = configFile
-                .getStringList("settings.restrictions.AllowedRestrictedUser");
-        isMovementAllowed = configFile.getBoolean(
-                "settings.restrictions.allowMovement", false);
-        getMovementRadius = configFile.getInt(
-                "settings.restrictions.allowedMovementRadius", 100);
-        getJoinPermissions = configFile
-                .getStringList("GroupOptions.Permissions.PermissionsOnJoin");
-        isKickOnWrongPasswordEnabled = configFile.getBoolean(
-                "settings.restrictions.kickOnWrongPassword", false);
-        isKickNonRegisteredEnabled = configFile.getBoolean(
-                "settings.restrictions.kickNonRegistered", false);
-        isForceSingleSessionEnabled = configFile.getBoolean(
-                "settings.restrictions.ForceSingleSession", true);
-        isForceSpawnLocOnJoinEnabled = configFile.getBoolean(
-                "settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
-        isSaveQuitLocationEnabled = configFile.getBoolean(
-                "settings.restrictions.SaveQuitLocation", false);
-        isForceSurvivalModeEnabled = configFile.getBoolean(
-                "settings.GameMode.ForceSurvivalMode", false);
-        isResetInventoryIfCreative = configFile.getBoolean(
-                "settings.GameMode.ResetInventoryIfCreative", false);
-        getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp",
-                1);
+        getRegistrationTimeout = configFile.getInt("settings.restrictions.timeout", 30);
+        isChatAllowed = configFile.getBoolean("settings.restrictions.allowChat", false);
+        getMaxNickLength = configFile.getInt("settings.restrictions.maxNicknameLength", 20);
+        getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
+        getPasswordMinLen = configFile.getInt("settings.security.minPasswordLength", 4);
+        getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
+        isAllowRestrictedIp = configFile.getBoolean("settings.restrictions.AllowRestrictedUser", false);
+        getRestrictedIp = configFile.getStringList("settings.restrictions.AllowedRestrictedUser");
+        isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
+        getMovementRadius = configFile.getInt("settings.restrictions.allowedMovementRadius", 100);
+        getJoinPermissions = configFile.getStringList("GroupOptions.Permissions.PermissionsOnJoin");
+        isKickOnWrongPasswordEnabled = configFile.getBoolean("settings.restrictions.kickOnWrongPassword", false);
+        isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
+        isForceSingleSessionEnabled = configFile.getBoolean("settings.restrictions.ForceSingleSession", true);
+        isForceSpawnLocOnJoinEnabled = configFile.getBoolean("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
+        isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
+        isForceSurvivalModeEnabled = configFile.getBoolean("settings.GameMode.ForceSurvivalMode", false);
+        isResetInventoryIfCreative = configFile.getBoolean("settings.GameMode.ResetInventoryIfCreative", false);
+        getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp", 1);
         getPasswordHash = getPasswordHash();
-        getUnloggedinGroup = configFile.getString(
-                "settings.security.unLoggedinGroup", "unLoggedInGroup");
+        getUnloggedinGroup = configFile.getString("settings.security.unLoggedinGroup", "unLoggedInGroup");
         getDataSource = getDataSource();
         isCachingEnabled = configFile.getBoolean("DataSource.caching", true);
-        getMySQLHost = configFile
-                .getString("DataSource.mySQLHost", "127.0.0.1");
+        getMySQLHost = configFile.getString("DataSource.mySQLHost", "127.0.0.1");
         getMySQLPort = configFile.getString("DataSource.mySQLPort", "3306");
-        getMySQLUsername = configFile.getString("DataSource.mySQLUsername",
-                "authme");
-        getMySQLPassword = configFile.getString("DataSource.mySQLPassword",
-                "12345");
-        getMySQLDatabase = configFile.getString("DataSource.mySQLDatabase",
-                "authme");
-        getMySQLTablename = configFile.getString("DataSource.mySQLTablename",
-                "authme");
-        getMySQLColumnEmail = configFile.getString(
-                "DataSource.mySQLColumnEmail", "email");
-        getMySQLColumnName = configFile.getString("DataSource.mySQLColumnName",
-                "username");
-        getMySQLColumnPassword = configFile.getString(
-                "DataSource.mySQLColumnPassword", "password");
-        getMySQLColumnIp = configFile.getString("DataSource.mySQLColumnIp",
-                "ip");
-        getMySQLColumnLastLogin = configFile.getString(
-                "DataSource.mySQLColumnLastLogin", "lastlogin");
-        getMySQLlastlocX = configFile
-                .getString("DataSource.mySQLlastlocX", "x");
-        getMySQLlastlocY = configFile
-                .getString("DataSource.mySQLlastlocY", "y");
-        getMySQLlastlocZ = configFile
-                .getString("DataSource.mySQLlastlocZ", "z");
-        getMySQLlastlocWorld = configFile.getString(
-                "DataSource.mySQLlastlocWorld", "world");
-        getMySQLColumnSalt = configFile.getString(
-                "ExternalBoardOptions.mySQLColumnSalt", "");
-        getMySQLColumnGroup = configFile.getString(
-                "ExternalBoardOptions.mySQLColumnGroup", "");
-        getNonActivatedGroup = configFile.getInt(
-                "ExternalBoardOptions.nonActivedUserGroup", -1);
-        unRegisteredGroup = configFile.getString(
-                "GroupOptions.UnregisteredPlayerGroup", "");
-        getUnrestrictedName = configFile
-                .getStringList("settings.unrestrictions.UnrestrictedName");
-        getRegisteredGroup = configFile.getString(
-                "GroupOptions.RegisteredPlayerGroup", "");
-        getEnablePasswordVerifier = configFile.getBoolean(
-                "settings.restrictions.enablePasswordVerifier", true);
-        protectInventoryBeforeLogInEnabled = configFile.getBoolean(
-                "settings.restrictions.ProtectInventoryBeforeLogIn", true);
-        passwordMaxLength = configFile.getInt(
-                "settings.security.passwordMaxLength", 20);
-        isBackupActivated = configFile.getBoolean(
-                "BackupSystem.ActivateBackup", false);
-        isBackupOnStart = configFile.getBoolean("BackupSystem.OnServerStart",
-                false);
-        isBackupOnStop = configFile.getBoolean("BackupSystem.OnServeStop",
-                false);
-        backupWindowsPath = configFile.getString(
-                "BackupSystem.MysqlWindowsPath",
-                "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
-        enablePasspartu = configFile.getBoolean("Passpartu.enablePasspartu",
-                false);
-        isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer",
-                true);
-        reloadSupport = configFile.getBoolean(
-                "Security.ReloadCommand.useReloadCommandSupport", true);
-        allowCommands = (List<String>) configFile
-                .getList("settings.restrictions.allowCommands");
+        getMySQLUsername = configFile.getString("DataSource.mySQLUsername", "authme");
+        getMySQLPassword = configFile.getString("DataSource.mySQLPassword", "12345");
+        getMySQLDatabase = configFile.getString("DataSource.mySQLDatabase", "authme");
+        getMySQLTablename = configFile.getString("DataSource.mySQLTablename", "authme");
+        getMySQLColumnEmail = configFile.getString("DataSource.mySQLColumnEmail", "email");
+        getMySQLColumnName = configFile.getString("DataSource.mySQLColumnName", "username");
+        getMySQLColumnPassword = configFile.getString("DataSource.mySQLColumnPassword", "password");
+        getMySQLColumnIp = configFile.getString("DataSource.mySQLColumnIp", "ip");
+        getMySQLColumnLastLogin = configFile.getString("DataSource.mySQLColumnLastLogin", "lastlogin");
+        getMySQLlastlocX = configFile.getString("DataSource.mySQLlastlocX", "x");
+        getMySQLlastlocY = configFile.getString("DataSource.mySQLlastlocY", "y");
+        getMySQLlastlocZ = configFile.getString("DataSource.mySQLlastlocZ", "z");
+        getMySQLlastlocWorld = configFile.getString("DataSource.mySQLlastlocWorld", "world");
+        getMySQLColumnSalt = configFile.getString("ExternalBoardOptions.mySQLColumnSalt", "");
+        getMySQLColumnGroup = configFile.getString("ExternalBoardOptions.mySQLColumnGroup", "");
+        getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
+        unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
+        getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
+        getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
+        getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
+        protectInventoryBeforeLogInEnabled = configFile.getBoolean("settings.restrictions.ProtectInventoryBeforeLogIn", true);
+        passwordMaxLength = configFile.getInt("settings.security.passwordMaxLength", 20);
+        isBackupActivated = configFile.getBoolean("BackupSystem.ActivateBackup", false);
+        isBackupOnStart = configFile.getBoolean("BackupSystem.OnServerStart", false);
+        isBackupOnStop = configFile.getBoolean("BackupSystem.OnServeStop", false);
+        backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
+        enablePasspartu = configFile.getBoolean("Passpartu.enablePasspartu", false);
+        isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
+        reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
+        allowCommands = (List<String>) configFile.getList("settings.restrictions.allowCommands");
         if (configFile.contains("allowCommands")) {
-            if (!allowCommands.contains("/login")) allowCommands.add("/login");
-            if (!allowCommands.contains("/register")) allowCommands
-                    .add("/register");
-            if (!allowCommands.contains("/l")) allowCommands.add("/l");
-            if (!allowCommands.contains("/reg")) allowCommands.add("/reg");
-            if (!allowCommands.contains("/passpartu")) allowCommands
-                    .add("/passpartu");
-            if (!allowCommands.contains("/email")) allowCommands.add("/email");
-            if (!allowCommands.contains("/captcha")) allowCommands
-                    .add("/captcha");
+            if (!allowCommands.contains("/login"))
+                allowCommands.add("/login");
+            if (!allowCommands.contains("/register"))
+                allowCommands.add("/register");
+            if (!allowCommands.contains("/l"))
+                allowCommands.add("/l");
+            if (!allowCommands.contains("/reg"))
+                allowCommands.add("/reg");
+            if (!allowCommands.contains("/passpartu"))
+                allowCommands.add("/passpartu");
+            if (!allowCommands.contains("/email"))
+                allowCommands.add("/email");
+            if (!allowCommands.contains("/captcha"))
+                allowCommands.add("/captcha");
         }
-        rakamakUsers = configFile.getString("Converter.Rakamak.fileName",
-                "users.rak");
-        rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName",
-                "UsersIp.rak");
+        rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
+        rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
-        noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam",
-                false);
-        removePassword = configFile.getBoolean(
-                "Security.console.removePassword", true);
+        noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam", false);
+        removePassword = configFile.getBoolean("Security.console.removePassword", true);
         getmailAccount = configFile.getString("Email.mailAccount", "");
         getmailPassword = configFile.getString("Email.mailPassword", "");
         getmailSMTP = configFile.getString("Email.mailSMTP", "smtp.gmail.com");
         getMailPort = configFile.getInt("Email.mailPort", 465);
-        getRecoveryPassLength = configFile.getInt(
-                "Email.RecoveryPasswordLength", 8);
-        getMySQLOtherUsernameColumn = (List<String>) configFile.getList(
-                "ExternalBoardOptions.mySQLOtherUsernameColumns",
-                new ArrayList<String>());
-        displayOtherAccounts = configFile.getBoolean(
-                "settings.restrictions.displayOtherAccounts", true);
-        getMySQLColumnId = configFile.getString("DataSource.mySQLColumnId",
-                "id");
+        getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
+        getMySQLOtherUsernameColumn = (List<String>) configFile.getList("ExternalBoardOptions.mySQLOtherUsernameColumns", new ArrayList<String>());
+        displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
+        getMySQLColumnId = configFile.getString("DataSource.mySQLColumnId", "id");
         getmailSenderName = configFile.getString("Email.mailSenderName", "");
-        useCaptcha = configFile
-                .getBoolean("Security.captcha.useCaptcha", false);
+        useCaptcha = configFile.getBoolean("Security.captcha.useCaptcha", false);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        getMailSubject = configFile.getString("Email.mailSubject",
-                "Your new AuthMe Password");
-        getMailText = configFile
-                .getString(
-                        "Email.mailText",
-                        "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
-        emailRegistration = configFile.getBoolean(
-                "settings.registration.enableEmailRegistrationSystem", false);
-        saltLength = configFile.getInt("settings.security.doubleMD5SaltLength",
-                8);
+        getMailSubject = configFile.getString("Email.mailSubject", "Your new AuthMe Password");
+        getMailText = configFile.getString("Email.mailText", "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
+        emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
+        saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = configFile.getBoolean("Hooks.multiverse", true);
         chestshop = configFile.getBoolean("Hooks.chestshop", true);
         notifications = configFile.getBoolean("Hooks.notifications", true);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
-        getForcedWorlds = (List<String>) configFile
-                .getList("settings.restrictions.ForceSpawnOnTheseWorlds");
-        banUnsafeIp = configFile.getBoolean(
-                "settings.restrictions.banUnsafedIP", false);
-        doubleEmailCheck = configFile.getBoolean(
-                "settings.registration.doubleEmailCheck", false);
-        sessionExpireOnIpChange = configFile.getBoolean(
-                "settings.sessions.sessionExpireOnIpChange", false);
-        useLogging = configFile
-                .getBoolean("Security.console.logConsole", false);
-        disableSocialSpy = configFile
-                .getBoolean("Hooks.disableSocialSpy", true);
-        bCryptLog2Rounds = configFile.getInt(
-                "ExternalBoardOptions.bCryptLog2Round", 10);
-        forceOnlyAfterLogin = configFile.getBoolean(
-                "settings.GameMode.ForceOnlyAfterLogin", false);
-        useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd",
-                false);
+        getForcedWorlds = (List<String>) configFile.getList("settings.restrictions.ForceSpawnOnTheseWorlds");
+        banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
+        doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
+        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
+        useLogging = configFile.getBoolean("Security.console.logConsole", false);
+        disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
+        bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
+        forceOnlyAfterLogin = configFile.getBoolean("settings.GameMode.ForceOnlyAfterLogin", false);
+        useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
         usePurge = configFile.getBoolean("Purge.useAutoPurge", false);
         purgeDelay = configFile.getInt("Purge.daysBeforeRemovePlayer", 60);
         purgePlayerDat = configFile.getBoolean("Purge.removePlayerDat", false);
-        purgeEssentialsFile = configFile.getBoolean(
-                "Purge.removeEssentialsFile", false);
+        purgeEssentialsFile = configFile.getBoolean("Purge.removeEssentialsFile", false);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
-        getPhpbbPrefix = configFile.getString(
-                "ExternalBoardOptions.phpbbTablePrefix", "phpbb_");
-        getPhpbbGroup = configFile.getInt(
-                "ExternalBoardOptions.phpbbActivatedGroupId", 2);
-        supportOldPassword = configFile.getBoolean(
-                "settings.security.supportOldPasswordHash", false);
-        getWordPressPrefix = configFile.getString(
-                "ExternalBoardOptions.wordpressTablePrefix", "wp_");
-        purgeLimitedCreative = configFile.getBoolean(
-                "Purge.removeLimitedCreativesInventories", false);
-        purgeAntiXray = configFile
-                .getBoolean("Purge.removeAntiXRayFile", false);
+        getPhpbbPrefix = configFile.getString("ExternalBoardOptions.phpbbTablePrefix", "phpbb_");
+        getPhpbbGroup = configFile.getInt("ExternalBoardOptions.phpbbActivatedGroupId", 2);
+        supportOldPassword = configFile.getBoolean("settings.security.supportOldPasswordHash", false);
+        getWordPressPrefix = configFile.getString("ExternalBoardOptions.wordpressTablePrefix", "wp_");
+        purgeLimitedCreative = configFile.getBoolean("Purge.removeLimitedCreativesInventories", false);
+        purgeAntiXray = configFile.getBoolean("Purge.removeAntiXRayFile", false);
         // purgePermissions = configFile.getBoolean("Purge.removePermissions",
         // false);
-        enableProtection = configFile.getBoolean("Protection.enableProtection",
-                false);
+        enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = (List<String>) configFile.getList("Protection.countries");
-        enableAntiBot = configFile
-                .getBoolean("Protection.enableAntiBot", false);
-        antiBotSensibility = configFile.getInt("Protection.antiBotSensibility",
-                5);
+        enableAntiBot = configFile.getBoolean("Protection.enableAntiBot", false);
+        antiBotSensibility = configFile.getInt("Protection.antiBotSensibility", 5);
         antiBotDuration = configFile.getInt("Protection.antiBotDuration", 10);
-        forceCommands = (List<String>) configFile.getList(
-                "settings.forceCommands", new ArrayList<String>());
-        forceCommandsAsConsole = (List<String>) configFile.getList(
-                "settings.forceCommandsAsConsole", new ArrayList<String>());
+        forceCommands = (List<String>) configFile.getList("settings.forceCommands", new ArrayList<String>());
+        forceCommandsAsConsole = (List<String>) configFile.getList("settings.forceCommandsAsConsole", new ArrayList<String>());
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         delayRecall = configFile.getInt("Email.delayRecall", 5);
-        useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage",
-                true);
-        unsafePasswords = (List<String>) configFile.getList(
-                "settings.security.unsafePasswords", new ArrayList<String>());
-        countriesBlacklist = (List<String>) configFile.getList(
-                "Protection.countriesBlacklist", new ArrayList<String>());
-        broadcastWelcomeMessage = configFile.getBoolean(
-                "settings.broadcastWelcomeMessage", false);
-        forceRegKick = configFile.getBoolean(
-                "settings.registration.forceKickAfterRegister", false);
-        forceRegLogin = configFile.getBoolean(
-                "settings.registration.forceLoginAfterRegister", false);
-        getMySQLColumnLogged = configFile.getString(
-                "DataSource.mySQLColumnLogged", "isLogged");
-        spawnPriority = configFile.getString(
-                "settings.restrictions.spawnPriority",
-                "authme,essentials,multiverse,default");
-        getMaxLoginPerIp = configFile.getInt(
-                "settings.restrictions.maxLoginPerIp", 0);
-        getMaxJoinPerIp = configFile.getInt(
-                "settings.restrictions.maxJoinPerIp", 0);
-        checkVeryGames = configFile
-                .getBoolean("VeryGames.enableIpCheck", false);
-        delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage",
-                false);
-        noTeleport = configFile.getBoolean("settings.restrictions.noTeleport",
-                false);
-        crazyloginFileName = configFile.getString(
-                "Converter.CrazyLogin.fileName", "accounts.db");
-        getPassRegex = configFile.getString(
-                "settings.restrictions.allowedPasswordCharacters",
-                "[a-zA-Z0-9_?!@+&-]*");
-        applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect",
-                false);
+        useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
+        unsafePasswords = (List<String>) configFile.getList("settings.security.unsafePasswords", new ArrayList<String>());
+        countriesBlacklist = (List<String>) configFile.getList("Protection.countriesBlacklist", new ArrayList<String>());
+        broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
+        forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
+        forceRegLogin = configFile.getBoolean("settings.registration.forceLoginAfterRegister", false);
+        getMySQLColumnLogged = configFile.getString("DataSource.mySQLColumnLogged", "isLogged");
+        spawnPriority = configFile.getString("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+        getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
+        getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
+        checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
+        delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
+        noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
+        crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
+        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[a-zA-Z0-9_?!@+&-]*");
+        applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
 
@@ -664,14 +438,10 @@ public final class Settings extends YamlConfiguration {
 
     public void mergeConfig() {
         boolean changes = false;
-        if (contains("Xenoforo.predefinedSalt")) set("Xenoforo.predefinedSalt",
-                null);
-        if (configFile.getString("settings.security.passwordHash", "SHA256")
-                .toUpperCase().equals("XFSHA1")
-                || configFile
-                        .getString("settings.security.passwordHash", "SHA256")
-                        .toUpperCase().equals("XFSHA256")) set(
-                "settings.security.passwordHash", "XENFORO");
+        if (contains("Xenoforo.predefinedSalt"))
+            set("Xenoforo.predefinedSalt", null);
+        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256"))
+            set("settings.security.passwordHash", "XENFORO");
         if (!contains("Protection.enableProtection")) {
             set("Protection.enableProtection", false);
             changes = true;
@@ -745,8 +515,7 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (!contains("settings.restrictions.spawnPriority")) {
-            set("settings.restrictions.spawnPriority",
-                    "authme,essentials,multiverse,default");
+            set("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
             changes = true;
         }
         if (!contains("settings.restrictions.maxLoginPerIp")) {
@@ -761,10 +530,8 @@ public final class Settings extends YamlConfiguration {
             set("VeryGames.enableIpCheck", false);
             changes = true;
         }
-        if (getString("settings.restrictions.allowedNicknameCharacters")
-                .equals("[a-zA-Z0-9_?]*")) set(
-                "settings.restrictions.allowedNicknameCharacters",
-                "[a-zA-Z0-9_]*");
+        if (getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*"))
+            set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
         if (!contains("settings.delayJoinMessage")) {
             set("settings.delayJoinMessage", false);
             changes = true;
@@ -773,15 +540,14 @@ public final class Settings extends YamlConfiguration {
             set("settings.restrictions.noTeleport", false);
             changes = true;
         }
-        if (contains("Converter.Rakamak.newPasswordHash")) set(
-                "Converter.Rakamak.newPasswordHash", null);
+        if (contains("Converter.Rakamak.newPasswordHash"))
+            set("Converter.Rakamak.newPasswordHash", null);
         if (!contains("Converter.CrazyLogin.fileName")) {
             set("Converter.CrazyLogin.fileName", "accounts.db");
             changes = true;
         }
         if (!contains("settings.restrictions.allowedPasswordCharacters")) {
-            set("settings.restrictions.allowedPasswordCharacters",
-                    "[a-zA-Z0-9_?!@+&-]*");
+            set("settings.restrictions.allowedPasswordCharacters", "[a-zA-Z0-9_?!@+&-]*");
             changes = true;
         }
         if (!contains("settings.applyBlindEffect")) {
@@ -800,11 +566,8 @@ public final class Settings extends YamlConfiguration {
         }
 
         if (changes) {
-            plugin.getLogger()
-                    .warning(
-                            "Merge new Config Options - I'm not an error, please don't report me");
-            plugin.getLogger().warning(
-                    "Please check your config.yml file for new configs!");
+            plugin.getLogger().warning("Merge new Config Options - I'm not an error, please don't report me");
+            plugin.getLogger().warning("Please check your config.yml file for new configs!");
         }
         plugin.saveConfig();
 
@@ -814,11 +577,9 @@ public final class Settings extends YamlConfiguration {
     private static HashAlgorithm getPasswordHash() {
         String key = "settings.security.passwordHash";
         try {
-            return HashAlgorithm.valueOf(configFile.getString(key, "SHA256")
-                    .toUpperCase());
+            return HashAlgorithm.valueOf(configFile.getString(key, "SHA256").toUpperCase());
         } catch (IllegalArgumentException ex) {
-            ConsoleLogger
-                    .showError("Unknown Hash Algorithm; defaulting to SHA256");
+            ConsoleLogger.showError("Unknown Hash Algorithm; defaulting to SHA256");
             return HashAlgorithm.SHA256;
         }
     }
@@ -826,11 +587,9 @@ public final class Settings extends YamlConfiguration {
     private static DataSourceType getDataSource() {
         String key = "DataSource.backend";
         try {
-            return DataSource.DataSourceType.valueOf(configFile.getString(key)
-                    .toUpperCase());
+            return DataSource.DataSourceType.valueOf(configFile.getString(key).toUpperCase());
         } catch (IllegalArgumentException ex) {
-            ConsoleLogger
-                    .showError("Unknown database backend; defaulting to file database");
+            ConsoleLogger.showError("Unknown database backend; defaulting to file database");
             return DataSource.DataSourceType.FILE;
         }
     }
@@ -918,7 +677,8 @@ public final class Settings extends YamlConfiguration {
      */
     public final void loadDefaults(String filename) {
         InputStream stream = plugin.getResource(filename);
-        if (stream == null) return;
+        if (stream == null)
+            return;
 
         setDefaults(YamlConfiguration.loadConfiguration(stream));
     }
@@ -970,9 +730,9 @@ public final class Settings extends YamlConfiguration {
     }
 
     public static void switchAntiBotMod(boolean mode) {
-        if (mode) isKickNonRegisteredEnabled = true;
-        else isKickNonRegisteredEnabled = configFile.getBoolean(
-                "settings.restrictions.kickNonRegistered", false);
+        if (mode)
+            isKickNonRegisteredEnabled = true;
+        else isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
     }
 
     private static void getWelcomeMessage(AuthMe plugin) {
@@ -980,11 +740,9 @@ public final class Settings extends YamlConfiguration {
         if (!useWelcomeMessage) {
             return;
         }
-        if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt")
-                .exists())) {
+        if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt").exists())) {
             try {
-                FileWriter fw = new FileWriter(plugin.getDataFolder()
-                        + File.separator + "welcome.txt", true);
+                FileWriter fw = new FileWriter(plugin.getDataFolder() + File.separator + "welcome.txt", true);
                 BufferedWriter w = new BufferedWriter(fw);
                 w.write("Welcome {PLAYER} on {SERVER} server");
                 w.newLine();
@@ -995,8 +753,7 @@ public final class Settings extends YamlConfiguration {
             }
         }
         try {
-            FileReader fr = new FileReader(plugin.getDataFolder()
-                    + File.separator + "welcome.txt");
+            FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
             BufferedReader br = new BufferedReader(fr);
             String line = "";
             while ((line = br.readLine()) != null) {
@@ -1011,8 +768,10 @@ public final class Settings extends YamlConfiguration {
     }
 
     public static boolean isEmailCorrect(String email) {
-        if (!email.contains("@")) return false;
-        if (email.equalsIgnoreCase("your@email.com")) return false;
+        if (!email.contains("@"))
+            return false;
+        if (email.equalsIgnoreCase("your@email.com"))
+            return false;
         String emailDomain = email.split("@")[1];
         boolean correct = true;
         if (emailWhitelist != null && !emailWhitelist.isEmpty()) {
@@ -1038,6 +797,26 @@ public final class Settings extends YamlConfiguration {
     }
 
     public enum messagesLang {
-        en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl
+        en,
+        de,
+        br,
+        cz,
+        pl,
+        fr,
+        uk,
+        ru,
+        hu,
+        sk,
+        es,
+        fi,
+        zhtw,
+        zhhk,
+        zhcn,
+        lt,
+        it,
+        ko,
+        pt,
+        nl,
+        gl
     }
 }

@@ -37,7 +37,7 @@ public class newxAuthToFlat {
             sender.sendMessage("[AuthMe] xAuth plugin not found");
             return false;
         }
-        if (!(new File("./plugins/xAuth/xAuth.h2.db").exists())) {
+        if (!(new File(instance.getDataFolder().getParent() + File.separator + "xAuth" + File.separator + "xAuth.h2.db").exists())) {
             sender.sendMessage("[AuthMe] xAuth H2 database not found, checking for MySQL or SQLite data...");
         }
         List<Integer> players = getXAuthPlayers();
@@ -51,8 +51,7 @@ public class newxAuthToFlat {
                 String pl = getIdPlayer(id);
                 String psw = getPassword(id);
                 if (psw != null && !psw.isEmpty() && pl != null) {
-                    PlayerAuth auth = new PlayerAuth(pl, psw, "198.18.0.1", 0,
-                            "your@email.com", API.getPlayerRealName(pl));
+                    PlayerAuth auth = new PlayerAuth(pl, psw, "198.18.0.1", 0, "your@email.com", API.getPlayerRealName(pl));
                     database.saveAuth(auth);
                 }
             }
@@ -65,19 +64,16 @@ public class newxAuthToFlat {
 
     public String getIdPlayer(int id) {
         String realPass = "";
-        Connection conn = xAuth.getPlugin().getDatabaseController()
-                .getConnection();
+        Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format(
-                    "SELECT `playername` FROM `%s` WHERE `id` = ?",
-                    xAuth.getPlugin().getDatabaseController()
-                            .getTable(Table.ACCOUNT));
+            String sql = String.format("SELECT `playername` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
             ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
             rs = ps.executeQuery();
-            if (!rs.next()) return null;
+            if (!rs.next())
+                return null;
             realPass = rs.getString("playername").toLowerCase();
         } catch (SQLException e) {
             xAuthLog.severe("Failed to retrieve name for account: " + id, e);
@@ -90,13 +86,11 @@ public class newxAuthToFlat {
 
     public List<Integer> getXAuthPlayers() {
         List<Integer> xP = new ArrayList<Integer>();
-        Connection conn = xAuth.getPlugin().getDatabaseController()
-                .getConnection();
+        Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT * FROM `%s`", xAuth.getPlugin()
-                    .getDatabaseController().getTable(Table.ACCOUNT));
+            String sql = String.format("SELECT * FROM `%s`", xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -113,23 +107,19 @@ public class newxAuthToFlat {
 
     public String getPassword(int accountId) {
         String realPass = "";
-        Connection conn = xAuth.getPlugin().getDatabaseController()
-                .getConnection();
+        Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format(
-                    "SELECT `password`, `pwtype` FROM `%s` WHERE `id` = ?",
-                    xAuth.getPlugin().getDatabaseController()
-                            .getTable(Table.ACCOUNT));
+            String sql = String.format("SELECT `password`, `pwtype` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
             ps = conn.prepareStatement(sql);
             ps.setInt(1, accountId);
             rs = ps.executeQuery();
-            if (!rs.next()) return null;
+            if (!rs.next())
+                return null;
             realPass = rs.getString("password");
         } catch (SQLException e) {
-            xAuthLog.severe("Failed to retrieve password hash for account: "
-                    + accountId, e);
+            xAuthLog.severe("Failed to retrieve password hash for account: " + accountId, e);
             return null;
         } finally {
             xAuth.getPlugin().getDatabaseController().close(conn, ps, rs);

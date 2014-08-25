@@ -17,8 +17,7 @@ public class WBB3 implements EncryptionMethod {
     @Override
     public boolean comparePassword(String hash, String password,
             String playerName) throws NoSuchAlgorithmException {
-        String salt = AuthMe.getInstance().database.getAuth(playerName)
-                .getSalt();
+        String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
         return hash.equals(getHash(password, salt, ""));
     }
 
@@ -28,7 +27,6 @@ public class WBB3 implements EncryptionMethod {
         sha1.reset();
         sha1.update(message.getBytes());
         byte[] digest = sha1.digest();
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(
-                1, digest));
+        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
     }
 }

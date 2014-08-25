@@ -23,15 +23,15 @@ public class AuthMeServerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
-        if (!Settings.enableProtection) return;
-        if (Settings.countries.isEmpty()) return;
+        if (!Settings.enableProtection)
+            return;
+        if (Settings.countries.isEmpty())
+            return;
         if (!Settings.countriesBlacklist.isEmpty()) {
-            if (Settings.countriesBlacklist.contains(plugin
-                    .getCountryCode(event.getAddress().getHostAddress()))) event
-                    .setMotd(m._("country_banned")[0]);
+            if (Settings.countriesBlacklist.contains(plugin.getCountryCode(event.getAddress().getHostAddress())))
+                event.setMotd(m._("country_banned")[0]);
         }
-        if (Settings.countries.contains(plugin.getCountryCode(event
-                .getAddress().getHostAddress()))) {
+        if (Settings.countries.contains(plugin.getCountryCode(event.getAddress().getHostAddress()))) {
             event.setMotd(plugin.getServer().getMotd());
         } else {
             event.setMotd(m._("country_banned")[0]);
@@ -74,24 +74,26 @@ public class AuthMeServerListener implements Listener {
         }
         if (pluginName.equalsIgnoreCase("Vault")) {
             plugin.permission = null;
-            ConsoleLogger
-                    .showError("Vault has been disabled, unhook permissions!");
+            ConsoleLogger.showError("Vault has been disabled, unhook permissions!");
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
         String pluginName = event.getPlugin().getName();
-        if (pluginName.equalsIgnoreCase("Essentials")
-                || pluginName.equalsIgnoreCase("EssentialsSpawn")) plugin
-                .checkEssentials();
-        if (pluginName.equalsIgnoreCase("Multiverse-Core")) plugin
-                .checkMultiverse();
-        if (pluginName.equalsIgnoreCase("Notifications")) plugin
-                .checkNotifications();
-        if (pluginName.equalsIgnoreCase("ChestShop")) plugin.checkChestShop();
-        if (pluginName.equalsIgnoreCase("CombatTag")) plugin.combatTag();
-        if (pluginName.equalsIgnoreCase("Citizens")) plugin.citizensVersion();
-        if (pluginName.equalsIgnoreCase("Vault")) plugin.checkVault();
+        if (pluginName.equalsIgnoreCase("Essentials") || pluginName.equalsIgnoreCase("EssentialsSpawn"))
+            plugin.checkEssentials();
+        if (pluginName.equalsIgnoreCase("Multiverse-Core"))
+            plugin.checkMultiverse();
+        if (pluginName.equalsIgnoreCase("Notifications"))
+            plugin.checkNotifications();
+        if (pluginName.equalsIgnoreCase("ChestShop"))
+            plugin.checkChestShop();
+        if (pluginName.equalsIgnoreCase("CombatTag"))
+            plugin.combatTag();
+        if (pluginName.equalsIgnoreCase("Citizens"))
+            plugin.citizensVersion();
+        if (pluginName.equalsIgnoreCase("Vault"))
+            plugin.checkVault();
     }
 }

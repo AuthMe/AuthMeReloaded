@@ -60,8 +60,8 @@ public class SQLiteThread extends Thread implements DataSource {
                 ConsoleLogger.showError("Can't use SQLITE... ! SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
             }
-            if (!Settings.isStopEnabled) AuthMe.getInstance().getServer()
-                    .getPluginManager().disablePlugin(AuthMe.getInstance());
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         } catch (SQLException e) {
             ConsoleLogger.showError(e.getMessage());
@@ -69,8 +69,8 @@ public class SQLiteThread extends Thread implements DataSource {
                 ConsoleLogger.showError("Can't use SQLITE... ! SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
             }
-            if (!Settings.isStopEnabled) AuthMe.getInstance().getServer()
-                    .getPluginManager().disablePlugin(AuthMe.getInstance());
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         }
     }
@@ -79,8 +79,7 @@ public class SQLiteThread extends Thread implements DataSource {
             SQLException {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
-        this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/"
-                + database + ".db");
+        this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
 
     }
 
@@ -89,62 +88,37 @@ public class SQLiteThread extends Thread implements DataSource {
         ResultSet rs = null;
         try {
             st = con.createStatement();
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " ("
-                    + columnID + " INTEGER AUTO_INCREMENT," + columnName
-                    + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword
-                    + " VARCHAR(255) NOT NULL," + columnIp
-                    + " VARCHAR(40) NOT NULL," + columnLastLogin + " BIGINT,"
-                    + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY
-                    + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ
-                    + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld
-                    + " VARCHAR(255) DEFAULT 'world'," + columnEmail
-                    + " VARCHAR(255) DEFAULT 'your@email.com',"
-                    + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID
-                    + "));");
-            rs = con.getMetaData().getColumns(null, null, tableName,
-                    columnPassword);
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL," + columnLastLogin + " BIGINT," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) DEFAULT 'world'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
+            rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + columnPassword + " VARCHAR(255) NOT NULL;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnPassword + " VARCHAR(255) NOT NULL;");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnIp);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + columnIp + " VARCHAR(40) NOT NULL;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnIp + " VARCHAR(40) NOT NULL;");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName,
-                    columnLastLogin);
+            rs = con.getMetaData().getColumns(null, null, tableName, columnLastLogin);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + columnLastLogin + " BIGINT;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLastLogin + " BIGINT;");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName,
-                    lastlocWorld);
+            rs = con.getMetaData().getColumns(null, null, tableName, lastlocWorld);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + lastlocWorld
-                        + " VARCHAR(255) NOT NULL DEFAULT 'world';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT 'world';");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName,
-                    columnEmail);
+            rs = con.getMetaData().getColumns(null, null, tableName, columnEmail);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN "
-                        + columnEmail
-                        + "  VARCHAR(255) DEFAULT 'your@email.com';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnEmail + "  VARCHAR(255) DEFAULT 'your@email.com';");
             }
         } finally {
             close(rs);
@@ -158,8 +132,7 @@ public class SQLiteThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnName + "=?");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?");
             pst.setString(1, user);
             rs = pst.executeQuery();
             return rs.next();
@@ -177,41 +150,17 @@ public class SQLiteThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnName + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next()) {
                 if (rs.getString(columnIp).isEmpty()) {
-                    return new PlayerAuth(rs.getString(columnName),
-                            rs.getString(columnPassword), "198.18.0.1",
-                            rs.getLong(columnLastLogin),
-                            rs.getDouble(lastlocX), rs.getDouble(lastlocY),
-                            rs.getDouble(lastlocZ), rs.getString(lastlocWorld),
-                            rs.getString(columnEmail), API.getPlayerRealName(rs
-                                    .getString(columnName)));
+                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                 } else {
                     if (!columnSalt.isEmpty()) {
-                        return new PlayerAuth(rs.getString(columnName),
-                                rs.getString(columnPassword),
-                                rs.getString(columnSalt),
-                                rs.getInt(columnGroup), rs.getString(columnIp),
-                                rs.getLong(columnLastLogin),
-                                rs.getDouble(lastlocX), rs.getDouble(lastlocY),
-                                rs.getDouble(lastlocZ),
-                                rs.getString(lastlocWorld),
-                                rs.getString(columnEmail),
-                                API.getPlayerRealName(rs.getString(columnName)));
+                        return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                     } else {
-                        return new PlayerAuth(rs.getString(columnName),
-                                rs.getString(columnPassword),
-                                rs.getString(columnIp),
-                                rs.getLong(columnLastLogin),
-                                rs.getDouble(lastlocX), rs.getDouble(lastlocY),
-                                rs.getDouble(lastlocZ),
-                                rs.getString(lastlocWorld),
-                                rs.getString(columnEmail),
-                                API.getPlayerRealName(rs.getString(columnName)));
+                        return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), API.getPlayerRealName(rs.getString(columnName)));
                     }
                 }
             } else {
@@ -231,19 +180,14 @@ public class SQLiteThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             if (columnSalt.isEmpty() && auth.getSalt().isEmpty()) {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "("
-                        + columnName + "," + columnPassword + "," + columnIp
-                        + "," + columnLastLogin + ") VALUES (?,?,?,?);");
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + ") VALUES (?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
                 pst.executeUpdate();
             } else {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "("
-                        + columnName + "," + columnPassword + "," + columnIp
-                        + "," + columnLastLogin + "," + columnSalt
-                        + ") VALUES (?,?,?,?,?);");
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnSalt + ") VALUES (?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getHash());
                 pst.setString(3, auth.getIp());
@@ -264,8 +208,7 @@ public class SQLiteThread extends Thread implements DataSource {
     public synchronized boolean updatePassword(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnPassword + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
@@ -282,9 +225,7 @@ public class SQLiteThread extends Thread implements DataSource {
     public boolean updateSession(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnIp + "=?, " + columnLastLogin + "=? WHERE "
-                    + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
             pst.setString(3, auth.getNickname());
@@ -303,8 +244,7 @@ public class SQLiteThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
 
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE "
-                    + columnLastLogin + "<?;");
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             return pst.executeUpdate();
         } catch (SQLException ex) {
@@ -321,8 +261,7 @@ public class SQLiteThread extends Thread implements DataSource {
         ResultSet rs = null;
         List<String> list = new ArrayList<String>();
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnLastLogin + "<?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -342,8 +281,7 @@ public class SQLiteThread extends Thread implements DataSource {
     public synchronized boolean removeAuth(String user) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE "
-                    + columnName + "=?;");
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
             pst.setString(1, user);
             pst.executeUpdate();
         } catch (SQLException ex) {
@@ -359,9 +297,7 @@ public class SQLiteThread extends Thread implements DataSource {
     public boolean updateQuitLoc(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + lastlocX + "=?, " + lastlocY + "=?, " + lastlocZ + "=?, "
-                    + lastlocWorld + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + "=?, " + lastlocY + "=?, " + lastlocZ + "=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
             pst.setDouble(3, auth.getQuitLocZ());
@@ -383,8 +319,7 @@ public class SQLiteThread extends Thread implements DataSource {
         ResultSet rs = null;
         int countIp = 0;
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnIp + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -404,8 +339,7 @@ public class SQLiteThread extends Thread implements DataSource {
     public boolean updateEmail(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnEmail + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnEmail + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
@@ -425,8 +359,7 @@ public class SQLiteThread extends Thread implements DataSource {
         }
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET "
-                    + columnSalt + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
@@ -478,8 +411,7 @@ public class SQLiteThread extends Thread implements DataSource {
         ResultSet rs = null;
         List<String> countIp = new ArrayList<String>();
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnIp + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, auth.getIp());
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -506,8 +438,7 @@ public class SQLiteThread extends Thread implements DataSource {
         ResultSet rs = null;
         List<String> countIp = new ArrayList<String>();
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnIp + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -534,8 +465,7 @@ public class SQLiteThread extends Thread implements DataSource {
         ResultSet rs = null;
         List<String> countEmail = new ArrayList<String>();
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE "
-                    + columnEmail + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
             pst.setString(1, email);
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -561,8 +491,7 @@ public class SQLiteThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             for (String name : banned) {
-                pst = con.prepareStatement("DELETE FROM " + tableName
-                        + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, name);
                 pst.executeUpdate();
             }

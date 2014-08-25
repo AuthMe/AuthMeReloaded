@@ -60,8 +60,7 @@ public class AuthMeBlockListener implements Listener {
             return;
         }
 
-        if (PlayerCache.getInstance().isAuthenticated(
-                player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
             return;
         }
 

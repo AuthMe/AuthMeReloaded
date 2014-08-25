@@ -15,6 +15,7 @@ import fr.xephi.authme.settings.Messages;
  * @author stefano
  */
 public class PasspartuCommand implements CommandExecutor {
+
     private Utils utils = Utils.getInstance();
     public AuthMe plugin;
     private Messages m = Messages.getInstance();
@@ -32,16 +33,14 @@ public class PasspartuCommand implements CommandExecutor {
             return true;
         }
 
-        if (PlayerCache.getInstance().isAuthenticated(
-                sender.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(sender.getName().toLowerCase())) {
             return true;
         }
 
         if ((sender instanceof Player) && args.length == 1) {
             if (utils.readToken(args[0])) {
                 // bypass login!
-                plugin.management.performLogin((Player) sender, "dontneed",
-                        true);
+                plugin.management.performLogin((Player) sender, "dontneed", true);
                 return true;
             }
             sender.sendMessage("Time is expired or Token is Wrong!");

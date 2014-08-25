@@ -88,9 +88,13 @@ public class ConverterCommand implements CommandExecutor {
 
     public enum ConvertType {
 
-        ftsql("flattosql"), ftsqlite("flattosqlite"), xauth("xauth"), crazylogin(
-                "crazylogin"), rakamak("rakamak"), royalauth("royalauth"), vauth(
-                "vauth");
+        ftsql("flattosql"),
+        ftsqlite("flattosqlite"),
+        xauth("xauth"),
+        crazylogin("crazylogin"),
+        rakamak("rakamak"),
+        royalauth("royalauth"),
+        vauth("vauth");
 
         String name;
 

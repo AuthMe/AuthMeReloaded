@@ -22,7 +22,8 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public synchronized boolean isAuthAvailable(String user) {
-        if (cache.containsKey(user.toLowerCase())) return true;
+        if (cache.containsKey(user.toLowerCase()))
+            return true;
         return source.isAuthAvailable(user.toLowerCase());
     }
 
@@ -32,7 +33,8 @@ public class CacheDataSource implements DataSource {
             return cache.get(user.toLowerCase());
         } else {
             PlayerAuth auth = source.getAuth(user.toLowerCase());
-            if (auth != null) cache.put(user.toLowerCase(), auth);
+            if (auth != null)
+                cache.put(user.toLowerCase(), auth);
             return auth;
         }
     }
@@ -49,8 +51,8 @@ public class CacheDataSource implements DataSource {
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
         if (source.updatePassword(auth)) {
-            if (cache.containsKey(auth.getNickname().toLowerCase())) cache.get(
-                    auth.getNickname()).setHash(auth.getHash());
+            if (cache.containsKey(auth.getNickname().toLowerCase()))
+                cache.get(auth.getNickname()).setHash(auth.getHash());
             return true;
         }
         return false;
@@ -147,8 +149,8 @@ public class CacheDataSource implements DataSource {
     @Override
     public synchronized boolean updateEmail(PlayerAuth auth) {
         if (source.updateEmail(auth)) {
-            if (cache.containsKey(auth.getNickname().toLowerCase())) cache.get(
-                    auth.getNickname()).setEmail(auth.getEmail());
+            if (cache.containsKey(auth.getNickname().toLowerCase()))
+                cache.get(auth.getNickname()).setEmail(auth.getEmail());
             return true;
         }
         return false;
@@ -157,8 +159,8 @@ public class CacheDataSource implements DataSource {
     @Override
     public synchronized boolean updateSalt(PlayerAuth auth) {
         if (source.updateSalt(auth)) {
-            if (cache.containsKey(auth.getNickname().toLowerCase())) cache.get(
-                    auth.getNickname()).setSalt(auth.getSalt());
+            if (cache.containsKey(auth.getNickname().toLowerCase()))
+                cache.get(auth.getNickname()).setSalt(auth.getSalt());
             return true;
         }
         return false;

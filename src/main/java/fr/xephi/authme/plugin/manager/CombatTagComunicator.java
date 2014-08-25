@@ -19,8 +19,7 @@ public abstract class CombatTagComunicator {
     public static boolean isNPC(Entity player) {
         try {
             if (Bukkit.getServer().getPluginManager().getPlugin("CombatTag") != null) {
-                combatApi = new CombatTagApi((CombatTag) Bukkit.getServer()
-                        .getPluginManager().getPlugin("CombatTag"));
+                combatApi = new CombatTagApi((CombatTag) Bukkit.getServer().getPluginManager().getPlugin("CombatTag"));
                 try {
                     combatApi.getClass().getMethod("isNPC");
                 } catch (Exception e) {

@@ -40,48 +40,37 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
         if (time != 0) {
-            Bukkit.getScheduler().cancelTask(
-                    LimboCache.getInstance().getLimboPlayer(name)
-                            .getTimeoutTaskId());
-            int id = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
-                    new TimeoutTask(plugin, name), time);
+            Bukkit.getScheduler().cancelTask(LimboCache.getInstance().getLimboPlayer(name).getTimeoutTaskId());
+            int id = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new TimeoutTask(plugin, name), time);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
 
-        Bukkit.getScheduler().cancelTask(
-                LimboCache.getInstance().getLimboPlayer(name)
-                        .getMessageTaskId());
-        int nwMsg = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
-                new MessageTask(plugin, name, m._("login_msg"), msgInterval));
+        Bukkit.getScheduler().cancelTask(LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId());
+        int nwMsg = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("login_msg"), msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg);
 
         if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
             Location loca = plugin.getSpawnLocation(player);
-            RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player,
-                    loca);
+            RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
             plugin.getServer().getPluginManager().callEvent(tpEvent);
             if (!tpEvent.isCancelled()) {
-                if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo())
-                        .isLoaded()) {
-                    tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo())
-                            .load();
+                if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
+                    tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
                 }
                 player.teleport(tpEvent.getTo());
             }
         }
-        if (player.getGameMode() != GameMode.CREATIVE
-                && !Settings.isMovementAllowed) {
+        if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
             player.setAllowFlight(false);
             player.setFlying(false);
         }
-        if (Settings.applyBlindEffect) player
-                .removePotionEffect(PotionEffectType.BLINDNESS);
+        if (Settings.applyBlindEffect)
+            player.removePotionEffect(PotionEffectType.BLINDNESS);
         player.saveData();
-        if (!Settings.noConsoleSpam) ConsoleLogger.info(player.getName()
-                + " registered " + plugin.getIP(player));
+        if (!Settings.noConsoleSpam)
+            ConsoleLogger.info(player.getName() + " registered " + plugin.getIP(player));
         if (plugin.notifications != null) {
-            plugin.notifications.showNotification(new Notification("[AuthMe] "
-                    + player.getName() + " has registered by email!"));
+            plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " has registered by email!"));
         }
     }
 

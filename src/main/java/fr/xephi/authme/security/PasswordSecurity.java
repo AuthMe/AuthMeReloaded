@@ -26,23 +26,20 @@ public class PasswordSecurity {
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");
         sha1.reset();
         byte[] digest = sha1.digest(msg);
-        return String.format("%0" + (digest.length << 1) + "x",
-                new BigInteger(1, digest)).substring(0, length);
+        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest)).substring(0, length);
     }
 
     public static String getHash(HashAlgorithm alg, String password,
             String playerName) throws NoSuchAlgorithmException {
         EncryptionMethod method;
         try {
-            if (alg != HashAlgorithm.CUSTOM) method = (EncryptionMethod) alg
-                    .getclass().newInstance();
+            if (alg != HashAlgorithm.CUSTOM)
+                method = (EncryptionMethod) alg.getclass().newInstance();
             else method = null;
         } catch (InstantiationException e) {
-            throw new NoSuchAlgorithmException(
-                    "Problem with this hash algorithm");
+            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
         } catch (IllegalAccessException e) {
-            throw new NoSuchAlgorithmException(
-                    "Problem with this hash algorithm");
+            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
         }
         String salt = "";
         switch (alg) {
@@ -112,12 +109,11 @@ public class PasswordSecurity {
             default:
                 throw new NoSuchAlgorithmException("Unknown hash algorithm");
         }
-        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method,
-                playerName);
+        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
         Bukkit.getPluginManager().callEvent(event);
         method = event.getMethod();
-        if (method == null) throw new NoSuchAlgorithmException(
-                "Unknown hash algorithm");
+        if (method == null)
+            throw new NoSuchAlgorithmException("Unknown hash algorithm");
         return method.getHash(password, salt, playerName);
     }
 
@@ -126,30 +122,29 @@ public class PasswordSecurity {
         HashAlgorithm algo = Settings.getPasswordHash;
         EncryptionMethod method;
         try {
-            if (algo != HashAlgorithm.CUSTOM) method = (EncryptionMethod) algo
-                    .getclass().newInstance();
+            if (algo != HashAlgorithm.CUSTOM)
+                method = (EncryptionMethod) algo.getclass().newInstance();
             else method = null;
         } catch (InstantiationException e) {
-            throw new NoSuchAlgorithmException(
-                    "Problem with this hash algorithm");
+            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
         } catch (IllegalAccessException e) {
-            throw new NoSuchAlgorithmException(
-                    "Problem with this hash algorithm");
+            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
         }
-        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method,
-                playerName);
+        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
         Bukkit.getPluginManager().callEvent(event);
         method = event.getMethod();
-        if (method == null) throw new NoSuchAlgorithmException(
-                "Unknown hash algorithm");
+        if (method == null)
+            throw new NoSuchAlgorithmException("Unknown hash algorithm");
 
         try {
-            if (method.comparePassword(hash, password, playerName)) return true;
+            if (method.comparePassword(hash, password, playerName))
+                return true;
         } catch (Exception e) {
         }
         if (Settings.supportOldPassword) {
             try {
-                if (compareWithAllEncryptionMethod(password, hash, playerName)) return true;
+                if (compareWithAllEncryptionMethod(password, hash, playerName))
+                    return true;
             } catch (Exception e) {
             }
         }
@@ -159,23 +154,21 @@ public class PasswordSecurity {
     private static boolean compareWithAllEncryptionMethod(String password,
             String hash, String playerName) throws NoSuchAlgorithmException {
         for (HashAlgorithm algo : HashAlgorithm.values()) {
-            if (algo != HashAlgorithm.CUSTOM) try {
-                EncryptionMethod method = (EncryptionMethod) algo.getclass()
-                        .newInstance();
-                if (method.comparePassword(hash, password, playerName)) {
-                    PlayerAuth nAuth = AuthMe.getInstance().database
-                            .getAuth(playerName);
-                    if (nAuth != null) {
-                        nAuth.setHash(getHash(Settings.getPasswordHash,
-                                password, playerName));
-                        nAuth.setSalt(userSalt.get(playerName));
-                        AuthMe.getInstance().database.updatePassword(nAuth);
-                        AuthMe.getInstance().database.updateSalt(nAuth);
+            if (algo != HashAlgorithm.CUSTOM)
+                try {
+                    EncryptionMethod method = (EncryptionMethod) algo.getclass().newInstance();
+                    if (method.comparePassword(hash, password, playerName)) {
+                        PlayerAuth nAuth = AuthMe.getInstance().database.getAuth(playerName);
+                        if (nAuth != null) {
+                            nAuth.setHash(getHash(Settings.getPasswordHash, password, playerName));
+                            nAuth.setSalt(userSalt.get(playerName));
+                            AuthMe.getInstance().database.updatePassword(nAuth);
+                            AuthMe.getInstance().database.updateSalt(nAuth);
+                        }
+                        return true;
                     }
-                    return true;
+                } catch (Exception e) {
                 }
-            } catch (Exception e) {
-            }
         }
         return false;
     }

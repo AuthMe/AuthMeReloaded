@@ -36,8 +36,7 @@ public class LoginScreen extends GenericPopup implements Clickable {
     String exitMsg = spoutCfg.getString("LoginScreen.exit message");
     String title = spoutCfg.getString("LoginScreen.title");
     @SuppressWarnings("unchecked")
-    List<String> textlines = (List<String>) spoutCfg
-            .getList("LoginScreen.text");
+    List<String> textlines = (List<String>) spoutCfg.getList("LoginScreen.text");
     public SpoutPlayer splayer;
 
     public LoginScreen(SpoutPlayer player) {
@@ -50,33 +49,24 @@ public class LoginScreen extends GenericPopup implements Clickable {
         int part = !(textlines.size() <= 5) ? 195 / objects : 20;
         int h = 3 * part / 4, w = 8 * part;
         titleLbl = new GenericLabel();
-        titleLbl.setText(title).setTextColor(new Color(1.0F, 0, 0, 1.0F))
-                .setAlign(WidgetAnchor.TOP_CENTER).setHeight(h).setWidth(w)
-                .setX(maxWidth / 2).setY(25);
+        titleLbl.setText(title).setTextColor(new Color(1.0F, 0, 0, 1.0F)).setAlign(WidgetAnchor.TOP_CENTER).setHeight(h).setWidth(w).setX(maxWidth / 2).setY(25);
         this.attachWidget(plugin, titleLbl);
         int ystart = 25 + h + part / 2;
         for (int x = 0; x < textlines.size(); x++) {
             textLbl = new GenericLabel();
-            textLbl.setText(textlines.get(x)).setAlign(WidgetAnchor.TOP_CENTER)
-                    .setHeight(h).setWidth(w).setX(maxWidth / 2)
-                    .setY(ystart + x * part);
+            textLbl.setText(textlines.get(x)).setAlign(WidgetAnchor.TOP_CENTER).setHeight(h).setWidth(w).setX(maxWidth / 2).setY(ystart + x * part);
             this.attachWidget(plugin, textLbl);
         }
         passBox = new GenericTextField();
-        passBox.setMaximumCharacters(18).setMaximumLines(1).setHeight(h - 2)
-                .setWidth(w - 2).setY(220 - h - 2 * part);
+        passBox.setMaximumCharacters(18).setMaximumLines(1).setHeight(h - 2).setWidth(w - 2).setY(220 - h - 2 * part);
         passBox.setPasswordField(true);
         setXToMid(passBox);
         this.attachWidget(plugin, passBox);
         errorLbl = new GenericLabel();
-        errorLbl.setText("").setTextColor(new Color(1.0F, 0, 0, 1.0F))
-                .setHeight(h).setWidth(w)
-                .setX(passBox.getX() + passBox.getWidth() + 2)
-                .setY(passBox.getY());
+        errorLbl.setText("").setTextColor(new Color(1.0F, 0, 0, 1.0F)).setHeight(h).setWidth(w).setX(passBox.getX() + passBox.getWidth() + 2).setY(passBox.getY());
         this.attachWidget(plugin, errorLbl);
         loginBtn = new CustomButton(this);
-        loginBtn.setText(loginTxt).setHeight(h).setWidth(w)
-                .setY(220 - h - part);
+        loginBtn.setText(loginTxt).setHeight(h).setWidth(w).setY(220 - h - part);
         setXToMid(loginBtn);
         this.attachWidget(plugin, loginBtn);
         exitBtn = new CustomButton(this);
@@ -90,7 +80,8 @@ public class LoginScreen extends GenericPopup implements Clickable {
     public void handleClick(ButtonClickEvent event) {
         Button b = event.getButton();
         SpoutPlayer player = event.getPlayer();
-        if (event.isCancelled() || event == null || event.getPlayer() == null) return;
+        if (event.isCancelled() || event == null || event.getPlayer() == null)
+            return;
         if (b.equals(loginBtn)) {
             plugin.management.performLogin(player, passBox.getText(), false);
         } else if (b.equals(exitBtn)) {

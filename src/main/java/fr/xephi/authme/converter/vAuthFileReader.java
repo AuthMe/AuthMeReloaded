@@ -28,8 +28,7 @@ public class vAuthFileReader {
     }
 
     public void convert() throws IOException {
-        final File file = new File(plugin.getDataFolder().getParent()
-                + "/vAuth/passwords.yml");
+        final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
         Scanner scanner = null;
         try {
             scanner = new Scanner(file);
@@ -41,23 +40,20 @@ public class vAuthFileReader {
                 if (isUUIDinstance(password)) {
                     String pname = null;
                     try {
-                        pname = Bukkit.getOfflinePlayer(UUID.fromString(name))
-                                .getName();
+                        pname = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
                     } catch (Exception e) {
                         pname = getName(UUID.fromString(name));
                     } catch (NoSuchMethodError e) {
                         pname = getName(UUID.fromString(name));
                     }
-                    if (pname == null) continue;
-                    auth = new PlayerAuth(pname.toLowerCase(), password,
-                            "127.0.0.1", System.currentTimeMillis(),
-                            "your@email.com", pname);
+                    if (pname == null)
+                        continue;
+                    auth = new PlayerAuth(pname.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", pname);
                 } else {
-                    auth = new PlayerAuth(name, password, "127.0.0.1",
-                            System.currentTimeMillis(), "your@email.com",
-                            API.getPlayerRealName(name));
+                    auth = new PlayerAuth(name, password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", API.getPlayerRealName(name));
                 }
-                if (auth != null) database.saveAuth(auth);
+                if (auth != null)
+                    database.saveAuth(auth);
             }
         } catch (Exception e) {
         }
@@ -65,14 +61,16 @@ public class vAuthFileReader {
     }
 
     private boolean isUUIDinstance(String s) {
-        if (String.valueOf(s.charAt(8)).equalsIgnoreCase("-")) return true;
+        if (String.valueOf(s.charAt(8)).equalsIgnoreCase("-"))
+            return true;
         return true;
     }
 
     private String getName(UUID uuid) {
         try {
             for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
-                if (op.getUniqueId().compareTo(uuid) == 0) return op.getName();
+                if (op.getUniqueId().compareTo(uuid) == 0)
+                    return op.getName();
             }
         } catch (Exception e) {
         }

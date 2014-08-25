@@ -17,6 +17,7 @@ import fr.xephi.authme.settings.Settings;
  *
  */
 public class Management extends Thread {
+
     public DataSource database;
     public AuthMe plugin;
     public static RandomString rdm = new RandomString(Settings.captchaLength);
@@ -33,13 +34,11 @@ public class Management extends Thread {
 
     public void performLogin(final Player player, final String password,
             final boolean forceLogin) {
-        new AsyncronousLogin(player, password, forceLogin, plugin, database)
-                .process();
+        new AsyncronousLogin(player, password, forceLogin, plugin, database).process();
     }
 
     public void performRegister(final Player player, final String password,
             final String email) {
-        new AsyncronousRegister(player, password, email, plugin, database)
-                .process();
+        new AsyncronousRegister(player, password, email, plugin, database).process();
     }
 }

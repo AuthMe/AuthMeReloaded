@@ -32,8 +32,7 @@ public class API {
      * @return AuthMe instance
      */
     public static AuthMe hookAuthMe() {
-        Plugin plugin = Bukkit.getServer().getPluginManager()
-                .getPlugin("AuthMe");
+        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
         if (plugin == null || !(plugin instanceof AuthMe)) {
             return null;
         }
@@ -50,8 +49,7 @@ public class API {
      * @return true if player is authenticate
      */
     public static boolean isAuthenticated(Player player) {
-        return PlayerCache.getInstance().isAuthenticated(
-                player.getName().toLowerCase());
+        return PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase());
     }
 
     /**
@@ -61,7 +59,8 @@ public class API {
      */
     @Deprecated
     public boolean isaNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player, instance)) return true;
+        if (instance.getCitizensCommunicator().isNPC(player, instance))
+            return true;
         return CombatTagComunicator.isNPC(player);
     }
 
@@ -71,7 +70,8 @@ public class API {
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player, instance)) return true;
+        if (instance.getCitizensCommunicator().isNPC(player, instance))
+            return true;
         return CombatTagComunicator.isNPC(player);
     }
 
@@ -86,13 +86,10 @@ public class API {
 
     public static Location getLastLocation(Player player) {
         try {
-            PlayerAuth auth = PlayerCache.getInstance().getAuth(
-                    player.getName().toLowerCase());
+            PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
 
             if (auth != null) {
-                Location loc = new Location(Bukkit.getWorld(auth.getWorld()),
-                        auth.getQuitLocX(), auth.getQuitLocY(),
-                        auth.getQuitLocZ());
+                Location loc = new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
                 return loc;
             } else {
                 return null;
@@ -129,12 +126,12 @@ public class API {
      */
     public static boolean checkPassword(String playerName,
             String passwordToCheck) {
-        if (!isRegistered(playerName)) return false;
+        if (!isRegistered(playerName))
+            return false;
         String player = playerName.toLowerCase();
         PlayerAuth auth = database.getAuth(player);
         try {
-            return PasswordSecurity.comparePasswordWithHash(passwordToCheck,
-                    auth.getHash(), playerName);
+            return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), playerName);
         } catch (NoSuchAlgorithmException e) {
             return false;
         }
@@ -150,13 +147,11 @@ public class API {
     public static boolean registerPlayer(String playerName, String password) {
         try {
             String name = playerName.toLowerCase();
-            String hash = PasswordSecurity.getHash(Settings.getPasswordHash,
-                    password, name);
+            String hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0,
-                    "your@email.com", getPlayerRealName(name));
+            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com", getPlayerRealName(name));
             if (!database.saveAuth(auth)) {
                 return false;
             }
@@ -174,9 +169,9 @@ public class API {
      */
     public static String getPlayerRealName(String nickname) {
         try {
-            String realName = instance.dataManager.getOfflinePlayer(nickname)
-                    .getName();
-            if (realName != null && !realName.isEmpty()) return realName;
+            String realName = instance.dataManager.getOfflinePlayer(nickname).getName();
+            if (realName != null && !realName.isEmpty())
+                return realName;
         } catch (NullPointerException npe) {
         }
         return nickname;

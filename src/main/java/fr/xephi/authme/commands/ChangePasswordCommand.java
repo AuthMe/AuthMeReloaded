@@ -54,16 +54,13 @@ public class ChangePasswordCommand implements CommandExecutor {
         }
 
         try {
-            String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash,
-                    args[1], name);
+            String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, args[1], name);
 
-            if (PasswordSecurity.comparePasswordWithHash(args[0], PlayerCache
-                    .getInstance().getAuth(name).getHash(), player.getName())) {
+            if (PasswordSecurity.comparePasswordWithHash(args[0], PlayerCache.getInstance().getAuth(name).getHash(), player.getName())) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
                 auth.setHash(hashnew);
-                if (PasswordSecurity.userSalt.containsKey(name)
-                        && PasswordSecurity.userSalt.get(name) != null) auth
-                        .setSalt(PasswordSecurity.userSalt.get(name));
+                if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
+                    auth.setSalt(PasswordSecurity.userSalt.get(name));
                 else auth.setSalt("");
                 if (!database.updatePassword(auth)) {
                     m._(player, "error");
@@ -74,9 +71,7 @@ public class ChangePasswordCommand implements CommandExecutor {
                 m._(player, "pwd_changed");
                 ConsoleLogger.info(player.getName() + " changed his password");
                 if (plugin.notifications != null) {
-                    plugin.notifications.showNotification(new Notification(
-                            "[AuthMe] " + player.getName()
-                                    + " change his password!"));
+                    plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " change his password!"));
                 }
             } else {
                 m._(player, "wrong_pwd");

@@ -32,19 +32,12 @@ public class CustomConfiguration extends YamlConfiguration {
         try {
             super.load(configFile);
         } catch (FileNotFoundException e) {
-            Logger.getLogger(JavaPlugin.class.getName()).log(
-                    Level.SEVERE,
-                    "Could not find " + configFile.getName()
-                            + ", creating new one...");
+            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not find " + configFile.getName() + ", creating new one...");
             reLoad();
         } catch (IOException e) {
-            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE,
-                    "Could not load " + configFile.getName(), e);
+            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not load " + configFile.getName(), e);
         } catch (InvalidConfigurationException e) {
-            Logger.getLogger(JavaPlugin.class.getName())
-                    .log(Level.SEVERE,
-                            configFile.getName()
-                                    + " is no valid configuration file", e);
+            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, configFile.getName() + " is no valid configuration file", e);
         }
     }
 
@@ -53,7 +46,8 @@ public class CustomConfiguration extends YamlConfiguration {
         if (!configFile.exists()) {
             out = loadRessource(configFile);
         }
-        if (out) load();
+        if (out)
+            load();
         return out;
     }
 
@@ -61,8 +55,7 @@ public class CustomConfiguration extends YamlConfiguration {
         try {
             super.save(configFile);
         } catch (IOException ex) {
-            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE,
-                    "Could not save config to " + configFile.getName(), ex);
+            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not save config to " + configFile.getName(), ex);
         }
     }
 
@@ -70,15 +63,10 @@ public class CustomConfiguration extends YamlConfiguration {
         boolean out = true;
         if (!file.exists()) {
             try {
-                InputStream fis = getClass().getResourceAsStream(
-                        "/" + file.getName());
-                BufferedReader reader = new BufferedReader(
-                        new InputStreamReader(fis, Charset.forName("UTF-8")
-                                .newDecoder()));
+                InputStream fis = getClass().getResourceAsStream("/" + file.getName());
+                BufferedReader reader = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8").newDecoder()));
                 String str;
-                Writer writer = new BufferedWriter(new OutputStreamWriter(
-                        new FileOutputStream(file), Charset.forName("UTF-8")
-                                .newEncoder()));
+                Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder()));
                 while ((str = reader.readLine()) != null) {
                     writer.append(str).append("\r\n");
                 }
@@ -87,8 +75,7 @@ public class CustomConfiguration extends YamlConfiguration {
                 reader.close();
                 fis.close();
             } catch (Exception e) {
-                Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE,
-                        "Failed to load config from JAR");
+                Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Failed to load config from JAR");
                 out = false;
             }
             /*

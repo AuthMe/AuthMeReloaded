@@ -31,6 +31,7 @@ package fr.xephi.authme.security.pbkdf2;
  * @version 1.0
  */
 public class BinTools {
+
     public static final String hex = "0123456789ABCDEF";
 
     /**
@@ -101,9 +102,7 @@ public class BinTools {
         if (c >= 'a' && c <= 'f') {
             return (c - 'a' + 10);
         }
-        throw new IllegalArgumentException(
-                "Input string may only contain hex digits, but found '" + c
-                        + "'");
+        throw new IllegalArgumentException("Input string may only contain hex digits, but found '" + c + "'");
     }
 
     public static void main(String[] args) {

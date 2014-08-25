@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.util.Arrays;
 
 public class WORDPRESS implements EncryptionMethod {
+
     private static String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private int iterationCountLog2 = 8;
     private SecureRandom randomGen = new SecureRandom();
@@ -47,8 +48,7 @@ public class WORDPRESS implements EncryptionMethod {
 
     private String crypt(String password, String setting) {
         String output = "*0";
-        if (((setting.length() < 2) ? setting : setting.substring(0, 2))
-                .equalsIgnoreCase(output)) {
+        if (((setting.length() < 2) ? setting : setting.substring(0, 2)).equalsIgnoreCase(output)) {
             output = "*1";
         }
         String id = (setting.length() < 3) ? setting : setting.substring(0, 3);
@@ -95,8 +95,7 @@ public class WORDPRESS implements EncryptionMethod {
         try {
             return string.getBytes("UTF-8");
         } catch (UnsupportedEncodingException e) {
-            throw new UnsupportedOperationException(
-                    "This system doesn't support UTF-8!", e);
+            throw new UnsupportedOperationException("This system doesn't support UTF-8!", e);
         }
     }
 

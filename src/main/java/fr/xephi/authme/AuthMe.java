@@ -126,6 +126,7 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.enableAntiBot) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+
                 @Override
                 public void run() {
                     delayedAntiBot = false;
@@ -155,18 +156,15 @@ public class AuthMe extends JavaPlugin {
                 Class.forName("org.apache.logging.log4j.core.Filter");
                 setLog4JFilter();
             } catch (ClassNotFoundException e) {
-                ConsoleLogger
-                        .info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
+                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
             } catch (NoClassDefFoundError e) {
-                ConsoleLogger
-                        .info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
+                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
             }
         }
 
         // Load MailApi
-        if (!Settings.getmailAccount.isEmpty()
-                && !Settings.getmailPassword.isEmpty()) mail = new SendMailSSL(
-                this);
+        if (!Settings.getmailAccount.isEmpty() && !Settings.getmailPassword.isEmpty())
+            mail = new SendMailSSL(this);
 
         // Check Citizens Version
         citizensVersion();
@@ -191,7 +189,8 @@ public class AuthMe extends JavaPlugin {
          */
         if (Settings.isBackupActivated && Settings.isBackupOnStart) {
             Boolean Backup = new PerformBackup(this).DoBackup();
-            if (Backup) ConsoleLogger.info("Backup Complete");
+            if (Backup)
+                ConsoleLogger.info("Backup Complete");
             else ConsoleLogger.showError("Error while making Backup");
         }
 
@@ -240,10 +239,8 @@ public class AuthMe extends JavaPlugin {
 
         PluginManager pm = getServer().getPluginManager();
         if (Settings.bungee) {
-            Bukkit.getMessenger().registerOutgoingPluginChannel(this,
-                    "BungeeCord");
-            Bukkit.getMessenger().registerIncomingPluginChannel(this,
-                    "BungeeCord", new BungeeCordMessage(this));
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
         }
         if (pm.isPluginEnabled("Spout")) {
             pm.registerEvents(new AuthMeSpoutListener(database), this);
@@ -261,35 +258,32 @@ public class AuthMe extends JavaPlugin {
         this.getCommand("authme").setExecutor(new AdminCommand(this, database));
         this.getCommand("register").setExecutor(new RegisterCommand(this));
         this.getCommand("login").setExecutor(new LoginCommand(this));
-        this.getCommand("changepassword").setExecutor(
-                new ChangePasswordCommand(database, this));
-        this.getCommand("logout")
-                .setExecutor(new LogoutCommand(this, database));
-        this.getCommand("unregister").setExecutor(
-                new UnregisterCommand(this, database));
+        this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(database, this));
+        this.getCommand("logout").setExecutor(new LogoutCommand(this, database));
+        this.getCommand("unregister").setExecutor(new UnregisterCommand(this, database));
         this.getCommand("passpartu").setExecutor(new PasspartuCommand(this));
         this.getCommand("email").setExecutor(new EmailCommand(this, database));
         this.getCommand("captcha").setExecutor(new CaptchaCommand(this));
-        this.getCommand("converter").setExecutor(
-                new ConverterCommand(this, database));
+        this.getCommand("converter").setExecutor(new ConverterCommand(this, database));
 
         if (!Settings.isForceSingleSessionEnabled) {
-            ConsoleLogger
-                    .showError("ATTENTION by disabling ForceSingleSession, your server protection is set to low");
+            ConsoleLogger.showError("ATTENTION by disabling ForceSingleSession, your server protection is set to low");
         }
 
-        if (Settings.reloadSupport) try {
-            onReload();
-            if (server.getOnlinePlayers().length < 1) {
-                try {
-                    database.purgeLogged();
-                } catch (NullPointerException npe) {
+        if (Settings.reloadSupport)
+            try {
+                onReload();
+                if (server.getOnlinePlayers().length < 1) {
+                    try {
+                        database.purgeLogged();
+                    } catch (NullPointerException npe) {
+                    }
                 }
+            } catch (NullPointerException ex) {
             }
-        } catch (NullPointerException ex) {
-        }
 
-        if (Settings.usePurge) autoPurge();
+        if (Settings.usePurge)
+            autoPurge();
 
         // Download GeoIp.dat file
         downloadGeoIp();
@@ -300,35 +294,28 @@ public class AuthMe extends JavaPlugin {
         dataManager = new DataManager(this, database);
         dataManager.start();
 
-        ConsoleLogger.info("Authme " + this.getDescription().getVersion()
-                + " enabled");
+        ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
     }
 
     private void setLog4JFilter() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+
             @Override
             public void run() {
-                org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager
-                        .getRootLogger();
+                org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
                 coreLogger.addFilter(new Log4JFilter());
             }
         });
     }
 
     public void checkVault() {
-        if (this.getServer().getPluginManager().getPlugin("Vault") != null
-                && this.getServer().getPluginManager().getPlugin("Vault")
-                        .isEnabled()) {
-            RegisteredServiceProvider<Permission> permissionProvider = getServer()
-                    .getServicesManager().getRegistration(
-                            net.milkbowl.vault.permission.Permission.class);
+        if (this.getServer().getPluginManager().getPlugin("Vault") != null && this.getServer().getPluginManager().getPlugin("Vault").isEnabled()) {
+            RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
             if (permissionProvider != null) {
                 permission = permissionProvider.getProvider();
-                ConsoleLogger.info("Vault plugin detected, hook with "
-                        + permission.getName() + " system");
+                ConsoleLogger.info("Vault plugin detected, hook with " + permission.getName() + " system");
             } else {
-                ConsoleLogger
-                        .showError("Vault plugin is detected but not the permissions plugin!");
+                ConsoleLogger.showError("Vault plugin is detected but not the permissions plugin!");
             }
         } else {
             permission = null;
@@ -340,9 +327,7 @@ public class AuthMe extends JavaPlugin {
             this.ChestShop = 0;
             return;
         }
-        if (this.getServer().getPluginManager().getPlugin("ChestShop") != null
-                && this.getServer().getPluginManager().getPlugin("ChestShop")
-                        .isEnabled()) {
+        if (this.getServer().getPluginManager().getPlugin("ChestShop") != null && this.getServer().getPluginManager().getPlugin("ChestShop").isEnabled()) {
             try {
                 String ver = com.Acrobot.ChestShop.ChestShop.getVersion();
                 try {
@@ -350,8 +335,7 @@ public class AuthMe extends JavaPlugin {
                     if (version >= 3.50) {
                         this.ChestShop = version;
                     } else {
-                        ConsoleLogger
-                                .showError("Please Update your ChestShop version!");
+                        ConsoleLogger.showError("Please Update your ChestShop version!");
                     }
                 } catch (NumberFormatException nfe) {
                     try {
@@ -359,8 +343,7 @@ public class AuthMe extends JavaPlugin {
                         if (version >= 3.50) {
                             this.ChestShop = version;
                         } else {
-                            ConsoleLogger
-                                    .showError("Please Update your ChestShop version!");
+                            ConsoleLogger.showError("Please Update your ChestShop version!");
                         }
                     } catch (NumberFormatException nfee) {
                     }
@@ -377,14 +360,10 @@ public class AuthMe extends JavaPlugin {
             multiverse = null;
             return;
         }
-        if (this.getServer().getPluginManager().getPlugin("Multiverse-Core") != null
-                && this.getServer().getPluginManager()
-                        .getPlugin("Multiverse-Core").isEnabled()) {
+        if (this.getServer().getPluginManager().getPlugin("Multiverse-Core") != null && this.getServer().getPluginManager().getPlugin("Multiverse-Core").isEnabled()) {
             try {
-                multiverse = (MultiverseCore) this.getServer()
-                        .getPluginManager().getPlugin("Multiverse-Core");
-                ConsoleLogger
-                        .info("Hook with Multiverse-Core for SpawnLocations");
+                multiverse = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
+                ConsoleLogger.info("Hook with Multiverse-Core for SpawnLocations");
             } catch (NullPointerException npe) {
                 multiverse = null;
             } catch (ClassCastException cce) {
@@ -398,12 +377,9 @@ public class AuthMe extends JavaPlugin {
     }
 
     public void checkEssentials() {
-        if (this.getServer().getPluginManager().getPlugin("Essentials") != null
-                && this.getServer().getPluginManager().getPlugin("Essentials")
-                        .isEnabled()) {
+        if (this.getServer().getPluginManager().getPlugin("Essentials") != null && this.getServer().getPluginManager().getPlugin("Essentials").isEnabled()) {
             try {
-                ess = (Essentials) this.getServer().getPluginManager()
-                        .getPlugin("Essentials");
+                ess = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
                 ConsoleLogger.info("Hook with Essentials plugin");
             } catch (NullPointerException npe) {
                 ess = null;
@@ -415,16 +391,13 @@ public class AuthMe extends JavaPlugin {
         } else {
             ess = null;
         }
-        if (this.getServer().getPluginManager().getPlugin("EssentialsSpawn") != null
-                && this.getServer().getPluginManager()
-                        .getPlugin("EssentialsSpawn").isEnabled()) {
+        if (this.getServer().getPluginManager().getPlugin("EssentialsSpawn") != null && this.getServer().getPluginManager().getPlugin("EssentialsSpawn").isEnabled()) {
             try {
                 essentialsSpawn = new EssSpawn().getLocation();
                 ConsoleLogger.info("Hook with EssentialsSpawn plugin");
             } catch (Exception e) {
                 essentialsSpawn = null;
-                ConsoleLogger
-                        .showError("Error while reading /plugins/Essentials/spawn.yml file ");
+                ConsoleLogger.showError("Error while reading /plugins/Essentials/spawn.yml file ");
             }
         } else {
             ess = null;
@@ -436,11 +409,8 @@ public class AuthMe extends JavaPlugin {
             this.notifications = null;
             return;
         }
-        if (this.getServer().getPluginManager().getPlugin("Notifications") != null
-                && this.getServer().getPluginManager()
-                        .getPlugin("Notifications").isEnabled()) {
-            this.notifications = (Notifications) this.getServer()
-                    .getPluginManager().getPlugin("Notifications");
+        if (this.getServer().getPluginManager().getPlugin("Notifications") != null && this.getServer().getPluginManager().getPlugin("Notifications").isEnabled()) {
+            this.notifications = (Notifications) this.getServer().getPluginManager().getPlugin("Notifications");
             ConsoleLogger.info("Successfully hook with Notifications");
         } else {
             this.notifications = null;
@@ -448,9 +418,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     public void combatTag() {
-        if (this.getServer().getPluginManager().getPlugin("CombatTag") != null
-                && this.getServer().getPluginManager().getPlugin("CombatTag")
-                        .isEnabled()) {
+        if (this.getServer().getPluginManager().getPlugin("CombatTag") != null && this.getServer().getPluginManager().getPlugin("CombatTag").isEnabled()) {
             this.CombatTag = 1;
         } else {
             this.CombatTag = 0;
@@ -458,11 +426,8 @@ public class AuthMe extends JavaPlugin {
     }
 
     public void citizensVersion() {
-        if (this.getServer().getPluginManager().getPlugin("Citizens") != null
-                && this.getServer().getPluginManager().getPlugin("Citizens")
-                        .isEnabled()) {
-            Citizens cit = (Citizens) this.getServer().getPluginManager()
-                    .getPlugin("Citizens");
+        if (this.getServer().getPluginManager().getPlugin("Citizens") != null && this.getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
+            Citizens cit = (Citizens) this.getServer().getPluginManager().getPlugin("Citizens");
             String ver = cit.getDescription().getVersion();
             String[] args = ver.split("\\.");
             if (args[0].contains("1")) {
@@ -477,30 +442,32 @@ public class AuthMe extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (Bukkit.getOnlinePlayers().length != 0) for (Player player : Bukkit
-                .getOnlinePlayers()) {
-            this.savePlayer(player);
-        }
+        if (Bukkit.getOnlinePlayers().length != 0)
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                this.savePlayer(player);
+            }
 
         if (database != null) {
             database.close();
         }
 
         if (databaseThread != null) {
-            if (databaseThread.isAlive()) databaseThread.interrupt();
+            if (databaseThread.isAlive())
+                databaseThread.interrupt();
         }
 
         if (dataManager != null) {
-            if (dataManager.isAlive()) dataManager.interrupt();
+            if (dataManager.isAlive())
+                dataManager.interrupt();
         }
 
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {
             Boolean Backup = new PerformBackup(this).DoBackup();
-            if (Backup) ConsoleLogger.info("Backup Complete");
+            if (Backup)
+                ConsoleLogger.info("Backup Complete");
             else ConsoleLogger.showError("Error while making Backup");
         }
-        ConsoleLogger.info("Authme " + this.getDescription().getVersion()
-                + " disabled");
+        ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " disabled");
     }
 
     private void onReload() {
@@ -510,10 +477,9 @@ public class AuthMe extends JavaPlugin {
                     if (database.isLogged(player.getName().toLowerCase())) {
                         String name = player.getName().toLowerCase();
                         PlayerAuth pAuth = database.getAuth(name);
-                        if (pAuth == null) break;
-                        PlayerAuth auth = new PlayerAuth(name, pAuth.getHash(),
-                                pAuth.getIp(), new Date().getTime(),
-                                pAuth.getEmail(), player.getName());
+                        if (pAuth == null)
+                            break;
+                        PlayerAuth auth = new PlayerAuth(name, pAuth.getHash(), pAuth.getIp(), new Date().getTime(), pAuth.getEmail(), player.getName());
                         database.updateSession(auth);
                         PlayerCache.getInstance().addPlayer(auth);
                     }
@@ -532,35 +498,28 @@ public class AuthMe extends JavaPlugin {
     public void savePlayer(Player player) throws IllegalStateException,
             NullPointerException {
         try {
-            if ((citizens.isNPC(player, this))
-                    || (Utils.getInstance().isUnrestricted(player))
-                    || (CombatTagComunicator.isNPC(player))) {
+            if ((citizens.isNPC(player, this)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
                 return;
             }
         } catch (Exception e) {
         }
         try {
             String name = player.getName().toLowerCase();
-            if (PlayerCache.getInstance().isAuthenticated(name)
-                    && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-                final PlayerAuth auth = new PlayerAuth(player.getName()
-                        .toLowerCase(), player.getLocation().getX(), player
-                        .getLocation().getY(), player.getLocation().getZ(),
-                        player.getWorld().getName());
+            if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
+                final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName());
                 database.updateQuitLoc(auth);
             }
             if (LimboCache.getInstance().hasLimboPlayer(name)) {
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(
-                        name);
+                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
                 if (Settings.protectInventoryBeforeLogInEnabled.booleanValue()) {
                     player.getInventory().setArmorContents(limbo.getArmour());
                     player.getInventory().setContents(limbo.getInventory());
                 }
-                if (!Settings.noTeleport) player.teleport(limbo.getLoc());
+                if (!Settings.noTeleport)
+                    player.teleport(limbo.getLoc());
                 this.utils.addNormal(player, limbo.getGroup());
                 player.setOp(limbo.getOperator());
-                this.plugin.getServer().getScheduler()
-                        .cancelTask(limbo.getTimeoutTaskId());
+                this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
                 LimboCache.getInstance().deleteLimboPlayer(name);
                 if (this.playerBackup.doesCacheExist(player)) {
                     this.playerBackup.removeCache(player);
@@ -608,7 +567,8 @@ public class AuthMe extends JavaPlugin {
     }
 
     public boolean authmePermissible(Player player, String perm) {
-        if (player.hasPermission(perm)) return true;
+        if (player.hasPermission(perm))
+            return true;
         else if (permission != null) {
             return permission.playerHas(player, perm);
         }
@@ -616,7 +576,8 @@ public class AuthMe extends JavaPlugin {
     }
 
     public boolean authmePermissible(CommandSender sender, String perm) {
-        if (sender.hasPermission(perm)) return true;
+        if (sender.hasPermission(perm))
+            return true;
         else if (permission != null) {
             return permission.has(sender, perm);
         }
@@ -631,23 +592,24 @@ public class AuthMe extends JavaPlugin {
         calendar.add(Calendar.DATE, -(Settings.purgeDelay));
         long until = calendar.getTimeInMillis();
         List<String> cleared = this.database.autoPurgeDatabase(until);
-        ConsoleLogger.info("AutoPurgeDatabase : " + cleared.size()
-                + " accounts removed.");
-        if (cleared.isEmpty()) return;
-        if (Settings.purgeEssentialsFile && this.ess != null) dataManager
-                .purgeEssentials(cleared);
-        if (Settings.purgePlayerDat) dataManager.purgeDat(cleared);
-        if (Settings.purgeLimitedCreative) dataManager
-                .purgeLimitedCreative(cleared);
-        if (Settings.purgeAntiXray) dataManager.purgeAntiXray(cleared);
+        ConsoleLogger.info("AutoPurgeDatabase : " + cleared.size() + " accounts removed.");
+        if (cleared.isEmpty())
+            return;
+        if (Settings.purgeEssentialsFile && this.ess != null)
+            dataManager.purgeEssentials(cleared);
+        if (Settings.purgePlayerDat)
+            dataManager.purgeDat(cleared);
+        if (Settings.purgeLimitedCreative)
+            dataManager.purgeLimitedCreative(cleared);
+        if (Settings.purgeAntiXray)
+            dataManager.purgeAntiXray(cleared);
     }
 
     public Location getSpawnLocation(Player player) {
         World world = player.getWorld();
         String[] spawnPriority = Settings.spawnPriority.split(",");
         if (spawnPriority.length < 4) {
-            ConsoleLogger
-                    .showError("Check your config for spawnPriority, you need to put all of 4 spawn priorities");
+            ConsoleLogger.showError("Check your config for spawnPriority, you need to put all of 4 spawn priorities");
             ConsoleLogger.showError("Defaulting Spawn to world's one");
             return world.getSpawnLocation();
         }
@@ -655,14 +617,17 @@ public class AuthMe extends JavaPlugin {
         int i = 3;
         for (i = 3; i >= 0; i--) {
             String s = spawnPriority[i];
-            if (s.equalsIgnoreCase("default") && getDefaultSpawn(world) != null) spawnLoc = getDefaultSpawn(world);
-            if (s.equalsIgnoreCase("multiverse")
-                    && getMultiverseSpawn(world) != null) spawnLoc = getMultiverseSpawn(world);
-            if (s.equalsIgnoreCase("essentials")
-                    && getEssentialsSpawn() != null) spawnLoc = getEssentialsSpawn();
-            if (s.equalsIgnoreCase("authme") && getAuthMeSpawn(player) != null) spawnLoc = getAuthMeSpawn(player);
+            if (s.equalsIgnoreCase("default") && getDefaultSpawn(world) != null)
+                spawnLoc = getDefaultSpawn(world);
+            if (s.equalsIgnoreCase("multiverse") && getMultiverseSpawn(world) != null)
+                spawnLoc = getMultiverseSpawn(world);
+            if (s.equalsIgnoreCase("essentials") && getEssentialsSpawn() != null)
+                spawnLoc = getEssentialsSpawn();
+            if (s.equalsIgnoreCase("authme") && getAuthMeSpawn(player) != null)
+                spawnLoc = getAuthMeSpawn(player);
         }
-        if (spawnLoc == null) spawnLoc = world.getSpawnLocation();
+        if (spawnLoc == null)
+            spawnLoc = world.getSpawnLocation();
         return spawnLoc;
     }
 
@@ -673,8 +638,7 @@ public class AuthMe extends JavaPlugin {
     private Location getMultiverseSpawn(World world) {
         if (multiverse != null && Settings.multiverse) {
             try {
-                return multiverse.getMVWorldManager().getMVWorld(world)
-                        .getSpawnLocation();
+                return multiverse.getMVWorldManager().getMVWorld(world).getSpawnLocation();
             } catch (NullPointerException npe) {
             } catch (ClassCastException cce) {
             } catch (NoClassDefFoundError ncdfe) {
@@ -684,23 +648,21 @@ public class AuthMe extends JavaPlugin {
     }
 
     private Location getEssentialsSpawn() {
-        if (essentialsSpawn != null) return essentialsSpawn;
+        if (essentialsSpawn != null)
+            return essentialsSpawn;
         return null;
     }
 
     private Location getAuthMeSpawn(Player player) {
-        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player
-                .hasPlayedBefore())
-                && (Spawn.getInstance().getFirstSpawn() != null)) return Spawn
-                .getInstance().getFirstSpawn();
-        if (Spawn.getInstance().getSpawn() != null) return Spawn.getInstance()
-                .getSpawn();
+        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null))
+            return Spawn.getInstance().getFirstSpawn();
+        if (Spawn.getInstance().getSpawn() != null)
+            return Spawn.getInstance().getSpawn();
         return null;
     }
 
     public void downloadGeoIp() {
-        ConsoleLogger
-                .info("LICENSE : This product includes GeoLite data created by MaxMind, available from http://www.maxmind.com");
+        ConsoleLogger.info("LICENSE : This product includes GeoLite data created by MaxMind, available from http://www.maxmind.com");
         File file = new File(getDataFolder(), "GeoIP.dat");
         if (!file.exists()) {
             try {
@@ -710,7 +672,8 @@ public class AuthMe extends JavaPlugin {
                 conn.setConnectTimeout(10000);
                 conn.connect();
                 InputStream input = conn.getInputStream();
-                if (url.endsWith(".gz")) input = new GZIPInputStream(input);
+                if (url.endsWith(".gz"))
+                    input = new GZIPInputStream(input);
                 OutputStream output = new FileOutputStream(file);
                 byte[] buffer = new byte[2048];
                 int length = input.read(buffer);
@@ -727,10 +690,11 @@ public class AuthMe extends JavaPlugin {
 
     public String getCountryCode(String ip) {
         try {
-            if (ls == null) ls = new LookupService(new File(getDataFolder(),
-                    "GeoIP.dat"));
+            if (ls == null)
+                ls = new LookupService(new File(getDataFolder(), "GeoIP.dat"));
             String code = ls.getCountry(ip).getCode();
-            if (code != null && !code.isEmpty()) return code;
+            if (code != null && !code.isEmpty())
+                return code;
         } catch (Exception e) {
         }
         return null;
@@ -738,10 +702,11 @@ public class AuthMe extends JavaPlugin {
 
     public String getCountryName(String ip) {
         try {
-            if (ls == null) ls = new LookupService(new File(getDataFolder(),
-                    "GeoIP.dat"));
+            if (ls == null)
+                ls = new LookupService(new File(getDataFolder(), "GeoIP.dat"));
             String code = ls.getCountry(ip).getName();
-            if (code != null && !code.isEmpty()) return code;
+            if (code != null && !code.isEmpty())
+                return code;
         } catch (Exception e) {
         }
         return null;
@@ -753,20 +718,21 @@ public class AuthMe extends JavaPlugin {
     }
 
     private void recallEmail() {
-        if (!Settings.recallEmail) return;
+        if (!Settings.recallEmail)
+            return;
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
+
             @Override
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (player.isOnline()) {
                         String name = player.getName().toLowerCase();
-                        if (database.isAuthAvailable(name)) if (PlayerCache
-                                .getInstance().isAuthenticated(name)) {
-                            String email = database.getAuth(name).getEmail();
-                            if (email == null || email.isEmpty()
-                                    || email.equalsIgnoreCase("your@email.com")) m
-                                    ._(player, "add_email");
-                        }
+                        if (database.isAuthAvailable(name))
+                            if (PlayerCache.getInstance().isAuthenticated(name)) {
+                                String email = database.getAuth(name).getEmail();
+                                if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
+                                    m._(player, "add_email");
+                            }
                     }
                 }
             }
@@ -777,20 +743,14 @@ public class AuthMe extends JavaPlugin {
         try {
             message = message.replace("&", "\u00a7");
             message = message.replace("{PLAYER}", player.getName());
-            message = message.replace("{ONLINE}", ""
-                    + this.getServer().getOnlinePlayers().length);
-            message = message.replace("{MAXPLAYERS}", ""
-                    + this.getServer().getMaxPlayers());
+            message = message.replace("{ONLINE}", "" + this.getServer().getOnlinePlayers().length);
+            message = message.replace("{MAXPLAYERS}", "" + this.getServer().getMaxPlayers());
             message = message.replace("{IP}", getIP(player));
-            message = message.replace("{LOGINS}", ""
-                    + PlayerCache.getInstance().getLogged());
+            message = message.replace("{LOGINS}", "" + PlayerCache.getInstance().getLogged());
             message = message.replace("{WORLD}", player.getWorld().getName());
-            message = message.replace("{SERVER}", this.getServer()
-                    .getServerName());
-            message = message.replace("{VERSION}", this.getServer()
-                    .getBukkitVersion());
-            message = message.replace("{COUNTRY}",
-                    this.getCountryName(getIP(player)));
+            message = message.replace("{SERVER}", this.getServer().getServerName());
+            message = message.replace("{VERSION}", this.getServer().getBukkitVersion());
+            message = message.replace("{COUNTRY}", this.getCountryName(getIP(player)));
         } catch (Exception e) {
         }
         return message;
@@ -800,30 +760,34 @@ public class AuthMe extends JavaPlugin {
         String name = player.getName().toLowerCase();
         String ip = player.getAddress().getAddress().getHostAddress();
         if (Settings.bungee) {
-            if (realIp.containsKey(name)) ip = realIp.get(name);
+            if (realIp.containsKey(name))
+                ip = realIp.get(name);
         }
-        if (Settings.checkVeryGames) if (getVeryGamesIP(player) != null) ip = getVeryGamesIP(player);
+        if (Settings.checkVeryGames)
+            if (getVeryGamesIP(player) != null)
+                ip = getVeryGamesIP(player);
         return ip;
     }
 
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
         for (Player player : this.getServer().getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player))
-                    && database.isLogged(player.getName().toLowerCase())
-                    && !player.getName().equalsIgnoreCase(name)) count++;
+            if (ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
+                count++;
         }
-        if (count >= Settings.getMaxLoginPerIp) return true;
+        if (count >= Settings.getMaxLoginPerIp)
+            return true;
         return false;
     }
 
     public boolean hasJoinedIp(String name, String ip) {
         int count = 0;
         for (Player player : this.getServer().getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player))
-                    && !player.getName().equalsIgnoreCase(name)) count++;
+            if (ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
+                count++;
         }
-        if (count >= Settings.getMaxJoinPerIp) return true;
+        if (count >= Settings.getMaxJoinPerIp)
+            return true;
         return false;
     }
 
@@ -836,17 +800,13 @@ public class AuthMe extends JavaPlugin {
     public String getVeryGamesIP(Player player) {
         String realIP = null;
         String sUrl = vgUrl;
-        sUrl = sUrl.replace("%IP%",
-                player.getAddress().getAddress().getHostAddress()).replace(
-                "%PORT%", "" + player.getAddress().getPort());
+        sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", "" + player.getAddress().getPort());
         try {
             URL url = new URL(sUrl);
             URLConnection urlc = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(
-                    urlc.getInputStream()));
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
             String inputLine = in.readLine();
-            if (inputLine != null && !inputLine.isEmpty()
-                    && !inputLine.equalsIgnoreCase("error")) {
+            if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error")) {
                 realIP = inputLine;
             }
         } catch (Exception e) {

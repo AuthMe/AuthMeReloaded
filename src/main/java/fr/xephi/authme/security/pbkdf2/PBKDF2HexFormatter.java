@@ -32,6 +32,7 @@ package fr.xephi.authme.security.pbkdf2;
  * @version 1.0
  */
 public class PBKDF2HexFormatter implements PBKDF2Formatter {
+
     public boolean fromString(PBKDF2Parameters p, String s) {
         if (p == null || s == null) {
             return true;
@@ -53,9 +54,7 @@ public class PBKDF2HexFormatter implements PBKDF2Formatter {
     }
 
     public String toString(PBKDF2Parameters p) {
-        String s = BinTools.bin2hex(p.getSalt()) + ":"
-                + String.valueOf(p.getIterationCount()) + ":"
-                + BinTools.bin2hex(p.getDerivedKey());
+        String s = BinTools.bin2hex(p.getSalt()) + ":" + String.valueOf(p.getIterationCount()) + ":" + BinTools.bin2hex(p.getDerivedKey());
         return s;
     }
 }

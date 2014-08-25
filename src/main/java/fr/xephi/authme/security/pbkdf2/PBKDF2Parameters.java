@@ -37,6 +37,7 @@ package fr.xephi.authme.security.pbkdf2;
  * @version 1.0
  */
 public class PBKDF2Parameters {
+
     protected byte[] salt;
 
     protected int iterationCount;

@@ -4,6 +4,7 @@ import org.getspout.spoutapi.event.screen.ButtonClickEvent;
 import org.getspout.spoutapi.gui.GenericButton;
 
 public class CustomButton extends GenericButton {
+
     public Clickable handleRef = null;
 
     public CustomButton(Clickable c) {

@@ -29,15 +29,15 @@ public enum HashAlgorithm {
     ROYALAUTH(fr.xephi.authme.security.crypts.ROYALAUTH.class),
     CRAZYCRYPT1(fr.xephi.authme.security.crypts.CRAZYCRYPT1.class),
     CUSTOM(Null.class);
-    
+
     Class<?> classe;
 
     HashAlgorithm(Class<?> classe) {
-    	this.classe = classe;
+        this.classe = classe;
     }
-    
+
     public Class<?> getclass() {
-    	return classe;
+        return classe;
     }
 
 }

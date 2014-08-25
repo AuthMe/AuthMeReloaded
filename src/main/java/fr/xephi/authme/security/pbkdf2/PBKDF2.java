@@ -32,6 +32,7 @@ package fr.xephi.authme.security.pbkdf2;
  * @version 1.0
  */
 public interface PBKDF2 {
+
     /**
      * Convert String-based input to internal byte array, then invoke PBKDF2.
      * Desired key length defaults to Pseudo Random Function block size.
