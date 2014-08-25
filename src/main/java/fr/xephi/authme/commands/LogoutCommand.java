@@ -110,6 +110,9 @@ public class LogoutCommand implements CommandExecutor {
         }
         if (Settings.applyBlindEffect)
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
+        player.setOp(false);
+        player.setFlying(true);
+        player.setAllowFlight(true);
         m._(player, "logout");
         ConsoleLogger.info(player.getDisplayName() + " logged out");
         if (plugin.notifications != null) {
