@@ -295,8 +295,8 @@ public class AuthMe extends JavaPlugin {
         dataManager.start();
 
         // Sponsor message
-        ConsoleLogger.info("AuthMe is sponsored and hook perfectly with server hosting VERYGAMES, rent your server for only 1.99$/months");
-        ConsoleLogger.info("Look Minecraft and other offers on www.verygames.net ! ");
+        ConsoleLogger.info("[SPONSOR] AuthMe is sponsored and hook perfectly with server hosting VERYGAMES, rent your server for only 1.99$/months");
+        ConsoleLogger.info("[SPONSOR] Look Minecraft and other offers on www.verygames.net ! ");
 
         ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
     }
@@ -660,7 +660,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     public void downloadGeoIp() {
-        ConsoleLogger.info("LICENSE : This product includes GeoLite data created by MaxMind, available from http://www.maxmind.com");
+        ConsoleLogger.info("[LICENSE] This product includes GeoLite data created by MaxMind, available from http://www.maxmind.com");
         File file = new File(getDataFolder(), "GeoIP.dat");
         if (!file.exists()) {
             try {
