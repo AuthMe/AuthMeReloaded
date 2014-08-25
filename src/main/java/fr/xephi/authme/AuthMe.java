@@ -400,7 +400,7 @@ public class AuthMe extends JavaPlugin {
                 ConsoleLogger.showError("Error while reading /plugins/Essentials/spawn.yml file ");
             }
         } else {
-            ess = null;
+            essentialsSpawn = null;
         }
     }
 
