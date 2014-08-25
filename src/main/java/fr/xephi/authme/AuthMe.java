@@ -804,7 +804,7 @@ public class AuthMe extends JavaPlugin {
             URLConnection urlc = url.openConnection();
             BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
             String inputLine = in.readLine();
-            if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error")) {
+            if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error") && !inputLine.contains("error")) {
                 realIP = inputLine;
             }
         } catch (Exception e) {
