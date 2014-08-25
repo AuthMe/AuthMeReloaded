@@ -796,7 +796,7 @@ public class AuthMe extends JavaPlugin {
      *            player
      */
     public String getVeryGamesIP(Player player) {
-        String realIP = null;
+        String realIP = player.getAddress().getAddress().getHostAddress();
         String sUrl = vgUrl;
         sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", "" + player.getAddress().getPort());
         try {
