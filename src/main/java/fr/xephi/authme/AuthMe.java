@@ -294,6 +294,10 @@ public class AuthMe extends JavaPlugin {
         dataManager = new DataManager(this, database);
         dataManager.start();
 
+        // Sponsor message
+        ConsoleLogger.info("AuthMe is sponsored and hook perfectly with server hosting VERYGAMES, rent your server for only 1.99$/months");
+        ConsoleLogger.info("Look Minecraft and other offers on www.verygames.net ! ");
+
         ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
     }
 
