@@ -389,8 +389,8 @@ public class AuthMePlayerListener implements Listener {
             // Little workaround to be sure registered player is the same as this
             if (player.hasPlayedBefore())
                 // Make sure it's the correct player
-                if (data.getAuth(lowname).getIp().equalsIgnoreCase(player.getAddress().getAddress().getHostAddress()))
-                    if (data.isAuthAvailable(lowname))
+                if (data.isAuthAvailable(lowname))
+                    if (data.getAuth(lowname).getIp().equalsIgnoreCase(player.getAddress().getAddress().getHostAddress()))
                         data.updateName(lowname, name);
         }
 
