@@ -385,9 +385,14 @@ public class AuthMePlayerListener implements Listener {
         final String lowname = player.getName().toLowerCase();
         final String name = player.getName();
 
-        if (!lowname.equals(name))
-            if (data.isAuthAvailable(lowname))
-                data.updateName(lowname, name);
+        if (!lowname.equals(name)) {
+            // Little workaround to be sure registered player is the same as this
+            if (player.hasPlayedBefore())
+                // Make sure it's the correct player
+                if (data.getAuth(lowname).getIp().equalsIgnoreCase(player.getAddress().getAddress().getHostAddress()))
+                    if (data.isAuthAvailable(lowname))
+                        data.updateName(lowname, name);
+        }
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
