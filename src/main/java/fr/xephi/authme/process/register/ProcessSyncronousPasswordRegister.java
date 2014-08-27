@@ -35,12 +35,15 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         this.plugin = plugin;
     }
 
-    protected void forceCommands(Player player) {
-        for (String command : Settings.forceCommands) {
+    protected void forceCommands() {
+        for (String command : Settings.forceRegisterCommands) {
             try {
                 player.performCommand(command.replace("%p", player.getName()));
             } catch (Exception e) {
             }
+        }
+        for (String command : Settings.forceRegisterCommandsAsConsole) {
+            Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
         }
     }
 
@@ -144,7 +147,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
             }
 
         // Register is now finish , we can force all commands
-        forceCommands(player);
+        forceCommands();
 
     }
 }

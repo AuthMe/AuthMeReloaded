@@ -38,6 +38,8 @@ public final class Settings extends YamlConfiguration {
     public static List<String> countriesBlacklist = null;
     public static List<String> forceCommands = null;
     public static List<String> forceCommandsAsConsole = null;
+    public static List<String> forceRegisterCommands = null;
+    public static List<String> forceRegisterCommandsAsConsole = null;
     private AuthMe plugin;
     private final File file;
     public static DataSourceType getDataSource;
@@ -265,6 +267,8 @@ public final class Settings extends YamlConfiguration {
         applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
+        forceRegisterCommands = (List<String>) configFile.getList("settings.forceRegisterCommands", new ArrayList<String>());
+        forceRegisterCommandsAsConsole = (List<String>) configFile.getList("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -430,6 +434,8 @@ public final class Settings extends YamlConfiguration {
         applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
+        forceRegisterCommands = (List<String>) configFile.getList("settings.forceRegisterCommands", new ArrayList<String>());
+        forceRegisterCommandsAsConsole = (List<String>) configFile.getList("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -562,6 +568,14 @@ public final class Settings extends YamlConfiguration {
             set("Performances.useMultiThreading", null);
         if (!contains("Email.emailWhitelisted")) {
             set("Email.emailWhitelisted", new ArrayList<String>());
+            changes = true;
+        }
+        if (!contains("settings.forceRegisterCommands")) {
+            set("settings.forceRegisterCommands", new ArrayList<String>());
+            changes = true;
+        }
+        if (!contains("settings.forceRegisterCommandsAsConsole")) {
+            set("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
             changes = true;
         }
 
