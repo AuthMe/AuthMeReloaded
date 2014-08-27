@@ -55,7 +55,7 @@ public class oldxAuthToFlat {
                 String pl = getIdPlayer(id);
                 String psw = getPassword(id);
                 if (psw != null && !psw.isEmpty() && pl != null) {
-                    PlayerAuth auth = new PlayerAuth(pl, psw, "198.18.0.1", 0, "your@email.com", API.getPlayerRealName(pl));
+                    PlayerAuth auth = new PlayerAuth(pl, psw, "198.18.0.1", 0, "your@email.com");
                     database.saveAuth(auth);
                 }
             }
@@ -78,7 +78,7 @@ public class oldxAuthToFlat {
             rs = ps.executeQuery();
             if (!rs.next())
                 return null;
-            realPass = rs.getString("playername").toLowerCase();
+            realPass = rs.getString("playername");
         } catch (SQLException e) {
             xAuthLog.severe("Failed to retrieve name for account: " + id, e);
             return null;

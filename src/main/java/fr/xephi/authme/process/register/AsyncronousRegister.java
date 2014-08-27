@@ -19,7 +19,6 @@ public class AsyncronousRegister {
     protected Player player;
     protected String name;
     protected String password;
-    protected String realName;
     protected String email = "";
     protected boolean allowRegister;
     private AuthMe plugin;
@@ -30,8 +29,7 @@ public class AsyncronousRegister {
             AuthMe plugin, DataSource data) {
         this.player = player;
         this.password = password;
-        name = player.getName().toLowerCase();
-        realName = player.getName();
+        name = player.getName();
         this.email = email;
         this.plugin = plugin;
         this.database = data;
@@ -59,7 +57,7 @@ public class AsyncronousRegister {
             allowRegister = false;
         }
 
-        if (database.isAuthAvailable(player.getName().toLowerCase())) {
+        if (database.isAuthAvailable(player.getName())) {
             m._(player, "user_regged");
             if (plugin.pllog.getStringList("players").contains(player.getName())) {
                 plugin.pllog.getStringList("players").remove(player.getName());
@@ -103,7 +101,7 @@ public class AsyncronousRegister {
         PlayerAuth auth = null;
         try {
             final String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
-            auth = new PlayerAuth(name, hashnew, getIp(), 0, (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email, realName);
+            auth = new PlayerAuth(name, hashnew, getIp(), 0, (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email);
         } catch (NoSuchAlgorithmException e) {
             ConsoleLogger.showError(e.getMessage());
             m._(player, "error");
@@ -142,9 +140,9 @@ public class AsyncronousRegister {
             return;
         }
         if (Settings.getMySQLColumnSalt.isEmpty() && !PasswordSecurity.userSalt.containsKey(name)) {
-            auth = new PlayerAuth(name, hash, getIp(), new Date().getTime(), "your@email.com", player.getName());
+            auth = new PlayerAuth(name, hash, getIp(), new Date().getTime(), "your@email.com");
         } else {
-            auth = new PlayerAuth(name, hash, PasswordSecurity.userSalt.get(name), getIp(), new Date().getTime(), player.getName());
+            auth = new PlayerAuth(name, hash, PasswordSecurity.userSalt.get(name), getIp(), new Date().getTime());
         }
         if (!database.saveAuth(auth)) {
             m._(player, "error");

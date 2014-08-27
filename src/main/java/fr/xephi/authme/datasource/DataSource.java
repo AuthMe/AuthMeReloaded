@@ -61,4 +61,6 @@ public interface DataSource {
 
     int getAccountsRegistered();
 
+    void updateName(String oldone, String newone);
+
 }

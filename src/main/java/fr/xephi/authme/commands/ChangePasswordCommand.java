@@ -42,7 +42,7 @@ public class ChangePasswordCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
             m._(player, "not_logged_in");
             return true;

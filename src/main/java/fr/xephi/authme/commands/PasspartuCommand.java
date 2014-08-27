@@ -33,7 +33,7 @@ public class PasspartuCommand implements CommandExecutor {
             return true;
         }
 
-        if (PlayerCache.getInstance().isAuthenticated(sender.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(sender.getName())) {
             return true;
         }
 

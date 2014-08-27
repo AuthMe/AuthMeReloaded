@@ -162,14 +162,14 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             try {
-                if (database.getAuth(args[1].toLowerCase()) != null) {
-                    PlayerAuth player = database.getAuth(args[1].toLowerCase());
+                if (database.getAuth(args[1]) != null) {
+                    PlayerAuth player = database.getAuth(args[1]);
                     long lastLogin = player.getLastLogin();
                     Date d = new Date(lastLogin);
                     final long diff = System.currentTimeMillis() - lastLogin;
                     final String msg = (int) (diff / 86400000) + " days " + (int) (diff / 3600000 % 24) + " hours " + (int) (diff / 60000 % 60) + " mins " + (int) (diff / 1000 % 60) + " secs.";
                     String lastIP = player.getIp();
-                    sender.sendMessage("[AuthMe] " + args[1].toLowerCase() + " lastlogin : " + d.toString());
+                    sender.sendMessage("[AuthMe] " + args[1] + " lastlogin : " + d.toString());
                     sender.sendMessage("[AuthMe] The player : " + player.getNickname() + " is unlogged since " + msg);
                     sender.sendMessage("[AuthMe] LastPlayer IP : " + lastIP);
                 } else {
@@ -196,7 +196,7 @@ public class AdminCommand implements CommandExecutor {
                         PlayerAuth pAuth = null;
                         String message = "[AuthMe] ";
                         try {
-                            pAuth = database.getAuth(arguments[1].toLowerCase());
+                            pAuth = database.getAuth(arguments[1]);
                         } catch (NullPointerException npe) {
                             fSender.sendMessage("[AuthMe] This player is unknown");
                             return;
@@ -274,13 +274,13 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             try {
-                String name = args[1].toLowerCase();
+                String name = args[1];
                 if (database.isAuthAvailable(name)) {
                     m._(sender, "user_regged");
                     return true;
                 }
                 String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
-                PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0L, "your@email.com", API.getPlayerRealName(name));
+                PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0L, "your@email.com");
                 if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
                     auth.setSalt(PasswordSecurity.userSalt.get(name));
                 else auth.setSalt("");
@@ -300,7 +300,7 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage: /authme getemail playername");
                 return true;
             }
-            String playername = args[1].toLowerCase();
+            String playername = args[1];
             PlayerAuth getAuth = database.getAuth(playername);
             if (getAuth == null) {
                 m._(sender, "unknown_user");
@@ -313,7 +313,7 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage: /authme chgemail playername email");
                 return true;
             }
-            String playername = args[1].toLowerCase();
+            String playername = args[1];
             PlayerAuth getAuth = database.getAuth(playername);
             if (getAuth == null) {
                 m._(sender, "unknown_user");
@@ -356,7 +356,7 @@ public class AdminCommand implements CommandExecutor {
         } else if (args[0].equalsIgnoreCase("purgebannedplayers")) {
             List<String> bannedPlayers = new ArrayList<String>();
             for (OfflinePlayer off : plugin.getServer().getBannedPlayers()) {
-                bannedPlayers.add(off.getName().toLowerCase());
+                bannedPlayers.add(off.getName());
             }
             database.purgeBanned(bannedPlayers);
             if (Settings.purgeEssentialsFile && plugin.ess != null)
@@ -400,7 +400,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             try {
-                String name = args[1].toLowerCase();
+                String name = args[1];
                 String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
                 PlayerAuth auth = null;
                 if (PlayerCache.getInstance().isAuthenticated(name)) {
@@ -433,7 +433,7 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage: /authme unregister playername");
                 return true;
             }
-            String name = args[1].toLowerCase();
+            String name = args[1];
             if (!database.isAuthAvailable(name)) {
                 m._(sender, "user_unknown");
                 return true;
@@ -482,7 +482,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             try {
-                String name = args[1].toLowerCase();
+                String name = args[1];
                 PlayerAuth auth = database.getAuth(name);
                 if (auth == null) {
                     sender.sendMessage("The player " + name + " is not registered ");

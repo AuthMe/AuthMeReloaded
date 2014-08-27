@@ -27,7 +27,7 @@ public class ProcessSyncronousEmailRegister implements Runnable {
 
     public ProcessSyncronousEmailRegister(Player player, AuthMe plugin) {
         this.player = player;
-        this.name = player.getName().toLowerCase();
+        this.name = player.getName();
         this.plugin = plugin;
     }
 

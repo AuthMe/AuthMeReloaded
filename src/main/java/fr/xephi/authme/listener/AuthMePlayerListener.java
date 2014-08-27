@@ -86,7 +86,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player))
             return;
@@ -121,7 +121,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player))
             return;
@@ -158,7 +158,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player))
             return;
@@ -195,7 +195,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player))
             return;
@@ -232,7 +232,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player))
             return;
@@ -269,7 +269,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player))
             return;
@@ -306,7 +306,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player))
             return;
@@ -342,7 +342,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
@@ -382,7 +382,12 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerLogin(PlayerLoginEvent event) {
 
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
+        final String lowname = player.getName().toLowerCase();
+        final String name = player.getName();
+
+        if (!lowname.equals(name))
+            if (data.isAuthAvailable(lowname))
+                data.updateName(lowname, name);
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
@@ -419,7 +424,7 @@ public class AuthMePlayerListener implements Listener {
             if (!Settings.isSessionsEnabled) {
             } else if (PlayerCache.getInstance().isAuthenticated(name)) {
                 if (!Settings.sessionExpireOnIpChange)
-                    if (LimboCache.getInstance().hasLimboPlayer(player.getName().toLowerCase())) {
+                    if (LimboCache.getInstance().hasLimboPlayer(player.getName())) {
                         LimboCache.getInstance().deleteLimboPlayer(name);
                     }
             }
@@ -427,11 +432,11 @@ public class AuthMePlayerListener implements Listener {
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
-            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
+            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName());
             event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("same_nick")[0]);
-            if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+            if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
                 utils.addNormal(player, limbo.getGroup());
-                LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
+                LimboCache.getInstance().deleteLimboPlayer(player.getName());
             }
             return;
         }
@@ -530,12 +535,12 @@ public class AuthMePlayerListener implements Listener {
             }, Settings.antiBotDuration * 1200);
             return;
         }
-        antibot.put(event.getPlayer().getName().toLowerCase(), event);
+        antibot.put(event.getPlayer().getName(), event);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
             @Override
             public void run() {
-                antibot.remove(event.getPlayer().getName().toLowerCase());
+                antibot.remove(event.getPlayer().getName());
             }
         }, 300);
     }
@@ -546,7 +551,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
+        final String name = player.getName();
         Location spawnLoc = plugin.getSpawnLocation(player);
         gm = player.getGameMode();
         gameMode.put(name, gm);
@@ -675,7 +680,7 @@ public class AuthMePlayerListener implements Listener {
         }
         if (Settings.protectInventoryBeforeLogInEnabled) {
             try {
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
+                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName());
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
                 plugin.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
@@ -755,7 +760,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
         Location loc = player.getLocation();
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
@@ -833,7 +838,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         String ip = plugin.getIP(player);
         if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead())) {
@@ -906,7 +911,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
@@ -915,7 +920,7 @@ public class AuthMePlayerListener implements Listener {
         if (plugin.getCitizensCommunicator().isNPC(player, plugin))
             return;
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return;
         }
 
@@ -934,7 +939,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
@@ -943,7 +948,7 @@ public class AuthMePlayerListener implements Listener {
         if (plugin.getCitizensCommunicator().isNPC(player, plugin))
             return;
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return;
         }
 
@@ -963,7 +968,7 @@ public class AuthMePlayerListener implements Listener {
         if (event.isCancelled() || event.getPlayer() == null)
             return;
         Player player = (Player) event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
@@ -972,7 +977,7 @@ public class AuthMePlayerListener implements Listener {
         if (plugin.getCitizensCommunicator().isNPC(player, plugin))
             return;
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return;
         }
 
@@ -992,7 +997,7 @@ public class AuthMePlayerListener implements Listener {
         if (!(event.getWhoClicked() instanceof Player))
             return;
         Player player = (Player) event.getWhoClicked();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
@@ -1001,7 +1006,7 @@ public class AuthMePlayerListener implements Listener {
         if (plugin.getCitizensCommunicator().isNPC(player, plugin))
             return;
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return;
         }
 
@@ -1021,13 +1026,13 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return;
         }
 
@@ -1045,7 +1050,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
@@ -1054,7 +1059,7 @@ public class AuthMePlayerListener implements Listener {
         if (plugin.getCitizensCommunicator().isNPC(player, plugin))
             return;
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return;
         }
 
@@ -1072,13 +1077,13 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return;
         }
 
@@ -1096,7 +1101,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
@@ -1118,7 +1123,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player))
             return;
@@ -1158,7 +1163,7 @@ public class AuthMePlayerListener implements Listener {
         if (plugin.authmePermissible(player, "authme.bypassforcesurvival"))
             return;
 
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player))
             return;

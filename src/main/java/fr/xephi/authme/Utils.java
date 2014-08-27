@@ -69,7 +69,7 @@ public class Utils {
             case LOGGEDIN: {
                 if (!useGroupSystem())
                     break;
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name.toLowerCase());
+                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
                 if (limbo == null)
                     break;
                 String realGroup = limbo.getGroup();

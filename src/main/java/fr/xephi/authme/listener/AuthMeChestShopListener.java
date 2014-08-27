@@ -31,7 +31,7 @@ public class AuthMeChestShopListener implements Listener {
         }
 
         Player player = event.getClient();
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;

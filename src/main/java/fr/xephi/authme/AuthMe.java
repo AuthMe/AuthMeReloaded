@@ -478,12 +478,12 @@ public class AuthMe extends JavaPlugin {
         try {
             if (Bukkit.getServer().getOnlinePlayers() != null) {
                 for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                    if (database.isLogged(player.getName().toLowerCase())) {
-                        String name = player.getName().toLowerCase();
+                    if (database.isLogged(player.getName())) {
+                        String name = player.getName();
                         PlayerAuth pAuth = database.getAuth(name);
                         if (pAuth == null)
                             break;
-                        PlayerAuth auth = new PlayerAuth(name, pAuth.getHash(), pAuth.getIp(), new Date().getTime(), pAuth.getEmail(), player.getName());
+                        PlayerAuth auth = new PlayerAuth(name, pAuth.getHash(), pAuth.getIp(), new Date().getTime(), pAuth.getEmail());
                         database.updateSession(auth);
                         PlayerCache.getInstance().addPlayer(auth);
                     }
@@ -508,9 +508,9 @@ public class AuthMe extends JavaPlugin {
         } catch (Exception e) {
         }
         try {
-            String name = player.getName().toLowerCase();
+            String name = player.getName();
             if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-                final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName());
+                final PlayerAuth auth = new PlayerAuth(player.getName(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName());
                 database.updateQuitLoc(auth);
             }
             if (LimboCache.getInstance().hasLimboPlayer(name)) {
@@ -652,7 +652,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     private Location getAuthMeSpawn(Player player) {
-        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null))
+        if ((!database.isAuthAvailable(player.getName()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null))
             return Spawn.getInstance().getFirstSpawn();
         if (Spawn.getInstance().getSpawn() != null)
             return Spawn.getInstance().getSpawn();
@@ -724,7 +724,7 @@ public class AuthMe extends JavaPlugin {
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (player.isOnline()) {
-                        String name = player.getName().toLowerCase();
+                        String name = player.getName();
                         if (database.isAuthAvailable(name))
                             if (PlayerCache.getInstance().isAuthenticated(name)) {
                                 String email = database.getAuth(name).getEmail();
@@ -755,7 +755,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     public String getIP(Player player) {
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
         String ip = player.getAddress().getAddress().getHostAddress();
         if (Settings.bungee) {
             if (realIp.containsKey(name))
@@ -770,7 +770,7 @@ public class AuthMe extends JavaPlugin {
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
         for (Player player : this.getServer().getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
+            if (ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName()) && !player.getName().equalsIgnoreCase(name))
                 count++;
         }
         if (count >= Settings.getMaxLoginPerIp)

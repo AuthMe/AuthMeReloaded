@@ -30,7 +30,7 @@ public class CaptchaCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        String name = player.getName().toLowerCase();
+        String name = player.getName();
 
         if (args.length == 0) {
             m._(player, "usage_captcha");

@@ -26,7 +26,6 @@ public class AsyncronousLogin {
     protected Player player;
     protected String name;
     protected String password;
-    protected String realName;
     protected boolean forceLogin;
     private AuthMe plugin;
     private DataSource database;
@@ -37,8 +36,7 @@ public class AsyncronousLogin {
             AuthMe plugin, DataSource data) {
         this.player = player;
         this.password = password;
-        name = player.getName().toLowerCase();
-        realName = player.getName();
+        name = player.getName();
         this.forceLogin = forceLogin;
         this.plugin = plugin;
         this.database = data;
@@ -99,7 +97,7 @@ public class AsyncronousLogin {
             return null;
         }
         if (Settings.getMaxLoginPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
-            if (plugin.isLoggedIp(realName, getIP())) {
+            if (plugin.isLoggedIp(name, getIP())) {
                 m._(player, "logged_in");
                 return null;
             }
@@ -126,14 +124,14 @@ public class AsyncronousLogin {
         boolean passwordVerified = true;
         if (!forceLogin)
             try {
-                passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, realName);
+                passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, name);
             } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
                 m._(player, "error");
                 return;
             }
         if (passwordVerified && player.isOnline()) {
-            PlayerAuth auth = new PlayerAuth(name, hash, getIP(), new Date().getTime(), email, realName);
+            PlayerAuth auth = new PlayerAuth(name, hash, getIP(), new Date().getTime(), email);
             database.updateSession(auth);
 
             if (Settings.useCaptcha) {

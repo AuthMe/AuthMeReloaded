@@ -49,7 +49,7 @@ public class API {
      * @return true if player is authenticate
      */
     public static boolean isAuthenticated(Player player) {
-        return PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase());
+        return PlayerCache.getInstance().isAuthenticated(player.getName());
     }
 
     /**
@@ -86,7 +86,7 @@ public class API {
 
     public static Location getLastLocation(Player player) {
         try {
-            PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
+            PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName());
 
             if (auth != null) {
                 Location loc = new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
@@ -115,7 +115,7 @@ public class API {
      * @return true if player is registered
      */
     public static boolean isRegistered(String playerName) {
-        String player = playerName.toLowerCase();
+        String player = playerName;
         return database.isAuthAvailable(player);
     }
 
@@ -128,7 +128,7 @@ public class API {
             String passwordToCheck) {
         if (!isRegistered(playerName))
             return false;
-        String player = playerName.toLowerCase();
+        String player = playerName;
         PlayerAuth auth = database.getAuth(player);
         try {
             return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), playerName);
@@ -146,12 +146,12 @@ public class API {
      */
     public static boolean registerPlayer(String playerName, String password) {
         try {
-            String name = playerName.toLowerCase();
+            String name = playerName;
             String hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com", getPlayerRealName(name));
+            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com");
             if (!database.saveAuth(auth)) {
                 return false;
             }
@@ -159,22 +159,6 @@ public class API {
         } catch (NoSuchAlgorithmException ex) {
             return false;
         }
-    }
-
-    /**
-     * Get Player realName from lowerCase nickname
-     * 
-     * @param String
-     *            playerName return String player real name
-     */
-    public static String getPlayerRealName(String nickname) {
-        try {
-            String realName = instance.dataManager.getOfflinePlayer(nickname).getName();
-            if (realName != null && !realName.isEmpty())
-                return realName;
-        } catch (NullPointerException npe) {
-        }
-        return nickname;
     }
 
     /**
