@@ -48,24 +48,6 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         Bukkit.getScheduler().cancelTask(LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId());
         int nwMsg = Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, m._("login_msg"), msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg);
-
-        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-            Location loca = plugin.getSpawnLocation(player);
-            RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
-            plugin.getServer().getPluginManager().callEvent(tpEvent);
-            if (!tpEvent.isCancelled()) {
-                if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                    tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                }
-                player.teleport(tpEvent.getTo());
-            }
-        }
-        if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
-            player.setAllowFlight(false);
-            player.setFlying(false);
-        }
-        if (Settings.applyBlindEffect)
-            player.removePotionEffect(PotionEffectType.BLINDNESS);
         player.saveData();
         if (!Settings.noConsoleSpam)
             ConsoleLogger.info(player.getName() + " registered " + plugin.getIP(player));
