@@ -71,6 +71,11 @@ public class FileCache {
                 file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "inventory" + File.separator + i + ".cache");
                 file.createNewFile();
                 writer = new FileWriter(file);
+                if (item.getType() == Material.AIR) {
+                    writer.write("AIR");
+                    writer.close();
+                    continue;
+                }
                 writer.write(item.getType().name() + API.newline);
                 writer.write(item.getDurability() + API.newline);
                 writer.write(item.getAmount() + API.newline);
@@ -117,6 +122,11 @@ public class FileCache {
                 file.createNewFile();
                 writer = new FileWriter(file);
                 if (item != null) {
+                    if (item.getType() == Material.AIR) {
+                        writer.write("AIR");
+                        writer.close();
+                        continue;
+                    }
                     writer.write(item.getType().name() + API.newline);
                     writer.write(item.getDurability() + API.newline);
                     writer.write(item.getAmount() + API.newline);
