@@ -46,6 +46,8 @@ public class FileCache {
         }
         File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "playerdatas.cache");
 
+        if (!file.getParentFile().exists())
+            file.getParentFile().mkdir();
         if (file.exists()) {
             return;
         }
@@ -67,6 +69,7 @@ public class FileCache {
             for (int i = 0; i < inv.length; i++) {
                 ItemStack item = inv[i];
                 file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "inventory" + File.separator + i + ".cache");
+                file.createNewFile();
                 writer = new FileWriter(file);
                 writer.write(item.getType().name() + API.newline);
                 writer.write(item.getDurability() + API.newline);
@@ -111,6 +114,7 @@ public class FileCache {
             for (int i = 0; i < armors.length; i++) {
                 ItemStack item = armors[i];
                 file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "armours" + File.separator + i + ".cache");
+                file.createNewFile();
                 writer = new FileWriter(file);
                 if (item != null) {
                     writer.write(item.getType().name() + API.newline);
