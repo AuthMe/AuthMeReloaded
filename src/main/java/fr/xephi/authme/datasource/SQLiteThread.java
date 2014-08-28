@@ -11,7 +11,6 @@ import java.util.List;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.settings.PlayersLogs;
@@ -568,5 +567,39 @@ public class SQLiteThread extends Thread implements DataSource {
             close(pst);
         }
         return;
+    }
+
+    @Override
+    public List<PlayerAuth> getAllAuths() {
+        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                PlayerAuth pAuth = null;
+                if (rs.getString(columnIp).isEmpty()) {
+                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "127.0.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                } else {
+                    if (!columnSalt.isEmpty()) {
+                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                    } else {
+                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                    }
+                }
+                if (pAuth != null)
+                    auths.add(pAuth);
+            }
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return auths;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return auths;
+        } finally {
+            close(pst);
+        }
+        return auths;
     }
 }

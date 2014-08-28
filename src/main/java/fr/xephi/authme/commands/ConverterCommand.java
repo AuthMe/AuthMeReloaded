@@ -13,6 +13,7 @@ import fr.xephi.authme.converter.FlatToSql;
 import fr.xephi.authme.converter.FlatToSqlite;
 import fr.xephi.authme.converter.RakamakConverter;
 import fr.xephi.authme.converter.RoyalAuthConverter;
+import fr.xephi.authme.converter.SqlToFlat;
 import fr.xephi.authme.converter.vAuthConverter;
 import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.datasource.DataSource;
@@ -42,7 +43,7 @@ public class ConverterCommand implements CommandExecutor {
         }
 
         if (args.length == 0) {
-            sender.sendMessage("Usage : /converter flattosql | flattosqlite | xauth | crazylogin | rakamak | royalauth | vauth");
+            sender.sendMessage("Usage : /converter flattosql | flattosqlite | xauth | crazylogin | rakamak | royalauth | vauth | sqltoflat");
             return true;
         }
 
@@ -74,6 +75,9 @@ public class ConverterCommand implements CommandExecutor {
             case vauth:
                 converter = new vAuthConverter(plugin, database, sender);
                 break;
+            case sqltoflat:
+                converter = new SqlToFlat(plugin, database, sender);
+                break;
             default:
                 break;
         }
@@ -94,7 +98,8 @@ public class ConverterCommand implements CommandExecutor {
         crazylogin("crazylogin"),
         rakamak("rakamak"),
         royalauth("royalauth"),
-        vauth("vauth");
+        vauth("vauth"),
+        sqltoflat("sqltoflat");
 
         String name;
 

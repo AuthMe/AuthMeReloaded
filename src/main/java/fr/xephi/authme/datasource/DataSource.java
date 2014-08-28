@@ -63,4 +63,6 @@ public interface DataSource {
 
     void updateName(String oldone, String newone);
 
+    List<PlayerAuth> getAllAuths();
+
 }

@@ -13,7 +13,6 @@ import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -1039,6 +1038,57 @@ public class MySQLThread extends Thread implements DataSource {
             close(con);
         }
         return;
+    }
+
+    @Override
+    public List<PlayerAuth> getAllAuths() {
+        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            con = makeSureConnectionIsReady();
+            pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                PlayerAuth pAuth = null;
+                int id = rs.getInt(columnID);
+                if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
+                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                } else {
+                    if (!columnSalt.isEmpty()) {
+                        if (!columnGroup.isEmpty())
+                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                        else pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                    } else {
+                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                    }
+                }
+                if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                    rs.close();
+                    pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
+                    pst.setInt(1, id);
+                    rs = pst.executeQuery();
+                    if (rs.next()) {
+                        Blob blob = rs.getBlob("data");
+                        byte[] bytes = blob.getBytes(1, (int) blob.length());
+                        pAuth.setHash(new String(bytes));
+                    }
+                }
+                if (pAuth != null)
+                    auths.add(pAuth);
+            }
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return auths;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return auths;
+        } finally {
+            close(pst);
+            close(con);
+        }
+        return auths;
     }
 
 }

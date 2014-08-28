@@ -12,7 +12,6 @@ import java.util.List;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
@@ -699,5 +698,46 @@ public class FlatFileThread extends Thread implements DataSource {
         auth.setName(newone);
         this.saveAuth(auth);
         this.removeAuth(oldone);
+    }
+
+    @Override
+    public List<PlayerAuth> getAllAuths() {
+        BufferedReader br = null;
+        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        try {
+            br = new BufferedReader(new FileReader(source));
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] args = line.split(":");
+                switch (args.length) {
+                    case 2:
+                        auths.add(new PlayerAuth(args[0], args[1], "198.18.0.1", 0, "your@email.com"));
+                    case 3:
+                        auths.add(new PlayerAuth(args[0], args[1], args[2], 0, "your@email.com"));
+                    case 4:
+                        auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), "your@email.com"));
+                    case 7:
+                        auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "unavailableworld", "your@email.com"));
+                    case 8:
+                        auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com"));
+                    case 9:
+                        auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8]));
+                }
+            }
+        } catch (FileNotFoundException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return auths;
+        } catch (IOException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return auths;
+        } finally {
+            if (br != null) {
+                try {
+                    br.close();
+                } catch (IOException ex) {
+                }
+            }
+        }
+        return auths;
     }
 }

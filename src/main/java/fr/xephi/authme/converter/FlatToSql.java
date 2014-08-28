@@ -54,10 +54,9 @@ public class FlatToSql implements Converter {
             source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
             source.createNewFile();
             output = new File(AuthMe.getInstance().getDataFolder() + File.separator + "authme.sql");
-            BufferedReader br = null;
-            BufferedWriter sql = null;
-            br = new BufferedReader(new FileReader(source));
-            sql = new BufferedWriter(new FileWriter(output));
+            output.createNewFile();
+            BufferedReader br = new BufferedReader(new FileReader(source));
+            BufferedWriter sql = new BufferedWriter(new FileWriter(output));
             String createDB = "CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1'," + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "'," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) DEFAULT 'world'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged + " SMALLINT NOT NULL DEFAULT '0'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));";
             sql.write(createDB);
             String line;
