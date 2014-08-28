@@ -17,7 +17,7 @@ error: '&cAtsirado klaida, praneskite adminstratoriui.'
 login_msg: '&ePrasome prisijungti: /login slaptazodis'
 reg_msg: '&ePrasome prisiregistruoti: /register slaptazodis pakartotiSlaptazodi'
 reg_email_msg: '&cPlease register with "/register <email> <confirmEmail>"'
-usage_unreg: '&ePanaikinti registracija: /unregister slaptazodis"
+usage_unreg: '&ePanaikinti registracija: "/unregister slaptazodis"'
 pwd_changed: '&aSlaptazodis pakeistas'
 user_unknown: '&cVartotojas neprisiregistraves'
 password_error: '&cSlaptazodziai nesutampa'
