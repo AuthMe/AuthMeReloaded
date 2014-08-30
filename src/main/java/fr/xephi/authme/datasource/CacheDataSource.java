@@ -229,4 +229,9 @@ public class CacheDataSource implements DataSource {
         }
         source.updateName(oldone, newone);
     }
+
+    @Override
+    public List<PlayerAuth> getAllAuths() {
+        return source.getAllAuths();
+    }
 }
