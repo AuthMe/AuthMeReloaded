@@ -205,7 +205,7 @@ public class AuthMe extends JavaPlugin {
                 databaseThread = fileThread;
                 final int a = database.getAccountsRegistered();
                 if (a >= 1000) {
-                    ConsoleLogger.showError("YOUR USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
+                    ConsoleLogger.showError("YOU'RE USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
                 }
                 break;
             case MYSQL:

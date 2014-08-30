@@ -31,8 +31,11 @@ public class FlatFileThread extends Thread implements DataSource {
      */
     private File source;
 
-    public void run() {
+    public FlatFileThread() {
         source = new File(Settings.AUTH_FILE);
+    }
+
+    public void run() {
         try {
             source.createNewFile();
         } catch (IOException e) {
