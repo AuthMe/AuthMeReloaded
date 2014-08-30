@@ -71,43 +71,47 @@ public class FileCache {
                 file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "inventory" + File.separator + i + ".cache");
                 file.createNewFile();
                 writer = new FileWriter(file);
-                if (item.getType() == Material.AIR) {
-                    writer.write("AIR");
-                    writer.close();
-                    continue;
-                }
-                writer.write(item.getType().name() + API.newline);
-                writer.write(item.getDurability() + API.newline);
-                writer.write(item.getAmount() + API.newline);
-                writer.flush();
-                if (item.hasItemMeta()) {
-                    ItemMeta meta = item.getItemMeta();
-                    if (meta.hasDisplayName())
-                        writer.write("name=" + meta.getDisplayName() + API.newline);
-                    if (meta.hasLore()) {
-                        String lores = "";
-                        for (String lore : meta.getLore())
-                            lores = lore + "%newline%";
-                        writer.write("lore=" + lores + API.newline);
+                if (item != null) {
+                    if (item.getType() == Material.AIR) {
+                        writer.write("AIR");
+                        writer.close();
+                        continue;
                     }
-                    if (meta.hasEnchants()) {
-                        for (Enchantment ench : meta.getEnchants().keySet()) {
-                            writer.write("metaenchant=" + ench.getName() + ":" + meta.getEnchants().get(ench) + API.newline);
-                        }
-                    }
+                    writer.write(item.getType().name() + API.newline);
+                    writer.write(item.getDurability() + API.newline);
+                    writer.write(item.getAmount() + API.newline);
                     writer.flush();
-                }
-                for (Enchantment ench : item.getEnchantments().keySet()) {
-                    writer.write("enchant=" + ench.getName() + ":" + item.getEnchantments().get(ench) + API.newline);
-                }
-                Attributes attributes = new Attributes(item);
-                if (attributes != null)
-                    while (attributes.values().iterator().hasNext()) {
-                        Attribute a = attributes.values().iterator().next();
-                        if (a != null) {
-                            writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                    if (item.hasItemMeta()) {
+                        ItemMeta meta = item.getItemMeta();
+                        if (meta.hasDisplayName())
+                            writer.write("name=" + meta.getDisplayName() + API.newline);
+                        if (meta.hasLore()) {
+                            String lores = "";
+                            for (String lore : meta.getLore())
+                                lores = lore + "%newline%";
+                            writer.write("lore=" + lores + API.newline);
                         }
+                        if (meta.hasEnchants()) {
+                            for (Enchantment ench : meta.getEnchants().keySet()) {
+                                writer.write("metaenchant=" + ench.getName() + ":" + meta.getEnchants().get(ench) + API.newline);
+                            }
+                        }
+                        writer.flush();
                     }
+                    for (Enchantment ench : item.getEnchantments().keySet()) {
+                        writer.write("enchant=" + ench.getName() + ":" + item.getEnchantments().get(ench) + API.newline);
+                    }
+                    Attributes attributes = new Attributes(item);
+                    if (attributes != null)
+                        while (attributes.values().iterator().hasNext()) {
+                            Attribute a = attributes.values().iterator().next();
+                            if (a != null) {
+                                writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                            }
+                        }
+                } else {
+                    writer.write("AIR");
+                }
                 writer.close();
             }
 
@@ -487,11 +491,15 @@ public class FileCache {
 
         if (file.exists()) {
             if (file.isDirectory()) {
-                for (File f : file.listFiles())
-                    if (f.isDirectory())
-                        for (File a : f.listFiles())
+                for (File f : file.listFiles()) {
+                    if (f.isDirectory()) {
+                        for (File a : f.listFiles()) {
                             a.delete();
-                    else f.delete();
+                        }
+                        f.delete();
+                    } else f.delete();
+                }
+                file.delete();
             } else file.delete();
         }
     }
@@ -505,7 +513,7 @@ public class FileCache {
         } catch (Error e) {
             path = player.getName();
         }
-        File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path);
+        File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "playerdatas.cache");
         if (!file.exists()) {
             file = new File("cache/" + player.getName().toLowerCase() + ".cache");
         }

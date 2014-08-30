@@ -675,10 +675,7 @@ public class FlatFileThread extends Thread implements DataSource {
             while ((br.readLine()) != null) {
                 result++;
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return result;
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return result;
         } finally {
