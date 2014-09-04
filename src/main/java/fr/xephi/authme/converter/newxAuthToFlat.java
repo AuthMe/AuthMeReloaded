@@ -13,9 +13,7 @@ import org.bukkit.command.CommandSender;
 import de.luricos.bukkit.xAuth.xAuth;
 import de.luricos.bukkit.xAuth.database.Table;
 import de.luricos.bukkit.xAuth.utils.xAuthLog;
-
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 

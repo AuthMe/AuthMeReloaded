@@ -38,16 +38,16 @@ public class Utils {
             return;
         if (plugin.permission == null)
             return;
+        String name = player;
         try {
             World world = null;
-            currentGroup = plugin.permission.getPrimaryGroup(world, player);
+            currentGroup = plugin.permission.getPrimaryGroup(world, name);
         } catch (UnsupportedOperationException e) {
             ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
             plugin.permission = null;
             return;
         }
         World world = null;
-        String name = player;
         switch (group) {
             case UNREGISTERED: {
                 plugin.permission.playerRemoveGroup(world, name, currentGroup);
