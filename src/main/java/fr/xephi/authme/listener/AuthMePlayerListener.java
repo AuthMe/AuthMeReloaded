@@ -274,8 +274,14 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.getInstance().isUnrestricted(player))
             return;
 
-        if (PlayerCache.getInstance().isAuthenticated(name))
+        if (PlayerCache.getInstance().isAuthenticated(name)) {
+            if (!Settings.isChatAllowed)
+                for (Player p : event.getRecipients()) {
+                    if (!PlayerCache.getInstance().isAuthenticated(p.getName()))
+                        event.getRecipients().remove(p);
+                }
             return;
+        }
 
         String cmd = event.getMessage().split(" ")[0];
 

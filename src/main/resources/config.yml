@@ -74,7 +74,7 @@ settings:
         # And try to login with an another IP Address?
         sessionExpireOnIpChange: false
     restrictions:
-        # Can unregistered players chat, care , that block all commands except followers
+        # Can unregistered/unlogged players chat and see chat, care , that block all commands except followers
         allowChat: false
         # Commands allowed when a player is unlogged
         allowCommands:
