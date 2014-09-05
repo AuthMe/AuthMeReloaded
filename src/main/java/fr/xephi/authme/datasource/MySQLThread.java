@@ -171,8 +171,7 @@ public class MySQLThread extends Thread implements DataSource {
         ResultSet rs = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
-
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWEST(" + columnName + ")=LOWEST(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
             return rs.next();
@@ -198,7 +197,7 @@ public class MySQLThread extends Thread implements DataSource {
         int id = -1;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWEST(" + columnName + ")=LOWEST(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next()) {
