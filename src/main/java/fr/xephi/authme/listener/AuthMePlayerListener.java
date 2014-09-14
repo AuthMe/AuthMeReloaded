@@ -264,7 +264,7 @@ public class AuthMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerEarlyChat(AsyncPlayerChatEvent event) {
+    public void onPlayerEarlyChat(final AsyncPlayerChatEvent event) {
         if (event.isCancelled() || event.getPlayer() == null)
             return;
 
@@ -275,11 +275,24 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
-            if (!Settings.isChatAllowed)
-                for (Player p : event.getRecipients()) {
-                    if (!PlayerCache.getInstance().isAuthenticated(p.getName()))
-                        event.getRecipients().remove(p);
-                }
+            if (!event.isAsynchronous()) {
+                if (!Settings.isChatAllowed)
+                    for (Player p : event.getRecipients()) {
+                        if (!PlayerCache.getInstance().isAuthenticated(p.getName()))
+                            event.getRecipients().remove(p);
+                    }
+            } else {
+                plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+                    @Override
+                    public void run() {
+                        if (!Settings.isChatAllowed)
+                            for (Player p : event.getRecipients()) {
+                                if (!PlayerCache.getInstance().isAuthenticated(p.getName()))
+                                    event.getRecipients().remove(p);
+                            }
+                    }
+                });
+            }
             return;
         }
 

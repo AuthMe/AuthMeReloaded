@@ -171,7 +171,7 @@ public class FlatFileThread extends Thread implements DataSource {
             String line = "";
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
-                if (args[0].equals(auth.getNickname())) {
+                if (args[0].equalsIgnoreCase(auth.getNickname())) {
                     switch (args.length) {
                         case 4: {
                             newAuth = new PlayerAuth(args[0], args[1], auth.getIp(), auth.getLastLogin(), 0, 0, 0, "world", "your@email.com");
@@ -228,7 +228,7 @@ public class FlatFileThread extends Thread implements DataSource {
             String line = "";
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
-                if (args[0].equals(auth.getNickname())) {
+                if (args[0].equalsIgnoreCase(auth.getNickname())) {
                     newAuth = new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), auth.getEmail());
                     break;
                 }
