@@ -265,6 +265,7 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerEarlyChat(AsyncPlayerChatEvent event) {
+        try{
         if (event.isCancelled() || event.getPlayer() == null)
             return;
 
@@ -304,7 +305,9 @@ public class AuthMePlayerListener implements Listener {
             event.setCancelled(true);
             return;
         }
-    }
+    }catch(Exception eff){
+        
+    }}
 
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerLowChat(AsyncPlayerChatEvent event) {
