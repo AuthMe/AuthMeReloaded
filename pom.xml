@@ -7,13 +7,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
-	<repositories>
-		<repository>
-			<id>Bukkit</id>
-			<name>Bukkit</name>
-			<url>http://repo.bukkit.org/content/groups/public/</url>
-		</repository>
-	</repositories>
     <build>
 	<plugins>
 		<plugin>
@@ -33,6 +26,8 @@
     		<groupId>org.bukkit</groupId>
     		<artifactId>craftbukkit</artifactId>
     		<version>1.7.10-R0.1-SNAPSHOT</version>
+    		<scope>system</scope>
+    		<systemPath>${project.basedir}/lib/CraftBukkit.jar</systemPath>
     	</dependency>
     	<dependency>
     		<groupId>net.milkbowl.vault</groupId>
