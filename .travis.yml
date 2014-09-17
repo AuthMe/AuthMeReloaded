@@ -5,4 +5,4 @@ install: true
 matrix:
   include:
   - jdk: openjdk6
-    script: mvn clean install
+  script: mvn clean install
