@@ -45,14 +45,12 @@ public class SendMailSSL {
         props.put("mail.smtp.port", String.valueOf(Settings.getMailPort));
 
         Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-
             protected PasswordAuthentication getPasswordAuthentication() {
                 return new PasswordAuthentication(Settings.getmailAccount, Settings.getmailPassword);
             }
         });
 
         try {
-
             final Message message = new MimeMessage(session);
             try {
                 message.setFrom(new InternetAddress(Settings.getmailAccount, sendername));
@@ -68,7 +66,6 @@ public class SendMailSSL {
             text = text.replace("<generatedpass>", newPass);
             message.setContent(text, "text/html");
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
                 @Override
                 public void run() {
                     try {
@@ -84,5 +81,4 @@ public class SendMailSSL {
             throw new RuntimeException(e);
         }
     }
-
 }
