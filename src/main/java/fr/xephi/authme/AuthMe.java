@@ -226,6 +226,9 @@ public class AuthMe extends JavaPlugin {
                 break;
         }
 
+        dataManager = new DataManager(this, database);
+        dataManager.start();
+
         if (Settings.isCachingEnabled) {
             database = new CacheDataSource(this, database);
         }
@@ -290,9 +293,6 @@ public class AuthMe extends JavaPlugin {
 
         // Start Email recall task if needed
         recallEmail();
-
-        dataManager = new DataManager(this, database);
-        dataManager.start();
 
         // Sponsor message
         ConsoleLogger.info("[SPONSOR] AuthMe is sponsored and hook perfectly with server hosting VERYGAMES, rent your server for only 1.99$/months");
