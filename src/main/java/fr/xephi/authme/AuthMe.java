@@ -226,12 +226,12 @@ public class AuthMe extends JavaPlugin {
                 break;
         }
 
-        dataManager = new DataManager(this, database);
-        dataManager.start();
-
         if (Settings.isCachingEnabled) {
             database = new CacheDataSource(this, database);
         }
+
+        dataManager = new DataManager(this, database);
+        dataManager.start();
 
         // Setup API
         api = new API(this, database);
