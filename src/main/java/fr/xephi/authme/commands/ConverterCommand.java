@@ -47,7 +47,7 @@ public class ConverterCommand implements CommandExecutor {
             return true;
         }
 
-        ConvertType type = ConvertType.valueOf(args[0]);
+        ConvertType type = ConvertType.fromName(args[0]);
         if (type == null) {
             m._(sender, "error");
             return true;
@@ -111,8 +111,12 @@ public class ConverterCommand implements CommandExecutor {
             return this.name;
         }
 
-        ConvertType fromName(String name) {
-            return ConvertType.valueOf(name);
+        public static ConvertType fromName(String name) {
+            for (ConvertType type : ConvertType.values()) {
+                if (type.getName().equalsIgnoreCase(name))
+                    return type;
+            }
+            return null;
         }
     }
 }
