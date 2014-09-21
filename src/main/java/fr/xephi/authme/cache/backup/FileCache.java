@@ -106,7 +106,9 @@ public class FileCache {
                         while (attributes.values().iterator().hasNext()) {
                             Attribute a = attributes.values().iterator().next();
                             if (a != null) {
-                                writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                                try {
+                                    writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                                } catch (Exception e) {}
                             }
                         }
                 } else {
@@ -155,7 +157,9 @@ public class FileCache {
                         while (attributes.values().iterator().hasNext()) {
                             Attribute a = attributes.values().iterator().next();
                             if (a != null) {
-                                writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                                try {
+                                    writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                                } catch (Exception e) {}
                             }
                         }
                 } else {
