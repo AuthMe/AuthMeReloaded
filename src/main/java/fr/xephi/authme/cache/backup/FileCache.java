@@ -335,7 +335,7 @@ public class FileCache {
                     reader = new Scanner(new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "inventory" + File.separator + i + ".cache"));
                     ItemStack item = new ItemStack(Material.AIR);
                     ItemMeta meta = null;
-                    Attributes attributes = new Attributes(item);
+                    Attributes attributes = null;
                     count = 1;
                     boolean v = true;
                     while (reader.hasNextLine() && v == true) {
@@ -378,6 +378,8 @@ public class FileCache {
                             item.addEnchantment(Enchantment.getByName(line.split(":")[0]), Integer.parseInt(line.split(":")[1]));
                         }
                         if (line.startsWith("attribute=")) {
+                            if (attributes == null)
+                                attributes = new Attributes(item);
                             try {
                                 line = line.substring(10);
                                 String[] args = line.split(";");
@@ -397,13 +399,16 @@ public class FileCache {
                     }
                     if (reader != null)
                         reader.close();
-                    inv[i] = attributes.getStack();
+                    if (attributes != null)
+                        inv[i] = attributes.getStack();
+                    else
+                        inv[i] = item;
                 }
                 for (int i = 0; i < armours.length; i++) {
                     reader = new Scanner(new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "armours" + File.separator + i + ".cache"));
                     ItemStack item = new ItemStack(Material.AIR);
                     ItemMeta meta = null;
-                    Attributes attributes = new Attributes(item);
+                    Attributes attributes = null;
                     count = 1;
                     boolean v = true;
                     while (reader.hasNextLine() && v == true) {
@@ -446,6 +451,8 @@ public class FileCache {
                             item.addEnchantment(Enchantment.getByName(line.split(":")[0]), Integer.parseInt(line.split(":")[1]));
                         }
                         if (line.startsWith("attribute=")) {
+                            if (attributes == null)
+                                attributes = new Attributes(item);
                             try {
                                 line = line.substring(10);
                                 String[] args = line.split(";");
@@ -465,7 +472,10 @@ public class FileCache {
                     }
                     if (reader != null)
                         reader.close();
-                    armours[i] = attributes.getStack();
+                    if (attributes != null)
+                        armours[i] = attributes.getStack();
+                    else
+                        armours[i] = item;
                 }
 
             } catch (final Exception e) {
