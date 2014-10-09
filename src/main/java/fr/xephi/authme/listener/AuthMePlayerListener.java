@@ -390,9 +390,14 @@ public class AuthMePlayerListener implements Listener {
             // Little workaround to be sure registered player is the same as this
             if (player.hasPlayedBefore() && !player.isOnline())
                 // Make sure it's the correct player
-                if (data.isAuthAvailable(lowname))
-                    if (data.getAuth(lowname).getIp().equalsIgnoreCase(player.getAddress().getAddress().getHostAddress()))
+                if (data.isAuthAvailable(lowname)) {
+                    if (data.getAuth(lowname).getIp().equalsIgnoreCase(player.getAddress().getAddress().getHostAddress())) {
                         data.updateName(lowname, name);
+                    } else {
+                        event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                        event.setKickMessage(m._("same_nick")[0]);
+                    }
+                }
         }
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
