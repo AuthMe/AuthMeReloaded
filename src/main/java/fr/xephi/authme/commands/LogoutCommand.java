@@ -2,6 +2,7 @@ package fr.xephi.authme.commands;
 
 import me.muizers.Notifications.Notification;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,6 +23,7 @@ import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
+import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
@@ -53,7 +55,7 @@ public class LogoutCommand implements CommandExecutor {
             return true;
         }
 
-        Player player = (Player) sender;
+        final Player player = (Player) sender;
         String name = player.getName();
 
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
@@ -115,6 +117,13 @@ public class LogoutCommand implements CommandExecutor {
         player.setOp(false);
         player.setAllowFlight(true);
         player.setFlying(true);
+        // Player is now logout... Time to fire event !
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+			@Override
+            public void run() {
+				Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
+            }
+        });
         m._(player, "logout");
         ConsoleLogger.info(player.getDisplayName() + " logged out");
         if (plugin.notifications != null) {
