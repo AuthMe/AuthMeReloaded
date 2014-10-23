@@ -916,7 +916,7 @@ public class AuthMePlayerListener implements Listener {
         player.saveData();
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if (event.isCancelled() || event.getPlayer() == null) {
             return;
@@ -975,7 +975,7 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         if (event.isCancelled() || event.getPlayer() == null)
             return;
@@ -1002,7 +1002,7 @@ public class AuthMePlayerListener implements Listener {
         player.closeInventory();
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
         if (event.isCancelled() || event.getWhoClicked() == null)
             return;

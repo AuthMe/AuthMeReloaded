@@ -28,7 +28,7 @@ public class AuthMeEntityListener implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.isCancelled()) {
             return;
@@ -62,10 +62,11 @@ public class AuthMeEntityListener implements Listener {
             }
         }
         player.setFireTicks(0);
+        event.setDamage(0.0);
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
         if (event.isCancelled()) {
             return;
@@ -96,7 +97,7 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.isCancelled()) {
             return;
@@ -154,10 +155,11 @@ public class AuthMeEntityListener implements Listener {
             }
         }
 
+        event.setAmount(0.0);
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
         if (event.isCancelled() || event == null) {
             return;
