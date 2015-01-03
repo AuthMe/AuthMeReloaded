@@ -23,11 +23,11 @@
     <version>3.5-SNAPSHOT</version>
     <dependencies>
     	<dependency>
-    		<groupId>org.bukkit</groupId>
-    		<artifactId>craftbukkit</artifactId>
-    		<version>1.7.10-R0.1-SNAPSHOT</version>
+    		<groupId>org.spigotmc</groupId>
+    		<artifactId>spigot</artifactId>
+    		<version>1.8-R0.1-SNAPSHOT</version>
     		<scope>system</scope>
-    		<systemPath>${project.basedir}/lib/CraftBukkit.jar</systemPath>
+    		<systemPath>${project.basedir}/lib/Spigot.jar</systemPath>
     	</dependency>
     	<dependency>
     		<groupId>net.milkbowl.vault</groupId>
