@@ -71,7 +71,7 @@ public class AuthMePlayerListener implements Listener {
     public AuthMe plugin;
     private DataSource data;
     private FileCache playerBackup;
-    public boolean causeByAuthMe = false;
+    public static HashMap<String, Boolean> causeByAuthMe = new HashMap<String, Boolean>();
     private HashMap<String, PlayerLoginEvent> antibot = new HashMap<String, PlayerLoginEvent>();
 
     public AuthMePlayerListener(AuthMe plugin, DataSource data) {
@@ -369,11 +369,12 @@ public class AuthMePlayerListener implements Listener {
         int radius = Settings.getMovementRadius;
         Location spawn = plugin.getSpawnLocation(player);
 
-        if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
-            event.getPlayer().teleport(spawn);
-            return;
-        }
-        if ((spawn.distance(player.getLocation()) > radius)) {
+        if (spawn != null && spawn.getWorld() != null)
+        	if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
+        		event.getPlayer().teleport(spawn);
+        		return;
+        	}
+        if ((spawn.distance(player.getLocation()) > radius) && spawn.getWorld() != null) {
             event.getPlayer().teleport(spawn);
             return;
         }
@@ -583,9 +584,9 @@ public class AuthMePlayerListener implements Listener {
         String ip = plugin.getIP(player);
         if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
             GameMode gM = gameMode.get(name);
-            this.causeByAuthMe = true;
+            causeByAuthMe.put(name, true);
             player.setGameMode(gM);
-            this.causeByAuthMe = false;
+            causeByAuthMe.put(name, false);
             player.kickPlayer("You are not the Owner of this account, please try another name!");
             if (Settings.banUnsafeIp)
                 plugin.getServer().banIP(ip);
@@ -618,25 +619,25 @@ public class AuthMePlayerListener implements Listener {
                         return;
                     } else if (!Settings.sessionExpireOnIpChange) {
                         GameMode gM = gameMode.get(name);
-                        this.causeByAuthMe = true;
+                        causeByAuthMe.put(name, true);
                         player.setGameMode(gM);
-                        this.causeByAuthMe = false;
+                        causeByAuthMe.put(name, false);
                         player.kickPlayer(m._("unvalid_session")[0]);
                         return;
                     } else if (auth.getNickname().equalsIgnoreCase(name)) {
                         if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                            this.causeByAuthMe = true;
+                            causeByAuthMe.put(name, true);
                             Utils.forceGM(player);
-                            this.causeByAuthMe = false;
+                            causeByAuthMe.put(name, false);
                         }
                         // Player change his IP between 2 relog-in
                         PlayerCache.getInstance().removePlayer(name);
                         data.setUnlogged(name);
                     } else {
                         GameMode gM = gameMode.get(name);
-                        this.causeByAuthMe = true;
+                        causeByAuthMe.put(name, true);
                         player.setGameMode(gM);
-                        this.causeByAuthMe = false;
+                        causeByAuthMe.put(name, false);
                         player.kickPlayer(m._("unvalid_session")[0]);
                         return;
                     }
@@ -648,9 +649,9 @@ public class AuthMePlayerListener implements Listener {
             }
             // isent in session or session was ended correctly
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                this.causeByAuthMe = true;
+                causeByAuthMe.put(name, true);
                 Utils.forceGM(player);
-                this.causeByAuthMe = false;
+                causeByAuthMe.put(name, false);
             }
             if (!Settings.noTeleport)
                 if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
@@ -658,7 +659,8 @@ public class AuthMePlayerListener implements Listener {
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if (!tpEvent.isCancelled()) {
                         if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                            player.teleport(tpEvent.getTo());
+                        	if (tpEvent.getTo().getWorld() != null)
+                        		player.teleport(tpEvent.getTo());
                         }
                     }
                 }
@@ -668,9 +670,9 @@ public class AuthMePlayerListener implements Listener {
             playerBackup.createCache(player, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(), LimboCache.getInstance().getLimboPlayer(name).getOperator(), LimboCache.getInstance().getLimboPlayer(name).isFlying());
         } else {
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                this.causeByAuthMe = true;
+                causeByAuthMe.put(name, true);
                 Utils.forceGM(player);
-                this.causeByAuthMe = false;
+                causeByAuthMe.put(name, false);
             }
             if (!Settings.unRegisteredGroup.isEmpty()) {
                 utils.setGroup(player, Utils.groupType.UNREGISTERED);
@@ -681,7 +683,8 @@ public class AuthMePlayerListener implements Listener {
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if (!tpEvent.isCancelled()) {
                         if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                            player.teleport(tpEvent.getTo());
+                        	if (tpEvent.getTo().getWorld() != null)
+                        		player.teleport(tpEvent.getTo());
                         }
                     }
                 }
@@ -754,13 +757,15 @@ public class AuthMePlayerListener implements Listener {
         Block b = player.getLocation().getBlock();
         if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL || b.getType() == Material.LAVA || b.getType() == Material.STATIONARY_LAVA) {
             m._(player, "unsafe_spawn");
-            player.teleport(spawnLoc);
+            if (spawnLoc.getWorld() != null)
+            	player.teleport(spawnLoc);
             return;
         }
         Block c = player.getLocation().add(0D, 1D, 0D).getBlock();
         if (c.getType() == Material.PORTAL || c.getType() == Material.ENDER_PORTAL || c.getType() == Material.LAVA || c.getType() == Material.STATIONARY_LAVA) {
             m._(player, "unsafe_spawn");
-            player.teleport(spawnLoc);
+            if (spawnLoc.getWorld() != null)
+            	player.teleport(spawnLoc);
             return;
         }
     }
@@ -887,7 +892,8 @@ public class AuthMePlayerListener implements Listener {
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if (!tpEvent.isCancelled()) {
                         if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                            player.teleport(tpEvent.getTo());
+                        	if (tpEvent.getTo().getWorld() != null)
+                            	player.teleport(tpEvent.getTo());
                         }
                     }
                 } catch (NullPointerException npe) {
@@ -1190,7 +1196,7 @@ public class AuthMePlayerListener implements Listener {
             if (!Settings.isForcedRegistrationEnabled)
                 return;
 
-        if (this.causeByAuthMe)
+        if (causeByAuthMe.containsKey(name) && causeByAuthMe.get(name))
             return;
         event.setCancelled(true);
     }
