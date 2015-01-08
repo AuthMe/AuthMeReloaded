@@ -948,22 +948,24 @@ public class MySQLThread extends Thread implements DataSource {
     public void setUnlogged(String user) {
         Connection con = null;
         PreparedStatement pst = null;
-        try {
-            con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnName + "=?;");
-            pst.setInt(1, 0);
-            pst.setString(2, user);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } finally {
-            close(pst);
-            close(con);
-        }
+        if (user != null)
+        	try {
+        		con = makeSureConnectionIsReady();
+        		pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnName + "=?;");
+        		pst.setInt(1, 0);
+        		pst.setString(2, user);
+        		pst.executeUpdate();
+        	} catch (SQLException ex) {
+        		ConsoleLogger.showError(ex.getMessage());
+        		return;
+        	} catch (TimeoutException ex) {
+        		ConsoleLogger.showError(ex.getMessage());
+        		return;
+        	}
+        	finally {
+        		close(pst);
+        		close(con);
+        	}
         return;
     }
 
