@@ -107,8 +107,11 @@ public class FileCache {
                             Attribute a = attributes.values().iterator().next();
                             if (a != null) {
                                 try {
-                                    writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
-                                } catch (Exception e) {}
+                                	if (a.getName() != null && a.getAttributeType() != null
+                                		&& a.getOperation() != null && a.getUUID() != null)
+                                		writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                                } catch (Exception e) {
+                                } catch (Error e) {}
                             }
                         }
                 } else {
@@ -158,7 +161,9 @@ public class FileCache {
                             Attribute a = attributes.values().iterator().next();
                             if (a != null) {
                                 try {
-                                    writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
+                                	if (a.getName() != null && a.getAttributeType() != null
+                                    		&& a.getOperation() != null && a.getUUID() != null)
+                                		writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
                                 } catch (Exception e) {}
                             }
                         }
