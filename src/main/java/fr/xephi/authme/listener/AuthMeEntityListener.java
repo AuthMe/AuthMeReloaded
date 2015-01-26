@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -96,6 +97,28 @@ public class AuthMeEntityListener implements Listener {
         event.setTarget(null);
         event.setCancelled(true);
     }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+	public void onDmg(EntityDamageByEntityEvent event) {
+		if (event.isCancelled()) {
+            return;
+        }
+		
+		Entity entity = event.getDamager();
+		
+		if (entity == null || !(entity instanceof Player)) {
+            return;
+        }
+		
+		Player player = (Player) entity;
+		String name = player.getName();
+		
+        if (PlayerCache.getInstance().isAuthenticated(name)) {
+            return;
+        }
+        
+        event.setCancelled(true);
+	}
 
     @EventHandler (priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
