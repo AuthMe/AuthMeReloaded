@@ -286,6 +286,11 @@ public class MySQLThread extends Thread implements DataSource {
                     pst.setInt(3, 0);
                     pst.setInt(4, 0);
                     pst.executeUpdate();
+                    // Update username_clean in phpbb_users
+                    pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".username_clean=? WHERE " + columnName + "=?;");
+                    pst.setString(1, auth.getNickname().toLowerCase());
+                    pst.setString(2, auth.getNickname());
+                    pst.executeUpdate();
                     // Update player group in phpbb_users
                     pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".group_id=? WHERE " + columnName + "=?;");
                     pst.setInt(1, Settings.getPhpbbGroup);
@@ -302,6 +307,9 @@ public class MySQLThread extends Thread implements DataSource {
                     pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".user_lastvisit=? WHERE " + columnName + "=?;");
                     pst.setLong(1, time);
                     pst.setString(2, auth.getNickname());
+                    pst.executeUpdate();
+                    // Increment num_users
+                    pst = con.prepareStatement("UPDATE " + Settings.getPhpbbPrefix + "config SET config_value = config_value + 1 WHERE config_name = 'num_users';");
                     pst.executeUpdate();
                 }
             }
