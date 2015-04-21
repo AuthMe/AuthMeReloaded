@@ -20,6 +20,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -28,8 +29,6 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -72,7 +71,7 @@ public class AuthMePlayerListener implements Listener {
     private DataSource data;
     private FileCache playerBackup;
     public static HashMap<String, Boolean> causeByAuthMe = new HashMap<String, Boolean>();
-    private HashMap<String, PlayerLoginEvent> antibot = new HashMap<String, PlayerLoginEvent>();
+    private HashMap<String, AsyncPlayerPreLoginEvent> antibot = new HashMap<String, AsyncPlayerPreLoginEvent>();
 
     public AuthMePlayerListener(AuthMe plugin, DataSource data) {
         this.plugin = plugin;
@@ -381,9 +380,16 @@ public class AuthMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerLogin(PlayerLoginEvent event) {
-
-        final Player player = event.getPlayer();
+    public void onAsyncLogin(AsyncPlayerPreLoginEvent event)
+    {
+    	Player player = null;
+    	try {
+    		player = Bukkit.getPlayer(event.getUniqueId());
+    	} catch (Exception e) {
+    		return;
+    	}
+    	if (player == null)
+    		return;
         final String name = player.getName().toLowerCase();
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
@@ -393,27 +399,31 @@ public class AuthMePlayerListener implements Listener {
         if (!Settings.countriesBlacklist.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (Settings.countriesBlacklist.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("country_banned")[0]);
+                event.setKickMessage(m._("country_banned")[0]);
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
         if (Settings.enableProtection && !Settings.countries.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (!Settings.countries.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("country_banned")[0]);
+                event.setKickMessage(m._("country_banned")[0]);
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
 
         if (Settings.isKickNonRegisteredEnabled) {
             if (!data.isAuthAvailable(name)) {
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("reg_only")[0]);
+                event.setKickMessage(m._("reg_only")[0]);
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
 
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("same_nick")[0]);
+            event.setKickMessage(m._("same_nick")[0]);
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             return;
         }
 
@@ -430,7 +440,8 @@ public class AuthMePlayerListener implements Listener {
         // joined with same nick of online player
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("same_nick")[0]);
+            event.setKickMessage(m._("same_nick")[0]);
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
                 utils.addNormal(player, limbo.getGroup());
                 LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
@@ -444,33 +455,39 @@ public class AuthMePlayerListener implements Listener {
 
         if (name.length() > max || name.length() < min) {
 
-            event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("name_len")[0]);
+            event.setKickMessage(m._("name_len")[0]);
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             return;
         }
         try {
             if (!player.getName().matches(regex) || name.equals("Player")) {
                 try {
-                    event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("regex")[0].replace("REG_EX", regex));
+                    event.setKickMessage(m._("regex")[0].replace("REG_EX", regex));
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 } catch (Exception exc) {
-                    event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "allowed char : " + regex);
+                    event.setKickMessage("allowed char : " + regex);
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 }
                 return;
             }
         } catch (PatternSyntaxException pse) {
             if (regex == null || regex.isEmpty()) {
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "Your nickname do not match");
+                event.setKickMessage("Your nickname do not match");
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 return;
             }
             try {
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, m._("regex")[0].replace("REG_EX", regex));
+                event.setKickMessage(m._("regex")[0].replace("REG_EX", regex));
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             } catch (Exception exc) {
-                event.disallow(PlayerLoginEvent.Result.KICK_OTHER, "allowed char : " + regex);
+                event.setKickMessage("allowed char : " + regex);
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             }
             return;
         }
 
-        if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
-            checkAntiBotMod(event);
+        if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            checkAntiBotMod(event, player);
             if (Settings.bungee) {
                 final ByteArrayOutputStream b = new ByteArrayOutputStream();
                 DataOutputStream out = new DataOutputStream(b);
@@ -483,12 +500,13 @@ public class AuthMePlayerListener implements Listener {
             }
             return;
         }
-        if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL)
+        if (event.getLoginResult() != AsyncPlayerPreLoginEvent.Result.KICK_FULL)
             return;
         if (player.isBanned())
             return;
         if (!plugin.authmePermissible(player, "authme.vip")) {
-            event.disallow(Result.KICK_FULL, m._("kick_fullserver")[0]);
+            event.setKickMessage(m._("kick_fullserver")[0]);
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_FULL);
             return;
         }
 
@@ -503,16 +521,17 @@ public class AuthMePlayerListener implements Listener {
                 return;
             } else {
                 ConsoleLogger.info("The player " + player.getName() + " wants to join, but the server is full");
-                event.disallow(Result.KICK_FULL, m._("kick_fullserver")[0]);
+                event.setKickMessage(m._("kick_fullserver")[0]);
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_FULL);
                 return;
             }
         }
     }
 
-    private void checkAntiBotMod(final PlayerLoginEvent event) {
+    private void checkAntiBotMod(final AsyncPlayerPreLoginEvent event, final Player player) {
         if (plugin.delayedAntiBot || plugin.antibotMod)
             return;
-        if (plugin.authmePermissible(event.getPlayer(), "authme.bypassantibot"))
+        if (plugin.authmePermissible(player, "authme.bypassantibot"))
             return;
         if (antibot.keySet().size() > Settings.antiBotSensibility) {
             plugin.switchAntiBotMod(true);
@@ -532,12 +551,12 @@ public class AuthMePlayerListener implements Listener {
             }, Settings.antiBotDuration * 1200);
             return;
         }
-        antibot.put(event.getPlayer().getName().toLowerCase(), event);
+        antibot.put(player.getName().toLowerCase(), event);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
             @Override
             public void run() {
-                antibot.remove(event.getPlayer().getName().toLowerCase());
+                antibot.remove(player.getName().toLowerCase());
             }
         }, 300);
     }
