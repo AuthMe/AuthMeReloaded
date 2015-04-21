@@ -434,14 +434,14 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
                 ResultSet rs = null;
-                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
@@ -479,7 +479,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
             pst.setString(3, auth.getNickname());
@@ -558,7 +558,7 @@ public class MySQLThread extends Thread implements DataSource {
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
                 ResultSet rs = null;
-                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, user);
                 rs = pst.executeQuery();
                 if (rs.next()) {
@@ -568,7 +568,7 @@ public class MySQLThread extends Thread implements DataSource {
                     pst.setInt(1, id);
                 }
             }
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, user);
             pst.executeUpdate();
         } catch (SQLException ex) {
@@ -590,7 +590,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + " =?, " + lastlocY + "=?, " + lastlocZ + "=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + " =?, " + lastlocY + "=?, " + lastlocZ + "=?, " + lastlocWorld + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
             pst.setDouble(3, auth.getQuitLocZ());
@@ -644,7 +644,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnEmail + " =? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnEmail + " =? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
@@ -670,7 +670,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + " =? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + " =? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
@@ -832,7 +832,7 @@ public class MySQLThread extends Thread implements DataSource {
         try {
             for (String name : banned) {
                 con = makeSureConnectionIsReady();
-                pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
+                pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, name);
                 pst.executeUpdate();
             }
@@ -911,7 +911,7 @@ public class MySQLThread extends Thread implements DataSource {
         ResultSet rs = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next())
@@ -936,7 +936,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setInt(1, 1);
             pst.setString(2, user);
             pst.executeUpdate();
@@ -960,7 +960,7 @@ public class MySQLThread extends Thread implements DataSource {
         if (user != null)
         	try {
         		con = makeSureConnectionIsReady();
-        		pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnName + "=?;");
+        		pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
         		pst.setInt(1, 0);
         		pst.setString(2, user);
         		pst.executeUpdate();
@@ -1033,7 +1033,7 @@ public class MySQLThread extends Thread implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, newone);
             pst.setString(2, oldone);
             pst.executeUpdate();
