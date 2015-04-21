@@ -651,8 +651,13 @@ public class AuthMePlayerListener implements Listener {
                 }
             placePlayerSafely(player, spawnLoc);
             LimboCache.getInstance().updateLimboPlayer(player);
-            DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
-            playerBackup.createCache(player, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(), LimboCache.getInstance().getLimboPlayer(name).getOperator(), LimboCache.getInstance().getLimboPlayer(name).isFlying());
+            try {
+                DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
+                playerBackup.createCache(player, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(), LimboCache.getInstance().getLimboPlayer(name).getOperator(), LimboCache.getInstance().getLimboPlayer(name).isFlying());
+            } catch (Exception e)
+            {
+            	ConsoleLogger.showError("Error on creating an inventory cache for " + name + ", maybe inventory wipe in preparation...");
+            }
         } else {
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
                 causeByAuthMe.put(name, true);
