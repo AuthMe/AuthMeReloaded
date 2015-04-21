@@ -28,7 +28,7 @@ public class MessageTask implements Runnable {
             return;
 
         for (Player player : plugin.getServer().getOnlinePlayers()) {
-            if (player.getName().equals(name)) {
+            if (player.getName().toLowerCase().equals(name)) {
                 for (String ms : msg) {
                     player.sendMessage(ms);
                 }

@@ -56,7 +56,7 @@ public class LogoutCommand implements CommandExecutor {
         }
 
         final Player player = (Player) sender;
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
             m._(player, "not_logged_in");

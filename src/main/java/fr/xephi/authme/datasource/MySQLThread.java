@@ -188,7 +188,8 @@ public class MySQLThread extends Thread implements DataSource {
         }
     }
 
-    @Override
+    @SuppressWarnings("resource")
+	@Override
     public synchronized PlayerAuth getAuth(String user) {
         Connection con = null;
         PreparedStatement pst = null;
@@ -203,14 +204,14 @@ public class MySQLThread extends Thread implements DataSource {
             if (rs.next()) {
                 id = rs.getInt(columnID);
                 if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
-                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                    pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), "198.18.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
                 } else {
                     if (!columnSalt.isEmpty()) {
                         if (!columnGroup.isEmpty())
-                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                        else pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                            pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                        else pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
                     } else {
-                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                        pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
                     }
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {

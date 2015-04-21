@@ -35,8 +35,8 @@ public class PlayersLogs extends CustomConfiguration {
 
     public void addPlayer(String user) {
         players = this.getStringList("players");
-        if (!players.contains(user)) {
-            players.add(user);
+        if (!players.contains(user.toLowerCase())) {
+            players.add(user.toLowerCase());
             set("players", players);
             save();
         }
@@ -44,8 +44,8 @@ public class PlayersLogs extends CustomConfiguration {
 
     public void removePlayer(String user) {
         players = this.getStringList("players");
-        if (players.contains(user)) {
-            players.remove(user);
+        if (players.contains(user.toLowerCase())) {
+            players.remove(user.toLowerCase());
             set("players", players);
             save();
         }

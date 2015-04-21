@@ -40,7 +40,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         this.database = data;
         this.pm = plugin.getServer().getPluginManager();
         this.player = player;
-        this.name = player.getName();
+        this.name = player.getName().toLowerCase();
         this.limbo = LimboCache.getInstance().getLimboPlayer(name);
         this.auth = database.getAuth(name);
         this.playerCache = new FileCache(plugin);

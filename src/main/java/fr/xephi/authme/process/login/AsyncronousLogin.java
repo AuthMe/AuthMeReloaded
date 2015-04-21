@@ -25,6 +25,7 @@ public class AsyncronousLogin {
 
     protected Player player;
     protected String name;
+    protected String realName;
     protected String password;
     protected boolean forceLogin;
     private AuthMe plugin;
@@ -36,7 +37,8 @@ public class AsyncronousLogin {
             AuthMe plugin, DataSource data) {
         this.player = player;
         this.password = password;
-        name = player.getName();
+        name = player.getName().toLowerCase();
+        realName = player.getName();
         this.forceLogin = forceLogin;
         this.plugin = plugin;
         this.database = data;
@@ -124,7 +126,7 @@ public class AsyncronousLogin {
         boolean passwordVerified = true;
         if (!forceLogin)
             try {
-                passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, name);
+                passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, realName);
             } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
                 m._(player, "error");

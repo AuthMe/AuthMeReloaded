@@ -20,7 +20,7 @@ public class AuthMeSpoutListener implements Listener {
     @EventHandler
     public void onSpoutCraftEnable(final SpoutCraftEnableEvent event) {
         if (SpoutCfg.getInstance().getBoolean("LoginScreen.enabled")) {
-            if (data.isAuthAvailable(event.getPlayer().getName()) && !PlayerCache.getInstance().isAuthenticated(event.getPlayer().getName())) {
+            if (data.isAuthAvailable(event.getPlayer().getName().toLowerCase()) && !PlayerCache.getInstance().isAuthenticated(event.getPlayer().getName().toLowerCase())) {
                 event.getPlayer().getMainScreen().attachPopupScreen(new LoginScreen(event.getPlayer()));
             }
         }

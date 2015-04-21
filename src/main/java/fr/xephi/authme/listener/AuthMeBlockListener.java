@@ -29,7 +29,7 @@ public class AuthMeBlockListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
@@ -54,13 +54,13 @@ public class AuthMeBlockListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
+        if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
 

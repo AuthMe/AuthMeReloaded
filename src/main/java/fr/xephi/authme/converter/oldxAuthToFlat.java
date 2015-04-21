@@ -77,7 +77,7 @@ public class oldxAuthToFlat {
             rs = ps.executeQuery();
             if (!rs.next())
                 return null;
-            realPass = rs.getString("playername");
+            realPass = rs.getString("playername").toLowerCase();
         } catch (SQLException e) {
             xAuthLog.severe("Failed to retrieve name for account: " + id, e);
             return null;

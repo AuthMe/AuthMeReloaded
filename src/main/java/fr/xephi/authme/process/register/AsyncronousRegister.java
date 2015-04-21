@@ -29,7 +29,7 @@ public class AsyncronousRegister {
             AuthMe plugin, DataSource data) {
         this.player = player;
         this.password = password;
-        name = player.getName();
+        name = player.getName().toLowerCase();
         this.email = email;
         this.plugin = plugin;
         this.database = data;
@@ -57,10 +57,10 @@ public class AsyncronousRegister {
             allowRegister = false;
         }
 
-        if (database.isAuthAvailable(player.getName())) {
+        if (database.isAuthAvailable(name)) {
             m._(player, "user_regged");
-            if (plugin.pllog.getStringList("players").contains(player.getName())) {
-                plugin.pllog.getStringList("players").remove(player.getName());
+            if (plugin.pllog.getStringList("players").contains(name)) {
+                plugin.pllog.getStringList("players").remove(name);
             }
             allowRegister = false;
         }

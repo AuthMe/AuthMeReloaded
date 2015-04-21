@@ -55,7 +55,7 @@ public class UnregisterCommand implements CommandExecutor {
         }
 
         Player player = (Player) sender;
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
             m._(player, "not_logged_in");
@@ -84,7 +84,7 @@ public class UnregisterCommand implements CommandExecutor {
                     player.getInventory().setContents(new ItemStack[36]);
                     player.getInventory().setArmorContents(new ItemStack[4]);
                     player.saveData();
-                    PlayerCache.getInstance().removePlayer(player.getName());
+                    PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                     if (!Settings.getRegisteredGroup.isEmpty())
                         Utils.getInstance().setGroup(player, groupType.UNREGISTERED);
                     LimboCache.getInstance().addLimboPlayer(player);
@@ -106,7 +106,7 @@ public class UnregisterCommand implements CommandExecutor {
                 if (!Settings.unRegisteredGroup.isEmpty()) {
                     Utils.getInstance().setGroup(player, Utils.groupType.UNREGISTERED);
                 }
-                PlayerCache.getInstance().removePlayer(player.getName());
+                PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                 // check if Player cache File Exist and delete it, preventing
                 // duplication of items
                 if (playerCache.doesCacheExist(player)) {

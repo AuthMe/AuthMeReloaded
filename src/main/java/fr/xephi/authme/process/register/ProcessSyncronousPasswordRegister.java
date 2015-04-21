@@ -31,7 +31,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 
     public ProcessSyncronousPasswordRegister(Player player, AuthMe plugin) {
         this.player = player;
-        this.name = player.getName();
+        this.name = player.getName().toLowerCase();
         this.plugin = plugin;
     }
 

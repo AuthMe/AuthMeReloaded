@@ -57,7 +57,7 @@ public class CrazyLoginConverter implements Converter {
                         continue;
                     if (args[0].equalsIgnoreCase("name"))
                         continue;
-                    String player = args[0];
+                    String player = args[0].toLowerCase();
                     String psw = args[1];
                     try {
                         if (player != null && psw != null) {

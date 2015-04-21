@@ -25,7 +25,7 @@
     	<dependency>
     		<groupId>org.spigotmc</groupId>
     		<artifactId>spigot</artifactId>
-    		<version>1.8-R0.1-SNAPSHOT</version>
+    		<version>1.8.3</version>
     		<scope>system</scope>
     		<systemPath>${project.basedir}/lib/Spigot.jar</systemPath>
     	</dependency>

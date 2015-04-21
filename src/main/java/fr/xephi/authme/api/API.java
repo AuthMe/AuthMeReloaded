@@ -86,7 +86,7 @@ public class API {
 
     public static Location getLastLocation(Player player) {
         try {
-            PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName());
+            PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
 
             if (auth != null) {
                 Location loc = new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
@@ -115,7 +115,7 @@ public class API {
      * @return true if player is registered
      */
     public static boolean isRegistered(String playerName) {
-        String player = playerName;
+        String player = playerName.toLowerCase();
         return database.isAuthAvailable(player);
     }
 
@@ -128,7 +128,7 @@ public class API {
             String passwordToCheck) {
         if (!isRegistered(playerName))
             return false;
-        String player = playerName;
+        String player = playerName.toLowerCase();
         PlayerAuth auth = database.getAuth(player);
         try {
             return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), playerName);
@@ -146,7 +146,7 @@ public class API {
      */
     public static boolean registerPlayer(String playerName, String password) {
         try {
-            String name = playerName;
+            String name = playerName.toLowerCase();
             String hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
             if (isRegistered(name)) {
                 return false;

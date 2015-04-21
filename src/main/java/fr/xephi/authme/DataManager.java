@@ -25,17 +25,12 @@ public class DataManager extends Thread {
     public OfflinePlayer getOfflinePlayer(String name) {
         OfflinePlayer result = null;
         try {
-            if (org.bukkit.Bukkit.class.getMethod("getOfflinePlayer", new Class[] { String.class }).isAnnotationPresent(Deprecated.class)) {
-                for (OfflinePlayer op : Bukkit.getOfflinePlayers())
-                    if (op.getName().equalsIgnoreCase(name)) {
-                        result = op;
-                        break;
-                    }
-            } else {
-                result = Bukkit.getOfflinePlayer(name);
-            }
+            for (OfflinePlayer op : Bukkit.getOfflinePlayers())
+                if (op.getName().equalsIgnoreCase(name)) {
+                    result = op;
+                    break;
+                }
         } catch (Exception e) {
-            result = Bukkit.getOfflinePlayer(name);
         }
         return result;
     }

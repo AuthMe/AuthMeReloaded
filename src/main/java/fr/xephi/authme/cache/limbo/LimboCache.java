@@ -29,7 +29,7 @@ public class LimboCache {
     }
 
     public void addLimboPlayer(Player player) {
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
         Location loc = player.getLocation();
         GameMode gameMode = player.getGameMode();
         ItemStack[] arm;
@@ -95,7 +95,7 @@ public class LimboCache {
     }
 
     public void addLimboPlayer(Player player, String group) {
-        cache.put(player.getName(), new LimboPlayer(player.getName(), group));
+        cache.put(player.getName().toLowerCase(), new LimboPlayer(player.getName().toLowerCase(), group));
     }
 
     public void deleteLimboPlayer(String name) {
@@ -118,8 +118,8 @@ public class LimboCache {
     }
 
     public void updateLimboPlayer(Player player) {
-        if (this.hasLimboPlayer(player.getName())) {
-            this.deleteLimboPlayer(player.getName());
+        if (this.hasLimboPlayer(player.getName().toLowerCase())) {
+            this.deleteLimboPlayer(player.getName().toLowerCase());
         }
         this.addLimboPlayer(player);
     }

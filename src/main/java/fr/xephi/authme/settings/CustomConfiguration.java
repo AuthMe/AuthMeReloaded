@@ -78,16 +78,6 @@ public class CustomConfiguration extends YamlConfiguration {
                 Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Failed to load config from JAR");
                 out = false;
             }
-            /*
-             * FileOutputStream fos = null; try { fos = new
-             * FileOutputStream(file); byte[] buf = new byte[1024]; int i = 0;
-             * while ((i = fis.read(buf)) != -1) { fos.write(buf, 0, i); } }
-             * catch (Exception e) {
-             * Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE,
-             * "Failed to load config from JAR"); out = false; } finally { try {
-             * if (fis != null) { fis.close(); } if (fos != null) { fos.close();
-             * } } catch (Exception e) { } } }
-             */
         }
         return out;
     }

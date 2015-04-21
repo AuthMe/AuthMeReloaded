@@ -48,7 +48,7 @@ public class AuthMeEntityListener implements Listener {
             return;
 
         Player player = (Player) entity;
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (CombatTagComunicator.isNPC(player))
             return;
@@ -83,7 +83,7 @@ public class AuthMeEntityListener implements Listener {
             return;
 
         Player player = (Player) entity;
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
@@ -111,7 +111,7 @@ public class AuthMeEntityListener implements Listener {
         }
 		
 		Player player = (Player) entity;
-		String name = player.getName();
+		String name = player.getName().toLowerCase();
 		
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
@@ -135,7 +135,7 @@ public class AuthMeEntityListener implements Listener {
             return;
 
         Player player = (Player) entity;
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
@@ -166,7 +166,7 @@ public class AuthMeEntityListener implements Listener {
             return;
 
         Player player = (Player) entity;
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
@@ -193,7 +193,7 @@ public class AuthMeEntityListener implements Listener {
         }
 
         Player player = (Player) event.getEntity();
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
@@ -225,7 +225,7 @@ public class AuthMeEntityListener implements Listener {
         }
 
         Player player = (Player) event.getEntity();
-        String name = player.getName();
+        String name = player.getName().toLowerCase();
 
         if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
