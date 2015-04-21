@@ -18,13 +18,20 @@ public class CacheDataSource implements DataSource {
     public CacheDataSource(AuthMe plugin, DataSource source) {
         this.plugin = plugin;
         this.source = source;
+        /*
+         * We need to load all players in cache ...
+         * It will took more time to load the server,
+         * but it will be much easier to check for an isAuthAvailable !
+         */
+        for(PlayerAuth auth : source.getAllAuths())
+        	cache.put(auth.getNickname(), auth);
     }
 
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         if (cache.containsKey(user.toLowerCase()))
             return true;
-        return source.isAuthAvailable(user.toLowerCase());
+        return false;
     }
 
     @Override

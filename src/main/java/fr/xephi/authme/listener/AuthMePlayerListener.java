@@ -549,7 +549,6 @@ public class AuthMePlayerListener implements Listener {
         }
         Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
-        Location spawnLoc = plugin.getSpawnLocation(player);
         gm = player.getGameMode();
         gameMode.put(name, gm);
         BukkitScheduler sched = plugin.getServer().getScheduler();
@@ -583,6 +582,7 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
+        Location spawnLoc = plugin.getSpawnLocation(player);
         if (data.isAuthAvailable(name)) {
             if (Settings.isSessionsEnabled) {
                 PlayerAuth auth = data.getAuth(name);
