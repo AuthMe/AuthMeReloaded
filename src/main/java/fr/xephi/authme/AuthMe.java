@@ -202,6 +202,7 @@ public class AuthMe extends JavaPlugin {
         switch (Settings.getDataSource) {
             case FILE:
                 FlatFileThread fileThread = new FlatFileThread();
+                fileThread.start();
                 database = fileThread;
                 databaseThread = fileThread;
                 final int a = database.getAccountsRegistered();
