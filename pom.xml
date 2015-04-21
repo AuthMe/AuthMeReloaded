@@ -32,7 +32,7 @@
     	<dependency>
     		<groupId>net.milkbowl.vault</groupId>
     		<artifactId>Vault</artifactId>
-    		<version>1.4.1-SNAPSHOT</version>
+    		<version>1.5.3</version>
     		<scope>system</scope>
     		<systemPath>${project.basedir}/lib/Vault.jar</systemPath>
     	</dependency>

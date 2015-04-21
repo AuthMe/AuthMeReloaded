@@ -11,6 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -386,7 +387,12 @@ public class AuthMePlayerListener implements Listener {
     	try {
     		player = Bukkit.getPlayer(event.getUniqueId());
     	} catch (Exception e) {
-    		return;
+    		try {
+    			player = Bukkit.getOfflinePlayer(event.getUniqueId()).getPlayer();
+    		} catch (Exception ex)
+    		{
+    			return;
+    		}
     	}
     	if (player == null)
     		return;
