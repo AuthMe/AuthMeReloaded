@@ -48,9 +48,14 @@ public class LimboCache {
                 inv = null;
                 arm = null;
             }
-            playerGroup = playerData.readCache(player).getGroup();
-            operator = playerData.readCache(player).getOperator();
-            flying = playerData.readCache(player).isFlying();
+            try {
+                playerGroup = playerData.readCache(player).getGroup();
+                operator = playerData.readCache(player).getOperator();
+                flying = playerData.readCache(player).isFlying();
+            } catch (Exception e)
+            {
+            	ConsoleLogger.showError("Some error on reading cache of " + name);
+            }
         } else {
             StoreInventoryEvent event = new StoreInventoryEvent(player);
             Bukkit.getServer().getPluginManager().callEvent(event);

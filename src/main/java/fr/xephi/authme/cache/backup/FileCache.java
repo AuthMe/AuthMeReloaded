@@ -38,6 +38,8 @@ public class FileCache {
     public void createCache(Player player, DataFileCache playerData,
             String group, boolean operator, boolean flying) {
         String path = "";
+        if (player == null)
+        	return;
         try {
             path = player.getUniqueId().toString();
         } catch (Exception e) {
