@@ -846,7 +846,6 @@ public class AuthMePlayerListener implements Listener {
         }
         if (gameMode.containsKey(name))
             gameMode.remove(name);
-        player.saveData();
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -934,7 +933,6 @@ public class AuthMePlayerListener implements Listener {
             player.getVehicle().eject();
         } catch (NullPointerException ex) {
         }
-        player.saveData();
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
