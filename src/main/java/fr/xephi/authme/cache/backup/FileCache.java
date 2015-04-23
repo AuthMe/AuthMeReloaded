@@ -124,7 +124,8 @@ public class FileCache {
             }
 
             file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "armours");
-
+            if (!file.getParentFile().exists())
+                file.getParentFile().mkdir();
             file.mkdir();
 
             ItemStack[] armors = playerData.getArmour();
@@ -165,7 +166,8 @@ public class FileCache {
                     			Attribute a = attributes.values().iterator().next();
                     			if (a != null) {
                                 	if (a.getName() != null && a.getAttributeType() != null
-                                    		&& a.getOperation() != null && a.getUUID() != null)
+                                    		&& a.getOperation() != null && a.getUUID() != null
+                                    		&& a.getAttributeType().getMinecraftId() != null)
                                 		writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
                     			}
                     		}
