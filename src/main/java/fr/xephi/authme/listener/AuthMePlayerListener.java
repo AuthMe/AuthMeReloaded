@@ -36,6 +36,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -730,7 +731,7 @@ public class AuthMePlayerListener implements Listener {
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
         if (time != 0) {
-            int id = sched.scheduleSyncDelayedTask(plugin, new TimeoutTask(plugin, name), time);
+            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), time);
             if (!LimboCache.getInstance().hasLimboPlayer(name))
                 LimboCache.getInstance().addLimboPlayer(player);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
@@ -748,7 +749,7 @@ public class AuthMePlayerListener implements Listener {
             player.setAllowFlight(true);
             player.setFlying(true);
         }
-        int msgT = sched.scheduleSyncDelayedTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
+        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         player.setNoDamageTicks(Settings.getRegistrationTimeout * 20);
         if (Settings.useEssentialsMotd)
@@ -830,8 +831,8 @@ public class AuthMePlayerListener implements Listener {
                 player.setAllowFlight(limbo.isFlying());
                 player.setFlying(limbo.isFlying());
             }
-            this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
-            this.plugin.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
+            limbo.getTimeoutTaskId().cancel();
+            limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (playerBackup.doesCacheExist(player)) {
                 playerBackup.removeCache(player);
@@ -917,8 +918,8 @@ public class AuthMePlayerListener implements Listener {
                 player.setAllowFlight(limbo.isFlying());
                 player.setFlying(limbo.isFlying());
             }
-            this.plugin.getServer().getScheduler().cancelTask(limbo.getTimeoutTaskId());
-            this.plugin.getServer().getScheduler().cancelTask(limbo.getMessageTaskId());
+            limbo.getTimeoutTaskId().cancel();
+            limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (this.playerBackup.doesCacheExist(player)) {
                 this.playerBackup.removeCache(player);

@@ -3,6 +3,7 @@ package fr.xephi.authme.cache.limbo;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 public class LimboPlayer {
 
@@ -10,8 +11,8 @@ public class LimboPlayer {
     private ItemStack[] inventory;
     private ItemStack[] armour;
     private Location loc = null;
-    private int timeoutTaskId = -1;
-    private int messageTaskId = -1;
+    private BukkitTask timeoutTaskId = null;
+    private BukkitTask messageTaskId = null;
     private GameMode gameMode = GameMode.SURVIVAL;
     private boolean operator = false;
     private String group = "";
@@ -81,19 +82,19 @@ public class LimboPlayer {
         return group;
     }
 
-    public void setTimeoutTaskId(int i) {
+    public void setTimeoutTaskId(BukkitTask i) {
         this.timeoutTaskId = i;
     }
 
-    public int getTimeoutTaskId() {
+    public BukkitTask getTimeoutTaskId() {
         return timeoutTaskId;
     }
 
-    public void setMessageTaskId(int messageTaskId) {
+    public void setMessageTaskId(BukkitTask messageTaskId) {
         this.messageTaskId = messageTaskId;
     }
 
-    public int getMessageTaskId() {
+    public BukkitTask getMessageTaskId() {
         return messageTaskId;
     }
 

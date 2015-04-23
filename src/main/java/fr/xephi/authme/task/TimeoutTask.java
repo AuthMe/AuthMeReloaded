@@ -38,8 +38,8 @@ public class TimeoutTask implements Runnable {
             if (player.getName().toLowerCase().equals(name)) {
                 if (LimboCache.getInstance().hasLimboPlayer(name)) {
                     LimboPlayer inv = LimboCache.getInstance().getLimboPlayer(name);
-                    player.getServer().getScheduler().cancelTask(inv.getMessageTaskId());
-                    player.getServer().getScheduler().cancelTask(inv.getTimeoutTaskId());
+                    inv.getMessageTaskId().cancel();
+                    inv.getTimeoutTaskId().cancel();
                     if (playerCache.doesCacheExist(player)) {
                         playerCache.removeCache(player);
                     }
