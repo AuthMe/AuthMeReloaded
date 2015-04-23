@@ -34,9 +34,9 @@ public class LimboCache {
         GameMode gameMode = player.getGameMode();
         ItemStack[] arm;
         ItemStack[] inv;
-        boolean operator;
+        boolean operator = false;
         String playerGroup = "";
-        boolean flying;
+        boolean flying = false;
 
         if (playerData.doesCacheExist(player)) {
             StoreInventoryEvent event = new StoreInventoryEvent(player, playerData);
