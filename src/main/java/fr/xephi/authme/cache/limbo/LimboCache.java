@@ -96,7 +96,7 @@ public class LimboCache {
         if (player.isDead()) {
             loc = plugin.getSpawnLocation(player);
         }
-        cache.put(player.getName(), new LimboPlayer(name, loc, inv, arm, gameMode, operator, playerGroup, flying));
+        cache.put(name, new LimboPlayer(name, loc, inv, arm, gameMode, operator, playerGroup, flying));
     }
 
     public void addLimboPlayer(Player player, String group) {
