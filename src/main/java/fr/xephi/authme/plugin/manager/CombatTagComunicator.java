@@ -1,10 +1,12 @@
 package fr.xephi.authme.plugin.manager;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Entity;
-
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.CombatTagApi.CombatTagApi;
+import net.minelink.ctplus.CombatTagPlus;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 public abstract class CombatTagComunicator {
 
@@ -34,7 +36,10 @@ public abstract class CombatTagComunicator {
         } catch (NoClassDefFoundError ncdfe) {
             return false;
         }
-        return false;
+
+        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("CombatTagPlus");
+        return (plugin != null && plugin instanceof CombatTagPlus &&
+                player instanceof Player && ((CombatTagPlus) plugin).getNpcPlayerHelper().isNpc((Player) player));
     }
 
 }
