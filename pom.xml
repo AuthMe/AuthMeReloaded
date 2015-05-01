@@ -127,5 +127,12 @@
     		<scope>system</scope>
     		<systemPath>${project.basedir}/lib/Essentials.jar</systemPath>
     	</dependency>
+			<dependency>
+				<groupId>net.minelink</groupId>
+				<artifactId>CombatTagPlus</artifactId>
+				<version>1.1.2-SNAPSHOT</version>
+				<scope>system</scope>
+				<systemPath>${project.basedir}/lib/CombatTagPlus.jar</systemPath>
+			</dependency>
     </dependencies>
 </project>
