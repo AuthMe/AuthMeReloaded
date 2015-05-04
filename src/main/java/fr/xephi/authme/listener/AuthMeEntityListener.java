@@ -116,6 +116,12 @@ public class AuthMeEntityListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
+
+        if (!data.isAuthAvailable(name)) {
+            if (!Settings.isForcedRegistrationEnabled) {
+                return;
+            }
+        }
         
         event.setCancelled(true);
 	}
