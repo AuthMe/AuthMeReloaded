@@ -72,6 +72,7 @@ public class SQLiteThread extends Thread implements DataSource {
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         }
+        this.setName("AuthMeSQLiteThread");
     }
 
     private synchronized void connect() throws ClassNotFoundException,

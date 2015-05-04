@@ -27,6 +27,11 @@ public class CacheDataSource extends Thread implements DataSource {
         	cache.put(auth.getNickname(), auth);
     }
 
+    public void run()
+    {
+    	this.setName("AuthMeCacheThread");
+    }
+
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         if (cache.containsKey(user.toLowerCase()))

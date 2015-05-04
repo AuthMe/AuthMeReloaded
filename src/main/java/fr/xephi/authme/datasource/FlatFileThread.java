@@ -48,6 +48,7 @@ public class FlatFileThread extends Thread implements DataSource {
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         }
+        this.setName("AuthMeFlatFileThread");
     }
 
     @Override

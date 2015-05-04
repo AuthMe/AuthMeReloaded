@@ -1177,7 +1177,8 @@ public class AuthMePlayerListener implements Listener {
             } catch (NullPointerException npe) {
             }
         }
-        event.setRespawnLocation(spawn);
+        if (spawn != null && spawn.getWorld() != null)
+        	event.setRespawnLocation(spawn);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

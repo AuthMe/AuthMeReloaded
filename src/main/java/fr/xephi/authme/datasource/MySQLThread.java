@@ -94,10 +94,11 @@ public class MySQLThread extends Thread implements DataSource {
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         }
+        this.setName("AuthMeMySQLThread");
     }
 
     private synchronized void connect() throws ClassNotFoundException,
-            SQLException, TimeoutException {
+            SQLException, TimeoutException, NumberFormatException {
         Class.forName("com.mysql.jdbc.Driver");
         ConsoleLogger.info("MySQL driver loaded");
         MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
