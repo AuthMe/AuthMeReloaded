@@ -14,7 +14,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
@@ -32,10 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-
 import com.earth2me.essentials.Essentials;
-import com.earth2me.essentials.OfflinePlayer;
 import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 
@@ -89,7 +85,6 @@ public class AuthMe extends JavaPlugin {
     public static AuthMe authme;
     public Permission permission;
     private Utils utils = Utils.getInstance();
-    private JavaPlugin plugin;
     private FileCache playerBackup = new FileCache(this);
     public CitizensCommunicator citizens;
     public SendMailSSL mail = null;
@@ -556,21 +551,10 @@ public class AuthMe extends JavaPlugin {
 
     public Player generateKickPlayer(Collection<? extends Player> collection) {
         Player player = null;
-        int i;
         for (Player p : collection) {
-            Random rdm = new Random();
-            int a = rdm.nextInt(collection.size());
             if (!(authmePermissible(p, "authme.vip"))) {
                 player = p;
                 break;
-            }
-        }
-        if (player == null) {
-            for (Player p : collection) {
-                if (!(authmePermissible(p, "authme.vip"))) {
-                    player = p;
-                    break;
-                }
             }
         }
         return player;
