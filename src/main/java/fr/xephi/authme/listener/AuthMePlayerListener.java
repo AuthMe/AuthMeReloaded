@@ -951,7 +951,7 @@ public class AuthMePlayerListener implements Listener {
         if (plugin.getCitizensCommunicator().isNPC(player, plugin))
             return;
 
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+        if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
 
