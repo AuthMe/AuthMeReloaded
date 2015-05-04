@@ -692,6 +692,9 @@ public class AuthMePlayerListener implements Listener {
             if (!Settings.unRegisteredGroup.isEmpty()) {
                 utils.setGroup(player, Utils.groupType.UNREGISTERED);
             }
+            if (!Settings.isForcedRegistrationEnabled) {
+                return;
+            }
             if (!Settings.noTeleport)
                 if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                     SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
@@ -703,9 +706,6 @@ public class AuthMePlayerListener implements Listener {
                         }
                     }
                 }
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
 
         }
         if (Settings.protectInventoryBeforeLogInEnabled) {
