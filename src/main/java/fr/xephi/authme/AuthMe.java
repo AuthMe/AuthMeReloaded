@@ -232,6 +232,8 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.isCachingEnabled) {
             database = new CacheDataSource(this, database);
+            if (database instanceof CacheDataSource)
+            	((CacheDataSource)database).start();
         }
 
         dataManager = new DataManager(this, database);

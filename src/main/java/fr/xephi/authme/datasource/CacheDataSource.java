@@ -9,7 +9,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
-public class CacheDataSource implements DataSource {
+public class CacheDataSource extends Thread implements DataSource {
 
     private DataSource source;
     public AuthMe plugin;
@@ -135,6 +135,7 @@ public class CacheDataSource implements DataSource {
     @Override
     public synchronized void close() {
         source.close();
+        this.interrupt();
     }
 
     @Override
