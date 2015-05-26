@@ -29,7 +29,7 @@ public class PasspartuCommand implements CommandExecutor {
             String[] args) {
 
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            m._(sender, "no_perm");
+            m.send(sender, "no_perm");
             return true;
         }
 

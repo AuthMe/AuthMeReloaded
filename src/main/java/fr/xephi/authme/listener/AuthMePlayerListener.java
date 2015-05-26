@@ -132,16 +132,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (data.isAuthAvailable(name)) {
-            m._(player, "login_msg");
+            m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
             if (Settings.emailRegistration) {
-                m._(player, "reg_email_msg");
+                m.send(player, "reg_email_msg");
                 return;
             } else {
-                m._(player, "reg_msg");
+                m.send(player, "reg_msg");
                 return;
             }
         }
@@ -169,16 +169,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (data.isAuthAvailable(name)) {
-            m._(player, "login_msg");
+            m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
             if (Settings.emailRegistration) {
-                m._(player, "reg_email_msg");
+                m.send(player, "reg_email_msg");
                 return;
             } else {
-                m._(player, "reg_msg");
+                m.send(player, "reg_msg");
                 return;
             }
         }
@@ -206,16 +206,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (data.isAuthAvailable(name)) {
-            m._(player, "login_msg");
+            m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
             if (Settings.emailRegistration) {
-                m._(player, "reg_email_msg");
+                m.send(player, "reg_email_msg");
                 return;
             } else {
-                m._(player, "reg_msg");
+                m.send(player, "reg_msg");
                 return;
             }
         }
@@ -243,16 +243,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (data.isAuthAvailable(name)) {
-            m._(player, "login_msg");
+            m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
             if (Settings.emailRegistration) {
-                m._(player, "reg_email_msg");
+                m.send(player, "reg_email_msg");
                 return;
             } else {
-                m._(player, "reg_msg");
+                m.send(player, "reg_msg");
                 return;
             }
         }
@@ -281,16 +281,16 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (data.isAuthAvailable(name)) {
-            m._(player, "login_msg");
+            m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
             if (Settings.emailRegistration) {
-                m._(player, "reg_email_msg");
+                m.send(player, "reg_email_msg");
                 return;
             } else {
-                m._(player, "reg_msg");
+                m.send(player, "reg_msg");
                 return;
             }
         }
@@ -318,15 +318,15 @@ public class AuthMePlayerListener implements Listener {
         String cmd = event.getMessage().split(" ")[0];
 
         if (data.isAuthAvailable(name)) {
-            m._(player, "login_msg");
+            m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
             if (Settings.emailRegistration) {
-                m._(player, "reg_email_msg");
+                m.send(player, "reg_email_msg");
             } else {
-                m._(player, "reg_msg");
+                m.send(player, "reg_msg");
             }
         }
 
@@ -405,7 +405,7 @@ public class AuthMePlayerListener implements Listener {
         if (!Settings.countriesBlacklist.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (Settings.countriesBlacklist.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
-                event.setKickMessage(m._("country_banned")[0]);
+                event.setKickMessage(m.send("country_banned")[0]);
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 return;
             }
@@ -413,7 +413,7 @@ public class AuthMePlayerListener implements Listener {
         if (Settings.enableProtection && !Settings.countries.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (!Settings.countries.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
-                event.setKickMessage(m._("country_banned")[0]);
+                event.setKickMessage(m.send("country_banned")[0]);
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 return;
             }
@@ -421,14 +421,14 @@ public class AuthMePlayerListener implements Listener {
 
         if (Settings.isKickNonRegisteredEnabled) {
             if (!data.isAuthAvailable(name)) {
-                event.setKickMessage(m._("reg_only")[0]);
+                event.setKickMessage(m.send("reg_only")[0]);
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
 
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
-            event.setKickMessage(m._("same_nick")[0]);
+            event.setKickMessage(m.send("same_nick")[0]);
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             return;
         }
@@ -446,7 +446,7 @@ public class AuthMePlayerListener implements Listener {
         // joined with same nick of online player
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-            event.setKickMessage(m._("same_nick")[0]);
+            event.setKickMessage(m.send("same_nick")[0]);
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
                 utils.addNormal(player, limbo.getGroup());
@@ -461,14 +461,14 @@ public class AuthMePlayerListener implements Listener {
 
         if (name.length() > max || name.length() < min) {
 
-            event.setKickMessage(m._("name_len")[0]);
+            event.setKickMessage(m.send("name_len")[0]);
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             return;
         }
         try {
             if (!player.getName().matches(regex) || name.equals("Player")) {
                 try {
-                    event.setKickMessage(m._("regex")[0].replace("REG_EX", regex));
+                    event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
                     event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 } catch (Exception exc) {
                     event.setKickMessage("allowed char : " + regex);
@@ -483,7 +483,7 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
             try {
-                event.setKickMessage(m._("regex")[0].replace("REG_EX", regex));
+                event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             } catch (Exception exc) {
                 event.setKickMessage("allowed char : " + regex);
@@ -511,7 +511,7 @@ public class AuthMePlayerListener implements Listener {
         if (player.isBanned())
             return;
         if (!plugin.authmePermissible(player, "authme.vip")) {
-            event.setKickMessage(m._("kick_fullserver")[0]);
+            event.setKickMessage(m.send("kick_fullserver")[0]);
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_FULL);
             return;
         }
@@ -522,12 +522,12 @@ public class AuthMePlayerListener implements Listener {
         } else {
             final Player pl = plugin.generateKickPlayer(plugin.getServer().getOnlinePlayers());
             if (pl != null) {
-                pl.kickPlayer(m._("kick_forvip")[0]);
+                pl.kickPlayer(m.send("kick_forvip")[0]);
                 event.allow();
                 return;
             } else {
                 ConsoleLogger.info("The player " + player.getName() + " wants to join, but the server is full");
-                event.setKickMessage(m._("kick_fullserver")[0]);
+                event.setKickMessage(m.send("kick_fullserver")[0]);
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_FULL);
                 return;
             }
@@ -541,7 +541,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         if (antibot.keySet().size() > Settings.antiBotSensibility) {
             plugin.switchAntiBotMod(true);
-            for (String s : m._("antibot_auto_enabled"))
+            for (String s : m.send("antibot_auto_enabled"))
                 Bukkit.broadcastMessage(s);
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -550,7 +550,7 @@ public class AuthMePlayerListener implements Listener {
                     if (plugin.antibotMod) {
                         plugin.switchAntiBotMod(false);
                         antibot.clear();
-                        for (String s : m._("antibot_auto_disabled"))
+                        for (String s : m.send("antibot_auto_disabled"))
                             Bukkit.broadcastMessage(s.replace("%m", "" + Settings.antiBotDuration));
                     }
                 }
@@ -622,7 +622,7 @@ public class AuthMePlayerListener implements Listener {
                             PlayerCache.getInstance().addPlayer(auth);
                             data.setLogged(name);
                         }
-                        m._(player, "valid_session");
+                        m.send(player, "valid_session");
                         // Restore Permission Group
                         utils.setGroup(player, Utils.groupType.LOGGEDIN);
                         plugin.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
@@ -632,7 +632,7 @@ public class AuthMePlayerListener implements Listener {
                         causeByAuthMe.put(name, true);
                         player.setGameMode(gM);
                         causeByAuthMe.put(name, false);
-                        player.kickPlayer(m._("unvalid_session")[0]);
+                        player.kickPlayer(m.send("unvalid_session")[0]);
                         return;
                     } else if (auth.getNickname().equalsIgnoreCase(name)) {
                         if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
@@ -648,7 +648,7 @@ public class AuthMePlayerListener implements Listener {
                         causeByAuthMe.put(name, true);
                         player.setGameMode(gM);
                         causeByAuthMe.put(name, false);
-                        player.kickPlayer(m._("unvalid_session")[0]);
+                        player.kickPlayer(m.send("unvalid_session")[0]);
                         return;
                     }
                 } else {
@@ -724,9 +724,9 @@ public class AuthMePlayerListener implements Listener {
         }
         String[] msg;
         if (Settings.emailRegistration) {
-            msg = data.isAuthAvailable(name) ? m._("login_msg") : m._("reg_email_msg");
+            msg = data.isAuthAvailable(name) ? m.send("login_msg") : m.send("reg_email_msg");
         } else {
-            msg = data.isAuthAvailable(name) ? m._("login_msg") : m._("reg_msg");
+            msg = data.isAuthAvailable(name) ? m.send("login_msg") : m.send("reg_msg");
         }
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
@@ -771,14 +771,14 @@ public class AuthMePlayerListener implements Listener {
             return;
         Block b = player.getLocation().getBlock();
         if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL || b.getType() == Material.LAVA || b.getType() == Material.STATIONARY_LAVA) {
-            m._(player, "unsafe_spawn");
+            m.send(player, "unsafe_spawn");
             if (spawnLoc.getWorld() != null)
             	player.teleport(spawnLoc);
             return;
         }
         Block c = player.getLocation().add(0D, 1D, 0D).getBlock();
         if (c.getType() == Material.PORTAL || c.getType() == Material.ENDER_PORTAL || c.getType() == Material.LAVA || c.getType() == Material.STATIONARY_LAVA) {
-            m._(player, "unsafe_spawn");
+            m.send(player, "unsafe_spawn");
             if (spawnLoc.getWorld() != null)
             	player.teleport(spawnLoc);
             return;

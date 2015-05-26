@@ -51,7 +51,7 @@ public class UnregisterCommand implements CommandExecutor {
         }
 
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            m._(sender, "no_perm");
+            m.send(sender, "no_perm");
             return true;
         }
 
@@ -59,12 +59,12 @@ public class UnregisterCommand implements CommandExecutor {
         String name = player.getName().toLowerCase();
 
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
-            m._(player, "not_logged_in");
+            m.send(player, "not_logged_in");
             return true;
         }
 
         if (args.length != 1) {
-            m._(player, "usage_unreg");
+            m.send(player, "usage_unreg");
             return true;
         }
         try {
@@ -96,8 +96,8 @@ public class UnregisterCommand implements CommandExecutor {
                         BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
                         LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTask(plugin, new MessageTask(plugin, name, m._("reg_msg"), interval)));
-                    m._(player, "unregistered");
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTask(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
+                    m.send(player, "unregistered");
                     ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                     if (plugin.notifications != null) {
                         plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
@@ -115,7 +115,7 @@ public class UnregisterCommand implements CommandExecutor {
                 }
                 if (Settings.applyBlindEffect)
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
-                m._(player, "unregistered");
+                m.send(player, "unregistered");
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                 if (plugin.notifications != null) {
                     plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
@@ -133,7 +133,7 @@ public class UnregisterCommand implements CommandExecutor {
                 }
                 return true;
             } else {
-                m._(player, "wrong_pwd");
+                m.send(player, "wrong_pwd");
             }
         } catch (NoSuchAlgorithmException ex) {
             ConsoleLogger.showError(ex.getMessage());

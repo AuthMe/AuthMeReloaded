@@ -68,7 +68,7 @@ public class Messages extends CustomConfiguration {
         this.save();
     }
 
-    public void _(CommandSender sender, String msg) {
+    public void send(CommandSender sender, String msg) {
         String loc = (String) this.get(msg);
         if (loc == null) {
             loc = "Error with Translation files; Please contact the admin for verify or update translation";
@@ -79,7 +79,7 @@ public class Messages extends CustomConfiguration {
         }
     }
 
-    public String[] _(String msg) {
+    public String[] send(String msg) {
         int i = ((String) this.get(msg)).split("&n").length;
         String[] loc = new String[i];
         int a;

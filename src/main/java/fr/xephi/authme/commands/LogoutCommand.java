@@ -52,7 +52,7 @@ public class LogoutCommand implements CommandExecutor {
         }
 
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            m._(sender, "no_perm");
+            m.send(sender, "no_perm");
             return true;
         }
 
@@ -60,7 +60,7 @@ public class LogoutCommand implements CommandExecutor {
         String name = player.getName().toLowerCase();
 
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
-            m._(player, "not_logged_in");
+            m.send(player, "not_logged_in");
             return true;
         }
 
@@ -106,7 +106,7 @@ public class LogoutCommand implements CommandExecutor {
             BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, m._("login_msg"), interval));
+        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         try {
             if (player.isInsideVehicle())
@@ -125,7 +125,7 @@ public class LogoutCommand implements CommandExecutor {
 				Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
             }
         });
-        m._(player, "logout");
+        m.send(player, "logout");
         ConsoleLogger.info(player.getDisplayName() + " logged out");
         if (plugin.notifications != null) {
             plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged out!"));

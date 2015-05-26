@@ -33,34 +33,34 @@ public class CaptchaCommand implements CommandExecutor {
         String name = player.getName().toLowerCase();
 
         if (args.length == 0) {
-            m._(player, "usage_captcha");
+            m.send(player, "usage_captcha");
             return true;
         }
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
-            m._(player, "logged_in");
+            m.send(player, "logged_in");
             return true;
         }
 
         if (!plugin.authmePermissible(player, "authme." + label.toLowerCase())) {
-            m._(player, "no_perm");
+            m.send(player, "no_perm");
             return true;
         }
 
         if (!Settings.useCaptcha) {
-            m._(player, "usage_log");
+            m.send(player, "usage_log");
             return true;
         }
 
         if (!plugin.cap.containsKey(name)) {
-            m._(player, "usage_log");
+            m.send(player, "usage_log");
             return true;
         }
 
         if (Settings.useCaptcha && !args[0].equals(plugin.cap.get(name))) {
             plugin.cap.remove(name);
             plugin.cap.put(name, rdm.nextString());
-            for (String s : m._("wrong_captcha")) {
+            for (String s : m.send("wrong_captcha")) {
                 player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)));
             }
             return true;
@@ -70,8 +70,8 @@ public class CaptchaCommand implements CommandExecutor {
             plugin.cap.remove(name);
         } catch (NullPointerException npe) {
         }
-        m._(player, "valid_captcha");
-        m._(player, "login_msg");
+        m.send(player, "valid_captcha");
+        m.send(player, "login_msg");
         return true;
     }
 

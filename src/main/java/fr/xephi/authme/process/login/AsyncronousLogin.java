@@ -60,7 +60,7 @@ public class AsyncronousLogin {
             }
             if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
                 plugin.cap.put(name, rdm.nextString());
-                for (String s : m._("usage_captcha")) {
+                for (String s : m.send("usage_captcha")) {
                     player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
                 }
                 return true;
@@ -81,18 +81,18 @@ public class AsyncronousLogin {
      */
     protected PlayerAuth preAuth() {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
-            m._(player, "logged_in");
+            m.send(player, "logged_in");
             return null;
         }
         if (!database.isAuthAvailable(name)) {
-            m._(player, "user_unknown");
+            m.send(player, "user_unknown");
             if (LimboCache.getInstance().hasLimboPlayer(name)) {
             	LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
                 String[] msg;
                 if (Settings.emailRegistration) {
-                    msg = m._("reg_email_msg");
+                    msg = m.send("reg_email_msg");
                 } else {
-                    msg = m._("reg_msg");
+                    msg = m.send("reg_msg");
                 }
                 BukkitTask msgT = Bukkit.getScheduler().runTask(plugin, new MessageTask(plugin, name, msg, Settings.getWarnMessageInterval));
                 LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
@@ -101,17 +101,17 @@ public class AsyncronousLogin {
         }
         if (Settings.getMaxLoginPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
             if (plugin.isLoggedIp(name, getIP())) {
-                m._(player, "logged_in");
+                m.send(player, "logged_in");
                 return null;
             }
         }
         PlayerAuth pAuth = database.getAuth(name);
         if (pAuth == null) {
-            m._(player, "user_unknown");
+            m.send(player, "user_unknown");
             return null;
         }
         if (!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
-            m._(player, "vb_nonActiv");
+            m.send(player, "vb_nonActiv");
             return null;
         }
         return pAuth;
@@ -130,7 +130,7 @@ public class AsyncronousLogin {
                 passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, realName);
             } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                m._(player, "error");
+                m.send(player, "error");
                 return;
             }
         if (passwordVerified && player.isOnline()) {
@@ -147,7 +147,7 @@ public class AsyncronousLogin {
             }
 
             player.setNoDamageTicks(0);
-            m._(player, "login");
+            m.send(player, "login");
 
             displayOtherAccounts(auth, player);
 
@@ -184,11 +184,11 @@ public class AsyncronousLogin {
                         if (AuthMePlayerListener.gameMode != null && AuthMePlayerListener.gameMode.containsKey(name)) {
                             player.setGameMode(AuthMePlayerListener.gameMode.get(name));
                         }
-                        player.kickPlayer(m._("wrong_pwd")[0]);
+                        player.kickPlayer(m.send("wrong_pwd")[0]);
                     }
                 });
             } else {
-                m._(player, "wrong_pwd");
+                m.send(player, "wrong_pwd");
                 return;
             }
         } else {

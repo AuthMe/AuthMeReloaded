@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Random;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
@@ -122,8 +121,7 @@ public class AuthMe extends JavaPlugin {
         try {
             settings = new Settings(this);
             settings.loadConfigOptions();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             ConsoleLogger.showError("Can't load config file... Something goes wrong, for prevent security issues, server will shutdown");
             this.getServer().shutdown();
             return;
@@ -236,7 +234,7 @@ public class AuthMe extends JavaPlugin {
         if (Settings.isCachingEnabled) {
             database = new CacheDataSource(this, database);
             if (database instanceof CacheDataSource)
-            	((CacheDataSource)database).start();
+                ((CacheDataSource) database).start();
         }
 
         dataManager = new DataManager(this, database);
@@ -729,7 +727,7 @@ public class AuthMe extends JavaPlugin {
                             if (PlayerCache.getInstance().isAuthenticated(name)) {
                                 String email = database.getAuth(name).getEmail();
                                 if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
-                                    m._(player, "add_email");
+                                    m.send(player, "add_email");
                             }
                     }
                 }

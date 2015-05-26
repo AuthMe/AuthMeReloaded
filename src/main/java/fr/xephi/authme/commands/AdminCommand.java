@@ -77,7 +77,7 @@ public class AdminCommand implements CommandExecutor {
         }
 
         if (!plugin.authmePermissible(sender, "authme.admin." + args[0].toLowerCase())) {
-            m._(sender, "no_perm");
+            m.send(sender, "no_perm");
             return true;
         }
 
@@ -155,7 +155,7 @@ public class AdminCommand implements CommandExecutor {
             Settings.reloadConfigOptions(newConfig);
             m.reLoad();
             s.reLoad();
-            m._(sender, "reload");
+            m.send(sender, "reload");
         } else if (args[0].equalsIgnoreCase("lastlogin")) {
             if (args.length != 2) {
                 sender.sendMessage("Usage: /authme lastlogin <playername>");
@@ -173,11 +173,11 @@ public class AdminCommand implements CommandExecutor {
                     sender.sendMessage("[AuthMe] The player : " + player.getNickname() + " is unlogged since " + msg);
                     sender.sendMessage("[AuthMe] LastPlayer IP : " + lastIP);
                 } else {
-                    m._(sender, "unknown_user");
+                    m.send(sender, "unknown_user");
                     return true;
                 }
             } catch (NullPointerException e) {
-                m._(sender, "unknown_user");
+                m.send(sender, "unknown_user");
                 return true;
             }
         } else if (args[0].equalsIgnoreCase("accounts")) {
@@ -276,7 +276,7 @@ public class AdminCommand implements CommandExecutor {
             try {
                 String name = args[1].toLowerCase();
                 if (database.isAuthAvailable(name)) {
-                    m._(sender, "user_regged");
+                    m.send(sender, "user_regged");
                     return true;
                 }
                 String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
@@ -285,14 +285,14 @@ public class AdminCommand implements CommandExecutor {
                     auth.setSalt(PasswordSecurity.userSalt.get(name));
                 else auth.setSalt("");
                 if (!database.saveAuth(auth)) {
-                    m._(sender, "error");
+                    m.send(sender, "error");
                     return true;
                 }
-                m._(sender, "registered");
+                m.send(sender, "registered");
                 ConsoleLogger.info(args[1] + " registered");
             } catch (NoSuchAlgorithmException ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                m._(sender, "error");
+                m.send(sender, "error");
             }
             return true;
         } else if (args[0].equalsIgnoreCase("getemail")) {
@@ -303,7 +303,7 @@ public class AdminCommand implements CommandExecutor {
             String playername = args[1].toLowerCase();
             PlayerAuth getAuth = database.getAuth(playername);
             if (getAuth == null) {
-                m._(sender, "unknown_user");
+                m.send(sender, "unknown_user");
                 return true;
             }
             sender.sendMessage("[AuthMe] " + args[1] + " email : " + getAuth.getEmail());
@@ -316,12 +316,12 @@ public class AdminCommand implements CommandExecutor {
             String playername = args[1].toLowerCase();
             PlayerAuth getAuth = database.getAuth(playername);
             if (getAuth == null) {
-                m._(sender, "unknown_user");
+                m.send(sender, "unknown_user");
                 return true;
             }
             getAuth.setEmail(args[2]);
             if (!database.updateEmail(getAuth)) {
-                m._(sender, "error");
+                m.send(sender, "error");
                 return true;
             }
             if (PlayerCache.getInstance().getAuth(playername) != null)
@@ -409,7 +409,7 @@ public class AdminCommand implements CommandExecutor {
                     auth = database.getAuth(name);
                 }
                 if (auth == null) {
-                    m._(sender, "unknown_user");
+                    m.send(sender, "unknown_user");
                     return true;
                 }
                 auth.setHash(hash);
@@ -418,14 +418,14 @@ public class AdminCommand implements CommandExecutor {
                     database.updateSalt(auth);
                 }
                 if (!database.updatePassword(auth)) {
-                    m._(sender, "error");
+                    m.send(sender, "error");
                     return true;
                 }
                 sender.sendMessage("pwd_changed");
                 ConsoleLogger.info(args[1] + "'s password changed");
             } catch (NoSuchAlgorithmException ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                m._(sender, "error");
+                m.send(sender, "error");
             }
             return true;
         } else if (args[0].equalsIgnoreCase("unregister") || args[0].equalsIgnoreCase("unreg") || args[0].equalsIgnoreCase("del")) {
@@ -435,11 +435,11 @@ public class AdminCommand implements CommandExecutor {
             }
             String name = args[1].toLowerCase();
             if (!database.isAuthAvailable(name)) {
-                m._(sender, "user_unknown");
+                m.send(sender, "user_unknown");
                 return true;
             }
             if (!database.removeAuth(name)) {
-                m._(sender, "error");
+                m.send(sender, "error");
                 return true;
             }
             Player target = Bukkit.getPlayer(name);
@@ -463,17 +463,17 @@ public class AdminCommand implements CommandExecutor {
                         BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
                         LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTask(plugin, new MessageTask(plugin, name, m._("reg_msg"), interval)));
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTask(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
                     if (Settings.applyBlindEffect)
                         target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
-                    m._(target, "unregistered");
+                    m.send(target, "unregistered");
                 } else {
                     // Player isn't online, do nothing else
                 }
             } else {
                 // Player does not exist, do nothing else
             }
-            m._(sender, "unregistered");
+            m.send(sender, "unregistered");
             ConsoleLogger.info(args[1] + " unregistered");
             return true;
         } else if (args[0].equalsIgnoreCase("purgelastpos")) {
@@ -540,7 +540,7 @@ public class AdminCommand implements CommandExecutor {
             }
             PlayerAuth auth = database.getAuth(args[1]);
             if (auth == null) {
-                m._(sender, "unknown_user");
+                m.send(sender, "unknown_user");
                 return true;
             }
             auth.setQuitLocX(0D);

@@ -70,7 +70,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
             BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, m._("login_msg"), interval));
+        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         try {
             plugin.pllog.removePlayer(name);
@@ -104,9 +104,9 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         if (!Settings.getRegisteredGroup.isEmpty()) {
             Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
         }
-        m._(player, "registered");
+        m.send(player, "registered");
         if (!Settings.getmailAccount.isEmpty())
-            m._(player, "add_email");
+            m.send(player, "add_email");
         if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
             player.setAllowFlight(false);
             player.setFlying(false);
@@ -125,7 +125,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 
         // Kick Player after Registration is enabled, kick the player
         if (Settings.forceRegKick) {
-            player.kickPlayer(m._("registered")[0]);
+            player.kickPlayer(m.send("registered")[0]);
             return;
         }
 

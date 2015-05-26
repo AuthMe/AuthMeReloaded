@@ -41,7 +41,7 @@ public class EmailCommand implements CommandExecutor {
         }
 
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            m._(sender, "no_perm");
+            m.send(sender, "no_perm");
             return true;
         }
 
@@ -49,105 +49,105 @@ public class EmailCommand implements CommandExecutor {
         String name = player.getName();
 
         if (args.length == 0) {
-            m._(player, "usage_email_add");
-            m._(player, "usage_email_change");
-            m._(player, "usage_email_recovery");
+            m.send(player, "usage_email_add");
+            m.send(player, "usage_email_change");
+            m.send(player, "usage_email_recovery");
             return true;
         }
 
         if (args[0].equalsIgnoreCase("add")) {
             if (args.length != 3) {
-                m._(player, "usage_email_add");
+                m.send(player, "usage_email_add");
                 return true;
             }
             if (Settings.getmaxRegPerEmail > 0) {
                 if (!plugin.authmePermissible(sender, "authme.allow2accounts") && data.getAllAuthsByEmail(args[1]).size() >= Settings.getmaxRegPerEmail) {
-                    m._(player, "max_reg");
+                    m.send(player, "max_reg");
                     return true;
                 }
             }
             if (args[1].equals(args[2]) && PlayerCache.getInstance().isAuthenticated(name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
                 if (auth.getEmail() == null || (!auth.getEmail().equals("your@email.com") && !auth.getEmail().isEmpty())) {
-                    m._(player, "usage_email_change");
+                    m.send(player, "usage_email_change");
                     return true;
                 }
                 if (!Settings.isEmailCorrect(args[1])) {
-                    m._(player, "email_invalid");
+                    m.send(player, "email_invalid");
                     return true;
                 }
                 auth.setEmail(args[1]);
                 if (!data.updateEmail(auth)) {
-                    m._(player, "error");
+                    m.send(player, "error");
                     return true;
                 }
                 PlayerCache.getInstance().updatePlayer(auth);
-                m._(player, "email_added");
+                m.send(player, "email_added");
                 player.sendMessage(auth.getEmail());
             } else if (PlayerCache.getInstance().isAuthenticated(name)) {
-                m._(player, "email_confirm");
+                m.send(player, "email_confirm");
             } else {
                 if (!data.isAuthAvailable(name)) {
-                    m._(player, "login_msg");
+                    m.send(player, "login_msg");
                 } else {
-                    m._(player, "reg_email_msg");
+                    m.send(player, "reg_email_msg");
                 }
             }
         } else if (args[0].equalsIgnoreCase("change")) {
             if (args.length != 3) {
-                m._(player, "usage_email_change");
+                m.send(player, "usage_email_change");
                 return true;
             }
             if (Settings.getmaxRegPerEmail > 0) {
                 if (!plugin.authmePermissible(sender, "authme.allow2accounts") && data.getAllAuthsByEmail(args[2]).size() >= Settings.getmaxRegPerEmail) {
-                    m._(player, "max_reg");
+                    m.send(player, "max_reg");
                     return true;
                 }
             }
             if (PlayerCache.getInstance().isAuthenticated(name)) {
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
                 if (auth.getEmail() == null || auth.getEmail().equals("your@email.com") || auth.getEmail().isEmpty()) {
-                    m._(player, "usage_email_add");
+                    m.send(player, "usage_email_add");
                     return true;
                 }
                 if (!args[1].equals(auth.getEmail())) {
-                    m._(player, "old_email_invalid");
+                    m.send(player, "old_email_invalid");
                     return true;
                 }
                 if (!Settings.isEmailCorrect(args[2])) {
-                    m._(player, "new_email_invalid");
+                    m.send(player, "new_email_invalid");
                     return true;
                 }
                 auth.setEmail(args[2]);
                 if (!data.updateEmail(auth)) {
-                    m._(player, "error");
+                    m.send(player, "error");
                     return true;
                 }
                 PlayerCache.getInstance().updatePlayer(auth);
-                m._(player, "email_changed");
-                player.sendMessage(m._("email_defined") + auth.getEmail());
+                m.send(player, "email_changed");
+                player.sendMessage(m.send("email_defined") + auth.getEmail());
             } else if (PlayerCache.getInstance().isAuthenticated(name)) {
-                m._(player, "email_confirm");
+                m.send(player, "email_confirm");
             } else {
                 if (!data.isAuthAvailable(name)) {
-                    m._(player, "login_msg");
+                    m.send(player, "login_msg");
                 } else {
-                    m._(player, "reg_email_msg");
+                    m.send(player, "reg_email_msg");
                 }
             }
         }
         if (args[0].equalsIgnoreCase("recovery")) {
             if (args.length != 2) {
-                m._(player, "usage_email_recovery");
+                m.send(player, "usage_email_recovery");
                 return true;
             }
             if (plugin.mail == null) {
-                m._(player, "error");
+                m.send(player, "error");
                 return true;
             }
             if (data.isAuthAvailable(name)) {
                 if (PlayerCache.getInstance().isAuthenticated(name)) {
-                    m._(player, "logged_in");
+                    m.send(player, "logged_in");
                     return true;
                 }
                 try {
@@ -160,16 +160,16 @@ public class EmailCommand implements CommandExecutor {
                     } else if (data.isAuthAvailable(name)) {
                         auth = data.getAuth(name);
                     } else {
-                        m._(player, "unknown_user");
+                        m.send(player, "unknown_user");
                         return true;
                     }
                     if (Settings.getmailAccount.equals("") || Settings.getmailAccount.isEmpty()) {
-                        m._(player, "error");
+                        m.send(player, "error");
                         return true;
                     }
 
                     if (!args[1].equalsIgnoreCase(auth.getEmail()) || args[1].equalsIgnoreCase("your@email.com") || auth.getEmail().equalsIgnoreCase("your@email.com")) {
-                        m._(player, "email_invalid");
+                        m.send(player, "email_invalid");
                         return true;
                     }
                     final String finalhashnew = hashnew;
@@ -188,16 +188,16 @@ public class EmailCommand implements CommandExecutor {
                         });
                     }
                     plugin.mail.main(auth, thePass);
-                    m._(player, "email_send");
+                    m.send(player, "email_send");
                 } catch (NoSuchAlgorithmException ex) {
                     ConsoleLogger.showError(ex.getMessage());
-                    m._(sender, "error");
+                    m.send(sender, "error");
                 } catch (NoClassDefFoundError ncdfe) {
                     ConsoleLogger.showError(ncdfe.getMessage());
-                    m._(sender, "error");
+                    m.send(sender, "error");
                 }
             } else {
-                m._(player, "reg_email_msg");
+                m.send(player, "reg_email_msg");
             }
         }
         return true;

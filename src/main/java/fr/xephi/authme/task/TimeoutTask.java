@@ -50,7 +50,7 @@ public class TimeoutTask implements Runnable {
                 	player.setGameMode(gm);
                 	ConsoleLogger.info("Set " + player.getName() + " to gamemode: " + gm.name());
                 }
-                player.kickPlayer(m._("timeout")[0]);
+                player.kickPlayer(m.send("timeout")[0]);
                 break;
             }
         }

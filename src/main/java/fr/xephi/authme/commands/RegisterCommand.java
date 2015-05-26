@@ -29,27 +29,27 @@ public class RegisterCommand implements CommandExecutor {
             return true;
         }
         if (args.length == 0) {
-            m._(sender, "usage_reg");
+            m.send(sender, "usage_reg");
         }
         if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            m._(sender, "no_perm");
+            m.send(sender, "no_perm");
             return true;
         }
         final Player player = (Player) sender;
         if (Settings.emailRegistration && !Settings.getmailAccount.isEmpty()) {
             if (Settings.doubleEmailCheck) {
                 if (args.length < 2) {
-                    m._(player, "usage_reg");
+                    m.send(player, "usage_reg");
                     return true;
                 }
                 if (!args[0].equals(args[1])) {
-                    m._(player, "usage_reg");
+                    m.send(player, "usage_reg");
                     return true;
                 }
             }
             final String email = args[0];
             if (!Settings.isEmailCorrect(email)) {
-                m._(player, "email_invalid");
+                m.send(player, "email_invalid");
                 return true;
             }
             RandomString rand = new RandomString(Settings.getRecoveryPassLength);
@@ -58,12 +58,12 @@ public class RegisterCommand implements CommandExecutor {
             return true;
         }
         if (args.length == 0 || (Settings.getEnablePasswordVerifier && args.length < 2)) {
-            m._(player, "usage_reg");
+            m.send(player, "usage_reg");
             return true;
         }
         if (args.length > 1 && Settings.getEnablePasswordVerifier)
             if (!args[0].equals(args[1])) {
-                m._(player, "password_error");
+                m.send(player, "password_error");
                 return true;
             }
         plugin.management.performRegister(player, args[0], "");

@@ -33,7 +33,7 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         if (!Settings.getRegisteredGroup.isEmpty()) {
             Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
         }
-        m._(player, "vb_nonActiv");
+        m.send(player, "vb_nonActiv");
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
         if (time != 0) {
@@ -43,7 +43,7 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         }
 
         LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
-        BukkitTask nwMsg = Bukkit.getScheduler().runTask(plugin, new MessageTask(plugin, name, m._("login_msg"), msgInterval));
+        BukkitTask nwMsg = Bukkit.getScheduler().runTask(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg);
         player.saveData();
         if (!Settings.noConsoleSpam)

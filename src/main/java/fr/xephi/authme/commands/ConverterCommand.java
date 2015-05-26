@@ -38,7 +38,7 @@ public class ConverterCommand implements CommandExecutor {
         }
 
         if (!plugin.authmePermissible(sender, "authme.admin.converter")) {
-            m._(sender, "no_perm");
+            m.send(sender, "no_perm");
             return true;
         }
 
@@ -49,7 +49,7 @@ public class ConverterCommand implements CommandExecutor {
 
         ConvertType type = ConvertType.fromName(args[0]);
         if (type == null) {
-            m._(sender, "error");
+            m.send(sender, "error");
             return true;
         }
         Converter converter = null;
@@ -82,7 +82,7 @@ public class ConverterCommand implements CommandExecutor {
                 break;
         }
         if (converter == null) {
-            m._(sender, "error");
+            m.send(sender, "error");
             return true;
         }
         Bukkit.getScheduler().runTaskAsynchronously(plugin, converter);

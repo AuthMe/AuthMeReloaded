@@ -44,7 +44,7 @@ public class SqlToFlat implements Converter {
             return;
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            Messages.getInstance()._(sender, "error");
+            Messages.getInstance().send(sender, "error");
             return;
         }
     }
