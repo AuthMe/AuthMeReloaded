@@ -31,6 +31,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+
 import com.earth2me.essentials.Essentials;
 import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
@@ -118,8 +119,15 @@ public class AuthMe extends JavaPlugin {
 
         authmeLogger.setParent(this.getLogger());
 
-        settings = new Settings(this);
-        settings.loadConfigOptions();
+        try {
+            settings = new Settings(this);
+            settings.loadConfigOptions();
+        } catch (Exception e)
+        {
+            ConsoleLogger.showError("Can't load config file... Something goes wrong, for prevent security issues, server will shutdown");
+            this.getServer().shutdown();
+            return;
+        }
 
         citizens = new CitizensCommunicator(this);
 
