@@ -381,6 +381,8 @@ Hooks:
     disableSocialSpy: true
     # Do we need to force /motd Essentials command on join ?
     useEssentialsMotd: false
+    # Do we need to cache custom Attributes ?
+    customAttributes: false
 Performances:
     # HIGHLY recommended to use this! This will increase database performance
     # Default is true, change it to false if you experience issues

@@ -70,7 +70,7 @@ public final class Settings extends YamlConfiguration {
             purgePermissions, enableProtection, enableAntiBot, recallEmail,
             useWelcomeMessage, broadcastWelcomeMessage, forceRegKick,
             forceRegLogin, checkVeryGames, delayJoinMessage, noTeleport,
-            applyBlindEffect;
+            applyBlindEffect, customAttributes;
 
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
             getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
@@ -270,6 +270,7 @@ public final class Settings extends YamlConfiguration {
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
         forceRegisterCommands = (List<String>) configFile.getList("settings.forceRegisterCommands", new ArrayList<String>());
         forceRegisterCommandsAsConsole = (List<String>) configFile.getList("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
+        customAttributes = configFile.getBoolean("Hooks.customAttributes");
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -437,6 +438,7 @@ public final class Settings extends YamlConfiguration {
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
         forceRegisterCommands = (List<String>) configFile.getList("settings.forceRegisterCommands", new ArrayList<String>());
         forceRegisterCommandsAsConsole = (List<String>) configFile.getList("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
+        customAttributes = configFile.getBoolean("Hooks.customAttributes");
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -577,6 +579,11 @@ public final class Settings extends YamlConfiguration {
         }
         if (!contains("settings.forceRegisterCommandsAsConsole")) {
             set("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
+            changes = true;
+        }
+        if (!contains("Hooks.customAttributes"))
+        {
+            set("Hooks.customAttributes", false);
             changes = true;
         }
 
