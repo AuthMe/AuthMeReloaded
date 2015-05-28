@@ -1,5 +1,6 @@
 package fr.xephi.authme.security;
 
+import java.util.Calendar;
 import java.util.Random;
 
 /**
@@ -25,6 +26,7 @@ public class RandomString {
         if (length < 1)
             throw new IllegalArgumentException("length < 1: " + length);
         buf = new char[length];
+        random.setSeed(Calendar.getInstance().getTimeInMillis());
     }
 
     public String nextString() {
