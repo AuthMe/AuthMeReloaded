@@ -1,8 +1,7 @@
 package fr.xephi.authme.datasource;
 
-import java.util.HashMap;
 import java.util.List;
-
+import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
@@ -13,7 +12,7 @@ public class CacheDataSource extends Thread implements DataSource {
 
     private DataSource source;
     public AuthMe plugin;
-    private HashMap<String, PlayerAuth> cache = new HashMap<String, PlayerAuth>();
+    private ConcurrentHashMap<String, PlayerAuth> cache = new ConcurrentHashMap<String, PlayerAuth>();
 
     public CacheDataSource(AuthMe plugin, DataSource source) {
         this.plugin = plugin;

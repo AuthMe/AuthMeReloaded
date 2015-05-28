@@ -370,10 +370,10 @@ public class AuthMePlayerListener implements Listener {
         Location spawn = plugin.getSpawnLocation(player);
 
         if (spawn != null && spawn.getWorld() != null)
-        	if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
-        		event.getPlayer().teleport(spawn);
-        		return;
-        	}
+            if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
+                event.getPlayer().teleport(spawn);
+                return;
+            }
         if ((spawn.distance(player.getLocation()) > radius) && spawn.getWorld() != null) {
             event.getPlayer().teleport(spawn);
             return;
@@ -381,21 +381,19 @@ public class AuthMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onAsyncLogin(AsyncPlayerPreLoginEvent event)
-    {
-    	Player player = null;
-    	try {
-    		player = Bukkit.getPlayer(event.getUniqueId());
-    	} catch (Exception e) {
-    		try {
-    			player = Bukkit.getOfflinePlayer(event.getUniqueId()).getPlayer();
-    		} catch (Exception ex)
-    		{
-    			return;
-    		}
-    	}
-    	if (player == null)
-    		return;
+    public void onAsyncLogin(AsyncPlayerPreLoginEvent event) {
+        Player player = null;
+        try {
+            player = Bukkit.getPlayer(event.getUniqueId());
+        } catch (Exception e) {
+            try {
+                player = Bukkit.getOfflinePlayer(event.getUniqueId()).getPlayer();
+            } catch (Exception ex) {
+                return;
+            }
+        }
+        if (player == null)
+            return;
         final String name = player.getName().toLowerCase();
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
@@ -534,7 +532,8 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    private void checkAntiBotMod(final AsyncPlayerPreLoginEvent event, final Player player) {
+    private void checkAntiBotMod(final AsyncPlayerPreLoginEvent event,
+            final Player player) {
         if (plugin.delayedAntiBot || plugin.antibotMod)
             return;
         if (plugin.authmePermissible(player, "authme.bypassantibot"))
@@ -669,8 +668,8 @@ public class AuthMePlayerListener implements Listener {
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if (!tpEvent.isCancelled()) {
                         if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                        	if (tpEvent.getTo().getWorld() != null)
-                        		player.teleport(tpEvent.getTo());
+                            if (tpEvent.getTo().getWorld() != null)
+                                player.teleport(tpEvent.getTo());
                         }
                     }
                 }
@@ -679,9 +678,8 @@ public class AuthMePlayerListener implements Listener {
             try {
                 DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
                 playerBackup.createCache(player, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(), LimboCache.getInstance().getLimboPlayer(name).getOperator(), LimboCache.getInstance().getLimboPlayer(name).isFlying());
-            } catch (Exception e)
-            {
-            	ConsoleLogger.showError("Error on creating an inventory cache for " + name + ", maybe inventory wipe in preparation...");
+            } catch (Exception e) {
+                ConsoleLogger.showError("Error on creating an inventory cache for " + name + ", maybe inventory wipe in preparation...");
             }
         } else {
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
@@ -701,8 +699,8 @@ public class AuthMePlayerListener implements Listener {
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if (!tpEvent.isCancelled()) {
                         if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                        	if (tpEvent.getTo().getWorld() != null)
-                        		player.teleport(tpEvent.getTo());
+                            if (tpEvent.getTo().getWorld() != null)
+                                player.teleport(tpEvent.getTo());
                         }
                     }
                 }
@@ -773,14 +771,14 @@ public class AuthMePlayerListener implements Listener {
         if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL || b.getType() == Material.LAVA || b.getType() == Material.STATIONARY_LAVA) {
             m.send(player, "unsafe_spawn");
             if (spawnLoc.getWorld() != null)
-            	player.teleport(spawnLoc);
+                player.teleport(spawnLoc);
             return;
         }
         Block c = player.getLocation().add(0D, 1D, 0D).getBlock();
         if (c.getType() == Material.PORTAL || c.getType() == Material.ENDER_PORTAL || c.getType() == Material.LAVA || c.getType() == Material.STATIONARY_LAVA) {
             m.send(player, "unsafe_spawn");
             if (spawnLoc.getWorld() != null)
-            	player.teleport(spawnLoc);
+                player.teleport(spawnLoc);
             return;
         }
     }
@@ -906,8 +904,8 @@ public class AuthMePlayerListener implements Listener {
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if (!tpEvent.isCancelled()) {
                         if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                        	if (tpEvent.getTo().getWorld() != null)
-                            	player.teleport(tpEvent.getTo());
+                            if (tpEvent.getTo().getWorld() != null)
+                                player.teleport(tpEvent.getTo());
                         }
                     }
                 } catch (NullPointerException npe) {
@@ -1178,7 +1176,7 @@ public class AuthMePlayerListener implements Listener {
             }
         }
         if (spawn != null && spawn.getWorld() != null)
-        	event.setRespawnLocation(spawn);
+            event.setRespawnLocation(spawn);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
