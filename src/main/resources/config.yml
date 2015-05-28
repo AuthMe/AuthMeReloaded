@@ -402,6 +402,8 @@ Purge:
     removeLimitedCreativesInventories: false
     # Do we need to remove the AntiXRayData/PlayerData/player file during purge process ?
     removeAntiXRayFile: false
+    # Do we need to remove permissions ?
+    removePermissions: false
 Protection:
     # Enable some servers protection ( country based login, antibot )
     enableProtection: false

@@ -605,6 +605,8 @@ public class AuthMe extends JavaPlugin {
             dataManager.purgeLimitedCreative(cleared);
         if (Settings.purgeAntiXray)
             dataManager.purgeAntiXray(cleared);
+        if (Settings.purgePermissions)
+            dataManager.purgePermissions(cleared, permission);
     }
 
     public Location getSpawnLocation(Player player) {

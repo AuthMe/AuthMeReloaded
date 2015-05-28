@@ -3,8 +3,12 @@ package fr.xephi.authme;
 import java.io.File;
 import java.util.List;
 
+import net.milkbowl.vault.Vault;
+import net.milkbowl.vault.permission.Permission;
+
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Settings;
@@ -48,7 +52,8 @@ public class DataManager extends Thread {
                     playerFile.delete();
                     i++;
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " AntiXRayData Files");
     }
@@ -76,7 +81,8 @@ public class DataManager extends Thread {
                     playerFile.delete();
                     i++;
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " LimitedCreative Survival, Creative and Adventure files");
     }
@@ -94,7 +100,8 @@ public class DataManager extends Thread {
                     playerFile.delete();
                     i++;
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " .dat Files");
     }
@@ -108,8 +115,24 @@ public class DataManager extends Thread {
                     playerFile.delete();
                     i++;
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
+    }
+
+    public void purgePermissions(List<String> cleared, Permission permission) {
+        int i = 0;
+        for (String name : cleared) {
+            try {
+                OfflinePlayer p = Bukkit.getOfflinePlayer(name);
+                for (String group : permission.getPlayerGroups((Player) p)) {
+                    permission.playerRemoveGroup(null, p, group);
+                }
+                i++;
+            } catch (Exception e) {
+            }
+        }
+        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " Permissions");
     }
 }

@@ -239,8 +239,7 @@ public final class Settings extends YamlConfiguration {
         getWordPressPrefix = configFile.getString("ExternalBoardOptions.wordpressTablePrefix", "wp_");
         purgeLimitedCreative = configFile.getBoolean("Purge.removeLimitedCreativesInventories", false);
         purgeAntiXray = configFile.getBoolean("Purge.removeAntiXRayFile", false);
-        // purgePermissions = configFile.getBoolean("Purge.removePermissions",
-        // false);
+        purgePermissions = configFile.getBoolean("Purge.removePermissions", false);
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = (List<String>) configFile.getList("Protection.countries", new ArrayList<String>());
         enableAntiBot = configFile.getBoolean("Protection.enableAntiBot", false);
@@ -407,8 +406,7 @@ public final class Settings extends YamlConfiguration {
         getWordPressPrefix = configFile.getString("ExternalBoardOptions.wordpressTablePrefix", "wp_");
         purgeLimitedCreative = configFile.getBoolean("Purge.removeLimitedCreativesInventories", false);
         purgeAntiXray = configFile.getBoolean("Purge.removeAntiXRayFile", false);
-        // purgePermissions = configFile.getBoolean("Purge.removePermissions",
-        // false);
+        purgePermissions = configFile.getBoolean("Purge.removePermissions", false);
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = (List<String>) configFile.getList("Protection.countries");
         enableAntiBot = configFile.getBoolean("Protection.enableAntiBot", false);
@@ -584,6 +582,11 @@ public final class Settings extends YamlConfiguration {
         if (!contains("Hooks.customAttributes"))
         {
             set("Hooks.customAttributes", false);
+            changes = true;
+        }
+        if (!contains("Purge.removePermissions"))
+        {
+            set("Purge.removePermissions", false);
             changes = true;
         }
 

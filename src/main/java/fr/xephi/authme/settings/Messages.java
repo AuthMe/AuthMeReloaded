@@ -92,7 +92,7 @@ public class Messages extends CustomConfiguration {
             loc[0] = "Error with " + msg + " translation; Please contact the admin for verify or update translation files";
             return (loc);
         }
-        int i = ((s.split("&n").length;
+        int i = s.split("&n").length;
         String[] loc = new String[i];
         int a;
         for (a = 0; a < i; a++) {
