@@ -23,7 +23,7 @@ public class CacheDataSource extends Thread implements DataSource {
          * but it will be much easier to check for an isAuthAvailable !
          */
         for(PlayerAuth auth : source.getAllAuths())
-        	cache.put(auth.getNickname(), auth);
+        	cache.put(auth.getNickname().toLowerCase(), auth);
     }
 
     public void run()
