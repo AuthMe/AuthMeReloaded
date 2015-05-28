@@ -71,7 +71,7 @@ public class Messages extends CustomConfiguration {
     public void send(CommandSender sender, String msg) {
         String loc = (String) this.get(msg);
         if (loc == null) {
-            loc = "Error with Translation files; Please contact the admin for verify or update translation";
+            loc = "Error with Translation files, please contact the admin for verify or update translation";
             ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml !");
         }
         for (String l : loc.split("&n")) {
@@ -80,7 +80,19 @@ public class Messages extends CustomConfiguration {
     }
 
     public String[] send(String msg) {
-        int i = ((String) this.get(msg)).split("&n").length;
+        String s = null;
+        try {
+            s = (String) this.get(msg);
+        } catch (Exception e) {
+        }
+        if (s == null)
+        {
+            ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml !");
+            String[] loc = new String[1];
+            loc[0] = "Error with " + msg + " translation; Please contact the admin for verify or update translation files";
+            return (loc);
+        }
+        int i = ((s.split("&n").length;
         String[] loc = new String[i];
         int a;
         for (a = 0; a < i; a++) {
@@ -88,7 +100,6 @@ public class Messages extends CustomConfiguration {
         }
         if (loc == null || loc.length == 0) {
             loc[0] = "Error with " + msg + " translation; Please contact the admin for verify or update translation files";
-            ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml !");
         }
         return loc;
     }
