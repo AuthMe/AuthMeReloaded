@@ -256,6 +256,7 @@ public class MySQLThread extends Thread implements DataSource {
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
                 pst.executeUpdate();
+                pst.close();
             } else {
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnSalt + ") VALUES (?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
@@ -264,6 +265,7 @@ public class MySQLThread extends Thread implements DataSource {
                 pst.setLong(4, auth.getLastLogin());
                 pst.setString(5, auth.getSalt());
                 pst.executeUpdate();
+                pst.close();
             }
             if (!columnOthers.isEmpty()) {
                 for (String column : columnOthers) {
@@ -271,14 +273,15 @@ public class MySQLThread extends Thread implements DataSource {
                     pst.setString(1, auth.getNickname());
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
+                    pst.close();
                 }
             }
             if (Settings.getPasswordHash == HashAlgorithm.PHPBB) {
                 int id;
                 ResultSet rs = null;
-                pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
-                pst.setString(1, auth.getNickname());
-                rs = pst.executeQuery();
+                PreparedStatement pst2 = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
+                pst2.setString(1, auth.getNickname());
+                rs = pst2.executeQuery();
                 if (rs.next()) {
                     id = rs.getInt(columnID);
                     // Insert player in phpbb_user_group
@@ -288,16 +291,19 @@ public class MySQLThread extends Thread implements DataSource {
                     pst.setInt(3, 0);
                     pst.setInt(4, 0);
                     pst.executeUpdate();
+                    pst.close();
                     // Update username_clean in phpbb_users
                     pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".username_clean=? WHERE " + columnName + "=?;");
                     pst.setString(1, auth.getNickname().toLowerCase());
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
+                    pst.close();
                     // Update player group in phpbb_users
                     pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".group_id=? WHERE " + columnName + "=?;");
                     pst.setInt(1, Settings.getPhpbbGroup);
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
+                    pst.close();
                     // Get current time without ms
                     long time = System.currentTimeMillis() / 1000;
                     // Update user_regdate
@@ -305,15 +311,19 @@ public class MySQLThread extends Thread implements DataSource {
                     pst.setLong(1, time);
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
+                    pst.close();
                     // Update user_lastvisit
                     pst = con.prepareStatement("UPDATE " + tableName + " SET " + tableName + ".user_lastvisit=? WHERE " + columnName + "=?;");
                     pst.setLong(1, time);
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
+                    pst.close();
                     // Increment num_users
                     pst = con.prepareStatement("UPDATE " + Settings.getPhpbbPrefix + "config SET config_value = config_value + 1 WHERE config_name = 'num_users';");
                     pst.executeUpdate();
+                    pst.close();
                 }
+                pst2.close();
             }
             if (Settings.getPasswordHash == HashAlgorithm.WORDPRESS) {
                 int id;
@@ -439,6 +449,7 @@ public class MySQLThread extends Thread implements DataSource {
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
+            pst.close();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
                 ResultSet rs = null;
@@ -533,6 +544,7 @@ public class MySQLThread extends Thread implements DataSource {
             while (rs.next()) {
                 list.add(rs.getString(columnName));
             }
+            pst.close();
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             pst.executeUpdate();
@@ -565,10 +577,14 @@ public class MySQLThread extends Thread implements DataSource {
                 if (rs.next()) {
                     id = rs.getInt(columnID);
                     // Remove data
-                    pst = con.prepareStatement("DELETE FROM xf_user_authenticate WHERE " + columnID + "=?;");
-                    pst.setInt(1, id);
+                    PreparedStatement pst2 = con.prepareStatement("DELETE FROM xf_user_authenticate WHERE " + columnID + "=?;");
+                    pst2.setInt(1, id);
+                    pst2.executeUpdate();
+                    pst2.close();
                 }
             }
+            if (pst != null && !pst.isClosed())
+                pst.close();
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, user);
             pst.executeUpdate();

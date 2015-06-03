@@ -700,6 +700,7 @@ public final class Settings extends YamlConfiguration {
      * @param filename
      *            The filename to open
      */
+    @SuppressWarnings("deprecation")
     public final void loadDefaults(String filename) {
         InputStream stream = plugin.getResource(filename);
         if (stream == null)

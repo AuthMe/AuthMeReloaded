@@ -33,6 +33,7 @@ public class Utils {
         setGroup(player.getName(), group);
     }
 
+    @SuppressWarnings("deprecation")
     public void setGroup(String player, groupType group) {
         if (!Settings.isPermissionCheckEnabled)
             return;
@@ -81,6 +82,7 @@ public class Utils {
         return;
     }
 
+    @SuppressWarnings("deprecation")
     public boolean addNormal(Player player, String group) {
         if (!useGroupSystem()) {
             return false;

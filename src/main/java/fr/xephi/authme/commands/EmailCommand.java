@@ -1,7 +1,6 @@
 package fr.xephi.authme.commands;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

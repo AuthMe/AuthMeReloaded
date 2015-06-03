@@ -120,10 +120,11 @@ public class LogoutCommand implements CommandExecutor {
         player.setAllowFlight(true);
         player.setFlying(true);
         // Player is now logout... Time to fire event !
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
-			@Override
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+            @Override
             public void run() {
-				Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
+                Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
             }
         });
         m.send(player, "logout");

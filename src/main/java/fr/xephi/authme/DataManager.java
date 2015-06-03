@@ -3,7 +3,6 @@ package fr.xephi.authme;
 import java.io.File;
 import java.util.List;
 
-import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
@@ -121,6 +120,7 @@ public class DataManager extends Thread {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
     }
 
+    @SuppressWarnings("deprecation")
     public void purgePermissions(List<String> cleared, Permission permission) {
         int i = 0;
         for (String name : cleared) {
