@@ -53,6 +53,11 @@ public class ChangePasswordCommand implements CommandExecutor {
             return true;
         }
 
+        String lowpass = args[1].toLowerCase();
+        if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
+            m.send(player, "password_error");
+            return true;
+        }
         try {
             String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, args[1], name);
 
