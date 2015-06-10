@@ -29,6 +29,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -564,6 +565,43 @@ public class AuthMePlayerListener implements Listener {
                 antibot.remove(player.getName().toLowerCase());
             }
         }, 300);
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerLogin(PlayerLoginEvent event)
+    {
+        if (event.getPlayer() == null)
+            return;
+        
+        Player player = event.getPlayer();
+        String name = player.getName();
+        String regex = Settings.getNickRegex;
+        try {
+            if (!player.getName().matches(regex) || name.equals("Player")) {
+                try {
+                    event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
+                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                } catch (Exception exc) {
+                    event.setKickMessage("allowed char : " + regex);
+                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                }
+                return;
+            }
+        } catch (PatternSyntaxException pse) {
+            if (regex == null || regex.isEmpty()) {
+                event.setKickMessage("Your nickname do not match");
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+            try {
+                event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            } catch (Exception exc) {
+                event.setKickMessage("allowed char : " + regex);
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            }
+            return;
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
