@@ -888,8 +888,10 @@ public class AuthMePlayerListener implements Listener {
                 player.setAllowFlight(limbo.isFlying());
                 player.setFlying(limbo.isFlying());
             }
-            limbo.getTimeoutTaskId().cancel();
-            limbo.getMessageTaskId().cancel();
+            if (limbo.getTimeoutTaskId() != null)
+                limbo.getTimeoutTaskId().cancel();
+            if (limbo.getMessageTaskId() != null)
+                limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (playerBackup.doesCacheExist(player)) {
                 playerBackup.removeCache(player);
@@ -975,8 +977,10 @@ public class AuthMePlayerListener implements Listener {
                 player.setAllowFlight(limbo.isFlying());
                 player.setFlying(limbo.isFlying());
             }
-            limbo.getTimeoutTaskId().cancel();
-            limbo.getMessageTaskId().cancel();
+            if (limbo.getTimeoutTaskId() != null)
+                limbo.getTimeoutTaskId().cancel();
+            if (limbo.getMessageTaskId() != null)
+                limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (this.playerBackup.doesCacheExist(player)) {
                 this.playerBackup.removeCache(player);
