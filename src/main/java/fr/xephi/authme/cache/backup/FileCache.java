@@ -3,6 +3,7 @@ package fr.xephi.authme.cache.backup;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
@@ -51,7 +52,7 @@ public class FileCache {
         File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "playerdatas.cache");
 
         if (!file.getParentFile().exists())
-            file.getParentFile().mkdir();
+            file.getParentFile().mkdirs();
         if (file.exists()) {
             return;
         }
@@ -68,7 +69,7 @@ public class FileCache {
 
             file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "inventory");
 
-            file.mkdir();
+            file.mkdirs();
             ItemStack[] inv = playerData.getInventory();
             for (int i = 0; i < inv.length; i++) {
                 ItemStack item = inv[i];
@@ -108,14 +109,20 @@ public class FileCache {
                     if (Settings.customAttributes) {
                         try {
                             Attributes attributes = new Attributes(item);
-                            if (attributes != null)
-                                while (attributes.values().iterator().hasNext()) {
-                                    Attribute a = attributes.values().iterator().next();
+                            if (attributes != null) {
+                                Iterator<Attribute> iter = attributes.values().iterator();
+                                Attribute a = null;
+                                while (iter.hasNext()) {
+                                    Attribute b = iter.next();
+                                    if (a != null && a == b)
+                                        break;
+                                    a = b;
                                     if (a != null) {
                                         if (a.getName() != null && a.getAttributeType() != null && a.getOperation() != null && a.getUUID() != null)
                                             writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
                                     }
                                 }
+                            }
                         } catch (Exception e) {
                         } catch (Error e) {
                         }
@@ -128,8 +135,8 @@ public class FileCache {
 
             file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "armours");
             if (!file.getParentFile().exists())
-                file.getParentFile().mkdir();
-            file.mkdir();
+                file.getParentFile().mkdirs();
+            file.mkdirs();
 
             ItemStack[] armors = playerData.getArmour();
             for (int i = 0; i < armors.length; i++) {
@@ -393,8 +400,7 @@ public class FileCache {
                                 line = line.substring(8);
                                 item.addEnchantment(Enchantment.getByName(line.split(":")[0]), Integer.parseInt(line.split(":")[1]));
                             }
-                            if (Settings.customAttributes)
-                            {
+                            if (Settings.customAttributes) {
                                 if (line.startsWith("attribute=")) {
                                     if (attributes == null)
                                         attributes = new Attributes(item);
@@ -468,8 +474,7 @@ public class FileCache {
                                 line = line.substring(8);
                                 item.addEnchantment(Enchantment.getByName(line.split(":")[0]), Integer.parseInt(line.split(":")[1]));
                             }
-                            if (Settings.customAttributes)
-                            {
+                            if (Settings.customAttributes) {
                                 if (line.startsWith("attribute=")) {
                                     if (attributes == null)
                                         attributes = new Attributes(item);
