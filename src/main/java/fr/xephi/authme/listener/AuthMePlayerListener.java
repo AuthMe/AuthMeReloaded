@@ -401,7 +401,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!Settings.countriesBlacklist.isEmpty()) {
+        if (Settings.enablePasspartu && !Settings.countriesBlacklist.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (Settings.countriesBlacklist.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
                 event.setKickMessage(m.send("country_banned")[0]);
@@ -576,6 +576,22 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName();
         String regex = Settings.getNickRegex;
+        if (Settings.enableProtection && !Settings.countriesBlacklist.isEmpty()) {
+            String code = plugin.getCountryCode(event.getAddress().getHostAddress());
+            if (((code == null) || (Settings.countriesBlacklist.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+                event.setKickMessage(m.send("country_banned")[0]);
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+        }
+        if (Settings.enableProtection && !Settings.countries.isEmpty()) {
+            String code = plugin.getCountryCode(event.getAddress().getHostAddress());
+            if (((code == null) || (!Settings.countries.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+                event.setKickMessage(m.send("country_banned")[0]);
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+        }
         try {
             if (!player.getName().matches(regex) || name.equals("Player")) {
                 try {
