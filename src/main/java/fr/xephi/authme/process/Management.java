@@ -1,5 +1,6 @@
 package fr.xephi.authme.process;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 
@@ -34,11 +35,21 @@ public class Management extends Thread {
 
     public void performLogin(final Player player, final String password,
             final boolean forceLogin) {
-        new AsyncronousLogin(player, password, forceLogin, plugin, database).process();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+            @Override
+            public void run() {
+                new AsyncronousLogin(player, password, forceLogin, plugin, database).process();
+            }
+        });
     }
 
     public void performRegister(final Player player, final String password,
             final String email) {
-        new AsyncronousRegister(player, password, email, plugin, database).process();
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+            @Override
+            public void run() {
+                new AsyncronousRegister(player, password, email, plugin, database).process();
+            }
+        });
     }
 }
