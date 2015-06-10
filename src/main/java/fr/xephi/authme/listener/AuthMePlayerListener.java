@@ -354,6 +354,12 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
+        if (!data.isAuthAvailable(name)) {
+            if (!Settings.isForcedRegistrationEnabled) {
+                return;
+            }
+        }
+
         if (!Settings.isForcedRegistrationEnabled) {
             return;
         }
@@ -566,13 +572,12 @@ public class AuthMePlayerListener implements Listener {
             }
         }, 300);
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerLogin(PlayerLoginEvent event)
-    {
+    public void onPlayerLogin(PlayerLoginEvent event) {
         if (event.getPlayer() == null)
             return;
-        
+
         Player player = event.getPlayer();
         String name = player.getName();
         String regex = Settings.getNickRegex;
