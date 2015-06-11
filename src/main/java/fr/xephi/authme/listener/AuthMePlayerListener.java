@@ -29,6 +29,7 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -353,6 +354,12 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
+        if (!data.isAuthAvailable(name)) {
+            if (!Settings.isForcedRegistrationEnabled) {
+                return;
+            }
+        }
+
         if (!Settings.isForcedRegistrationEnabled) {
             return;
         }
@@ -400,7 +407,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!Settings.countriesBlacklist.isEmpty()) {
+        if (Settings.enablePasspartu && !Settings.countriesBlacklist.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (Settings.countriesBlacklist.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
                 event.setKickMessage(m.send("country_banned")[0]);
@@ -564,6 +571,58 @@ public class AuthMePlayerListener implements Listener {
                 antibot.remove(player.getName().toLowerCase());
             }
         }, 300);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerLogin(PlayerLoginEvent event) {
+        if (event.getPlayer() == null)
+            return;
+
+        Player player = event.getPlayer();
+        String name = player.getName();
+        String regex = Settings.getNickRegex;
+        if (Settings.enableProtection && !Settings.countriesBlacklist.isEmpty()) {
+            String code = plugin.getCountryCode(event.getAddress().getHostAddress());
+            if (((code == null) || (Settings.countriesBlacklist.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+                event.setKickMessage(m.send("country_banned")[0]);
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+        }
+        if (Settings.enableProtection && !Settings.countries.isEmpty()) {
+            String code = plugin.getCountryCode(event.getAddress().getHostAddress());
+            if (((code == null) || (!Settings.countries.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+                event.setKickMessage(m.send("country_banned")[0]);
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+        }
+        try {
+            if (!player.getName().matches(regex) || name.equals("Player")) {
+                try {
+                    event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
+                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                } catch (Exception exc) {
+                    event.setKickMessage("allowed char : " + regex);
+                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                }
+                return;
+            }
+        } catch (PatternSyntaxException pse) {
+            if (regex == null || regex.isEmpty()) {
+                event.setKickMessage("Your nickname do not match");
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+            try {
+                event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            } catch (Exception exc) {
+                event.setKickMessage("allowed char : " + regex);
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            }
+            return;
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -829,8 +888,10 @@ public class AuthMePlayerListener implements Listener {
                 player.setAllowFlight(limbo.isFlying());
                 player.setFlying(limbo.isFlying());
             }
-            limbo.getTimeoutTaskId().cancel();
-            limbo.getMessageTaskId().cancel();
+            if (limbo.getTimeoutTaskId() != null)
+                limbo.getTimeoutTaskId().cancel();
+            if (limbo.getMessageTaskId() != null)
+                limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (playerBackup.doesCacheExist(player)) {
                 playerBackup.removeCache(player);
@@ -916,8 +977,10 @@ public class AuthMePlayerListener implements Listener {
                 player.setAllowFlight(limbo.isFlying());
                 player.setFlying(limbo.isFlying());
             }
-            limbo.getTimeoutTaskId().cancel();
-            limbo.getMessageTaskId().cancel();
+            if (limbo.getTimeoutTaskId() != null)
+                limbo.getTimeoutTaskId().cancel();
+            if (limbo.getMessageTaskId() != null)
+                limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (this.playerBackup.doesCacheExist(player)) {
                 this.playerBackup.removeCache(player);

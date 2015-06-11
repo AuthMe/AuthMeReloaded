@@ -169,8 +169,10 @@ public class AsyncronousLogin {
             // processed in other order.
             ProcessSyncronousPlayerLogin syncronousPlayerLogin = new ProcessSyncronousPlayerLogin(player, plugin, database);
             if (syncronousPlayerLogin.getLimbo() != null) {
-            	syncronousPlayerLogin.getLimbo().getTimeoutTaskId().cancel();
-            	syncronousPlayerLogin.getLimbo().getMessageTaskId().cancel();
+                if (syncronousPlayerLogin.getLimbo().getTimeoutTaskId() != null)
+                    syncronousPlayerLogin.getLimbo().getTimeoutTaskId().cancel();
+                if (syncronousPlayerLogin.getLimbo().getMessageTaskId() != null)
+                    syncronousPlayerLogin.getLimbo().getMessageTaskId().cancel();
             }
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, syncronousPlayerLogin);
         } else if (player.isOnline()) {
