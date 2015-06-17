@@ -203,8 +203,8 @@
 
 		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
 		<dependency>
-            		<groupId>com.onarandombox.multiverseinventories</groupId>
-        		<artifactId>Multiverse-Inventories</artifactId>
+            		<groupId>com.onarandombox.multiversecore</groupId>
+        		<artifactId>Multiverse-Core</artifactId>
             		<version>2.5</version>
             		<type>jar</type>
             		<scope>compile</scope>
