@@ -1,18 +1,16 @@
 AuthMeReloaded
 ======================
 
-<hr>
-
 Build status : [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded)
 
 You will find all builds here : http://ci.xephi.fr
 
-<hr>
+======================
 
 <h2 id="w-auth-me-reloaded">AuthMe Reloaded</h2>
 <div style="text-align:center;margin-left:auto;margin-right:auto"><p><img src="http://www.imagestorming.com/media/cys/1328692322/authme.png" alt="AuthMe" title="AuthMe"></p>
 </div>
-<hr>
+======================
 <p>/login|/register plugin! <br>
 Prevent Name stolen ! AutoUpdate names through UUID<br>
 AuthMe Reloaded prevents players who aren't logged in from actions like placing blocks, moving, typing commands or seeing the inventory of the current player. </p>
@@ -20,10 +18,10 @@ AuthMe Reloaded prevents players who aren't logged in from actions like placing 
 <p>Login Sessions make it possible that you don't have to login within a given time period.</p>
 <p>Each command and every setting can be enabled or disabled by a easy structured config file. </p>
 <p>If you don't like English or don't like my translations you can easily edit almost every message sent by AuthMe!</p>
-<hr>
+======================
 <div style="text-align:center;margin-left:auto;margin-right:auto"><h3 id="w-http-dev-bukkit-org-server-mods-authme-reloaded-pages"><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/videos-tutorials/"><strong>  &gt; &gt; &gt; ALL AUTHME VIDEOS TUTORIALS  &lt; &lt; &lt;</strong></a></h3>
 </div>
-<hr>
+======================
 <h2 id="w-features">Features:</h2>
 <ul><li><strong>E-Mail Recovery System</strong> !!!
 </li><li>Playername spoof protection
