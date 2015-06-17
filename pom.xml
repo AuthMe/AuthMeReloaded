@@ -40,7 +40,7 @@
     </issueManagement>
     
     <build>
-    	<plugins>
+        <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.5</version>
@@ -55,8 +55,8 @@
     </build>
     
     <repositories>
-    	
-    	<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
+        
+        <!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
         <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
@@ -125,7 +125,7 @@
             <id>comphenix-snapshots</id>
             <name>Comphenix Maven Snapshots</name>
             <url>http://repo.comphenix.net/content/repositories/snapshots/</url>
-		</repository>
+        </repository>
         
     </repositories>
     
@@ -148,23 +148,23 @@
         </dependency>
         
         <!-- Database Library -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.187</version>
-		</dependency>
-		
-		<!-- Java Email API -->
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
-			<version>1.5.3</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.5.0-b01</version>
-		</dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.187</version>
+        </dependency>
+        
+        <!-- Java Email API -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.5.0-b01</version>
+        </dependency>
         
         <!-- Attribute -->
         <dependency>
@@ -173,15 +173,15 @@
             <version>0.0.2-SNAPSHOT</version>
         </dependency>
         
-		<!-- Maxmind GeoIp API -->
-		<dependency>
-			<groupId>com.maxmind.geoip</groupId>
-			<artifactId>geoip-api</artifactId>
-			<version>1.2.14</version>
-		</dependency>
-		
-		<!-- Spigot-Api, http://www.spigotmc.org/
-		     Based on the Bukkit project, http://bukkit.org/ -->
+        <!-- Maxmind GeoIp API -->
+        <dependency>
+            <groupId>com.maxmind.geoip</groupId>
+            <artifactId>geoip-api</artifactId>
+            <version>1.2.14</version>
+        </dependency>
+        
+        <!-- Spigot-Api, http://www.spigotmc.org/
+             Based on the Bukkit project, http://bukkit.org/ -->
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
@@ -205,13 +205,13 @@
         </dependency>
         
         <!--  Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
-		<dependency>
-			<groupId>com.onarandombox.multiversecore</groupId>
-			<artifactId>Multiverse-Core</artifactId>
-			<version>2.5</version>
-		</dependency>
-		
-		<!-- EssentialsX, a fork of Spigot Essentials (1.8) with fixes and optimizations, https://github.com/drtshock/Essentials/ -->
+        <dependency>
+            <groupId>com.onarandombox.multiversecore</groupId>
+            <artifactId>Multiverse-Core</artifactId>
+            <version>2.5</version>
+        </dependency>
+        
+        <!-- EssentialsX, a fork of Spigot Essentials (1.8) with fixes and optimizations, https://github.com/drtshock/Essentials/ -->
         <dependency>
             <groupId>net.ess3</groupId>
             <artifactId>EssentialsX</artifactId>
@@ -241,10 +241,10 @@
         
         <!-- Spout API, https://spoutcraft.org/downloads/ -->
         <dependency>
-			<groupId>org.spoutcraft</groupId>
-			<artifactId>spoutcraftplugin</artifactId>
-			<version>1.6.4-SNAPSHOT</version>
-		</dependency>
+            <groupId>org.spoutcraft</groupId>
+            <artifactId>spoutcraftplugin</artifactId>
+            <version>1.6.4-SNAPSHOT</version>
+        </dependency>
         
         <!-- Local Dependencies -->
         
