@@ -208,12 +208,11 @@
 			<version>2.5</version>
 		</dependency>
 
-		<!-- EssentialsX, a fork of Spigot Essentials (1.8) with fixes and optimizations, 
-			https://github.com/drtshock/Essentials/ -->
+		<!-- Essentials plugin-->
 		<dependency>
 			<groupId>net.ess3</groupId>
-			<artifactId>EssentialsX</artifactId>
-			<version>2.0.1-SNAPSHOT</version>
+			<artifactId>Essentials</artifactId>
+			<version>2.13-SNAPSHOT</version>
 		</dependency>
 
 		<!-- Anti PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
@@ -242,14 +241,6 @@
 			<groupId>org.spoutcraft</groupId>
 			<artifactId>spoutcraftplugin</artifactId>
 			<version>1.6.4-SNAPSHOT</version>
-		</dependency>
-
-		<dependency>
-			<groupId>com.onarandombox.multiverseinventories</groupId>
-			<artifactId>Multiverse-Inventories</artifactId>
-			<version>2.5</version>
-			<type>jar</type>
-			<scope>compile</scope>
 		</dependency>
 
 		<!-- Local Dependencies -->
