@@ -81,7 +81,7 @@
 		<!-- EssentialsX Repo -->
 		<repository>
 			<id>ess-repo</id>
-			<url>https://ci.drtshock.net/plugin/repository/everything/</url>
+			<url>http://ci.drtshock.net/plugin/repository/everything/net/ess3/</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
