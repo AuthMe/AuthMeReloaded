@@ -1,15 +1,32 @@
-AuthMeReloaded
+![AuthMeReloaded](http://www.imagestorming.com/media/cys/1328692322/authme.png)
+####The most used authentication plugin for CraftBukkit/Spigot!
+<hr>
+#####Development tools:
+
+- Build status: [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded)
+
+- Build Server (Jenkins): http://ci.xephi.fr
+
+- JavaDoc: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a></p>
+
+- MavenRepository: <p><a href="http://xephi.fr:8080/plugin/repository/everything/">Maven Repo</a></p>
+
 ======================
+#####Compiling Requirements:
+>- JDK 1.7
+>- Maven
+>- Git/Github (Optional)
 
-Build status : [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded)
+#####How to compile the project:
+>- Clone the project with Git/Github
+>- Execute command "mvn clean install"
 
-You will find all builds here : http://ci.xephi.fr
+#####Running Requirements:
+>- Java 1.7 (should work also with Java 1.8)
+>- Spigot or CraftBukkit
 
-======================
-
-<h2 id="w-auth-me-reloaded">AuthMe Reloaded</h2>
-<div style="text-align:center;margin-left:auto;margin-right:auto"><p><img src="http://www.imagestorming.com/media/cys/1328692322/authme.png" alt="AuthMe" title="AuthMe"></p>
-</div>
+<hr>
+###Plugin Description:
 ======================
 <p>/login|/register plugin! <br>
 Prevent Name stolen ! AutoUpdate names through UUID<br>
@@ -19,10 +36,7 @@ AuthMe Reloaded prevents players who aren't logged in from actions like placing 
 <p>Each command and every setting can be enabled or disabled by a easy structured config file. </p>
 <p>If you don't like English or don't like my translations you can easily edit almost every message sent by AuthMe!</p>
 ======================
-<div style="text-align:center;margin-left:auto;margin-right:auto"><h3 id="w-http-dev-bukkit-org-server-mods-authme-reloaded-pages"><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/videos-tutorials/"><strong>  &gt; &gt; &gt; ALL AUTHME VIDEOS TUTORIALS  &lt; &lt; &lt;</strong></a></h3>
-</div>
-======================
-<h2 id="w-features">Features:</h2>
+####Features:
 <ul><li><strong>E-Mail Recovery System</strong> !!!
 </li><li>Playername spoof protection
 </li><li>Countries Selection! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a>
@@ -58,15 +72,15 @@ AuthMe Reloaded prevents players who aren't logged in from actions like placing 
 </li><li>Possible to use without a Permissions plugin
 </li><li><strong>Spoutcraft Login GUI</strong>
 </li><li>Automatic backup system of all your user password data
-</li><li>Default Language Style: en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, nl ( feel free to send me new translations )
+</li><li>Default Language Style: en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, nl ( feel free to send new translations )
 </li><li>Convert the FlatFile auths.db to an usefull authme.sql that you can use on a MySQL database !
 </li><li>Import your database from Rakamak, xAuth, CrazyLogin, RoyalAuth, vAuth !
 </li></ul>
-<h2 id="w-configuration">Configuration</h2>
+####Configuration
 <p><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/configure-auth-me/">How to Configure Authme</a></p>
-<h2 id="w-email-recovery-dependency">Email Recovery Dependency</h2>
+####Email Recovery Dependency
 <p><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-configure-email-recovery-system/">How to configure email recovery system?</a></p>
-<h2 id="w-commands">Commands</h2>
+####Commands
 <p><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/command/">Command list and usage</a></p>
 <h2 id="w-permissions">Permissions</h2>
 <ul><li>authme.player.* - for all user command
@@ -74,7 +88,7 @@ AuthMe Reloaded prevents players who aren't logged in from actions like placing 
 </li><li>authme.* - for all user and admin command
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/permissions/">List of all single permissions</a>
 </li></ul>
-<h2 id="w-how-to">How To</h2>
+####How To
 <ul><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">How to Install and Setup</a>
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-xauth/">How to import database from xAuth</a>
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/">WebSite Integration</a>
@@ -82,15 +96,9 @@ AuthMe Reloaded prevents players who aren't logged in from actions like placing 
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/">How to convert from Rakamak</a>
 </li><li>Convert from FlatFile (auths.db but not the sqlite one ) to MySQL : /converter
 </li></ul>
-<p><strong>Source:</strong>
-<a href="https://github.com/Xephi/AuthMeReloaded">Source Code on Github</a></p>
-<p><strong>JavaDoc:</strong>
-<a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a></p>
-<h2 id="w-dev-build">DevBuild</h2>
-<p>Development builds of this project can be acquired at the provided continuous integration server. These builds have not been approved by the BukkitDev staff. Use them at your own risk. <br>
-<a href="http://ci.xephi.fr/">DevBuilds - on Xephi.fr - Jenkins CI</a></p>
-<h2 id="w-maven-repository">MavenRepository:</h2>
-<p><a href="http://xephi.fr:8080/plugin/repository/everything/">Maven Repo</a></p>
+======================
+
+
 <h2 id="w-geo-ip">GeoIP</h2>
 <p>This product includes and download automatically GeoLite data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a></p>
 <h2 id="w-donate">Donate</h2>
