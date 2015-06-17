@@ -120,12 +120,12 @@
         </repository>
         <!-- End of Spout Repo -->
         
-        <!-- Attribute Repo
+        <!-- Attribute Repo -->
         <repository>
 			<id>comphenix-snapshots</id>
 			<name>Comphenix Maven Snapshots</name>
 			<url>http://repo.comphenix.net/content/repositories/snapshots/</url>
-		</repository> -->
+		</repository>
         
     </repositories>
     
@@ -165,13 +165,12 @@
 			<artifactId>mail</artifactId>
 			<version>1.5.0-b01</version>
 		</dependency>
-		
-		<!-- Attribute, THIS DOESN?T WORK BECAUSE XEPHI USED A MODIFIED VERSION
+
 		<dependency>
   			<groupId>com.comphenix.attribute</groupId>
   			<artifactId>AttributeStorage</artifactId>
   			<version>0.0.2-SNAPSHOT</version>
-		</dependency> -->
+		</dependency>
 		
 		<!-- Maxmind GeoIp API -->
 		<dependency>
