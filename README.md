@@ -30,7 +30,8 @@
 <hr>
 ###Plugin Description:
 
-<p>/login|/register plugin! <br>
+#####"/login|/register plugin!"
+
 Prevent Name stolen ! AutoUpdate names through UUID<br>
 AuthMe Reloaded prevents players who aren't logged in from actions like placing blocks, moving, typing commands or seeing the inventory of the current player. </p>
 <p>The possibility to set up name spoof protection kicks players with uncommon long or short player names before they could actually join.</p>
