@@ -72,15 +72,16 @@
 			<url>http://repo.citizensnpcs.co</url>
 		</repository>
 
+		<!-- Multiverse Repo -->
+		<repository>
+			<id>onarandombox</id>
+			<url>http://repo.onarandombox.com/content/groups/public</url>
+		</repository>
+
 		<!-- EssentialsX Repo -->
 		<repository>
 			<id>ess-repo</id>
 			<url>https://ci.drtshock.net/plugin/repository/everything/</url>
-		</repository>
-
-		<repository>
-			<id>essentials-repo</id>
-			<url>http://repo.ess3.net/content/groups/essentials</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
@@ -163,7 +164,6 @@
 			<version>1.5.0-b01</version>
 		</dependency>
 
-		<!-- Attribute -->
 		<dependency>
 			<groupId>com.comphenix.attribute</groupId>
 			<artifactId>AttributeStorage</artifactId>
@@ -199,6 +199,13 @@
 			<artifactId>citizensapi</artifactId>
 			<version>2.0.16-SNAPSHOT</version>
 			<scope>provided</scope>
+		</dependency>
+
+		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
+		<dependency>
+			<groupId>com.onarandombox.multiversecore</groupId>
+			<artifactId>Multiverse-Core</artifactId>
+			<version>2.5</version>
 		</dependency>
 
 		<!-- EssentialsX, a fork of Spigot Essentials (1.8) with fixes and optimizations, 
@@ -237,6 +244,14 @@
 			<version>1.6.4-SNAPSHOT</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.onarandombox.multiverseinventories</groupId>
+			<artifactId>Multiverse-Inventories</artifactId>
+			<version>2.5</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+
 		<!-- Local Dependencies -->
 
 		<!-- It doesn't have a Maven Repo, http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
@@ -255,15 +270,6 @@
 			<version>1.2.4</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/Citizens.jar</systemPath>
-		</dependency>
-
-		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
-		<dependency>
-			<groupId>com.onarandombox.multiversecore</groupId>
-			<artifactId>Multiverse-Core</artifactId>
-			<version>2.5</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/Multiverse-Core.jar</systemPath>
 		</dependency>
 
 		<!-- Old version of xAuth by Cypherx -->
