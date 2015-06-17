@@ -1,5 +1,5 @@
 <hr>
-![AuthMeReloaded](http://www.imagestorming.com/media/cys/1328692322/authme.png)
+<p align="center">![AuthMeReloaded](http://www.imagestorming.com/media/cys/1328692322/authme.png)</p>
 ####The most used authentication plugin for CraftBukkit/Spigot!
 <hr>
 #####Development tools:
