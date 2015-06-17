@@ -203,10 +203,12 @@
 
 		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
 		<dependency>
-			<groupId>com.onarandombox.multiversecore</groupId>
-			<artifactId>Multiverse-Core</artifactId>
-			<version>2.5</version>
-		</dependency>
+            		<groupId>com.onarandombox.multiversecore</groupId>
+        		<artifactId>Multiverse-Core</artifactId>
+            		<version>2.5</version>
+            		<type>jar</type>
+            		<scope>compile</scope>
+        	</dependency>
 
 		<!-- Essentials plugin-->
 		<dependency>
