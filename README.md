@@ -1,3 +1,4 @@
+<hr>
 ![AuthMeReloaded](http://www.imagestorming.com/media/cys/1328692322/authme.png)
 ####The most used authentication plugin for CraftBukkit/Spigot!
 <hr>
@@ -11,7 +12,8 @@
 
 - MavenRepository: <p><a href="http://xephi.fr:8080/plugin/repository/everything/">Maven Repo</a></p>
 
-======================
+<hr>
+
 #####Compiling Requirements:
 >- JDK 1.7
 >- Maven
