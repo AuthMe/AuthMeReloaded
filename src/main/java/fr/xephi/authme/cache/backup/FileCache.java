@@ -414,8 +414,13 @@ public class FileCache {
                                         double amount = Double.parseDouble(args[2]);
                                         Operation operation = Operation.fromId(Integer.parseInt(args[3]));
                                         UUID uuid = UUID.fromString(args[4]);
-                                        Attribute attribute = new Attribute(new Builder(amount, operation, type, name, uuid));
-                                        attributes.add(attribute);
+                                        Builder build = Attribute.newBuilder();
+                                        build.amount(amount);
+                                        build.operation(operation);
+                                        build.type(type);
+                                        build.name(name);
+                                        build.uuid(uuid);
+                                        attributes.add(build.build());
                                     } catch (Exception e) {
                                     }
                                 }
@@ -488,8 +493,13 @@ public class FileCache {
                                         double amount = Double.parseDouble(args[2]);
                                         Operation operation = Operation.fromId(Integer.parseInt(args[3]));
                                         UUID uuid = UUID.fromString(args[4]);
-                                        Attribute attribute = new Attribute(new Builder(amount, operation, type, name, uuid));
-                                        attributes.add(attribute);
+                                        Builder build = Attribute.newBuilder();
+                                        build.amount(amount);
+                                        build.operation(operation);
+                                        build.type(type);
+                                        build.name(name);
+                                        build.uuid(uuid);
+                                        attributes.add(build.build());
                                     } catch (Exception e) {
                                     }
                                 }
