@@ -72,16 +72,10 @@
 			<url>http://repo.citizensnpcs.co</url>
 		</repository>
 
-		<!-- Multiverse Repo -->
-		<repository>
-			<id>onarandombox</id>
-			<url>http://repo.onarandombox.com/content/groups/public</url>
-		</repository>
-
 		<!-- EssentialsX Repo -->
 		<repository>
 			<id>ess-repo</id>
-			<url>https://ci.drtshock.net/plugin/repository/everything/</url>
+			<url>http://repo.ess3.net/content/groups/public</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
@@ -123,6 +117,12 @@
 			<id>comphenix-snapshots</id>
 			<name>Comphenix Maven Snapshots</name>
 			<url>http://repo.comphenix.net/content/repositories/snapshots/</url>
+		</repository>
+
+		<!-- Multiverse Repo -->
+		<repository>
+			<id>onarandombox</id>
+			<url>http://repo.onarandombox.com/content/groups/public</url>
 		</repository>
 
 	</repositories>
