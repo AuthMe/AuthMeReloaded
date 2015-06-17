@@ -1,290 +1,288 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    
-    <groupId>fr.xephi.authme.AuthMe</groupId>
-    <artifactId>AuthMe</artifactId>
-    <version>5.0-SNAPSHOT</version>
-    
-    <name>AuthMeReloaded</name>
-    <description>Authentication plugin for CraftBukkit/Spigot!</description>
-    <url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
-    
-    <packaging>jar</packaging>
-    
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        
-        <!-- Change Compiler Version (JDK) HERE! -->
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
-        
-        <!-- Change MC Version HERE! -->
-        <bukkitVersion>1.8.7-R0.1-SNAPSHOT</bukkitVersion>
-        
-        <mainClass>${project.groupId}.${project.artifactId}</mainClass>
-    </properties>
-    
-    <!-- Official Build Server
-         ALLERT: sometimes jenkins is offline, no panic! -->
-    <ciManagement>
-        <system>jenkins</system>
-        <url>http://ci.xephi.fr</url>
-    </ciManagement>
-    
-    <issueManagement>
-        <system>GitHub</system>
-        <url>https://github.com/Xephi/AuthMeReloaded/issues</url>
-    </issueManagement>
-    
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.5</version>
-                <configuration>
-                    <archive>
-                    <manifestFile>${manifest.file}</manifestFile>
-                    </archive>
-                </configuration>
-            </plugin>
-        </plugins>
-        
-    </build>
-    
-    <repositories>
-        
-        <!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
-        <repository>
-            <id>spigot-repo</id>
-            <url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
-        </repository>
-        
-        <!-- Vault Repo -->
-        <repository>
-            <id>vault-repo</id>
-            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
-        </repository>
-        
-        <!-- Citizens 2.X Repo -->
-        <repository>
-            <id>everything</id>
-            <url>http://repo.citizensnpcs.co</url>
-        </repository>
-        
-        <!-- Multiverse Repo -->
-        <repository>
-            <id>onarandombox</id>
-            <url>http://repo.onarandombox.com/content/groups/public</url>
-        </repository>
-        
-        <!-- EssentialsX Repo -->
-        <repository>
-            <id>ess-repo</id>
-            <url>https://ci.drtshock.net/plugin/repository/everything/</url>
-        </repository>
-        
-        <!-- CombatTagPlus Repo -->
-        <repository>
-            <id>minelink-thirdparty</id>
-            <url>http://repo.minelink.net/content/repositories/public</url>
-        </repository>
-        
-        <!-- CombatTag Repo, Unofficial (needs replacement) -->
-        <repository>
-            <id>techcable-repo</id>
-            <url>http://repo.techcable.net/content/repositories/snapshots/</url>
-        </repository>
-        
-        <!-- XAuth Repo -->
-        <repository>
-            <id>bukkit-plugins-releases</id>
-            <name>repo.luricos.de releases</name>
-            <url>http://repo.luricos.de/content/repositories/releases/</url>
-        </repository>
-        
-        <!-- SpoutCraft Repo -->
-        <repository>
-            <id>sonatype-nexus-releases</id>
-            <url>https://oss.sonatype.org/content/repositories/releases</url>
-        </repository>
-        <repository>
-            <id>sonatype-nexus-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-            <snapshots>
-                <enabled>true</enabled>
-                <updatePolicy>always</updatePolicy>
-            </snapshots>
-        </repository>
-        <!-- End of Spout Repo -->
-        
-        <!-- Attribute Repo -->
-        <repository>
-            <id>comphenix-snapshots</id>
-            <name>Comphenix Maven Snapshots</name>
-            <url>http://repo.comphenix.net/content/repositories/snapshots/</url>
-        </repository>
-        
-    </repositories>
-    
-    <dependencies>
-        
-        <!-- Maven Dependencies -->
-        
-        <!-- MySql Library -->
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.35</version>
-        </dependency>
-        
-        <!-- SQLite Library -->
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.8.10.1</version>
-        </dependency>
-        
-        <!-- Database Library -->
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>1.4.187</version>
-        </dependency>
-        
-        <!-- Java Email API -->
-        <dependency>
-            <groupId>com.sun.mail</groupId>
-            <artifactId>javax.mail</artifactId>
-            <version>1.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.mail</groupId>
-            <artifactId>mail</artifactId>
-            <version>1.5.0-b01</version>
-        </dependency>
-        
-        <!-- Attribute -->
-        <dependency>
-            <groupId>com.comphenix.attribute</groupId>
-            <artifactId>AttributeStorage</artifactId>
-            <version>0.0.2-SNAPSHOT</version>
-        </dependency>
-        
-        <!-- Maxmind GeoIp API -->
-        <dependency>
-            <groupId>com.maxmind.geoip</groupId>
-            <artifactId>geoip-api</artifactId>
-            <version>1.2.14</version>
-        </dependency>
-        
-        <!-- Spigot-Api, http://www.spigotmc.org/
-             Based on the Bukkit project, http://bukkit.org/ -->
-        <dependency>
-            <groupId>org.spigotmc</groupId>
-            <artifactId>spigot-api</artifactId>
-            <version>${bukkitVersion}</version>
-        </dependency>
-        
-        <!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
-        <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>Vault</artifactId>
-            <version>1.5.4</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <!-- Citizens 2.X, NPC plugin, http://dev.bukkit.org/bukkit-plugins/citizens/ -->
-        <dependency>
-            <groupId>net.citizensnpcs</groupId>
-            <artifactId>citizensapi</artifactId>
-            <version>2.0.16-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        
-        <!-- EssentialsX, a fork of Spigot Essentials (1.8) with fixes and optimizations, https://github.com/drtshock/Essentials/ -->
-        <dependency>
-            <groupId>net.ess3</groupId>
-            <artifactId>EssentialsX</artifactId>
-            <version>2.0.1-SNAPSHOT</version>
-        </dependency>
-        
-        <!-- Anti PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
-        <dependency>
-            <groupId>net.minelink</groupId>
-            <artifactId>CombatTagPlus</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
-        </dependency>
-        
-        <!-- Anti PvPLogging plugin, http://www.spigotmc.org/resources/combat-tag.3182/ -->
-        <dependency>
-            <groupId>com.trc202</groupId>
-            <artifactId>combattag</artifactId>
-            <version>6.4.1-SNAPSHOT</version>
-        </dependency>
-        
-        <!-- XAuth, another authentication plugin, required by the database converter -->
-        <dependency>
-            <groupId>de.luricos.bukkit</groupId>
-            <artifactId>xAuth</artifactId>
-            <version>2.6</version>
-        </dependency>
-        
-        <!-- Spout API, https://spoutcraft.org/downloads/ -->
-        <dependency>
-            <groupId>org.spoutcraft</groupId>
-            <artifactId>spoutcraftplugin</artifactId>
-            <version>1.6.4-SNAPSHOT</version>
-        </dependency>
-        
-        <!-- Local Dependencies -->
-        
-        <!-- It doesn't have a Maven Repo, http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
-        <dependency>
-            <groupId>com.Acrobot</groupId>
-            <artifactId>ChestShop</artifactId>
-            <version>3.8.10</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/ChestShop.jar</systemPath>
-        </dependency>
-        
-        <!-- Citizens 1.X (No API) -->
-        <dependency>
-            <groupId>net.citizensnpcs</groupId>
-            <artifactId>citizens</artifactId>
-            <version>1.2.4</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/Citizens.jar</systemPath>
-        </dependency>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-        <!--  Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
-        <dependency>
-            <groupId>com.onarandombox.multiversecore</groupId>
-            <artifactId>Multiverse-Core</artifactId>
-            <version>2.5</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/Multiverse-Core.jar</systemPath>
-        </dependency>
-        
-        <!-- Old version of xAuth by Cypherx -->
-        <dependency>
-            <groupId>com.cypherx</groupId>
-            <artifactId>xauth</artifactId>
-            <version>2.0.26</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/xAuth.jar</systemPath>
-        </dependency>
-        
-        <!-- A SpoutApi Plugin, http://dev.bukkit.org/bukkit-plugins/notifications/ -->
-        <dependency>
-            <groupId>me.muizers</groupId>
-            <artifactId>Notifications</artifactId>
-            <version>1.6</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/Notifications.jar</systemPath>
-        </dependency>
-        
-    </dependencies>
+	<groupId>fr.xephi.authme.AuthMe</groupId>
+	<artifactId>AuthMe</artifactId>
+	<version>5.0-SNAPSHOT</version>
+
+	<name>AuthMeReloaded</name>
+	<description>Authentication plugin for CraftBukkit/Spigot!</description>
+	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
+
+	<packaging>jar</packaging>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- Change Compiler Version (JDK) HERE! -->
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+
+		<!-- Change MC Version HERE! -->
+		<bukkitVersion>1.8.7-R0.1-SNAPSHOT</bukkitVersion>
+
+		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
+	</properties>
+
+	<!-- Official Build Server ALLERT: sometimes jenkins is offline, no panic! -->
+	<ciManagement>
+		<system>jenkins</system>
+		<url>http://ci.xephi.fr</url>
+	</ciManagement>
+
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/Xephi/AuthMeReloaded/issues</url>
+	</issueManagement>
+
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.5</version>
+				<configuration>
+					<archive>
+						<manifestFile>${manifest.file}</manifestFile>
+					</archive>
+				</configuration>
+			</plugin>
+		</plugins>
+
+	</build>
+
+	<repositories>
+
+		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+		</repository>
+
+		<!-- Vault Repo -->
+		<repository>
+			<id>vault-repo</id>
+			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+		</repository>
+
+		<!-- Citizens 2.X Repo -->
+		<repository>
+			<id>everything</id>
+			<url>http://repo.citizensnpcs.co</url>
+		</repository>
+
+		<!-- EssentialsX Repo -->
+		<repository>
+			<id>ess-repo</id>
+			<url>https://ci.drtshock.net/plugin/repository/everything/</url>
+		</repository>
+
+		<repository>
+			<id>essentials-repo</id>
+			<url>http://repo.ess3.net/content/groups/essentials</url>
+		</repository>
+
+		<!-- CombatTagPlus Repo -->
+		<repository>
+			<id>minelink-thirdparty</id>
+			<url>http://repo.minelink.net/content/repositories/public</url>
+		</repository>
+
+		<!-- CombatTag Repo, Unofficial (needs replacement) -->
+		<repository>
+			<id>techcable-repo</id>
+			<url>http://repo.techcable.net/content/repositories/snapshots/</url>
+		</repository>
+
+		<!-- XAuth Repo -->
+		<repository>
+			<id>bukkit-plugins-releases</id>
+			<name>repo.luricos.de releases</name>
+			<url>http://repo.luricos.de/content/repositories/releases/</url>
+		</repository>
+
+		<!-- SpoutCraft Repo -->
+		<repository>
+			<id>sonatype-nexus-releases</id>
+			<url>https://oss.sonatype.org/content/repositories/releases</url>
+		</repository>
+		<repository>
+			<id>sonatype-nexus-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
+		</repository>
+		<!-- End of Spout Repo -->
+
+		<!-- Attribute Repo -->
+		<repository>
+			<id>comphenix-snapshots</id>
+			<name>Comphenix Maven Snapshots</name>
+			<url>http://repo.comphenix.net/content/repositories/snapshots/</url>
+		</repository>
+
+	</repositories>
+
+	<dependencies>
+
+		<!-- Maven Dependencies -->
+
+		<!-- MySql Library -->
+		<dependency>
+			<groupId>mysql</groupId>
+			<artifactId>mysql-connector-java</artifactId>
+			<version>5.1.35</version>
+		</dependency>
+
+		<!-- SQLite Library -->
+		<dependency>
+			<groupId>org.xerial</groupId>
+			<artifactId>sqlite-jdbc</artifactId>
+			<version>3.8.10.1</version>
+		</dependency>
+
+		<!-- Database Library -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.187</version>
+		</dependency>
+
+		<!-- Java Email API -->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.5.0-b01</version>
+		</dependency>
+
+		<!-- Attribute -->
+		<dependency>
+			<groupId>com.comphenix.attribute</groupId>
+			<artifactId>AttributeStorage</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Maxmind GeoIp API -->
+		<dependency>
+			<groupId>com.maxmind.geoip</groupId>
+			<artifactId>geoip-api</artifactId>
+			<version>1.2.14</version>
+		</dependency>
+
+		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 
+			http://bukkit.org/ -->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>${bukkitVersion}</version>
+		</dependency>
+
+		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
+		<dependency>
+			<groupId>net.milkbowl.vault</groupId>
+			<artifactId>Vault</artifactId>
+			<version>1.5.4</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- Citizens 2.X, NPC plugin, http://dev.bukkit.org/bukkit-plugins/citizens/ -->
+		<dependency>
+			<groupId>net.citizensnpcs</groupId>
+			<artifactId>citizensapi</artifactId>
+			<version>2.0.16-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- EssentialsX, a fork of Spigot Essentials (1.8) with fixes and optimizations, 
+			https://github.com/drtshock/Essentials/ -->
+		<dependency>
+			<groupId>net.ess3</groupId>
+			<artifactId>EssentialsX</artifactId>
+			<version>2.0.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Anti PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
+		<dependency>
+			<groupId>net.minelink</groupId>
+			<artifactId>CombatTagPlus</artifactId>
+			<version>1.2.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Anti PvPLogging plugin, http://www.spigotmc.org/resources/combat-tag.3182/ -->
+		<dependency>
+			<groupId>com.trc202</groupId>
+			<artifactId>combattag</artifactId>
+			<version>6.4.1-SNAPSHOT</version>
+		</dependency>
+
+		<!-- XAuth, another authentication plugin, required by the database converter -->
+		<dependency>
+			<groupId>de.luricos.bukkit</groupId>
+			<artifactId>xAuth</artifactId>
+			<version>2.6</version>
+		</dependency>
+
+		<!-- Spout API, https://spoutcraft.org/downloads/ -->
+		<dependency>
+			<groupId>org.spoutcraft</groupId>
+			<artifactId>spoutcraftplugin</artifactId>
+			<version>1.6.4-SNAPSHOT</version>
+		</dependency>
+
+		<!-- Local Dependencies -->
+
+		<!-- It doesn't have a Maven Repo, http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
+		<dependency>
+			<groupId>com.Acrobot</groupId>
+			<artifactId>ChestShop</artifactId>
+			<version>3.8.10</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/ChestShop.jar</systemPath>
+		</dependency>
+
+		<!-- Citizens 1.X (No API) -->
+		<dependency>
+			<groupId>net.citizensnpcs</groupId>
+			<artifactId>citizens</artifactId>
+			<version>1.2.4</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/Citizens.jar</systemPath>
+		</dependency>
+
+		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
+		<dependency>
+			<groupId>com.onarandombox.multiversecore</groupId>
+			<artifactId>Multiverse-Core</artifactId>
+			<version>2.5</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/Multiverse-Core.jar</systemPath>
+		</dependency>
+
+		<!-- Old version of xAuth by Cypherx -->
+		<dependency>
+			<groupId>com.cypherx</groupId>
+			<artifactId>xauth</artifactId>
+			<version>2.0.26</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/xAuth.jar</systemPath>
+		</dependency>
+
+		<!-- A SpoutApi Plugin, http://dev.bukkit.org/bukkit-plugins/notifications/ -->
+		<dependency>
+			<groupId>me.muizers</groupId>
+			<artifactId>Notifications</artifactId>
+			<version>1.6</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/libs/Notifications.jar</systemPath>
+		</dependency>
+
+	</dependencies>
 </project>
