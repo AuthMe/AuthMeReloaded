@@ -11,7 +11,7 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 
 import de.luricos.bukkit.xAuth.xAuth;
-import de.luricos.bukkit.xAuth.database.Table;
+import de.luricos.bukkit.xAuth.database.DatabaseTables;
 import de.luricos.bukkit.xAuth.utils.xAuthLog;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -66,7 +66,7 @@ public class newxAuthToFlat {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT `playername` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
+            String sql = String.format("SELECT `playername` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
             ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
             rs = ps.executeQuery();
@@ -88,7 +88,7 @@ public class newxAuthToFlat {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT * FROM `%s`", xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
+            String sql = String.format("SELECT * FROM `%s`", xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -109,7 +109,7 @@ public class newxAuthToFlat {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT `password`, `pwtype` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
+            String sql = String.format("SELECT `password`, `pwtype` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
             ps = conn.prepareStatement(sql);
             ps.setInt(1, accountId);
             rs = ps.executeQuery();

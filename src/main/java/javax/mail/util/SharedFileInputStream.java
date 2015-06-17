@@ -300,16 +300,19 @@ public class SharedFileInputStream extends BufferedInputStream
     private int read1(byte[] b, int off, int len) throws IOException {
 	int avail = count - pos;
 	if (avail <= 0) {
+		
+		/*
 	    if (false) {
 	    /* If the requested length is at least as large as the buffer, and
 	       if there is no mark/reset activity, do not bother to copy the
 	       bytes into the local buffer.  In this way buffered streams will
-	       cascade harmlessly. */
+	       cascade harmlessly. */ /*
 	    if (len >= buf.length && markpos < 0) {
 		// XXX - seek, update bufpos - how?
 		return in.read(b, off, len);
 	    }
-	    }
+	    }*/
+		
 	    fill();
 	    avail = count - pos;
 	    if (avail <= 0) return -1;
