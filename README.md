@@ -103,6 +103,7 @@ AuthMe Reloaded prevents players who aren't logged in from actions like placing 
 
 #####GeoIP
 <p>This product includes and download automatically GeoLite data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a></p>
+<hr>
 
 #####Donate
 <p>Do you like my work ? Or just want to buy me a coffee for quickly update?<br>
