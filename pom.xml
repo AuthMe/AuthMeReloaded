@@ -204,13 +204,6 @@
             <scope>provided</scope>
         </dependency>
         
-        <!--  Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
-        <dependency>
-            <groupId>com.onarandombox.multiversecore</groupId>
-            <artifactId>Multiverse-Core</artifactId>
-            <version>2.5</version>
-        </dependency>
-        
         <!-- EssentialsX, a fork of Spigot Essentials (1.8) with fixes and optimizations, https://github.com/drtshock/Essentials/ -->
         <dependency>
             <groupId>net.ess3</groupId>
@@ -264,6 +257,15 @@
             <version>1.2.4</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/libs/Citizens.jar</systemPath>
+        </dependency>
+
+        <!--  Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
+        <dependency>
+            <groupId>com.onarandombox.multiversecore</groupId>
+            <artifactId>Multiverse-Core</artifactId>
+            <version>2.5</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/Multiverse-Core.jar</systemPath>
         </dependency>
         
         <!-- Old version of xAuth by Cypherx -->
