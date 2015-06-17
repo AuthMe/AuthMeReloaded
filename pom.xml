@@ -120,6 +120,13 @@
         </repository>
         <!-- End of Spout Repo -->
         
+        <!-- Attribute Repo
+        <repository>
+			<id>comphenix-snapshots</id>
+			<name>Comphenix Maven Snapshots</name>
+			<url>http://repo.comphenix.net/content/repositories/snapshots/</url>
+		</repository> -->
+        
     </repositories>
     
     <dependencies>
@@ -145,6 +152,32 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.187</version>
+		</dependency>
+		
+		<!-- Java Email API -->
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.5.3</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>mail</artifactId>
+			<version>1.5.0-b01</version>
+		</dependency>
+		
+		<!-- Attribute, THIS DOESN?T WORK BECAUSE XEPHI USED A MODIFIED VERSION
+		<dependency>
+  			<groupId>com.comphenix.attribute</groupId>
+  			<artifactId>AttributeStorage</artifactId>
+  			<version>0.0.2-SNAPSHOT</version>
+		</dependency> -->
+		
+		<!-- Maxmind GeoIp API -->
+		<dependency>
+			<groupId>com.maxmind.geoip</groupId>
+			<artifactId>geoip-api</artifactId>
+			<version>1.2.14</version>
 		</dependency>
 		
 		<!-- Spigot-Api, http://www.spigotmc.org/
