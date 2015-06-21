@@ -118,7 +118,7 @@ public class MySQLThread extends Thread implements DataSource {
         try {
             con = makeSureConnectionIsReady();
             st = con.createStatement();
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1'," + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "'," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) DEFAULT 'world'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged + " SMALLINT NOT NULL DEFAULT '0'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1'," + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "'," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT " + Settings.defaultWorld + "," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged + " SMALLINT NOT NULL DEFAULT '0'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnPassword + " VARCHAR(255) NOT NULL;");
@@ -190,7 +190,7 @@ public class MySQLThread extends Thread implements DataSource {
     }
 
     @SuppressWarnings("resource")
-	@Override
+    @Override
     public synchronized PlayerAuth getAuth(String user) {
         Connection con = null;
         PreparedStatement pst = null;
@@ -975,23 +975,22 @@ public class MySQLThread extends Thread implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         if (user != null)
-        	try {
-        		con = makeSureConnectionIsReady();
-        		pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
-        		pst.setInt(1, 0);
-        		pst.setString(2, user);
-        		pst.executeUpdate();
-        	} catch (SQLException ex) {
-        		ConsoleLogger.showError(ex.getMessage());
-        		return;
-        	} catch (TimeoutException ex) {
-        		ConsoleLogger.showError(ex.getMessage());
-        		return;
-        	}
-        	finally {
-        		close(pst);
-        		close(con);
-        	}
+            try {
+                con = makeSureConnectionIsReady();
+                pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
+                pst.setInt(1, 0);
+                pst.setString(2, user);
+                pst.executeUpdate();
+            } catch (SQLException ex) {
+                ConsoleLogger.showError(ex.getMessage());
+                return;
+            } catch (TimeoutException ex) {
+                ConsoleLogger.showError(ex.getMessage());
+                return;
+            } finally {
+                close(pst);
+                close(con);
+            }
         return;
     }
 
