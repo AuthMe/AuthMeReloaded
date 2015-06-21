@@ -163,19 +163,26 @@
 			<artifactId>mail</artifactId>
 			<version>1.5.0-b01</version>
 		</dependency>
-
-		<dependency>
-			<groupId>com.comphenix.attribute</groupId>
-			<artifactId>AttributeStorage</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
-		</dependency>
-
+		
 		<!-- Maxmind GeoIp API -->
 		<dependency>
 			<groupId>com.maxmind.geoip</groupId>
 			<artifactId>geoip-api</artifactId>
 			<version>1.2.14</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.comphenix.attribute</groupId>
+			<artifactId>AttributeStorage</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+			</exclusions> 
+		</dependency>
+
 
 		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 
 			http://bukkit.org/ -->
@@ -191,6 +198,12 @@
 			<artifactId>Vault</artifactId>
 			<version>1.5.4</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- Citizens 2.X, NPC plugin, http://dev.bukkit.org/bukkit-plugins/citizens/ -->
@@ -199,6 +212,16 @@
 			<artifactId>citizensapi</artifactId>
 			<version>2.0.16-SNAPSHOT</version>
 			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.milkbowl.vault</groupId>
+					<artifactId>Vault</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
@@ -208,6 +231,16 @@
 			<version>2.5</version>
 			<type>jar</type>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.milkbowl.vault</groupId>
+					<artifactId>Vault</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- Essentials plugin -->
@@ -215,6 +248,16 @@
 			<groupId>net.ess3</groupId>
 			<artifactId>Essentials</artifactId>
 			<version>2.13-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.milkbowl.vault</groupId>
+					<artifactId>Vault</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- Anti PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
@@ -222,6 +265,12 @@
 			<groupId>net.minelink</groupId>
 			<artifactId>CombatTagPlus</artifactId>
 			<version>1.2.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- Anti PvPLogging plugin, http://www.spigotmc.org/resources/combat-tag.3182/ -->
@@ -229,6 +278,12 @@
 			<groupId>com.trc202</groupId>
 			<artifactId>combattag</artifactId>
 			<version>6.4.1-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- XAuth, another authentication plugin, required by the database converter -->
@@ -236,6 +291,12 @@
 			<groupId>de.luricos.bukkit</groupId>
 			<artifactId>xAuth</artifactId>
 			<version>2.6</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- Spout API, https://spoutcraft.org/downloads/ -->
@@ -243,6 +304,12 @@
 			<groupId>org.spoutcraft</groupId>
 			<artifactId>spoutcraftplugin</artifactId>
 			<version>1.6.4-SNAPSHOT</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- Local Dependencies -->
@@ -254,6 +321,16 @@
 			<version>3.8.10</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/ChestShop.jar</systemPath>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.milkbowl.vault</groupId>
+					<artifactId>Vault</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- Citizens 1.X (No API) -->
