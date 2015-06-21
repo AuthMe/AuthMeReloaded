@@ -3,8 +3,8 @@ package fr.xephi.authme;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
+
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -44,13 +44,13 @@ public class SendMailSSL {
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.port", String.valueOf(Settings.getMailPort));
 
-        Session session = Session.getInstance(props, new javax.mail.Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(Settings.getmailAccount, Settings.getmailPassword);
-            }
-        });
-
         try {
+            Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+
+                protected PasswordAuthentication getPasswordAuthentication() {
+                    return new PasswordAuthentication(Settings.getmailAccount, Settings.getmailPassword);
+                }
+            });
             final Message message = new MimeMessage(session);
             try {
                 message.setFrom(new InternetAddress(Settings.getmailAccount, sendername));
@@ -66,19 +66,20 @@ public class SendMailSSL {
             text = text.replace("<generatedpass>", newPass);
             message.setContent(text, "text/html");
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
                 @Override
                 public void run() {
                     try {
                         Transport.send(message);
-                    } catch (MessagingException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        ConsoleLogger.showError("Some error appears while trying to send mail to " + auth.getEmail());
                     }
                 }
             });
             if (!Settings.noConsoleSpam)
                 ConsoleLogger.info("Email sent to : " + auth.getNickname());
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            ConsoleLogger.showError("Some error appears while trying to send mail to " + auth.getEmail());
         }
     }
 }
