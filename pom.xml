@@ -217,6 +217,10 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.milkbowl.vault</groupId>
+					<artifactId>Vault</artifactId>
+				</exclusion>
 			</exclusions> 
 		</dependency>
 
@@ -232,6 +236,10 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.milkbowl.vault</groupId>
+					<artifactId>Vault</artifactId>
+				</exclusion>
 			</exclusions> 
 		</dependency>
 
@@ -244,6 +252,10 @@
 				<exclusion>
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.milkbowl.vault</groupId>
+					<artifactId>Vault</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -314,6 +326,10 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.milkbowl.vault</groupId>
+					<artifactId>Vault</artifactId>
+				</exclusion>
 			</exclusions> 
 		</dependency>
 
@@ -324,12 +340,6 @@
 			<version>1.2.4</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/Citizens.jar</systemPath>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-			</exclusions> 
 		</dependency>
 
 		<!-- Old version of xAuth by Cypherx -->
@@ -339,12 +349,6 @@
 			<version>2.0.26</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/xAuth.jar</systemPath>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-			</exclusions> 
 		</dependency>
 
 		<!-- A SpoutApi Plugin, http://dev.bukkit.org/bukkit-plugins/notifications/ -->
@@ -354,12 +358,6 @@
 			<version>1.6</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/Notifications.jar</systemPath>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-			</exclusions> 
 		</dependency>
 
 	</dependencies>
