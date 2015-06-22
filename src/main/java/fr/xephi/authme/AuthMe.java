@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
@@ -283,7 +284,18 @@ public class AuthMe extends JavaPlugin {
         if (Settings.reloadSupport)
             try {
                 onReload();
-                if (server.getOnlinePlayers().size() < 1) {
+                int playersOnline = 0;
+                try {
+                    if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
+                        playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
+                    else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
+                } catch (NoSuchMethodException ex) {
+                } // can never happen
+                catch (InvocationTargetException ex) {
+                } // can also never happen
+                catch (IllegalAccessException ex) {
+                } // can still never happen
+                if (playersOnline < 1) {
                     try {
                         database.purgeLogged();
                     } catch (NullPointerException npe) {
@@ -453,7 +465,18 @@ public class AuthMe extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        if (Bukkit.getOnlinePlayers().size() != 0)
+        int playersOnline = 0;
+        try {
+            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
+                playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
+            else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
+        } catch (NoSuchMethodException ex) {
+        } // can never happen
+        catch (InvocationTargetException ex) {
+        } // can also never happen
+        catch (IllegalAccessException ex) {
+        } // can still never happen
+        if (playersOnline != 0)
             for (Player player : Bukkit.getOnlinePlayers()) {
                 this.savePlayer(player);
             }
@@ -738,10 +761,21 @@ public class AuthMe extends JavaPlugin {
     }
 
     public String replaceAllInfos(String message, Player player) {
+        int playersOnline = 0;
+        try {
+            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
+                playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
+            else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
+        } catch (NoSuchMethodException ex) {
+        } // can never happen
+        catch (InvocationTargetException ex) {
+        } // can also never happen
+        catch (IllegalAccessException ex) {
+        } // can still never happen
         try {
             message = message.replace("&", "\u00a7");
             message = message.replace("{PLAYER}", player.getName());
-            message = message.replace("{ONLINE}", "" + this.getServer().getOnlinePlayers().size());
+            message = message.replace("{ONLINE}", "" + playersOnline);
             message = message.replace("{MAXPLAYERS}", "" + this.getServer().getMaxPlayers());
             message = message.replace("{IP}", getIP(player));
             message = message.replace("{LOGINS}", "" + PlayerCache.getInstance().getLogged());

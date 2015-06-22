@@ -3,6 +3,8 @@ package fr.xephi.authme.listener;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.regex.PatternSyntaxException;
@@ -521,7 +523,18 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (plugin.getServer().getOnlinePlayers().size() > plugin.getServer().getMaxPlayers()) {
+        int playersOnline = 0;
+        try {
+            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
+                playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
+            else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
+        } catch (NoSuchMethodException ex) {
+        } // can never happen
+        catch (InvocationTargetException ex) {
+        } // can also never happen
+        catch (IllegalAccessException ex) {
+        } // can still never happen
+        if (playersOnline > plugin.getServer().getMaxPlayers()) {
             event.allow();
             return;
         } else {
