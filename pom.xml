@@ -213,7 +213,6 @@
 			<version>2.0.16-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
-			<exclusions>
 				<exclusion>
 					<groupId>*</groupId>
 					<artifactId>*</artifactId>
