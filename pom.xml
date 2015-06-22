@@ -2,46 +2,77 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
+	
 	<groupId>fr.xephi.authme.AuthMe</groupId>
 	<artifactId>AuthMe</artifactId>
 	<version>5.0-SNAPSHOT</version>
-
+	
 	<name>AuthMeReloaded</name>
 	<description>Authentication plugin for CraftBukkit/Spigot!</description>
 	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
-
+	
 	<packaging>jar</packaging>
-
+	
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
+		
 		<!-- Change Compiler Version (JDK) HERE! -->
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-
+		
 		<!-- Change MC Version HERE! -->
 		<bukkitVersion>1.8.7-R0.1-SNAPSHOT</bukkitVersion>
-
+		
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
 	</properties>
-
+	
 	<!-- Official Build Server ALLERT: sometimes jenkins is offline, no panic! -->
 	<ciManagement>
 		<system>jenkins</system>
 		<url>http://ci.xephi.fr</url>
 	</ciManagement>
-
+	
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/Xephi/AuthMeReloaded/issues</url>
 	</issueManagement>
-
+	
 	<build>
 		<plugins>
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.3</version>
+				<configuration>
+					<source>${maven.compiler.source}</source>
+					<target>${maven.compiler.target}</target>
+				</configuration>
+			</plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>maven-replacer-plugin</artifactId>
+                <version>1.4.1</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <file>target/classes/plugin.yml</file>
+                    <replacements>
+                        <replacement>
+                            <token>${version}</token>
+                            <value>${version}</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.5</version>
+				<version>2.6</version>
 				<configuration>
 					<archive>
 						<manifestFile>${manifest.file}</manifestFile>
@@ -49,7 +80,6 @@
 				</configuration>
 			</plugin>
 		</plugins>
-
 	</build>
 
 	<repositories>
@@ -105,10 +135,10 @@
 		<repository>
 			<id>sonatype-nexus-snapshots</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<snapshots>
+			<!-- <snapshots>
 				<enabled>true</enabled>
 				<updatePolicy>always</updatePolicy>
-			</snapshots>
+			</snapshots> -->
 		</repository>
 		<!-- End of Spout Repo -->
 
@@ -136,6 +166,8 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.35</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- SQLite Library -->
@@ -143,6 +175,8 @@
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.10.1</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Database Library -->
@@ -150,6 +184,8 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.187</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Java Email API -->
@@ -157,11 +193,15 @@
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.3</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<version>1.5.0-b01</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 		
 		<!-- Maxmind GeoIp API -->
@@ -169,19 +209,10 @@
 			<groupId>com.maxmind.geoip</groupId>
 			<artifactId>geoip-api</artifactId>
 			<version>1.2.14</version>
+			<type>jar</type>
+			<scope>compile</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>com.comphenix.attribute</groupId>
-			<artifactId>AttributeStorage</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions> 
-		</dependency>
 
 
 		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 
@@ -190,6 +221,22 @@
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>${bukkitVersion}</version>
+			<type>jar</type>
+			<scope>compile</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.comphenix.attribute</groupId>
+			<artifactId>AttributeStorage</artifactId>
+			<version>0.0.2-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+			</exclusions> 
 		</dependency>
 
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
@@ -197,11 +244,12 @@
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>Vault</artifactId>
 			<version>1.5.4</version>
-			<scope>provided</scope>
+			<type>jar</type>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -211,11 +259,12 @@
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizensapi</artifactId>
 			<version>2.0.16-SNAPSHOT</version>
-			<scope>provided</scope>
+			<type>jar</type>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -229,8 +278,8 @@
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -240,10 +289,12 @@
 			<groupId>net.ess3</groupId>
 			<artifactId>Essentials</artifactId>
 			<version>2.13-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -253,10 +304,12 @@
 			<groupId>net.minelink</groupId>
 			<artifactId>CombatTagPlus</artifactId>
 			<version>1.2.1-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -266,10 +319,12 @@
 			<groupId>com.trc202</groupId>
 			<artifactId>combattag</artifactId>
 			<version>6.4.1-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -279,10 +334,12 @@
 			<groupId>de.luricos.bukkit</groupId>
 			<artifactId>xAuth</artifactId>
 			<version>2.6</version>
+			<type>jar</type>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -292,12 +349,14 @@
 			<groupId>org.spoutcraft</groupId>
 			<artifactId>spoutcraftplugin</artifactId>
 			<version>1.6.4-SNAPSHOT</version>
+			<type>jar</type>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
 				</exclusion>
-			</exclusions>
+			</exclusions> 
 		</dependency>
 
 		<!-- Local Dependencies -->
@@ -311,10 +370,10 @@
 			<systemPath>${project.basedir}/libs/ChestShop.jar</systemPath>
 			<exclusions>
 				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
 				</exclusion>
-			</exclusions>
+			</exclusions> 
 		</dependency>
 
 		<!-- Citizens 1.X (No API) -->
