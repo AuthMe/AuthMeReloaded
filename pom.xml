@@ -177,8 +177,8 @@
 			<version>0.0.2-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -200,8 +200,8 @@
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -214,12 +214,8 @@
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.milkbowl.vault</groupId>
-					<artifactId>Vault</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -233,12 +229,8 @@
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.milkbowl.vault</groupId>
-					<artifactId>Vault</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -250,12 +242,8 @@
 			<version>2.13-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>net.milkbowl.vault</groupId>
-					<artifactId>Vault</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -267,8 +255,8 @@
 			<version>1.2.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -280,8 +268,8 @@
 			<version>6.4.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -293,8 +281,8 @@
 			<version>2.6</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -306,10 +294,10 @@
 			<version>1.6.4-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Local Dependencies -->
@@ -323,14 +311,10 @@
 			<systemPath>${project.basedir}/libs/ChestShop.jar</systemPath>
 			<exclusions>
 				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
 				</exclusion>
-				<exclusion>
-					<groupId>net.milkbowl.vault</groupId>
-					<artifactId>Vault</artifactId>
-				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Citizens 1.X (No API) -->
