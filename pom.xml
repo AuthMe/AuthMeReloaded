@@ -236,6 +236,10 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
+				</exclusion>
 			</exclusions> 
 		</dependency>
 
@@ -250,6 +254,10 @@
 				<exclusion>
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -266,6 +274,10 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
+				</exclusion>
 			</exclusions> 
 		</dependency>
 
@@ -280,6 +292,10 @@
 				<exclusion>
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -296,6 +312,10 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
+				</exclusion>
 			</exclusions> 
 		</dependency>
 
@@ -310,6 +330,10 @@
 				<exclusion>
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -326,6 +350,10 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
+				</exclusion>
 			</exclusions> 
 		</dependency>
 
@@ -341,6 +369,10 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
+				</exclusion>
 			</exclusions> 
 		</dependency>
 
@@ -355,6 +387,10 @@
 				<exclusion>
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
@@ -372,6 +408,10 @@
 				<exclusion>
 					<groupId>org.bukkit</groupId>
 					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
 				</exclusion>
 			</exclusions> 
 		</dependency>
