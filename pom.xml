@@ -167,7 +167,7 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.35</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- SQLite Library -->
@@ -176,7 +176,7 @@
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.10.1</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Database Library -->
@@ -185,7 +185,7 @@
 			<artifactId>h2</artifactId>
 			<version>1.4.187</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 		<!-- Java Email API -->
@@ -194,14 +194,14 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.3</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<version>1.5.0-b01</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		
 		<!-- Maxmind GeoIp API -->
@@ -210,7 +210,7 @@
 			<artifactId>geoip-api</artifactId>
 			<version>1.2.14</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 
 
@@ -222,7 +222,7 @@
 			<artifactId>spigot-api</artifactId>
 			<version>${bukkitVersion}</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
@@ -230,7 +230,7 @@
 			<artifactId>AttributeStorage</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -245,7 +245,7 @@
 			<artifactId>Vault</artifactId>
 			<version>1.5.4</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -260,7 +260,7 @@
 			<artifactId>citizensapi</artifactId>
 			<version>2.0.16-SNAPSHOT</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -275,7 +275,7 @@
 			<artifactId>Multiverse-Core</artifactId>
 			<version>2.5</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -290,7 +290,7 @@
 			<artifactId>Essentials</artifactId>
 			<version>2.13-SNAPSHOT</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -305,7 +305,7 @@
 			<artifactId>CombatTagPlus</artifactId>
 			<version>1.2.1-SNAPSHOT</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -320,7 +320,7 @@
 			<artifactId>combattag</artifactId>
 			<version>6.4.1-SNAPSHOT</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -335,7 +335,7 @@
 			<artifactId>xAuth</artifactId>
 			<version>2.6</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -350,7 +350,7 @@
 			<artifactId>spoutcraftplugin</artifactId>
 			<version>1.6.4-SNAPSHOT</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
