@@ -81,52 +81,52 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	
 	<repositories>
-
+		
 		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
 		</repository>
-
+		
 		<!-- Vault Repo -->
 		<repository>
 			<id>vault-repo</id>
 			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
 		</repository>
-
+		
 		<!-- Citizens 2.X Repo -->
 		<repository>
 			<id>everything</id>
 			<url>http://repo.citizensnpcs.co</url>
 		</repository>
-
+		
 		<!-- EssentialsX Repo -->
 		<repository>
 			<id>ess-repo</id>
 			<url>http://repo.ess3.net/content/groups/public</url>
 		</repository>
-
+		
 		<!-- CombatTagPlus Repo -->
 		<repository>
 			<id>minelink-thirdparty</id>
 			<url>http://repo.minelink.net/content/repositories/public</url>
 		</repository>
-
+		
 		<!-- CombatTag Repo, Unofficial (needs replacement) -->
 		<repository>
 			<id>techcable-repo</id>
 			<url>http://repo.techcable.net/content/repositories/snapshots/</url>
 		</repository>
-
+		
 		<!-- XAuth Repo -->
 		<repository>
 			<id>bukkit-plugins-releases</id>
 			<name>repo.luricos.de releases</name>
 			<url>http://repo.luricos.de/content/repositories/releases/</url>
 		</repository>
-
+		
 		<!-- SpoutCraft Repo -->
 		<repository>
 			<id>sonatype-nexus-releases</id>
@@ -141,67 +141,57 @@
 			</snapshots> -->
 		</repository>
 		<!-- End of Spout Repo -->
-
+		
 		<!-- Attribute Repo -->
 		<repository>
 			<id>comphenix-snapshots</id>
 			<name>Comphenix Maven Snapshots</name>
 			<url>http://repo.comphenix.net/content/repositories/snapshots/</url>
 		</repository>
-
+		
 		<!-- Multiverse Repo -->
 		<repository>
 			<id>onarandombox</id>
 			<url>http://repo.onarandombox.com/content/groups/public</url>
 		</repository>
-
+		
 	</repositories>
-
+	
 	<dependencies>
-
+		
 		<!-- Maven Dependencies -->
-
+		
 		<!-- MySql Library -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.35</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
-
+		
 		<!-- SQLite Library -->
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.10.1</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
-
+		
 		<!-- Database Library -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.187</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
-
+		
 		<!-- Java Email API -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.3</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>mail</artifactId>
 			<version>1.5.0-b01</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
 		
 		<!-- Maxmind GeoIp API -->
@@ -209,28 +199,20 @@
 			<groupId>com.maxmind.geoip</groupId>
 			<artifactId>geoip-api</artifactId>
 			<version>1.2.14</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
-
-
-
+		
 		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 
 			http://bukkit.org/ -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>${bukkitVersion}</version>
-			<type>jar</type>
-			<scope>provided</scope>
 		</dependency>
 		
 		<dependency>
 			<groupId>com.comphenix.attribute</groupId>
 			<artifactId>AttributeStorage</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -242,14 +224,12 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>Vault</artifactId>
 			<version>1.5.4</version>
-			<type>jar</type>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -261,14 +241,12 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- Citizens 2.X, NPC plugin, http://dev.bukkit.org/bukkit-plugins/citizens/ -->
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizensapi</artifactId>
 			<version>2.0.16-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -280,14 +258,14 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
 		<dependency>
 			<groupId>com.onarandombox.multiversecore</groupId>
 			<artifactId>Multiverse-Core</artifactId>
 			<version>2.5</version>
 			<type>jar</type>
-			<scope>provided</scope>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -299,14 +277,12 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- Essentials plugin -->
 		<dependency>
 			<groupId>net.ess3</groupId>
 			<artifactId>Essentials</artifactId>
 			<version>2.13-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -318,14 +294,12 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- Anti PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
 		<dependency>
 			<groupId>net.minelink</groupId>
 			<artifactId>CombatTagPlus</artifactId>
 			<version>1.2.1-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -337,14 +311,12 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- Anti PvPLogging plugin, http://www.spigotmc.org/resources/combat-tag.3182/ -->
 		<dependency>
 			<groupId>com.trc202</groupId>
 			<artifactId>combattag</artifactId>
 			<version>6.4.1-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -356,14 +328,12 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- XAuth, another authentication plugin, required by the database converter -->
 		<dependency>
 			<groupId>de.luricos.bukkit</groupId>
 			<artifactId>xAuth</artifactId>
 			<version>2.6</version>
-			<type>jar</type>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -375,14 +345,12 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- Spout API, https://spoutcraft.org/downloads/ -->
 		<dependency>
 			<groupId>org.spoutcraft</groupId>
 			<artifactId>spoutcraftplugin</artifactId>
 			<version>1.6.4-SNAPSHOT</version>
-			<type>jar</type>
-			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -394,9 +362,9 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- Local Dependencies -->
-
+		
 		<!-- It doesn't have a Maven Repo, http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
 		<dependency>
 			<groupId>com.Acrobot</groupId>
@@ -415,7 +383,7 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-
+		
 		<!-- Citizens 1.X (No API) -->
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
@@ -424,7 +392,7 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/Citizens.jar</systemPath>
 		</dependency>
-
+		
 		<!-- Old version of xAuth by Cypherx -->
 		<dependency>
 			<groupId>com.cypherx</groupId>
@@ -433,7 +401,7 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/xAuth.jar</systemPath>
 		</dependency>
-
+		
 		<!-- A SpoutApi Plugin, http://dev.bukkit.org/bukkit-plugins/notifications/ -->
 		<dependency>
 			<groupId>me.muizers</groupId>
@@ -442,6 +410,6 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/Notifications.jar</systemPath>
 		</dependency>
-
+		
 	</dependencies>
 </project>
