@@ -48,28 +48,28 @@
 					<target>${maven.compiler.target}</target>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>com.google.code.maven-replacer-plugin</groupId>
-                <artifactId>maven-replacer-plugin</artifactId>
-                <version>1.4.1</version>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <file>target/classes/plugin.yml</file>
-                    <replacements>
-                        <replacement>
-                            <token>${version}</token>
-                            <value>${version}</value>
-                        </replacement>
-                    </replacements>
-                </configuration>
-            </plugin>
+			<!-- <plugin>
+				<groupId>com.google.code.maven-replacer-plugin</groupId>
+				<artifactId>maven-replacer-plugin</artifactId>
+				<version>1.4.1</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>replace</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<file>target/classes/plugin.yml</file>
+					<replacements>
+						<replacement>
+							<token>${version}</token>
+							<value>${version}</value>
+						</replacement>
+					</replacements>
+				</configuration>
+			</plugin> -->
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.6</version>
