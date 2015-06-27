@@ -58,6 +58,10 @@ public class ChangePasswordCommand implements CommandExecutor {
             m.send(player, "password_error");
             return true;
         }
+        if (!args[1].matches(Settings.getPassRegex)) {
+            m.send(player, "password_error");
+            return true;
+        }
         try {
             String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, args[1], name);
 
