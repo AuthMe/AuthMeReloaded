@@ -41,23 +41,28 @@ public class AsyncronousRegister {
     }
 
     protected void preRegister() {
+        String lowpass = password.toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             m.send(player, "logged_in");
             allowRegister = false;
         }
 
-        if (!Settings.isRegistrationEnabled) {
+        else if (!Settings.isRegistrationEnabled) {
             m.send(player, "reg_disabled");
             allowRegister = false;
         }
 
-        String lowpass = password.toLowerCase();
-        if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
+        else if (!password.matches(Settings.getPassRegex)) {
             m.send(player, "password_error");
             allowRegister = false;
         }
 
-        if (database.isAuthAvailable(name)) {
+        else if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
+            m.send(player, "password_error");
+            allowRegister = false;
+        }
+
+        else if (database.isAuthAvailable(name)) {
             m.send(player, "user_regged");
             if (plugin.pllog.getStringList("players").contains(name)) {
                 plugin.pllog.getStringList("players").remove(name);
@@ -65,7 +70,7 @@ public class AsyncronousRegister {
             allowRegister = false;
         }
 
-        if (Settings.getmaxRegPerIp > 0) {
+        else if (Settings.getmaxRegPerIp > 0) {
             if (!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByIp(getIp()).size() >= Settings.getmaxRegPerIp && !getIp().equalsIgnoreCase("127.0.0.1") && !getIp().equalsIgnoreCase("localhost")) {
                 m.send(player, "max_reg");
                 allowRegister = false;
