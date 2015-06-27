@@ -2,13 +2,14 @@ package fr.xephi.authme.datasource;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
-public class CacheDataSource extends Thread implements DataSource {
+public class CacheDataSource implements DataSource {
 
     private DataSource source;
     public AuthMe plugin;
@@ -18,17 +19,12 @@ public class CacheDataSource extends Thread implements DataSource {
         this.plugin = plugin;
         this.source = source;
         /*
-         * We need to load all players in cache ...
-         * It will took more time to load the server,
-         * but it will be much easier to check for an isAuthAvailable !
+         * We need to load all players in cache ... It will took more time to
+         * load the server, but it will be much easier to check for an
+         * isAuthAvailable !
          */
-        for(PlayerAuth auth : source.getAllAuths())
-        	cache.put(auth.getNickname().toLowerCase(), auth);
-    }
-
-    public void run()
-    {
-    	this.setName("AuthMeCacheThread");
+        for (PlayerAuth auth : source.getAllAuths())
+            cache.put(auth.getNickname().toLowerCase(), auth);
     }
 
     @Override
@@ -40,7 +36,7 @@ public class CacheDataSource extends Thread implements DataSource {
 
     @Override
     public synchronized PlayerAuth getAuth(String user) {
-    	user = user.toLowerCase();
+        user = user.toLowerCase();
         if (cache.containsKey(user)) {
             return cache.get(user);
         } else {
@@ -139,7 +135,6 @@ public class CacheDataSource extends Thread implements DataSource {
     @Override
     public synchronized void close() {
         source.close();
-        this.interrupt();
     }
 
     @Override

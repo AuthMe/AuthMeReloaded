@@ -16,7 +16,7 @@ import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 
-public class SQLiteThread extends Thread implements DataSource {
+public class SQLite implements DataSource {
 
     private String database;
     private String tableName;
@@ -34,7 +34,7 @@ public class SQLiteThread extends Thread implements DataSource {
     private String columnID;
     private Connection con;
 
-    public void run() {
+    public SQLite() {
         this.database = Settings.getMySQLDatabase;
         this.tableName = Settings.getMySQLTablename;
         this.columnName = Settings.getMySQLColumnName;
@@ -72,7 +72,6 @@ public class SQLiteThread extends Thread implements DataSource {
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         }
-        this.setName("AuthMeSQLiteThread");
     }
 
     private synchronized void connect() throws ClassNotFoundException,

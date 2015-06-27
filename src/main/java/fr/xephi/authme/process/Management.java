@@ -17,7 +17,7 @@ import fr.xephi.authme.settings.Settings;
  *          href="http://dev.bukkit.org/profiles/Possible/">Possible</a>
  *
  */
-public class Management extends Thread {
+public class Management {
 
     public DataSource database;
     public AuthMe plugin;
@@ -30,12 +30,10 @@ public class Management extends Thread {
         this.pm = plugin.getServer().getPluginManager();
     }
 
-    public void run() {
-    }
-
     public void performLogin(final Player player, final String password,
             final boolean forceLogin) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
             @Override
             public void run() {
                 new AsyncronousLogin(player, password, forceLogin, plugin, database).process();
@@ -45,7 +43,8 @@ public class Management extends Thread {
 
     public void performRegister(final Player player, final String password,
             final String email) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
             @Override
             public void run() {
                 new AsyncronousRegister(player, password, email, plugin, database).process();

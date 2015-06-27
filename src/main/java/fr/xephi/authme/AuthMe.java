@@ -54,9 +54,10 @@ import fr.xephi.authme.commands.RegisterCommand;
 import fr.xephi.authme.commands.UnregisterCommand;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.FlatFileThread;
-import fr.xephi.authme.datasource.MySQLThread;
-import fr.xephi.authme.datasource.SQLiteThread;
+import fr.xephi.authme.datasource.DatabaseCalls;
+import fr.xephi.authme.datasource.FlatFile;
+import fr.xephi.authme.datasource.MySQL;
+import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeChestShopListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
@@ -102,7 +103,6 @@ public class AuthMe extends JavaPlugin {
     public HashMap<String, String> realIp = new HashMap<String, String>();
     public MultiverseCore multiverse = null;
     public Location essentialsSpawn;
-    public Thread databaseThread = null;
     public LookupService ls = null;
     public boolean antibotMod = false;
     public boolean delayedAntiBot = true;
@@ -205,26 +205,20 @@ public class AuthMe extends JavaPlugin {
          */
         switch (Settings.getDataSource) {
             case FILE:
-                FlatFileThread fileThread = new FlatFileThread();
-                fileThread.start();
+                FlatFile fileThread = new FlatFile();
                 database = fileThread;
-                databaseThread = fileThread;
                 final int a = database.getAccountsRegistered();
                 if (a >= 1000) {
                     ConsoleLogger.showError("YOU'RE USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
                 }
                 break;
             case MYSQL:
-                MySQLThread sqlThread = new MySQLThread();
-                sqlThread.start();
+                MySQL sqlThread = new MySQL();
                 database = sqlThread;
-                databaseThread = sqlThread;
                 break;
             case SQLITE:
-                SQLiteThread sqliteThread = new SQLiteThread();
-                sqliteThread.start();
+                SQLite sqliteThread = new SQLite();
                 database = sqliteThread;
-                databaseThread = sqliteThread;
                 final int b = database.getAccountsRegistered();
                 if (b >= 2000) {
                     ConsoleLogger.showError("YOU'RE USING SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
@@ -234,19 +228,17 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.isCachingEnabled) {
             database = new CacheDataSource(this, database);
-            if (database instanceof CacheDataSource)
-                ((CacheDataSource) database).start();
         }
 
+        database = new DatabaseCalls(this, database);
+
         dataManager = new DataManager(this, database);
-        dataManager.start();
 
         // Setup API
         api = new API(this, database);
 
         // Setup Management
         management = new Management(database, this);
-        management.start();
 
         PluginManager pm = getServer().getPluginManager();
         if (Settings.bungee) {
@@ -483,16 +475,6 @@ public class AuthMe extends JavaPlugin {
 
         if (database != null) {
             database.close();
-        }
-
-        if (databaseThread != null) {
-            if (databaseThread.isAlive())
-                databaseThread.interrupt();
-        }
-
-        if (dataManager != null) {
-            if (dataManager.isAlive())
-                dataManager.interrupt();
         }
 
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {

@@ -8,7 +8,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.FlatFileThread;
+import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.settings.Messages;
 
 public class SqlToFlat implements Converter {
@@ -26,8 +26,7 @@ public class SqlToFlat implements Converter {
     @Override
     public void run() {
         try {
-            FlatFileThread flat = new FlatFileThread();
-            flat.start();
+            FlatFile flat = new FlatFile();
             List<PlayerAuth> auths = database.getAllAuths();
             int i = 0;
             final int size = auths.size();
@@ -38,8 +37,6 @@ public class SqlToFlat implements Converter {
                     sender.sendMessage("Conversion Status : " + i + " / " + size);
                 }
             }
-            if (flat != null && flat.isAlive())
-                flat.interrupt();
             sender.sendMessage("Successfully convert from SQL table to file auths.db");
             return;
         } catch (Exception ex) {

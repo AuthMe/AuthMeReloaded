@@ -2,6 +2,11 @@ package fr.xephi.authme;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import net.milkbowl.vault.permission.Permission;
 
@@ -12,7 +17,7 @@ import org.bukkit.entity.Player;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Settings;
 
-public class DataManager extends Thread {
+public class DataManager {
 
     public AuthMe plugin;
     public DataSource database;
@@ -25,20 +30,31 @@ public class DataManager extends Thread {
     public void run() {
     }
 
-    public OfflinePlayer getOfflinePlayer(String name) {
-        OfflinePlayer result = null;
-        try {
-            for (OfflinePlayer op : Bukkit.getOfflinePlayers())
-                if (op.getName().equalsIgnoreCase(name)) {
-                    result = op;
-                    break;
+    public synchronized OfflinePlayer getOfflinePlayer(final String name) {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<OfflinePlayer> result = executor.submit(new Callable<OfflinePlayer>() {
+
+            public synchronized OfflinePlayer call() throws Exception {
+                OfflinePlayer result = null;
+                try {
+                    for (OfflinePlayer op : Bukkit.getOfflinePlayers())
+                        if (op.getName().equalsIgnoreCase(name)) {
+                            result = op;
+                            break;
+                        }
+                } catch (Exception e) {
                 }
-        } catch (Exception e) {
+                return result;
+            }
+        });
+        try {
+            return result.get();
+        } catch (InterruptedException | ExecutionException e) {
+            return (null);
         }
-        return result;
     }
 
-    public void purgeAntiXray(List<String> cleared) {
+    public synchronized void purgeAntiXray(List<String> cleared) {
         int i = 0;
         for (String name : cleared) {
             try {
@@ -57,7 +73,7 @@ public class DataManager extends Thread {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " AntiXRayData Files");
     }
 
-    public void purgeLimitedCreative(List<String> cleared) {
+    public synchronized void purgeLimitedCreative(List<String> cleared) {
         int i = 0;
         for (String name : cleared) {
             try {
@@ -86,7 +102,7 @@ public class DataManager extends Thread {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " LimitedCreative Survival, Creative and Adventure files");
     }
 
-    public void purgeDat(List<String> cleared) {
+    public synchronized void purgeDat(List<String> cleared) {
         int i = 0;
         for (String name : cleared) {
             try {
@@ -120,12 +136,12 @@ public class DataManager extends Thread {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
     }
 
-    @SuppressWarnings("deprecation")
-    public void purgePermissions(List<String> cleared, Permission permission) {
+    public synchronized void purgePermissions(List<String> cleared,
+            Permission permission) {
         int i = 0;
         for (String name : cleared) {
             try {
-                OfflinePlayer p = Bukkit.getOfflinePlayer(name);
+                OfflinePlayer p = this.getOfflinePlayer(name);
                 for (String group : permission.getPlayerGroups((Player) p)) {
                     permission.playerRemoveGroup(null, p, group);
                 }

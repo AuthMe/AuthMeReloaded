@@ -243,4 +243,17 @@ public class PlayerAuth {
         this.nickname = nickname;
     }
 
+    public void set(PlayerAuth auth) {
+        this.setEmail(auth.getEmail());
+        this.setHash(auth.getHash());
+        this.setIp(auth.getIp());
+        this.setLastLogin(auth.getLastLogin());
+        this.setName(auth.getNickname());
+        this.setQuitLocX(auth.getQuitLocX());
+        this.setQuitLocY(auth.getQuitLocY());
+        this.setQuitLocZ(auth.getQuitLocZ());
+        this.setSalt(auth.getSalt());
+        this.setWorld(auth.getWorld());
+    }
+
 }

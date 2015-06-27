@@ -18,7 +18,7 @@ import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
-public class MySQLThread extends Thread implements DataSource {
+public class MySQL implements DataSource {
 
     private String host;
     private String port;
@@ -42,7 +42,7 @@ public class MySQLThread extends Thread implements DataSource {
     private List<String> columnOthers;
     private MiniConnectionPoolManager conPool;
 
-    public void run() {
+    public MySQL() {
         this.host = Settings.getMySQLHost;
         this.port = Settings.getMySQLPort;
         this.username = Settings.getMySQLUsername;
@@ -94,7 +94,6 @@ public class MySQLThread extends Thread implements DataSource {
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
         }
-        this.setName("AuthMeMySQLThread");
     }
 
     private synchronized void connect() throws ClassNotFoundException,

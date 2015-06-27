@@ -357,14 +357,9 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-
         if (!Settings.isForcedRegistrationEnabled) {
-            return;
+            if (!data.isAuthAvailable(name))
+                return;
         }
 
         if (!Settings.isMovementAllowed) {
