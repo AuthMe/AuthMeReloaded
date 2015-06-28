@@ -52,12 +52,7 @@ public class AsyncronousRegister {
             allowRegister = false;
         }
 
-        else if (!password.matches(Settings.getPassRegex)) {
-            m.send(player, "password_error");
-            allowRegister = false;
-        }
-
-        else if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
+        else if ((lowpass.equalsIgnoreCase(player.getName()) || lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
             m.send(player, "password_error");
             allowRegister = false;
         }

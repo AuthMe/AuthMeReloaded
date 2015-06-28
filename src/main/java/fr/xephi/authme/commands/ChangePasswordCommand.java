@@ -58,7 +58,7 @@ public class ChangePasswordCommand implements CommandExecutor {
             m.send(player, "password_error");
             return true;
         }
-        if (!args[1].matches(Settings.getPassRegex)) {
+        if (lowpass.equalsIgnoreCase(name)) {
             m.send(player, "password_error");
             return true;
         }
