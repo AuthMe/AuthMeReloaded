@@ -43,7 +43,6 @@ import fr.xephi.authme.Utils;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
@@ -60,14 +59,12 @@ public class AuthMePlayerListener implements Listener {
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
     private DataSource data;
-    private FileCache playerBackup;
     public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<String, Boolean>();
     private List<String> antibot = new ArrayList<String>();
 
     public AuthMePlayerListener(AuthMe plugin, DataSource data) {
         this.plugin = plugin;
         this.data = data;
-        this.playerBackup = new FileCache(plugin);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
