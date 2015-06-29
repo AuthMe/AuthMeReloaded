@@ -100,7 +100,7 @@ public class AsyncronousJoin {
                 long timeout = Settings.getSessionTimeout * 60000;
                 long lastLogin = auth.getLastLogin();
                 long cur = new Date().getTime();
-                if ((cur - lastLogin < timeout || timeout == 0) && !auth.getIp().equals("198.18.0.1")) {
+                if ((cur - lastLogin < timeout || timeout == 0) && !auth.getIp().matches("198.168.(0|1).1")) {
                     if (auth.getNickname().equalsIgnoreCase(name) && auth.getIp().equals(ip)) {
                         if (PlayerCache.getInstance().getAuth(name) != null) {
                             PlayerCache.getInstance().updatePlayer(auth);
