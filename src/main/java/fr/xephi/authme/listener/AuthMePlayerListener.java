@@ -443,15 +443,12 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (data.isAuthAvailable(name) && !LimboCache.getInstance().hasLimboPlayer(name)) {
-            if (!Settings.isSessionsEnabled) {
-            } else if (PlayerCache.getInstance().isAuthenticated(name)) {
-                if (!Settings.sessionExpireOnIpChange)
-                    if (LimboCache.getInstance().hasLimboPlayer(player.getName().toLowerCase())) {
+        if (data.isAuthAvailable(name) && LimboCache.getInstance().hasLimboPlayer(name))
+            if (Settings.isSessionsEnabled)
+                if (PlayerCache.getInstance().isAuthenticated(name))
+                    if (!Settings.sessionExpireOnIpChange)
                         LimboCache.getInstance().deleteLimboPlayer(name);
-                    }
-            }
-        }
+
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
