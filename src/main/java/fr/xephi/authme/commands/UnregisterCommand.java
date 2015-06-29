@@ -2,8 +2,6 @@ package fr.xephi.authme.commands;
 
 import java.security.NoSuchAlgorithmException;
 
-import me.muizers.Notifications.Notification;
-
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -29,6 +27,7 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import me.muizers.Notifications.Notification;
 
 public class UnregisterCommand implements CommandExecutor {
 
@@ -93,10 +92,10 @@ public class UnregisterCommand implements CommandExecutor {
                     int interval = Settings.getWarnMessageInterval;
                     BukkitScheduler sched = sender.getServer().getScheduler();
                     if (delay != 0) {
-                        BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
+                        BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name), delay);
                         LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTask(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
                     m.send(player, "unregistered");
                     ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                     if (plugin.notifications != null) {

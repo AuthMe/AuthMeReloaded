@@ -3,8 +3,6 @@ package fr.xephi.authme.process.login;
 import java.util.Date;
 import java.util.List;
 
-import me.muizers.Notifications.Notification;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -21,6 +19,7 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
+import me.muizers.Notifications.Notification;
 
 public class AsyncronousLogin {
 
@@ -64,7 +63,8 @@ public class AsyncronousLogin {
                     player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
                 }
                 return true;
-            } else if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
+            } else
+                if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
                 try {
                     plugin.captcha.remove(name);
                     plugin.cap.remove(name);
@@ -87,14 +87,14 @@ public class AsyncronousLogin {
         if (!database.isAuthAvailable(name)) {
             m.send(player, "user_unknown");
             if (LimboCache.getInstance().hasLimboPlayer(name)) {
-            	LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
+                LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
                 String[] msg;
                 if (Settings.emailRegistration) {
                     msg = m.send("reg_email_msg");
                 } else {
                     msg = m.send("reg_msg");
                 }
-                BukkitTask msgT = Bukkit.getScheduler().runTask(plugin, new MessageTask(plugin, name, msg, Settings.getWarnMessageInterval));
+                BukkitTask msgT = Bukkit.getScheduler().runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, Settings.getWarnMessageInterval));
                 LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
             }
             return null;

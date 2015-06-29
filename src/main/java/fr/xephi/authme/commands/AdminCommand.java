@@ -268,7 +268,8 @@ public class AdminCommand implements CommandExecutor {
                 });
                 return true;
             }
-        } else if (args[0].equalsIgnoreCase("register") || args[0].equalsIgnoreCase("reg")) {
+        } else
+            if (args[0].equalsIgnoreCase("register") || args[0].equalsIgnoreCase("reg")) {
             if (args.length != 3) {
                 sender.sendMessage("Usage: /authme register playername password");
                 return true;
@@ -394,7 +395,8 @@ public class AdminCommand implements CommandExecutor {
                 ConsoleLogger.showError(ex.getMessage());
             }
             return true;
-        } else if (args[0].equalsIgnoreCase("changepassword") || args[0].equalsIgnoreCase("cp")) {
+        } else
+            if (args[0].equalsIgnoreCase("changepassword") || args[0].equalsIgnoreCase("cp")) {
             if (args.length != 3) {
                 sender.sendMessage("Usage: /authme changepassword playername newpassword");
                 return true;
@@ -460,10 +462,10 @@ public class AdminCommand implements CommandExecutor {
                     int interval = Settings.getWarnMessageInterval;
                     BukkitScheduler sched = sender.getServer().getScheduler();
                     if (delay != 0) {
-                        BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
+                        BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name), delay);
                         LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTask(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
                     if (Settings.applyBlindEffect)
                         target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
                     m.send(target, "unregistered");
