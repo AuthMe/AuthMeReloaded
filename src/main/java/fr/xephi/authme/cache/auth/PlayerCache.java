@@ -1,14 +1,14 @@
 package fr.xephi.authme.cache.auth;
 
-import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerCache {
 
     private static PlayerCache singleton = null;
-    private HashMap<String, PlayerAuth> cache;
+    private ConcurrentHashMap<String, PlayerAuth> cache;
 
     private PlayerCache() {
-        cache = new HashMap<String, PlayerAuth>();
+        cache = new ConcurrentHashMap<String, PlayerAuth>();
     }
 
     public void addPlayer(PlayerAuth auth) {

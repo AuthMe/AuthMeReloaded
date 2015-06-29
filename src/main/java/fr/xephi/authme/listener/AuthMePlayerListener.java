@@ -6,9 +6,8 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.PatternSyntaxException;
 
 import org.bukkit.Bukkit;
@@ -37,51 +36,35 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.DataFileCache;
-import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
-import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.events.RestoreInventoryEvent;
-import fr.xephi.authme.events.SessionEvent;
-import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
 
 public class AuthMePlayerListener implements Listener {
 
     public static GameMode gm = GameMode.SURVIVAL;
-    public static HashMap<String, GameMode> gameMode = new HashMap<String, GameMode>();
-    public static HashMap<String, String> joinMessage = new HashMap<String, String>();
+    public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<String, GameMode>();
+    public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<String, String>();
     private Utils utils = Utils.getInstance();
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
     private DataSource data;
-    private FileCache playerBackup;
-    public static HashMap<String, Boolean> causeByAuthMe = new HashMap<String, Boolean>();
+    public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<String, Boolean>();
     private List<String> antibot = new ArrayList<String>();
 
     public AuthMePlayerListener(AuthMe plugin, DataSource data) {
         this.plugin = plugin;
         this.data = data;
-        this.playerBackup = new FileCache(plugin);
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -460,15 +443,12 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (data.isAuthAvailable(name) && !LimboCache.getInstance().hasLimboPlayer(name)) {
-            if (!Settings.isSessionsEnabled) {
-            } else if (PlayerCache.getInstance().isAuthenticated(name)) {
-                if (!Settings.sessionExpireOnIpChange)
-                    if (LimboCache.getInstance().hasLimboPlayer(player.getName().toLowerCase())) {
+        if (data.isAuthAvailable(name) && LimboCache.getInstance().hasLimboPlayer(name))
+            if (Settings.isSessionsEnabled)
+                if (PlayerCache.getInstance().isAuthenticated(name))
+                    if (!Settings.sessionExpireOnIpChange)
                         LimboCache.getInstance().deleteLimboPlayer(name);
-                    }
-            }
-        }
+
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
@@ -578,188 +558,9 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-        gm = player.getGameMode();
-        gameMode.put(name, gm);
-        BukkitScheduler sched = plugin.getServer().getScheduler();
+        String name = player.getName().toLowerCase();
 
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
-            return;
-        }
-
-        if (plugin.ess != null && Settings.disableSocialSpy) {
-            try {
-                plugin.ess.getUser(player.getName().toLowerCase()).setSocialSpyEnabled(false);
-            } catch (Exception e) {
-            } catch (NoSuchMethodError e) {
-            }
-        }
-
-        String ip = plugin.getIP(player);
-        if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
-            GameMode gM = gameMode.get(name);
-            causeByAuthMe.put(name, true);
-            player.setGameMode(gM);
-            causeByAuthMe.put(name, false);
-            player.kickPlayer("You are not the Owner of this account, please try another name!");
-            if (Settings.banUnsafeIp)
-                plugin.getServer().banIP(ip);
-            return;
-        }
-        if (Settings.getMaxJoinPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
-            if (plugin.hasJoinedIp(player.getName(), ip)) {
-                player.kickPlayer("A player with the same IP is already in game!");
-                return;
-            }
-        }
-        Location spawnLoc = plugin.getSpawnLocation(player);
-        if (data.isAuthAvailable(name)) {
-            if (Settings.isSessionsEnabled) {
-                PlayerAuth auth = data.getAuth(name);
-                long timeout = Settings.getSessionTimeout * 60000;
-                long lastLogin = auth.getLastLogin();
-                long cur = new Date().getTime();
-                if ((cur - lastLogin < timeout || timeout == 0) && !auth.getIp().equals("198.18.0.1")) {
-                    if (auth.getNickname().equalsIgnoreCase(name) && auth.getIp().equals(ip)) {
-                        if (PlayerCache.getInstance().getAuth(name) != null) {
-                            PlayerCache.getInstance().updatePlayer(auth);
-                        } else {
-                            PlayerCache.getInstance().addPlayer(auth);
-                            data.setLogged(name);
-                        }
-                        m.send(player, "valid_session");
-                        // Restore Permission Group
-                        utils.setGroup(player, Utils.groupType.LOGGEDIN);
-                        plugin.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
-                        return;
-                    } else if (!Settings.sessionExpireOnIpChange) {
-                        GameMode gM = gameMode.get(name);
-                        causeByAuthMe.put(name, true);
-                        player.setGameMode(gM);
-                        causeByAuthMe.put(name, false);
-                        player.kickPlayer(m.send("unvalid_session")[0]);
-                        return;
-                    } else if (auth.getNickname().equalsIgnoreCase(name)) {
-                        if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                            causeByAuthMe.put(name, true);
-                            Utils.forceGM(player);
-                            causeByAuthMe.put(name, false);
-                        }
-                        // Player change his IP between 2 relog-in
-                        PlayerCache.getInstance().removePlayer(name);
-                        data.setUnlogged(name);
-                    } else {
-                        GameMode gM = gameMode.get(name);
-                        causeByAuthMe.put(name, true);
-                        player.setGameMode(gM);
-                        causeByAuthMe.put(name, false);
-                        player.kickPlayer(m.send("unvalid_session")[0]);
-                        return;
-                    }
-                } else {
-                    // Session is ended correctly
-                    PlayerCache.getInstance().removePlayer(name);
-                    data.setUnlogged(name);
-                }
-            }
-            // isent in session or session was ended correctly
-            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                causeByAuthMe.put(name, true);
-                Utils.forceGM(player);
-                causeByAuthMe.put(name, false);
-            }
-            if (!Settings.noTeleport)
-                if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
-                    plugin.getServer().getPluginManager().callEvent(tpEvent);
-                    if (!tpEvent.isCancelled()) {
-                        if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                            if (tpEvent.getTo().getWorld() != null)
-                                player.teleport(tpEvent.getTo());
-                        }
-                    }
-                }
-            placePlayerSafely(player, spawnLoc);
-            LimboCache.getInstance().updateLimboPlayer(player);
-            try {
-                DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
-                playerBackup.createCache(player, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(), LimboCache.getInstance().getLimboPlayer(name).getOperator(), LimboCache.getInstance().getLimboPlayer(name).isFlying());
-            } catch (Exception e) {
-                ConsoleLogger.showError("Error on creating an inventory cache for " + name + ", maybe inventory wipe in preparation...");
-            }
-        } else {
-            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                causeByAuthMe.put(name, true);
-                Utils.forceGM(player);
-                causeByAuthMe.put(name, false);
-            }
-            if (!Settings.unRegisteredGroup.isEmpty()) {
-                utils.setGroup(player, Utils.groupType.UNREGISTERED);
-            }
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (!Settings.noTeleport)
-                if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
-                    plugin.getServer().getPluginManager().callEvent(tpEvent);
-                    if (!tpEvent.isCancelled()) {
-                        if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                            if (tpEvent.getTo().getWorld() != null)
-                                player.teleport(tpEvent.getTo());
-                        }
-                    }
-                }
-
-        }
-        if (Settings.protectInventoryBeforeLogInEnabled) {
-            try {
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-                plugin.getServer().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    if (!Settings.noConsoleSpam)
-                        ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
-                } else {
-                    API.setPlayerInventory(player, ev.getEmptyInventory(), ev.getEmptyArmor());
-                }
-            } catch (NullPointerException ex) {
-            }
-        }
-        String[] msg;
-        if (Settings.emailRegistration) {
-            msg = data.isAuthAvailable(name) ? m.send("login_msg") : m.send("reg_email_msg");
-        } else {
-            msg = data.isAuthAvailable(name) ? m.send("login_msg") : m.send("reg_msg");
-        }
-        int time = Settings.getRegistrationTimeout * 20;
-        int msgInterval = Settings.getWarnMessageInterval;
-        if (time != 0) {
-            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), time);
-            if (!LimboCache.getInstance().hasLimboPlayer(name))
-                LimboCache.getInstance().addLimboPlayer(player);
-            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
-        }
-        if (!LimboCache.getInstance().hasLimboPlayer(name))
-            LimboCache.getInstance().addLimboPlayer(player);
-        if (data.isAuthAvailable(name)) {
-            utils.setGroup(player, groupType.NOTLOGGEDIN);
-        } else {
-            utils.setGroup(player, groupType.UNREGISTERED);
-        }
-        if (player.isOp())
-            player.setOp(false);
-        if (!Settings.isMovementAllowed) {
-            player.setAllowFlight(true);
-            player.setFlying(true);
-        }
-        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
-        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
-        player.setNoDamageTicks(Settings.getRegistrationTimeout * 20);
-        if (Settings.useEssentialsMotd)
-            player.performCommand("motd");
-        if (Settings.applyBlindEffect)
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
+        plugin.management.performJoin(player);
 
         // Remove the join message while the player isn't logging in
         if (Settings.enableProtection || Settings.delayJoinMessage) {
@@ -797,61 +598,11 @@ public class AuthMePlayerListener implements Listener {
 
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
-        Location loc = player.getLocation();
 
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
-            return;
-        }
-
-        String ip = plugin.getIP(player);
-
-        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) {
-            if (Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
-                final PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName());
-                try {
-                    data.updateQuitLoc(auth);
-                } catch (NullPointerException npe) {
-                }
-            }
-            PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis());
-            data.updateSession(auth);
-        }
+        plugin.management.performQuit(player);
 
         if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
             event.setQuitMessage(null);
-
-        if (LimboCache.getInstance().hasLimboPlayer(name)) {
-            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-            if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
-                RestoreInventoryEvent ev = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-                plugin.getServer().getPluginManager().callEvent(ev);
-                if (!ev.isCancelled()) {
-                    API.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
-                }
-            }
-            utils.addNormal(player, limbo.getGroup());
-            player.setOp(limbo.getOperator());
-            if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
-                player.setAllowFlight(limbo.isFlying());
-                player.setFlying(limbo.isFlying());
-            }
-            if (limbo.getTimeoutTaskId() != null)
-                limbo.getTimeoutTaskId().cancel();
-            if (limbo.getMessageTaskId() != null)
-                limbo.getMessageTaskId().cancel();
-            LimboCache.getInstance().deleteLimboPlayer(name);
-            if (playerBackup.doesCacheExist(player)) {
-                playerBackup.removeCache(player);
-            }
-        }
-        PlayerCache.getInstance().removePlayer(name);
-        data.setUnlogged(name);
-        try {
-            player.getVehicle().eject();
-        } catch (NullPointerException ex) {
-        }
-        if (gameMode.containsKey(name))
-            gameMode.remove(name);
     }
 
     @EventHandler(priority = EventPriority.MONITOR)
@@ -864,83 +615,13 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        Location loc = player.getLocation();
-
-        if ((plugin.getCitizensCommunicator().isNPC(player, plugin)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
-            return;
-        }
 
         if ((Settings.isForceSingleSessionEnabled) && (event.getReason().contains("You logged in from another location"))) {
             event.setCancelled(true);
             return;
         }
 
-        String name = player.getName().toLowerCase();
-
-        String ip = plugin.getIP(player);
-        if ((PlayerCache.getInstance().isAuthenticated(name)) && (!player.isDead())) {
-            if ((Settings.isSaveQuitLocationEnabled) && data.isAuthAvailable(name)) {
-                final PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName());
-                try {
-                    data.updateQuitLoc(auth);
-                } catch (NullPointerException npe) {
-                }
-            }
-            PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis());
-            data.updateSession(auth);
-        }
-
-        if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
-            event.setLeaveMessage(null);
-
-        if (LimboCache.getInstance().hasLimboPlayer(name)) {
-            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-            if (Settings.protectInventoryBeforeLogInEnabled) {
-                try {
-                    RestoreInventoryEvent ev = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-                    plugin.getServer().getPluginManager().callEvent(ev);
-                    if (!ev.isCancelled()) {
-                        API.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
-                    }
-                } catch (NullPointerException npe) {
-                    ConsoleLogger.showError("Problem while restore " + name + " inventory after a kick");
-                }
-            }
-            if (!Settings.noTeleport)
-                try {
-                    AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
-                    plugin.getServer().getPluginManager().callEvent(tpEvent);
-                    if (!tpEvent.isCancelled()) {
-                        if (player != null && player.isOnline() && tpEvent.getTo() != null) {
-                            if (tpEvent.getTo().getWorld() != null)
-                                player.teleport(tpEvent.getTo());
-                        }
-                    }
-                } catch (NullPointerException npe) {
-                }
-            this.utils.addNormal(player, limbo.getGroup());
-            player.setOp(limbo.getOperator());
-            if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
-                player.setAllowFlight(limbo.isFlying());
-                player.setFlying(limbo.isFlying());
-            }
-            if (limbo.getTimeoutTaskId() != null)
-                limbo.getTimeoutTaskId().cancel();
-            if (limbo.getMessageTaskId() != null)
-                limbo.getMessageTaskId().cancel();
-            LimboCache.getInstance().deleteLimboPlayer(name);
-            if (this.playerBackup.doesCacheExist(player)) {
-                this.playerBackup.removeCache(player);
-            }
-        }
-        PlayerCache.getInstance().removePlayer(name);
-        data.setUnlogged(name);
-        if (gameMode.containsKey(name))
-            gameMode.remove(name);
-        try {
-            player.getVehicle().eject();
-        } catch (NullPointerException ex) {
-        }
+        plugin.management.performQuit(player);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

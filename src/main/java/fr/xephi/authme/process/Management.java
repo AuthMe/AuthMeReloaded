@@ -6,7 +6,10 @@ import org.bukkit.plugin.PluginManager;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.process.join.AsyncronousJoin;
 import fr.xephi.authme.process.login.AsyncronousLogin;
+import fr.xephi.authme.process.logout.AsyncronousLogout;
+import fr.xephi.authme.process.quit.AsyncronousQuit;
 import fr.xephi.authme.process.register.AsyncronousRegister;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
@@ -49,6 +52,38 @@ public class Management {
             public void run() {
                 new AsyncronousRegister(player, password, email, plugin, database).process();
             }
+        });
+    }
+
+    public void performLogout(final Player player) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                new AsyncronousLogout(player, plugin, database).process();
+            }
+        });
+    }
+
+    public void performQuit(final Player player) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                new AsyncronousQuit(player, plugin, database).process();
+            }
+
+        });
+    }
+
+    public void performJoin(final Player player) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                new AsyncronousJoin(player, plugin, database).process();
+            }
+
         });
     }
 }
