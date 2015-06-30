@@ -90,19 +90,19 @@
 			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
 		</repository>
 
-		<!-- Vault Repo -->
+		<!-- Vault Repo (Already in ess repo!)
 		<repository>
 			<id>vault-repo</id>
 			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
-		</repository>
+		</repository> -->
 
 		<!-- Citizens 2.X Repo -->
 		<repository>
-			<id>everything</id>
+			<id>citizens-repo</id>
 			<url>http://repo.citizensnpcs.co</url>
 		</repository>
 
-		<!-- EssentialsX Repo -->
+		<!-- Essentials Repo -->
 		<repository>
 			<id>ess-repo</id>
 			<url>http://repo.ess3.net/content/groups/public</url>
@@ -114,38 +114,27 @@
 			<url>http://repo.minelink.net/content/repositories/public</url>
 		</repository>
 
-		<!-- CombatTag Repo, Unofficial (needs replacement) -->
+		<!-- CombatTag Repo, Unofficial (needs replacement) UPDATE: this server is OFFLINE
 		<repository>
 			<id>techcable-repo</id>
 			<url>http://repo.techcable.net/content/repositories/snapshots/</url>
-		</repository>
+		</repository> -->
 
 		<!-- XAuth Repo -->
 		<repository>
-			<id>bukkit-plugins-releases</id>
-			<name>repo.luricos.de releases</name>
+			<id>luricos-releases</id>
 			<url>http://repo.luricos.de/content/repositories/releases/</url>
 		</repository>
 
 		<!-- SpoutCraft Repo -->
 		<repository>
-			<id>sonatype-nexus-releases</id>
-			<url>https://oss.sonatype.org/content/repositories/releases</url>
-		</repository>
-		<repository>
 			<id>sonatype-nexus-snapshots</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<!-- <snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots> -->
 		</repository>
-		<!-- End of Spout Repo -->
 
 		<!-- Attribute Repo -->
 		<repository>
 			<id>comphenix-snapshots</id>
-			<name>Comphenix Maven Snapshots</name>
 			<url>http://repo.comphenix.net/content/repositories/snapshots/</url>
 		</repository>
 
@@ -209,6 +198,7 @@
 			<version>${bukkitVersion}</version>
 		</dependency>
 
+        <!-- Attribute -->
 		<dependency>
 			<groupId>com.comphenix.attribute</groupId>
 			<artifactId>AttributeStorage</artifactId>
@@ -315,8 +305,8 @@
 		<!-- Anti PvPLogging plugin, http://www.spigotmc.org/resources/combat-tag.3182/ -->
 		<dependency>
 			<groupId>com.trc202</groupId>
-			<artifactId>combattag</artifactId>
-			<version>6.4.1-SNAPSHOT</version>
+			<artifactId>CombatTag</artifactId>
+			<version>6.2.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
