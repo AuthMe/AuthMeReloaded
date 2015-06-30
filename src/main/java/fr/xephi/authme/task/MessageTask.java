@@ -1,7 +1,6 @@
 package fr.xephi.authme.task;
 
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
@@ -33,11 +32,11 @@ public class MessageTask implements Runnable {
                 for (String ms : msg) {
                     player.sendMessage(ms);
                 }
-                BukkitScheduler sched = plugin.getServer().getScheduler();
-                BukkitTask late = sched.runTaskLater(plugin, this, interval * 20);
+                BukkitTask late = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, this, interval * 20);
                 if (LimboCache.getInstance().hasLimboPlayer(name)) {
                     LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(late);
                 }
+                return;
             }
         }
     }

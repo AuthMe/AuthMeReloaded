@@ -1,5 +1,6 @@
 package fr.xephi.authme.task;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
@@ -34,7 +35,7 @@ public class TimeoutTask implements Runnable {
         if (PlayerCache.getInstance().isAuthenticated(name))
             return;
 
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (final Player player : plugin.getServer().getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
                 if (LimboCache.getInstance().hasLimboPlayer(name)) {
                     LimboPlayer inv = LimboCache.getInstance().getLimboPlayer(name);
@@ -44,14 +45,27 @@ public class TimeoutTask implements Runnable {
                         playerCache.removeCache(player);
                     }
                 }
-                GameMode gm = AuthMePlayerListener.gameMode.get(name);
-                if (gm != null)
-                {
-                	player.setGameMode(gm);
-                	ConsoleLogger.info("Set " + player.getName() + " to gamemode: " + gm.name());
+                final GameMode gm = AuthMePlayerListener.gameMode.get(name);
+                if (gm != null) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+                        @Override
+                        public void run() {
+                            player.setGameMode(gm);
+                        }
+
+                    });
+                    ConsoleLogger.info("Set " + player.getName() + " to gamemode: " + gm.name());
                 }
-                player.kickPlayer(m.send("timeout")[0]);
-                break;
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (player.isOnline())
+                            player.kickPlayer(m.send("timeout")[0]);
+                    }
+                });
+                return;
             }
         }
     }

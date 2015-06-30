@@ -1,7 +1,5 @@
 package fr.xephi.authme.process.register;
 
-import me.muizers.Notifications.Notification;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -22,6 +20,7 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import me.muizers.Notifications.Notification;
 
 public class ProcessSyncronousPasswordRegister implements Runnable {
 
@@ -67,10 +66,10 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         int interval = Settings.getWarnMessageInterval;
         BukkitScheduler sched = plugin.getServer().getScheduler();
         if (delay != 0) {
-            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
+            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name), delay);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
+        BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         try {
             plugin.pllog.removePlayer(name);
