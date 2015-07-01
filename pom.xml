@@ -218,8 +218,8 @@
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>Vault</artifactId>
-			<version>1.5.4</version>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.5</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>

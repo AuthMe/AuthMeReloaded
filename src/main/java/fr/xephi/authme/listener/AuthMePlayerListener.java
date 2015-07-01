@@ -606,7 +606,7 @@ public class AuthMePlayerListener implements Listener {
 
         Player player = event.getPlayer();
 
-        if ((!Settings.isForceSingleSessionEnabled) && (event.getReason().contains("You logged in from another location"))) {
+        if ((!Settings.isForceSingleSessionEnabled) && (event.getReason().contains(m.getString("same_nick")))) {
             event.setCancelled(true);
             return;
         }
