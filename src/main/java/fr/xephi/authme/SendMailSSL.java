@@ -4,12 +4,16 @@ import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.mail.BodyPart;
 import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.bukkit.Bukkit;
 
@@ -37,20 +41,16 @@ public class SendMailSSL {
             sendername = Settings.getmailSenderName;
         }
 
+        String port = String.valueOf(Settings.getMailPort);
         Properties props = new Properties();
         props.put("mail.smtp.host", Settings.getmailSMTP);
-        props.put("mail.smtp.socketFactory.port", String.valueOf(Settings.getMailPort));
-        props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", String.valueOf(Settings.getMailPort));
+        props.put("mail.smtp.port", port);
+        props.put("mail.smtp.starttls.enable", true);
 
         try {
-            Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+            Session session = Session.getInstance(props, null);
 
-                protected PasswordAuthentication getPasswordAuthentication() {
-                    return new PasswordAuthentication(Settings.getmailAccount, Settings.getmailPassword);
-                }
-            });
             final Message message = new MimeMessage(session);
             try {
                 message.setFrom(new InternetAddress(Settings.getmailAccount, sendername));
@@ -60,26 +60,34 @@ public class SendMailSSL {
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(auth.getEmail()));
             message.setSubject(Settings.getMailSubject);
             message.setSentDate(new Date());
+            BodyPart messageBodyPart = new MimeBodyPart();
             String text = Settings.getMailText;
-            text = text.replace("<playername>", auth.getNickname());
-            text = text.replace("<servername>", plugin.getServer().getServerName());
-            text = text.replace("<generatedpass>", newPass);
-            message.setContent(text, "text/html");
+            messageBodyPart.setText(text);
+
+            Multipart multipart = new MimeMultipart();
+
+            multipart.addBodyPart(messageBodyPart);
+
+            messageBodyPart = new MimeBodyPart();
+
+            multipart.addBodyPart(messageBodyPart);
+            message.setContent(multipart);
+            final Transport transport = session.getTransport("smtp");
+            transport.connect(Settings.getmailSMTP, Settings.getmailAccount, Settings.getmailPassword);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
                 @Override
                 public void run() {
                     try {
-                        Transport.send(message);
-                    } catch (Exception e) {
-                        ConsoleLogger.showError("Some error appears while trying to send mail to " + auth.getEmail());
+                        transport.sendMessage(message, message.getAllRecipients());
+                    } catch (MessagingException e) {
+                        System.out.println("Some error occured while trying to send a mail to " + auth.getEmail());
                     }
                 }
+
             });
-            if (!Settings.noConsoleSpam)
-                ConsoleLogger.info("Email sent to : " + auth.getNickname());
         } catch (Exception e) {
-            ConsoleLogger.showError("Some error appears while trying to send mail to " + auth.getEmail());
+            System.out.println("Some error occured while trying to send a mail to " + auth.getEmail());
         }
     }
 }
