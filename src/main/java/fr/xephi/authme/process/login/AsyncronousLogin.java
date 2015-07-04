@@ -152,8 +152,6 @@ public class AsyncronousLogin {
             displayOtherAccounts(auth, player);
             
             if (Settings.recallEmail) {
-                String name = player.getName().toLowerCase();
-                String email = database.getAuth(name).getEmail();
                 if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
                     m.send(player, "add_email");
             }
