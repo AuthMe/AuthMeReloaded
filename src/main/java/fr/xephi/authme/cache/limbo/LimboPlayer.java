@@ -1,5 +1,6 @@
 package fr.xephi.authme.cache.limbo;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
@@ -83,6 +84,10 @@ public class LimboPlayer {
     }
 
     public void setTimeoutTaskId(BukkitTask i) {
+        if (this.timeoutTaskId != null) {
+            if (Bukkit.getScheduler().isCurrentlyRunning(this.timeoutTaskId.getTaskId()) || Bukkit.getScheduler().isQueued(this.timeoutTaskId.getTaskId()))
+                Bukkit.getScheduler().cancelTask(this.timeoutTaskId.getTaskId());
+        }
         this.timeoutTaskId = i;
     }
 
@@ -91,6 +96,10 @@ public class LimboPlayer {
     }
 
     public void setMessageTaskId(BukkitTask messageTaskId) {
+        if (this.messageTaskId != null) {
+            if (Bukkit.getScheduler().isCurrentlyRunning(this.messageTaskId.getTaskId()) || Bukkit.getScheduler().isQueued(this.messageTaskId.getTaskId()))
+                Bukkit.getScheduler().cancelTask(this.messageTaskId.getTaskId());
+        }
         this.messageTaskId = messageTaskId;
     }
 

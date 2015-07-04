@@ -1,7 +1,5 @@
 package fr.xephi.authme.process.logout;
 
-import me.muizers.Notifications.Notification;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -17,6 +15,7 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import me.muizers.Notifications.Notification;
 
 public class ProcessSyncronousPlayerLogout implements Runnable {
 
@@ -37,10 +36,10 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         int interval = Settings.getWarnMessageInterval;
         BukkitScheduler sched = player.getServer().getScheduler();
         if (delay != 0) {
-            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), delay);
+            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name), delay);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
+        BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         try {
             if (player.isInsideVehicle())

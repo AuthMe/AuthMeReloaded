@@ -272,7 +272,7 @@ public class AsyncronousJoin {
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
         if (time != 0) {
-            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name), time);
+            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name), time);
             if (!LimboCache.getInstance().hasLimboPlayer(name))
                 LimboCache.getInstance().addLimboPlayer(player);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
@@ -302,11 +302,12 @@ public class AsyncronousJoin {
             }
 
         });
-        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
+        BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
     }
 
-    private void placePlayerSafely(final Player player, final Location spawnLoc) {
+    private void placePlayerSafely(final Player player,
+            final Location spawnLoc) {
         Location loc = null;
         if (spawnLoc == null)
             return;

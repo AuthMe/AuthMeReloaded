@@ -2,41 +2,41 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	
+
 	<groupId>fr.xephi.authme.AuthMe</groupId>
 	<artifactId>AuthMe</artifactId>
 	<version>5.0-SNAPSHOT</version>
-	
+
 	<name>AuthMeReloaded</name>
 	<description>Authentication plugin for CraftBukkit/Spigot!</description>
 	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
-	
+
 	<packaging>jar</packaging>
-	
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		
+
 		<!-- Change Compiler Version (JDK) HERE! -->
 		<maven.compiler.source>1.7</maven.compiler.source>
 		<maven.compiler.target>1.7</maven.compiler.target>
-		
+
 		<!-- Change MC Version HERE! -->
 		<bukkitVersion>1.8.7-R0.1-SNAPSHOT</bukkitVersion>
-		
+
 		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
 	</properties>
-	
+
 	<!-- Official Build Server ALLERT: sometimes jenkins is offline, no panic! -->
 	<ciManagement>
 		<system>jenkins</system>
 		<url>http://ci.xephi.fr</url>
 	</ciManagement>
-	
+
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/Xephi/AuthMeReloaded/issues</url>
 	</issueManagement>
-	
+
 	<build>
 		<plugins>
 			<plugin>
@@ -48,10 +48,10 @@
 					<target>${maven.compiler.target}</target>
 				</configuration>
 			</plugin>
-			<!-- <plugin>
+			<plugin>
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
-				<artifactId>maven-replacer-plugin</artifactId>
-				<version>1.4.1</version>
+				<artifactId>replacer</artifactId>
+				<version>1.5.3</version>
 				<executions>
 					<execution>
 						<phase>prepare-package</phase>
@@ -64,12 +64,12 @@
 					<file>target/classes/plugin.yml</file>
 					<replacements>
 						<replacement>
-							<token>${version}</token>
-							<value>${version}</value>
+							<token>maven-version</token>
+							<value>${project.version}</value>
 						</replacement>
 					</replacements>
 				</configuration>
-			</plugin> -->
+			</plugin>
 			<plugin>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>2.6</version>
@@ -81,107 +81,96 @@
 			</plugin>
 		</plugins>
 	</build>
-	
+
 	<repositories>
-		
+
 		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
 		</repository>
-		
-		<!-- Vault Repo -->
+
+		<!-- Vault Repo (Already in ess repo!) -->
 		<repository>
 			<id>vault-repo</id>
 			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
 		</repository>
-		
+
 		<!-- Citizens 2.X Repo -->
 		<repository>
-			<id>everything</id>
+			<id>citizens-repo</id>
 			<url>http://repo.citizensnpcs.co</url>
 		</repository>
-		
-		<!-- EssentialsX Repo -->
+
+		<!-- Essentials Repo -->
 		<repository>
 			<id>ess-repo</id>
 			<url>http://repo.ess3.net/content/groups/public</url>
 		</repository>
-		
+
 		<!-- CombatTagPlus Repo -->
 		<repository>
 			<id>minelink-thirdparty</id>
 			<url>http://repo.minelink.net/content/repositories/public</url>
 		</repository>
-		
-		<!-- CombatTag Repo, Unofficial (needs replacement) -->
+
+		<!-- CombatTag Repo, Unofficial (needs replacement) UPDATE: this server is OFFLINE
 		<repository>
 			<id>techcable-repo</id>
 			<url>http://repo.techcable.net/content/repositories/snapshots/</url>
-		</repository>
-		
+		</repository> -->
+
 		<!-- XAuth Repo -->
 		<repository>
-			<id>bukkit-plugins-releases</id>
-			<name>repo.luricos.de releases</name>
+			<id>luricos-releases</id>
 			<url>http://repo.luricos.de/content/repositories/releases/</url>
 		</repository>
-		
+
 		<!-- SpoutCraft Repo -->
-		<repository>
-			<id>sonatype-nexus-releases</id>
-			<url>https://oss.sonatype.org/content/repositories/releases</url>
-		</repository>
 		<repository>
 			<id>sonatype-nexus-snapshots</id>
 			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<!-- <snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots> -->
 		</repository>
-		<!-- End of Spout Repo -->
-		
+
 		<!-- Attribute Repo -->
 		<repository>
 			<id>comphenix-snapshots</id>
-			<name>Comphenix Maven Snapshots</name>
 			<url>http://repo.comphenix.net/content/repositories/snapshots/</url>
 		</repository>
-		
+
 		<!-- Multiverse Repo -->
 		<repository>
 			<id>onarandombox</id>
 			<url>http://repo.onarandombox.com/content/groups/public</url>
 		</repository>
-		
+
 	</repositories>
-	
+
 	<dependencies>
-		
+
 		<!-- Maven Dependencies -->
-		
+
 		<!-- MySql Library -->
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.35</version>
 		</dependency>
-		
+
 		<!-- SQLite Library -->
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.10.1</version>
 		</dependency>
-		
+
 		<!-- Database Library -->
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 			<version>1.4.187</version>
 		</dependency>
-		
+
 		<!-- Java Email API -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
@@ -193,14 +182,14 @@
 			<artifactId>mail</artifactId>
 			<version>1.5.0-b01</version>
 		</dependency>
-		
+
 		<!-- Maxmind GeoIp API -->
 		<dependency>
 			<groupId>com.maxmind.geoip</groupId>
 			<artifactId>geoip-api</artifactId>
 			<version>1.2.14</version>
 		</dependency>
-		
+
 		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 
 			http://bukkit.org/ -->
 		<dependency>
@@ -208,7 +197,8 @@
 			<artifactId>spigot-api</artifactId>
 			<version>${bukkitVersion}</version>
 		</dependency>
-		
+
+        <!-- Attribute -->
 		<dependency>
 			<groupId>com.comphenix.attribute</groupId>
 			<artifactId>AttributeStorage</artifactId>
@@ -224,12 +214,12 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>Vault</artifactId>
-			<version>1.5.4</version>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.5</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -241,7 +231,7 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- Citizens 2.X, NPC plugin, http://dev.bukkit.org/bukkit-plugins/citizens/ -->
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
@@ -258,7 +248,7 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
 		<dependency>
 			<groupId>com.onarandombox.multiversecore</groupId>
@@ -277,7 +267,7 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- Essentials plugin -->
 		<dependency>
 			<groupId>net.ess3</groupId>
@@ -294,7 +284,7 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- Anti PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
 		<dependency>
 			<groupId>net.minelink</groupId>
@@ -311,12 +301,12 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- Anti PvPLogging plugin, http://www.spigotmc.org/resources/combat-tag.3182/ -->
 		<dependency>
 			<groupId>com.trc202</groupId>
-			<artifactId>combattag</artifactId>
-			<version>6.4.1-SNAPSHOT</version>
+			<artifactId>CombatTag</artifactId>
+			<version>6.2.1-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -328,7 +318,7 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- XAuth, another authentication plugin, required by the database converter -->
 		<dependency>
 			<groupId>de.luricos.bukkit</groupId>
@@ -345,7 +335,7 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- Spout API, https://spoutcraft.org/downloads/ -->
 		<dependency>
 			<groupId>org.spoutcraft</groupId>
@@ -362,7 +352,7 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- Local Dependencies -->
 		
 		<!-- It doesn't have a Maven Repo, http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
@@ -383,7 +373,7 @@
 				</exclusion>
 			</exclusions> 
 		</dependency>
-		
+
 		<!-- Citizens 1.X (No API) -->
 		<dependency>
 			<groupId>net.citizensnpcs</groupId>
@@ -392,7 +382,7 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/Citizens.jar</systemPath>
 		</dependency>
-		
+
 		<!-- Old version of xAuth by Cypherx -->
 		<dependency>
 			<groupId>com.cypherx</groupId>
@@ -401,7 +391,7 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/xAuth.jar</systemPath>
 		</dependency>
-		
+
 		<!-- A SpoutApi Plugin, http://dev.bukkit.org/bukkit-plugins/notifications/ -->
 		<dependency>
 			<groupId>me.muizers</groupId>
@@ -410,6 +400,6 @@
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/Notifications.jar</systemPath>
 		</dependency>
-		
+
 	</dependencies>
 </project>

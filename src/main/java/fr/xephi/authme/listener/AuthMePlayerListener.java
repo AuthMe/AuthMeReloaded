@@ -14,7 +14,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -86,7 +85,6 @@ public class AuthMePlayerListener implements Listener {
                 return;
 
         String msg = event.getMessage();
-        // WorldEdit GUI Shit
         if (msg.equalsIgnoreCase("/worldedit cui"))
             return;
 
@@ -403,7 +401,7 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         if (player == null)
             return;
         final String name = player.getName().toLowerCase();
@@ -447,18 +445,31 @@ public class AuthMePlayerListener implements Listener {
             if (Settings.isSessionsEnabled)
                 if (PlayerCache.getInstance().isAuthenticated(name))
                     if (!Settings.sessionExpireOnIpChange)
-                        LimboCache.getInstance().deleteLimboPlayer(name);
+                        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+                            @Override
+                            public void run() {
+                                LimboCache.getInstance().deleteLimboPlayer(name);
+                            }
+                        });
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
-            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
             event.setKickMessage(m.send("same_nick")[0]);
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-                utils.addNormal(player, limbo.getGroup());
-                LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
-            }
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+                @Override
+                public void run() {
+                    LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
+                    if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+                        Utils.getInstance().addNormal(player, limbo.getGroup());
+                        LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
+                    }
+                }
+
+            });
             return;
         }
 
@@ -569,27 +580,6 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    private void placePlayerSafely(Player player, Location spawnLoc) {
-        if (!Settings.noTeleport)
-            return;
-        if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())))
-            return;
-        Block b = player.getLocation().getBlock();
-        if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL || b.getType() == Material.LAVA || b.getType() == Material.STATIONARY_LAVA) {
-            m.send(player, "unsafe_spawn");
-            if (spawnLoc.getWorld() != null)
-                player.teleport(spawnLoc);
-            return;
-        }
-        Block c = player.getLocation().add(0D, 1D, 0D).getBlock();
-        if (c.getType() == Material.PORTAL || c.getType() == Material.ENDER_PORTAL || c.getType() == Material.LAVA || c.getType() == Material.STATIONARY_LAVA) {
-            m.send(player, "unsafe_spawn");
-            if (spawnLoc.getWorld() != null)
-                player.teleport(spawnLoc);
-            return;
-        }
-    }
-
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (event.getPlayer() == null) {
@@ -616,7 +606,7 @@ public class AuthMePlayerListener implements Listener {
 
         Player player = event.getPlayer();
 
-        if ((Settings.isForceSingleSessionEnabled) && (event.getReason().contains("You logged in from another location"))) {
+        if ((!Settings.isForceSingleSessionEnabled) && (event.getReason().contains(m.getString("same_nick")))) {
             event.setCancelled(true);
             return;
         }
