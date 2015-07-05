@@ -8,6 +8,8 @@ unregistered: '&cRegistratie succesvol ongedaan gemaakt!'
 reg_disabled: '&cRegistratie is uitgeschakeld'
 valid_session: '&cSessie ingelogt'
 login: '&cSuccesvol ingelogt!'
+password_error_nick: '&fYou can''t use your name as password'
+password_error_unsafe: '&fYou can''t use unsafe passwords'
 vb_nonActiv: Je accound is nog niet geactiveerd, controleer je mailbox!
 user_regged: '&cGebruikersnaam is al geregistreerd'
 usage_reg: '&cGebruik: /register <wachtwoord> <herhaalWachtwoord>'

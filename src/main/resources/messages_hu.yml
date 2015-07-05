@@ -11,6 +11,8 @@ reg_voluntarily: Regisztrálhatod beceneved a szerveren a következö parancsal 
 reg_disabled: '&cRegisztráció letiltva'
 no_perm: '&cNincs engedélyed'
 usage_reg: '&cHasználat: /register jelszó jelszóújra'
+password_error_nick: '&fYou can''t use your name as password'
+password_error_unsafe: '&fYou can''t use unsafe passwords'
 unregistered: '&cRegisztráció sikeresen törölve!'
 same_nick: Ezen a játékosnéven már játszanak
 valid_session: '&cSession login'
