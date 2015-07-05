@@ -169,3 +169,6 @@ permissions:
     authme.admin.forcelogin:
         description: Force login for that player
         default: op
+    authme.canbeforced:
+        description: Can this player be forced to login
+        default: true

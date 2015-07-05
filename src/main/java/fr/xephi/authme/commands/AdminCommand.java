@@ -568,6 +568,10 @@ public class AdminCommand implements CommandExecutor {
                     sender.sendMessage("Online player only !");
                     return true;
                 }
+                if (!plugin.authmePermissible(player, "authme.canbeforced")) {
+                    sender.sendMessage("You cannot force login for this player!");
+                    return true;
+                }
                 plugin.management.performLogin(player, "dontneed", true);
                 sender.sendMessage("Force Login performed !");
             } catch (Exception e) {
