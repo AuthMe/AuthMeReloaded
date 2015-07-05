@@ -165,7 +165,7 @@ settings:
         # AuthMe will NEVER teleport players !
         noTeleport: false
         # Regex sintax for allowed Chars in passwords.
-        allowedPasswordCharacters: '[a-zA-Z0-9_?!@+&-]*'
+        allowedPasswordCharacters: '[\x21-\x7E]*'
     GameMode:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false
