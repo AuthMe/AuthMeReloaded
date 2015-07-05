@@ -150,6 +150,12 @@ public class AsyncronousLogin {
             m.send(player, "login");
 
             displayOtherAccounts(auth, player);
+            
+            if (Settings.recallEmail) {
+                if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
+                    m.send(player, "add_email");
+            }
+
 
             if (!Settings.noConsoleSpam)
                 ConsoleLogger.info(player.getName() + " logged in!");
