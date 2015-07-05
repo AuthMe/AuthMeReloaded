@@ -1,10 +1,8 @@
 package fr.xephi.authme;
 
-import java.io.File;
-import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Random;
-import java.util.Scanner;
+import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -12,10 +10,10 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
+import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
 
 public class Utils {
@@ -24,6 +22,7 @@ public class Utils {
     private static Utils singleton;
     int id;
     public AuthMe plugin;
+    private static List<String> tokens = new ArrayList<String>();
 
     public Utils(AuthMe plugin) {
         this.plugin = plugin;
@@ -167,19 +166,18 @@ public class Utils {
      * Random Token for passpartu
      */
     public boolean obtainToken() {
-        File file = new File("plugins" + File.separator + "AuthMe" + File.separator + "passpartu.token");
-        if (file.exists())
-            file.delete();
-
-        FileWriter writer = null;
         try {
-            file.createNewFile();
-            writer = new FileWriter(file);
-            String token = generateToken();
-            writer.write(token + ":" + System.currentTimeMillis() / 1000 + API.newline);
-            writer.flush();
+            final String token = new RandomString(10).nextString();
+            tokens.add(token);
             ConsoleLogger.info("[AuthMe] Security passpartu token: " + token);
-            writer.close();
+            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+
+                @Override
+                public void run() {
+                    tokens.remove(token);
+                }
+
+            }, 600);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -191,46 +189,11 @@ public class Utils {
      * Read Token
      */
     public boolean readToken(String inputToken) {
-        File file = new File("plugins" + File.separator + "AuthMe" + File.separator + "passpartu.token");
-
-        if (!file.exists())
-            return false;
-
-        if (inputToken.isEmpty())
-            return false;
-        Scanner reader = null;
-        try {
-            reader = new Scanner(file);
-            while (reader.hasNextLine()) {
-                final String line = reader.nextLine();
-                if (line.contains(":")) {
-                    String[] tokenInfo = line.split(":");
-                    if (tokenInfo[0].equals(inputToken) && System.currentTimeMillis() / 1000 - 30 <= Integer.parseInt(tokenInfo[1])) {
-                        file.delete();
-                        reader.close();
-                        return true;
-                    }
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        reader.close();
-        return false;
-    }
-
-    /*
-     * Generate Random Token
-     */
-    private String generateToken() {
-        // obtain new random token
-        Random rnd = new Random();
-        char[] arr = new char[5];
-        for (int i = 0; i < 5; i++) {
-            int n = rnd.nextInt(36);
-            arr[i] = (char) (n < 10 ? '0' + n : 'a' + n - 10);
-        }
-        return new String(arr);
+        boolean ret = false;
+        if (tokens.contains(inputToken))
+            ret = true;
+        tokens.remove(inputToken);
+        return (ret);
     }
 
     /*
