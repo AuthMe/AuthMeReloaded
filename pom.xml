@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>fr.xephi.authme.AuthMe</groupId>
+	<groupId>fr.xephi.authme</groupId>
 	<artifactId>AuthMe</artifactId>
 	<version>5.0-SNAPSHOT</version>
 
@@ -113,12 +113,6 @@
 			<id>minelink-thirdparty</id>
 			<url>http://repo.minelink.net/content/repositories/public</url>
 		</repository>
-
-		<!-- CombatTag Repo, Unofficial (needs replacement) UPDATE: this server is OFFLINE
-		<repository>
-			<id>techcable-repo</id>
-			<url>http://repo.techcable.net/content/repositories/snapshots/</url>
-		</repository> -->
 
 		<!-- XAuth Repo -->
 		<repository>
@@ -362,16 +356,6 @@
 			<version>3.8.10</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/ChestShop.jar</systemPath>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-			</exclusions> 
 		</dependency>
 
 		<!-- Citizens 1.X (No API) -->
