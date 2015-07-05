@@ -6,7 +6,6 @@ import java.util.Properties;
 
 import javax.mail.BodyPart;
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -73,14 +72,14 @@ public class SendMailSSL {
             multipart.addBodyPart(messageBodyPart);
             message.setContent(multipart);
             final Transport transport = session.getTransport("smtp");
-            transport.connect(Settings.getmailSMTP, Settings.getmailAccount, Settings.getmailPassword);
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
                 @Override
                 public void run() {
                     try {
+                        transport.connect(Settings.getmailSMTP, Settings.getmailAccount, Settings.getmailPassword);
                         transport.sendMessage(message, message.getAllRecipients());
-                    } catch (MessagingException e) {
+                    } catch (Exception e) {
                         System.out.println("Some error occured while trying to send a mail to " + auth.getEmail());
                     }
                 }
