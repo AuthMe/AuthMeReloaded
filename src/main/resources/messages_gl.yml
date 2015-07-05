@@ -6,6 +6,8 @@ reg_voluntarily: '&fPodes rexistrar o teu nome no servidor co comando
 usage_log: '&cUso: /login <contrasinal>'
 wrong_pwd: '&cContrasinal equivocado'
 unregistered: '&cFeito! Xa non estás rexistrado!'
+password_error_nick: '&fYou can''t use your name as password'
+password_error_unsafe: '&fYou can''t use unsafe passwords'
 reg_disabled: '&cO rexistro está deshabilitado'
 valid_session: '&cIdentificado mediante a sesión'
 login: '&cIdentificación con éxito!'
