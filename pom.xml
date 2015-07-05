@@ -79,6 +79,29 @@
 					</archive>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<artifactSet>
+						<includes>
+							<include>com.maxmind.geoip:*</include>
+							<include>com.sun.mail:*</include>
+							<include>javax.mail:*</include>
+							<include>com.comphenix.attribute:*</include>
+						</includes>
+					</artifactSet>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
 
@@ -169,12 +192,7 @@
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
-			<version>1.5.3</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>1.5.0-b01</version>
+			<version>1.5.4</version>
 		</dependency>
 
 		<!-- Maxmind GeoIp API -->
@@ -192,7 +210,7 @@
 			<version>${bukkitVersion}</version>
 		</dependency>
 
-        <!-- Attribute -->
+		<!-- Attribute -->
 		<dependency>
 			<groupId>com.comphenix.attribute</groupId>
 			<artifactId>AttributeStorage</artifactId>
@@ -206,7 +224,7 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
@@ -223,7 +241,7 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Citizens 2.X, NPC plugin, http://dev.bukkit.org/bukkit-plugins/citizens/ -->
@@ -240,7 +258,7 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
@@ -259,7 +277,7 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Essentials plugin -->
@@ -276,7 +294,7 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Anti PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
@@ -293,7 +311,7 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Anti PvPLogging plugin, http://www.spigotmc.org/resources/combat-tag.3182/ -->
@@ -310,7 +328,7 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- XAuth, another authentication plugin, required by the database converter -->
@@ -327,7 +345,7 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Spout API, https://spoutcraft.org/downloads/ -->
@@ -344,11 +362,11 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
-			</exclusions> 
+			</exclusions>
 		</dependency>
 
 		<!-- Local Dependencies -->
-		
+
 		<!-- It doesn't have a Maven Repo, http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
 		<dependency>
 			<groupId>com.Acrobot</groupId>

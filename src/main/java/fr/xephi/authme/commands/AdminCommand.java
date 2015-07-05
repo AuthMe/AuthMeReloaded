@@ -73,6 +73,7 @@ public class AdminCommand implements CommandExecutor {
             sender.sendMessage("/authme getemail <playername> - Get player email");
             sender.sendMessage("/authme purgelastpos <playername> - Purge last position for a player");
             sender.sendMessage("/authme switchantibot on/off - Enable/Disable antibot method");
+            sender.sendMessage("/authme forcelogin <playername>");
             return true;
         }
 
@@ -552,6 +553,26 @@ public class AdminCommand implements CommandExecutor {
             database.updateQuitLoc(auth);
             sender.sendMessage("[AuthMe] Successfully reset position for " + auth.getNickname());
             return true;
+        } else if (args[0].equalsIgnoreCase("forcelogin")) {
+            if (args.length < 2) {
+                sender.sendMessage("Usage : /authme forcelogin <playerName>");
+                return true;
+            }
+            try {
+                Player player = Bukkit.getPlayer(args[1]);
+                if (player == null || !player.isOnline()) {
+                    sender.sendMessage("Online player only !");
+                    return true;
+                }
+                if (!plugin.authmePermissible(player, "authme.canbeforced")) {
+                    sender.sendMessage("You cannot force login for this player!");
+                    return true;
+                }
+                plugin.management.performLogin(player, "dontneed", true);
+                sender.sendMessage("Force Login performed !");
+            } catch (Exception e) {
+                sender.sendMessage("An error occured while trying to get that player!");
+            }
         } else {
             sender.sendMessage("Usage: /authme reload|register playername password|changepassword playername password|unregister playername");
         }

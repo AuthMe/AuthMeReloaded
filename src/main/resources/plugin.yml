@@ -69,6 +69,7 @@ permissions:
              authme.admin.getip: true
              authme.admin.converter: true
              authme.admin.resetposition: true
+             authme.admin.forcelogin: true
     authme.register:
         description: Register an account
         default: true
@@ -165,3 +166,9 @@ permissions:
     authme.admin.resetposition:
         description: Reset last position for a player
         default: op
+    authme.admin.forcelogin:
+        description: Force login for that player
+        default: op
+    authme.canbeforced:
+        description: Can this player be forced to login
+        default: true

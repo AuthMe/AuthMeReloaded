@@ -75,7 +75,7 @@ AuthMe Reloaded prevents players who aren't logged in from actions like placing 
 </li><li>Possible to use without a Permissions plugin
 </li><li><strong>Spoutcraft Login GUI</strong>
 </li><li>Automatic backup system of all your user password data
-</li><li>Default Language Style: en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, nl ( feel free to send new translations )
+</li><li>Default Language Style: en, de, br, cz, pl, fr, it, ru, hu, sk, es, zhtw, fi, zhcn, nl ( feel free to send new translations )
 </li><li>Convert the FlatFile auths.db to an usefull authme.sql that you can use on a MySQL database !
 </li><li>Import your database from Rakamak, xAuth, CrazyLogin, RoyalAuth, vAuth !
 </li></ul>
