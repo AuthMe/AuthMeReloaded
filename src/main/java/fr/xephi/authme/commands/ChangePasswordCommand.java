@@ -54,8 +54,12 @@ public class ChangePasswordCommand implements CommandExecutor {
         }
 
         String lowpass = args[1].toLowerCase();
-        if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex) || lowpass.equalsIgnoreCase(name)) {
+        if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex) {
             m.send(player, "password_error");
+            return true;
+        }
+        if ((lowpass.equalsIgnoreCase(name){
+            m.send(player, "password_error_nick");
             return true;
         }
         if (lowpass.length() < Settings.getPasswordMinLen || lowpass.length() > Settings.passwordMaxLength) {
@@ -64,7 +68,7 @@ public class ChangePasswordCommand implements CommandExecutor {
         }
         if (!Settings.unsafePasswords.isEmpty()) {
             if (Settings.unsafePasswords.contains(lowpass)) {
-                m.send(player, "password_error");
+                m.send(player, "password_error_unsafe");
                 return true;
             }
         }
