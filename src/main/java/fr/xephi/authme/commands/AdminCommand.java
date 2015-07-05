@@ -554,6 +554,10 @@ public class AdminCommand implements CommandExecutor {
             sender.sendMessage("[AuthMe] Successfully reset position for " + auth.getNickname());
             return true;
         } else if (args[0].equalsIgnoreCase("forcelogin")) {
+            if (!(sender instanceof ConsoleCommandSender)) {
+                sender.sendMessage("This command can only be performed by console");
+                return true;
+            }
             if (args.length < 2) {
                 sender.sendMessage("Usage : /authme forcelogin <playerName>");
                 return true;
