@@ -263,7 +263,7 @@ public final class Settings extends YamlConfiguration {
         delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
-        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[a-zA-Z0-9_?!@+&-]*");
+        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
         applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
@@ -430,7 +430,7 @@ public final class Settings extends YamlConfiguration {
         delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
-        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[a-zA-Z0-9_?!@+&-]*");
+        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
         applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
@@ -554,7 +554,7 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (!contains("settings.restrictions.allowedPasswordCharacters")) {
-            set("settings.restrictions.allowedPasswordCharacters", "[a-zA-Z0-9_?!@+&-]*");
+            set("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
             changes = true;
         }
         if (!contains("settings.applyBlindEffect")) {
@@ -579,13 +579,11 @@ public final class Settings extends YamlConfiguration {
             set("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
             changes = true;
         }
-        if (!contains("Hooks.customAttributes"))
-        {
+        if (!contains("Hooks.customAttributes")) {
             set("Hooks.customAttributes", false);
             changes = true;
         }
-        if (!contains("Purge.removePermissions"))
-        {
+        if (!contains("Purge.removePermissions")) {
             set("Purge.removePermissions", false);
             changes = true;
         }
