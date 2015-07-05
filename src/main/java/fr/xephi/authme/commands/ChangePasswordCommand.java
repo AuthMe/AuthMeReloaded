@@ -54,11 +54,11 @@ public class ChangePasswordCommand implements CommandExecutor {
         }
 
         String lowpass = args[1].toLowerCase();
-        if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex) {
+        if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
             m.send(player, "password_error");
             return true;
         }
-        if ((lowpass.equalsIgnoreCase(name){
+        if ((lowpass.equalsIgnoreCase(name))){
             m.send(player, "password_error_nick");
             return true;
         }
