@@ -40,53 +40,56 @@ public class SendMailSSL {
             sendername = Settings.getmailSenderName;
         }
 
-        String port = String.valueOf(Settings.getMailPort);
-        Properties props = new Properties();
-        props.put("mail.smtp.host", Settings.getmailSMTP);
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.port", port);
-        props.put("mail.smtp.starttls.enable", true);
+        final String sender = sendername;
+        final String port = String.valueOf(Settings.getMailPort);
+        final String acc = Settings.getmailAccount;
+        final String subject = Settings.getMailSubject;
+        final String smtp = Settings.getmailSMTP;
+        final String password = Settings.getmailPassword;
+        final String mailText = Settings.getMailText;
+        final String mail = auth.getEmail();
 
-        try {
-            Session session = Session.getInstance(props, null);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-            final Message message = new MimeMessage(session);
-            try {
-                message.setFrom(new InternetAddress(Settings.getmailAccount, sendername));
-            } catch (UnsupportedEncodingException uee) {
-                message.setFrom(new InternetAddress(Settings.getmailAccount));
-            }
-            message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(auth.getEmail()));
-            message.setSubject(Settings.getMailSubject);
-            message.setSentDate(new Date());
-            BodyPart messageBodyPart = new MimeBodyPart();
-            String text = Settings.getMailText;
-            messageBodyPart.setText(text);
+            @Override
+            public void run() {
+                try {
+                    Properties props = new Properties();
+                    props.put("mail.smtp.host", smtp);
+                    props.put("mail.smtp.auth", "true");
+                    props.put("mail.smtp.port", port);
+                    props.put("mail.smtp.starttls.enable", true);
+                    Session session = Session.getInstance(props, null);
 
-            Multipart multipart = new MimeMultipart();
-
-            multipart.addBodyPart(messageBodyPart);
-
-            messageBodyPart = new MimeBodyPart();
-
-            multipart.addBodyPart(messageBodyPart);
-            message.setContent(multipart);
-            final Transport transport = session.getTransport("smtp");
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                @Override
-                public void run() {
+                    Message message = new MimeMessage(session);
                     try {
-                        transport.connect(Settings.getmailSMTP, Settings.getmailAccount, Settings.getmailPassword);
-                        transport.sendMessage(message, message.getAllRecipients());
-                    } catch (Exception e) {
-                        System.out.println("Some error occured while trying to send a mail to " + auth.getEmail());
+                        message.setFrom(new InternetAddress(acc, sender));
+                    } catch (UnsupportedEncodingException uee) {
+                        message.setFrom(new InternetAddress(acc));
                     }
-                }
+                    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mail));
+                    message.setSubject(subject);
+                    message.setSentDate(new Date());
+                    BodyPart messageBodyPart = new MimeBodyPart();
+                    messageBodyPart.setText(mailText);
 
-            });
-        } catch (Exception e) {
-            System.out.println("Some error occured while trying to send a mail to " + auth.getEmail());
-        }
+                    Multipart multipart = new MimeMultipart();
+
+                    multipart.addBodyPart(messageBodyPart);
+
+                    messageBodyPart = new MimeBodyPart();
+
+                    multipart.addBodyPart(messageBodyPart);
+                    message.setContent(multipart);
+                    Transport transport = session.getTransport("smtp");
+                    transport.connect(smtp, acc, password);
+                    transport.sendMessage(message, message.getAllRecipients());
+
+                } catch (Exception e) {
+                    System.out.println("Some error occured while trying to send a mail to " + mail);
+                }
+            }
+
+        });
     }
 }
