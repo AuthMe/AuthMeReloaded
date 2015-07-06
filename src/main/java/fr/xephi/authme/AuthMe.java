@@ -127,7 +127,16 @@ public class AuthMe extends JavaPlugin {
             this.getServer().shutdown();
             return;
         }
-
+        
+        try {
+            MetricsLite metrics = new MetricsLite(this);
+            metrics.start();
+            ConsoleLogger.info("Metrics-Lite started successfully!");
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+            ConsoleLogger.showError("Can't start Metrics-Lite! The plugin will work anyway...");
+        }
+        
         citizens = new CitizensCommunicator(this);
 
         if (Settings.enableAntiBot) {
