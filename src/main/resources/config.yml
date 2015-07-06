@@ -6,7 +6,7 @@ DataSource:
     # Username about Database Connection Infos
     mySQLUsername: authme
     # Can be set to : file, sqlite, mysql
-    backend: file
+    backend: sqlite
     # Column for storing players lastlogins
     mySQLColumnLastLogin: lastlogin
     # Database Name, use with converters or as SQLITE database name
@@ -165,7 +165,7 @@ settings:
         # AuthMe will NEVER teleport players !
         noTeleport: false
         # Regex sintax for allowed Chars in passwords.
-        allowedPasswordCharacters: '[a-zA-Z0-9_?!@+&-]*'
+        allowedPasswordCharacters: '[\x21-\x7E]*'
     GameMode:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false
