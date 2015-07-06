@@ -68,7 +68,7 @@ settings:
         # 0 for unlimitted sessions, use 0 at your own risk!
         # consider that session will end only after timeout, and
         # if player's ip is changed but the timeout treshould isent
-        # ended, player will kick out of sever for unvalidSession!
+        # ended, player will kick out of sever for invalidSession!
         timeout: 10
         # Do we need to timeout the session if the player is offline
         # And try to login with an another IP Address?

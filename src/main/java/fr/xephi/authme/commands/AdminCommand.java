@@ -125,7 +125,6 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
         } else if (args[0].equalsIgnoreCase("reload")) {
-            database.reload();
             File newConfigFile = new File("plugins" + File.separator + "AuthMe", "config.yml");
             if (!newConfigFile.exists()) {
                 InputStream fis = getClass().getResourceAsStream("" + File.separator + "config.yml");
@@ -156,6 +155,8 @@ public class AdminCommand implements CommandExecutor {
             Settings.reloadConfigOptions(newConfig);
             m.reLoad();
             s.reLoad();
+            plugin.database.close();
+            plugin.setupDatabase();
             m.send(sender, "reload");
         } else if (args[0].equalsIgnoreCase("lastlogin")) {
             if (args.length != 2) {

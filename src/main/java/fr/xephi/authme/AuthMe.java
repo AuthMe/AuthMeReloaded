@@ -18,10 +18,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
-import me.muizers.Notifications.Notifications;
-import net.citizensnpcs.Citizens;
-import net.milkbowl.vault.permission.Permission;
-
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -76,6 +72,9 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
+import me.muizers.Notifications.Notifications;
+import net.citizensnpcs.Citizens;
+import net.milkbowl.vault.permission.Permission;
 
 public class AuthMe extends JavaPlugin {
 
@@ -211,37 +210,7 @@ public class AuthMe extends JavaPlugin {
             else ConsoleLogger.showError("Error while making Backup");
         }
 
-        /*
-         * Backend MYSQL - FILE - SQLITE
-         */
-        switch (Settings.getDataSource) {
-            case FILE:
-                FlatFile fileThread = new FlatFile();
-                database = fileThread;
-                final int a = database.getAccountsRegistered();
-                if (a >= 1000) {
-                    ConsoleLogger.showError("YOU'RE USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
-                }
-                break;
-            case MYSQL:
-                MySQL sqlThread = new MySQL();
-                database = sqlThread;
-                break;
-            case SQLITE:
-                SQLite sqliteThread = new SQLite();
-                database = sqliteThread;
-                final int b = database.getAccountsRegistered();
-                if (b >= 2000) {
-                    ConsoleLogger.showError("YOU'RE USING SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
-                }
-                break;
-        }
-
-        if (Settings.isCachingEnabled) {
-            database = new CacheDataSource(this, database);
-        }
-
-        database = new DatabaseCalls(this, database);
+        setupDatabase();
 
         dataManager = new DataManager(this, database);
 
@@ -281,7 +250,7 @@ public class AuthMe extends JavaPlugin {
         this.getCommand("converter").setExecutor(new ConverterCommand(this, database));
 
         if (!Settings.isForceSingleSessionEnabled) {
-            ConsoleLogger.showError("ATTENTION by disabling ForceSingleSession, your server protection is set to low");
+            ConsoleLogger.showError("BECAREFUL !!! By disabling ForceSingleSession, your server protection is set to LOW");
         }
 
         if (Settings.reloadSupport)
@@ -292,19 +261,15 @@ public class AuthMe extends JavaPlugin {
                     if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
                         playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
                     else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-                } catch (NoSuchMethodException ex) {
-                } // can never happen
-                catch (InvocationTargetException ex) {
-                } // can also never happen
-                catch (IllegalAccessException ex) {
-                } // can still never happen
+                } catch (Exception ex) {
+                }
                 if (playersOnline < 1) {
                     try {
                         database.purgeLogged();
                     } catch (NullPointerException npe) {
                     }
                 }
-            } catch (NullPointerException ex) {
+            } catch (Exception ex) {
             }
 
         if (Settings.usePurge)
@@ -317,8 +282,7 @@ public class AuthMe extends JavaPlugin {
         recallEmail();
 
         // Sponsor message
-        ConsoleLogger.info("[SPONSOR] AuthMe is sponsored and hook perfectly with server hosting VERYGAMES, rent your server for only 1.99$/months");
-        ConsoleLogger.info("[SPONSOR] Look Minecraft and other offers on www.verygames.net ! ");
+        ConsoleLogger.info("AuthMe hook perfectly with server hosting VERYGAMES");
 
         ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
     }
@@ -513,7 +477,7 @@ public class AuthMe extends JavaPlugin {
                 }
             }
             return;
-        } catch (NullPointerException ex) {
+        } catch (Exception ex) {
             return;
         }
     }
@@ -522,8 +486,8 @@ public class AuthMe extends JavaPlugin {
         return authme;
     }
 
-    public void savePlayer(Player player) throws IllegalStateException,
-            NullPointerException {
+    public void savePlayer(Player player)
+            throws IllegalStateException, NullPointerException {
         try {
             if ((citizens.isNPC(player, this)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
                 return;
@@ -837,5 +801,34 @@ public class AuthMe extends JavaPlugin {
         } catch (Exception e) {
         }
         return realIP;
+    }
+
+    public void setupDatabase() {
+        /*
+         * Backend MYSQL - FILE - SQLITE
+         */
+        switch (Settings.getDataSource) {
+            case FILE:
+                database = new FlatFile();
+                final int a = database.getAccountsRegistered();
+                if (a >= 1000)
+                    ConsoleLogger.showError("YOU'RE USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
+                break;
+            case MYSQL:
+                database = new MySQL();
+                break;
+            case SQLITE:
+                database = new SQLite();
+                final int b = database.getAccountsRegistered();
+                if (b >= 2000)
+                    ConsoleLogger.showError("YOU'RE USING SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
+                break;
+        }
+
+        if (Settings.isCachingEnabled) {
+            database = new CacheDataSource(this, database);
+        }
+
+        database = new DatabaseCalls(this, database);
     }
 }

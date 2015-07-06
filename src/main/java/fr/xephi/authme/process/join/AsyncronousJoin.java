@@ -122,7 +122,7 @@ public class AsyncronousJoin {
                                 AuthMePlayerListener.causeByAuthMe.put(name, true);
                                 player.setGameMode(gM);
                                 AuthMePlayerListener.causeByAuthMe.put(name, false);
-                                player.kickPlayer(m.send("unvalid_session")[0]);
+                                player.kickPlayer(m.send("invalid_session")[0]);
                             }
 
                         });
@@ -152,7 +152,7 @@ public class AsyncronousJoin {
                                 AuthMePlayerListener.causeByAuthMe.put(name, true);
                                 player.setGameMode(gM);
                                 AuthMePlayerListener.causeByAuthMe.put(name, false);
-                                player.kickPlayer(m.send("unvalid_session")[0]);
+                                player.kickPlayer(m.send("invalid_session")[0]);
                             }
 
                         });
