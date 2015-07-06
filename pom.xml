@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>fr.xephi.authme</groupId>
-	<artifactId>AuthMe</artifactId>
+	<groupId>fr.xephi</groupId>
+	<artifactId>authme</artifactId>
 	<version>5.0-SNAPSHOT</version>
 
 	<name>AuthMeReloaded</name>
@@ -22,8 +22,6 @@
 
 		<!-- Change MC Version HERE! -->
 		<bukkitVersion>1.8.7-R0.1-SNAPSHOT</bukkitVersion>
-
-		<mainClass>${project.groupId}.${project.artifactId}</mainClass>
 	</properties>
 
 	<!-- Official Build Server ALLERT: sometimes jenkins is offline, no panic! -->
@@ -90,8 +88,15 @@
 							<include>com.sun.mail:*</include>
 							<include>javax.mail:*</include>
 							<include>com.comphenix.attribute:*</include>
+							<include>org.mcstats.*:*</include>
 						</includes>
 					</artifactSet>
+					<relocations>
+						<relocation>
+							<pattern>org.mcstats</pattern>
+							<shadedPattern>fr.xephi.authme</shadedPattern>
+						</relocation>
+					</relocations>
 				</configuration>
 				<executions>
 					<execution>
@@ -111,6 +116,12 @@
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+		</repository>
+
+		<!-- Mcstats.org Metrics Repo -->
+		<repository>
+			<id>Plugin Metrics</id>
+			<url>http://repo.mcstats.org/content/repositories/public</url>
 		</repository>
 
 		<!-- Vault Repo (Already in ess repo!) -->
@@ -200,6 +211,23 @@
 			<groupId>com.maxmind.geoip</groupId>
 			<artifactId>geoip-api</artifactId>
 			<version>1.2.14</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mcstats.bukkit</groupId>
+			<artifactId>metrics-lite</artifactId>
+			<version>R7</version>
+			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 

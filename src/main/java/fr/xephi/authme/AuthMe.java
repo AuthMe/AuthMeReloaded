@@ -3,6 +3,7 @@ package fr.xephi.authme;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -27,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.mcstats.MetricsLite;
 
 import com.earth2me.essentials.Essentials;
 import com.maxmind.geoip.LookupService;
@@ -126,7 +128,16 @@ public class AuthMe extends JavaPlugin {
             this.getServer().shutdown();
             return;
         }
-
+        
+        try {
+            MetricsLite metrics = new MetricsLite(this);
+            metrics.start();
+            ConsoleLogger.info("Metrics-Lite started successfully!");
+        } catch (IOException e) {
+            // Failed to submit the stats :-(
+            ConsoleLogger.showError("Can't start Metrics-Lite! The plugin will work anyway...");
+        }
+        
         citizens = new CitizensCommunicator(this);
 
         if (Settings.enableAntiBot) {
