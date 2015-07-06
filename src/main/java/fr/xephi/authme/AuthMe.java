@@ -250,19 +250,15 @@ public class AuthMe extends JavaPlugin {
                     if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
                         playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
                     else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-                } catch (NoSuchMethodException ex) {
-                } // can never happen
-                catch (InvocationTargetException ex) {
-                } // can also never happen
-                catch (IllegalAccessException ex) {
-                } // can still never happen
+                } catch (Exception ex) {
+                }
                 if (playersOnline < 1) {
                     try {
                         database.purgeLogged();
                     } catch (NullPointerException npe) {
                     }
                 }
-            } catch (NullPointerException ex) {
+            } catch (Exception ex) {
             }
 
         if (Settings.usePurge)
@@ -275,8 +271,7 @@ public class AuthMe extends JavaPlugin {
         recallEmail();
 
         // Sponsor message
-        ConsoleLogger.info("[SPONSOR] AuthMe is sponsored and hook perfectly with server hosting VERYGAMES, rent your server for only 1.99$/months");
-        ConsoleLogger.info("[SPONSOR] Look Minecraft and other offers on www.verygames.net ! ");
+        ConsoleLogger.info("AuthMe hook perfectly with server hosting VERYGAMES");
 
         ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
     }
@@ -471,7 +466,7 @@ public class AuthMe extends JavaPlugin {
                 }
             }
             return;
-        } catch (NullPointerException ex) {
+        } catch (Exception ex) {
             return;
         }
     }
