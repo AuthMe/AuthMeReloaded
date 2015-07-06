@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>fr.xephi.authme</groupId>
-	<artifactId>AuthMe</artifactId>
+	<groupId>fr.xephi</groupId>
+	<artifactId>authme</artifactId>
 	<version>5.0-SNAPSHOT</version>
 
 	<name>AuthMeReloaded</name>
@@ -96,7 +96,7 @@
 					<relocations>
 						<relocation>
 							<pattern>org.mcstats</pattern>
-							<shadedPattern>fr.xephi.authme.AuthMe</shadedPattern>
+							<shadedPattern>fr.xephi.authme</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
