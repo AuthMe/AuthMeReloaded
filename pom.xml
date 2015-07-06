@@ -218,6 +218,16 @@
 			<artifactId>metrics-lite</artifactId>
 			<version>R7</version>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 
