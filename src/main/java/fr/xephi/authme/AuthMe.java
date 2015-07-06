@@ -28,7 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.MetricsLite;
+import org.mcstats.Metrics;
 
 import com.earth2me.essentials.Essentials;
 import com.maxmind.geoip.LookupService;
@@ -128,16 +128,16 @@ public class AuthMe extends JavaPlugin {
             this.getServer().shutdown();
             return;
         }
-        
+
         try {
-            MetricsLite metrics = new MetricsLite(this);
+            Metrics metrics = new Metrics(this);
             metrics.start();
-            ConsoleLogger.info("Metrics-Lite started successfully!");
+            ConsoleLogger.info("Metrics started successfully!");
         } catch (IOException e) {
             // Failed to submit the stats :-(
-            ConsoleLogger.showError("Can't start Metrics-Lite! The plugin will work anyway...");
+            ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway...");
         }
-        
+
         citizens = new CitizensCommunicator(this);
 
         if (Settings.enableAntiBot) {

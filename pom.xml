@@ -216,7 +216,7 @@
 
 		<dependency>
 			<groupId>org.mcstats.bukkit</groupId>
-			<artifactId>metrics-lite</artifactId>
+			<artifactId>metrics</artifactId>
 			<version>R7</version>
 			<scope>compile</scope>
 			<exclusions>
