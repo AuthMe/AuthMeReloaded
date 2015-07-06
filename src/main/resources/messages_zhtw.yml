@@ -1,35 +1,37 @@
-unknown_user: 使用者名稱不在資料庫內
-unsafe_spawn: 退出的位置是不安全的,你被傳送到重生點
+unknown_user: '使用者名稱不在資料庫內'
+unsafe_spawn: '退出的位置是不安全的,你被傳送到重生點'
 not_logged_in: '&c您還未登入!'
-reg_voluntarily: 您可以在本伺服器創一個屬於您的密碼 ，指令:"/register <密碼> 確認密碼"
+reg_voluntarily: '您可以在本伺服器創一個屬於您的密碼 ，指令:"/register <密碼> 確認密碼"'
 usage_log: '&c正確用法為:使用"/login <密碼>"來登入'
 wrong_pwd: '&c密碼錯誤!'
 unregistered: '&a此密碼尚未被註冊!'
 reg_disabled: '&c註冊被禁用'
+password_error_nick: '&fYou can''t use your name as password'
+password_error_unsafe: '&fYou can''t use unsafe passwords'
 valid_session: '&c"會議"登入'
 login: '&a登入成功!'
-vb_nonActiv: 你的帳號沒有被繳活,請查看你的電子信箱!
+vb_nonActiv: '你的帳號沒有被繳活,請查看你的電子信箱!'
 user_regged: '&c此密碼已被註冊，請重新註冊您的新密碼!'
 usage_reg: '&c正確用法為:使用"/register <密碼> <確認密碼>"來註冊你的密碼'
-max_reg: 你的密碼註冊數量已滿,無法繼續註冊!
+max_reg: '你的密碼註冊數量已滿,無法繼續註冊!'
 no_perm: '&c你沒有權限!'
-error: 發生未知錯誤,請通知管理員!
+error: '發生未知錯誤,請通知管理員!'
 login_msg: '&c請使用"/login <密碼>"來登入'
 reg_msg: '&c初次登入請使用"/register <密碼> <確認密碼>"來註冊!'
 usage_unreg: '&c正確用法為:使用"/unregister <密碼>"來取消現有密碼'
 pwd_changed: '&c密碼變更成功!'
 user_unknown: '&c此用戶名並未被註冊!'
 password_error: <密碼>與<錯認密碼>不相同!
-unvalid_session: Session Dataes doesnt corrispond Plaese wait the end of session
-reg_only: Registered players only! Please visit http://example.com to register
+unvalid_session: 'Session Dataes doesnt corrispond Plaese wait the end of session'
+reg_only: 'Registered players only! Please visit http://example.com to register'
 logged_in: '&c您已經登入了!'
 logout: '&a登出成功!'
-same_nick: 與別人的密碼重複!
+same_nick: '與別人的密碼重複!'
 registered: '&a註冊成功!'
-pass_len: 您的密碼未到達最小長度(4)，或超過最大長度(20)
-reload: 伺服器已重新配置數據庫
-timeout: 登入超時了!
-usage_changepassword: 正確用法為:使用"/changepassword <舊密碼> <新密碼>"來更換密碼
+pass_len: '您的密碼未到達最小長度(4)，或超過最大長度(20)'
+reload: '伺服器已重新配置數據庫'
+timeout: '登入超時了!'
+usage_changepassword: '正確用法為:使用"/changepassword <舊密碼> <新密碼>"來更換密碼'
 name_len: '&cYour nickname is too Short or too long'
 regex: '&cYour nickname contains illegal characters. Allowed chars: REG_EX'
 add_email: '&cPlease add your email with : /email add yourEmail confirmEmail'

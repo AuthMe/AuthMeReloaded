@@ -52,8 +52,13 @@ public class AsyncronousRegister {
             allowRegister = false;
         }
 
-        else if ((lowpass.equalsIgnoreCase(player.getName()) || lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
+        else if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
             m.send(player, "password_error");
+            allowRegister = false;
+        }
+
+        else if ((lowpass.equalsIgnoreCase(player.getName()))) {
+            m.send(player, "password_error_nick");
             allowRegister = false;
         }
 
@@ -126,7 +131,7 @@ public class AsyncronousRegister {
         }
         if (!Settings.unsafePasswords.isEmpty()) {
             if (Settings.unsafePasswords.contains(password.toLowerCase())) {
-                m.send(player, "password_error");
+                m.send(player, "password_error_unsafe");
                 return;
             }
         }
