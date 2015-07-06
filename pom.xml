@@ -216,8 +216,8 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.mcstats.MOD</groupId>
-			<artifactId>metrics</artifactId>
+			<groupId>org.mcstats.bukkit</groupId>
+			<artifactId>metrics-lite</artifactId>
 			<version>R7</version>
 			<scope>compile</scope>
 		</dependency>
