@@ -10,7 +10,6 @@ import org.bukkit.potion.PotionEffectType;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.Utils.groupType;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -91,7 +90,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            API.setPlayerInventory(player, event.getInventory(), event.getArmor());
+            plugin.api.setPlayerInventory(player, event.getInventory(), event.getArmor());
         }
     }
 
@@ -146,7 +145,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
                     } else {
                         teleportBackFromSpawn();
                     }
-                } else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                } else
+                    if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
                     teleportToSpawn();
                 } else if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
                     packQuitLocation();

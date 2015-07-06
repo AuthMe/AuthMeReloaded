@@ -17,7 +17,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.Utils.groupType;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.DataFileCache;
@@ -255,7 +254,7 @@ public class AsyncronousJoin {
                             if (!Settings.noConsoleSpam)
                                 ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
                         } else {
-                            API.setPlayerInventory(player, ev.getEmptyInventory(), ev.getEmptyArmor());
+                            plugin.api.setPlayerInventory(player, ev.getEmptyInventory(), ev.getEmptyArmor());
                         }
                     } catch (NullPointerException ex) {
                     }

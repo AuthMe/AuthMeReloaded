@@ -82,6 +82,6 @@ public class AsyncronousQuit {
         PlayerCache.getInstance().removePlayer(name);
         database.setUnlogged(name);
         AuthMePlayerListener.gameMode.remove(name);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(player, inv, armor, isOp, isFlying, needToChange));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, inv, armor, isOp, isFlying, needToChange));
     }
 }

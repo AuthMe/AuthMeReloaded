@@ -39,7 +39,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -405,6 +404,7 @@ public class AuthMePlayerListener implements Listener {
         if (player == null)
             return;
         final String name = player.getName().toLowerCase();
+        boolean isAuthAvailable = data.isAuthAvailable(name);
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
@@ -412,7 +412,7 @@ public class AuthMePlayerListener implements Listener {
 
         if (Settings.enablePasspartu && !Settings.countriesBlacklist.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || (Settings.countriesBlacklist.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+            if (((code == null) || (Settings.countriesBlacklist.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -420,7 +420,7 @@ public class AuthMePlayerListener implements Listener {
         }
         if (Settings.enableProtection && !Settings.countries.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || (!Settings.countries.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+            if (((code == null) || (!Settings.countries.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -441,7 +441,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (data.isAuthAvailable(name) && LimboCache.getInstance().hasLimboPlayer(name))
+        if (isAuthAvailable && LimboCache.getInstance().hasLimboPlayer(name))
             if (Settings.isSessionsEnabled)
                 if (PlayerCache.getInstance().isAuthenticated(name))
                     if (!Settings.sessionExpireOnIpChange)
