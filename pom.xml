@@ -90,8 +90,15 @@
 							<include>com.sun.mail:*</include>
 							<include>javax.mail:*</include>
 							<include>com.comphenix.attribute:*</include>
+							<include>org.mcstats.*:*</include>
 						</includes>
 					</artifactSet>
+					<relocations>
+						<relocation>
+							<pattern>org.mcstats</pattern>
+							<shadedPattern>fr.xephi.authme.AuthMe</shadedPattern>
+						</relocation>
+					</relocations>
 				</configuration>
 				<executions>
 					<execution>
@@ -111,6 +118,12 @@
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+		</repository>
+
+		<!-- Mcstats.org Metrics Repo -->
+		<repository>
+			<id>Plugin Metrics</id>
+			<url>http://repo.mcstats.org/content/repositories/public</url>
 		</repository>
 
 		<!-- Vault Repo (Already in ess repo!) -->
@@ -200,6 +213,13 @@
 			<groupId>com.maxmind.geoip</groupId>
 			<artifactId>geoip-api</artifactId>
 			<version>1.2.14</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.mcstats.MOD</groupId>
+			<artifactId>metrics</artifactId>
+			<version>R7</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 
