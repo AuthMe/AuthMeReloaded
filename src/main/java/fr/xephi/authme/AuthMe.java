@@ -17,10 +17,6 @@ import java.util.List;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
-import me.muizers.Notifications.Notifications;
-import net.citizensnpcs.Citizens;
-import net.milkbowl.vault.permission.Permission;
-
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -74,6 +70,9 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
+import me.muizers.Notifications.Notifications;
+import net.citizensnpcs.Citizens;
+import net.milkbowl.vault.permission.Permission;
 
 public class AuthMe extends JavaPlugin {
 
@@ -200,37 +199,7 @@ public class AuthMe extends JavaPlugin {
             else ConsoleLogger.showError("Error while making Backup");
         }
 
-        /*
-         * Backend MYSQL - FILE - SQLITE
-         */
-        switch (Settings.getDataSource) {
-            case FILE:
-                FlatFile fileThread = new FlatFile();
-                database = fileThread;
-                final int a = database.getAccountsRegistered();
-                if (a >= 1000) {
-                    ConsoleLogger.showError("YOU'RE USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
-                }
-                break;
-            case MYSQL:
-                MySQL sqlThread = new MySQL();
-                database = sqlThread;
-                break;
-            case SQLITE:
-                SQLite sqliteThread = new SQLite();
-                database = sqliteThread;
-                final int b = database.getAccountsRegistered();
-                if (b >= 2000) {
-                    ConsoleLogger.showError("YOU'RE USING SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
-                }
-                break;
-        }
-
-        if (Settings.isCachingEnabled) {
-            database = new CacheDataSource(this, database);
-        }
-
-        database = new DatabaseCalls(this, database);
+        setupDatabase();
 
         dataManager = new DataManager(this, database);
 
@@ -511,8 +480,8 @@ public class AuthMe extends JavaPlugin {
         return authme;
     }
 
-    public void savePlayer(Player player) throws IllegalStateException,
-            NullPointerException {
+    public void savePlayer(Player player)
+            throws IllegalStateException, NullPointerException {
         try {
             if ((citizens.isNPC(player, this)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
                 return;
@@ -826,5 +795,34 @@ public class AuthMe extends JavaPlugin {
         } catch (Exception e) {
         }
         return realIP;
+    }
+
+    public void setupDatabase() {
+        /*
+         * Backend MYSQL - FILE - SQLITE
+         */
+        switch (Settings.getDataSource) {
+            case FILE:
+                database = new FlatFile();
+                final int a = database.getAccountsRegistered();
+                if (a >= 1000)
+                    ConsoleLogger.showError("YOU'RE USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
+                break;
+            case MYSQL:
+                database = new MySQL();
+                break;
+            case SQLITE:
+                database = new SQLite();
+                final int b = database.getAccountsRegistered();
+                if (b >= 2000)
+                    ConsoleLogger.showError("YOU'RE USING SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
+                break;
+        }
+
+        if (Settings.isCachingEnabled) {
+            database = new CacheDataSource(this, database);
+        }
+
+        database = new DatabaseCalls(this, database);
     }
 }
