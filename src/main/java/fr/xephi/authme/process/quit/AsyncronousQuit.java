@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
@@ -30,13 +31,16 @@ public class AsyncronousQuit {
     private boolean isOp = false;
     private boolean isFlying = false;
     private boolean needToChange = false;
+    private boolean isKick = false;
 
-    public AsyncronousQuit(Player p, AuthMe plugin, DataSource database) {
+    public AsyncronousQuit(Player p, AuthMe plugin, DataSource database,
+            boolean isKick) {
         this.p = p;
         this.plugin = plugin;
         this.database = database;
         this.name = p.getName().toLowerCase();
         this.playerBackup = new FileCache(plugin);
+        this.isKick = isKick;
     }
 
     public void process() {
@@ -79,8 +83,23 @@ public class AsyncronousQuit {
                 playerBackup.removeCache(player);
             }
         }
-        PlayerCache.getInstance().removePlayer(name);
-        database.setUnlogged(name);
+        if (Settings.isSessionsEnabled && !isKick) {
+            BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+
+                @Override
+                public void run() {
+                    PlayerCache.getInstance().removePlayer(name);
+                    if (database.isLogged(name))
+                        database.setUnlogged(name);
+                    plugin.sessions.remove(name);
+                }
+
+            }, Settings.getSessionTimeout * 20 * 60);
+            plugin.sessions.put(name, task);
+        } else {
+            PlayerCache.getInstance().removePlayer(name);
+            database.setUnlogged(name);
+        }
         AuthMePlayerListener.gameMode.remove(name);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, inv, armor, isOp, isFlying, needToChange));
     }

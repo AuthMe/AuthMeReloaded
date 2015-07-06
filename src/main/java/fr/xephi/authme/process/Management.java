@@ -16,8 +16,8 @@ import fr.xephi.authme.settings.Settings;
 
 /**
  * 
- * @authors Xephi59, <a
- *          href="http://dev.bukkit.org/profiles/Possible/">Possible</a>
+ * @authors Xephi59,
+ *          <a href="http://dev.bukkit.org/profiles/Possible/">Possible</a>
  *
  */
 public class Management {
@@ -65,12 +65,12 @@ public class Management {
         });
     }
 
-    public void performQuit(final Player player) {
+    public void performQuit(final Player player, final boolean isKick) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
             public void run() {
-                new AsyncronousQuit(player, plugin, database).process();
+                new AsyncronousQuit(player, plugin, database, isKick).process();
             }
 
         });

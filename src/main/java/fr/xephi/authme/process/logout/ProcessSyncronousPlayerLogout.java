@@ -32,6 +32,9 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
 
     @Override
     public void run() {
+        if (plugin.sessions.containsKey(name))
+            plugin.sessions.get(name).cancel();
+        plugin.sessions.remove(name);
         int delay = Settings.getRegistrationTimeout * 20;
         int interval = Settings.getWarnMessageInterval;
         BukkitScheduler sched = player.getServer().getScheduler();

@@ -441,18 +441,6 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (isAuthAvailable && LimboCache.getInstance().hasLimboPlayer(name))
-            if (Settings.isSessionsEnabled)
-                if (PlayerCache.getInstance().isAuthenticated(name))
-                    if (!Settings.sessionExpireOnIpChange)
-                        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                LimboCache.getInstance().deleteLimboPlayer(name);
-                            }
-                        });
-
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
         if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
@@ -589,7 +577,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        plugin.management.performQuit(player);
+        plugin.management.performQuit(player, false);
 
         if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
             event.setQuitMessage(null);
@@ -611,7 +599,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        plugin.management.performQuit(player);
+        plugin.management.performQuit(player, true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

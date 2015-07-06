@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
@@ -28,6 +29,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 import org.mcstats.Metrics;
 
 import com.earth2me.essentials.Essentials;
@@ -109,6 +111,7 @@ public class AuthMe extends JavaPlugin {
     public boolean delayedAntiBot = true;
     protected static String vgUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
     public DataManager dataManager;
+    public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<String, BukkitTask>();
 
     public Settings getSettings() {
         return settings;

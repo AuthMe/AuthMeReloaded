@@ -28,7 +28,8 @@ public class AsyncronousLogout {
     private Utils utils = Utils.getInstance();
     private FileCache playerBackup;
 
-    public AsyncronousLogout(Player player, AuthMe plugin, DataSource database) {
+    public AsyncronousLogout(Player player, AuthMe plugin,
+            DataSource database) {
         this.player = player;
         this.plugin = plugin;
         this.database = database;
@@ -50,8 +51,6 @@ public class AsyncronousLogout {
         final Player p = player;
         BukkitScheduler sched = p.getServer().getScheduler();
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
-        if (Settings.isSessionsEnabled)
-            auth.setLastLogin(0L);
         database.updateSession(auth);
         auth.setQuitLocX(p.getLocation().getX());
         auth.setQuitLocY(p.getLocation().getY());
