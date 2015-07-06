@@ -75,6 +75,7 @@
 					<archive>
 						<manifestFile>${manifest.file}</manifestFile>
 					</archive>
+					<finalName>AuthMe</finalName>
 				</configuration>
 			</plugin>
 			<plugin>
