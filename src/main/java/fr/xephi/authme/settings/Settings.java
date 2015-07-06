@@ -612,7 +612,7 @@ public final class Settings extends YamlConfiguration {
         try {
             return DataSource.DataSourceType.valueOf(configFile.getString(key, "sqlite").toUpperCase());
         } catch (IllegalArgumentException ex) {
-            ConsoleLogger.showError("Unknown database backend; defaulting to file database");
+            ConsoleLogger.showError("Unknown database backend; defaulting to sqlite database");
             return DataSource.DataSourceType.SQLITE;
         }
     }
