@@ -239,7 +239,7 @@ public class AuthMe extends JavaPlugin {
         this.getCommand("converter").setExecutor(new ConverterCommand(this, database));
 
         if (!Settings.isForceSingleSessionEnabled) {
-            ConsoleLogger.showError("ATTENTION by disabling ForceSingleSession, your server protection is set to low");
+            ConsoleLogger.showError("BECAREFUL !!! By disabling ForceSingleSession, your server protection is set to LOW");
         }
 
         if (Settings.reloadSupport)
