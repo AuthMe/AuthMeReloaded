@@ -342,7 +342,8 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (!Settings.isMovementAllowed) {
-            event.setTo(event.getFrom());
+            if (!event.getFrom().getBlock().equals(event.getTo().getBlock()))
+                event.setTo(event.getFrom());
             return;
         }
 
