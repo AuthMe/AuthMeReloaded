@@ -354,14 +354,15 @@ public class AuthMePlayerListener implements Listener {
         int radius = Settings.getMovementRadius;
         Location spawn = plugin.getSpawnLocation(player);
 
-        if (spawn != null && spawn.getWorld() != null)
+        if (spawn != null && spawn.getWorld() != null) {
             if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
                 event.getPlayer().teleport(spawn);
                 return;
             }
-        if ((spawn.distance(player.getLocation()) > radius) && spawn.getWorld() != null) {
-            event.getPlayer().teleport(spawn);
-            return;
+            if ((spawn.distance(player.getLocation()) > radius)) {
+                event.getPlayer().teleport(spawn);
+                return;
+            }
         }
     }
 
