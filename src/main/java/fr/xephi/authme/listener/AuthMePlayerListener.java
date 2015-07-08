@@ -53,7 +53,6 @@ public class AuthMePlayerListener implements Listener {
     public static GameMode gm = GameMode.SURVIVAL;
     public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<String, GameMode>();
     public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<String, String>();
-    private Utils utils = Utils.getInstance();
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
     private DataSource data;
