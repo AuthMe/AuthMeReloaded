@@ -46,12 +46,8 @@ public class SendMailSSL {
         final String subject = Settings.getMailSubject;
         final String smtp = Settings.getmailSMTP;
         final String password = Settings.getmailPassword;
+        final String mailText = Settings.getMailText;
         final String mail = auth.getEmail();
-        String s = Settings.getMailText;
-        s.replace("<playername>", auth.getNickname());
-        s.replace("<servername>", plugin.getServer().getServerName());
-        s.replace("<generatedpass>", newPass);
-        final String mailText = s;
 
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -75,11 +71,9 @@ public class SendMailSSL {
                     message.setSubject(subject);
                     message.setSentDate(new Date());
                     BodyPart messageBodyPart = new MimeBodyPart();
-                    Multipart multipart = new MimeMultipart();
-
                     messageBodyPart.setText(mailText);
+                    Multipart multipart = new MimeMultipart();
                     multipart.addBodyPart(messageBodyPart);
-
                     message.setContent(multipart);
                     Transport transport = session.getTransport("smtp");
                     transport.connect(smtp, acc, password);
