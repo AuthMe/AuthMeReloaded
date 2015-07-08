@@ -1,7 +1,5 @@
 package fr.xephi.authme.plugin.manager;
 
-import net.minelink.ctplus.CombatTagPlus;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -9,6 +7,9 @@ import org.bukkit.plugin.Plugin;
 
 import com.trc202.CombatTag.CombatTag;
 import com.trc202.CombatTagApi.CombatTagApi;
+
+import fr.xephi.authme.AuthMe;
+import net.minelink.ctplus.CombatTagPlus;
 
 public abstract class CombatTagComunicator {
 
@@ -21,6 +22,8 @@ public abstract class CombatTagComunicator {
      * @return true if the player is an NPC
      */
     public static boolean isNPC(Entity player) {
+        if (!AuthMe.getInstance().CombatTag)
+            return false;
         try {
             if (Bukkit.getServer().getPluginManager().getPlugin("CombatTag") != null) {
                 combatApi = new CombatTagApi((CombatTag) Bukkit.getServer().getPluginManager().getPlugin("CombatTag"));

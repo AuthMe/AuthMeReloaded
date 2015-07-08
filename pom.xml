@@ -140,7 +140,7 @@
 		<!-- Essentials Repo -->
 		<repository>
 			<id>ess-repo</id>
-			<url>http://repo.ess3.net/content/groups/public</url>
+			<url>http://repo.ess3.net/content/groups/essentials</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
@@ -185,13 +185,6 @@
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.10.1</version>
-		</dependency>
-
-		<!-- Database Library -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.187</version>
 		</dependency>
 
 		<!-- Java Email API -->
@@ -380,24 +373,6 @@
 			<version>3.8.10</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/ChestShop.jar</systemPath>
-		</dependency>
-
-		<!-- Citizens 1.X (No API) -->
-		<dependency>
-			<groupId>net.citizensnpcs</groupId>
-			<artifactId>citizens</artifactId>
-			<version>1.2.4</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/Citizens.jar</systemPath>
-		</dependency>
-
-		<!-- Old version of xAuth by Cypherx -->
-		<dependency>
-			<groupId>com.cypherx</groupId>
-			<artifactId>xauth</artifactId>
-			<version>2.0.26</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/xAuth.jar</systemPath>
 		</dependency>
 
 	</dependencies>

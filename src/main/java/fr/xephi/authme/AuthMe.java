@@ -73,7 +73,6 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import net.citizensnpcs.Citizens;
 import net.milkbowl.vault.permission.Permission;
 
 public class AuthMe extends JavaPlugin {
@@ -90,9 +89,9 @@ public class AuthMe extends JavaPlugin {
     private Utils utils = Utils.getInstance();
     private FileCache playerBackup = new FileCache(this);
     public CitizensCommunicator citizens;
+    public boolean isCitizensActive = false;
     public SendMailSSL mail = null;
-    public int CitizensVersion = 0;
-    public int CombatTag = 0;
+    public boolean CombatTag = false;
     public double ChestShop = 0;
     public boolean BungeeCord = false;
     public Essentials ess;
@@ -390,25 +389,16 @@ public class AuthMe extends JavaPlugin {
 
     public void combatTag() {
         if (this.getServer().getPluginManager().getPlugin("CombatTag") != null && this.getServer().getPluginManager().getPlugin("CombatTag").isEnabled()) {
-            this.CombatTag = 1;
+            this.CombatTag = true;
         } else {
-            this.CombatTag = 0;
+            this.CombatTag = false;
         }
     }
 
     public void citizensVersion() {
-        if (this.getServer().getPluginManager().getPlugin("Citizens") != null && this.getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
-            Citizens cit = (Citizens) this.getServer().getPluginManager().getPlugin("Citizens");
-            String ver = cit.getDescription().getVersion();
-            String[] args = ver.split("\\.");
-            if (args[0].contains("1")) {
-                this.CitizensVersion = 1;
-            } else {
-                this.CitizensVersion = 2;
-            }
-        } else {
-            this.CitizensVersion = 0;
-        }
+        if (this.getServer().getPluginManager().getPlugin("Citizens") != null && this.getServer().getPluginManager().getPlugin("Citizens").isEnabled())
+            this.isCitizensActive = true;
+        else this.isCitizensActive = false;
     }
 
     @Override

@@ -61,11 +61,11 @@ public class AuthMeServerListener implements Listener {
             ConsoleLogger.info("ChestShop has been disabled, unhook!");
         }
         if (pluginName.equalsIgnoreCase("CombatTag")) {
-            plugin.CombatTag = 0;
+            plugin.CombatTag = false;
             ConsoleLogger.info("CombatTag has been disabled, unhook!");
         }
         if (pluginName.equalsIgnoreCase("Citizens")) {
-            plugin.CitizensVersion = 0;
+            plugin.isCitizensActive = false;
             ConsoleLogger.info("Citizens has been disabled, unhook!");
         }
         if (pluginName.equalsIgnoreCase("Vault")) {
