@@ -12,7 +12,6 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
-import me.muizers.Notifications.Notification;
 
 public class ProcessSyncronousEmailRegister implements Runnable {
 
@@ -47,9 +46,6 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         player.saveData();
         if (!Settings.noConsoleSpam)
             ConsoleLogger.info(player.getName() + " registered " + plugin.getIP(player));
-        if (plugin.notifications != null) {
-            plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " has registered by email!"));
-        }
     }
 
 }

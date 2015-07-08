@@ -63,7 +63,6 @@ import fr.xephi.authme.listener.AuthMeChestShopListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMeServerListener;
-import fr.xephi.authme.listener.AuthMeSpoutListener;
 import fr.xephi.authme.plugin.manager.BungeeCordMessage;
 import fr.xephi.authme.plugin.manager.CitizensCommunicator;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
@@ -74,7 +73,6 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import me.muizers.Notifications.Notifications;
 import net.citizensnpcs.Citizens;
 import net.milkbowl.vault.permission.Permission;
 
@@ -98,7 +96,6 @@ public class AuthMe extends JavaPlugin {
     public double ChestShop = 0;
     public boolean BungeeCord = false;
     public Essentials ess;
-    public Notifications notifications;
     public API api;
     public Management management;
     public HashMap<String, Integer> captcha = new HashMap<String, Integer>();
@@ -191,9 +188,6 @@ public class AuthMe extends JavaPlugin {
         // Check Combat Tag Version
         combatTag();
 
-        // Check Notifications
-        checkNotifications();
-
         // Check Multiverse
         checkMultiverse();
 
@@ -228,10 +222,7 @@ public class AuthMe extends JavaPlugin {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
         }
-        if (pm.isPluginEnabled("Spout")) {
-            pm.registerEvents(new AuthMeSpoutListener(database), this);
-            ConsoleLogger.info("Successfully hook with Spout!");
-        }
+
         pm.registerEvents(new AuthMePlayerListener(this, database), this);
         pm.registerEvents(new AuthMeBlockListener(database, this), this);
         pm.registerEvents(new AuthMeEntityListener(database, this), this);
@@ -394,19 +385,6 @@ public class AuthMe extends JavaPlugin {
             }
         } else {
             essentialsSpawn = null;
-        }
-    }
-
-    public void checkNotifications() {
-        if (!Settings.notifications) {
-            this.notifications = null;
-            return;
-        }
-        if (this.getServer().getPluginManager().getPlugin("Notifications") != null && this.getServer().getPluginManager().getPlugin("Notifications").isEnabled()) {
-            this.notifications = (Notifications) this.getServer().getPluginManager().getPlugin("Notifications");
-            ConsoleLogger.info("Successfully hook with Notifications");
-        } else {
-            this.notifications = null;
         }
     }
 

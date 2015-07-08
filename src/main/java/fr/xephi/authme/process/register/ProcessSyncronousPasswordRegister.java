@@ -20,7 +20,6 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
-import me.muizers.Notifications.Notification;
 
 public class ProcessSyncronousPasswordRegister implements Runnable {
 
@@ -118,9 +117,6 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 
         if (!Settings.noConsoleSpam)
             ConsoleLogger.info(player.getName() + " registered " + plugin.getIP(player));
-        if (plugin.notifications != null) {
-            plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " has registered!"));
-        }
 
         // Kick Player after Registration is enabled, kick the player
         if (Settings.forceRegKick) {

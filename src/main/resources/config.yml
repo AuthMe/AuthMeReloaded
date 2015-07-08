@@ -375,8 +375,6 @@ Hooks:
     chestshop: true
     # Do we need to hook with BungeeCord for get the real Player ip ?
     bungeecord: false
-    # Do we need to hook with Notifications for Notifs sending ?
-    notifications: true
     # Do we need to disable Essentials SocialSpy on join ?
     disableSocialSpy: true
     # Do we need to force /motd Essentials command on join ?

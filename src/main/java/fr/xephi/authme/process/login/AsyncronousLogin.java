@@ -19,7 +19,6 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
-import me.muizers.Notifications.Notification;
 
 public class AsyncronousLogin {
 
@@ -159,10 +158,6 @@ public class AsyncronousLogin {
 
             if (!Settings.noConsoleSpam)
                 ConsoleLogger.info(player.getName() + " logged in!");
-
-            if (plugin.notifications != null) {
-                plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged in!"));
-            }
 
             // makes player isLoggedin via API
             PlayerCache.getInstance().addPlayer(auth);

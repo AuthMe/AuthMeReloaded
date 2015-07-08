@@ -56,10 +56,6 @@ public class AuthMeServerListener implements Listener {
             ConsoleLogger.info("Multiverse-Core has been disabled, unhook!");
             return;
         }
-        if (pluginName.equalsIgnoreCase("Notifications")) {
-            plugin.notifications = null;
-            ConsoleLogger.info("Notifications has been disabled, unhook!");
-        }
         if (pluginName.equalsIgnoreCase("ChestShop")) {
             plugin.ChestShop = 0;
             ConsoleLogger.info("ChestShop has been disabled, unhook!");
@@ -85,8 +81,6 @@ public class AuthMeServerListener implements Listener {
             plugin.checkEssentials();
         if (pluginName.equalsIgnoreCase("Multiverse-Core"))
             plugin.checkMultiverse();
-        if (pluginName.equalsIgnoreCase("Notifications"))
-            plugin.checkNotifications();
         if (pluginName.equalsIgnoreCase("ChestShop"))
             plugin.checkChestShop();
         if (pluginName.equalsIgnoreCase("CombatTag"))
