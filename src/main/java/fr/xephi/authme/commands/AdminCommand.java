@@ -39,7 +39,6 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import fr.xephi.authme.settings.SpoutCfg;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 
@@ -47,7 +46,6 @@ public class AdminCommand implements CommandExecutor {
 
     public AuthMe plugin;
     private Messages m = Messages.getInstance();
-    private SpoutCfg s = SpoutCfg.getInstance();
     public DataSource database;
 
     public AdminCommand(AuthMe plugin, DataSource database) {
@@ -154,7 +152,6 @@ public class AdminCommand implements CommandExecutor {
             YamlConfiguration newConfig = YamlConfiguration.loadConfiguration(newConfigFile);
             Settings.reloadConfigOptions(newConfig);
             m.reLoad();
-            s.reLoad();
             plugin.database.close();
             plugin.setupDatabase();
             m.send(sender, "reload");

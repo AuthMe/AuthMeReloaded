@@ -63,7 +63,7 @@ public final class Settings extends YamlConfiguration {
             isBackupOnStart, isBackupOnStop, enablePasspartu, isStopEnabled,
             reloadSupport, rakamakUseIp, noConsoleSpam, removePassword,
             displayOtherAccounts, useCaptcha, emailRegistration, multiverse,
-            notifications, chestshop, bungee, banUnsafeIp, doubleEmailCheck,
+            chestshop, bungee, banUnsafeIp, doubleEmailCheck,
             sessionExpireOnIpChange, disableSocialSpy, forceOnlyAfterLogin,
             useEssentialsMotd, usePurge, purgePlayerDat, purgeEssentialsFile,
             supportOldPassword, purgeLimitedCreative, purgeAntiXray,
@@ -217,7 +217,6 @@ public final class Settings extends YamlConfiguration {
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = configFile.getBoolean("Hooks.multiverse", true);
         chestshop = configFile.getBoolean("Hooks.chestshop", true);
-        notifications = configFile.getBoolean("Hooks.notifications", true);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
         getForcedWorlds = (List<String>) configFile.getList("settings.restrictions.ForceSpawnOnTheseWorlds", new ArrayList<String>());
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
@@ -384,7 +383,6 @@ public final class Settings extends YamlConfiguration {
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = configFile.getBoolean("Hooks.multiverse", true);
         chestshop = configFile.getBoolean("Hooks.chestshop", true);
-        notifications = configFile.getBoolean("Hooks.notifications", true);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
         getForcedWorlds = (List<String>) configFile.getList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
@@ -587,6 +585,8 @@ public final class Settings extends YamlConfiguration {
             set("Purge.removePermissions", false);
             changes = true;
         }
+        if (contains("Hooks.notifications"))
+            set("Hooks.notifications", null);
 
         if (changes) {
             plugin.getLogger().warning("Merge new Config Options - I'm not an error, please don't report me");

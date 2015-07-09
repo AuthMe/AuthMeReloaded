@@ -75,6 +75,7 @@
 					<archive>
 						<manifestFile>${manifest.file}</manifestFile>
 					</archive>
+					<finalName>AuthMe-${project.version}</finalName>
 				</configuration>
 			</plugin>
 			<plugin>
@@ -139,7 +140,7 @@
 		<!-- Essentials Repo -->
 		<repository>
 			<id>ess-repo</id>
-			<url>http://repo.ess3.net/content/groups/public</url>
+			<url>http://repo.ess3.net/content/groups/essentials</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
@@ -152,12 +153,6 @@
 		<repository>
 			<id>luricos-releases</id>
 			<url>http://repo.luricos.de/content/repositories/releases/</url>
-		</repository>
-
-		<!-- SpoutCraft Repo -->
-		<repository>
-			<id>sonatype-nexus-snapshots</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
 
 		<!-- Attribute Repo -->
@@ -192,13 +187,6 @@
 			<version>3.8.10.1</version>
 		</dependency>
 
-		<!-- Database Library -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>1.4.187</version>
-		</dependency>
-
 		<!-- Java Email API -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
@@ -215,7 +203,7 @@
 
 		<dependency>
 			<groupId>org.mcstats.bukkit</groupId>
-			<artifactId>metrics-lite</artifactId>
+			<artifactId>metrics</artifactId>
 			<version>R7</version>
 			<scope>compile</scope>
 			<exclusions>
@@ -376,23 +364,6 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Spout API, https://spoutcraft.org/downloads/ -->
-		<dependency>
-			<groupId>org.spoutcraft</groupId>
-			<artifactId>spoutcraftplugin</artifactId>
-			<version>1.6.4-SNAPSHOT</version>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<!-- Local Dependencies -->
 
 		<!-- It doesn't have a Maven Repo, http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
@@ -402,33 +373,6 @@
 			<version>3.8.10</version>
 			<scope>system</scope>
 			<systemPath>${project.basedir}/libs/ChestShop.jar</systemPath>
-		</dependency>
-
-		<!-- Citizens 1.X (No API) -->
-		<dependency>
-			<groupId>net.citizensnpcs</groupId>
-			<artifactId>citizens</artifactId>
-			<version>1.2.4</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/Citizens.jar</systemPath>
-		</dependency>
-
-		<!-- Old version of xAuth by Cypherx -->
-		<dependency>
-			<groupId>com.cypherx</groupId>
-			<artifactId>xauth</artifactId>
-			<version>2.0.26</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/xAuth.jar</systemPath>
-		</dependency>
-
-		<!-- A SpoutApi Plugin, http://dev.bukkit.org/bukkit-plugins/notifications/ -->
-		<dependency>
-			<groupId>me.muizers</groupId>
-			<artifactId>Notifications</artifactId>
-			<version>1.6</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/Notifications.jar</systemPath>
 		</dependency>
 
 	</dependencies>

@@ -1,11 +1,9 @@
 package fr.xephi.authme.plugin.manager;
 
-import net.citizensnpcs.api.CitizensAPI;
-import net.citizensnpcs.api.CitizensManager;
-
 import org.bukkit.entity.Entity;
 
 import fr.xephi.authme.AuthMe;
+import net.citizensnpcs.api.CitizensAPI;
 
 public class CitizensCommunicator {
 
@@ -16,14 +14,10 @@ public class CitizensCommunicator {
     }
 
     public boolean isNPC(final Entity player, AuthMe instance) {
+        if (!this.instance.isCitizensActive)
+            return false;
         try {
-            if (instance.CitizensVersion == 1) {
-                return CitizensManager.isNPC(player);
-            } else if (instance.CitizensVersion == 2) {
-                return CitizensAPI.getNPCRegistry().isNPC(player);
-            } else {
-                return false;
-            }
+            return CitizensAPI.getNPCRegistry().isNPC(player);
         } catch (NoClassDefFoundError ncdfe) {
             return false;
         } catch (Exception npe) {

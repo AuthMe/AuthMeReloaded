@@ -15,6 +15,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 
@@ -28,7 +29,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.mcstats.MetricsLite;
+import org.bukkit.scheduler.BukkitTask;
+import org.mcstats.Metrics;
 
 import com.earth2me.essentials.Essentials;
 import com.maxmind.geoip.LookupService;
@@ -61,7 +63,6 @@ import fr.xephi.authme.listener.AuthMeChestShopListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMeServerListener;
-import fr.xephi.authme.listener.AuthMeSpoutListener;
 import fr.xephi.authme.plugin.manager.BungeeCordMessage;
 import fr.xephi.authme.plugin.manager.CitizensCommunicator;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
@@ -72,8 +73,6 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import me.muizers.Notifications.Notifications;
-import net.citizensnpcs.Citizens;
 import net.milkbowl.vault.permission.Permission;
 
 public class AuthMe extends JavaPlugin {
@@ -90,13 +89,12 @@ public class AuthMe extends JavaPlugin {
     private Utils utils = Utils.getInstance();
     private FileCache playerBackup = new FileCache(this);
     public CitizensCommunicator citizens;
+    public boolean isCitizensActive = false;
     public SendMailSSL mail = null;
-    public int CitizensVersion = 0;
-    public int CombatTag = 0;
+    public boolean CombatTag = false;
     public double ChestShop = 0;
     public boolean BungeeCord = false;
     public Essentials ess;
-    public Notifications notifications;
     public API api;
     public Management management;
     public HashMap<String, Integer> captcha = new HashMap<String, Integer>();
@@ -109,6 +107,7 @@ public class AuthMe extends JavaPlugin {
     public boolean delayedAntiBot = true;
     protected static String vgUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
     public DataManager dataManager;
+    public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<String, BukkitTask>();
 
     public Settings getSettings() {
         return settings;
@@ -128,16 +127,16 @@ public class AuthMe extends JavaPlugin {
             this.getServer().shutdown();
             return;
         }
-        
+
         try {
-            MetricsLite metrics = new MetricsLite(this);
+            Metrics metrics = new Metrics(this);
             metrics.start();
-            ConsoleLogger.info("Metrics-Lite started successfully!");
+            ConsoleLogger.info("Metrics started successfully!");
         } catch (IOException e) {
             // Failed to submit the stats :-(
-            ConsoleLogger.showError("Can't start Metrics-Lite! The plugin will work anyway...");
+            ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway...");
         }
-        
+
         citizens = new CitizensCommunicator(this);
 
         if (Settings.enableAntiBot) {
@@ -188,9 +187,6 @@ public class AuthMe extends JavaPlugin {
         // Check Combat Tag Version
         combatTag();
 
-        // Check Notifications
-        checkNotifications();
-
         // Check Multiverse
         checkMultiverse();
 
@@ -225,10 +221,7 @@ public class AuthMe extends JavaPlugin {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
         }
-        if (pm.isPluginEnabled("Spout")) {
-            pm.registerEvents(new AuthMeSpoutListener(database), this);
-            ConsoleLogger.info("Successfully hook with Spout!");
-        }
+
         pm.registerEvents(new AuthMePlayerListener(this, database), this);
         pm.registerEvents(new AuthMeBlockListener(database, this), this);
         pm.registerEvents(new AuthMeEntityListener(database, this), this);
@@ -394,40 +387,18 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    public void checkNotifications() {
-        if (!Settings.notifications) {
-            this.notifications = null;
-            return;
-        }
-        if (this.getServer().getPluginManager().getPlugin("Notifications") != null && this.getServer().getPluginManager().getPlugin("Notifications").isEnabled()) {
-            this.notifications = (Notifications) this.getServer().getPluginManager().getPlugin("Notifications");
-            ConsoleLogger.info("Successfully hook with Notifications");
-        } else {
-            this.notifications = null;
-        }
-    }
-
     public void combatTag() {
         if (this.getServer().getPluginManager().getPlugin("CombatTag") != null && this.getServer().getPluginManager().getPlugin("CombatTag").isEnabled()) {
-            this.CombatTag = 1;
+            this.CombatTag = true;
         } else {
-            this.CombatTag = 0;
+            this.CombatTag = false;
         }
     }
 
     public void citizensVersion() {
-        if (this.getServer().getPluginManager().getPlugin("Citizens") != null && this.getServer().getPluginManager().getPlugin("Citizens").isEnabled()) {
-            Citizens cit = (Citizens) this.getServer().getPluginManager().getPlugin("Citizens");
-            String ver = cit.getDescription().getVersion();
-            String[] args = ver.split("\\.");
-            if (args[0].contains("1")) {
-                this.CitizensVersion = 1;
-            } else {
-                this.CitizensVersion = 2;
-            }
-        } else {
-            this.CitizensVersion = 0;
-        }
+        if (this.getServer().getPluginManager().getPlugin("Citizens") != null && this.getServer().getPluginManager().getPlugin("Citizens").isEnabled())
+            this.isCitizensActive = true;
+        else this.isCitizensActive = false;
     }
 
     @Override

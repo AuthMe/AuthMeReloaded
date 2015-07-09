@@ -72,13 +72,7 @@ public class SendMailSSL {
                     message.setSentDate(new Date());
                     BodyPart messageBodyPart = new MimeBodyPart();
                     messageBodyPart.setText(mailText);
-
                     Multipart multipart = new MimeMultipart();
-
-                    multipart.addBodyPart(messageBodyPart);
-
-                    messageBodyPart = new MimeBodyPart();
-
                     multipart.addBodyPart(messageBodyPart);
                     message.setContent(multipart);
                     Transport transport = session.getTransport("smtp");

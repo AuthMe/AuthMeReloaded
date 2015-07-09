@@ -2,7 +2,6 @@ package fr.xephi.authme.commands;
 
 import java.security.NoSuchAlgorithmException;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -172,21 +171,8 @@ public class EmailCommand implements CommandExecutor {
                         m.send(player, "email_invalid");
                         return true;
                     }
-                    final String finalhashnew = hashnew;
-                    final PlayerAuth finalauth = auth;
-                    if (data instanceof Thread) {
-                        finalauth.setHash(hashnew);
-                        data.updatePassword(auth);
-                    } else {
-                        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                finalauth.setHash(finalhashnew);
-                                data.updatePassword(finalauth);
-                            }
-                        });
-                    }
+                    auth.setHash(hashnew);
+                    data.updatePassword(auth);
                     plugin.mail.main(auth, thePass);
                     m.send(player, "email_send");
                 } catch (NoSuchAlgorithmException ex) {

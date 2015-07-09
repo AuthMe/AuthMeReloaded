@@ -4,12 +4,13 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.xephi.authme.api.API;
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.settings.Settings;
 
 public class ProcessSyncronousPlayerQuit implements Runnable {
 
+    protected AuthMe plugin;
     protected Player player;
     protected boolean isOp;
     protected boolean isFlying;
@@ -17,9 +18,10 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
     protected ItemStack[] armor;
     protected boolean needToChange;
 
-    public ProcessSyncronousPlayerQuit(Player player, ItemStack[] inv,
-            ItemStack[] armor, boolean isOp, boolean isFlying,
+    public ProcessSyncronousPlayerQuit(AuthMe plugin, Player player,
+            ItemStack[] inv, ItemStack[] armor, boolean isOp, boolean isFlying,
             boolean needToChange) {
+        this.plugin = plugin;
         this.player = player;
         this.isOp = isOp;
         this.isFlying = isFlying;
@@ -34,7 +36,7 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
             RestoreInventoryEvent ev = new RestoreInventoryEvent(player, inv, armor);
             player.getServer().getPluginManager().callEvent(ev);
             if (!ev.isCancelled()) {
-                API.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
+                plugin.api.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
             }
         }
         if (needToChange) {
