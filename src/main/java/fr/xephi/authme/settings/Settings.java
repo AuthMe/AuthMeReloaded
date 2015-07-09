@@ -70,7 +70,7 @@ public final class Settings extends YamlConfiguration {
             purgePermissions, enableProtection, enableAntiBot, recallEmail,
             useWelcomeMessage, broadcastWelcomeMessage, forceRegKick,
             forceRegLogin, checkVeryGames, delayJoinMessage, noTeleport,
-            applyBlindEffect, customAttributes;
+            applyBlindEffect, customAttributes, generateImage;
 
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
             getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
@@ -269,6 +269,7 @@ public final class Settings extends YamlConfiguration {
         forceRegisterCommands = (List<String>) configFile.getList("settings.forceRegisterCommands", new ArrayList<String>());
         forceRegisterCommandsAsConsole = (List<String>) configFile.getList("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
+        generateImage = configFile.getBoolean("Email.generateImage", true);
 
         // Load the welcome message
         getWelcomeMessage(plugin);
@@ -435,6 +436,7 @@ public final class Settings extends YamlConfiguration {
         forceRegisterCommands = (List<String>) configFile.getList("settings.forceRegisterCommands", new ArrayList<String>());
         forceRegisterCommandsAsConsole = (List<String>) configFile.getList("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
+        generateImage = configFile.getBoolean("Email.generateImage", true);
 
         // Reload the welcome message
         getWelcomeMessage(AuthMe.getInstance());
@@ -587,6 +589,10 @@ public final class Settings extends YamlConfiguration {
         }
         if (contains("Hooks.notifications"))
             set("Hooks.notifications", null);
+        if (!contains("Email.generateImage")) {
+            set("Email.generateImage", true);
+            changes = true;
+        }
 
         if (changes) {
             plugin.getLogger().warning("Merge new Config Options - I'm not an error, please don't report me");

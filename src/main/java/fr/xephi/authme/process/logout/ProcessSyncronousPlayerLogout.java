@@ -51,8 +51,10 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         if (Settings.applyBlindEffect)
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
         player.setOp(false);
-        player.setAllowFlight(true);
-        player.setFlying(true);
+        if (!Settings.isMovementAllowed) {
+            player.setAllowFlight(true);
+            player.setFlying(true);
+        }
         // Player is now logout... Time to fire event !
         sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
