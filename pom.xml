@@ -24,10 +24,10 @@
 		<bukkitVersion>1.8.7-R0.1-SNAPSHOT</bukkitVersion>
 	</properties>
 
-	<!-- Official Build Server ALLERT: sometimes jenkins is offline, no panic! -->
+	<!-- Official Build Server -->
 	<ciManagement>
 		<system>jenkins</system>
-		<url>http://ci.xephi.fr</url>
+		<url>http://ci.xephi.fr/job/AuthMeReloaded/</url>
 	</ciManagement>
 
 	<issueManagement>
@@ -116,16 +116,16 @@
 		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
 		<repository>
 			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/groups/public/</url>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
 		</repository>
 
 		<!-- Mcstats.org Metrics Repo -->
 		<repository>
 			<id>Plugin Metrics</id>
-			<url>http://repo.mcstats.org/content/repositories/public</url>
+			<url>http://repo.mcstats.org/content/repositories/releases</url>
 		</repository>
 
-		<!-- Vault Repo (Already in ess repo!) -->
+		<!-- Vault Repo -->
 		<repository>
 			<id>vault-repo</id>
 			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
@@ -152,19 +152,19 @@
 		<!-- XAuth Repo -->
 		<repository>
 			<id>luricos-releases</id>
-			<url>http://repo.luricos.de/content/repositories/releases/</url>
+			<url>http://repo.luricos.de/content/repositories/bukkit-plugins</url>
 		</repository>
 
 		<!-- Attribute Repo -->
 		<repository>
 			<id>comphenix-snapshots</id>
-			<url>http://repo.comphenix.net/content/repositories/snapshots/</url>
+			<url>http://repo.comphenix.net/content/repositories/snapshots</url>
 		</repository>
 
 		<!-- Multiverse Repo -->
 		<repository>
 			<id>onarandombox</id>
-			<url>http://repo.onarandombox.com/content/groups/public</url>
+			<url>http://repo.onarandombox.com/content/repositories/multiverse</url>
 		</repository>
 
 	</repositories>
