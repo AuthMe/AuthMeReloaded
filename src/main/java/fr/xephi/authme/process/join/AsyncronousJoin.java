@@ -53,7 +53,7 @@ public class AsyncronousJoin {
         AuthMePlayerListener.gameMode.put(name, player.getGameMode());
         BukkitScheduler sched = plugin.getServer().getScheduler();
 
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
 
@@ -216,7 +216,7 @@ public class AsyncronousJoin {
             public void run() {
                 if (player.isOp())
                     player.setOp(false);
-                if (!Settings.isMovementAllowed) {
+                if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
                     player.setAllowFlight(true);
                     player.setFlying(true);
                 }

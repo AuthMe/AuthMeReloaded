@@ -460,7 +460,7 @@ public class AuthMe extends JavaPlugin {
     public void savePlayer(Player player)
             throws IllegalStateException, NullPointerException {
         try {
-            if ((citizens.isNPC(player, this)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
+            if ((citizens.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
                 return;
             }
         } catch (Exception e) {

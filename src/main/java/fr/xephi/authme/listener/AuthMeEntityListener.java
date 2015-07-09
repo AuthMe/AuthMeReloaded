@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -29,7 +29,7 @@ public class AuthMeEntityListener implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.isCancelled()) {
             return;
@@ -44,7 +44,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity, instance))
+        if (instance.citizens.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -67,7 +67,7 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
         if (event.isCancelled()) {
             return;
@@ -79,7 +79,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity, instance))
+        if (instance.citizens.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -97,22 +97,22 @@ public class AuthMeEntityListener implements Listener {
         event.setTarget(null);
         event.setCancelled(true);
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST)
-	public void onDmg(EntityDamageByEntityEvent event) {
-		if (event.isCancelled()) {
+    public void onDmg(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) {
             return;
         }
-		
-		Entity entity = event.getDamager();
-		
-		if (entity == null || !(entity instanceof Player)) {
+
+        Entity entity = event.getDamager();
+
+        if (entity == null || !(entity instanceof Player)) {
             return;
         }
-		
-		Player player = (Player) entity;
-		String name = player.getName().toLowerCase();
-		
+
+        Player player = (Player) entity;
+        String name = player.getName().toLowerCase();
+
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
@@ -122,11 +122,11 @@ public class AuthMeEntityListener implements Listener {
                 return;
             }
         }
-        
-        event.setCancelled(true);
-	}
 
-    @EventHandler (priority = EventPriority.LOWEST)
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.isCancelled()) {
             return;
@@ -137,7 +137,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity, instance))
+        if (instance.citizens.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -168,7 +168,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity, instance))
+        if (instance.citizens.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -205,7 +205,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(player, instance))
+        if (instance.citizens.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
@@ -237,7 +237,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(player, instance))
+        if (instance.citizens.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {

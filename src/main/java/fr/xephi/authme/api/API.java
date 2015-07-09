@@ -72,20 +72,8 @@ public class API {
      * @param player
      * @return true if player is a npc
      */
-    @Deprecated
-    public boolean isaNPC(Player player) {
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin))
-            return true;
-        return CombatTagComunicator.isNPC(player);
-    }
-
-    /**
-     * 
-     * @param player
-     * @return true if player is a npc
-     */
     public boolean isNPC(Player player) {
-        if (plugin.getCitizensCommunicator().isNPC(player, plugin))
+        if (plugin.getCitizensCommunicator().isNPC(player))
             return true;
         return CombatTagComunicator.isNPC(player);
     }
