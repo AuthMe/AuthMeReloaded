@@ -46,9 +46,8 @@ public class SendMailSSL {
         final String subject = Settings.getMailSubject;
         final String smtp = Settings.getmailSMTP;
         final String password = Settings.getmailPassword;
-        final String mailText = Settings.getMailText;
+        final String mailText = Settings.getMailText.replace("<playername>", auth.getNickname()).replace("<servername>", plugin.getServer().getServerName()).replace("<generatedpass>", newPass);
         final String mail = auth.getEmail();
-
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
