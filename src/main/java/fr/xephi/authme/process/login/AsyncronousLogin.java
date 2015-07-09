@@ -19,7 +19,6 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
-import me.muizers.Notifications.Notification;
 
 public class AsyncronousLogin {
 
@@ -147,22 +146,18 @@ public class AsyncronousLogin {
             }
 
             player.setNoDamageTicks(0);
-            m.send(player, "login");
+            if (!forceLogin)
+                m.send(player, "login");
 
             displayOtherAccounts(auth, player);
-            
+
             if (Settings.recallEmail) {
                 if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
                     m.send(player, "add_email");
             }
 
-
             if (!Settings.noConsoleSpam)
                 ConsoleLogger.info(player.getName() + " logged in!");
-
-            if (plugin.notifications != null) {
-                plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged in!"));
-            }
 
             // makes player isLoggedin via API
             PlayerCache.getInstance().addPlayer(auth);

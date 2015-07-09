@@ -1,11 +1,14 @@
 package fr.xephi.authme.api;
 
 import java.security.NoSuchAlgorithmException;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -18,29 +21,41 @@ import fr.xephi.authme.settings.Settings;
 public class API {
 
     public static final String newline = System.getProperty("line.separator");
-    public static AuthMe instance;
-    public static DataSource database;
+    public static API singleton;
+    public AuthMe plugin;
+    public DataSource database;
 
-    public API(AuthMe instance, DataSource database) {
-        API.instance = instance;
-        API.database = database;
+    public API(AuthMe plugin, DataSource database) {
+        this.plugin = plugin;
+        this.database = database;
+    }
+
+    public API(Server serv) {
+        this.plugin = (AuthMe) serv.getPluginManager().getPlugin("AuthMe");
+        this.database = this.plugin.database;
     }
 
     /**
      * Hook into AuthMe
      * 
-     * @return AuthMe instance
+     * @return
+     * 
+     * @return AuthMe plugin
      */
-    public static AuthMe hookAuthMe() {
-        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
-        if (plugin == null || !(plugin instanceof AuthMe)) {
+    public static API getInstance() {
+        if (singleton != null)
+            return singleton;
+        Plugin p = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
+        if (p == null || !(p instanceof AuthMe)) {
             return null;
         }
-        return (AuthMe) plugin;
+        AuthMe authme = (AuthMe) p;
+        singleton = (new API(authme, authme.database));
+        return singleton;
     }
 
     public AuthMe getPlugin() {
-        return instance;
+        return plugin;
     }
 
     /**
@@ -48,7 +63,7 @@ public class API {
      * @param player
      * @return true if player is authenticate
      */
-    public static boolean isAuthenticated(Player player) {
+    public boolean isAuthenticated(Player player) {
         return PlayerCache.getInstance().isAuthenticated(player.getName());
     }
 
@@ -59,7 +74,7 @@ public class API {
      */
     @Deprecated
     public boolean isaNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player, instance))
+        if (plugin.getCitizensCommunicator().isNPC(player, plugin))
             return true;
         return CombatTagComunicator.isNPC(player);
     }
@@ -70,7 +85,7 @@ public class API {
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player, instance))
+        if (plugin.getCitizensCommunicator().isNPC(player, plugin))
             return true;
         return CombatTagComunicator.isNPC(player);
     }
@@ -80,11 +95,11 @@ public class API {
      * @param player
      * @return true if the player is unrestricted
      */
-    public static boolean isUnrestricted(Player player) {
+    public boolean isUnrestricted(Player player) {
         return Utils.getInstance().isUnrestricted(player);
     }
 
-    public static Location getLastLocation(Player player) {
+    public Location getLastLocation(Player player) {
         try {
             PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
 
@@ -100,7 +115,7 @@ public class API {
         }
     }
 
-    public static void setPlayerInventory(Player player, ItemStack[] content,
+    public void setPlayerInventory(Player player, ItemStack[] content,
             ItemStack[] armor) {
         try {
             player.getInventory().setContents(content);
@@ -114,7 +129,7 @@ public class API {
      * @param playerName
      * @return true if player is registered
      */
-    public static boolean isRegistered(String playerName) {
+    public boolean isRegistered(String playerName) {
         String player = playerName.toLowerCase();
         return database.isAuthAvailable(player);
     }
@@ -124,8 +139,7 @@ public class API {
      *            playerName, String passwordToCheck
      * @return true if the password is correct , false else
      */
-    public static boolean checkPassword(String playerName,
-            String passwordToCheck) {
+    public boolean checkPassword(String playerName, String passwordToCheck) {
         if (!isRegistered(playerName))
             return false;
         String player = playerName.toLowerCase();
@@ -144,7 +158,7 @@ public class API {
      *            playerName, String password
      * @return true if the player is register correctly
      */
-    public static boolean registerPlayer(String playerName, String password) {
+    public boolean registerPlayer(String playerName, String password) {
         try {
             String name = playerName.toLowerCase();
             String hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
@@ -167,8 +181,8 @@ public class API {
      * @param Player
      *            player
      */
-    public static void forceLogin(Player player) {
-        instance.management.performLogin(player, "dontneed", true);
+    public void forceLogin(Player player) {
+        plugin.management.performLogin(player, "dontneed", true);
     }
 
 }

@@ -22,7 +22,7 @@ usage_unreg: '&c正確用法為:使用"/unregister <密碼>"來取消現有密�
 pwd_changed: '&c密碼變更成功!'
 user_unknown: '&c此用戶名並未被註冊!'
 password_error: <密碼>與<錯認密碼>不相同!
-unvalid_session: 'Session Dataes doesnt corrispond Plaese wait the end of session'
+invalid_session: 'Session Dataes doesnt corrispond Plaese wait the end of session'
 reg_only: 'Registered players only! Please visit http://example.com to register'
 logged_in: '&c您已經登入了!'
 logout: '&a登出成功!'

@@ -22,7 +22,7 @@ usage_unreg: '&cGebruik: /unregister password'
 pwd_changed: '&cWachtwoord aangepast!'
 user_unknown: '&cGebruikersnaam niet geregistreerd'
 password_error: Wachtwoord incorrect!
-unvalid_session: Sessie beschadigt, wacht tot de sessie is verlopen en join opnieuw.
+invalid_session: Sessie beschadigt, wacht tot de sessie is verlopen en join opnieuw.
 reg_only: Alleen voor geregistreerde spelers! Bezoek http://example.com om te registreren
 logged_in: '&cJe bent al ingelogt!'
 logout: '&cJe bent succesvol uitgelogt'

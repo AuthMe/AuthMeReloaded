@@ -27,7 +27,6 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
-import me.muizers.Notifications.Notification;
 
 public class UnregisterCommand implements CommandExecutor {
 
@@ -98,9 +97,6 @@ public class UnregisterCommand implements CommandExecutor {
                     LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
                     m.send(player, "unregistered");
                     ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
-                    if (plugin.notifications != null) {
-                        plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
-                    }
                     return true;
                 }
                 if (!Settings.unRegisteredGroup.isEmpty()) {
@@ -116,9 +112,6 @@ public class UnregisterCommand implements CommandExecutor {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
                 m.send(player, "unregistered");
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
-                if (plugin.notifications != null) {
-                    plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " unregistered himself!"));
-                }
                 if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
                     Location spawn = plugin.getSpawnLocation(player);
                     SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);

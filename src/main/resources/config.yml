@@ -68,7 +68,7 @@ settings:
         # 0 for unlimitted sessions, use 0 at your own risk!
         # consider that session will end only after timeout, and
         # if player's ip is changed but the timeout treshould isent
-        # ended, player will kick out of sever for unvalidSession!
+        # ended, player will kick out of sever for invalidSession!
         timeout: 10
         # Do we need to timeout the session if the player is offline
         # And try to login with an another IP Address?
@@ -375,8 +375,6 @@ Hooks:
     chestshop: true
     # Do we need to hook with BungeeCord for get the real Player ip ?
     bungeecord: false
-    # Do we need to hook with Notifications for Notifs sending ?
-    notifications: true
     # Do we need to disable Essentials SocialSpy on join ?
     disableSocialSpy: true
     # Do we need to force /motd Essentials command on join ?

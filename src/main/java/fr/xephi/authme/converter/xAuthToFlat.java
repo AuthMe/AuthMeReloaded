@@ -10,25 +10,20 @@ import java.util.List;
 
 import org.bukkit.command.CommandSender;
 
-import com.cypherx.xauth.xAuth;
-import com.cypherx.xauth.database.Table;
-import com.cypherx.xauth.utils.xAuthLog;
-
+import de.luricos.bukkit.xAuth.xAuth;
+import de.luricos.bukkit.xAuth.database.DatabaseTables;
+import de.luricos.bukkit.xAuth.utils.xAuthLog;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 
-/**
- *
- * @author Xephi59
- */
-public class oldxAuthToFlat {
+public class xAuthToFlat {
 
     public AuthMe instance;
     public DataSource database;
     public CommandSender sender;
 
-    public oldxAuthToFlat(AuthMe instance, DataSource database,
+    public xAuthToFlat(AuthMe instance, DataSource database,
             CommandSender sender) {
         this.instance = instance;
         this.database = database;
@@ -71,7 +66,7 @@ public class oldxAuthToFlat {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT `playername` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
+            String sql = String.format("SELECT `playername` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
             ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
             rs = ps.executeQuery();
@@ -93,7 +88,7 @@ public class oldxAuthToFlat {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT * FROM `%s`", xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
+            String sql = String.format("SELECT * FROM `%s`", xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -114,7 +109,7 @@ public class oldxAuthToFlat {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT `password`, `pwtype` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(Table.ACCOUNT));
+            String sql = String.format("SELECT `password`, `pwtype` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
             ps = conn.prepareStatement(sql);
             ps.setInt(1, accountId);
             rs = ps.executeQuery();

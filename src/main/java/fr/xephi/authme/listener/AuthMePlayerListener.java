@@ -39,7 +39,6 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -54,7 +53,6 @@ public class AuthMePlayerListener implements Listener {
     public static GameMode gm = GameMode.SURVIVAL;
     public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<String, GameMode>();
     public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<String, String>();
-    private Utils utils = Utils.getInstance();
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
     private DataSource data;
@@ -344,7 +342,8 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (!Settings.isMovementAllowed) {
-            event.setTo(event.getFrom());
+            if (!event.getFrom().getBlock().equals(event.getTo().getBlock()))
+                event.setTo(event.getFrom());
             return;
         }
 
@@ -355,14 +354,15 @@ public class AuthMePlayerListener implements Listener {
         int radius = Settings.getMovementRadius;
         Location spawn = plugin.getSpawnLocation(player);
 
-        if (spawn != null && spawn.getWorld() != null)
+        if (spawn != null && spawn.getWorld() != null) {
             if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
                 event.getPlayer().teleport(spawn);
                 return;
             }
-        if ((spawn.distance(player.getLocation()) > radius) && spawn.getWorld() != null) {
-            event.getPlayer().teleport(spawn);
-            return;
+            if ((spawn.distance(player.getLocation()) > radius)) {
+                event.getPlayer().teleport(spawn);
+                return;
+            }
         }
     }
 
@@ -405,6 +405,7 @@ public class AuthMePlayerListener implements Listener {
         if (player == null)
             return;
         final String name = player.getName().toLowerCase();
+        boolean isAuthAvailable = data.isAuthAvailable(name);
 
         if (plugin.getCitizensCommunicator().isNPC(player, plugin) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
@@ -412,7 +413,7 @@ public class AuthMePlayerListener implements Listener {
 
         if (Settings.enablePasspartu && !Settings.countriesBlacklist.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || (Settings.countriesBlacklist.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+            if (((code == null) || (Settings.countriesBlacklist.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -420,7 +421,7 @@ public class AuthMePlayerListener implements Listener {
         }
         if (Settings.enableProtection && !Settings.countries.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || (!Settings.countries.contains(code) && !API.isRegistered(name))) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+            if (((code == null) || (!Settings.countries.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -440,18 +441,6 @@ public class AuthMePlayerListener implements Listener {
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
-
-        if (data.isAuthAvailable(name) && LimboCache.getInstance().hasLimboPlayer(name))
-            if (Settings.isSessionsEnabled)
-                if (PlayerCache.getInstance().isAuthenticated(name))
-                    if (!Settings.sessionExpireOnIpChange)
-                        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                LimboCache.getInstance().deleteLimboPlayer(name);
-                            }
-                        });
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
@@ -589,7 +578,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        plugin.management.performQuit(player);
+        plugin.management.performQuit(player, false);
 
         if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
             event.setQuitMessage(null);
@@ -611,7 +600,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        plugin.management.performQuit(player);
+        plugin.management.performQuit(player, true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

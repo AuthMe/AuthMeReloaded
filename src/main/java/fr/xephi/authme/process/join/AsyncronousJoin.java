@@ -1,7 +1,5 @@
 package fr.xephi.authme.process.join;
 
-import java.util.Date;
-
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -17,7 +15,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.Utils.groupType;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.DataFileCache;
@@ -26,7 +23,6 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.events.SessionEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
@@ -95,76 +91,6 @@ public class AsyncronousJoin {
         }
         final Location spawnLoc = plugin.getSpawnLocation(player);
         if (database.isAuthAvailable(name)) {
-            if (Settings.isSessionsEnabled) {
-                PlayerAuth auth = database.getAuth(name);
-                long timeout = Settings.getSessionTimeout * 60000;
-                long lastLogin = auth.getLastLogin();
-                long cur = new Date().getTime();
-                if ((cur - lastLogin < timeout || timeout == 0) && !auth.getIp().matches("198.168.(0|1).1")) {
-                    if (auth.getNickname().equalsIgnoreCase(name) && auth.getIp().equals(ip)) {
-                        if (PlayerCache.getInstance().getAuth(name) != null) {
-                            PlayerCache.getInstance().updatePlayer(auth);
-                        } else {
-                            PlayerCache.getInstance().addPlayer(auth);
-                            database.setLogged(name);
-                        }
-                        m.send(player, "valid_session");
-                        // Restore Permission Group
-                        utils.setGroup(player, Utils.groupType.LOGGEDIN);
-                        plugin.getServer().getPluginManager().callEvent(new SessionEvent(auth, true));
-                        return;
-                    } else if (!Settings.sessionExpireOnIpChange) {
-                        final GameMode gM = AuthMePlayerListener.gameMode.get(name);
-                        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                AuthMePlayerListener.causeByAuthMe.put(name, true);
-                                player.setGameMode(gM);
-                                AuthMePlayerListener.causeByAuthMe.put(name, false);
-                                player.kickPlayer(m.send("unvalid_session")[0]);
-                            }
-
-                        });
-                        return;
-                    } else if (auth.getNickname().equalsIgnoreCase(name)) {
-                        if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                                @Override
-                                public void run() {
-                                    AuthMePlayerListener.causeByAuthMe.put(name, true);
-                                    Utils.forceGM(player);
-                                    AuthMePlayerListener.causeByAuthMe.put(name, false);
-                                }
-
-                            });
-                        }
-                        // Player change his IP between 2 relog-in
-                        PlayerCache.getInstance().removePlayer(name);
-                        database.setUnlogged(name);
-                    } else {
-                        final GameMode gM = AuthMePlayerListener.gameMode.get(name);
-                        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                            @Override
-                            public void run() {
-                                AuthMePlayerListener.causeByAuthMe.put(name, true);
-                                player.setGameMode(gM);
-                                AuthMePlayerListener.causeByAuthMe.put(name, false);
-                                player.kickPlayer(m.send("unvalid_session")[0]);
-                            }
-
-                        });
-                        return;
-                    }
-                } else {
-                    // Session is ended correctly
-                    PlayerCache.getInstance().removePlayer(name);
-                    database.setUnlogged(name);
-                }
-            }
-            // isent in session or session was ended correctly
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
                 sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -255,7 +181,7 @@ public class AsyncronousJoin {
                             if (!Settings.noConsoleSpam)
                                 ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
                         } else {
-                            API.setPlayerInventory(player, ev.getEmptyInventory(), ev.getEmptyArmor());
+                            plugin.api.setPlayerInventory(player, ev.getEmptyInventory(), ev.getEmptyArmor());
                         }
                     } catch (NullPointerException ex) {
                     }
@@ -302,6 +228,23 @@ public class AsyncronousJoin {
             }
 
         });
+        if (Settings.isSessionsEnabled && database.isAuthAvailable(name) && (PlayerCache.getInstance().isAuthenticated(name) || database.isLogged(name))) {
+            if (plugin.sessions.containsKey(name))
+                plugin.sessions.get(name).cancel();
+            plugin.sessions.remove(name);
+            PlayerAuth auth = database.getAuth(name);
+            if (auth != null && auth.getIp().equals(ip)) {
+                m.send(player, "valid_session");
+                PlayerCache.getInstance().removePlayer(name);
+                database.setUnlogged(name);
+                plugin.management.performLogin(player, "dontneed", true);
+            } else if (Settings.sessionExpireOnIpChange) {
+                PlayerCache.getInstance().removePlayer(name);
+                database.setUnlogged(name);
+                m.send(player, "invalid_session");
+            }
+            return;
+        }
         BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
     }

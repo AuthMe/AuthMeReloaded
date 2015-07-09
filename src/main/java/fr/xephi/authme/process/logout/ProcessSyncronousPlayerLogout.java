@@ -15,7 +15,6 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
-import me.muizers.Notifications.Notification;
 
 public class ProcessSyncronousPlayerLogout implements Runnable {
 
@@ -32,6 +31,9 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
 
     @Override
     public void run() {
+        if (plugin.sessions.containsKey(name))
+            plugin.sessions.get(name).cancel();
+        plugin.sessions.remove(name);
         int delay = Settings.getRegistrationTimeout * 20;
         int interval = Settings.getWarnMessageInterval;
         BukkitScheduler sched = player.getServer().getScheduler();
@@ -61,9 +63,6 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         });
         m.send(player, "logout");
         ConsoleLogger.info(player.getDisplayName() + " logged out");
-        if (plugin.notifications != null) {
-            plugin.notifications.showNotification(new Notification("[AuthMe] " + player.getName() + " logged out!"));
-        }
     }
 
 }
