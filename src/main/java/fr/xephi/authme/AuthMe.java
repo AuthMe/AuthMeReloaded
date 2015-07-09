@@ -566,8 +566,8 @@ public class AuthMe extends JavaPlugin {
         Location spawnLoc = world.getSpawnLocation();
         for (int i = spawnPriority.length - 1; i >= 0; i--) {
             String s = spawnPriority[i];
-            if (s.equalsIgnoreCase("default") && getDefaultSpawn(world) != null)
-                spawnLoc = getDefaultSpawn(world);
+            if (s.equalsIgnoreCase("default") && getDefaultSpawn() != null)
+                spawnLoc = getDefaultSpawn();
             if (s.equalsIgnoreCase("multiverse") && getMultiverseSpawn(world) != null)
                 spawnLoc = getMultiverseSpawn(world);
             if (s.equalsIgnoreCase("essentials") && getEssentialsSpawn() != null)
@@ -580,8 +580,8 @@ public class AuthMe extends JavaPlugin {
         return spawnLoc;
     }
 
-    private Location getDefaultSpawn(World world) {
-        return world.getSpawnLocation();
+    private Location getDefaultSpawn() {
+        return this.getServer().getWorld(Settings.defaultWorld).getSpawnLocation();
     }
 
     private Location getMultiverseSpawn(World world) {
@@ -607,7 +607,7 @@ public class AuthMe extends JavaPlugin {
             return Spawn.getInstance().getFirstSpawn();
         if (Spawn.getInstance().getSpawn() != null)
             return Spawn.getInstance().getSpawn();
-        return null;
+        return this.getServer().getWorld(Settings.defaultWorld).getSpawnLocation();
     }
 
     public void downloadGeoIp() {

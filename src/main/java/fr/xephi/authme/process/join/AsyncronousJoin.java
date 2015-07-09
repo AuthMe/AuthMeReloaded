@@ -22,12 +22,14 @@ import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 
@@ -149,7 +151,7 @@ public class AsyncronousJoin {
                 return;
             }
             if (!Settings.noTeleport)
-                if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
+                if (!needFirstspawn() && Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                     sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                         @Override
@@ -249,6 +251,31 @@ public class AsyncronousJoin {
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
     }
 
+    private boolean needFirstspawn() {
+        if (database.isAuthAvailable(player.getName().toLowerCase()) && player.hasPlayedBefore())
+            return false;
+        else {
+            if (Spawn.getInstance().getFirstSpawn() == null || Spawn.getInstance().getFirstSpawn().getWorld() == null)
+                return false;
+            final Location loc = Spawn.getInstance().getFirstSpawn();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+                @Override
+                public void run() {
+                    FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), loc);
+                    plugin.getServer().getPluginManager().callEvent(tpEvent);
+                    if (!tpEvent.isCancelled()) {
+                        if (player != null && player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
+                            player.teleport(tpEvent.getTo());
+                        }
+                    }
+                }
+
+            });
+            return true;
+        }
+    }
+
     private void placePlayerSafely(final Player player,
             final Location spawnLoc) {
         Location loc = null;
@@ -258,14 +285,16 @@ public class AsyncronousJoin {
             return;
         if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())))
             return;
+        if (!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore())
+            return;
         Block b = player.getLocation().getBlock();
-        if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL || b.getType() == Material.LAVA || b.getType() == Material.STATIONARY_LAVA) {
+        if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL) {
             m.send(player, "unsafe_spawn");
             if (spawnLoc.getWorld() != null)
                 loc = spawnLoc;
         } else {
             Block c = player.getLocation().add(0D, 1D, 0D).getBlock();
-            if (c.getType() == Material.PORTAL || c.getType() == Material.ENDER_PORTAL || c.getType() == Material.LAVA || c.getType() == Material.STATIONARY_LAVA) {
+            if (c.getType() == Material.PORTAL || c.getType() == Material.ENDER_PORTAL) {
                 m.send(player, "unsafe_spawn");
                 if (spawnLoc.getWorld() != null)
                     loc = spawnLoc;
