@@ -33,7 +33,6 @@ import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
@@ -46,10 +45,8 @@ public class AdminCommand implements CommandExecutor {
 
     public AuthMe plugin;
     private Messages m = Messages.getInstance();
-    public DataSource database;
 
-    public AdminCommand(AuthMe plugin, DataSource database) {
-        this.database = database;
+    public AdminCommand(AuthMe plugin) {
         this.plugin = plugin;
     }
 
@@ -107,7 +104,7 @@ public class AdminCommand implements CommandExecutor {
                 Calendar calendar = Calendar.getInstance();
                 calendar.add(Calendar.DATE, -(Integer.parseInt(args[1])));
                 long until = calendar.getTimeInMillis();
-                List<String> purged = database.autoPurgeDatabase(until);
+                List<String> purged = plugin.database.autoPurgeDatabase(until);
                 sender.sendMessage("Deleted " + purged.size() + " user accounts");
                 if (Settings.purgeEssentialsFile && plugin.ess != null)
                     plugin.dataManager.purgeEssentials(purged);
@@ -161,8 +158,8 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             try {
-                if (database.getAuth(args[1].toLowerCase()) != null) {
-                    PlayerAuth player = database.getAuth(args[1].toLowerCase());
+                if (plugin.database.getAuth(args[1].toLowerCase()) != null) {
+                    PlayerAuth player = plugin.database.getAuth(args[1].toLowerCase());
                     long lastLogin = player.getLastLogin();
                     Date d = new Date(lastLogin);
                     final long diff = System.currentTimeMillis() - lastLogin;
@@ -195,13 +192,13 @@ public class AdminCommand implements CommandExecutor {
                         PlayerAuth pAuth = null;
                         String message = "[AuthMe] ";
                         try {
-                            pAuth = database.getAuth(arguments[1].toLowerCase());
+                            pAuth = plugin.database.getAuth(arguments[1].toLowerCase());
                         } catch (NullPointerException npe) {
                             fSender.sendMessage("[AuthMe] This player is unknown");
                             return;
                         }
                         if (pAuth != null) {
-                            List<String> accountList = database.getAllAuthsByName(pAuth);
+                            List<String> accountList = plugin.database.getAllAuthsByName(pAuth);
                             if (accountList.isEmpty() || accountList == null) {
                                 fSender.sendMessage("[AuthMe] This player is unknown");
                                 return;
@@ -238,7 +235,7 @@ public class AdminCommand implements CommandExecutor {
                     public void run() {
                         String message = "[AuthMe] ";
                         if (arguments[1] != null) {
-                            List<String> accountList = database.getAllAuthsByIp(arguments[1]);
+                            List<String> accountList = plugin.database.getAllAuthsByIp(arguments[1]);
                             if (accountList.isEmpty() || accountList == null) {
                                 fSender.sendMessage("[AuthMe] Please put a valid IP");
                                 return;
@@ -275,7 +272,7 @@ public class AdminCommand implements CommandExecutor {
             }
             try {
                 String name = args[1].toLowerCase();
-                if (database.isAuthAvailable(name)) {
+                if (plugin.database.isAuthAvailable(name)) {
                     m.send(sender, "user_regged");
                     return true;
                 }
@@ -284,7 +281,7 @@ public class AdminCommand implements CommandExecutor {
                 if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
                     auth.setSalt(PasswordSecurity.userSalt.get(name));
                 else auth.setSalt("");
-                if (!database.saveAuth(auth)) {
+                if (!plugin.database.saveAuth(auth)) {
                     m.send(sender, "error");
                     return true;
                 }
@@ -301,7 +298,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             String playername = args[1].toLowerCase();
-            PlayerAuth getAuth = database.getAuth(playername);
+            PlayerAuth getAuth = plugin.database.getAuth(playername);
             if (getAuth == null) {
                 m.send(sender, "unknown_user");
                 return true;
@@ -314,13 +311,13 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             String playername = args[1].toLowerCase();
-            PlayerAuth getAuth = database.getAuth(playername);
+            PlayerAuth getAuth = plugin.database.getAuth(playername);
             if (getAuth == null) {
                 m.send(sender, "unknown_user");
                 return true;
             }
             getAuth.setEmail(args[2]);
-            if (!database.updateEmail(getAuth)) {
+            if (!plugin.database.updateEmail(getAuth)) {
                 m.send(sender, "error");
                 return true;
             }
@@ -358,7 +355,7 @@ public class AdminCommand implements CommandExecutor {
             for (OfflinePlayer off : plugin.getServer().getBannedPlayers()) {
                 bannedPlayers.add(off.getName().toLowerCase());
             }
-            database.purgeBanned(bannedPlayers);
+            plugin.database.purgeBanned(bannedPlayers);
             if (Settings.purgeEssentialsFile && plugin.ess != null)
                 plugin.dataManager.purgeEssentials(bannedPlayers);
             if (Settings.purgePlayerDat)
@@ -406,8 +403,8 @@ public class AdminCommand implements CommandExecutor {
                 PlayerAuth auth = null;
                 if (PlayerCache.getInstance().isAuthenticated(name)) {
                     auth = PlayerCache.getInstance().getAuth(name);
-                } else if (database.isAuthAvailable(name)) {
-                    auth = database.getAuth(name);
+                } else if (plugin.database.isAuthAvailable(name)) {
+                    auth = plugin.database.getAuth(name);
                 }
                 if (auth == null) {
                     m.send(sender, "unknown_user");
@@ -416,9 +413,9 @@ public class AdminCommand implements CommandExecutor {
                 auth.setHash(hash);
                 if (PasswordSecurity.userSalt.containsKey(name)) {
                     auth.setSalt(PasswordSecurity.userSalt.get(name));
-                    database.updateSalt(auth);
+                    plugin.database.updateSalt(auth);
                 }
-                if (!database.updatePassword(auth)) {
+                if (!plugin.database.updatePassword(auth)) {
                     m.send(sender, "error");
                     return true;
                 }
@@ -435,11 +432,11 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             String name = args[1].toLowerCase();
-            if (!database.isAuthAvailable(name)) {
+            if (!plugin.database.isAuthAvailable(name)) {
                 m.send(sender, "user_unknown");
                 return true;
             }
-            if (!database.removeAuth(name)) {
+            if (!plugin.database.removeAuth(name)) {
                 m.send(sender, "error");
                 return true;
             }
@@ -484,7 +481,7 @@ public class AdminCommand implements CommandExecutor {
             }
             try {
                 String name = args[1].toLowerCase();
-                PlayerAuth auth = database.getAuth(name);
+                PlayerAuth auth = plugin.database.getAuth(name);
                 if (auth == null) {
                     sender.sendMessage("The player " + name + " is not registered ");
                     return true;
@@ -493,7 +490,7 @@ public class AdminCommand implements CommandExecutor {
                 auth.setQuitLocY(0);
                 auth.setQuitLocZ(0);
                 auth.setWorld("world");
-                database.updateQuitLoc(auth);
+                plugin.database.updateQuitLoc(auth);
                 sender.sendMessage(name + " 's last pos location is now reset");
             } catch (Exception e) {
                 ConsoleLogger.showError("An error occured while trying to reset location or player do not exist, please see below: ");
@@ -539,7 +536,7 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage : /authme resetPosition <playerName>");
                 return true;
             }
-            PlayerAuth auth = database.getAuth(args[1]);
+            PlayerAuth auth = plugin.database.getAuth(args[1]);
             if (auth == null) {
                 m.send(sender, "unknown_user");
                 return true;
@@ -548,7 +545,7 @@ public class AdminCommand implements CommandExecutor {
             auth.setQuitLocY(0D);
             auth.setQuitLocZ(0D);
             auth.setWorld("world");
-            database.updateQuitLoc(auth);
+            plugin.database.updateQuitLoc(auth);
             sender.sendMessage("[AuthMe] Successfully reset position for " + auth.getNickname());
             return true;
         } else if (args[0].equalsIgnoreCase("forcelogin")) {

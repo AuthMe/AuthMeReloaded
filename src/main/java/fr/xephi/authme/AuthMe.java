@@ -208,13 +208,13 @@ public class AuthMe extends JavaPlugin {
 
         setupDatabase();
 
-        dataManager = new DataManager(this, database);
+        dataManager = new DataManager(this);
 
         // Setup API
-        api = new API(this, database);
+        api = new API(this);
 
         // Setup Management
-        management = new Management(database, this);
+        management = new Management(this);
 
         PluginManager pm = getServer().getPluginManager();
         if (Settings.bungee) {
@@ -222,25 +222,25 @@ public class AuthMe extends JavaPlugin {
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
         }
 
-        pm.registerEvents(new AuthMePlayerListener(this, database), this);
-        pm.registerEvents(new AuthMeBlockListener(database, this), this);
-        pm.registerEvents(new AuthMeEntityListener(database, this), this);
+        pm.registerEvents(new AuthMePlayerListener(this), this);
+        pm.registerEvents(new AuthMeBlockListener(this), this);
+        pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
         if (ChestShop != 0) {
-            pm.registerEvents(new AuthMeChestShopListener(database, this), this);
+            pm.registerEvents(new AuthMeChestShopListener(this), this);
             ConsoleLogger.info("Successfully hook with ChestShop!");
         }
 
-        this.getCommand("authme").setExecutor(new AdminCommand(this, database));
+        this.getCommand("authme").setExecutor(new AdminCommand(this));
         this.getCommand("register").setExecutor(new RegisterCommand(this));
         this.getCommand("login").setExecutor(new LoginCommand(this));
-        this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(database, this));
-        this.getCommand("logout").setExecutor(new LogoutCommand(this, database));
-        this.getCommand("unregister").setExecutor(new UnregisterCommand(this, database));
+        this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
+        this.getCommand("logout").setExecutor(new LogoutCommand(this));
+        this.getCommand("unregister").setExecutor(new UnregisterCommand(this));
         this.getCommand("passpartu").setExecutor(new PasspartuCommand(this));
-        this.getCommand("email").setExecutor(new EmailCommand(this, database));
+        this.getCommand("email").setExecutor(new EmailCommand(this));
         this.getCommand("captcha").setExecutor(new CaptchaCommand(this));
-        this.getCommand("converter").setExecutor(new ConverterCommand(this, database));
+        this.getCommand("converter").setExecutor(new ConverterCommand(this));
 
         if (!Settings.isForceSingleSessionEnabled) {
             ConsoleLogger.showError("BECAREFUL !!! By disabling ForceSingleSession, your server protection is set to LOW");

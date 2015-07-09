@@ -16,18 +16,15 @@ import fr.xephi.authme.converter.RoyalAuthConverter;
 import fr.xephi.authme.converter.SqlToFlat;
 import fr.xephi.authme.converter.vAuthConverter;
 import fr.xephi.authme.converter.xAuthConverter;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Messages;
 
 public class ConverterCommand implements CommandExecutor {
 
     private AuthMe plugin;
     private Messages m = Messages.getInstance();
-    private DataSource database;
 
-    public ConverterCommand(AuthMe plugin, DataSource database) {
+    public ConverterCommand(AuthMe plugin) {
         this.plugin = plugin;
-        this.database = database;
     }
 
     @Override
@@ -61,22 +58,22 @@ public class ConverterCommand implements CommandExecutor {
                 converter = new FlatToSqlite(sender);
                 break;
             case xauth:
-                converter = new xAuthConverter(plugin, database, sender);
+                converter = new xAuthConverter(plugin, sender);
                 break;
             case crazylogin:
-                converter = new CrazyLoginConverter(plugin, database, sender);
+                converter = new CrazyLoginConverter(plugin, sender);
                 break;
             case rakamak:
-                converter = new RakamakConverter(plugin, database, sender);
+                converter = new RakamakConverter(plugin, sender);
                 break;
             case royalauth:
                 converter = new RoyalAuthConverter(plugin);
                 break;
             case vauth:
-                converter = new vAuthConverter(plugin, database, sender);
+                converter = new vAuthConverter(plugin, sender);
                 break;
             case sqltoflat:
-                converter = new SqlToFlat(plugin, database, sender);
+                converter = new SqlToFlat(plugin, sender);
                 break;
             default:
                 break;

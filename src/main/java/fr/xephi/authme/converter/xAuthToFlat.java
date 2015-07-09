@@ -23,10 +23,9 @@ public class xAuthToFlat {
     public DataSource database;
     public CommandSender sender;
 
-    public xAuthToFlat(AuthMe instance, DataSource database,
-            CommandSender sender) {
+    public xAuthToFlat(AuthMe instance, CommandSender sender) {
         this.instance = instance;
-        this.database = database;
+        this.database = instance.database;
         this.sender = sender;
     }
 

@@ -15,17 +15,14 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Settings;
 
 public class AuthMeEntityListener implements Listener {
 
-    private DataSource data;
     public AuthMe instance;
 
-    public AuthMeEntityListener(DataSource data, AuthMe instance) {
-        this.data = data;
+    public AuthMeEntityListener(AuthMe instance) {
         this.instance = instance;
     }
 
@@ -57,7 +54,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -89,7 +86,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -117,7 +114,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -147,7 +144,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -178,7 +175,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -212,7 +209,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -244,7 +241,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }

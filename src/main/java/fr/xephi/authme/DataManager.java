@@ -8,23 +8,19 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import net.milkbowl.vault.permission.Permission;
-
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Settings;
+import net.milkbowl.vault.permission.Permission;
 
 public class DataManager {
 
     public AuthMe plugin;
-    public DataSource database;
 
-    public DataManager(AuthMe plugin, DataSource database) {
+    public DataManager(AuthMe plugin) {
         this.plugin = plugin;
-        this.database = database;
     }
 
     public void run() {
