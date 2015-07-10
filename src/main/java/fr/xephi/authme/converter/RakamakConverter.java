@@ -29,10 +29,9 @@ public class RakamakConverter implements Converter {
     public DataSource database;
     public CommandSender sender;
 
-    public RakamakConverter(AuthMe instance, DataSource database,
-            CommandSender sender) {
+    public RakamakConverter(AuthMe instance, CommandSender sender) {
         this.instance = instance;
-        this.database = database;
+        this.database = instance.database;
         this.sender = sender;
     }
 

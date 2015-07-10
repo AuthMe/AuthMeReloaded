@@ -234,36 +234,39 @@ public class AdminCommand implements CommandExecutor {
                 });
                 return true;
             } else {
+                final CommandSender fSender = sender;
+                final String[] arguments = args;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
                     @Override
                     public void run() {
                         String message = "[AuthMe] ";
-                        if (args[1] == null) {
-                            sender.sendMessage("[AuthMe] Please put a valid IP");
+                        if (arguments[1] != null) {
+                            List<String> accountList = plugin.database.getAllAuthsByIp(arguments[1]);
+                            if (accountList.isEmpty() || accountList == null) {
+                                fSender.sendMessage("[AuthMe] Please put a valid IP");
+                                return;
+                            }
+                            if (accountList.size() == 1) {
+                                fSender.sendMessage("[AuthMe] " + arguments[1] + " is a single account player");
+                                return;
+                            }
+                            int i = 0;
+                            for (String account : accountList) {
+                                i++;
+                                message = message + account;
+                                if (i != accountList.size()) {
+                                    message = message + ", ";
+                                } else {
+                                    message = message + ".";
+                                }
+                            }
+                            fSender.sendMessage("[AuthMe] " + arguments[1] + " has " + String.valueOf(accountList.size()) + " accounts");
+                            fSender.sendMessage(message);
+                        } else {
+                            fSender.sendMessage("[AuthMe] Please put a valid IP");
                             return;
                         }
-                        List<String> accountList = plugin.database.getAllAuthsByIp(args[1]);
-                        if (accountList.isEmpty() || accountList == null) {
-                            sender.sendMessage("[AuthMe] This IP does not exist in the database");
-                            return true;
-                        }
-                        if (accountList.size() == 1) {
-                            sender.sendMessage("[AuthMe] " + args[1] + " is a single account player");
-                            return true;
-                        }
-                        int i = 0;
-                        for (String account : accountList) {
-                            i++;
-                            message = message + account;
-                            if (i != accountList.size()) {
-                                message = message + ", ";
-                            } else {
-                                message = message + ".";
-                            }
-                        }
-                        sender.sendMessage("[AuthMe] " + args[1] + " has " + String.valueOf(accountList.size()) + " accounts");
-                        sender.sendMessage(message);
                     }
                 });
                 return true;

@@ -116,31 +116,19 @@
 		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
 		<repository>
 			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
-		</repository>
-
-		<!-- Mcstats.org Metrics Repo -->
-		<repository>
-			<id>Plugin Metrics</id>
-			<url>http://repo.mcstats.org/content/repositories/releases</url>
-		</repository>
-
-		<!-- Vault Repo -->
-		<repository>
-			<id>vault-repo</id>
-			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
-		</repository>
-
-		<!-- Citizens 2.X Repo -->
-		<repository>
-			<id>citizens-repo</id>
-			<url>http://repo.citizensnpcs.co</url>
+			<url>https://hub.spigotmc.org/nexus/content/groups/public</url>
 		</repository>
 
 		<!-- Essentials Repo -->
 		<repository>
 			<id>ess-repo</id>
-			<url>http://repo.ess3.net/content/groups/essentials</url>
+			<url>http://repo.ess3.net/content/groups/public</url>
+		</repository>
+
+		<!-- Citizens API 2.X Repo -->
+		<repository>
+			<id>citizensapi-repo</id>
+			<url>http://ci.citizensnpcs.co/plugin/repository/project/CitizensAPI/LastSuccessful/repository</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
@@ -149,22 +137,34 @@
 			<url>http://repo.minelink.net/content/repositories/public</url>
 		</repository>
 
-		<!-- XAuth Repo -->
-		<repository>
-			<id>luricos-releases</id>
-			<url>http://repo.luricos.de/content/repositories/bukkit-plugins</url>
-		</repository>
-
 		<!-- Attribute Repo -->
 		<repository>
 			<id>comphenix-snapshots</id>
-			<url>http://repo.comphenix.net/content/repositories/snapshots</url>
+			<url>http://repo.comphenix.net/content/repositories/public</url>
 		</repository>
 
 		<!-- Multiverse Repo -->
 		<repository>
 			<id>onarandombox</id>
-			<url>http://repo.onarandombox.com/content/repositories/multiverse</url>
+			<url>http://repo.onarandombox.com/content/groups/public</url>
+		</repository>
+
+		<!-- Vault Repo -->
+		<repository>
+			<id>vault-repo</id>
+			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+		</repository>
+
+		<!-- Mcstats.org Metrics Repo -->
+		<repository>
+			<id>Plugin Metrics</id>
+			<url>http://repo.mcstats.org/content/repositories/releases</url>
+		</repository>
+
+		<!-- XAuth Repo -->
+		<repository>
+			<id>luricos-releases</id>
+			<url>http://repo.luricos.de/content/repositories/releases</url>
 		</repository>
 
 	</repositories>
@@ -248,6 +248,7 @@
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>VaultAPI</artifactId>
 			<version>1.5</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -300,7 +301,7 @@
 		<dependency>
 			<groupId>net.ess3</groupId>
 			<artifactId>Essentials</artifactId>
-			<version>2.13-SNAPSHOT</version>
+			<version>2.14-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>

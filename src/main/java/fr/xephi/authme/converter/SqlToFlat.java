@@ -17,9 +17,9 @@ public class SqlToFlat implements Converter {
     public DataSource database;
     public CommandSender sender;
 
-    public SqlToFlat(AuthMe plugin, DataSource database, CommandSender sender) {
+    public SqlToFlat(AuthMe plugin, CommandSender sender) {
         this.plugin = plugin;
-        this.database = database;
+        this.database = plugin.database;
         this.sender = sender;
     }
 

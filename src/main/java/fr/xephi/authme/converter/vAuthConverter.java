@@ -12,17 +12,16 @@ public class vAuthConverter implements Converter {
     public DataSource database;
     public CommandSender sender;
 
-    public vAuthConverter(AuthMe plugin, DataSource database,
-            CommandSender sender) {
+    public vAuthConverter(AuthMe plugin, CommandSender sender) {
         this.plugin = plugin;
-        this.database = database;
+        this.database = plugin.database;
         this.sender = sender;
     }
 
     @Override
     public void run() {
         try {
-            new vAuthFileReader(plugin, database, sender).convert();
+            new vAuthFileReader(plugin, sender).convert();
         } catch (Exception e) {
             sender.sendMessage(e.getMessage());
             ConsoleLogger.showError(e.getMessage());

@@ -19,10 +19,9 @@ public class vAuthFileReader {
     public DataSource database;
     public CommandSender sender;
 
-    public vAuthFileReader(AuthMe plugin, DataSource database,
-            CommandSender sender) {
+    public vAuthFileReader(AuthMe plugin, CommandSender sender) {
         this.plugin = plugin;
-        this.database = database;
+        this.database = plugin.database;
         this.sender = sender;
     }
 

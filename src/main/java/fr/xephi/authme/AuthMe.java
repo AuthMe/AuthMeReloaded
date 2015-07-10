@@ -12,8 +12,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -80,7 +78,6 @@ public class AuthMe extends JavaPlugin {
     public DataSource database = null;
     private Settings settings;
     private Messages m;
-    public PlayersLogs pllog;
     public OtherAccounts otherAccounts;
     public static Server server;
     public static Logger authmeLogger = Logger.getLogger("AuthMe");
@@ -97,9 +94,9 @@ public class AuthMe extends JavaPlugin {
     public Essentials ess;
     public API api;
     public Management management;
-    public HashMap<String, Integer> captcha = new HashMap<String, Integer>();
-    public HashMap<String, String> cap = new HashMap<String, String>();
-    public HashMap<String, String> realIp = new HashMap<String, String>();
+    public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<String, Integer>();
+    public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<String, String>();
+    public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<String, String>();
     public MultiverseCore multiverse = null;
     public Location essentialsSpawn;
     public LookupService ls = null;
@@ -150,8 +147,6 @@ public class AuthMe extends JavaPlugin {
         }
 
         m = Messages.getInstance();
-
-        pllog = PlayersLogs.getInstance();
 
         otherAccounts = OtherAccounts.getInstance();
 
@@ -208,13 +203,13 @@ public class AuthMe extends JavaPlugin {
 
         setupDatabase();
 
-        dataManager = new DataManager(this, database);
+        dataManager = new DataManager(this);
 
         // Setup API
-        api = new API(this, database);
+        api = new API(this);
 
         // Setup Management
-        management = new Management(database, this);
+        management = new Management(this);
 
         PluginManager pm = getServer().getPluginManager();
         if (Settings.bungee) {
@@ -222,33 +217,34 @@ public class AuthMe extends JavaPlugin {
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
         }
 
-        pm.registerEvents(new AuthMePlayerListener(this, database), this);
-        pm.registerEvents(new AuthMeBlockListener(database, this), this);
-        pm.registerEvents(new AuthMeEntityListener(database, this), this);
+        pm.registerEvents(new AuthMePlayerListener(this), this);
+        pm.registerEvents(new AuthMeBlockListener(this), this);
+        pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
         if (ChestShop != 0) {
-            pm.registerEvents(new AuthMeChestShopListener(database, this), this);
+            pm.registerEvents(new AuthMeChestShopListener(this), this);
             ConsoleLogger.info("Successfully hook with ChestShop!");
         }
 
-        this.getCommand("authme").setExecutor(new AdminCommand(this, database));
+        this.getCommand("authme").setExecutor(new AdminCommand(this));
         this.getCommand("register").setExecutor(new RegisterCommand(this));
         this.getCommand("login").setExecutor(new LoginCommand(this));
-        this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(database, this));
-        this.getCommand("logout").setExecutor(new LogoutCommand(this, database));
-        this.getCommand("unregister").setExecutor(new UnregisterCommand(this, database));
+        this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
+        this.getCommand("logout").setExecutor(new LogoutCommand(this));
+        this.getCommand("unregister").setExecutor(new UnregisterCommand(this));
         this.getCommand("passpartu").setExecutor(new PasspartuCommand(this));
-        this.getCommand("email").setExecutor(new EmailCommand(this, database));
+        this.getCommand("email").setExecutor(new EmailCommand(this));
         this.getCommand("captcha").setExecutor(new CaptchaCommand(this));
-        this.getCommand("converter").setExecutor(new ConverterCommand(this, database));
+        this.getCommand("converter").setExecutor(new ConverterCommand(this));
 
         if (!Settings.isForceSingleSessionEnabled) {
             ConsoleLogger.showError("BECAREFUL !!! By disabling ForceSingleSession, your server protection is set to LOW");
         }
 
+        PlayersLogs.getInstance();
+
         if (Settings.reloadSupport)
             try {
-                onReload();
                 int playersOnline = 0;
                 try {
                     if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
@@ -261,7 +257,7 @@ public class AuthMe extends JavaPlugin {
                         database.purgeLogged();
                     } catch (NullPointerException npe) {
                     }
-                }
+                } else PlayersLogs.getInstance().loadPlayers();
             } catch (Exception ex) {
             }
 
@@ -432,27 +428,6 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " disabled");
     }
 
-    private void onReload() {
-        try {
-            if (Bukkit.getServer().getOnlinePlayers() != null) {
-                for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                    if (database.isLogged(player.getName().toLowerCase())) {
-                        String name = player.getName().toLowerCase();
-                        PlayerAuth pAuth = database.getAuth(name);
-                        if (pAuth == null)
-                            break;
-                        PlayerAuth auth = new PlayerAuth(name, pAuth.getHash(), pAuth.getIp(), new Date().getTime(), pAuth.getEmail());
-                        database.updateSession(auth);
-                        PlayerCache.getInstance().addPlayer(auth);
-                    }
-                }
-            }
-            return;
-        } catch (Exception ex) {
-            return;
-        }
-    }
-
     public static AuthMe getInstance() {
         return authme;
     }
@@ -607,7 +582,7 @@ public class AuthMe extends JavaPlugin {
             return Spawn.getInstance().getFirstSpawn();
         if (Spawn.getInstance().getSpawn() != null)
             return Spawn.getInstance().getSpawn();
-        return this.getServer().getWorld(Settings.defaultWorld).getSpawnLocation();
+        return player.getWorld().getSpawnLocation();
     }
 
     public void downloadGeoIp() {

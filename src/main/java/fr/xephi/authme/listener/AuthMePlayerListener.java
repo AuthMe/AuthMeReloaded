@@ -43,7 +43,6 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -54,13 +53,11 @@ public class AuthMePlayerListener implements Listener {
     public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<String, String>();
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
-    private DataSource data;
     public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<String, Boolean>();
     private List<String> antibot = new ArrayList<String>();
 
-    public AuthMePlayerListener(AuthMe plugin, DataSource data) {
+    public AuthMePlayerListener(AuthMe plugin) {
         this.plugin = plugin;
-        this.data = data;
     }
 
     @EventHandler(priority = EventPriority.LOWEST)
@@ -77,7 +74,7 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name))
             return;
 
-        if (!data.isAuthAvailable(name))
+        if (!plugin.database.isAuthAvailable(name))
             if (!Settings.isForcedRegistrationEnabled)
                 return;
 
@@ -113,7 +110,7 @@ public class AuthMePlayerListener implements Listener {
 
         String cmd = event.getMessage().split(" ")[0];
 
-        if (data.isAuthAvailable(name)) {
+        if (plugin.database.isAuthAvailable(name)) {
             m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
@@ -150,7 +147,7 @@ public class AuthMePlayerListener implements Listener {
 
         String cmd = event.getMessage().split(" ")[0];
 
-        if (data.isAuthAvailable(name)) {
+        if (plugin.database.isAuthAvailable(name)) {
             m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
@@ -187,7 +184,7 @@ public class AuthMePlayerListener implements Listener {
 
         String cmd = event.getMessage().split(" ")[0];
 
-        if (data.isAuthAvailable(name)) {
+        if (plugin.database.isAuthAvailable(name)) {
             m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
@@ -224,7 +221,7 @@ public class AuthMePlayerListener implements Listener {
 
         String cmd = event.getMessage().split(" ")[0];
 
-        if (data.isAuthAvailable(name)) {
+        if (plugin.database.isAuthAvailable(name)) {
             m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
@@ -262,7 +259,7 @@ public class AuthMePlayerListener implements Listener {
 
         String cmd = event.getMessage().split(" ")[0];
 
-        if (data.isAuthAvailable(name)) {
+        if (plugin.database.isAuthAvailable(name)) {
             m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
@@ -299,7 +296,7 @@ public class AuthMePlayerListener implements Listener {
 
         String cmd = event.getMessage().split(" ")[0];
 
-        if (data.isAuthAvailable(name)) {
+        if (plugin.database.isAuthAvailable(name)) {
             m.send(player, "login_msg");
         } else {
             if (!Settings.isForcedRegistrationEnabled) {
@@ -336,7 +333,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (!Settings.isForcedRegistrationEnabled) {
-            if (!data.isAuthAvailable(name))
+            if (!plugin.database.isAuthAvailable(name))
                 return;
         }
 
@@ -404,7 +401,7 @@ public class AuthMePlayerListener implements Listener {
         if (player == null)
             return;
         final String name = player.getName().toLowerCase();
-        boolean isAuthAvailable = data.isAuthAvailable(name);
+        boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
 
         if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
@@ -428,7 +425,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (Settings.isKickNonRegisteredEnabled) {
-            if (!data.isAuthAvailable(name)) {
+            if (!plugin.database.isAuthAvailable(name)) {
                 event.setKickMessage(m.send("reg_only")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -579,7 +576,7 @@ public class AuthMePlayerListener implements Listener {
 
         plugin.management.performQuit(player, false);
 
-        if (data.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
+        if (plugin.database.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
             event.setQuitMessage(null);
     }
 
@@ -622,7 +619,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!plugin.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -650,7 +647,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!plugin.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -679,7 +676,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!plugin.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -708,7 +705,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!plugin.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -734,7 +731,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!plugin.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -761,7 +758,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!plugin.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -785,7 +782,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!plugin.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -806,7 +803,7 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
-        if (!data.isAuthAvailable(name)) {
+        if (!plugin.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -832,15 +829,15 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name))
             return;
 
-        if (!data.isAuthAvailable(name))
+        if (!plugin.database.isAuthAvailable(name))
             if (!Settings.isForcedRegistrationEnabled)
                 return;
 
         Location spawn = plugin.getSpawnLocation(player);
-        if (Settings.isSaveQuitLocationEnabled && data.isAuthAvailable(name)) {
+        if (Settings.isSaveQuitLocationEnabled && plugin.database.isAuthAvailable(name)) {
             final PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName());
             try {
-                data.updateQuitLoc(auth);
+                plugin.database.updateQuitLoc(auth);
             } catch (NullPointerException npe) {
             }
         }
@@ -871,7 +868,7 @@ public class AuthMePlayerListener implements Listener {
         if (PlayerCache.getInstance().isAuthenticated(name))
             return;
 
-        if (!data.isAuthAvailable(name))
+        if (!plugin.database.isAuthAvailable(name))
             if (!Settings.isForcedRegistrationEnabled)
                 return;
 
