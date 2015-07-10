@@ -328,6 +328,22 @@
 					<groupId>org.bukkit</groupId>
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
+				<exclusion>
+					<groupId>net.minelink</groupId>
+					<artifactId>CombatTagPlusCompat-*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.minelink</groupId>
+					<artifactId>CombatTagPlusHook</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.minelink</groupId>
+					<artifactId>CombatTagPlusFactions-*</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.minelink</groupId>
+					<artifactId>CombatTagPlusWG-*</artifactId>
+				</exclusion>
 			</exclusions>
 		</dependency>
 
