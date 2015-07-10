@@ -146,7 +146,7 @@
 		<!-- Multiverse Repo -->
 		<repository>
 			<id>onarandombox</id>
-			<url>http://repo.onarandombox.com/content/repositories/multiverse</url>
+			<url>http://repo.onarandombox.com/content/groups/public</url>
 		</repository>
 
 		<!-- Vault Repo -->
