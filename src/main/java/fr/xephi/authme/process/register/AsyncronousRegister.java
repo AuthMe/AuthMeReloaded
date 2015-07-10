@@ -12,6 +12,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 
 public class AsyncronousRegister {
@@ -76,9 +77,7 @@ public class AsyncronousRegister {
 
         else if (database.isAuthAvailable(name)) {
             m.send(player, "user_regged");
-            if (plugin.pllog.getStringList("players").contains(name)) {
-                plugin.pllog.getStringList("players").remove(name);
-            }
+            PlayersLogs.getInstance().savePlayerLogs();
             allowRegister = false;
         }
 
