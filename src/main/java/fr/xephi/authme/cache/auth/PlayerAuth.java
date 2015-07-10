@@ -7,7 +7,7 @@ public class PlayerAuth {
 
     private String nickname = "";
     private String hash = "";
-    private String ip = "198.18.0.1";
+    private String ip = "198.168.0.1";
     private long lastLogin = 0;
     private double x = 0;
     private double y = 0;
