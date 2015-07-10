@@ -848,6 +848,8 @@ public final class Settings extends YamlConfiguration {
         pt,
         nl,
         gl,
-        bg
+        bg,
+        eu,
+        tr
     }
 }
