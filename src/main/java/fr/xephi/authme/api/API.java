@@ -13,7 +13,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
@@ -23,16 +22,13 @@ public class API {
     public static final String newline = System.getProperty("line.separator");
     public static API singleton;
     public AuthMe plugin;
-    public DataSource database;
 
-    public API(AuthMe plugin, DataSource database) {
+    public API(AuthMe plugin) {
         this.plugin = plugin;
-        this.database = database;
     }
 
     public API(Server serv) {
         this.plugin = (AuthMe) serv.getPluginManager().getPlugin("AuthMe");
-        this.database = this.plugin.database;
     }
 
     /**
@@ -50,7 +46,7 @@ public class API {
             return null;
         }
         AuthMe authme = (AuthMe) p;
-        singleton = (new API(authme, authme.database));
+        singleton = (new API(authme));
         return singleton;
     }
 
@@ -119,7 +115,7 @@ public class API {
      */
     public boolean isRegistered(String playerName) {
         String player = playerName.toLowerCase();
-        return database.isAuthAvailable(player);
+        return plugin.database.isAuthAvailable(player);
     }
 
     /**
@@ -131,7 +127,7 @@ public class API {
         if (!isRegistered(playerName))
             return false;
         String player = playerName.toLowerCase();
-        PlayerAuth auth = database.getAuth(player);
+        PlayerAuth auth = plugin.database.getAuth(player);
         try {
             return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), playerName);
         } catch (NoSuchAlgorithmException e) {
@@ -154,7 +150,7 @@ public class API {
                 return false;
             }
             PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com");
-            if (!database.saveAuth(auth)) {
+            if (!plugin.database.saveAuth(auth)) {
                 return false;
             }
             return true;
