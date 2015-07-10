@@ -206,20 +206,20 @@ public class AdminCommand implements CommandExecutor {
                             auth = plugin.database.getAuth(arguments[1].toLowerCase());
                         } catch (NullPointerException npe) {
                             m.send(fSender, "unknown_user");
-                            return true;
+                            return;
                         }
                         if (auth == null) {
                             m.send(fSender, "unknown_user");
-                            return true;
+                            return;
                         }
                         List<String> accountList = plugin.database.getAllAuthsByName(auth);
                         if (accountList.isEmpty() || accountList == null) {
                             m.send(fSender, "user_unknown");
-                            return true;
+                            return;
                         }
                         if (accountList.size() == 1) {
                             fSender.sendMessage("[AuthMe] " + arguments[1] + " is a single account player");
-                            return true;
+                            return;
                         }
                         int i = 0;
                         for (String account : accountList) {
@@ -246,16 +246,16 @@ public class AdminCommand implements CommandExecutor {
                         String message = "[AuthMe] ";
                         if (arguments[1] == null) {
                             fSender.sendMessage("[AuthMe] Please put a valid IP");
-                            return true;
+                            return;
                         }
                         List<String> accountList = plugin.database.getAllAuthsByIp(arguments[1]);
                         if (accountList.isEmpty() || accountList == null) {
                             fSender.sendMessage("[AuthMe] This IP does not exist in the database");
-                            return true;
+                            return;
                         }
                         if (accountList.size() == 1) {
                             fSender.sendMessage("[AuthMe] " + arguments[1] + " is a single account player");
-                            return true;
+                            return;
                         }
                         int i = 0;
                         for (String account : accountList) {
