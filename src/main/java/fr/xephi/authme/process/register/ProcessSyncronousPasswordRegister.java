@@ -17,6 +17,7 @@ import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RegisterTeleportEvent;
 import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
@@ -71,7 +72,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         try {
-            plugin.pllog.removePlayer(name);
+            PlayersLogs.getInstance().save();
             if (player.isInsideVehicle())
                 player.getVehicle().eject();
         } catch (NullPointerException npe) {

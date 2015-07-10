@@ -12,6 +12,7 @@ import java.util.List;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
@@ -74,8 +75,8 @@ public class SQLite implements DataSource {
         }
     }
 
-    private synchronized void connect() throws ClassNotFoundException,
-            SQLException {
+    private synchronized void connect()
+            throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
@@ -508,17 +509,17 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        return PlayersLogs.getInstance().players.contains(user.toLowerCase());
+        return PlayerCache.getInstance().isAuthenticated(user);
     }
 
     @Override
     public void setLogged(String user) {
-        PlayersLogs.getInstance().addPlayer(user.toLowerCase());
+        PlayersLogs.getInstance().savePlayerLogs();
     }
 
     @Override
     public void setUnlogged(String user) {
-        PlayersLogs.getInstance().removePlayer(user.toLowerCase());
+        PlayersLogs.getInstance().savePlayerLogs();
     }
 
     @Override

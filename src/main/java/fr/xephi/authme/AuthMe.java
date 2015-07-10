@@ -12,8 +12,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -80,7 +78,6 @@ public class AuthMe extends JavaPlugin {
     public DataSource database = null;
     private Settings settings;
     private Messages m;
-    public PlayersLogs pllog;
     public OtherAccounts otherAccounts;
     public static Server server;
     public static Logger authmeLogger = Logger.getLogger("AuthMe");
@@ -97,9 +94,9 @@ public class AuthMe extends JavaPlugin {
     public Essentials ess;
     public API api;
     public Management management;
-    public HashMap<String, Integer> captcha = new HashMap<String, Integer>();
-    public HashMap<String, String> cap = new HashMap<String, String>();
-    public HashMap<String, String> realIp = new HashMap<String, String>();
+    public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<String, Integer>();
+    public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<String, String>();
+    public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<String, String>();
     public MultiverseCore multiverse = null;
     public Location essentialsSpawn;
     public LookupService ls = null;
@@ -150,8 +147,6 @@ public class AuthMe extends JavaPlugin {
         }
 
         m = Messages.getInstance();
-
-        pllog = PlayersLogs.getInstance();
 
         otherAccounts = OtherAccounts.getInstance();
 
@@ -246,9 +241,10 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.showError("BECAREFUL !!! By disabling ForceSingleSession, your server protection is set to LOW");
         }
 
+        PlayersLogs.getInstance();
+
         if (Settings.reloadSupport)
             try {
-                onReload();
                 int playersOnline = 0;
                 try {
                     if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
@@ -261,7 +257,7 @@ public class AuthMe extends JavaPlugin {
                         database.purgeLogged();
                     } catch (NullPointerException npe) {
                     }
-                }
+                } else PlayersLogs.getInstance().loadPlayers();
             } catch (Exception ex) {
             }
 
@@ -430,27 +426,6 @@ public class AuthMe extends JavaPlugin {
             else ConsoleLogger.showError("Error while making Backup");
         }
         ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " disabled");
-    }
-
-    private void onReload() {
-        try {
-            if (Bukkit.getServer().getOnlinePlayers() != null) {
-                for (Player player : Bukkit.getServer().getOnlinePlayers()) {
-                    if (database.isLogged(player.getName().toLowerCase())) {
-                        String name = player.getName().toLowerCase();
-                        PlayerAuth pAuth = database.getAuth(name);
-                        if (pAuth == null)
-                            break;
-                        PlayerAuth auth = new PlayerAuth(name, pAuth.getHash(), pAuth.getIp(), new Date().getTime(), pAuth.getEmail());
-                        database.updateSession(auth);
-                        PlayerCache.getInstance().addPlayer(auth);
-                    }
-                }
-            }
-            return;
-        } catch (Exception ex) {
-            return;
-        }
     }
 
     public static AuthMe getInstance() {

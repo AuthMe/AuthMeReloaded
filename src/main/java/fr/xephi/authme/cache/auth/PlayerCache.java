@@ -43,4 +43,8 @@ public class PlayerCache {
         return cache.size();
     }
 
+    public ConcurrentHashMap<String, PlayerAuth> getCache() {
+        return this.cache;
+    }
+
 }
