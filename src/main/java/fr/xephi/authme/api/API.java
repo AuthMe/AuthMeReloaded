@@ -153,7 +153,7 @@ public class API {
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "198.168.0.1", 0, "your@email.com");
+            PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com");
             if (!database.saveAuth(auth)) {
                 return false;
             }
