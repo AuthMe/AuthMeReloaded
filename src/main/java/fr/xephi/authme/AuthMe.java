@@ -582,7 +582,7 @@ public class AuthMe extends JavaPlugin {
             return Spawn.getInstance().getFirstSpawn();
         if (Spawn.getInstance().getSpawn() != null)
             return Spawn.getInstance().getSpawn();
-        return this.getServer().getWorld(Settings.defaultWorld).getSpawnLocation();
+        return player.getWorld().getSpawnLocation();
     }
 
     public void downloadGeoIp() {
