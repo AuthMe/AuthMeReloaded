@@ -53,14 +53,26 @@ public class AsyncronousRegister {
             allowRegister = false;
         }
 
-        else if ((lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null")) || !lowpass.matches(Settings.getPassRegex)) {
+        else if (lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null") || !lowpass.matches(Settings.getPassRegex)) {
             m.send(player, "password_error");
             allowRegister = false;
         }
 
-        else if ((lowpass.equalsIgnoreCase(player.getName()))) {
+        else if (lowpass.equalsIgnoreCase(player.getName())) {
             m.send(player, "password_error_nick");
             allowRegister = false;
+        }
+        
+        else if (password.length() < Settings.getPasswordMinLen || password.length() > Settings.passwordMaxLength) {
+            m.send(player, "pass_len");
+            allowRegister = false;
+        }
+        
+        else if (!Settings.unsafePasswords.isEmpty()) {
+            if (Settings.unsafePasswords.contains(password.toLowerCase())) {
+                m.send(player, "password_error_unsafe");
+                allowRegister = false;
+            }
         }
 
         else if (database.isAuthAvailable(name)) {
@@ -124,16 +136,6 @@ public class AsyncronousRegister {
     }
 
     protected void passwordRegister() {
-        if (password.length() < Settings.getPasswordMinLen || password.length() > Settings.passwordMaxLength) {
-            m.send(player, "pass_len");
-            return;
-        }
-        if (!Settings.unsafePasswords.isEmpty()) {
-            if (Settings.unsafePasswords.contains(password.toLowerCase())) {
-                m.send(player, "password_error_unsafe");
-                return;
-            }
-        }
         PlayerAuth auth = null;
         String hash = "";
         try {
