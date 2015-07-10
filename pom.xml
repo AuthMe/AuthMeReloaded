@@ -125,10 +125,10 @@
 			<url>http://repo.ess3.net/content/groups/public</url>
 		</repository>
 
-		<!-- Citizens 2.X Repo -->
+		<!-- Citizens API 2.X Repo -->
 		<repository>
-			<id>citizens-repo</id>
-			<url>http://repo.citizensnpcs.co</url>
+			<id>citizensapi-repo</id>
+			<url>http://ci.citizensnpcs.co/plugin/repository/project/CitizensAPI/LastSuccessful/repository/</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
