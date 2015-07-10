@@ -1,9 +1,14 @@
 package fr.xephi.authme;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.imageio.ImageIO;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
@@ -46,9 +51,8 @@ public class SendMailSSL {
         final String subject = Settings.getMailSubject;
         final String smtp = Settings.getmailSMTP;
         final String password = Settings.getmailPassword;
-        final String mailText = Settings.getMailText;
+        final String mailText = Settings.getMailText.replace("<playername>", auth.getNickname()).replace("<servername>", plugin.getServer().getServerName()).replace("<generatedpass>", newPass);
         final String mail = auth.getEmail();
-
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
@@ -74,10 +78,26 @@ public class SendMailSSL {
                     messageBodyPart.setText(mailText);
                     Multipart multipart = new MimeMultipart();
                     multipart.addBodyPart(messageBodyPart);
+
+                    // Generate an image ?
+                    File file = null;
+                    if (Settings.generateImage) {
+                        ImageGenerator gen = new ImageGenerator(plugin, newPass);
+                        file = new File(plugin.getDataFolder() + File.separator + auth.getNickname() + "_new_pass.jpg");
+                        ImageIO.write(gen.generateImage(), "jpg", file);
+                        messageBodyPart = new MimeBodyPart();
+                        DataSource source = new FileDataSource(file);
+                        messageBodyPart.setDataHandler(new DataHandler(source));
+                        messageBodyPart.setFileName(auth.getNickname() + "_new_pass.jpg");
+                        multipart.addBodyPart(messageBodyPart);
+                    }
+
                     message.setContent(multipart);
                     Transport transport = session.getTransport("smtp");
                     transport.connect(smtp, acc, password);
                     transport.sendMessage(message, message.getAllRecipients());
+                    if (file != null)
+                        file.delete();
 
                 } catch (Exception e) {
                     System.out.println("Some error occured while trying to send a mail to " + mail);

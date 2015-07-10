@@ -20,7 +20,6 @@ import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
@@ -32,12 +31,10 @@ public class UnregisterCommand implements CommandExecutor {
 
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
-    private DataSource database;
     private FileCache playerCache;
 
-    public UnregisterCommand(AuthMe plugin, DataSource database) {
+    public UnregisterCommand(AuthMe plugin) {
         this.plugin = plugin;
-        this.database = database;
         this.playerCache = new FileCache(plugin);
     }
 
@@ -67,7 +64,7 @@ public class UnregisterCommand implements CommandExecutor {
         }
         try {
             if (PasswordSecurity.comparePasswordWithHash(args[0], PlayerCache.getInstance().getAuth(name).getHash(), player.getName())) {
-                if (!database.removeAuth(name)) {
+                if (!plugin.database.removeAuth(name)) {
                     player.sendMessage("error");
                     return true;
                 }

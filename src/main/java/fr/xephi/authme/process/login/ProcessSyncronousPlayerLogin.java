@@ -10,7 +10,6 @@ import org.bukkit.potion.PotionEffectType;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.Utils.groupType;
-import fr.xephi.authme.api.API;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -53,8 +52,13 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     protected void restoreOpState() {
         player.setOp(limbo.getOperator());
         if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
-            player.setAllowFlight(limbo.isFlying());
-            player.setFlying(limbo.isFlying());
+            if (limbo.getGameMode() != GameMode.CREATIVE) {
+                player.setAllowFlight(limbo.isFlying());
+                player.setFlying(limbo.isFlying());
+            } else {
+                player.setAllowFlight(false);
+                player.setFlying(false);
+            }
         }
     }
 
@@ -120,8 +124,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
              * ProtectInventoryEvent after Teleporting Also it's the current
              * world inventory !
              */
+            player.setGameMode(limbo.getGameMode());
             if (!Settings.forceOnlyAfterLogin) {
-                player.setGameMode(limbo.getGameMode());
                 // Inventory - Make it after restore GameMode , cause we need to
                 // restore the
                 // right inventory in the right gamemode
@@ -146,7 +150,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
                     } else {
                         teleportBackFromSpawn();
                     }
-                } else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                } else
+                    if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
                     teleportToSpawn();
                 } else if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
                     packQuitLocation();

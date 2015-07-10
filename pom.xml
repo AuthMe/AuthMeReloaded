@@ -119,16 +119,10 @@
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
 		</repository>
 
-		<!-- Mcstats.org Metrics Repo -->
+		<!-- Essentials Repo -->
 		<repository>
-			<id>Plugin Metrics</id>
-			<url>http://repo.mcstats.org/content/repositories/releases</url>
-		</repository>
-
-		<!-- Vault Repo -->
-		<repository>
-			<id>vault-repo</id>
-			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+			<id>ess-repo</id>
+			<url>http://repo.ess3.net/content/groups/public</url>
 		</repository>
 
 		<!-- Citizens 2.X Repo -->
@@ -137,22 +131,10 @@
 			<url>http://repo.citizensnpcs.co</url>
 		</repository>
 
-		<!-- Essentials Repo -->
-		<repository>
-			<id>ess-repo</id>
-			<url>http://repo.ess3.net/content/groups/essentials</url>
-		</repository>
-
 		<!-- CombatTagPlus Repo -->
 		<repository>
 			<id>minelink-thirdparty</id>
 			<url>http://repo.minelink.net/content/repositories/public</url>
-		</repository>
-
-		<!-- XAuth Repo -->
-		<repository>
-			<id>luricos-releases</id>
-			<url>http://repo.luricos.de/content/repositories/bukkit-plugins</url>
 		</repository>
 
 		<!-- Attribute Repo -->
@@ -165,6 +147,24 @@
 		<repository>
 			<id>onarandombox</id>
 			<url>http://repo.onarandombox.com/content/repositories/multiverse</url>
+		</repository>
+
+		<!-- Vault Repo -->
+		<repository>
+			<id>vault-repo</id>
+			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+		</repository>
+
+		<!-- Mcstats.org Metrics Repo -->
+		<repository>
+			<id>Plugin Metrics</id>
+			<url>http://repo.mcstats.org/content/repositories/releases</url>
+		</repository>
+
+		<!-- XAuth Repo -->
+		<repository>
+			<id>luricos-releases</id>
+			<url>http://repo.luricos.de/content/repositories/bukkit-plugins</url>
 		</repository>
 
 	</repositories>
@@ -248,6 +248,7 @@
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>VaultAPI</artifactId>
 			<version>1.5</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -300,7 +301,7 @@
 		<dependency>
 			<groupId>net.ess3</groupId>
 			<artifactId>Essentials</artifactId>
-			<version>2.13-SNAPSHOT</version>
+			<version>2.14-SNAPSHOT</version>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>

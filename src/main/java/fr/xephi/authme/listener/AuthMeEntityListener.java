@@ -5,8 +5,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityInteractEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -15,21 +15,18 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Settings;
 
 public class AuthMeEntityListener implements Listener {
 
-    private DataSource data;
     public AuthMe instance;
 
-    public AuthMeEntityListener(DataSource data, AuthMe instance) {
-        this.data = data;
+    public AuthMeEntityListener(AuthMe instance) {
         this.instance = instance;
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
         if (event.isCancelled()) {
             return;
@@ -44,7 +41,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity, instance))
+        if (instance.citizens.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -57,7 +54,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -67,7 +64,7 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
         if (event.isCancelled()) {
             return;
@@ -79,7 +76,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity, instance))
+        if (instance.citizens.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -89,7 +86,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -97,36 +94,36 @@ public class AuthMeEntityListener implements Listener {
         event.setTarget(null);
         event.setCancelled(true);
     }
-    
+
     @EventHandler(priority = EventPriority.LOWEST)
-	public void onDmg(EntityDamageByEntityEvent event) {
-		if (event.isCancelled()) {
+    public void onDmg(EntityDamageByEntityEvent event) {
+        if (event.isCancelled()) {
             return;
         }
-		
-		Entity entity = event.getDamager();
-		
-		if (entity == null || !(entity instanceof Player)) {
+
+        Entity entity = event.getDamager();
+
+        if (entity == null || !(entity instanceof Player)) {
             return;
         }
-		
-		Player player = (Player) entity;
-		String name = player.getName().toLowerCase();
-		
+
+        Player player = (Player) entity;
+        String name = player.getName().toLowerCase();
+
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
         }
-        
-        event.setCancelled(true);
-	}
 
-    @EventHandler (priority = EventPriority.LOWEST)
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         if (event.isCancelled()) {
             return;
@@ -137,7 +134,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity, instance))
+        if (instance.citizens.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -147,7 +144,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -168,7 +165,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity, instance))
+        if (instance.citizens.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -178,7 +175,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -205,14 +202,14 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(player, instance))
+        if (instance.citizens.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
@@ -237,14 +234,14 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(player, instance))
+        if (instance.citizens.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return;
         }
 
-        if (!data.isAuthAvailable(name)) {
+        if (!instance.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }

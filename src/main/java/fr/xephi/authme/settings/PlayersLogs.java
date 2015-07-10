@@ -2,7 +2,13 @@ package fr.xephi.authme.settings;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
 
 /**
  *
@@ -11,19 +17,27 @@ import java.util.List;
 public class PlayersLogs extends CustomConfiguration {
 
     private static PlayersLogs pllog = null;
-    public List<String> players;
 
     public PlayersLogs() {
         super(new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "players.yml"));
         pllog = this;
         load();
         save();
-        players = this.getStringList("players");
     }
 
-    public void clear() {
-        set("players", new ArrayList<String>());
-        save();
+    public void loadPlayers() {
+        DataSource database = AuthMe.getInstance().database;
+        List<String> list = this.getStringList("players");
+        if (list == null || list.isEmpty())
+            return;
+        for (String s : list) {
+            PlayerAuth auth = database.getAuth(s);
+            if (auth == null)
+                continue;
+            auth.setLastLogin(new Date().getTime());
+            database.updateSession(auth);
+            PlayerCache.getInstance().addPlayer(auth);
+        }
     }
 
     public static PlayersLogs getInstance() {
@@ -33,21 +47,18 @@ public class PlayersLogs extends CustomConfiguration {
         return pllog;
     }
 
-    public void addPlayer(String user) {
-        players = this.getStringList("players");
-        if (!players.contains(user.toLowerCase())) {
-            players.add(user.toLowerCase());
-            set("players", players);
-            save();
+    public void savePlayerLogs() {
+        List<String> players = new ArrayList<String>();
+        for (String s : PlayerCache.getInstance().getCache().keySet()) {
+            players.add(s);
         }
+        this.set("players", players);
+        this.save();
     }
 
-    public void removePlayer(String user) {
-        players = this.getStringList("players");
-        if (players.contains(user.toLowerCase())) {
-            players.remove(user.toLowerCase());
-            set("players", players);
-            save();
-        }
+    public void clear() {
+        this.set("players", new ArrayList<String>());
+        this.save();
     }
+
 }

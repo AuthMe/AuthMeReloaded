@@ -13,7 +13,7 @@ public class CitizensCommunicator {
         this.instance = instance;
     }
 
-    public boolean isNPC(final Entity player, AuthMe instance) {
+    public boolean isNPC(final Entity player) {
         if (!this.instance.isCitizensActive)
             return false;
         try {

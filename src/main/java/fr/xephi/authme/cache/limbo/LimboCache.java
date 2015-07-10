@@ -39,7 +39,7 @@ public class LimboCache {
         boolean flying = false;
 
         if (playerData.doesCacheExist(player)) {
-            StoreInventoryEvent event = new StoreInventoryEvent(player, playerData);
+            final StoreInventoryEvent event = new StoreInventoryEvent(player, playerData);
             Bukkit.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled() && event.getInventory() != null && event.getArmor() != null) {
                 inv = event.getInventory();
@@ -89,6 +89,9 @@ public class LimboCache {
                     player.getInventory().clear();
                     player.sendMessage("Your inventory has been cleaned!");
                 }
+            }
+            if (gameMode == GameMode.CREATIVE) {
+                flying = false;
             }
             gameMode = GameMode.SURVIVAL;
         }
