@@ -168,8 +168,9 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage: /authme lastlogin <playername>");
                 return true;
             }
+            PlayerAuth auth = null;
             try {
-                PlayerAuth auth = plugin.database.getAuth(args[1].toLowerCase());
+                auth = plugin.database.getAuth(args[1].toLowerCase());
             } catch (NullPointerException e) {
                 m.send(sender, "unknown_user");
                 return true;
@@ -193,6 +194,8 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             if (!args[1].contains(".")) {
+                final CommandSender fSender = sender;
+                final String[] arguments = args;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
                     @Override
@@ -200,22 +203,22 @@ public class AdminCommand implements CommandExecutor {
                         PlayerAuth auth = null;
                         String message = "[AuthMe] ";
                         try {
-                            auth = plugin.database.getAuth(args[1].toLowerCase());
+                            auth = plugin.database.getAuth(arguments[1].toLowerCase());
                         } catch (NullPointerException npe) {
-                            m.send(sender, "unknown_user");
+                            m.send(fSender, "unknown_user");
                             return true;
                         }
                         if (auth == null) {
-                            m.send(sender, "unknown_user");
+                            m.send(fSender, "unknown_user");
                             return true;
                         }
                         List<String> accountList = plugin.database.getAllAuthsByName(auth);
                         if (accountList.isEmpty() || accountList == null) {
-                            m.send(sender, "user_unknown");
+                            m.send(fSender, "user_unknown");
                             return true;
                         }
                         if (accountList.size() == 1) {
-                            sender.sendMessage("[AuthMe] " + args[1] + " is a single account player");
+                            fSender.sendMessage("[AuthMe] " + arguments[1] + " is a single account player");
                             return true;
                         }
                         int i = 0;
@@ -228,28 +231,30 @@ public class AdminCommand implements CommandExecutor {
                                 message = message + ".";
                             }
                         }
-                        sender.sendMessage("[AuthMe] " + args[1] + " has " + String.valueOf(accountList.size()) + " accounts");
-                        sender.sendMessage(message);
+                        fSender.sendMessage("[AuthMe] " + arguments[1] + " has " + String.valueOf(accountList.size()) + " accounts");
+                        fSender.sendMessage(message);
                     }
                 });
                 return true;
             } else {
+                final CommandSender fSender = sender;
+                final String[] arguments = args;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
                     @Override
                     public void run() {
                         String message = "[AuthMe] ";
-                        if (args[1] == null) {
-                            sender.sendMessage("[AuthMe] Please put a valid IP");
+                        if (arguments[1] == null) {
+                            fSender.sendMessage("[AuthMe] Please put a valid IP");
                             return true;
                         }
-                        List<String> accountList = plugin.database.getAllAuthsByIp(args[1]);
+                        List<String> accountList = plugin.database.getAllAuthsByIp(arguments[1]);
                         if (accountList.isEmpty() || accountList == null) {
-                            sender.sendMessage("[AuthMe] This IP does not exist in the database");
+                            fSender.sendMessage("[AuthMe] This IP does not exist in the database");
                             return true;
                         }
                         if (accountList.size() == 1) {
-                            sender.sendMessage("[AuthMe] " + args[1] + " is a single account player");
+                            fSender.sendMessage("[AuthMe] " + arguments[1] + " is a single account player");
                             return true;
                         }
                         int i = 0;
@@ -262,8 +267,8 @@ public class AdminCommand implements CommandExecutor {
                                 message = message + ".";
                             }
                         }
-                        sender.sendMessage("[AuthMe] " + args[1] + " has " + String.valueOf(accountList.size()) + " accounts");
-                        sender.sendMessage(message);
+                        fSender.sendMessage("[AuthMe] " + arguments[1] + " has " + String.valueOf(accountList.size()) + " accounts");
+                        fSender.sendMessage(message);
                     }
                 });
                 return true;
@@ -276,20 +281,20 @@ public class AdminCommand implements CommandExecutor {
             }
             String lowpass = args[2].toLowerCase();
             if (lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null") || !lowpass.matches(Settings.getPassRegex)) {
-                m.send(player, "password_error");
+                m.send(sender, "password_error");
                 return true;
             }
             if (lowpass.equalsIgnoreCase(args[1])) {
-                m.send(player, "password_error_nick");
+                m.send(sender, "password_error_nick");
                 return true;
             }
             if (lowpass.length() < Settings.getPasswordMinLen || lowpass.length() > Settings.passwordMaxLength) {
-                m.send(player, "pass_len");
+                m.send(sender, "pass_len");
                 return true;
             }
             if (!Settings.unsafePasswords.isEmpty()) {
                 if (Settings.unsafePasswords.contains(lowpass)) {
-                    m.send(player, "password_error_unsafe");
+                    m.send(sender, "password_error_unsafe");
                     return true;
                 }
             }
@@ -326,7 +331,7 @@ public class AdminCommand implements CommandExecutor {
                 m.send(sender, "unknown_user");
                 return true;
             }
-            sender.sendMessage("[AuthMe] " + args[1] + "'s email: " + getAuth.getEmail());
+            sender.sendMessage("[AuthMe] " + args[1] + "'s email: " + auth.getEmail());
             return true;
         } else if (args[0].equalsIgnoreCase("chgemail")) {
             if (args.length != 3) {
@@ -334,7 +339,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             if (!Settings.isEmailCorrect(args[2])) {
-                m.send(player, "email_invalid");
+                m.send(sender, "email_invalid");
                 return true;
             }
             String playername = args[1].toLowerCase();
@@ -429,20 +434,20 @@ public class AdminCommand implements CommandExecutor {
             }
             String lowpass = args[2].toLowerCase();
             if (lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null") || !lowpass.matches(Settings.getPassRegex)) {
-                m.send(player, "password_error");
+                m.send(sender, "password_error");
                 return true;
             }
             if (lowpass.equalsIgnoreCase(args[1])) {
-                m.send(player, "password_error_nick");
+                m.send(sender, "password_error_nick");
                 return true;
             }
             if (lowpass.length() < Settings.getPasswordMinLen || lowpass.length() > Settings.passwordMaxLength) {
-                m.send(player, "pass_len");
+                m.send(sender, "pass_len");
                 return true;
             }
             if (!Settings.unsafePasswords.isEmpty()) {
                 if (Settings.unsafePasswords.contains(lowpass)) {
-                    m.send(player, "password_error_unsafe");
+                    m.send(sender, "password_error_unsafe");
                     return true;
                 }
             }
