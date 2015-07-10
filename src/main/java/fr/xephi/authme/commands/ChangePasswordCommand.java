@@ -11,7 +11,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -19,11 +18,9 @@ import fr.xephi.authme.settings.Settings;
 public class ChangePasswordCommand implements CommandExecutor {
 
     private Messages m = Messages.getInstance();
-    private DataSource database;
     public AuthMe plugin;
 
-    public ChangePasswordCommand(DataSource database, AuthMe plugin) {
-        this.database = database;
+    public ChangePasswordCommand(AuthMe plugin) {
         this.plugin = plugin;
     }
 
@@ -79,11 +76,11 @@ public class ChangePasswordCommand implements CommandExecutor {
                 if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
                     auth.setSalt(PasswordSecurity.userSalt.get(name));
                 else auth.setSalt("");
-                if (!database.updatePassword(auth)) {
+                if (!plugin.database.updatePassword(auth)) {
                     m.send(player, "error");
                     return true;
                 }
-                database.updateSalt(auth);
+                plugin.database.updateSalt(auth);
                 PlayerCache.getInstance().updatePlayer(auth);
                 m.send(player, "pwd_changed");
                 ConsoleLogger.info(player.getName() + " changed his password");
