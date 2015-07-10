@@ -128,7 +128,7 @@
 		<!-- Citizens API 2.X Repo -->
 		<repository>
 			<id>citizensapi-repo</id>
-			<url>http://ci.citizensnpcs.co/plugin/repository/project/CitizensAPI/LastSuccessful/repository/</url>
+			<url>http://ci.citizensnpcs.co/plugin/repository/project/CitizensAPI/LastSuccessful/repository</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
@@ -140,7 +140,7 @@
 		<!-- Attribute Repo -->
 		<repository>
 			<id>comphenix-snapshots</id>
-			<url>http://repo.comphenix.net/content/repositories/snapshots</url>
+			<url>http://repo.comphenix.net/content/repositories/public</url>
 		</repository>
 
 		<!-- Multiverse Repo -->
@@ -164,7 +164,7 @@
 		<!-- XAuth Repo -->
 		<repository>
 			<id>luricos-releases</id>
-			<url>http://repo.luricos.de/content/repositories/bukkit-plugins</url>
+			<url>http://repo.luricos.de/content/repositories/releases</url>
 		</repository>
 
 	</repositories>
