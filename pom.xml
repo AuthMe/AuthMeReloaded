@@ -373,7 +373,7 @@
 			<artifactId>ChestShop</artifactId>
 			<version>3.8.10</version>
 			<scope>system</scope>
-			<systemPath>${project.basedir}/libs/ChestShop.jar</systemPath>
+			<systemPath>${project.basedir}/dependencies/ChestShop.jar</systemPath>
 		</dependency>
 
 	</dependencies>
