@@ -375,8 +375,8 @@
 
 		<!-- It doesn't have a Maven Repo, http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
 		<dependency>
-			<groupId>com.Acrobot</groupId>
-			<artifactId>ChestShop</artifactId>
+			<groupId>com.acrobot.chestshop</groupId>
+			<artifactId>chestshop</artifactId>
 			<version>3.8.12</version>
 			<exclusions>
 				<exclusion>
