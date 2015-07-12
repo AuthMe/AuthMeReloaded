@@ -8,16 +8,13 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 
 public class DatabaseCalls implements DataSource {
 
-    private AuthMe plugin;
     private DataSource database;
 
-    public DatabaseCalls(AuthMe plugin, DataSource database) {
-        this.plugin = plugin;
+    public DatabaseCalls(DataSource database) {
         this.database = database;
     }
 

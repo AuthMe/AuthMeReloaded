@@ -1,0 +1,33 @@
+#  ForcedActions AuthMeReloaded configuration file
+
+forcedActions:
+
+#    example1:
+#        at: firstlogin
+#        executedBy: console
+#        commands:
+#            - 'msg %p Welcome!'
+#            - pex user set group Player
+
+#    example2:
+#        at: connection
+#        executedBy: console
+#        commands:
+#            - 'msg %p You need to register yourself to play this server!'
+
+# 
+# Avariable events:
+#   connection
+#   firstconnection
+#   login
+#   firstlogin
+#   wrongpassword
+#   disconnection
+#   logout
+#   serverstop
+#   serverstart
+#   pluginreload 
+#   mysqlerror
+#   antiboton
+#   antibotoff 
+# 

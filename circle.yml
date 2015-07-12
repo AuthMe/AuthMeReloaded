@@ -6,4 +6,4 @@ general:
     - "target/AuthMe-*.jar"
 test:
   override:
-    - mvn clean install
+    - mvn clean install -B
