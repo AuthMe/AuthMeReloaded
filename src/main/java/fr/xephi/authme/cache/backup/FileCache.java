@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -203,7 +202,7 @@ public class FileCache {
             path = player.getName();
         }
         try {
-            File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + ".playerdatas.cache");
+            File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "playerdatas.cache");
             String playername = player.getName().toLowerCase();
             if (!file.exists()) {
                 // OLD METHOD
@@ -357,7 +356,7 @@ public class FileCache {
                     for (int i = 0; i < inv.length; i++) {
                         reader = new Scanner(new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "inventory" + File.separator + i + ".cache"));
                         ItemStack item = new ItemStack(Material.AIR);
-                        ItemMeta meta = null;
+                        ItemMeta meta = item.getItemMeta();
                         Attributes attributes = null;
                         count = 1;
                         boolean v = true;
@@ -365,22 +364,24 @@ public class FileCache {
                             String line = reader.nextLine();
                             switch (count) {
                                 case 1:
-                                    item.setType(Material.getMaterial(line));
+                                    item = new ItemStack(Material.getMaterial(line));
                                     if (item.getType() == Material.AIR)
                                         v = false;
+                                    meta = item.getItemMeta();
+                                    count++;
                                     continue;
                                 case 2:
-                                    item.setDurability(Short.parseShort(line));
+                                    item.setDurability((short) Integer.parseInt(line));
+                                    count++;
                                     continue;
                                 case 3:
                                     item.setAmount(Integer.parseInt(line));
+                                    count++;
                                     continue;
-                                case 4:
-                                    meta = Bukkit.getItemFactory().getItemMeta(item.getType());
-                                    break;
                                 default:
                                     break;
                             }
+                            meta = item.getItemMeta();
                             if (line.startsWith("name=")) {
                                 line = line.substring(5);
                                 meta.setDisplayName(line);
@@ -399,6 +400,7 @@ public class FileCache {
                             if (line.startsWith("enchant=")) {
                                 line = line.substring(8);
                                 item.addEnchantment(Enchantment.getByName(line.split(":")[0]), Integer.parseInt(line.split(":")[1]));
+                                continue;
                             }
                             if (Settings.customAttributes) {
                                 if (line.startsWith("attribute=")) {
@@ -429,7 +431,7 @@ public class FileCache {
                         }
                         if (reader != null)
                             reader.close();
-                        if (attributes != null)
+                        if (Settings.customAttributes && attributes != null)
                             inv[i] = attributes.getStack();
                         else inv[i] = item;
                     }
@@ -444,22 +446,24 @@ public class FileCache {
                             String line = reader.nextLine();
                             switch (count) {
                                 case 1:
-                                    item.setType(Material.getMaterial(line));
+                                    item = new ItemStack(Material.getMaterial(line));
                                     if (item.getType() == Material.AIR)
                                         v = false;
+                                    meta = item.getItemMeta();
+                                    count++;
                                     continue;
                                 case 2:
-                                    item.setDurability(Short.parseShort(line));
+                                    item.setDurability((short) Integer.parseInt(line));
+                                    count++;
                                     continue;
                                 case 3:
                                     item.setAmount(Integer.parseInt(line));
+                                    count++;
                                     continue;
-                                case 4:
-                                    meta = Bukkit.getItemFactory().getItemMeta(item.getType());
-                                    break;
                                 default:
                                     break;
                             }
+                            meta = item.getItemMeta();
                             if (line.startsWith("name=")) {
                                 line = line.substring(5);
                                 meta.setDisplayName(line);
@@ -573,10 +577,7 @@ public class FileCache {
             file = new File("cache/" + player.getName().toLowerCase() + ".cache");
         }
 
-        if (file.exists()) {
-            return true;
-        }
-        return false;
+        return file.exists();
     }
 
 }

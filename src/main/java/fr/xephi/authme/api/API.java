@@ -10,6 +10,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -104,7 +105,8 @@ public class API {
         try {
             player.getInventory().setContents(content);
             player.getInventory().setArmorContents(armor);
-        } catch (NullPointerException npe) {
+        } catch (Exception npe) {
+            ConsoleLogger.showError("Some error appear while trying to set inventory for " + player.getName());
         }
     }
 
