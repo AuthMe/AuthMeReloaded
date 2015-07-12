@@ -559,7 +559,7 @@ public class AuthMePlayerListener implements Listener {
         plugin.management.performJoin(player);
 
         // Remove the join message while the player isn't logging in
-        if (Settings.enableProtection || Settings.delayJoinMessage) {
+        if ((Settings.enableProtection || Settings.delayJoinMessage) && name != null && event.getJoinMessage() != null) {
             joinMessage.put(name, event.getJoinMessage());
             event.setJoinMessage(null);
         }
