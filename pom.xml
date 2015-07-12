@@ -167,6 +167,12 @@
 			<url>http://repo.luricos.de/content/repositories/releases</url>
 		</repository>
 
+		<!-- Xephi Repo (ChestShop) -->
+		<repository>
+			<id>luricos-releases</id>
+			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
+		</repository>
+
 	</repositories>
 
 	<dependencies>
@@ -371,9 +377,17 @@
 		<dependency>
 			<groupId>com.Acrobot</groupId>
 			<artifactId>ChestShop</artifactId>
-			<version>3.8.10</version>
-			<scope>system</scope>
-			<systemPath>${project.basedir}/dependencies/ChestShop.jar</systemPath>
+			<version>3.8.12</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>craftbukkit</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 	</dependencies>
