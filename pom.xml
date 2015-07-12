@@ -169,7 +169,7 @@
 
 		<!-- Xephi Repo (ChestShop) -->
 		<repository>
-			<id>luricos-releases</id>
+			<id>xephi-repo</id>
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
 
