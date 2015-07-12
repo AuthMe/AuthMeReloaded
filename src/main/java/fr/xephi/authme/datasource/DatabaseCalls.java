@@ -13,11 +13,9 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 
 public class DatabaseCalls implements DataSource {
 
-    private AuthMe plugin;
     private DataSource database;
 
     public DatabaseCalls(AuthMe plugin, DataSource database) {
-        this.plugin = plugin;
         this.database = database;
     }
 
