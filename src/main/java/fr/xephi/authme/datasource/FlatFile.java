@@ -427,7 +427,7 @@ public class FlatFile implements DataSource {
                 if (args[0].equalsIgnoreCase(user)) {
                     switch (args.length) {
                         case 2:
-                            return new PlayerAuth(args[0], args[1], "198.18.0.1", 0, "your@email.com");
+                            return new PlayerAuth(args[0], args[1], "192.168.0.1", 0, "your@email.com");
                         case 3:
                             return new PlayerAuth(args[0], args[1], args[2], 0, "your@email.com");
                         case 4:
@@ -709,7 +709,7 @@ public class FlatFile implements DataSource {
                 String[] args = line.split(":");
                 switch (args.length) {
                     case 2:
-                        auths.add(new PlayerAuth(args[0], args[1], "198.18.0.1", 0, "your@email.com"));
+                        auths.add(new PlayerAuth(args[0], args[1], "192.168.0.1", 0, "your@email.com"));
                     case 3:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], 0, "your@email.com"));
                     case 4:
