@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 public class ImageGenerator {
 
     private String pass;
-    public ImageGenerator(AuthMe plugin, String pass) {
+    public ImageGenerator(String pass) {
         this.pass = pass;
     }
 
