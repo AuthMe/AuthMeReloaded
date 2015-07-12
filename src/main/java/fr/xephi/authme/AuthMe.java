@@ -775,6 +775,6 @@ public class AuthMe extends JavaPlugin {
             database = new CacheDataSource(this, database);
         }
 
-        database = new DatabaseCalls(this, database);
+        database = new DatabaseCalls(database);
     }
 }

@@ -82,7 +82,7 @@ public class SendMailSSL {
                     // Generate an image ?
                     File file = null;
                     if (Settings.generateImage) {
-                        ImageGenerator gen = new ImageGenerator(plugin, newPass);
+                        ImageGenerator gen = new ImageGenerator(newPass);
                         file = new File(plugin.getDataFolder() + File.separator + auth.getNickname() + "_new_pass.jpg");
                         ImageIO.write(gen.generateImage(), "jpg", file);
                         messageBodyPart = new MimeBodyPart();
