@@ -87,7 +87,6 @@
 						<includes>
 							<include>com.maxmind.geoip:*</include>
 							<include>com.sun.mail:*</include>
-							<include>javax.mail:*</include>
 							<include>com.comphenix.attribute:*</include>
 							<include>org.mcstats.*:*</include>
 						</includes>
