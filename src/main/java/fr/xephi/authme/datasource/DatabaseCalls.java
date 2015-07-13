@@ -3,7 +3,6 @@ package fr.xephi.authme.datasource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -29,7 +28,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (false);
         }
     }
@@ -45,7 +44,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return null;
         }
     }
@@ -61,7 +60,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (false);
         }
     }
@@ -77,7 +76,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (false);
         }
     }
@@ -93,7 +92,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (false);
         }
     }
@@ -109,7 +108,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (0);
         }
     }
@@ -125,7 +124,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (new ArrayList<String>());
         }
     }
@@ -141,7 +140,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (false);
         }
     }
@@ -157,7 +156,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (false);
         }
     }
@@ -173,7 +172,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (0);
         }
     }
@@ -189,7 +188,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (new ArrayList<String>());
         }
     }
@@ -205,7 +204,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (new ArrayList<String>());
         }
     }
@@ -221,7 +220,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (new ArrayList<String>());
         }
     }
@@ -237,7 +236,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (false);
         }
     }
@@ -253,7 +252,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (false);
         }
     }
@@ -295,7 +294,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (false);
         }
     }
@@ -344,13 +343,14 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (0);
         }
     }
 
     @Override
-    public synchronized void updateName(final String oldone, final String newone) {
+    public synchronized void updateName(final String oldone,
+            final String newone) {
         new Thread(new Runnable() {
 
             @Override
@@ -371,7 +371,7 @@ public class DatabaseCalls implements DataSource {
         });
         try {
             return result.get();
-        } catch (InterruptedException | ExecutionException e) {
+        } catch (Exception e) {
             return (new ArrayList<PlayerAuth>());
         }
     }
