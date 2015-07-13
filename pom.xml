@@ -17,8 +17,8 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
 		<!-- Change Compiler Version (JDK) HERE! -->
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 
 		<!-- Change MC Version HERE! -->
 		<bukkitVersion>1.8.7-R0.1-SNAPSHOT</bukkitVersion>
@@ -183,7 +183,7 @@
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.35</version>
+			<version>5.1.36</version>
 		</dependency>
 
 		<!-- SQLite Library -->
@@ -195,8 +195,8 @@
 
 		<!-- Java Email API -->
 		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
 			<version>1.5.4</version>
 		</dependency>
 
