@@ -79,9 +79,6 @@ public class AsyncronousQuit {
             if (limbo.getMessageTaskId() != null)
                 limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
-            if (playerBackup.doesCacheExist(player)) {
-                playerBackup.removeCache(player);
-            }
         }
         if (Settings.isSessionsEnabled && !isKick) {
             BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {

@@ -35,6 +35,7 @@ import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 
 import fr.xephi.authme.api.API;
+import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.FileCache;
@@ -92,7 +93,7 @@ public class AuthMe extends JavaPlugin {
     public double ChestShop = 0;
     public boolean BungeeCord = false;
     public Essentials ess;
-    public API api;
+    public NewAPI api;
     public Management management;
     public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<String, Integer>();
     public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<String, String>();
@@ -206,7 +207,8 @@ public class AuthMe extends JavaPlugin {
         dataManager = new DataManager(this);
 
         // Setup API
-        api = new API(this);
+        api = new NewAPI(this);
+        new API(this);
 
         // Setup Management
         management = new Management(this);
