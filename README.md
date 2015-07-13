@@ -17,7 +17,7 @@
 <hr>
 
 #####Compiling Requirements:
->- JDK 1.7
+>- JDK 1.8
 >- Maven
 >- Git/Github (Optional)
 
@@ -26,7 +26,7 @@
 >- Execute command "mvn clean install"
 
 #####Running Requirements:
->- Java 1.7 (should work also with Java 1.8)
+>- Java 1.8 (DOESN'T WORK ON JAVA 1.7!!!)
 >- Spigot or CraftBukkit
 
 <hr>
