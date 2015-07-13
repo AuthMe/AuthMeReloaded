@@ -4,11 +4,13 @@ import java.security.NoSuchAlgorithmException;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -16,30 +18,41 @@ import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 
-public class API {
+public class NewAPI {
 
     public static final String newline = System.getProperty("line.separator");
-    public static AuthMe instance;
+    public static NewAPI singleton;
+    public AuthMe plugin;
 
-    public API(AuthMe instance) {
-        API.instance = instance;
+    public NewAPI(AuthMe plugin) {
+        this.plugin = plugin;
+    }
+
+    public NewAPI(Server serv) {
+        this.plugin = (AuthMe) serv.getPluginManager().getPlugin("AuthMe");
     }
 
     /**
      * Hook into AuthMe
      * 
-     * @return AuthMe instance
+     * @return
+     * 
+     * @return AuthMe plugin
      */
-    public static AuthMe hookAuthMe() {
-        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
-        if (plugin == null || !(plugin instanceof AuthMe)) {
+    public static NewAPI getInstance() {
+        if (singleton != null)
+            return singleton;
+        Plugin p = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
+        if (p == null || !(p instanceof AuthMe)) {
             return null;
         }
-        return (AuthMe) plugin;
+        AuthMe authme = (AuthMe) p;
+        singleton = (new NewAPI(authme));
+        return singleton;
     }
 
     public AuthMe getPlugin() {
-        return instance;
+        return plugin;
     }
 
     /**
@@ -47,7 +60,7 @@ public class API {
      * @param player
      * @return true if player is authenticate
      */
-    public static boolean isAuthenticated(Player player) {
+    public boolean isAuthenticated(Player player) {
         return PlayerCache.getInstance().isAuthenticated(player.getName());
     }
 
@@ -56,20 +69,8 @@ public class API {
      * @param player
      * @return true if player is a npc
      */
-    @Deprecated
-    public boolean isaNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player))
-            return true;
-        return CombatTagComunicator.isNPC(player);
-    }
-
-    /**
-     * 
-     * @param player
-     * @return true if player is a npc
-     */
     public boolean isNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player))
+        if (plugin.getCitizensCommunicator().isNPC(player))
             return true;
         return CombatTagComunicator.isNPC(player);
     }
@@ -79,11 +80,11 @@ public class API {
      * @param player
      * @return true if the player is unrestricted
      */
-    public static boolean isUnrestricted(Player player) {
+    public boolean isUnrestricted(Player player) {
         return Utils.getInstance().isUnrestricted(player);
     }
 
-    public static Location getLastLocation(Player player) {
+    public Location getLastLocation(Player player) {
         try {
             PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
 
@@ -99,12 +100,13 @@ public class API {
         }
     }
 
-    public static void setPlayerInventory(Player player, ItemStack[] content,
+    public void setPlayerInventory(Player player, ItemStack[] content,
             ItemStack[] armor) {
         try {
             player.getInventory().setContents(content);
             player.getInventory().setArmorContents(armor);
-        } catch (NullPointerException npe) {
+        } catch (Exception npe) {
+            ConsoleLogger.showError("Some error appear while trying to set inventory for " + player.getName());
         }
     }
 
@@ -113,9 +115,9 @@ public class API {
      * @param playerName
      * @return true if player is registered
      */
-    public static boolean isRegistered(String playerName) {
+    public boolean isRegistered(String playerName) {
         String player = playerName.toLowerCase();
-        return instance.database.isAuthAvailable(player);
+        return plugin.database.isAuthAvailable(player);
     }
 
     /**
@@ -123,12 +125,11 @@ public class API {
      *            playerName, String passwordToCheck
      * @return true if the password is correct , false else
      */
-    public static boolean checkPassword(String playerName,
-            String passwordToCheck) {
+    public boolean checkPassword(String playerName, String passwordToCheck) {
         if (!isRegistered(playerName))
             return false;
         String player = playerName.toLowerCase();
-        PlayerAuth auth = instance.database.getAuth(player);
+        PlayerAuth auth = plugin.database.getAuth(player);
         try {
             return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), playerName);
         } catch (NoSuchAlgorithmException e) {
@@ -143,15 +144,15 @@ public class API {
      *            playerName, String password
      * @return true if the player is register correctly
      */
-    public static boolean registerPlayer(String playerName, String password) {
+    public boolean registerPlayer(String playerName, String password) {
         try {
             String name = playerName.toLowerCase();
             String hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com");
-            if (!instance.database.saveAuth(auth)) {
+            PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com");
+            if (!plugin.database.saveAuth(auth)) {
                 return false;
             }
             return true;
@@ -166,8 +167,8 @@ public class API {
      * @param Player
      *            player
      */
-    public static void forceLogin(Player player) {
-        instance.management.performLogin(player, "dontneed", true);
+    public void forceLogin(Player player) {
+        plugin.management.performLogin(player, "dontneed", true);
     }
 
 }
