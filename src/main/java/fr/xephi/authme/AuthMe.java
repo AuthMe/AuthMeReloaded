@@ -543,8 +543,8 @@ public class AuthMe extends JavaPlugin {
         Location spawnLoc = world.getSpawnLocation();
         for (int i = spawnPriority.length - 1; i >= 0; i--) {
             String s = spawnPriority[i];
-            if (s.equalsIgnoreCase("default") && getDefaultSpawn() != null)
-                spawnLoc = getDefaultSpawn();
+            if (s.equalsIgnoreCase("default") && getDefaultSpawn(world) != null)
+                spawnLoc = getDefaultSpawn(world);
             if (s.equalsIgnoreCase("multiverse") && getMultiverseSpawn(world) != null)
                 spawnLoc = getMultiverseSpawn(world);
             if (s.equalsIgnoreCase("essentials") && getEssentialsSpawn() != null)
@@ -557,8 +557,8 @@ public class AuthMe extends JavaPlugin {
         return spawnLoc;
     }
 
-    private Location getDefaultSpawn() {
-        return this.getServer().getWorld(Settings.defaultWorld).getSpawnLocation();
+    private Location getDefaultSpawn(World world) {
+        return world.getSpawnLocation();
     }
 
     private Location getMultiverseSpawn(World world) {
