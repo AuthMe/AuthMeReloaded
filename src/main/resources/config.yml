@@ -1,28 +1,34 @@
 DataSource:
-    # Column for storing or checking players nickname
-    mySQLColumnName: username
-    # Table of the database
-    mySQLTablename: authme
-    # Username about Database Connection Infos
-    mySQLUsername: authme
     # Can be set to : file, sqlite, mysql
     backend: sqlite
-    # Column for storing players lastlogins
-    mySQLColumnLastLogin: lastlogin
-    # Database Name, use with converters or as SQLITE database name
-    mySQLDatabase: authme
-    # Database Port
-    mySQLPort: '3306'
-    # Column for storing players IPs
-    mySQLColumnIp: ip
-    # Database location
-    mySQLHost: 127.0.0.1
-    # Column for storing players passwords
-    mySQLColumnPassword: password
-    # Password about Database Connection Infos
-    mySQLPassword: '12345'
     # Do we need to cache all query?
     caching: true
+    # Database location
+    mySQLHost: 127.0.0.1
+    # Database Port
+    mySQLPort: '3306'
+    # Username about Database Connection Infos
+    mySQLUsername: authme
+    # Password about Database Connection Infos
+    mySQLPassword: '12345'
+    # Database Name, use with converters or as SQLITE database name
+    mySQLDatabase: authme
+    # Table of the database
+    mySQLTablename: authme
+    # Column of IDs to sort data
+    mySQLColumnId: id
+    # Column for storing or checking players nickname
+    mySQLColumnName: username
+    # Column for storing players passwords
+    mySQLColumnPassword: password
+    # Column for storing players emails
+    mySQLColumnEmail: email
+    # Column for Saving if a player is logged in or not
+    mySQLColumnLogged: isLogged
+    # Column for storing players IPs
+    mySQLColumnIp: ip
+    # Column for storing players lastlogins
+    mySQLColumnLastLogin: lastlogin
     # Column for SaveQuitLocation - X
     mySQLlastlocX: x
     # Column for SaveQuitLocation - Y
@@ -31,12 +37,6 @@ DataSource:
     mySQLlastlocZ: z
     # Column for SaveQuitLocation - World name
     mySQLlastlocWorld: world
-    # Column for storing players emails
-    mySQLColumnEmail: email
-    # Column of IDs to sort data
-    mySQLColumnId: id
-    # Column for Saving if a player is logged in or not
-    mySQLColumnLogged: isLogged
 GroupOptions:
     # if you want to set up a particulary Permission Group for
     # users that arent registered yet. Pay attention this option
@@ -87,11 +87,8 @@ settings:
         - /captcha
         # Maximum Registration per IP default: 1
         maxRegPerIp: 1
-        # max allowed nick length (Warning when you use
-        # mysql and choose a value >20 you have to 
-        # increase the size of the nickname column in your
-        # mysql table)
-        maxNicknameLength: 20
+        # Max allowed nick length
+        maxNicknameLength: 16
         # Player that is online arent 
         # kick out for "logged in from another
         # Location", this options will prevent players that would exploit
@@ -129,7 +126,7 @@ settings:
         # position
         teleportUnAuthedToSpawn: false
         # min allowed nick length 
-        minNicknameLength: 3
+        minNicknameLength: 4
         # Can unregistered players walk around?
         allowMovement: false
         # After what time players who fail to login or register
@@ -176,7 +173,7 @@ settings:
         ForceOnlyAfterLogin: false
     security:
         # minimum Length of password
-        minPasswordLength: 4
+        minPasswordLength: 5
         # this is very important options, 
         # every time player join the server,
         # if they are registered, AuthMe will switch him 
@@ -214,7 +211,12 @@ settings:
         #unsafePasswords:
         #- '123456'
         #- 'password'
-        unsafePasswords: []
+        unsafePasswords:
+        - '123456'
+        - 'password'
+        - 'qwerty'
+        - '12345'
+        - '54321'
     registration:
         # enable registration on the server?
         enabled: true
