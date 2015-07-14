@@ -88,7 +88,7 @@ settings:
         # Maximum Registration per IP default: 1
         maxRegPerIp: 1
         # Max allowed nick length
-        maxNicknameLength: 25
+        maxNicknameLength: 16
         # Player that is online arent 
         # kick out for "logged in from another
         # Location", this options will prevent players that would exploit
@@ -415,7 +415,7 @@ Protection:
     countriesBlacklist:
     - A1
     # Do we need to enable automatic antibot system?
-    enableAntiBot: true
+    enableAntiBot: false
     # Max number of player allowed to login in 5 secs before enable AntiBot system automatically
     antiBotSensibility: 5
     # Duration in minutes of the antibot automatic system
