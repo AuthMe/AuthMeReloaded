@@ -16,6 +16,7 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RegisterTeleportEvent;
+import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
@@ -93,6 +94,14 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
                         tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
                     }
                     player.teleport(tpEvent.getTo());
+                }
+            }
+            if (Settings.protectInventoryBeforeLogInEnabled && limbo.getInventory() != null && limbo.getArmour() != null) {
+                RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+                Bukkit.getPluginManager().callEvent(event);
+                if (!event.isCancelled() && event.getArmor() != null && event.getInventory() != null) {
+                    player.getInventory().setContents(event.getInventory());
+                    player.getInventory().setArmorContents(event.getArmor());
                 }
             }
             limbo.getTimeoutTaskId().cancel();
