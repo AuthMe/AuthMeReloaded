@@ -75,7 +75,7 @@ public class SendMailSSL {
                     message.setSubject(subject);
                     message.setSentDate(new Date());
                     BodyPart messageBodyPart = new MimeBodyPart();
-                    messageBodyPart.setText(mailText);
+                    messageBodyPart.setContent(mailText, "text/html");
                     Multipart multipart = new MimeMultipart();
                     multipart.addBodyPart(messageBodyPart);
 
