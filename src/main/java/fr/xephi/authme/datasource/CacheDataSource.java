@@ -29,9 +29,7 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public synchronized boolean isAuthAvailable(String user) {
-        if (cache.containsKey(user.toLowerCase()))
-            return true;
-        return false;
+        return cache.containsKey(user.toLowerCase());
     }
 
     @Override
