@@ -14,6 +14,13 @@
 
 - MavenRepository: <a href="http://xephi.fr:8080/plugin/repository/everything/">Maven Repo</a>
 
+#####Statistics
+
+McStats: http://mcstats.org/plugin/AuthMe
+
+<img src=http://i.mcstats.org/AuthMe/Global+Statistics.borderless.png>
+<img src=http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png>
+
 <hr>
 
 #####Compiling Requirements:
