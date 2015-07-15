@@ -1,13 +1,11 @@
 package fr.xephi.authme.task;
 
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.FileCache;
-import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Messages;
 
 public class TimeoutTask implements Runnable {
@@ -34,7 +32,6 @@ public class TimeoutTask implements Runnable {
         if (PlayerCache.getInstance().isAuthenticated(name))
             return;
 
-        final GameMode gm = AuthMePlayerListener.gameMode.get(name);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
             @Override
