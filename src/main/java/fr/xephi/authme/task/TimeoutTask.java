@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.settings.Messages;
 
 public class TimeoutTask implements Runnable {
@@ -13,14 +12,12 @@ public class TimeoutTask implements Runnable {
     private AuthMe plugin;
     private String name;
     private Messages m = Messages.getInstance();
-    private FileCache playerCache;
     private Player player;
 
     public TimeoutTask(AuthMe plugin, String name, Player player) {
         this.plugin = plugin;
         this.name = name;
         this.player = player;
-        this.playerCache = new FileCache(plugin);
     }
 
     public String getName() {
