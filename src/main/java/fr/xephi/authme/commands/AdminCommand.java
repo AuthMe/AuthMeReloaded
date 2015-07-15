@@ -176,7 +176,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             if (auth == null) {
-               m.send(sender, "user_unknown");
+                m.send(sender, "user_unknown");
                 return true;
             }
             long lastLogin = auth.getLastLogin();
@@ -362,9 +362,9 @@ public class AdminCommand implements CommandExecutor {
                 if (sender instanceof Player) {
                     if (Spawn.getInstance().setSpawn(((Player) sender).getLocation())) {
                         sender.sendMessage("[AuthMe] Correctly defined new spawn point");
-                   } else {
+                    } else {
                         sender.sendMessage("[AuthMe] SetSpawn has failed, please retry");
-                   }
+                    }
                 } else {
                     sender.sendMessage("[AuthMe] Please use that command in game");
                 }
@@ -427,7 +427,8 @@ public class AdminCommand implements CommandExecutor {
                 ConsoleLogger.showError(ex.getMessage());
             }
             return true;
-        } else if (args[0].equalsIgnoreCase("changepassword") || args[0].equalsIgnoreCase("cp")) {
+        } else
+            if (args[0].equalsIgnoreCase("changepassword") || args[0].equalsIgnoreCase("cp")) {
             if (args.length != 3) {
                 sender.sendMessage("Usage: /authme changepassword <playername> <newpassword>");
                 return true;
@@ -512,7 +513,7 @@ public class AdminCommand implements CommandExecutor {
                     int interval = Settings.getWarnMessageInterval;
                     BukkitScheduler sched = sender.getServer().getScheduler();
                     if (delay != 0) {
-                        BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name), delay);
+                        BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, target), delay);
                         LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
                     LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
@@ -528,7 +529,8 @@ public class AdminCommand implements CommandExecutor {
             m.send(sender, "unregistered");
             ConsoleLogger.info(args[1] + " unregistered");
             return true;
-        } else if (args[0].equalsIgnoreCase("purgelastpos") || args[0].equalsIgnoreCase("resetposition")) {
+        } else
+            if (args[0].equalsIgnoreCase("purgelastpos") || args[0].equalsIgnoreCase("resetposition")) {
             if (args.length != 2) {
                 sender.sendMessage("Usage: /authme purgelastpos <playername>");
                 return true;
@@ -581,9 +583,9 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage: /authme getip <onlineplayername>");
                 return true;
             }
-                sender.sendMessage(player.getName() + "'s actual IP is : " + player.getAddress().getAddress().getHostAddress() + ":" + player.getAddress().getPort());
-                sender.sendMessage(player.getName() + "'s real IP is : " + plugin.getIP(player));
-                return true;
+            sender.sendMessage(player.getName() + "'s actual IP is : " + player.getAddress().getAddress().getHostAddress() + ":" + player.getAddress().getPort());
+            sender.sendMessage(player.getName() + "'s real IP is : " + plugin.getIP(player));
+            return true;
         } else if (args[0].equalsIgnoreCase("forcelogin")) {
             if (args.length < 2) {
                 sender.sendMessage("Usage: /authme forcelogin <playername>");
