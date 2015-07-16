@@ -4,15 +4,17 @@
 <hr>
 #####Development tools:
 
-[![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+- Developers ChatRoom: [![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-- Build status: [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded)
+- Build status (Travis): [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded)
 
-- Build Server: <a href="http://ci.xephi.fr">Jenkins</a>
+- Build status (CircleCI): [CircleCI project Page](https://travis-ci.org/Xephi/AuthMeReloaded)
 
-- JavaDoc: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
+- Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr">Xephi's Jenkins</a>
 
-- MavenRepository: <a href="http://xephi.fr:8080/plugin/repository/everything/">Maven Repo</a>
+- JavaDocs: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
+
+- Maven Repo: <a href="http://xephi.fr:8080/plugin/repository/everything/">AuthMe Repo</a>
 
 #####Statistics:
 
@@ -40,55 +42,55 @@ McStats: http://mcstats.org/plugin/AuthMe
 <hr>
 ###Plugin Description:
 
-#####"/login /register plugin!"
+#####"The best authentication plugin for the Bukkit/Spigot API!"
 
-Prevent Name stolen ! AutoUpdate names through UUID<br>
-AuthMe Reloaded prevents players who aren't logged in from actions like placing blocks, moving, typing commands or seeing the inventory of the current player. </p>
-<p>The possibility to set up name spoof protection kicks players with uncommon long or short player names before they could actually join.</p>
-<p>Login Sessions make it possible that you don't have to login within a given time period.</p>
-<p>Each command and every setting can be enabled or disabled by a easy structured config file. </p>
-<p>If you don't like English or don't like my translations you can easily edit almost every message sent by AuthMe!</p>
+<p>Prevent username stealing on your server! Full compatible with UUIDs and Craftbukkit/Spigot 1.8.X!<br>
+Use it to secure your Offline mode server or to incrase your Online mode server's protection!</p>
+
+<p>AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>
+typing commands or use the inventory. It can also kick players with uncommon long or short player names or kick players from banned countries.</p>
+<p>With the Session Login feature you don't have to execute the authentication command everytime you connect to the server! Each command and every feature can be enabled or disabled from our well structured configuration file.</p>
+<p>You can also create your own translation file and, if you want, you can share it with us! :)</p>
 
 ####Features:
-<ul><li><strong>E-Mail Recovery System</strong> !!!
-</li><li>Playername spoof protection
-</li><li>Countries Selection! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a>
-</li><li>AntiBot Features!
-</li><li><strong> Passpartu Admin Feature: Admin can login with all account</strong> more info <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">here</a>
-</li><li>Protection against "Logged in from another location" messages
-</li><li>Login sessions
-</li><li>Editable settings &amp; messages
-</li><li>MySQL, flatfile and SQLITE support
-</li><li>Supported hash algorithms: MD5, SHA1, SHA256, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a>, <a href="http://en.wikipedia.org/wiki/Whirlpool_(cryptography)">Whirlpool</a>
-</li><li>Support for PLAINTEXT password storage
-</li><li>Support for PHPBB, VBullettin forum registration: <strong>MD5VB - PHPBB</strong>
-</li><li>Support for MyBB : <strong>MYBB</strong>
-</li><li>Support for IPB3 : <strong>IPB3</strong>
-</li><li>Support for PhpFusion : <strong>PHPFUSION</strong>
-</li><li>Support for Xenforo SHA1 with : <strong>XFSHA1</strong>
-</li><li>Support for Xenforo SHA256 with : <strong>XFSHA256</strong>
-</li><li>Support for Joomla with : <strong>JOOMLA</strong>
-</li><li>Support for WBB3 with : <strong>WBB3*</strong>
-</li><li>Support for SHA512 with : <strong>SHA512</strong>
-</li><li>Support DoubleSaltedMD5 password with : <strong>SALTED2MD5</strong>
-</li><li>Support WordPress integration, password with : <strong>WORDPRESS</strong>
-</li><li>Custom MySQL tables/columns (useable for forums, other scripts)
-</li><li>Database queries can be cached
-</li><li><em>Compatible with Citizens NPC plugin and CombatTag plugin</em>
-</li><li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong>
-</li><li><em>Account restriction through IP and name</em>
-</li><li><em>Permissions group switching on un-logged-in</em>
-</li><li>Different permission group for Registered and unRegistered users
-</li><li>Support for permissions onJoin with transient vault system
-</li><li>Cache on file for all inventories and enchants for un-logged-in players
-</li><li>Save Quit location to prevent loss of position
-</li><li>Possible to use without a Permissions plugin
-</li><li><strong>Spoutcraft Login GUI</strong>
-</li><li>Automatic backup system of all your user password data
-</li><li>Default Language Style: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr ( feel free to send new translations )
-</li><li>Convert the FlatFile auths.db to an usefull authme.sql that you can use on a MySQL database !
-</li><li>Import your database from Rakamak, xAuth, CrazyLogin, RoyalAuth, vAuth !
-</li></ul>
+<ul>
+  <li><strong>E-Mail Recovery System !!!</strong></li>
+  <li>Username spoofing protection.</li>
+  <li>Countries Whitelist/Blacklist! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a></li>
+  <li><strong>Built-in AntiBot System!</strong></li>
+  <li><del>Passpartu Feature: Admin can login with all account more info <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">here</a></del> <strong>(Deprecated)</strong></li>
+  <li><strong>Avoid the "Logged in from another location" message!</strong></li>
+  <li>Session Login!</li>
+  <li>Editable translations and messages!</li>
+  <li><strong>MySQL and SQLite Backend support!</strong></li>
+  <li>Supported password encryption algorithms: MD5, SHA1, SHA256, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a>, <a href="http://en.wikipedia.org/wiki/Whirlpool_(cryptography)">Whirlpool</a></li>
+  <li>Supported alternative registration methods:<br>
+  <ul>
+    <li>PHPBB, VBullettin: MD5VB - PHPBB</li>
+    <li>MyBB: MYBB</li>
+    <li>IPB3: IPB3</li>
+    <li>PhpFusion: PHPFUSION</li>
+    <li><del>Xenforo SHA1: XFSHA1</del> <strong>(Deprecated)</strong></li>
+    <li><del>Xenforo SHA256: XFSHA256</del> <strong>(Deprecated)</strong></li>
+    <li>Joomla: JOOMLA</li>
+    <li>WBB3: WBB3*</li>
+    <li>SHA512: SHA512</li>
+    <li>DoubleSaltedMD5: SALTED2MD5</li>
+    <li>WordPress: WORDPRESS</li>
+  </ul></li>
+  <li>Custom MySQL tables/columns names (useful with forums databases)</li>
+  <li><strong>Cached database queries!</strong></li>
+  <li><strong>Full compatible with Citizens2, CombatTag, CombatTagPlus and ChestShop!</strong></li>
+  <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
+  <li>Restricted users (associate a Username with an IP)</li>
+  <li>Protect player's inventory until a correct Authentication</li>
+  <li>Saves the quit location of the player</li>
+  <li>Automatic database Backup</li>
+  <li>Avariable languages: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr (feel free to send new translations)</li>
+  <li>Built-in Deprecated FlatFile (auths.db) to SQL (authme.sql) converter!</li>
+  <li><strong>Import your old database from other plugins like Rakamak, xAuth, CrazyLogin, RoyalAuth and vAuth!</strong></li>
+</ul>
+
 ####Configuration
 <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/configure-auth-me/">How to Configure Authme</a>
 ####Email Recovery Dependency
