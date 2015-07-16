@@ -80,7 +80,7 @@ typing commands or use the inventory. It can also kick players with uncommon lon
   </ul></li>
   <li>Custom MySQL tables/columns names (useful with forums databases)</li>
   <li><strong>Cached database queries!</strong></li>
-  <li><strong>Full compatible with Citizens2, CombatTag, CombatTagPlus and ChestShop!<strong></li>
+  <li><strong>Full compatible with Citizens2, CombatTag, CombatTagPlus and ChestShop!</strong></li>
   <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
   <li>Restricted users (associate a Username with an IP)</li>
   <li>Protect player's inventory until a correct Authentication</li>
@@ -88,7 +88,7 @@ typing commands or use the inventory. It can also kick players with uncommon lon
   <li>Automatic database Backup</li>
   <li>Avariable languages: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr (feel free to send new translations)</li>
   <li>Built-in Deprecated FlatFile (auths.db) to SQL (authme.sql) converter!</li>
-  <li><strong>Import your old database from other Authentication plugins like Rakamak, xAuth, CrazyLogin, RoyalAuth and vAuth!</strong></li>
+  <li><strong>Import your old database from other plugins like Rakamak, xAuth, CrazyLogin, RoyalAuth and vAuth!</strong></li>
 </ul>
 
 ####Configuration
