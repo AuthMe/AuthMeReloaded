@@ -59,10 +59,10 @@ public class PerformBackup {
                 runtimeProcess = Runtime.getRuntime().exec(executeCmd);
                 int processComplete = runtimeProcess.waitFor();
                 if (processComplete == 0) {
-                    ConsoleLogger.info("Backup created successfully");
+                    ConsoleLogger.info("Backup created successfully.");
                     return true;
                 } else {
-                    ConsoleLogger.info("Could not create the backup");
+                    ConsoleLogger.showError("Could not create the backup!");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -74,10 +74,10 @@ public class PerformBackup {
                 runtimeProcess = Runtime.getRuntime().exec(executeCmd);
                 int processComplete = runtimeProcess.waitFor();
                 if (processComplete == 0) {
-                    ConsoleLogger.info("Backup created successfully");
+                    ConsoleLogger.info("Backup created successfully.");
                     return true;
                 } else {
-                    ConsoleLogger.info("Could not create the backup");
+                    ConsoleLogger.showError("Could not create the backup!");
                 }
             } catch (Exception ex) {
                 ex.printStackTrace();
