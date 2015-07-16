@@ -1,4 +1,4 @@
-MPpackage fr.xephi.authme;
+package fr.xephi.authme;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
