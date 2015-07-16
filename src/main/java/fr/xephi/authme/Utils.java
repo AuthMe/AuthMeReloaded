@@ -43,7 +43,7 @@ public class Utils {
             World world = null;
             currentGroup = plugin.permission.getPrimaryGroup(world, name);
         } catch (UnsupportedOperationException e) {
-            ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
+            ConsoleLogger.showError("Your permission plugin (" + plugin.permission.getName() + ") doesn't support the Group system... unhook!");
             plugin.permission = null;
             return;
         }

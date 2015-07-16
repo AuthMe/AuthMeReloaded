@@ -121,7 +121,7 @@ public class AuthMe extends JavaPlugin {
             settings = new Settings(this);
             settings.loadConfigOptions();
         } catch (Exception e) {
-            ConsoleLogger.showError("Can't load config file... Something goes wrong, for prevent security issues, server will shutdown");
+            ConsoleLogger.showError("Can't load the configuration file... Something went wrong, to avoid security issues the server will shutdown!");
             this.getServer().shutdown();
             return;
         }
@@ -131,7 +131,7 @@ public class AuthMe extends JavaPlugin {
             metrics.start();
             ConsoleLogger.info("Metrics started successfully!");
         } catch (IOException e) {
-            // Failed to submit the stats :-(
+            // Failed to submit the metrics data
             ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway...");
         }
 
@@ -167,9 +167,9 @@ public class AuthMe extends JavaPlugin {
                 Class.forName("org.apache.logging.log4j.core.Filter");
                 setLog4JFilter();
             } catch (ClassNotFoundException e) {
-                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
+                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
             } catch (NoClassDefFoundError e) {
-                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
+                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
             }
         }
 
@@ -198,8 +198,8 @@ public class AuthMe extends JavaPlugin {
         if (Settings.isBackupActivated && Settings.isBackupOnStart) {
             Boolean Backup = new PerformBackup(this).DoBackup();
             if (Backup)
-                ConsoleLogger.info("Backup Complete");
-            else ConsoleLogger.showError("Error while making Backup");
+                ConsoleLogger.info("Backup performed correctly");
+            else ConsoleLogger.showError("Error while performing the backup!");
         }
 
         setupDatabase();
@@ -225,7 +225,7 @@ public class AuthMe extends JavaPlugin {
         pm.registerEvents(new AuthMeServerListener(this), this);
         if (ChestShop != 0) {
             pm.registerEvents(new AuthMeChestShopListener(this), this);
-            ConsoleLogger.info("Successfully hook with ChestShop!");
+            ConsoleLogger.info("Hooked successfully with ChestShop!");
         }
 
         this.getCommand("authme").setExecutor(new AdminCommand(this));
@@ -240,7 +240,7 @@ public class AuthMe extends JavaPlugin {
         this.getCommand("converter").setExecutor(new ConverterCommand(this));
 
         if (!Settings.isForceSingleSessionEnabled) {
-            ConsoleLogger.showError("BECAREFUL !!! By disabling ForceSingleSession, your server protection is set to LOW");
+            ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
         }
 
         PlayersLogs.getInstance();
@@ -273,9 +273,9 @@ public class AuthMe extends JavaPlugin {
         recallEmail();
 
         // Sponsor message
-        ConsoleLogger.info("AuthMe hook perfectly with server hosting VERYGAMES");
+        ConsoleLogger.info("AuthMe hooks perfectly with the VERYGAMES server hosting!");
 
-        ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
+        ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
     }
 
     private void setLog4JFilter() {
@@ -294,9 +294,9 @@ public class AuthMe extends JavaPlugin {
             RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
             if (permissionProvider != null) {
                 permission = permissionProvider.getProvider();
-                ConsoleLogger.info("Vault plugin detected, hook with " + permission.getName() + " system");
+                ConsoleLogger.info("Vault detected, hooking with the " + permission.getName() + " permissions system...");
             } else {
-                ConsoleLogger.showError("Vault plugin is detected but not the permissions plugin!");
+                ConsoleLogger.showError("Vault detected, but I can't find any permissions plugin to hook with!");
             }
         } else {
             permission = null;
@@ -316,7 +316,7 @@ public class AuthMe extends JavaPlugin {
                     if (version >= 3.50) {
                         this.ChestShop = version;
                     } else {
-                        ConsoleLogger.showError("Please Update your ChestShop version!");
+                        ConsoleLogger.showError("Please Update your ChestShop version! Bugs may occur!");
                     }
                 } catch (NumberFormatException nfe) {
                     try {
@@ -324,7 +324,7 @@ public class AuthMe extends JavaPlugin {
                         if (version >= 3.50) {
                             this.ChestShop = version;
                         } else {
-                            ConsoleLogger.showError("Please Update your ChestShop version!");
+                            ConsoleLogger.showError("Please Update your ChestShop version! Bugs may occur!");
                         }
                     } catch (NumberFormatException nfee) {
                     }
@@ -344,7 +344,7 @@ public class AuthMe extends JavaPlugin {
         if (this.getServer().getPluginManager().getPlugin("Multiverse-Core") != null && this.getServer().getPluginManager().getPlugin("Multiverse-Core").isEnabled()) {
             try {
                 multiverse = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
-                ConsoleLogger.info("Hook with Multiverse-Core for SpawnLocations");
+                ConsoleLogger.info("Hooked correctly with Multiverse-Core");
             } catch (NullPointerException npe) {
                 multiverse = null;
             } catch (ClassCastException cce) {
@@ -361,7 +361,7 @@ public class AuthMe extends JavaPlugin {
         if (this.getServer().getPluginManager().getPlugin("Essentials") != null && this.getServer().getPluginManager().getPlugin("Essentials").isEnabled()) {
             try {
                 ess = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
-                ConsoleLogger.info("Hook with Essentials plugin");
+                ConsoleLogger.info("Hooked correctly with Essentials");
             } catch (NullPointerException npe) {
                 ess = null;
             } catch (ClassCastException cce) {
@@ -375,10 +375,10 @@ public class AuthMe extends JavaPlugin {
         if (this.getServer().getPluginManager().getPlugin("EssentialsSpawn") != null && this.getServer().getPluginManager().getPlugin("EssentialsSpawn").isEnabled()) {
             try {
                 essentialsSpawn = new EssSpawn().getLocation();
-                ConsoleLogger.info("Hook with EssentialsSpawn plugin");
+                ConsoleLogger.info("Hooked correctly with EssentialsSpawn");
             } catch (Exception e) {
                 essentialsSpawn = null;
-                ConsoleLogger.showError("Error while reading /plugins/Essentials/spawn.yml file ");
+                ConsoleLogger.showError("Can't read the /plugins/Essentials/spawn.yml file!");
             }
         } else {
             essentialsSpawn = null;
@@ -424,10 +424,10 @@ public class AuthMe extends JavaPlugin {
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {
             Boolean Backup = new PerformBackup(this).DoBackup();
             if (Backup)
-                ConsoleLogger.info("Backup Complete");
-            else ConsoleLogger.showError("Error while making Backup");
+                ConsoleLogger.info("Backup performed correctly.");
+            else ConsoleLogger.showError("Error while performing the backup!");
         }
-        ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " disabled");
+        ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
     }
 
     public static AuthMe getInstance() {
@@ -524,7 +524,7 @@ public class AuthMe extends JavaPlugin {
             return;
         if (cleared.isEmpty())
             return;
-        ConsoleLogger.info("AutoPurgeDatabase : " + cleared.size() + " accounts removed.");
+        ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
         if (Settings.purgeEssentialsFile && this.ess != null)
             dataManager.purgeEssentials(cleared);
         if (Settings.purgePlayerDat)
@@ -588,7 +588,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     public void downloadGeoIp() {
-        ConsoleLogger.info("[LICENSE] This product includes GeoLite data created by MaxMind, available from http://www.maxmind.com");
+        ConsoleLogger.info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com");
         File file = new File(getDataFolder(), "GeoIP.dat");
         if (!file.exists()) {
             try {
@@ -759,8 +759,7 @@ public class AuthMe extends JavaPlugin {
             case FILE:
                 database = new FlatFile();
                 final int a = database.getAccountsRegistered();
-                if (a >= 1000)
-                    ConsoleLogger.showError("YOU'RE USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
+                ConsoleLogger.showError("YOU'RE USING THE FILE BACKEND WITH " + a + "+ ACCOUNTS, YOU SHOULD NEVER USE THIS, PLEASE UPGRADE TO SQLITE!!!");
                 break;
             case MYSQL:
                 database = new MySQL();
@@ -768,8 +767,8 @@ public class AuthMe extends JavaPlugin {
             case SQLITE:
                 database = new SQLite();
                 final int b = database.getAccountsRegistered();
-                if (b >= 2000)
-                    ConsoleLogger.showError("YOU'RE USING SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
+                if (b >= 4000)
+                    ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE UPGRADE TO MYSQL!!");
                 break;
         }
 
