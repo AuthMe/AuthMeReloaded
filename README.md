@@ -4,15 +4,17 @@
 <hr>
 #####Development tools:
 
-[![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+- Developers ChatRoom: [![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-- Build status: [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded)
+- Build status (Travis): [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded)
 
-- Build Server: <a href="http://ci.xephi.fr">Jenkins</a>
+- Build status (CircleCI): [CircleCI project Page](https://travis-ci.org/Xephi/AuthMeReloaded)
 
-- JavaDoc: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
+- Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr">Xephi's Jenkins</a>
 
-- MavenRepository: <a href="http://xephi.fr:8080/plugin/repository/everything/">Maven Repo</a>
+- JavaDocs: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
+
+- Maven Repo: <a href="http://xephi.fr:8080/plugin/repository/everything/">AuthMe Repo</a>
 
 #####Statistics:
 
@@ -40,27 +42,29 @@ McStats: http://mcstats.org/plugin/AuthMe
 <hr>
 ###Plugin Description:
 
-#####"/login /register plugin!"
+#####"The best authentication plugin for the Bukkit/Spigot API!"
 
-Prevent Name stolen ! AutoUpdate names through UUID<br>
-AuthMe Reloaded prevents players who aren't logged in from actions like placing blocks, moving, typing commands or seeing the inventory of the current player. </p>
-<p>The possibility to set up name spoof protection kicks players with uncommon long or short player names before they could actually join.</p>
-<p>Login Sessions make it possible that you don't have to login within a given time period.</p>
-<p>Each command and every setting can be enabled or disabled by a easy structured config file. </p>
-<p>If you don't like English or don't like my translations you can easily edit almost every message sent by AuthMe!</p>
+<p>Prevent username stealing on your server! Full compatible with UUIDs and Craftbukkit/Spigot 1.8.X!<br>
+Use it to secure your Offline mode server or to incrase your Online mode server's protection!</p>
+
+<p>AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>
+typing commands or use the inventory. It can also kick players with uncommon long or short player names or kick players from banned countries.</p>
+<p>With the Session Login feature you don't have to execute the authentication command everytime you connect to the server! Each command and every feature can be enabled or disabled from our well structured configuration file.</p>
+<p>You can also create your own translation file and if you want you can share it with us!</p>
 
 ####Features:
-<ul><li><strong>E-Mail Recovery System</strong> !!!
-</li><li>Playername spoof protection
-</li><li>Countries Selection! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a>
-</li><li>AntiBot Features!
-</li><li><strong> Passpartu Admin Feature: Admin can login with all account</strong> more info <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">here</a>
-</li><li>Protection against "Logged in from another location" messages
-</li><li>Login sessions
-</li><li>Editable settings &amp; messages
-</li><li>MySQL, flatfile and SQLITE support
-</li><li>Supported hash algorithms: MD5, SHA1, SHA256, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a>, <a href="http://en.wikipedia.org/wiki/Whirlpool_(cryptography)">Whirlpool</a>
-</li><li>Support for PLAINTEXT password storage
+<ul>
+  <li><strong>E-Mail Recovery System !!!</strong></li>
+  <li>Username spoofing protection.</li>
+  <li>Countries Whitelist/Blacklist! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a></li>
+  <li><strong>Built-in AntiBot System!</strong></li>
+  <li><del>Passpartu Feature: Admin can login with all account more info <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">here</a></del> <strong>Deprecated</strong></li>
+  <li><strong>Avoid the "Logged in from another location" message!</strong></li>
+  <li>Session Login!</li>
+  <li>Editable translations and messages!</li>
+  <li><strong>MySQL and SQLite Backend support!</strong></li>
+  <li>Supported password encryption algorithms: MD5, SHA1, SHA256, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a>, <a href="http://en.wikipedia.org/wiki/Whirlpool_(cryptography)">Whirlpool</a></li>
+  <li>Support for PLAINTEXT password storage
 </li><li>Support for PHPBB, VBullettin forum registration: <strong>MD5VB - PHPBB</strong>
 </li><li>Support for MyBB : <strong>MYBB</strong>
 </li><li>Support for IPB3 : <strong>IPB3</strong>
