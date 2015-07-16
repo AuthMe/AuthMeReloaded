@@ -100,7 +100,7 @@ public class SendMailSSL {
                         file.delete();
 
                 } catch (Exception e) {
-                    System.out.println("Some error occured while trying to send a mail to " + mail);
+                    console.showError("Some error occured while trying to send a mail to " + mail);
                 }
             }
 
