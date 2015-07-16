@@ -109,20 +109,20 @@ typing commands or use the inventory. It can also kick players with uncommon lon
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/">WebSite Integration</a>
 </li><li><a href="https://raw.githubusercontent.com/Xephi/AuthMeReloaded/master/src/main/resources/config.yml">Click here for an example of the Config file</a>
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/">How to convert from Rakamak</a>
-</li><li>Convert from FlatFile (auths.db but not the sqlite one ) to MySQL : /converter
+</li><li>Convert from FlatFile (auths.db but not the sqlite one ) to MySQL: /converter
 </li></ul>
 <hr>
 
 #####GeoIP
-<p>This product includes and download automatically GeoLite data created by MaxMind, available from <a href="http://www.maxmind.com">http://www.maxmind.com</a></p>
+<p>This product uses data from the GeoLite API created by MaxMind, available at <a href="http://www.maxmind.com">http://www.maxmind.com</a></p>
 <hr>
 
 #####Donate
-<p>Do you like my work ? Or just want to buy me a coffee for quickly update?<br>
-Use this link in EUR: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=QLMM9SNCX825Y"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a>
-Or this link in USD: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=PWQMYCP2SAH6L"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a></p>
+<p>Do you like my work? Do you want to buy me a coffee? :)<br>
+EUR: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=QLMM9SNCX825Y"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a>
+USD: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=PWQMYCP2SAH6L"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a></p>
 
 #####Credits
-<p>Credit for old version to d4rkwarriors, fabe1337 , Whoami and pomo4ka</p>
-<p>Thanks to : AS1LV3RN1NJA, Hoeze, eprimex</p>
-
+<p>Team members: Xephi(Main Developer, Author), Maxetto(Contributor) and sgdc3(Contributor)
+<p>Credit for old version of the plugin to: d4rkwarriors, fabe1337 , Whoami2 and pomo4ka</p>
+<p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>
