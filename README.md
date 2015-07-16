@@ -50,7 +50,7 @@ Use it to secure your Offline mode server or to incrase your Online mode server'
 <p>AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>
 typing commands or use the inventory. It can also kick players with uncommon long or short player names or kick players from banned countries.</p>
 <p>With the Session Login feature you don't have to execute the authentication command everytime you connect to the server! Each command and every feature can be enabled or disabled from our well structured configuration file.</p>
-<p>You can also create your own translation file and if you want you can share it with us!</p>
+<p>You can also create your own translation file and, if you want, you can share it with us! :)</p>
 
 ####Features:
 <ul>
@@ -58,41 +58,39 @@ typing commands or use the inventory. It can also kick players with uncommon lon
   <li>Username spoofing protection.</li>
   <li>Countries Whitelist/Blacklist! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a></li>
   <li><strong>Built-in AntiBot System!</strong></li>
-  <li><del>Passpartu Feature: Admin can login with all account more info <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">here</a></del> <strong>Deprecated</strong></li>
+  <li><del>Passpartu Feature: Admin can login with all account more info <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">here</a></del> <strong>(Deprecated)</strong></li>
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
   <li>Session Login!</li>
   <li>Editable translations and messages!</li>
   <li><strong>MySQL and SQLite Backend support!</strong></li>
   <li>Supported password encryption algorithms: MD5, SHA1, SHA256, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a>, <a href="http://en.wikipedia.org/wiki/Whirlpool_(cryptography)">Whirlpool</a></li>
-  <li>Support for PLAINTEXT password storage
-</li><li>Support for PHPBB, VBullettin forum registration: <strong>MD5VB - PHPBB</strong>
-</li><li>Support for MyBB : <strong>MYBB</strong>
-</li><li>Support for IPB3 : <strong>IPB3</strong>
-</li><li>Support for PhpFusion : <strong>PHPFUSION</strong>
-</li><li>Support for Xenforo SHA1 with : <strong>XFSHA1</strong>
-</li><li>Support for Xenforo SHA256 with : <strong>XFSHA256</strong>
-</li><li>Support for Joomla with : <strong>JOOMLA</strong>
-</li><li>Support for WBB3 with : <strong>WBB3*</strong>
-</li><li>Support for SHA512 with : <strong>SHA512</strong>
-</li><li>Support DoubleSaltedMD5 password with : <strong>SALTED2MD5</strong>
-</li><li>Support WordPress integration, password with : <strong>WORDPRESS</strong>
-</li><li>Custom MySQL tables/columns (useable for forums, other scripts)
-</li><li>Database queries can be cached
-</li><li><em>Compatible with Citizens NPC plugin and CombatTag plugin</em>
-</li><li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong>
-</li><li><em>Account restriction through IP and name</em>
-</li><li><em>Permissions group switching on un-logged-in</em>
-</li><li>Different permission group for Registered and unRegistered users
-</li><li>Support for permissions onJoin with transient vault system
-</li><li>Cache on file for all inventories and enchants for un-logged-in players
-</li><li>Save Quit location to prevent loss of position
-</li><li>Possible to use without a Permissions plugin
-</li><li><strong>Spoutcraft Login GUI</strong>
-</li><li>Automatic backup system of all your user password data
-</li><li>Default Language Style: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr ( feel free to send new translations )
-</li><li>Convert the FlatFile auths.db to an usefull authme.sql that you can use on a MySQL database !
-</li><li>Import your database from Rakamak, xAuth, CrazyLogin, RoyalAuth, vAuth !
-</li></ul>
+  <li>Supported alternative registration methods:<br>
+  <ul>
+    <li>PHPBB, VBullettin: MD5VB - PHPBB</li>
+    <li>MyBB: MYBB</li>
+    <li>IPB3: IPB3</li>
+    <li>PhpFusion: PHPFUSION</li>
+    <li><del>Xenforo SHA1: XFSHA1</del> <strong>(Deprecated)</strong></li>
+    <li><del>Xenforo SHA256: XFSHA256</del> <strong>(Deprecated)</strong></li>
+    <li>Joomla: JOOMLA</li>
+    <li>WBB3: WBB3*</li>
+    <li>SHA512: SHA512</li>
+    <li>DoubleSaltedMD5: SALTED2MD5</li>
+    <li>WordPress: WORDPRESS</li>
+  </ul></li>
+  <li>Custom MySQL tables/columns names (useful with forums databases)</li>
+  <li><strong>Cached database queries!</strong></li>
+  <li><strong>Full compatible with Citizens2, CombatTag, CombatTagPlus and ChestShop!<strong></li>
+  <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
+  <li>Restricted users (associate a Username with an IP)</li>
+  <li>Protect player's inventory until a correct Authentication</li>
+  <li>Saves the quit location of the player</li>
+  <li>Automatic database Backup</li>
+  <li>Avariable languages: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr (feel free to send new translations)</li>
+  <li>Built-in Deprecated FlatFile (auths.db) to SQL (authme.sql) converter!</li>
+  <li><strong>Import your old database from other Authentication plugins like Rakamak, xAuth, CrazyLogin, RoyalAuth and vAuth!</strong></li>
+</ul>
+
 ####Configuration
 <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/configure-auth-me/">How to Configure Authme</a>
 ####Email Recovery Dependency
