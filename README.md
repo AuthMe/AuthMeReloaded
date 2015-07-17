@@ -20,9 +20,9 @@
 
 McStats: http://mcstats.org/plugin/AuthMe
 
-<img src=http://i.mcstats.org/AuthMe/Global+Statistics.borderless.png>
+<a href="http://mcstats.org/plugin/AuthMe" target="_blank" class="externalLink" rel="nofollow"><img src="http://i.mcstats.org/AuthMe/Global+Statistics.borderless.png" class="bbCodeImage LbImage" alt="[&#8203;IMG]" data-url="http://i.mcstats.org/AuthMe/Global+Statistics.borderless.png"></a>
 
-<img src=http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png>
+<a href="http://mcstats.org/plugin/AuthMe" target="_blank" class="externalLink" rel="nofollow"><img src="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png" class="bbCodeImage LbImage" alt="[&#8203;IMG]" data-url="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png"></a>
 
 <hr>
 
