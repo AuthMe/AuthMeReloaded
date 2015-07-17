@@ -1,5 +1,5 @@
 <hr>
-<p align="center"><img src="http://www.imagestorming.com/media/cys/1328692322/authme.png"></p>
+<p align="center"><img src="http://i61.tinypic.com/fnfchs.png"></p>
 <p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
 <hr>
 #####Development tools:
