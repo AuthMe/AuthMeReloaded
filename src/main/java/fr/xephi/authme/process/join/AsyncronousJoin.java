@@ -87,7 +87,14 @@ public class AsyncronousJoin {
         }
         if (Settings.getMaxJoinPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
             if (plugin.hasJoinedIp(player.getName(), ip)) {
-                player.kickPlayer("A player with the same IP is already in game!");
+                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+
+                    @Override
+                    public void run() {
+                        player.kickPlayer("A player with the same IP is already in game!");
+                    }
+
+                });
                 return;
             }
         }
