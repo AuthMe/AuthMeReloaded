@@ -25,7 +25,7 @@ public class Messages extends CustomConfiguration {
      *            The filename to open
      */
     public final void loadDefaults(File file) {
-        if (file.exists())
+        if (!file.exists())
             return;
 
         setDefaults(YamlConfiguration.loadConfiguration(file));
