@@ -704,7 +704,7 @@ public final class Settings extends YamlConfiguration {
      *            The filename to open
      */
     public final void loadDefaults(File file) {
-        if (file.exists())
+        if (!file.exists())
             return;
 
         setDefaults(YamlConfiguration.loadConfiguration(file));
