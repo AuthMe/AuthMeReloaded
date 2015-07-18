@@ -407,6 +407,9 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
+        if (player.isBanned())
+            return;
+
         if (Settings.enablePasspartu && !Settings.countriesBlacklist.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (Settings.countriesBlacklist.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
@@ -430,12 +433,6 @@ public class AuthMePlayerListener implements Listener {
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
-        }
-
-        if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
-            event.setKickMessage(m.send("same_nick")[0]);
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
         }
 
         // Check if forceSingleSession is set to true, so kick player that has
@@ -463,13 +460,12 @@ public class AuthMePlayerListener implements Listener {
         String regex = Settings.getNickRegex;
 
         if (name.length() > max || name.length() < min) {
-
             event.setKickMessage(m.send("name_len")[0]);
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
         try {
-            if (!player.getName().matches(regex) || name.equals("Player")) {
+            if (!player.getName().matches(regex) || name.equalsIgnoreCase("Player")) {
                 try {
                     event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
                     event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
@@ -510,8 +506,6 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL)
-            return;
-        if (player.isBanned())
             return;
         if (!plugin.authmePermissible(player, "authme.vip")) {
             event.setKickMessage(m.send("kick_fullserver")[0]);

@@ -10,13 +10,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.nio.charset.Charset;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.nio.charset.StandardCharsets;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
+
+import fr.xephi.authme.ConsoleLogger;
 
 public class CustomConfiguration extends YamlConfiguration {
 
@@ -32,12 +31,12 @@ public class CustomConfiguration extends YamlConfiguration {
         try {
             super.load(configFile);
         } catch (FileNotFoundException e) {
-            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not find " + configFile.getName() + ", creating new one...");
+            ConsoleLogger.showError("Could not find " + configFile.getName() + ", creating new one...");
             reLoad();
         } catch (IOException e) {
-            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not load " + configFile.getName(), e);
+            ConsoleLogger.showError("Could not load " + configFile.getName());
         } catch (InvalidConfigurationException e) {
-            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, configFile.getName() + " is no valid configuration file", e);
+            ConsoleLogger.showError(configFile.getName() + " is no valid configuration file");
         }
     }
 
@@ -55,7 +54,7 @@ public class CustomConfiguration extends YamlConfiguration {
         try {
             super.save(configFile);
         } catch (IOException ex) {
-            Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Could not save config to " + configFile.getName(), ex);
+            ConsoleLogger.showError("Could not save config to " + configFile.getName());
         }
     }
 
@@ -63,19 +62,21 @@ public class CustomConfiguration extends YamlConfiguration {
         boolean out = true;
         if (!file.exists()) {
             try {
+                String charset = System.getProperty("file.encoding");
+                String newline = System.getProperty("line.separator");
                 InputStream fis = getClass().getResourceAsStream("/" + file.getName());
-                BufferedReader reader = new BufferedReader(new InputStreamReader(fis, Charset.forName("UTF-8").newDecoder()));
+                BufferedReader reader = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
                 String str;
-                Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName("UTF-8").newEncoder()));
+                Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset));
                 while ((str = reader.readLine()) != null) {
-                    writer.append(str).append("\r\n");
+                    writer.append(str).append(newline);
                 }
                 writer.flush();
                 writer.close();
                 reader.close();
                 fis.close();
             } catch (Exception e) {
-                Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Failed to load config from JAR");
+                ConsoleLogger.showError("Failed to load config from JAR");
                 out = false;
             }
         }

@@ -111,6 +111,14 @@ public class AuthMe extends JavaPlugin {
         return settings;
     }
 
+    public DataSource getAuthMeDatabase() {
+        return database;
+    }
+
+    public void setAuthMeDatabase(DataSource database) {
+        this.database = database;
+    }
+
     @Override
     public void onEnable() {
         authme = this;
