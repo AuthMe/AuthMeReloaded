@@ -1,0 +1,40 @@
+emailSystem:
+    # Do you want to replace the Password registration with an Email registration method?
+    enableEmailRegistration: false
+    # Do you want to enable the double check of the email address during a player registration?
+    # When it's true, registration require that kind of command:
+    # /register <email> <confirmEmail>
+    doubleEmailCheck: true
+    # Like maxRegPerIp but with emails
+    maxRegPerEmail: 1
+    # Do you want to recall players to add an email to their accounts?
+    recallPlayers: true
+    # Delay in minute for the recall scheduler
+    delayRecall: 5
+    
+    passwordRecovery:
+        # Recovery password length
+        RecoveryPasswordLength: 8
+        # Recovery Email subject
+        mailSubject: 'Your new AuthMe Password'
+        # Recovery Email text
+        mailText: 'Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword'
+    
+    smtpOptions:
+        # SMTP server host
+        mailSMTP: smtp.gmail.com
+        # SMTP server port
+        mailPort: 465
+        # Email account that sends the mails
+        mailAccount: ''
+        # Email account's password
+        mailPassword: ''
+        # Custom SenderName, that replace the mailAccount name in the emails
+        mailSenderName: ''
+    
+    emailSecurity:
+        # Blacklisted domains for emails
+        emailBlacklist:
+            - 10minutemail.com
+        # Do you like a Whitelist instead of a Blacklist?
+        blacklistAsWhitelist: false
