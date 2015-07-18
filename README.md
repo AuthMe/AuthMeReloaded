@@ -20,11 +20,11 @@
 
 McStats: http://mcstats.org/plugin/AuthMe
 
-<img src="http://i.mcstats.org/AuthMe/Global+Statistics.borderless.png" class="bbCodeImage LbImage" data-url="http://i.mcstats.org/AuthMe/Global+Statistics.borderless.png">
+<img src="http://i.mcstats.org/AuthMe/Global+Statistics.borderless.png">
 
-<img src="http://i.mcstats.org/AuthMe/Rank.borderless.png" class="bbCodeImage LbImage" data-url="http://i.mcstats.org/AuthMe/Rank.borderless.png">
+<img src="http://i.mcstats.org/AuthMe/Rank.borderless.png">
 
-<img src="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png" class="bbCodeImage LbImage" data-url="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png">
+<img src="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png">
 
 <hr>
 
