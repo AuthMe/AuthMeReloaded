@@ -1,0 +1,21 @@
+_________________________________________________________________________________
+>                                                                                <
+>        WARNING: Conversions can't be undone! DO ALWAYS A BACKUP BEFORE!!!      <
+>                                                                                <
+_________________________________________________________________________________
+>                AuthMe Reloaded  converters  description  file                  <
+_________________________________________________________________________________
+
+Built-in converters (Into the Plugin's core module):
+        Old File Backend ("file") >>> SQLite    ("/authme converter flatfiletosqlite") THIS CONVERTER WILL BE REMOVED FROM THE CORE IN FUTURE VERSIONS!!!
+
+Converters in the Converters module (Into the Converters module avariable at: NEED LINK):
+        SQlite >>> MySql                        ("/authme converter sqlitetomysql")
+        MySql >>> Redis                         ("/authme converter mysqltoredis")
+        Rakamak >>> SQlite                      ("/authme converter rakamaktosqlite [databasefile.rak] [(ip-mode) (ipdatabasefle.rak)]")
+        CrazyLogin >>> SQlite                   ("/authme converter crazylogintosqlite [databasefile.db]")
+        xAuth (Min version 2.6) >>> SQlite      ("/authme converter xauthtosqlite") NOTE: xAUTH MUST BE INSTALLED AND CONFIGURED IN THE SERVER, it works with all the xAuth backends!
+
+Discontinued Converters (use an old AuthMe version like 3.4):
+        RoyalAuth >>> SQlite
+        vAuth >>> SQlite
