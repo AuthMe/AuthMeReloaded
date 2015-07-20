@@ -34,7 +34,7 @@ public class PasswordSecurity {
         EncryptionMethod method;
         try {
             if (alg != HashAlgorithm.CUSTOM)
-                method = (EncryptionMethod) alg.getclass().newInstance();
+                method = (EncryptionMethod) alg.getclasse().newInstance();
             else method = null;
         } catch (InstantiationException e) {
             throw new NoSuchAlgorithmException("Problem with this hash algorithm");
@@ -123,7 +123,7 @@ public class PasswordSecurity {
         EncryptionMethod method;
         try {
             if (algo != HashAlgorithm.CUSTOM)
-                method = (EncryptionMethod) algo.getclass().newInstance();
+                method = (EncryptionMethod) algo.getclasse().newInstance();
             else method = null;
         } catch (InstantiationException e) {
             throw new NoSuchAlgorithmException("Problem with this hash algorithm");
@@ -156,7 +156,7 @@ public class PasswordSecurity {
         for (HashAlgorithm algo : HashAlgorithm.values()) {
             if (algo != HashAlgorithm.CUSTOM)
                 try {
-                    EncryptionMethod method = (EncryptionMethod) algo.getclass().newInstance();
+                    EncryptionMethod method = (EncryptionMethod) algo.getclasse().newInstance();
                     if (method.comparePassword(hash, password, playerName)) {
                         PlayerAuth nAuth = AuthMe.getInstance().database.getAuth(playerName);
                         if (nAuth != null) {

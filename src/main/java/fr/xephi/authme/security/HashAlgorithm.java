@@ -36,7 +36,7 @@ public enum HashAlgorithm {
         this.classe = classe;
     }
 
-    public Class<?> getclass() {
+    public Class<?> getclasse() {
         return classe;
     }
 

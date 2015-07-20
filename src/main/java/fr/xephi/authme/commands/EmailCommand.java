@@ -1,6 +1,7 @@
 package fr.xephi.authme.commands;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -121,7 +122,7 @@ public class EmailCommand implements CommandExecutor {
                 }
                 PlayerCache.getInstance().updatePlayer(auth);
                 m.send(player, "email_changed");
-                player.sendMessage(m.send("email_defined").toString() + auth.getEmail());
+                player.sendMessage(Arrays.toString(m.send("email_defined")) + auth.getEmail());
             } else if (PlayerCache.getInstance().isAuthenticated(name)) {
                 m.send(player, "email_confirm");
             } else {
