@@ -10,7 +10,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
@@ -25,7 +24,6 @@ public class AsyncronousQuit {
     protected Player p;
     protected Utils utils = Utils.getInstance();
     private String name;
-    private FileCache playerBackup;
     private ItemStack[] armor = null;
     private ItemStack[] inv = null;
     private boolean isOp = false;
@@ -39,7 +37,6 @@ public class AsyncronousQuit {
         this.plugin = plugin;
         this.database = database;
         this.name = p.getName().toLowerCase();
-        this.playerBackup = new FileCache(plugin);
         this.isKick = isKick;
     }
 
