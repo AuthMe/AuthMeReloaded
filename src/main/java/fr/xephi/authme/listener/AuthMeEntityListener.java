@@ -26,11 +26,8 @@ public class AuthMeEntityListener implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         Entity entity = event.getEntity();
 
         if (!(entity instanceof Player)) {
@@ -64,11 +61,8 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
         if (event.getTarget() == null)
             return;
         Entity entity = event.getTarget();
@@ -95,12 +89,8 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onDmg(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         Entity entity = event.getDamager();
 
         if (entity == null || !(entity instanceof Player)) {
@@ -123,12 +113,8 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         Entity entity = event.getEntity();
         if (!(entity instanceof Player)) {
             return;
@@ -154,12 +140,8 @@ public class AuthMeEntityListener implements Listener {
 
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void EntityRegainHealthEvent(EntityRegainHealthEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         Entity entity = event.getEntity();
         if (!(entity instanceof Player)) {
             return;
@@ -185,12 +167,8 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
-        if (event.isCancelled() || event == null) {
-            return;
-        }
-
         if (!(event.getEntity() instanceof Player)) {
             return;
         }
@@ -217,12 +195,8 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onLowestEntityInteract(EntityInteractEvent event) {
-        if (event.isCancelled() || event == null) {
-            return;
-        }
-
         if (!(event.getEntity() instanceof Player)) {
             return;
         }

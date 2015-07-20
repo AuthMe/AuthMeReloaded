@@ -94,7 +94,7 @@ public class AsyncronousRegister {
         preRegister();
         if (!allowRegister)
             return;
-        if (!email.isEmpty() && email != "") {
+        if (!email.isEmpty() && !email.equals("")) {
             if (Settings.getmaxRegPerEmail > 0) {
                 if (!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
                     m.send(player, "max_reg");

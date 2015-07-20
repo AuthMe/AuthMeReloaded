@@ -73,7 +73,7 @@ public class FlatToSql implements Converter {
                 else if (args.length == 9)
                     newline = "INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + lastlocX + "," + lastlocY + "," + lastlocZ + "," + lastlocWorld + "," + columnEmail + "," + columnLogged + ") VALUES ('" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", '" + args[7] + "', '" + args[8] + "', 0);";
                 else newline = "";
-                if (newline != "")
+                if (!newline.equals(""))
                     sql.write(newline);
             }
             sql.close();

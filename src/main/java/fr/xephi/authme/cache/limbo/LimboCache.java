@@ -17,7 +17,7 @@ import fr.xephi.authme.settings.Settings;
 
 public class LimboCache {
 
-    private static LimboCache singleton = null;
+    private volatile static LimboCache singleton = null;
     public ConcurrentHashMap<String, LimboPlayer> cache;
     private FileCache playerData;
     public AuthMe plugin;

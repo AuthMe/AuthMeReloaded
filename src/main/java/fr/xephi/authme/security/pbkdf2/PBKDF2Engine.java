@@ -60,9 +60,9 @@ import java.security.SecureRandom;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  * </p>
  * <p>
- * For Details, see <a
- * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
- * >http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
+ * For Details, see
+ * <a href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html" >http://www.
+ * gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
  * </p>
  * 
  * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898</a>
@@ -319,8 +319,8 @@ public class PBKDF2Engine implements PBKDF2 {
      * @throws IOException
      * @throws NoSuchAlgorithmException
      */
-    public static void main(String[] args) throws IOException,
-            NoSuchAlgorithmException {
+    public static void main(String[] args)
+            throws IOException, NoSuchAlgorithmException {
         String password = "password";
         String candidate = null;
         PBKDF2Formatter formatter = new PBKDF2HexFormatter();
@@ -341,7 +341,6 @@ public class PBKDF2Engine implements PBKDF2 {
             PBKDF2Engine e = new PBKDF2Engine(p);
             p.setDerivedKey(e.deriveKey(password));
             candidate = formatter.toString(p);
-            System.out.println(candidate);
         } else {
             // Verification mode
             PBKDF2Parameters p = new PBKDF2Parameters();
@@ -352,7 +351,6 @@ public class PBKDF2Engine implements PBKDF2 {
             }
             PBKDF2Engine e = new PBKDF2Engine(p);
             boolean verifyOK = e.verifyKey(password);
-            System.out.println(verifyOK ? "OK" : "FAIL");
             System.exit(verifyOK ? 0 : 1);
         }
     }

@@ -152,8 +152,10 @@ public class FlatFile implements DataSource {
                 }
             }
         }
-        removeAuth(auth.getNickname());
-        saveAuth(newAuth);
+        if (newAuth != null) {
+            removeAuth(auth.getNickname());
+            saveAuth(newAuth);
+        }
         return true;
     }
 
@@ -209,8 +211,10 @@ public class FlatFile implements DataSource {
                 }
             }
         }
-        removeAuth(auth.getNickname());
-        saveAuth(newAuth);
+        if (newAuth != null) {
+            removeAuth(auth.getNickname());
+            saveAuth(newAuth);
+        }
         return true;
     }
 
@@ -245,8 +249,10 @@ public class FlatFile implements DataSource {
                 }
             }
         }
-        removeAuth(auth.getNickname());
-        saveAuth(newAuth);
+        if (newAuth != null) {
+            removeAuth(auth.getNickname());
+            saveAuth(newAuth);
+        }
         return true;
     }
 
@@ -497,8 +503,10 @@ public class FlatFile implements DataSource {
                 }
             }
         }
-        removeAuth(auth.getNickname());
-        saveAuth(newAuth);
+        if (newAuth != null) {
+            removeAuth(auth.getNickname());
+            saveAuth(newAuth);
+        }
         return true;
     }
 

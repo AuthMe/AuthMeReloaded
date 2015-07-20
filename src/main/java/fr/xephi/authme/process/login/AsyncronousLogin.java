@@ -209,7 +209,7 @@ public class AsyncronousLogin {
         List<String> auths = this.database.getAllAuthsByName(auth);
         // List<String> uuidlist =
         // plugin.otherAccounts.getAllPlayersByUUID(player.getUniqueId());
-        if (auths.isEmpty() || auths == null) {
+        if (auths.isEmpty()) {
             return;
         }
         if (auths.size() == 1) {

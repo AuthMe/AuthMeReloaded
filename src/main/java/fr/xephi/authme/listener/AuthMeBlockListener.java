@@ -20,9 +20,9 @@ public class AuthMeBlockListener implements Listener {
         this.instance = instance;
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
+        if (event.getPlayer() == null) {
             return;
         }
 
@@ -45,9 +45,9 @@ public class AuthMeBlockListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
+        if (event.getPlayer() == null) {
             return;
         }
 
