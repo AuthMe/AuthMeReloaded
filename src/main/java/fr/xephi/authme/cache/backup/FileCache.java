@@ -546,9 +546,9 @@ public class FileCache {
                 file = new File("cache/" + player.getName().toLowerCase() + ".cache");
             }
             if (file.exists()) {
-                if (file.isDirectory()) {
+                if (file.isDirectory() && file.listFiles() != null) {
                     for (File f : file.listFiles()) {
-                        if (f.isDirectory()) {
+                        if (f.isDirectory() && f.listFiles() != null) {
                             for (File a : f.listFiles()) {
                                 a.delete();
                             }

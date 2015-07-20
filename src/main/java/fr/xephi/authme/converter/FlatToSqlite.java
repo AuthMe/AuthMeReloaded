@@ -86,7 +86,7 @@ public class FlatToSqlite implements Converter {
                 else if (args.length == 9)
                     newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", " + args[4] + ", " + args[5] + ", " + args[6] + ", '" + args[7] + "', '" + args[8] + "');";
                 else newline = "";
-                if (newline != "")
+                if (!newline.equals(""))
                     saveAuth(newline);
                 i = i + 1;
             }
@@ -104,8 +104,8 @@ public class FlatToSqlite implements Converter {
         return;
     }
 
-    private synchronized static void connect() throws ClassNotFoundException,
-            SQLException {
+    private synchronized static void connect()
+            throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
         con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");

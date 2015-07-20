@@ -39,7 +39,7 @@ public class SendMailSSL {
     public void main(final PlayerAuth auth, final String newPass) {
         String sendername;
 
-        if (Settings.getmailSenderName.isEmpty() || Settings.getmailSenderName == null) {
+        if (Settings.getmailSenderName == null || Settings.getmailSenderName.isEmpty()) {
             sendername = Settings.getmailAccount;
         } else {
             sendername = Settings.getmailSenderName;

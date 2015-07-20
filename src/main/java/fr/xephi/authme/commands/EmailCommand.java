@@ -121,7 +121,7 @@ public class EmailCommand implements CommandExecutor {
                 }
                 PlayerCache.getInstance().updatePlayer(auth);
                 m.send(player, "email_changed");
-                player.sendMessage(m.send("email_defined") + auth.getEmail());
+                player.sendMessage(m.send("email_defined").toString() + auth.getEmail());
             } else if (PlayerCache.getInstance().isAuthenticated(name)) {
                 m.send(player, "email_confirm");
             } else {

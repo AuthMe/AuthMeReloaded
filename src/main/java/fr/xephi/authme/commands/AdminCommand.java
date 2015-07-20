@@ -8,8 +8,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,7 +18,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -85,13 +82,13 @@ public class AdminCommand implements CommandExecutor {
 
         if ((sender instanceof ConsoleCommandSender) && args[0].equalsIgnoreCase("passpartutoken")) {
             if (args.length > 1) {
-                System.out.println("[AuthMe] command usage: /authme passpartutoken");
+                ConsoleLogger.info("[AuthMe] command usage: /authme passpartutoken");
                 return true;
             }
             if (Utils.getInstance().obtainToken()) {
-                System.out.println("[AuthMe] You have 30s to insert this token ingame with /passpartu <token>");
+                ConsoleLogger.info("[AuthMe] You have 30s to insert this token ingame with /passpartu <token>");
             } else {
-                System.out.println("[AuthMe] Security error on passpartu token, please redo the command.");
+                ConsoleLogger.info("[AuthMe] Security error on passpartu token, please redo the command.");
             }
             return true;
         }
@@ -144,7 +141,7 @@ public class AdminCommand implements CommandExecutor {
                         fos.write(buf, 0, i);
                     }
                 } catch (Exception e) {
-                    Logger.getLogger(JavaPlugin.class.getName()).log(Level.SEVERE, "Failed to load config from JAR");
+                    ConsoleLogger.showError("Failed to load config from JAR");
                 } finally {
                     try {
                         if (fis != null) {
@@ -213,7 +210,7 @@ public class AdminCommand implements CommandExecutor {
                             return;
                         }
                         List<String> accountList = plugin.database.getAllAuthsByName(auth);
-                        if (accountList.isEmpty() || accountList == null) {
+                        if (accountList == null || accountList.isEmpty()) {
                             m.send(fSender, "user_unknown");
                             return;
                         }
@@ -249,7 +246,7 @@ public class AdminCommand implements CommandExecutor {
                             return;
                         }
                         List<String> accountList = plugin.database.getAllAuthsByIp(arguments[1]);
-                        if (accountList.isEmpty() || accountList == null) {
+                        if (accountList == null || accountList.isEmpty()) {
                             fSender.sendMessage("[AuthMe] This IP does not exist in the database");
                             return;
                         }

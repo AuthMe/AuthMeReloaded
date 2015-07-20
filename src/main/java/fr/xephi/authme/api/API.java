@@ -31,11 +31,14 @@ public class API {
      * @return AuthMe instance
      */
     public static AuthMe hookAuthMe() {
+        if (instance != null)
+            return instance;
         Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
         if (plugin == null || !(plugin instanceof AuthMe)) {
             return null;
         }
-        return (AuthMe) plugin;
+        instance = (AuthMe) plugin;
+        return instance;
     }
 
     public AuthMe getPlugin() {

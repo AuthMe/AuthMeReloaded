@@ -21,9 +21,9 @@ public class AuthMeChestShopListener implements Listener {
         this.plugin = plugin;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPreTransaction(PreTransactionEvent event) {
-        if (event.isCancelled() || event.getClient() == null || event == null) {
+        if (event.getClient() == null) {
             return;
         }
 

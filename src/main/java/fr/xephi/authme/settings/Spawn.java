@@ -1,6 +1,7 @@
 package fr.xephi.authme.settings;
 
 import java.io.File;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -85,7 +86,7 @@ public class Spawn extends CustomConfiguration {
 
     public Location getSpawn() {
         try {
-            if (this.getString("spawn.world").isEmpty() || this.getString("spawn.world") == "")
+            if (this.getString("spawn.world").isEmpty() || this.getString("spawn.world").equals(""))
                 return null;
             Location location = new Location(Bukkit.getWorld(this.getString("spawn.world")), this.getDouble("spawn.x"), this.getDouble("spawn.y"), this.getDouble("spawn.z"), Float.parseFloat(this.getString("spawn.yaw")), Float.parseFloat(this.getString("spawn.pitch")));
             return location;
@@ -98,7 +99,7 @@ public class Spawn extends CustomConfiguration {
 
     public Location getFirstSpawn() {
         try {
-            if (this.getString("firstspawn.world").isEmpty() || this.getString("firstspawn.world") == "")
+            if (this.getString("firstspawn.world").isEmpty() || this.getString("firstspawn.world").equals(""))
                 return null;
             Location location = new Location(Bukkit.getWorld(this.getString("firstspawn.world")), this.getDouble("firstspawn.x"), this.getDouble("firstspawn.y"), this.getDouble("firstspawn.z"), Float.parseFloat(this.getString("firstspawn.yaw")), Float.parseFloat(this.getString("firstspawn.pitch")));
             return location;
