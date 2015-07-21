@@ -8,7 +8,7 @@
 
 - Build status (Travis): [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded)
 
-- Build status (CircleCI): [CircleCI project Page](https://travis-ci.org/Xephi/AuthMeReloaded)
+- Build status (CircleCI): [CircleCI project Page](https://circleci.com/gh/xephi/AuthMeReloaded)
 
 - Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr">Xephi's Jenkins</a>
 
