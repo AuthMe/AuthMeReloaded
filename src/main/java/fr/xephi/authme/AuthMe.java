@@ -744,6 +744,7 @@ public class AuthMe extends JavaPlugin {
      * @param Player
      *            player
      */
+    @Deprecated
     public String getVeryGamesIP(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();
         String sUrl = vgUrl;
@@ -788,8 +789,11 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
             Converter converter = new ForceFlatToSqlite(database, this);
-            Thread t = new Thread(converter);
-            t.start();
+            try {
+                Thread t = new Thread(converter);
+                t.start();
+            } catch (Exception e) {
+            }
             ConsoleLogger.showError("FlatFile backend as been detected and is now deprecated, next time server startup, it will be changed to SQLite... Conversion will be started Asynchronously, it will not drop down your performances !");
             ConsoleLogger.showError("If you want to keep FlatFile, set file again into config at backend, but this message and this change will appear again at the next restart");
         }
