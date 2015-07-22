@@ -602,6 +602,11 @@ public final class Settings extends YamlConfiguration {
         return;
     }
 
+    public void setValue(String key, Object value) {
+        this.set(key, value);
+        this.save();
+    }
+
     private static HashAlgorithm getPasswordHash() {
         String key = "settings.security.passwordHash";
         try {

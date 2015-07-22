@@ -51,6 +51,8 @@ import fr.xephi.authme.commands.LogoutCommand;
 import fr.xephi.authme.commands.PasspartuCommand;
 import fr.xephi.authme.commands.RegisterCommand;
 import fr.xephi.authme.commands.UnregisterCommand;
+import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DatabaseCalls;
@@ -742,6 +744,7 @@ public class AuthMe extends JavaPlugin {
      * @param Player
      *            player
      */
+    @Deprecated
     public String getVeryGamesIP(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();
         String sUrl = vgUrl;
@@ -766,8 +769,6 @@ public class AuthMe extends JavaPlugin {
         switch (Settings.getDataSource) {
             case FILE:
                 database = new FlatFile();
-                final int a = database.getAccountsRegistered();
-                ConsoleLogger.showError("YOU'RE USING THE FILE BACKEND WITH " + a + "+ ACCOUNTS, YOU SHOULD NEVER USE THIS, PLEASE UPGRADE TO SQLITE!!!");
                 break;
             case MYSQL:
                 database = new MySQL();
@@ -785,5 +786,16 @@ public class AuthMe extends JavaPlugin {
         }
 
         database = new DatabaseCalls(database);
+
+        if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
+            Converter converter = new ForceFlatToSqlite(database, this);
+            try {
+                Thread t = new Thread(converter);
+                t.start();
+            } catch (Exception e) {
+            }
+            ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, next time server starts up, it will be changed to SQLite... Conversion will be started Asynchronously, it will not drop down your performance !");
+            ConsoleLogger.showError("If you want to keep FlatFile, set file again into config at backend, but this message and this change will appear again at the next restart");
+        }
     }
 }

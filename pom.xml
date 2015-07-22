@@ -87,6 +87,7 @@
 						<includes>
 							<include>com.maxmind.geoip:*</include>
 							<include>javax.mail:*</include>
+							<include>com.sun.mail:*</include>
 							<include>com.comphenix.attribute:*</include>
 							<include>org.mcstats.*:*</include>
 						</includes>
@@ -188,8 +189,8 @@
 
 		<!-- Java Email API -->
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
 			<version>1.5.4</version>
 		</dependency>
 

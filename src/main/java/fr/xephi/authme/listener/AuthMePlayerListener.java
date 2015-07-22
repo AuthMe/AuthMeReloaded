@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -407,7 +408,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (player.isBanned())
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED)
             return;
 
         if (Settings.enablePasspartu && !Settings.countriesBlacklist.isEmpty()) {
@@ -460,7 +461,7 @@ public class AuthMePlayerListener implements Listener {
         String regex = Settings.getNickRegex;
 
         if (name.length() > max || name.length() < min) {
-            event.setKickMessage(m.send("name_len")[0]);
+            event.setKickMessage(Arrays.toString(m.send("name_len")));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }

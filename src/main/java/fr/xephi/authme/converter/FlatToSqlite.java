@@ -39,6 +39,8 @@ public class FlatToSqlite implements Converter {
     private static File source;
     private static String database;
     private static String columnID;
+    private static String columnSalt;
+    private static String columnGroup;
     private static Connection con;
 
     @Override
@@ -49,23 +51,20 @@ public class FlatToSqlite implements Converter {
         columnPassword = Settings.getMySQLColumnPassword;
         columnIp = Settings.getMySQLColumnIp;
         columnLastLogin = Settings.getMySQLColumnLastLogin;
+        columnSalt = Settings.getMySQLColumnSalt;
+        columnGroup = Settings.getMySQLColumnGroup;
         lastlocX = Settings.getMySQLlastlocX;
         lastlocY = Settings.getMySQLlastlocY;
         lastlocZ = Settings.getMySQLlastlocZ;
         lastlocWorld = Settings.getMySQLlastlocWorld;
         columnEmail = Settings.getMySQLColumnEmail;
         columnID = Settings.getMySQLColumnId;
-        ConsoleLogger.info("Converting FlatFile to SQLite ...");
-        if (new File(AuthMe.getInstance().getDataFolder() + File.separator + database + ".db").exists()) {
-            sender.sendMessage("The Database " + database + ".db can't be created cause the file already exist");
-            return;
-        }
+
         try {
             connect();
             setup();
         } catch (Exception e) {
-            ConsoleLogger.showError("Problem while trying to convert to sqlite !");
-            sender.sendMessage("Problem while trying to convert to sqlite !");
+            sender.sendMessage("Some error appeared while trying to setup and connect to sqlite database... Aborting");
             return;
         }
         try {
@@ -107,7 +106,6 @@ public class FlatToSqlite implements Converter {
     private synchronized static void connect()
             throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
-        ConsoleLogger.info("SQLite driver loaded");
         con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
     }
 
@@ -116,7 +114,7 @@ public class FlatToSqlite implements Converter {
         ResultSet rs = null;
         try {
             st = con.createStatement();
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL," + columnLastLogin + " BIGINT," + lastlocX + " smallint(6) DEFAULT '0'," + lastlocY + " smallint(6) DEFAULT '0'," + lastlocZ + " smallint(6) DEFAULT '0'," + lastlocWorld + " VARCHAR(255) DEFAULT 'world'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL," + columnLastLogin + " BIGINT," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnPassword + " VARCHAR(255) NOT NULL;");
@@ -134,12 +132,14 @@ public class FlatToSqlite implements Converter {
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocX + " smallint(6) NOT NULL DEFAULT '0'; " + "ALTER TABLE " + tableName + " ADD COLUMN " + lastlocY + " smallint(6) NOT NULL DEFAULT '0'; " + "ALTER TABLE " + tableName + " ADD COLUMN " + lastlocZ + " smallint(6) NOT NULL DEFAULT '0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, lastlocWorld);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT 'world' AFTER " + lastlocZ + ";");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT 'world';");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnEmail);
@@ -150,7 +150,6 @@ public class FlatToSqlite implements Converter {
             close(rs);
             close(st);
         }
-        ConsoleLogger.info("SQLite Setup finished");
     }
 
     private static synchronized boolean saveAuth(String s) {

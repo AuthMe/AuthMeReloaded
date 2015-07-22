@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.converter.Converter;
@@ -30,10 +29,6 @@ public class ConverterCommand implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command cmnd, String label,
             final String[] args) {
-        if (!(sender instanceof Player)) {
-            return true;
-        }
-
         if (!plugin.authmePermissible(sender, "authme.admin.converter")) {
             m.send(sender, "no_perm");
             return true;
