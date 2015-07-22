@@ -428,7 +428,10 @@ public class AuthMe extends JavaPlugin {
             }
 
         if (database != null) {
-            database.close();
+            try {
+                database.close();
+            } catch (Exception e) {
+            }
         }
 
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {
@@ -444,8 +447,7 @@ public class AuthMe extends JavaPlugin {
         return authme;
     }
 
-    public void savePlayer(Player player)
-            throws IllegalStateException, NullPointerException {
+    public void savePlayer(Player player) {
         try {
             if ((citizens.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
                 return;
