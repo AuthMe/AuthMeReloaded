@@ -64,7 +64,7 @@ public class FlatToSqlite implements Converter {
             connect();
             setup();
         } catch (Exception e) {
-            sender.sendMessage("Some error appears while trying to setup and connect to sqlite database... Aborting");
+            sender.sendMessage("Some error appeared while trying to setup and connect to sqlite database... Aborting");
             return;
         }
         try {

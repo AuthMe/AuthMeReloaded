@@ -794,7 +794,7 @@ public class AuthMe extends JavaPlugin {
                 t.start();
             } catch (Exception e) {
             }
-            ConsoleLogger.showError("FlatFile backend as been detected and is now deprecated, next time server startup, it will be changed to SQLite... Conversion will be started Asynchronously, it will not drop down your performances !");
+            ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, next time server starts up, it will be changed to SQLite... Conversion will be started Asynchronously, it will not drop down your performance !");
             ConsoleLogger.showError("If you want to keep FlatFile, set file again into config at backend, but this message and this change will appear again at the next restart");
         }
     }
