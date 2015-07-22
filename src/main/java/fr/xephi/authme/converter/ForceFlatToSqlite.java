@@ -26,7 +26,7 @@ public class ForceFlatToSqlite implements Converter {
             plugin.getSettings().setValue("DataSource.backend", "sqlite");
             ConsoleLogger.info("Database successfully converted to sqlite !");
         } catch (Exception e) {
-            ConsoleLogger.showError("An error appears while trying to convert flatfile ...");
+            ConsoleLogger.showError("An error appeared while trying to convert flatfile to sqlite ...");
         } finally {
             if (sqlite != null)
                 sqlite.close();
