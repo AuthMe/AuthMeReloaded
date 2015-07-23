@@ -30,6 +30,7 @@ redis:
 columnNames:
     idColumn: id
     nameColumn: username
+    realNameColumn: realname
     passwordColumn: password
     ipColumn: ip
     emailColumn: email
