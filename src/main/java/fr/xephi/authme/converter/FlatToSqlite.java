@@ -39,8 +39,6 @@ public class FlatToSqlite implements Converter {
     private static File source;
     private static String database;
     private static String columnID;
-    private static String columnSalt;
-    private static String columnGroup;
     private static Connection con;
 
     @Override
@@ -51,8 +49,6 @@ public class FlatToSqlite implements Converter {
         columnPassword = Settings.getMySQLColumnPassword;
         columnIp = Settings.getMySQLColumnIp;
         columnLastLogin = Settings.getMySQLColumnLastLogin;
-        columnSalt = Settings.getMySQLColumnSalt;
-        columnGroup = Settings.getMySQLColumnGroup;
         lastlocX = Settings.getMySQLlastlocX;
         lastlocY = Settings.getMySQLlastlocY;
         lastlocZ = Settings.getMySQLlastlocZ;
