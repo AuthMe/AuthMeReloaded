@@ -16,11 +16,6 @@ sessionLogin:
     # And try to login with an another IP Address?
     sessionExpireOnIpChange: true
 
-performance:
-    # HIGHLY recommended to use this! This will increase database performance
-    # Default is true, change it to false if you experience issues
-    useMultiThreading: true
-
 security:
     # Should players in the OP list have every permissions?
     opPermissions: true
