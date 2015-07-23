@@ -71,7 +71,6 @@ import fr.xephi.authme.plugin.manager.EssSpawn;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.OtherAccounts;
-import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import net.milkbowl.vault.permission.Permission;
@@ -253,8 +252,6 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
         }
 
-        PlayersLogs.getInstance();
-
         if (Settings.reloadSupport)
             try {
                 int playersOnline = 0;
@@ -269,7 +266,9 @@ public class AuthMe extends JavaPlugin {
                         database.purgeLogged();
                     } catch (NullPointerException npe) {
                     }
-                } else PlayersLogs.getInstance().loadPlayers();
+                } else {
+                    // TODO: load logged players !
+                }
             } catch (Exception ex) {
             }
 

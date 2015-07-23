@@ -12,7 +12,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 
 public class AsyncronousRegister {
@@ -62,12 +61,12 @@ public class AsyncronousRegister {
             m.send(player, "password_error_nick");
             allowRegister = false;
         }
-        
+
         else if (password.length() < Settings.getPasswordMinLen || password.length() > Settings.passwordMaxLength) {
             m.send(player, "pass_len");
             allowRegister = false;
         }
-        
+
         else if (!Settings.unsafePasswords.isEmpty()) {
             if (Settings.unsafePasswords.contains(password.toLowerCase())) {
                 m.send(player, "password_error_unsafe");
@@ -77,7 +76,6 @@ public class AsyncronousRegister {
 
         else if (database.isAuthAvailable(name)) {
             m.send(player, "user_regged");
-            PlayersLogs.getInstance().savePlayerLogs();
             allowRegister = false;
         }
 

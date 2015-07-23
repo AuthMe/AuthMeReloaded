@@ -14,7 +14,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 
 public class FlatFile implements DataSource {
@@ -662,17 +661,14 @@ public class FlatFile implements DataSource {
 
     @Override
     public void setLogged(String user) {
-        PlayersLogs.getInstance().savePlayerLogs();
     }
 
     @Override
     public void setUnlogged(String user) {
-        PlayersLogs.getInstance().savePlayerLogs();
     }
 
     @Override
     public void purgeLogged() {
-        PlayersLogs.getInstance().clear();
     }
 
     @Override
