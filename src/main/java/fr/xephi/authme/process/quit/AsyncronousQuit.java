@@ -51,13 +51,13 @@ public class AsyncronousQuit {
 
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) {
             if (Settings.isSaveQuitLocationEnabled && database.isAuthAvailable(name)) {
-                final PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName());
+                final PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName(), player.getName());
                 try {
                     database.updateQuitLoc(auth);
                 } catch (NullPointerException npe) {
                 }
             }
-            PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis());
+            PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis(), player.getName());
             database.updateSession(auth);
         }
 

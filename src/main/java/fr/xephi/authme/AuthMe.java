@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -267,7 +268,13 @@ public class AuthMe extends JavaPlugin {
                     } catch (NullPointerException npe) {
                     }
                 } else {
-                    // TODO: load logged players !
+                    for (PlayerAuth auth : database.getLoggedPlayers()) {
+                        if (auth == null)
+                            continue;
+                        auth.setLastLogin(new Date().getTime());
+                        database.updateSession(auth);
+                        PlayerCache.getInstance().addPlayer(auth);
+                    }
                 }
             } catch (Exception ex) {
             }
@@ -456,7 +463,7 @@ public class AuthMe extends JavaPlugin {
         try {
             String name = player.getName().toLowerCase();
             if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-                final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName());
+                final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName(), player.getName());
                 database.updateQuitLoc(auth);
             }
             if (LimboCache.getInstance().hasLimboPlayer(name)) {

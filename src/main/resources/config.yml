@@ -37,6 +37,8 @@ DataSource:
     mySQLlastlocZ: z
     # Column for SaveQuitLocation - World name
     mySQLlastlocWorld: world
+    # Column for RealName
+    mySQLRealName: realname
 GroupOptions:
     # if you want to set up a particulary Permission Group for
     # users that arent registered yet. Pay attention this option

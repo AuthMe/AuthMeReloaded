@@ -534,4 +534,25 @@ public class DatabaseCalls implements DataSource {
         return result;
     }
 
+    @Override
+    public List<PlayerAuth> getLoggedPlayers() {
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        List<PlayerAuth> result;
+        try {
+            result = executor.submit(new Callable<List<PlayerAuth>>() {
+
+                public List<PlayerAuth> call() throws Exception {
+                    return database.getLoggedPlayers();
+                }
+            }).get();
+        } catch (InterruptedException e1) {
+            return (new ArrayList<PlayerAuth>());
+        } catch (ExecutionException e1) {
+            return (new ArrayList<PlayerAuth>());
+        } finally {
+            executor.shutdown();
+        }
+        return result;
+    }
+
 }

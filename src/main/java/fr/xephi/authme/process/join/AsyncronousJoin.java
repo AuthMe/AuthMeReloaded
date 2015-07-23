@@ -100,6 +100,26 @@ public class AsyncronousJoin {
         }
         final Location spawnLoc = plugin.getSpawnLocation(player);
         if (database.isAuthAvailable(name)) {
+            PlayerAuth auth = database.getAuth(name);
+            if (!auth.getRealName().equals("Player") && !auth.getRealName().equals(player.getName())) {
+                final GameMode gM = AuthMePlayerListener.gameMode.get(name);
+                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+
+                    @Override
+                    public void run() {
+                        if (gM != null) {
+                            AuthMePlayerListener.causeByAuthMe.put(name, true);
+                            player.setGameMode(gM);
+                            AuthMePlayerListener.causeByAuthMe.put(name, false);
+                        }
+                        player.kickPlayer("You are not the Owner of this account, please try another name!");
+                        if (Settings.banUnsafeIp)
+                            plugin.getServer().banIP(ip);
+                    }
+
+                }, 1);
+                return;
+            }
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
                 sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 

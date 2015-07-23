@@ -240,4 +240,9 @@ public class CacheDataSource implements DataSource {
     public List<PlayerAuth> getAllAuths() {
         return source.getAllAuths();
     }
+
+    @Override
+    public List<PlayerAuth> getLoggedPlayers() {
+        return source.getLoggedPlayers();
+    }
 }
