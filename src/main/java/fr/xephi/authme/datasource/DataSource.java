@@ -65,4 +65,6 @@ public interface DataSource {
 
     List<PlayerAuth> getAllAuths();
 
+    List<PlayerAuth> getLoggedPlayers();
+
 }

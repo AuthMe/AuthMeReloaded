@@ -82,7 +82,8 @@ public final class Settings extends YamlConfiguration {
             getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName,
             getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
             getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
-            spawnPriority, crazyloginFileName, getPassRegex;
+            spawnPriority, crazyloginFileName, getPassRegex,
+            getMySQLColumnRealName;
 
     public static int getWarnMessageInterval, getSessionTimeout,
             getRegistrationTimeout, getMaxNickLength, getMinNickLength,
@@ -161,6 +162,7 @@ public final class Settings extends YamlConfiguration {
         getMySQLlastlocY = configFile.getString("DataSource.mySQLlastlocY", "y");
         getMySQLlastlocZ = configFile.getString("DataSource.mySQLlastlocZ", "z");
         getMySQLlastlocWorld = configFile.getString("DataSource.mySQLlastlocWorld", "world");
+        getMySQLColumnRealName = configFile.getString("DataSource.mySQLRealName", "realname");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
         getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
@@ -328,6 +330,7 @@ public final class Settings extends YamlConfiguration {
         getMySQLlastlocY = configFile.getString("DataSource.mySQLlastlocY", "y");
         getMySQLlastlocZ = configFile.getString("DataSource.mySQLlastlocZ", "z");
         getMySQLlastlocWorld = configFile.getString("DataSource.mySQLlastlocWorld", "world");
+        getMySQLColumnRealName = configFile.getString("DataSource.mySQLRealName", "realname");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
         getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
@@ -590,6 +593,10 @@ public final class Settings extends YamlConfiguration {
             set("Hooks.notifications", null);
         if (!contains("Email.generateImage")) {
             set("Email.generateImage", true);
+            changes = true;
+        }
+        if (!contains("DataSource.mySQLRealName")) {
+            set("DataSource.mySQLRealName", "realname");
             changes = true;
         }
 

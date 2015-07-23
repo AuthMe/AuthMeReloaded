@@ -12,7 +12,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 
 public class AsyncronousRegister {
@@ -62,12 +61,12 @@ public class AsyncronousRegister {
             m.send(player, "password_error_nick");
             allowRegister = false;
         }
-        
+
         else if (password.length() < Settings.getPasswordMinLen || password.length() > Settings.passwordMaxLength) {
             m.send(player, "pass_len");
             allowRegister = false;
         }
-        
+
         else if (!Settings.unsafePasswords.isEmpty()) {
             if (Settings.unsafePasswords.contains(password.toLowerCase())) {
                 m.send(player, "password_error_unsafe");
@@ -77,7 +76,6 @@ public class AsyncronousRegister {
 
         else if (database.isAuthAvailable(name)) {
             m.send(player, "user_regged");
-            PlayersLogs.getInstance().savePlayerLogs();
             allowRegister = false;
         }
 
@@ -117,7 +115,7 @@ public class AsyncronousRegister {
         PlayerAuth auth = null;
         try {
             final String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
-            auth = new PlayerAuth(name, hashnew, getIp(), 0, (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email);
+            auth = new PlayerAuth(name, hashnew, getIp(), 0, (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email, player.getName());
         } catch (NoSuchAlgorithmException e) {
             ConsoleLogger.showError(e.getMessage());
             m.send(player, "error");
@@ -146,9 +144,9 @@ public class AsyncronousRegister {
             return;
         }
         if (Settings.getMySQLColumnSalt.isEmpty() && !PasswordSecurity.userSalt.containsKey(name)) {
-            auth = new PlayerAuth(name, hash, getIp(), new Date().getTime(), "your@email.com");
+            auth = new PlayerAuth(name, hash, getIp(), new Date().getTime(), "your@email.com", player.getName());
         } else {
-            auth = new PlayerAuth(name, hash, PasswordSecurity.userSalt.get(name), getIp(), new Date().getTime());
+            auth = new PlayerAuth(name, hash, PasswordSecurity.userSalt.get(name), getIp(), new Date().getTime(), player.getName());
         }
         if (!database.saveAuth(auth)) {
             m.send(player, "error");

@@ -50,11 +50,11 @@ public class AsyncronousLogin {
     protected boolean needsCaptcha() {
         if (Settings.useCaptcha) {
             if (!plugin.captcha.containsKey(name)) {
-                plugin.captcha.put(name, 1);
+                plugin.captcha.putIfAbsent(name, 1);
             } else {
                 int i = plugin.captcha.get(name) + 1;
                 plugin.captcha.remove(name);
-                plugin.captcha.put(name, i);
+                plugin.captcha.putIfAbsent(name, i);
             }
             if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
                 plugin.cap.put(name, rdm.nextString());
@@ -133,7 +133,7 @@ public class AsyncronousLogin {
                 return;
             }
         if (passwordVerified && player.isOnline()) {
-            PlayerAuth auth = new PlayerAuth(name, hash, getIP(), new Date().getTime(), email);
+            PlayerAuth auth = new PlayerAuth(name, hash, getIP(), new Date().getTime(), email, realName);
             database.updateSession(auth);
 
             if (Settings.useCaptcha) {
@@ -157,7 +157,7 @@ public class AsyncronousLogin {
             }
 
             if (!Settings.noConsoleSpam)
-                ConsoleLogger.info(player.getName() + " logged in!");
+                ConsoleLogger.info(realName + " logged in!");
 
             // makes player isLoggedin via API
             PlayerCache.getInstance().addPlayer(auth);
@@ -178,7 +178,7 @@ public class AsyncronousLogin {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, syncronousPlayerLogin);
         } else if (player.isOnline()) {
             if (!Settings.noConsoleSpam)
-                ConsoleLogger.info(player.getName() + " used the wrong password");
+                ConsoleLogger.info(realName + " used the wrong password");
             if (Settings.isKickOnWrongPasswordEnabled) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 

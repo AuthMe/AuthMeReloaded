@@ -93,7 +93,7 @@ public class RakamakConverter implements Converter {
                 } else {
                     ip = "127.0.0.1";
                 }
-                PlayerAuth auth = new PlayerAuth(player, psw, ip, System.currentTimeMillis());
+                PlayerAuth auth = new PlayerAuth(player, psw, ip, System.currentTimeMillis(), player);
                 if (PasswordSecurity.userSalt.containsKey(player))
                     auth.setSalt(PasswordSecurity.userSalt.get(player));
                 database.saveAuth(auth);

@@ -116,11 +116,9 @@ public class Utils {
     public boolean isUnrestricted(Player player) {
         if (!Settings.isAllowRestrictedIp)
             return false;
-        if (Settings.getUnrestrictedName.isEmpty() || Settings.getUnrestrictedName == null)
+        if (Settings.getUnrestrictedName == null || Settings.getUnrestrictedName.isEmpty())
             return false;
-        if (Settings.getUnrestrictedName.contains(player.getName()))
-            return true;
-        return false;
+        return (Settings.getUnrestrictedName.contains(player.getName()));
     }
 
     public static Utils getInstance() {

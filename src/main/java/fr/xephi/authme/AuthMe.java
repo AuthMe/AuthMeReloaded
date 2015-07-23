@@ -12,6 +12,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
@@ -71,7 +72,6 @@ import fr.xephi.authme.plugin.manager.EssSpawn;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.OtherAccounts;
-import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import net.milkbowl.vault.permission.Permission;
@@ -253,8 +253,6 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
         }
 
-        PlayersLogs.getInstance();
-
         if (Settings.reloadSupport)
             try {
                 int playersOnline = 0;
@@ -269,7 +267,15 @@ public class AuthMe extends JavaPlugin {
                         database.purgeLogged();
                     } catch (NullPointerException npe) {
                     }
-                } else PlayersLogs.getInstance().loadPlayers();
+                } else {
+                    for (PlayerAuth auth : database.getLoggedPlayers()) {
+                        if (auth == null)
+                            continue;
+                        auth.setLastLogin(new Date().getTime());
+                        database.updateSession(auth);
+                        PlayerCache.getInstance().addPlayer(auth);
+                    }
+                }
             } catch (Exception ex) {
             }
 
@@ -428,7 +434,10 @@ public class AuthMe extends JavaPlugin {
             }
 
         if (database != null) {
-            database.close();
+            try {
+                database.close();
+            } catch (Exception e) {
+            }
         }
 
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {
@@ -444,8 +453,7 @@ public class AuthMe extends JavaPlugin {
         return authme;
     }
 
-    public void savePlayer(Player player)
-            throws IllegalStateException, NullPointerException {
+    public void savePlayer(Player player) {
         try {
             if ((citizens.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
                 return;
@@ -455,7 +463,7 @@ public class AuthMe extends JavaPlugin {
         try {
             String name = player.getName().toLowerCase();
             if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-                final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName());
+                final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName(), player.getName());
                 database.updateQuitLoc(auth);
             }
             if (LimboCache.getInstance().hasLimboPlayer(name)) {

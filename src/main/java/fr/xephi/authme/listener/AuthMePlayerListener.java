@@ -827,7 +827,7 @@ public class AuthMePlayerListener implements Listener {
 
         Location spawn = plugin.getSpawnLocation(player);
         if (Settings.isSaveQuitLocationEnabled && plugin.database.isAuthAvailable(name)) {
-            final PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName());
+            final PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName(), player.getName());
             try {
                 plugin.database.updateQuitLoc(auth);
             } catch (NullPointerException npe) {

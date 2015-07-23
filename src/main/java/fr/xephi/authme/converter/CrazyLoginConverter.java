@@ -61,7 +61,7 @@ public class CrazyLoginConverter implements Converter {
                     String psw = args[1];
                     try {
                         if (player != null && psw != null) {
-                            PlayerAuth auth = new PlayerAuth(player, psw, "127.0.0.1", System.currentTimeMillis());
+                            PlayerAuth auth = new PlayerAuth(player, psw, "127.0.0.1", System.currentTimeMillis(), player);
                             database.saveAuth(auth);
                         }
                     } catch (Exception e) {

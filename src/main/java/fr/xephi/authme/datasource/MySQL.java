@@ -41,6 +41,7 @@ public class MySQL implements DataSource {
     private String columnLogged;
     private List<String> columnOthers;
     private MiniConnectionPoolManager conPool;
+    private String columnRealName;
 
     public MySQL() {
         this.host = Settings.getMySQLHost;
@@ -63,6 +64,7 @@ public class MySQL implements DataSource {
         this.columnOthers = Settings.getMySQLOtherUsernameColumn;
         this.columnID = Settings.getMySQLColumnId;
         this.columnLogged = Settings.getMySQLColumnLogged;
+        this.columnRealName = Settings.getMySQLColumnRealName;
         try {
             this.connect();
             this.setup();
@@ -157,6 +159,11 @@ public class MySQL implements DataSource {
             if (rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " MODIFY " + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY " + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0', MODIFY " + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
             }
+            rs.close();
+            rs = con.getMetaData().getColumns(null, null, tableName, columnRealName);
+            if (!rs.next()) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnRealName + " VARCHAR(255) DEFAULT 'Player' AFTER " + columnLogged + ";");
+            }
         } finally {
             close(rs);
             close(st);
@@ -204,14 +211,14 @@ public class MySQL implements DataSource {
             if (rs.next()) {
                 id = rs.getInt(columnID);
                 if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
-                    pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                    pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                 } else {
                     if (!columnSalt.isEmpty()) {
                         if (!columnGroup.isEmpty())
-                            pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                        else pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                            pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                        else pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     } else {
-                        pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                        pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     }
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
@@ -249,27 +256,29 @@ public class MySQL implements DataSource {
         try {
             con = makeSureConnectionIsReady();
             if ((columnSalt == null || columnSalt.isEmpty()) || (auth.getSalt() == null || auth.getSalt().isEmpty())) {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + ") VALUES (?,?,?,?);");
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnRealName + ") VALUES (?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
+                pst.setString(5, auth.getRealName());
                 pst.executeUpdate();
                 pst.close();
             } else {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnSalt + ") VALUES (?,?,?,?,?);");
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnSalt + "," + columnRealName + ") VALUES (?,?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, auth.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
                 pst.setString(5, auth.getSalt());
+                pst.setString(6, auth.getRealName());
                 pst.executeUpdate();
                 pst.close();
             }
             if (!columnOthers.isEmpty()) {
                 for (String column : columnOthers) {
                     pst = con.prepareStatement("UPDATE " + tableName + " SET " + column + "=? WHERE " + columnName + "=?;");
-                    pst.setString(1, auth.getNickname());
+                    pst.setString(1, auth.getRealName());
                     pst.setString(2, auth.getNickname());
                     pst.executeUpdate();
                     pst.close();
@@ -338,72 +347,84 @@ public class MySQL implements DataSource {
                     pst.setString(2, "first_name");
                     pst.setString(3, "");
                     pst.executeUpdate();
+                    pst.close();
                     // Last Name
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "last_name");
                     pst.setString(3, "");
                     pst.executeUpdate();
+                    pst.close();
                     // Nick Name
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "nickname");
                     pst.setString(3, auth.getNickname());
                     pst.executeUpdate();
+                    pst.close();
                     // Description
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "description");
                     pst.setString(3, "");
                     pst.executeUpdate();
+                    pst.close();
                     // Rich_Editing
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "rich_editing");
                     pst.setString(3, "true");
                     pst.executeUpdate();
+                    pst.close();
                     // Comments_Shortcuts
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "comment_shortcuts");
                     pst.setString(3, "false");
                     pst.executeUpdate();
+                    pst.close();
                     // admin_color
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "admin_color");
                     pst.setString(3, "fresh");
                     pst.executeUpdate();
+                    pst.close();
                     // use_ssl
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "use_ssl");
                     pst.setString(3, "0");
                     pst.executeUpdate();
+                    pst.close();
                     // show_admin_bar_front
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "show_admin_bar_front");
                     pst.setString(3, "true");
                     pst.executeUpdate();
+                    pst.close();
                     // wp_capabilities
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "wp_capabilities");
                     pst.setString(3, "a:1:{s:10:\"subscriber\";b:1;}");
                     pst.executeUpdate();
+                    pst.close();
                     // wp_user_level
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "wp_user_level");
                     pst.setString(3, "0");
                     pst.executeUpdate();
+                    pst.close();
                     // default_password_nag
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
                     pst.setString(2, "default_password_nag");
                     pst.setString(3, "");
                     pst.executeUpdate();
+                    pst.close();
                 }
             }
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
@@ -424,6 +445,8 @@ public class MySQL implements DataSource {
                     pst.setBlob(3, blob);
                     pst.executeUpdate();
                 }
+                if (rs != null && !rs.isClosed())
+                    rs.close();
             }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -470,6 +493,8 @@ public class MySQL implements DataSource {
                     pst.setInt(2, id);
                     pst.executeUpdate();
                 }
+                if (rs != null && !rs.isClosed())
+                    rs.close();
             }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -1079,26 +1104,28 @@ public class MySQL implements DataSource {
                 PlayerAuth pAuth = null;
                 int id = rs.getInt(columnID);
                 if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
-                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                 } else {
                     if (!columnSalt.isEmpty()) {
                         if (!columnGroup.isEmpty())
-                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                        else pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                        else pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     } else {
-                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
+                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     }
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                    rs.close();
+                    ResultSet rsid = null;
                     pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
-                    rs = pst.executeQuery();
-                    if (rs.next()) {
-                        Blob blob = rs.getBlob("data");
+                    rsid = pst.executeQuery();
+                    if (rsid.next()) {
+                        Blob blob = rsid.getBlob("data");
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
                         pAuth.setHash(new String(bytes));
                     }
+                    if (rsid != null)
+                        rsid.close();
                 }
                 if (pAuth != null)
                     auths.add(pAuth);
@@ -1111,6 +1138,61 @@ public class MySQL implements DataSource {
             return auths;
         } finally {
             close(pst);
+            close(con);
+            close(rs);
+        }
+        return auths;
+    }
+
+    @Override
+    public List<PlayerAuth> getLoggedPlayers() {
+        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        Connection con = null;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            con = makeSureConnectionIsReady();
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
+            rs = pst.executeQuery();
+            while (rs.next()) {
+                PlayerAuth pAuth = null;
+                int id = rs.getInt(columnID);
+                if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
+                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                } else {
+                    if (!columnSalt.isEmpty()) {
+                        if (!columnGroup.isEmpty())
+                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                        else pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                    } else {
+                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                    }
+                }
+                if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                    ResultSet rsid = null;
+                    pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
+                    pst.setInt(1, id);
+                    rsid = pst.executeQuery();
+                    if (rsid.next()) {
+                        Blob blob = rsid.getBlob("data");
+                        byte[] bytes = blob.getBytes(1, (int) blob.length());
+                        pAuth.setHash(new String(bytes));
+                    }
+                    if (rsid != null)
+                        rsid.close();
+                }
+                if (pAuth != null)
+                    auths.add(pAuth);
+            }
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return auths;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return auths;
+        } finally {
+            close(pst);
+            close(rs);
             close(con);
         }
         return auths;
