@@ -12,9 +12,7 @@ import java.util.List;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
-import fr.xephi.authme.settings.PlayersLogs;
 import fr.xephi.authme.settings.Settings;
 
 public class SQLite implements DataSource {
@@ -34,6 +32,7 @@ public class SQLite implements DataSource {
     private String columnEmail;
     private String columnID;
     private Connection con;
+    private String columnLogged;
 
     public SQLite() {
         this.database = Settings.getMySQLDatabase;
@@ -50,6 +49,7 @@ public class SQLite implements DataSource {
         this.lastlocWorld = Settings.getMySQLlastlocWorld;
         this.columnEmail = Settings.getMySQLColumnEmail;
         this.columnID = Settings.getMySQLColumnId;
+        this.columnLogged = Settings.getMySQLColumnLogged;
 
         try {
             this.connect();
@@ -119,6 +119,11 @@ public class SQLite implements DataSource {
             rs = con.getMetaData().getColumns(null, null, tableName, columnEmail);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnEmail + "  VARCHAR(255) DEFAULT 'your@email.com';");
+            }
+            rs.close();
+            rs = con.getMetaData().getColumns(null, null, tableName, columnLogged);
+            if (!rs.next()) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLogged + "  BIGINT DEFAULT '0';");
             }
         } finally {
             close(rs);
@@ -509,22 +514,86 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        return PlayerCache.getInstance().isAuthenticated(user);
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
+            pst.setString(1, user);
+            rs = pst.executeQuery();
+            if (rs.next())
+                return (rs.getInt(columnLogged) == 1);
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return false;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return false;
+        } finally {
+            close(rs);
+            close(pst);
+        }
+        return false;
     }
 
     @Override
     public void setLogged(String user) {
-        PlayersLogs.getInstance().savePlayerLogs();
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
+            pst.setInt(1, 1);
+            pst.setString(2, user);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } finally {
+            close(pst);
+        }
+        return;
     }
 
     @Override
     public void setUnlogged(String user) {
-        PlayersLogs.getInstance().savePlayerLogs();
+        PreparedStatement pst = null;
+        if (user != null)
+            try {
+                pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
+                pst.setInt(1, 0);
+                pst.setString(2, user);
+                pst.executeUpdate();
+            } catch (SQLException ex) {
+                ConsoleLogger.showError(ex.getMessage());
+                return;
+            } catch (TimeoutException ex) {
+                ConsoleLogger.showError(ex.getMessage());
+                return;
+            } finally {
+                close(pst);
+            }
+        return;
     }
 
     @Override
     public void purgeLogged() {
-        PlayersLogs.getInstance().clear();
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnLogged + "=?;");
+            pst.setInt(1, 0);
+            pst.setInt(2, 1);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } catch (TimeoutException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            return;
+        } finally {
+            close(pst);
+        }
+        return;
     }
 
     @Override
