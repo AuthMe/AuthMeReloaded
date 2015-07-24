@@ -569,6 +569,8 @@ public final class Settings extends YamlConfiguration {
         }
         if (contains("Performances.useMultiThreading"))
             set("Performances.useMultiThreading", null);
+        if (contains("Performances"))
+            set("Performances", null);
         if (!contains("Email.emailWhitelisted")) {
             set("Email.emailWhitelisted", new ArrayList<String>());
             changes = true;
