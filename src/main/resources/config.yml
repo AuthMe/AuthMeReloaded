@@ -1,7 +1,7 @@
 DataSource:
-    # Can be set to : file, sqlite, mysql
+    # Can be set to: sqlite, mysql
     backend: sqlite
-    # Do we need to cache all query?
+    # Enable database caching
     caching: true
     # Database location
     mySQLHost: 127.0.0.1
@@ -385,10 +385,6 @@ Hooks:
     useEssentialsMotd: false
     # Do we need to cache custom Attributes ?
     customAttributes: false
-Performances:
-    # HIGHLY recommended to use this! This will increase database performance
-    # Default is true, change it to false if you experience issues
-    useMultiThreading: true
 Purge:
     # On Enable , does AuthMe need to purge automatically old accounts unused ?
     useAutoPurge: false
