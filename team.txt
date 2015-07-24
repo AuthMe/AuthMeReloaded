@@ -1,0 +1,10 @@
+AuthMe-Team:
+
+Xephi (Xephi59) - Leader, Main deveoper
+darkwarriors (d4rkwarriors) - Old AuthMe Reloaded Author
+Gabriele C. (sgdc3) - Ticket Manager, Project Page and Structure Manager, Contributor
+Maxetto (maxetto) - Ticket Manager, Italian Translator, Basic Developer
+Trojaner25 (Trojaner25) - Ticket manager, Basic Developer
+irobin591 (irobin591) - DE Translator
+WaterCXubic (WaterXCubic) - ZHHK Translator
+Bodyash - Russian/Ukrainian translator
