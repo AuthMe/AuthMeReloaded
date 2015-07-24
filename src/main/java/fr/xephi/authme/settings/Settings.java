@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -102,7 +103,7 @@ public final class Settings extends YamlConfiguration {
         if (exists()) {
             load();
         } else {
-            loadDefaults(file);
+            loadDefaults(file.getName());
             load();
         }
         configFile = (YamlConfiguration) plugin.getConfig();
@@ -569,6 +570,8 @@ public final class Settings extends YamlConfiguration {
         }
         if (contains("Performances.useMultiThreading"))
             set("Performances.useMultiThreading", null);
+        if (contains("Performances"))
+            set("Performances", null);
         if (!contains("Email.emailWhitelisted")) {
             set("Email.emailWhitelisted", new ArrayList<String>());
             changes = true;
@@ -683,7 +686,7 @@ public final class Settings extends YamlConfiguration {
 
     public final void reload() {
         load();
-        loadDefaults(file);
+        loadDefaults(file.getName());
     }
 
     /**
@@ -715,12 +718,14 @@ public final class Settings extends YamlConfiguration {
      * @param filename
      *            The filename to open
      */
-    public final void loadDefaults(File file) {
-        if (!file.exists())
-            return;
-
-        setDefaults(YamlConfiguration.loadConfiguration(file));
-    }
+    @SuppressWarnings("deprecation")
+    public final void loadDefaults(String filename) {
+        InputStream stream = plugin.getResource(filename);
+        if (stream == null)
+             return;
+ 
+        setDefaults(YamlConfiguration.loadConfiguration(stream));
+     }
 
     /**
      * Saves current configuration (plus defaults) to disk.
