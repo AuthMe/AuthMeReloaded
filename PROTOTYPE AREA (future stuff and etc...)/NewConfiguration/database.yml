@@ -1,7 +1,6 @@
 #  Database AuthMeReloaded configuration file
 
 # What type of database do you want to use? Avariable options: sqlite, mysql, redis
-# (The old flatfile backend is now deprecated, if you set this option to 'file' the 'file to SQLite' converter will be executed!)
 backend: sqlite
 # Do you like to cache all the queries? (Performance Boost)
 caching: true
@@ -12,6 +11,7 @@ databaseName: authme
 tableName: authme
 
 # MySql Database connection settings
+# Avariable only if the AuthMeReloaded-Mysql module is installed!
 mysql:
     port: '3306'
     host: 127.0.0.1
@@ -19,6 +19,7 @@ mysql:
     password: '12345'
 
 # Redis Database connection settings
+# Avariable only if the AuthMeReloaded-Redis module is installed!
 redis:
     # Get Redis from http://redis.io/
     host: 127.0.0.1
