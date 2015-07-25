@@ -7,11 +7,11 @@
 	<artifactId>authme</artifactId>
 	<version>5.0-SNAPSHOT</version>
 
+	<packaging>jar</packaging>
+
 	<name>AuthMeReloaded</name>
 	<description>Authentication plugin for CraftBukkit/Spigot!</description>
 	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
-
-	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
