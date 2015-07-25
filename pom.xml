@@ -11,8 +11,6 @@
 	<description>Authentication plugin for CraftBukkit/Spigot!</description>
 	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
 
-	<packaging>jar</packaging>
-
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
