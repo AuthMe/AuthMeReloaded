@@ -862,8 +862,10 @@ public class AuthMePlayerListener implements Listener {
             if (!Settings.isForcedRegistrationEnabled)
                 return;
 
-        if (causeByAuthMe.containsKey(name) && causeByAuthMe.get(name))
+        if (causeByAuthMe.containsKey(name)) {
+            causeByAuthMe.remove(name);
             return;
+        }
 
         event.setCancelled(true);
     }
