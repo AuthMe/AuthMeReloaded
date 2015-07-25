@@ -51,6 +51,8 @@ permissions:
             authme.passpartu: true
             authme.l: true
             authme.reg: true
+            authme.email: true
+            authme.captcha: true
     authme.admin.*:
          description: Gives access to all authme admin commands
          children:

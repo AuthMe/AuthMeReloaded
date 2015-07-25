@@ -52,7 +52,9 @@ public class AsyncronousJoin {
     }
 
     public void process() {
-        AuthMePlayerListener.gameMode.put(name, player.getGameMode());
+        if (AuthMePlayerListener.gameMode.containsKey(name))
+            AuthMePlayerListener.gameMode.remove(name);
+        AuthMePlayerListener.gameMode.putIfAbsent(name, player.getGameMode());
         BukkitScheduler sched = plugin.getServer().getScheduler();
 
         if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
@@ -74,9 +76,8 @@ public class AsyncronousJoin {
 
                 @Override
                 public void run() {
-                    AuthMePlayerListener.causeByAuthMe.put(name, true);
+                    AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
                     player.setGameMode(gM);
-                    AuthMePlayerListener.causeByAuthMe.put(name, false);
                     player.kickPlayer("You are not the Owner of this account, please try another name!");
                     if (Settings.banUnsafeIp)
                         plugin.getServer().banIP(ip);
@@ -125,9 +126,8 @@ public class AsyncronousJoin {
 
                     @Override
                     public void run() {
-                        AuthMePlayerListener.causeByAuthMe.put(name, true);
+                        AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
                         Utils.forceGM(player);
-                        AuthMePlayerListener.causeByAuthMe.put(name, false);
                     }
 
                 });
@@ -164,9 +164,8 @@ public class AsyncronousJoin {
 
                     @Override
                     public void run() {
-                        AuthMePlayerListener.causeByAuthMe.put(name, true);
+                        AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
                         Utils.forceGM(player);
-                        AuthMePlayerListener.causeByAuthMe.put(name, false);
                     }
 
                 });
