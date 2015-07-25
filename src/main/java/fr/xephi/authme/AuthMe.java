@@ -129,7 +129,6 @@ public class AuthMe extends JavaPlugin {
 
         try {
             settings = new Settings(this);
-            settings.loadConfigOptions();
         } catch (Exception e) {
             ConsoleLogger.showError("Can't load the configuration file... Something went wrong, to avoid security issues the server will shutdown!");
             this.getServer().shutdown();
