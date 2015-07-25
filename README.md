@@ -14,7 +14,7 @@
 
 - JavaDocs: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
 
-- Maven Repo: <a href="http://xephi.fr:8080/plugin/repository/everything/">AuthMe Repo</a>
+- Maven Repo: <a href="http://ci.xephi.fr/plugin/repository/everything/">AuthMe Repo</a>
 
 #####Statistics:
 
@@ -39,7 +39,7 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 #####Running Requirements:
 >- Java 1.7 (should work also with Java 1.8)
->- Spigot or CraftBukkit
+>- Spigot or CraftBukkit (1.7.10 or 1.8.X)
 
 <hr>
 ###Plugin Description:
