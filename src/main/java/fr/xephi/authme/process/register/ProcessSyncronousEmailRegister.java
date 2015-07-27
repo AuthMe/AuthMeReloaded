@@ -2,7 +2,6 @@ package fr.xephi.authme.process.register;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
@@ -35,20 +34,11 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         m.send(player, "vb_nonActiv");
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
-        
-        BukkitScheduler sched = plugin.getServer().getScheduler();
-
-//        if (time != 0) {
-//            LimboCache.getInstance().getLimboPlayer(name).getTimeoutTaskId().cancel();
-//            BukkitTask id = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
-//            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
-//        }
-        
         if (time != 0) {
-            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
+            LimboCache.getInstance().getLimboPlayer(name).getTimeoutTaskId().cancel();
+            BukkitTask id = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        
 
         LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
         BukkitTask nwMsg = Bukkit.getScheduler().runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
