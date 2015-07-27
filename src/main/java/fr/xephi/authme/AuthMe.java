@@ -251,6 +251,10 @@ public class AuthMe extends JavaPlugin {
         if (!Settings.isForceSingleSessionEnabled) {
             ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
         }
+        
+        if (Settings.getSessionTimeout == 0 && Settings.isSessionsEnabled){
+        	ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
+        }
 
         if (Settings.reloadSupport)
             try {
