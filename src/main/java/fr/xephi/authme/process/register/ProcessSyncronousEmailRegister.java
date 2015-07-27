@@ -37,13 +37,9 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         
         BukkitScheduler sched = plugin.getServer().getScheduler();
         if (time != 0) {
-        	if (LimboCache.getInstance().getLimboPlayer(name).getTimeoutTaskId() != null)
-        		LimboCache.getInstance().getLimboPlayer(name).getTimeoutTaskId().cancel();
             BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        if (LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId() != null)
-            LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
         BukkitTask nwMsg = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg);
 
