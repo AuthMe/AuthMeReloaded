@@ -22,6 +22,9 @@ import fr.xephi.authme.security.HashAlgorithm;
 
 public final class Settings extends YamlConfiguration {
 
+    //This is not an option!
+	public static Boolean antiBotInAction = false;
+
     public static String PLUGIN_FOLDER = "." + File.separator + "plugins" + File.separator + "AuthMe";
     public static final String CACHE_FOLDER = Settings.PLUGIN_FOLDER + File.separator + "cache";
     public static final String AUTH_FILE = Settings.PLUGIN_FOLDER + File.separator + "auths.db";
@@ -606,9 +609,13 @@ public final class Settings extends YamlConfiguration {
     }
 
     public static void switchAntiBotMod(boolean mode) {
-        if (mode)
+        if (mode){
             isKickNonRegisteredEnabled = true;
-        else isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
+            antiBotInAction = true;
+        }else{
+        	isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
+            antiBotInAction = false;
+        }
     }
 
     private static void getWelcomeMessage() {

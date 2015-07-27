@@ -428,9 +428,17 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        if (Settings.isKickNonRegisteredEnabled) {
+        if (Settings.isKickNonRegisteredEnabled && !Settings.antiBotInAction){
             if (!plugin.database.isAuthAvailable(name)) {
                 event.setKickMessage(m.send("reg_only")[0]);
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+        }
+        
+        if (Settings.antiBotInAction){
+            if (!plugin.database.isAuthAvailable(name)) {
+                event.setKickMessage(m.send("AntiBot service in action! Non registered players can't connect until the bot attack stops!")[0]); //Need to add string to messages
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
