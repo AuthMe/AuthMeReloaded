@@ -8,6 +8,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
@@ -28,6 +29,7 @@ public class ProcessSyncronousEmailRegister implements Runnable {
 
     @Override
     public void run() {
+        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (!Settings.getRegisteredGroup.isEmpty()) {
             Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
         }
@@ -36,12 +38,16 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         int msgInterval = Settings.getWarnMessageInterval;
         
         BukkitScheduler sched = plugin.getServer().getScheduler();
-        if (time != 0) {
+        if (time != 0 && limbo != null) {
+        	limbo.getTimeoutTaskId().cancel();
             BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
-            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
+            limbo.setTimeoutTaskId(id);
         }
-        BukkitTask nwMsg = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
-        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg);
+        if (limbo != null){
+        	limbo.getMessageTaskId().cancel();
+            BukkitTask nwMsg = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
+            limbo.setMessageTaskId(nwMsg);
+        }
 
         player.saveData();
         if (!Settings.noConsoleSpam)
