@@ -36,7 +36,7 @@ public class ProcessSyncronousEmailRegister implements Runnable {
         m.send(player, "vb_nonActiv");
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
-        
+
         BukkitScheduler sched = plugin.getServer().getScheduler();
         if (time != 0 && limbo != null) {
         	limbo.getTimeoutTaskId().cancel();
