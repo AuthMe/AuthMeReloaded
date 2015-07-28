@@ -210,15 +210,18 @@ public class Utils {
         LOGGEDIN
     }
     
-    public static void purgeDirectory(File dir) {
-    	if (dir != null && dir.listFiles() != null)
-        for (File file : dir.listFiles()) {
-        	if (file != null){
-	            if (file.isDirectory())
-	            	purgeDirectory(file);
-	            file.delete();
-        	}
+    public static void purgeDirectory(File file){
+        String files[] = file.list();
+        if (files != null && files.length != 0){
+            for (String temp : files) {
+                File fileDelete = new File(file, temp);
+                if (fileDelete.isDirectory()){
+                    purgeDirectory(fileDelete);
+                    fileDelete.delete();
+                } else {
+                    fileDelete.delete();
+                }
+            }
         }
     }
-
 }
