@@ -1,4 +1,4 @@
-<p align="center"><img src="http://i59.tinypic.com/21dqz34.png"></p>
+<p align="center"><img src="http://i61.tinypic.com/291dm49.png"></p>
 <p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
 <hr>
 #####Development tools:
