@@ -1,5 +1,5 @@
 <hr>
-<p align="center"><img src="http://i61.tinypic.com/fnfchs.png"></p>
+<p align="center"><img src="http://postimg.org/image/3nn4s64n7/"></p>
 <p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
 <hr>
 #####Development tools:
