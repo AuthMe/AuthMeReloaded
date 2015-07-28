@@ -141,7 +141,7 @@ public class AsyncronousJoin {
                             SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
                             plugin.getServer().getPluginManager().callEvent(tpEvent);
                             if (!tpEvent.isCancelled()) {
-                                if (player != null && player.isOnline() && tpEvent.getTo() != null) {
+                                if (player.isOnline() && tpEvent.getTo() != null) {
                                     if (tpEvent.getTo().getWorld() != null)
                                         player.teleport(tpEvent.getTo());
                                 }
@@ -185,7 +185,7 @@ public class AsyncronousJoin {
                             SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
                             plugin.getServer().getPluginManager().callEvent(tpEvent);
                             if (!tpEvent.isCancelled()) {
-                                if (player != null && player.isOnline() && tpEvent.getTo() != null) {
+                                if (player.isOnline() && tpEvent.getTo() != null) {
                                     if (tpEvent.getTo().getWorld() != null)
                                         player.teleport(tpEvent.getTo());
                                 }
@@ -291,7 +291,7 @@ public class AsyncronousJoin {
                     FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), loc);
                     plugin.getServer().getPluginManager().callEvent(tpEvent);
                     if (!tpEvent.isCancelled()) {
-                        if (player != null && player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
+                        if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
                             player.teleport(tpEvent.getTo());
                         }
                     }

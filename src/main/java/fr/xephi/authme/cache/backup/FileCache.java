@@ -24,6 +24,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.Utils;
 
 public class FileCache {
 
@@ -547,15 +548,7 @@ public class FileCache {
             }
             if (file.exists()) {
                 if (file.isDirectory() && file.listFiles() != null) {
-                    for (File f : file.listFiles()) {
-                        if (f.isDirectory() && f.listFiles() != null) {
-                            for (File a : f.listFiles()) {
-                                a.delete();
-                            }
-                            f.delete();
-                        } else f.delete();
-                    }
-                    file.delete();
+                	Utils.purgeDirectory(file);
                 } else file.delete();
             }
         } catch (Exception e) {

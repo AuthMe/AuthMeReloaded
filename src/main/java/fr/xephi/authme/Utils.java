@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -207,6 +208,17 @@ public class Utils {
         REGISTERED,
         NOTLOGGEDIN,
         LOGGEDIN
+    }
+    
+    public static void purgeDirectory(File dir) {
+    	if (dir != null && dir.listFiles() != null)
+        for (File file : dir.listFiles()) {
+        	if (file != null){
+	            if (file.isDirectory())
+	            	purgeDirectory(file);
+	            file.delete();
+        	}
+        }
     }
 
 }
