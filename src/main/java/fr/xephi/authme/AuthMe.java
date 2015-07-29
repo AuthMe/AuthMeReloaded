@@ -49,7 +49,6 @@ import fr.xephi.authme.commands.ConverterCommand;
 import fr.xephi.authme.commands.EmailCommand;
 import fr.xephi.authme.commands.LoginCommand;
 import fr.xephi.authme.commands.LogoutCommand;
-import fr.xephi.authme.commands.PasspartuCommand;
 import fr.xephi.authme.commands.RegisterCommand;
 import fr.xephi.authme.commands.UnregisterCommand;
 import fr.xephi.authme.converter.Converter;
@@ -243,7 +242,6 @@ public class AuthMe extends JavaPlugin {
         this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
         this.getCommand("logout").setExecutor(new LogoutCommand(this));
         this.getCommand("unregister").setExecutor(new UnregisterCommand(this));
-        this.getCommand("passpartu").setExecutor(new PasspartuCommand(this));
         this.getCommand("email").setExecutor(new EmailCommand(this));
         this.getCommand("captcha").setExecutor(new CaptchaCommand(this));
         this.getCommand("converter").setExecutor(new ConverterCommand(this));

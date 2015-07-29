@@ -59,7 +59,7 @@ typing commands or use the inventory. It can also kick players with uncommon lon
   <li>Username spoofing protection.</li>
   <li>Countries Whitelist/Blacklist! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a></li>
   <li><strong>Built-in AntiBot System!</strong></li>
-  <li><del>Passpartu Feature: Admin can login with all account more info <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">here</a></del> <strong>(Deprecated)</strong></li>
+  <li><strong>ForceLogin Feature: Admins can login with all account via console command!</strong></li>
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
   <li>Session Login!</li>
   <li>Editable translations and messages!</li>
