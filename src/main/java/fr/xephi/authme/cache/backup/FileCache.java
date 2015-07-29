@@ -24,6 +24,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.Utils;
 
 public class FileCache {
 
@@ -44,9 +45,9 @@ public class FileCache {
         try {
             path = player.getUniqueId().toString();
         } catch (Exception e) {
-            path = player.getName();
+            path = player.getName().toLowerCase();
         } catch (Error e) {
-            path = player.getName();
+            path = player.getName().toLowerCase();
         }
         File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "playerdatas.cache");
 
@@ -197,9 +198,9 @@ public class FileCache {
         try {
             path = player.getUniqueId().toString();
         } catch (Exception e) {
-            path = player.getName();
+            path = player.getName().toLowerCase();
         } catch (Error e) {
-            path = player.getName();
+            path = player.getName().toLowerCase();
         }
         try {
             File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "playerdatas.cache");
@@ -536,30 +537,25 @@ public class FileCache {
         try {
             path = player.getUniqueId().toString();
         } catch (Exception e) {
-            path = player.getName();
+            path = player.getName().toLowerCase();
         } catch (Error e) {
-            path = player.getName();
+            path = player.getName().toLowerCase();
         }
         try {
             File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path);
-            if (!file.exists()) {
-                file = new File("cache/" + player.getName().toLowerCase() + ".cache");
-            }
-            if (file.exists()) {
-                if (file.isDirectory() && file.listFiles() != null) {
-                    for (File f : file.listFiles()) {
-                        if (f.isDirectory() && f.listFiles() != null) {
-                            for (File a : f.listFiles()) {
-                                a.delete();
-                            }
-                            f.delete();
-                        } else f.delete();
-                    }
+            if (file.list() != null) {
+                Utils.purgeDirectory(file);
+                file.delete();
+            } else {
+                file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + player.getName().toLowerCase() + ".cache");
+                if(file.isFile()){
                     file.delete();
-                } else file.delete();
+                } else {
+                    ConsoleLogger.showError("Failed to remove" + player.getName() + "cache, it doesn't exist!");
+                }
             }
         } catch (Exception e) {
-            ConsoleLogger.showError("File cannot be removed correctly :/");
+            ConsoleLogger.showError("Failed to remove" + player.getName() + "cache :/");
         }
     }
 
@@ -568,9 +564,9 @@ public class FileCache {
         try {
             path = player.getUniqueId().toString();
         } catch (Exception e) {
-            path = player.getName();
+            path = player.getName().toLowerCase();
         } catch (Error e) {
-            path = player.getName();
+            path = player.getName().toLowerCase();
         }
         File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "playerdatas.cache");
         if (!file.exists()) {

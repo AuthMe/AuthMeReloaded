@@ -15,7 +15,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -71,25 +70,11 @@ public class AdminCommand implements CommandExecutor {
             sender.sendMessage("/authme firstspawn - Teleport yourself to the first spawn point");
             sender.sendMessage("/authme switchantibot on/off - Enable/Disable AntiBot feature");
             sender.sendMessage("/authme forcelogin <playername> - Enforce the login of a connected player");
-            sender.sendMessage("/authme passpartutoken - Generate a timed token to login with every player's account (CONSOLE ONLY)");
             return true;
         }
 
         if (!plugin.authmePermissible(sender, "authme.admin." + args[0].toLowerCase())) {
             m.send(sender, "no_perm");
-            return true;
-        }
-
-        if ((sender instanceof ConsoleCommandSender) && args[0].equalsIgnoreCase("passpartutoken")) {
-            if (args.length > 1) {
-                ConsoleLogger.info("[AuthMe] command usage: /authme passpartutoken");
-                return true;
-            }
-            if (Utils.getInstance().obtainToken()) {
-                ConsoleLogger.info("[AuthMe] You have 30s to insert this token ingame with /passpartu <token>");
-            } else {
-                ConsoleLogger.info("[AuthMe] Security error on passpartu token, please redo the command.");
-            }
             return true;
         }
 

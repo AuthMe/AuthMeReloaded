@@ -1,5 +1,4 @@
-<hr>
-<p align="center"><img src="http://i61.tinypic.com/fnfchs.png"></p>
+<p align="center"><img src="http://i61.tinypic.com/291dm49.png"></p>
 <p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
 <hr>
 #####Development tools:
@@ -14,7 +13,7 @@
 
 - JavaDocs: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
 
-- Maven Repo: <a href="http://xephi.fr:8080/plugin/repository/everything/">AuthMe Repo</a>
+- Maven Repo: <a href="http://ci.xephi.fr/plugin/repository/everything/">AuthMe Repo</a>
 
 #####Statistics:
 
@@ -39,7 +38,7 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 #####Running Requirements:
 >- Java 1.7 (should work also with Java 1.8)
->- Spigot or CraftBukkit
+>- Spigot or CraftBukkit (1.7.10 or 1.8.X)
 
 <hr>
 ###Plugin Description:
@@ -60,7 +59,7 @@ typing commands or use the inventory. It can also kick players with uncommon lon
   <li>Username spoofing protection.</li>
   <li>Countries Whitelist/Blacklist! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a></li>
   <li><strong>Built-in AntiBot System!</strong></li>
-  <li><del>Passpartu Feature: Admin can login with all account more info <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">here</a></del> <strong>(Deprecated)</strong></li>
+  <li><strong>ForceLogin Feature: Admins can login with all account via console command!</strong></li>
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
   <li>Session Login!</li>
   <li>Editable translations and messages!</li>

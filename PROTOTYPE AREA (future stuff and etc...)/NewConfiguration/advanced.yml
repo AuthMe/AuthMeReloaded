@@ -17,9 +17,6 @@ sessionLogin:
     sessionExpireOnIpChange: true
 
 security:
-    # Should players in the OP list have every permissions?
-    opPermissions: true
-    
     # Online players aren't kicked out for "Logged in from another location!", this option should always be set to true!
     forceSingleSession: true
     # Should we display all other accounts from a player when he joins?

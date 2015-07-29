@@ -109,6 +109,12 @@ public class DataManager {
                 if (playerFile.exists()) {
                     playerFile.delete();
                     i++;
+                } else {
+                    playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
+                    if (playerFile.exists()) {
+                        playerFile.delete();
+                        i++;
+                    }
                 }
             } catch (Exception e) {
             }
@@ -116,6 +122,7 @@ public class DataManager {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " .dat Files");
     }
 
+    @SuppressWarnings("deprecation")
     public void purgeEssentials(List<String> cleared) {
         int i = 0;
         for (String name : cleared) {
@@ -124,6 +131,12 @@ public class DataManager {
                 if (playerFile.exists()) {
                     playerFile.delete();
                     i++;
+                } else {
+                    playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + Bukkit.getOfflinePlayer(name).getUniqueId() + ".yml");
+                    if (playerFile.exists()) {
+                        playerFile.delete();
+                        i++;
+                    }
                 }
             } catch (Exception e) {
             }

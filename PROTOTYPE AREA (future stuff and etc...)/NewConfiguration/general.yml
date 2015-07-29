@@ -67,8 +67,6 @@ password:
     # When it's true, registration require that kind of command:
     # /register <password> <confirmPassword>
     doublePasswordCheck: true
-    # Should players can use their usernames as passwords?
-    allowNameAsPassword: false
     # Deny unsafe passwords for being used, put them on lowercase!
     unsafePasswords:
     - '123456'

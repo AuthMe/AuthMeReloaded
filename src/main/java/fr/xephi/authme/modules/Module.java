@@ -13,6 +13,7 @@ public interface Module {
     public enum ModuleType {
         MANAGER,
         MYSQL,
+        REDIS,
         ACTIONS,
         CONVERTERS,
         EMAILS,

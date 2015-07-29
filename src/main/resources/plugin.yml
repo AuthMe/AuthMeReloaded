@@ -22,10 +22,7 @@ commands:
         usage: /logout
     unregister:
         description: unregister your account
-        usage: /unregister password    
-    passpartu:
-        description: compare passpartu token
-        usage: /passpartu token          
+        usage: /unregister password         
     authme:
         description: AuthMe op commands
         usage: '/authme reload|register playername password|changepassword playername password|unregister playername|version'
@@ -48,7 +45,6 @@ permissions:
             authme.changepassword: true
             authme.logout: true
             authme.unregister: true
-            authme.passpartu: true
             authme.l: true
             authme.reg: true
             authme.email: true
@@ -86,9 +82,6 @@ permissions:
         default: true
     authme.email:
         description: Email
-        default: true
-    authme.passpartu:
-        description: passpartu
         default: true
     authme.allow2accounts:
         description: allow more accounts for same ip

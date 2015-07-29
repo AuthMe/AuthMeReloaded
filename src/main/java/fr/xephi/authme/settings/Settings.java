@@ -22,6 +22,9 @@ import fr.xephi.authme.security.HashAlgorithm;
 
 public final class Settings extends YamlConfiguration {
 
+    //This is not an option!
+	public static Boolean antiBotInAction = false;
+
     public static String PLUGIN_FOLDER = "." + File.separator + "plugins" + File.separator + "AuthMe";
     public static final String CACHE_FOLDER = Settings.PLUGIN_FOLDER + File.separator + "cache";
     public static final String AUTH_FILE = Settings.PLUGIN_FOLDER + File.separator + "auths.db";
@@ -59,7 +62,7 @@ public final class Settings extends YamlConfiguration {
             isResetInventoryIfCreative, isCachingEnabled,
             isKickOnWrongPasswordEnabled, getEnablePasswordVerifier,
             protectInventoryBeforeLogInEnabled, isBackupActivated,
-            isBackupOnStart, isBackupOnStop, enablePasspartu, isStopEnabled,
+            isBackupOnStart, isBackupOnStop, isStopEnabled,
             reloadSupport, rakamakUseIp, noConsoleSpam, removePassword,
             displayOtherAccounts, useCaptcha, emailRegistration, multiverse,
             chestshop, bungee, banUnsafeIp, doubleEmailCheck,
@@ -184,7 +187,6 @@ public final class Settings extends YamlConfiguration {
         isBackupOnStart = configFile.getBoolean("BackupSystem.OnServerStart", false);
         isBackupOnStop = configFile.getBoolean("BackupSystem.OnServeStop", false);
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
-        enablePasspartu = configFile.getBoolean("Passpartu.enablePasspartu", false);
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
         allowCommands = (List<String>) configFile.getList("settings.restrictions.allowCommands");
@@ -197,8 +199,6 @@ public final class Settings extends YamlConfiguration {
                 allowCommands.add("/l");
             if (!allowCommands.contains("/reg"))
                 allowCommands.add("/reg");
-            if (!allowCommands.contains("/passpartu"))
-                allowCommands.add("/passpartu");
             if (!allowCommands.contains("/email"))
                 allowCommands.add("/email");
             if (!allowCommands.contains("/captcha"))
@@ -417,8 +417,16 @@ public final class Settings extends YamlConfiguration {
         }
         if (contains("Performances.useMultiThreading"))
             set("Performances.useMultiThreading", null);
+
         if (contains("Performances"))
             set("Performances", null);
+
+        if (contains("Passpartu.enablePasspartu"))
+            set("Passpartu.enablePasspartu", null);
+
+        if (contains("Passpartu"))
+            set("Passpartu", null);
+
         if (!contains("Email.emailWhitelisted")) {
             set("Email.emailWhitelisted", new ArrayList<String>());
             changes = true;
@@ -606,9 +614,13 @@ public final class Settings extends YamlConfiguration {
     }
 
     public static void switchAntiBotMod(boolean mode) {
-        if (mode)
+        if (mode){
             isKickNonRegisteredEnabled = true;
-        else isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
+            antiBotInAction = true;
+        }else{
+        	isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
+            antiBotInAction = false;
+        }
     }
 
     private static void getWelcomeMessage() {

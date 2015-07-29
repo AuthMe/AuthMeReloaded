@@ -1,13 +1,14 @@
 package fr.xephi.authme.process.register;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
@@ -28,21 +29,26 @@ public class ProcessSyncronousEmailRegister implements Runnable {
 
     @Override
     public void run() {
+        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (!Settings.getRegisteredGroup.isEmpty()) {
             Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
         }
         m.send(player, "vb_nonActiv");
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
-        if (time != 0) {
-            LimboCache.getInstance().getLimboPlayer(name).getTimeoutTaskId().cancel();
-            BukkitTask id = Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
-            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
+
+        BukkitScheduler sched = plugin.getServer().getScheduler();
+        if (time != 0 && limbo != null) {
+        	limbo.getTimeoutTaskId().cancel();
+            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
+            limbo.setTimeoutTaskId(id);
+        }
+        if (limbo != null){
+        	limbo.getMessageTaskId().cancel();
+            BukkitTask nwMsg = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
+            limbo.setMessageTaskId(nwMsg);
         }
 
-        LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
-        BukkitTask nwMsg = Bukkit.getScheduler().runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
-        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nwMsg);
         player.saveData();
         if (!Settings.noConsoleSpam)
             ConsoleLogger.info(player.getName() + " registered " + plugin.getIP(player));

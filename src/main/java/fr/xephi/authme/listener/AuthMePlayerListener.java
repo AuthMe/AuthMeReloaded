@@ -84,7 +84,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         String cmd = msg.split(" ")[0];
-        if (cmd.equalsIgnoreCase("/login") || cmd.equalsIgnoreCase("/register") || cmd.equalsIgnoreCase("/passpartu") || cmd.equalsIgnoreCase("/l") || cmd.equalsIgnoreCase("/reg") || cmd.equalsIgnoreCase("/email") || cmd.equalsIgnoreCase("/captcha"))
+        if (cmd.equalsIgnoreCase("/login") || cmd.equalsIgnoreCase("/register") || cmd.equalsIgnoreCase("/l") || cmd.equalsIgnoreCase("/reg") || cmd.equalsIgnoreCase("/email") || cmd.equalsIgnoreCase("/captcha"))
             return;
         if (Settings.useEssentialsMotd && cmd.equalsIgnoreCase("/motd"))
             return;
@@ -411,7 +411,7 @@ public class AuthMePlayerListener implements Listener {
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED)
             return;
 
-        if (Settings.enablePasspartu && !Settings.countriesBlacklist.isEmpty()) {
+        if (!Settings.countriesBlacklist.isEmpty()) {
             String code = plugin.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (Settings.countriesBlacklist.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
                 event.setKickMessage(m.send("country_banned")[0]);
@@ -428,9 +428,17 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        if (Settings.isKickNonRegisteredEnabled) {
+        if (Settings.isKickNonRegisteredEnabled && !Settings.antiBotInAction){
             if (!plugin.database.isAuthAvailable(name)) {
                 event.setKickMessage(m.send("reg_only")[0]);
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+        }
+        
+        if (Settings.antiBotInAction){
+            if (!plugin.database.isAuthAvailable(name)) {
+                event.setKickMessage("AntiBot service in action! Non registered players can't connect until the bot attack stops!"); //Need to add string to messages
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }

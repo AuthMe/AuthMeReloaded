@@ -78,18 +78,20 @@ public class AsyncronousQuit {
             LimboCache.getInstance().deleteLimboPlayer(name);
         }
         if (Settings.isSessionsEnabled && !isKick) {
-            BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    PlayerCache.getInstance().removePlayer(name);
-                    if (database.isLogged(name))
-                        database.setUnlogged(name);
-                    plugin.sessions.remove(name);
-                }
-
-            }, Settings.getSessionTimeout * 20 * 60);
-            plugin.sessions.put(name, task);
+            if (Settings.getSessionTimeout != 0){
+	            BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+	
+	                @Override
+	                public void run() {
+	                    PlayerCache.getInstance().removePlayer(name);
+	                    if (database.isLogged(name))
+	                        database.setUnlogged(name);
+	                    plugin.sessions.remove(name);
+	                }
+	
+	            }, Settings.getSessionTimeout * 20 * 60);
+	            plugin.sessions.put(name, task);
+            }
         } else {
             PlayerCache.getInstance().removePlayer(name);
             database.setUnlogged(name);

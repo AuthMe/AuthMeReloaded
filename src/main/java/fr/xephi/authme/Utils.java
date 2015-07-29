@@ -1,8 +1,7 @@
 package fr.xephi.authme;
 
-import java.util.ArrayList;
+import java.io.File;
 import java.util.Iterator;
-import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Player;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
-import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
 
 public class Utils {
@@ -22,7 +20,6 @@ public class Utils {
     private static Utils singleton;
     int id;
     public AuthMe plugin;
-    private static List<String> tokens = new ArrayList<String>();
 
     public Utils(AuthMe plugin) {
         this.plugin = plugin;
@@ -161,40 +158,6 @@ public class Utils {
     }
 
     /*
-     * Random Token for passpartu
-     */
-    public boolean obtainToken() {
-        try {
-            final String token = new RandomString(10).nextString();
-            tokens.add(token);
-            ConsoleLogger.info("[AuthMe] Security passpartu token: " + token);
-            Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    tokens.remove(token);
-                }
-
-            }, 600);
-            return true;
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-    /*
-     * Read Token
-     */
-    public boolean readToken(String inputToken) {
-        boolean ret = false;
-        if (tokens.contains(inputToken))
-            ret = true;
-        tokens.remove(inputToken);
-        return (ret);
-    }
-
-    /*
      * Used for force player GameMode
      */
     public static void forceGM(Player player) {
@@ -208,5 +171,19 @@ public class Utils {
         NOTLOGGEDIN,
         LOGGEDIN
     }
-
+    
+    public static void purgeDirectory(File file){
+        String files[] = file.list();
+        if (files != null && files.length != 0){
+            for (String temp : files) {
+                File fileDelete = new File(file, temp);
+                if (fileDelete.isDirectory()){
+                    purgeDirectory(fileDelete);
+                    fileDelete.delete();
+                } else {
+                    fileDelete.delete();
+                }
+            }
+        }
+    }
 }

@@ -49,7 +49,6 @@ import fr.xephi.authme.commands.ConverterCommand;
 import fr.xephi.authme.commands.EmailCommand;
 import fr.xephi.authme.commands.LoginCommand;
 import fr.xephi.authme.commands.LogoutCommand;
-import fr.xephi.authme.commands.PasspartuCommand;
 import fr.xephi.authme.commands.RegisterCommand;
 import fr.xephi.authme.commands.UnregisterCommand;
 import fr.xephi.authme.converter.Converter;
@@ -243,7 +242,6 @@ public class AuthMe extends JavaPlugin {
         this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
         this.getCommand("logout").setExecutor(new LogoutCommand(this));
         this.getCommand("unregister").setExecutor(new UnregisterCommand(this));
-        this.getCommand("passpartu").setExecutor(new PasspartuCommand(this));
         this.getCommand("email").setExecutor(new EmailCommand(this));
         this.getCommand("captcha").setExecutor(new CaptchaCommand(this));
         this.getCommand("converter").setExecutor(new ConverterCommand(this));
@@ -251,8 +249,12 @@ public class AuthMe extends JavaPlugin {
         if (!Settings.isForceSingleSessionEnabled) {
             ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
         }
+        
+        if (Settings.getSessionTimeout == 0 && Settings.isSessionsEnabled) {
+        	ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
+        }
 
-        if (Settings.reloadSupport)
+        if (Settings.reloadSupport) {
             try {
                 int playersOnline = 0;
                 try {
@@ -277,9 +279,9 @@ public class AuthMe extends JavaPlugin {
                 }
             } catch (Exception ex) {
             }
+        }
 
-        if (Settings.usePurge)
-            autoPurge();
+        autoPurge();
 
         // Download GeoIp.dat file
         downloadGeoIp();
@@ -543,13 +545,13 @@ public class AuthMe extends JavaPlugin {
             return;
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
         if (Settings.purgeEssentialsFile && this.ess != null)
-            dataManager.purgeEssentials(cleared);
+            dataManager.purgeEssentials(cleared); // name to UUID convertion needed with latest versions
         if (Settings.purgePlayerDat)
-            dataManager.purgeDat(cleared);
+            dataManager.purgeDat(cleared); // name to UUID convertion needed with latest versions of MC
         if (Settings.purgeLimitedCreative)
             dataManager.purgeLimitedCreative(cleared);
         if (Settings.purgeAntiXray)
-            dataManager.purgeAntiXray(cleared);
+            dataManager.purgeAntiXray(cleared); // IDK if it uses UUID or names... (Actually it purges only names!)
         if (Settings.purgePermissions)
             dataManager.purgePermissions(cleared, permission);
     }

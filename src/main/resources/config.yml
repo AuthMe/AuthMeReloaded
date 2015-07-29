@@ -84,7 +84,6 @@ settings:
         - /register
         - /l
         - /reg
-        - /passpartu
         - /email
         - /captcha
         # Maximum Registration per IP default: 1
@@ -305,13 +304,6 @@ BackupSystem:
     OnServerStop: true
    # Windows only mysql installation Path
     MysqlWindowsPath: 'C:\\Program Files\\MySQL\\MySQL Server 5.1\\'
-Passpartu:
-    # Enable or Disable Passpartu Feature,
-    # this feature let Admin Login with all registered 
-    # Account they need, for example inspecting Player that
-    # is doing shit, they can login without know any 
-    # Player password! More info on How TO
-    enablePasspartu: false
 Security:
     SQLProblem:
         # Stop the server if we can't contact the sql database

@@ -21,7 +21,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 
 		<!-- Change MC Version HERE! -->
-		<bukkitVersion>1.8.7-R0.1-SNAPSHOT</bukkitVersion>
+		<bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
 	</properties>
 
 	<!-- Official Build Server -->
@@ -178,6 +178,7 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.36</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- SQLite Library -->
@@ -185,6 +186,7 @@
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.10.1</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<!-- Java Email API -->
@@ -192,13 +194,16 @@
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.4</version>
+			<scope>compile</scope>
 		</dependency>
+
 
 		<!-- Maxmind GeoIp API -->
 		<dependency>
 			<groupId>com.maxmind.geoip</groupId>
 			<artifactId>geoip-api</artifactId>
 			<version>1.2.14</version>
+			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
@@ -224,6 +229,7 @@
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>${bukkitVersion}</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<artifactId>bungeecord-chat</artifactId>
@@ -237,6 +243,7 @@
 			<groupId>com.comphenix.attribute</groupId>
 			<artifactId>AttributeStorage</artifactId>
 			<version>0.0.2-SNAPSHOT</version>
+			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -272,6 +279,7 @@
 			<groupId>net.citizensnpcs</groupId>
 			<artifactId>citizensapi</artifactId>
 			<version>2.0.16-SNAPSHOT</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -290,7 +298,7 @@
 			<artifactId>Multiverse-Core</artifactId>
 			<version>2.5</version>
 			<type>jar</type>
-			<scope>compile</scope>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -320,6 +328,7 @@
 			<groupId>net.ess3</groupId>
 			<artifactId>Essentials</artifactId>
 			<version>2.14-SNAPSHOT</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -337,6 +346,7 @@
 			<groupId>net.minelink</groupId>
 			<artifactId>CombatTagPlus</artifactId>
 			<version>1.2.1-SNAPSHOT</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -410,6 +420,7 @@
 			<groupId>com.trc202</groupId>
 			<artifactId>CombatTag</artifactId>
 			<version>6.2.1-SNAPSHOT</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -427,6 +438,7 @@
 			<groupId>de.luricos.bukkit</groupId>
 			<artifactId>xAuth</artifactId>
 			<version>2.6</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
@@ -464,6 +476,7 @@
 			<groupId>com.acrobot.chestshop</groupId>
 			<artifactId>chestshop</artifactId>
 			<version>3.8.12</version>
+			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
 					<groupId>org.bukkit</groupId>
