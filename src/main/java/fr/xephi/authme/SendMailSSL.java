@@ -95,16 +95,27 @@ public class SendMailSSL {
                             ConsoleLogger.showError("Unable to send new password as image! Using normal text! Dest: " + mail);
                         }
                     }
-
-                    message.setContent(multipart);
+                    
                     Transport transport = session.getTransport("smtp");
-                    transport.connect(smtp, acc, password);
+                    message.setContent(multipart);
+
+                    try {
+                        transport.connect(smtp, acc, password);
+                    } catch (Exception e) {
+                        ConsoleLogger.showError("Can't connect to your SMTP server! Aborting! Can't send recorvery email to " + mail);
+                        if (file != null)
+                            file.delete();
+                        return;
+                    }
                     transport.sendMessage(message, message.getAllRecipients());
+
                     if (file != null)
                         file.delete();
 
+                } catch (RuntimeException e) {
+                    ConsoleLogger.showError("Some error occured while trying to send a email to " + mail);
                 } catch (Exception e) {
-                    ConsoleLogger.showError("Some error occured while trying to send a mail to " + mail);
+                    ConsoleLogger.showError("Some error occured while trying to send a email to " + mail);
                 }
             }
 
