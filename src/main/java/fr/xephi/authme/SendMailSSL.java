@@ -82,14 +82,18 @@ public class SendMailSSL {
                     // Generate an image ?
                     File file = null;
                     if (Settings.generateImage) {
-                        ImageGenerator gen = new ImageGenerator(newPass);
-                        file = new File(plugin.getDataFolder() + File.separator + auth.getNickname() + "_new_pass.jpg");
-                        ImageIO.write(gen.generateImage(), "jpg", file);
-                        messageBodyPart = new MimeBodyPart();
-                        DataSource source = new FileDataSource(file);
-                        messageBodyPart.setDataHandler(new DataHandler(source));
-                        messageBodyPart.setFileName(auth.getNickname() + "_new_pass.jpg");
-                        multipart.addBodyPart(messageBodyPart);
+                        try {
+                            ImageGenerator gen = new ImageGenerator(newPass);
+                            file = new File(plugin.getDataFolder() + File.separator + auth.getNickname() + "_new_pass.jpg");
+                            ImageIO.write(gen.generateImage(), "jpg", file);
+                            messageBodyPart = new MimeBodyPart();
+                            DataSource source = new FileDataSource(file);
+                            messageBodyPart.setDataHandler(new DataHandler(source));
+                            messageBodyPart.setFileName(auth.getNickname() + "_new_pass.jpg");
+                            multipart.addBodyPart(messageBodyPart);
+                        } catch (Exception e) {
+                            ConsoleLogger.showError("Unable to send new password as image! Using normal text! Dest: " + mail);
+                        }
                     }
 
                     message.setContent(multipart);
