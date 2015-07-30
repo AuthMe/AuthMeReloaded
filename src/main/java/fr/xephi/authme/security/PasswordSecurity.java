@@ -97,7 +97,6 @@ public class PasswordSecurity {
                 break;
             case BCRYPT2Y:
                 salt = createSalt(22);
-                userSalt.put(playerName, salt);
                 break;
             case MD5:
             case SHA1:
