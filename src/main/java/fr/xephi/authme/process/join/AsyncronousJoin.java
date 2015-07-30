@@ -64,7 +64,6 @@ public class AsyncronousJoin {
         if (plugin.ess != null && Settings.disableSocialSpy) {
             try {
                 plugin.ess.getUser(player.getName().toLowerCase()).setSocialSpyEnabled(false);
-            } catch (Exception e) {
             } catch (NoSuchMethodError e) {
             }
         }
