@@ -22,9 +22,9 @@ import com.comphenix.attribute.Attributes.Operation;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.Utils;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.Utils;
 
 public class FileCache {
 
@@ -217,108 +217,93 @@ public class FileCache {
                 boolean op = false;
                 boolean flying = false;
 
-                Scanner reader = null;
-                try {
-                    reader = new Scanner(file);
+                Scanner reader = new Scanner(file);
 
-                    int i = 0;
-                    int a = 0;
-                    while (reader.hasNextLine()) {
-                        String line = reader.nextLine();
+                int i = 0;
+                int a = 0;
+                while (reader.hasNextLine()) {
+                    String line = reader.nextLine();
 
-                        if (!line.contains(":")) {
-                            // the fist line represent the player group,
-                            // operator
-                            // status
-                            // and flying status
-                            final String[] playerInfo = line.split(";");
-                            group = playerInfo[0];
+                    if (!line.contains(":")) {
+                        // the fist line represent the player group,
+                        // operator
+                        // status
+                        // and flying status
+                        final String[] playerInfo = line.split(";");
+                        group = playerInfo[0];
 
-                            if (Integer.parseInt(playerInfo[1]) == 1) {
-                                op = true;
-                            } else op = false;
-                            if (playerInfo.length > 2) {
-                                if (Integer.parseInt(playerInfo[2]) == 1)
-                                    flying = true;
-                                else flying = false;
-                            }
-
-                            continue;
+                        if (Integer.parseInt(playerInfo[1]) == 1) {
+                            op = true;
+                        } else op = false;
+                        if (playerInfo.length > 2) {
+                            if (Integer.parseInt(playerInfo[2]) == 1)
+                                flying = true;
+                            else flying = false;
                         }
 
-                        if (!line.startsWith("i") && !line.startsWith("w")) {
-                            continue;
-                        }
-                        String lores = "";
-                        String name = "";
-                        if (line.split("\\*").length > 1) {
-                            lores = line.split("\\*")[1];
-                            line = line.split("\\*")[0];
-                        }
-                        if (line.split(";").length > 1) {
-                            name = line.split(";")[1];
-                            line = line.split(";")[0];
-                        }
-                        final String[] in = line.split(":");
-                        // can enchant item? size ofstring in file - 4 all / 2 =
-                        // number
-                        // of enchant
-                        if (in[0].equals("i")) {
-                            stacki[i] = new ItemStack(Material.getMaterial(in[1]), Integer.parseInt(in[2]), Short.parseShort((in[3])));
-                            if (in.length > 4 && !in[4].isEmpty()) {
-                                for (int k = 4; k < in.length - 1; k++) {
-                                    stacki[i].addUnsafeEnchantment(Enchantment.getByName(in[k]), Integer.parseInt(in[k + 1]));
-                                    k++;
-                                }
-                            }
-                            try {
-                                ItemMeta meta = plugin.getServer().getItemFactory().getItemMeta(stacki[i].getType());
-                                if (!name.isEmpty()) {
-                                    meta.setDisplayName(name);
-                                }
-                                if (!lores.isEmpty()) {
-                                    List<String> loreList = new ArrayList<String>();
-                                    for (String s : lores.split("%newline%")) {
-                                        loreList.add(s);
-                                    }
-                                    meta.setLore(loreList);
-                                }
-                                if (meta != null)
-                                    stacki[i].setItemMeta(meta);
-                            } catch (Exception e) {
-                            }
-                            i++;
-                        } else {
-                            stacka[a] = new ItemStack(Material.getMaterial(in[1]), Integer.parseInt(in[2]), Short.parseShort((in[3])));
-                            if (in.length > 4 && !in[4].isEmpty()) {
-                                for (int k = 4; k < in.length - 1; k++) {
-                                    stacka[a].addUnsafeEnchantment(Enchantment.getByName(in[k]), Integer.parseInt(in[k + 1]));
-                                    k++;
-                                }
-                            }
-                            try {
-                                ItemMeta meta = plugin.getServer().getItemFactory().getItemMeta(stacka[a].getType());
-                                if (!name.isEmpty())
-                                    meta.setDisplayName(name);
-                                if (!lores.isEmpty()) {
-                                    List<String> loreList = new ArrayList<String>();
-                                    for (String s : lores.split("%newline%")) {
-                                        loreList.add(s);
-                                    }
-                                    meta.setLore(loreList);
-                                }
-                                if (meta != null)
-                                    stacki[i].setItemMeta(meta);
-                            } catch (Exception e) {
-                            }
-                            a++;
-                        }
+                        continue;
                     }
-                } catch (final Exception e) {
-                    ConsoleLogger.showError("Error on creating a file cache for " + player.getName() + ", maybe wipe inventory...");
-                } finally {
-                    if (reader != null) {
-                        reader.close();
+
+                    if (!line.startsWith("i") && !line.startsWith("w")) {
+                        continue;
+                    }
+                    String lores = "";
+                    String name = "";
+                    if (line.split("\\*").length > 1) {
+                        lores = line.split("\\*")[1];
+                        line = line.split("\\*")[0];
+                    }
+                    if (line.split(";").length > 1) {
+                        name = line.split(";")[1];
+                        line = line.split(";")[0];
+                    }
+                    final String[] in = line.split(":");
+                    // can enchant item? size ofstring in file - 4 all / 2 =
+                    // number
+                    // of enchant
+                    if (in[0].equals("i")) {
+                        stacki[i] = new ItemStack(Material.getMaterial(in[1]), Integer.parseInt(in[2]), Short.parseShort((in[3])));
+                        if (in.length > 4 && !in[4].isEmpty()) {
+                            for (int k = 4; k < in.length - 1; k++) {
+                                stacki[i].addUnsafeEnchantment(Enchantment.getByName(in[k]), Integer.parseInt(in[k + 1]));
+                                k++;
+                            }
+                        }
+                        ItemMeta meta = stacki[i].getItemMeta();
+                        if (!name.isEmpty()) {
+                            meta.setDisplayName(name);
+                        }
+                        if (!lores.isEmpty()) {
+                            List<String> loreList = new ArrayList<String>();
+                            for (String s : lores.split("%newline%")) {
+                                loreList.add(s);
+                            }
+                            meta.setLore(loreList);
+                        }
+                        if (meta != null)
+                            stacki[i].setItemMeta(meta);
+                        i++;
+                    } else {
+                        stacka[a] = new ItemStack(Material.getMaterial(in[1]), Integer.parseInt(in[2]), Short.parseShort((in[3])));
+                        if (in.length > 4 && !in[4].isEmpty()) {
+                            for (int k = 4; k < in.length - 1; k++) {
+                                stacka[a].addUnsafeEnchantment(Enchantment.getByName(in[k]), Integer.parseInt(in[k + 1]));
+                                k++;
+                            }
+                        }
+                        ItemMeta meta = stacka[a].getItemMeta();
+                        if (!name.isEmpty())
+                            meta.setDisplayName(name);
+                        if (!lores.isEmpty()) {
+                            List<String> loreList = new ArrayList<String>();
+                            for (String s : lores.split("%newline%")) {
+                                loreList.add(s);
+                            }
+                            meta.setLore(loreList);
+                        }
+                        if (meta != null)
+                            stacki[i].setItemMeta(meta);
+                        a++;
                     }
                 }
                 return new DataFileCache(stacki, stacka, group, op, flying);
@@ -548,7 +533,7 @@ public class FileCache {
                 file.delete();
             } else {
                 file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + player.getName().toLowerCase() + ".cache");
-                if(file.isFile()){
+                if (file.isFile()) {
                     file.delete();
                 } else {
                     ConsoleLogger.showError("Failed to remove" + player.getName() + "cache, it doesn't exist!");
