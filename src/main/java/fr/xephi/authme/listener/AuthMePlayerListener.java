@@ -543,7 +543,7 @@ public class AuthMePlayerListener implements Listener {
                 event.allow();
                 return;
             } else {
-                ConsoleLogger.info("The player " + player.getName() + " wants to join, but the server is full");
+                ConsoleLogger.info("The player " + player.getName() + " tryed to join, but the server was full");
                 event.setKickMessage(m.send("kick_fullserver")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_FULL);
                 return;
