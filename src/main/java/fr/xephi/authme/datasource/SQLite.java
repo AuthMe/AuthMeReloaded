@@ -130,7 +130,7 @@ public class SQLite implements DataSource {
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnRealName);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnRealName + " VARCHAR(255) DEFAULT 'Player';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnRealName + " VARCHAR(255) NOT NULL DEFAULT 'Player';");
             }
         } finally {
             close(rs);
