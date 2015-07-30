@@ -20,7 +20,8 @@ public class PasswordSecurity {
     private static SecureRandom rnd = new SecureRandom();
     public static HashMap<String, String> userSalt = new HashMap<String, String>();
 
-    public static String createSalt(int length) throws NoSuchAlgorithmException {
+    public static String createSalt(int length)
+            throws NoSuchAlgorithmException {
         byte[] msg = new byte[40];
         rnd.nextBytes(msg);
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");
@@ -93,6 +94,9 @@ public class PasswordSecurity {
             case PHPBB:
                 salt = createSalt(16);
                 userSalt.put(playerName, salt);
+                break;
+            case BCRYPT2Y:
+                salt = createSalt(22);
                 break;
             case MD5:
             case SHA1:
