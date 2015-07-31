@@ -108,6 +108,11 @@
 					</execution>
 				</executions>
 			</plugin>
+    			<plugin>
+				<groupId>com.versioneye</groupId>
+				<artifactId>versioneye-maven-plugin</artifactId>
+				<version>3.5.1</version>
+			</plugin>
 		</plugins>
 	</build>
 
