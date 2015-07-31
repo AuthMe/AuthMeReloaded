@@ -9,6 +9,8 @@
 
 - Build status (CircleCI): [CircleCI project Page](https://circleci.com/gh/xephi/AuthMeReloaded)
 
+- VisionEye status: <img src="https://www.versioneye.com/user/projects/55bab9e8653762002000190a/badge.svg?style=flat">
+
 - Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr">Xephi's Jenkins</a>
 
 - JavaDocs: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
