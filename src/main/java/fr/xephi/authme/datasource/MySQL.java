@@ -105,6 +105,7 @@ public class MySQL implements DataSource {
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
         config.setPassword(this.password);
+        config.setPoolName("AuthMeMYSQLPool");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
@@ -900,6 +901,7 @@ public class MySQL implements DataSource {
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         config.addDataSourceProperty("autoReconnect", true);
         config.addDataSourceProperty("initializationFailFast", true);
+        config.setPoolName("AuthMeMYSQLPool");
         ds = new HikariDataSource(config);
         if (!reload)
             ConsoleLogger.info("ConnectionPool was unavailable... Reconnected!");

@@ -166,10 +166,11 @@ public class AuthMe extends JavaPlugin {
 
         // Set Console Filter
         if (Settings.removePassword) {
-            this.getLogger().setFilter(new ConsoleFilter());
-            Bukkit.getLogger().setFilter(new ConsoleFilter());
-            Logger.getLogger("Minecraft").setFilter(new ConsoleFilter());
-            authmeLogger.setFilter(new ConsoleFilter());
+            ConsoleFilter filter = new ConsoleFilter();
+            this.getLogger().setFilter(filter);
+            Bukkit.getLogger().setFilter(filter);
+            Logger.getLogger("Minecraft").setFilter(filter);
+            authmeLogger.setFilter(filter);
             // Set Log4J Filter
             try {
                 Class.forName("org.apache.logging.log4j.core.Filter");
