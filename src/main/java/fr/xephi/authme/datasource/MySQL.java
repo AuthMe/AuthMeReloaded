@@ -12,6 +12,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.PoolInitializationException;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -96,11 +97,21 @@ public class MySQL implements DataSource {
             if (!Settings.isStopEnabled)
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
+        } catch (PoolInitializationException e) {
+            ConsoleLogger.showError(e.getMessage());
+            if (Settings.isStopEnabled) {
+                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
+                AuthMe.getInstance().getServer().shutdown();
+            }
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            return;
         }
     }
 
-    private synchronized void connect() throws ClassNotFoundException,
-            SQLException, TimeoutException, NumberFormatException {
+    private synchronized void connect()
+            throws ClassNotFoundException, SQLException, TimeoutException,
+            NumberFormatException, PoolInitializationException {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
@@ -889,7 +900,8 @@ public class MySQL implements DataSource {
     }
 
     private synchronized void reconnect(boolean reload)
-            throws ClassNotFoundException, SQLException, TimeoutException {
+            throws ClassNotFoundException, SQLException, TimeoutException,
+            PoolInitializationException {
         if (ds != null)
             ds.close();
         HikariConfig config = new HikariConfig();
