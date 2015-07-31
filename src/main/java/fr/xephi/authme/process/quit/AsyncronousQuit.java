@@ -46,16 +46,13 @@ public class AsyncronousQuit {
             return;
         }
 
-        Location loc = player.getLocation();
         String ip = plugin.getIP(player);
 
-        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead()) {
+        if (PlayerCache.getInstance().isAuthenticated(name)) {
             if (Settings.isSaveQuitLocationEnabled && database.isAuthAvailable(name)) {
-                final PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName(), player.getName());
-                try {
-                    database.updateQuitLoc(auth);
-                } catch (NullPointerException npe) {
-                }
+                Location loc = player.getLocation();
+                PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName(), player.getName());
+                database.updateQuitLoc(auth);
             }
             PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis(), player.getName());
             database.updateSession(auth);
@@ -78,19 +75,19 @@ public class AsyncronousQuit {
             LimboCache.getInstance().deleteLimboPlayer(name);
         }
         if (Settings.isSessionsEnabled && !isKick) {
-            if (Settings.getSessionTimeout != 0){
-	            BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
-	
-	                @Override
-	                public void run() {
-	                    PlayerCache.getInstance().removePlayer(name);
-	                    if (database.isLogged(name))
-	                        database.setUnlogged(name);
-	                    plugin.sessions.remove(name);
-	                }
-	
-	            }, Settings.getSessionTimeout * 20 * 60);
-	            plugin.sessions.put(name, task);
+            if (Settings.getSessionTimeout != 0) {
+                BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+
+                    @Override
+                    public void run() {
+                        PlayerCache.getInstance().removePlayer(name);
+                        if (database.isLogged(name))
+                            database.setUnlogged(name);
+                        plugin.sessions.remove(name);
+                    }
+
+                }, Settings.getSessionTimeout * 20 * 60);
+                plugin.sessions.put(name, task);
             }
         } else {
             PlayerCache.getInstance().removePlayer(name);

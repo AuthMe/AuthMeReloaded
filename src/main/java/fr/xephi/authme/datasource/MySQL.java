@@ -8,13 +8,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.PoolInitializationException;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
@@ -40,7 +42,7 @@ public class MySQL implements DataSource {
     private String columnID;
     private String columnLogged;
     private List<String> columnOthers;
-    private MiniConnectionPoolManager conPool;
+    private HikariDataSource ds;
     private String columnRealName;
 
     public MySQL() {
@@ -95,20 +97,32 @@ public class MySQL implements DataSource {
             if (!Settings.isStopEnabled)
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             return;
+        } catch (PoolInitializationException e) {
+            ConsoleLogger.showError(e.getMessage());
+            if (Settings.isStopEnabled) {
+                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
+                AuthMe.getInstance().getServer().shutdown();
+            }
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            return;
         }
     }
 
-    private synchronized void connect() throws ClassNotFoundException,
-            SQLException, TimeoutException, NumberFormatException {
-        Class.forName("com.mysql.jdbc.Driver");
-        ConsoleLogger.info("MySQL driver loaded");
-        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
-        dataSource.setDatabaseName(database);
-        dataSource.setServerName(host);
-        dataSource.setPort(Integer.parseInt(port));
-        dataSource.setUser(username);
-        dataSource.setPassword(password);
-        conPool = new MiniConnectionPoolManager(dataSource, 10);
+    private synchronized void connect()
+            throws ClassNotFoundException, SQLException, TimeoutException,
+            NumberFormatException, PoolInitializationException {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+        config.setUsername(this.username);
+        config.setPassword(this.password);
+        config.setPoolName("AuthMeMYSQLPool");
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        config.addDataSourceProperty("autoReconnect", true);
+        config.addDataSourceProperty("initializationFailFast", true);
+        ds = new HikariDataSource(config);
         ConsoleLogger.info("Connection pool ready");
     }
 
@@ -185,9 +199,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } finally {
             close(rs);
             close(pst);
@@ -236,9 +247,6 @@ public class MySQL implements DataSource {
                 return null;
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return null;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return null;
         } finally {
@@ -451,9 +459,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } finally {
             close(pst);
             close(con);
@@ -499,9 +504,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } finally {
             close(pst);
             close(con);
@@ -523,9 +525,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } finally {
             close(pst);
             close(con);
@@ -543,9 +542,6 @@ public class MySQL implements DataSource {
             pst.setLong(1, until);
             return pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return 0;
         } finally {
@@ -574,9 +570,6 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
             return list;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
         } finally {
@@ -615,9 +608,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } finally {
             close(pst);
             close(con);
@@ -639,9 +629,6 @@ public class MySQL implements DataSource {
             pst.setString(5, auth.getNickname());
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -669,9 +656,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return 0;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
         } finally {
             close(rs);
             close(pst);
@@ -690,9 +674,6 @@ public class MySQL implements DataSource {
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -718,9 +699,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } finally {
             close(pst);
             close(con);
@@ -730,11 +708,8 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized void close() {
-        try {
-            conPool.dispose();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-        }
+        if (ds != null)
+            ds.close();
     }
 
     @Override
@@ -800,9 +775,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
         } finally {
             close(rs);
             close(pst);
@@ -828,9 +800,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
         } finally {
             close(rs);
             close(pst);
@@ -854,9 +823,6 @@ public class MySQL implements DataSource {
             }
             return countEmail;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
         } finally {
@@ -888,7 +854,7 @@ public class MySQL implements DataSource {
     private synchronized Connection makeSureConnectionIsReady() {
         Connection con = null;
         try {
-            con = conPool.getValidConnection();
+            con = ds.getConnection();
         } catch (Exception te) {
             try {
                 con = null;
@@ -920,22 +886,35 @@ public class MySQL implements DataSource {
                     AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
             }
         }
-        if (con == null)
-            con = conPool.getValidConnection();
+        while (con == null)
+            try {
+                con = ds.getConnection();
+            } catch (SQLException e) {
+                try {
+                    reconnect(false);
+                    con = ds.getConnection();
+                } catch (Exception ex) {
+                }
+            }
         return con;
     }
 
     private synchronized void reconnect(boolean reload)
-            throws ClassNotFoundException, SQLException, TimeoutException {
-        conPool.dispose();
-        Class.forName("com.mysql.jdbc.Driver");
-        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
-        dataSource.setDatabaseName(database);
-        dataSource.setServerName(host);
-        dataSource.setPort(Integer.parseInt(port));
-        dataSource.setUser(username);
-        dataSource.setPassword(password);
-        conPool = new MiniConnectionPoolManager(dataSource, 10);
+            throws ClassNotFoundException, SQLException, TimeoutException,
+            PoolInitializationException {
+        if (ds != null)
+            ds.close();
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+        config.setUsername(this.username);
+        config.setPassword(this.password);
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        config.addDataSourceProperty("autoReconnect", true);
+        config.addDataSourceProperty("initializationFailFast", true);
+        config.setPoolName("AuthMeMYSQLPool");
+        ds = new HikariDataSource(config);
         if (!reload)
             ConsoleLogger.info("ConnectionPool was unavailable... Reconnected!");
     }
@@ -960,9 +939,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } finally {
             close(rs);
             close(pst);
@@ -982,9 +958,6 @@ public class MySQL implements DataSource {
             pst.setString(2, user);
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
         } finally {
@@ -1008,9 +981,6 @@ public class MySQL implements DataSource {
             } catch (SQLException ex) {
                 ConsoleLogger.showError(ex.getMessage());
                 return;
-            } catch (TimeoutException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-                return;
             } finally {
                 close(pst);
                 close(con);
@@ -1029,9 +999,6 @@ public class MySQL implements DataSource {
             pst.setInt(2, 1);
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
         } finally {
@@ -1057,9 +1024,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return result;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return result;
         } finally {
             close(pst);
             close(con);
@@ -1078,9 +1042,6 @@ public class MySQL implements DataSource {
             pst.setString(2, oldone);
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
         } finally {
@@ -1133,9 +1094,6 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
         } finally {
             close(pst);
             close(con);
@@ -1185,9 +1143,6 @@ public class MySQL implements DataSource {
                     auths.add(pAuth);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
         } finally {

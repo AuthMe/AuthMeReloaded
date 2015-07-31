@@ -12,7 +12,6 @@ import java.util.List;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.settings.Settings;
 
 public class SQLite implements DataSource {
@@ -436,9 +435,6 @@ public class SQLite implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
         } catch (NullPointerException npe) {
             return new ArrayList<String>();
         } finally {
@@ -463,9 +459,6 @@ public class SQLite implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
         } catch (NullPointerException npe) {
             return new ArrayList<String>();
         } finally {
@@ -488,9 +481,6 @@ public class SQLite implements DataSource {
             }
             return countEmail;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
         } catch (NullPointerException npe) {
@@ -535,9 +525,6 @@ public class SQLite implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } finally {
             close(rs);
             close(pst);
@@ -554,9 +541,6 @@ public class SQLite implements DataSource {
             pst.setString(2, user);
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
         } finally {
@@ -577,9 +561,6 @@ public class SQLite implements DataSource {
             } catch (SQLException ex) {
                 ConsoleLogger.showError(ex.getMessage());
                 return;
-            } catch (TimeoutException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-                return;
             } finally {
                 close(pst);
             }
@@ -595,9 +576,6 @@ public class SQLite implements DataSource {
             pst.setInt(2, 1);
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
         } finally {
@@ -620,9 +598,6 @@ public class SQLite implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return result;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return result;
         } finally {
             close(pst);
         }
@@ -638,9 +613,6 @@ public class SQLite implements DataSource {
             pst.setString(2, oldone);
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
         } finally {
@@ -674,9 +646,6 @@ public class SQLite implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
         } finally {
             close(pst);
         }
@@ -706,9 +675,6 @@ public class SQLite implements DataSource {
                     auths.add(pAuth);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
         } finally {
