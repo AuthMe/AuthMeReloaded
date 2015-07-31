@@ -9,7 +9,7 @@
 
 - Build status (CircleCI): [![Circle CI](https://circleci.com/gh/Xephi/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/Xephi/AuthMeReloaded)
 
-- Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr">Xephi's Jenkins</a>
+- Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr/job/AuthMeReloaded">Xephi's Jenkins</a>
 
 - JavaDocs: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
 

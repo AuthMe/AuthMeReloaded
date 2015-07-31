@@ -121,7 +121,7 @@ public class MySQL implements DataSource {
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         config.addDataSourceProperty("autoReconnect", true);
-        config.addDataSourceProperty("initializationFailFast", true);
+        config.setInitializationFailFast(false);
         ds = new HikariDataSource(config);
         ConsoleLogger.info("Connection pool ready");
     }
@@ -912,7 +912,7 @@ public class MySQL implements DataSource {
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         config.addDataSourceProperty("autoReconnect", true);
-        config.addDataSourceProperty("initializationFailFast", true);
+        config.setInitializationFailFast(false);
         config.setPoolName("AuthMeMYSQLPool");
         ds = new HikariDataSource(config);
         if (!reload)
