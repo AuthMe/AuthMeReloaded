@@ -306,6 +306,8 @@ public class FileCache {
                         a++;
                     }
                 }
+                if (reader != null)
+                    reader.close();
                 return new DataFileCache(stacki, stacka, group, op, flying);
             } else {
                 // NEW METHOD
