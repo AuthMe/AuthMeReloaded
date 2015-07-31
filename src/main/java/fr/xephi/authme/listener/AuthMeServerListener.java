@@ -84,9 +84,9 @@ public class AuthMeServerListener implements Listener {
         if (pluginName.equalsIgnoreCase("ChestShop"))
             plugin.checkChestShop();
         if (pluginName.equalsIgnoreCase("CombatTag"))
-            plugin.combatTag();
+            plugin.checkCombatTag();
         if (pluginName.equalsIgnoreCase("Citizens"))
-            plugin.citizensVersion();
+            plugin.checkCitizens();
         if (pluginName.equalsIgnoreCase("Vault"))
             plugin.checkVault();
     }
