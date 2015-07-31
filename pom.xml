@@ -112,6 +112,10 @@
 				<groupId>com.versioneye</groupId>
 				<artifactId>versioneye-maven-plugin</artifactId>
 				<version>3.5.1</version>
+				<configuration>
+					<projectId>544d0ff9512592562c000003</projectId>
+					<!--<apiKey>my_secret_api_key</apiKey>-->>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
