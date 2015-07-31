@@ -187,13 +187,16 @@ public class AuthMe extends JavaPlugin {
             mail = new SendMailSSL(this);
 
         // Check Citizens Version
-        citizensVersion();
+        checkCitizens();
 
         // Check Combat Tag Version
-        combatTag();
+        checkCombatTag();
 
         // Check Multiverse
         checkMultiverse();
+
+        // Check PerWorldInventories Version
+        checkPerWorldInventories();
 
         // Check ChestShop
         checkChestShop();
@@ -354,6 +357,27 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
+    public void checkPerWorldInventories() {
+        if (this.getServer().getPluginManager().getPlugin("PerWorldInventories") != null && this.getServer().getPluginManager().getPlugin("PerWorldInventories").isEnabled()) {
+            try {
+                String ver = Bukkit.getServer().getPluginManager().getPlugin("PerWorldInventories").getDescription().getVersion();
+                try {
+                    double version = Double.valueOf(ver.split(" ")[0]);
+                    if (version < 1.57)
+                        ConsoleLogger.showError("Please Update your PerWorldInventories version! INVENTORY WIPE may occur!");
+                } catch (NumberFormatException nfe) {
+                    try {
+                        double version = Double.valueOf(ver.split("t")[0]);
+                        if (version < 1.57)
+                            ConsoleLogger.showError("Please Update your PerWorldInventories version! INVENTORY WIPE may occur!");
+                    } catch (NumberFormatException nfee) {
+                    }
+                }
+            } catch (Exception e) {
+            }
+        }
+    }
+
     public void checkMultiverse() {
         if (!Settings.multiverse) {
             multiverse = null;
@@ -403,7 +427,7 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    public void combatTag() {
+    public void checkCombatTag() {
         if (this.getServer().getPluginManager().getPlugin("CombatTag") != null && this.getServer().getPluginManager().getPlugin("CombatTag").isEnabled()) {
             this.CombatTag = true;
         } else {
@@ -411,7 +435,7 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    public void citizensVersion() {
+    public void checkCitizens() {
         if (this.getServer().getPluginManager().getPlugin("Citizens") != null && this.getServer().getPluginManager().getPlugin("Citizens").isEnabled())
             this.isCitizensActive = true;
         else this.isCitizensActive = false;
