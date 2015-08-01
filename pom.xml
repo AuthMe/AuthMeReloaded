@@ -110,13 +110,13 @@
 					</execution>
 				</executions>
 			</plugin>
-    			<plugin>
+			<plugin>
 				<groupId>com.versioneye</groupId>
 				<artifactId>versioneye-maven-plugin</artifactId>
 				<version>3.5.1</version>
 				<configuration>
 					<projectId>55bab9e8653762002000190a</projectId>
-					<!--<apiKey>my_secret_api_key</apiKey>-->
+					<!--<apiKey>my_secret_api_key</apiKey> -->
 				</configuration>
 			</plugin>
 		</plugins>
@@ -178,6 +178,11 @@
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
 
+		<repository>
+			<id>mcstats-snapshots</id>
+			<url>http://repo.mcstats.org/content/repositories/snapshots/</url>
+		</repository>
+
 	</repositories>
 
 	<dependencies>
@@ -236,7 +241,7 @@
 		<dependency>
 			<groupId>org.mcstats.bukkit</groupId>
 			<artifactId>metrics</artifactId>
-			<version>R7</version>
+			<version>R8-SNAPSHOT</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
