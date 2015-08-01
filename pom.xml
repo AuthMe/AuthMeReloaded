@@ -116,7 +116,7 @@
 				<version>3.5.1</version>
 				<configuration>
 					<projectId>55bab9e8653762002000190a</projectId>
-					<!--<apiKey>my_secret_api_key</apiKey>-->>
+					<!--<apiKey>my_secret_api_key</apiKey>-->
 				</configuration>
 			</plugin>
 		</plugins>
