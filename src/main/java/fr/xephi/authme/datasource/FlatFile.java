@@ -714,16 +714,22 @@ public class FlatFile implements DataSource {
                 switch (args.length) {
                     case 2:
                         auths.add(new PlayerAuth(args[0], args[1], "192.168.0.1", 0, "your@email.com", args[0]));
+                        break;
                     case 3:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], 0, "your@email.com", args[0]));
+                        break;
                     case 4:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), "your@email.com", args[0]));
+                        break;
                     case 7:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "unavailableworld", "your@email.com", args[0]));
+                        break;
                     case 8:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]));
+                        break;
                     case 9:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]));
+                        break;
                 }
             }
         } catch (FileNotFoundException ex) {
