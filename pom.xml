@@ -178,6 +178,7 @@
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
 
+		<!-- Metrics Snapshots Repo -->
 		<repository>
 			<id>mcstats-snapshots</id>
 			<url>http://repo.mcstats.org/content/repositories/snapshots/</url>
@@ -238,6 +239,7 @@
 			<scope>compile</scope>
 		</dependency>
 
+		<!-- Metrics API -->
 		<dependency>
 			<groupId>org.mcstats.bukkit</groupId>
 			<artifactId>metrics</artifactId>
