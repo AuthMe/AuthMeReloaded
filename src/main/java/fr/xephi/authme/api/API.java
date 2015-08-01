@@ -21,6 +21,7 @@ public class API {
     public static final String newline = System.getProperty("line.separator");
     public static AuthMe instance;
 
+    @Deprecated
     public API(AuthMe instance) {
         API.instance = instance;
     }
