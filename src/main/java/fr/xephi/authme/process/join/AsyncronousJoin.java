@@ -99,7 +99,7 @@ public class AsyncronousJoin {
             }
         }
         final Location spawnLoc = plugin.getSpawnLocation(player);
-        if (database.isAuthAvailable(name)) {
+        if (database.getType() != DataSource.DataSourceType.FILE && database.isAuthAvailable(name)) {
             PlayerAuth auth = database.getAuth(name);
             if (auth.getRealName() != null && !auth.getRealName().isEmpty() && !auth.getRealName().equalsIgnoreCase("Player") && !auth.getRealName().equals(player.getName())) {
                 final GameMode gM = AuthMePlayerListener.gameMode.get(name);
