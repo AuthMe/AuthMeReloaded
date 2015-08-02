@@ -11,18 +11,16 @@
 
 	<name>AuthMeReloaded</name>
 	<description>Authentication plugin for CraftBukkit/Spigot!</description>
+	<inceptionYear>2013</inceptionYear>
 	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
+	<!-- See also: https://www.spigotmc.org/resources/authme-reloaded.6269/ -->
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
-		<!-- Change Compiler Version (JDK) HERE! -->
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-
-		<!-- Change MC Version HERE! -->
-		<bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
-	</properties>
+	<scm>
+		<connection>scm:git:https://github.com/Xephi/AuthMeReloaded.git</connection>
+		<developerConnection>scm:git:git@github.com:Xephi/AuthMeReloaded.git</developerConnection>
+		<url>http://github.com/Xephi/AuthMeReloaded</url>
+		<tag>HEAD</tag>
+	</scm>
 
 	<!-- Official Build Server -->
 	<ciManagement>
@@ -34,6 +32,26 @@
 		<system>GitHub</system>
 		<url>https://github.com/Xephi/AuthMeReloaded/issues</url>
 	</issueManagement>
+
+	<licenses>
+		<license>
+			<name>Apache-2.0</name>
+			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+		<!-- Change Compiler Version (JDK) HERE! -->
+		<maven.compiler.source>1.7</maven.compiler.source>
+		<maven.compiler.target>1.7</maven.compiler.target>
+
+		<!-- Change MC Version HERE! -->
+		<bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
+		
+		<jarPluginName>AuthMe</jarPluginName>
+	</properties>
 
 	<build>
 		<plugins>
@@ -75,7 +93,7 @@
 					<archive>
 						<manifestFile>${manifest.file}</manifestFile>
 					</archive>
-					<finalName>AuthMe-${project.version}</finalName>
+					<finalName>${jarPluginName}-${project.version}</finalName>
 				</configuration>
 			</plugin>
 			<plugin>
