@@ -588,6 +588,18 @@ public class AdminCommand implements CommandExecutor {
             } catch (Exception e) {
                 sender.sendMessage("An error occured while trying to get that player!");
             }
+        } else if (args[0].equalsIgnoreCase("resetname")) {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+                @Override
+                public void run() {
+                    List<PlayerAuth> auths = plugin.database.getAllAuths();
+                    for (PlayerAuth auth : auths) {
+                        auth.setRealName("Player");
+                        plugin.database.updateSession(auth);
+                    }
+                }
+            });
         } else {
             sender.sendMessage("Usage: /authme reload|register playername password|changepassword playername password|unregister playername");
         }

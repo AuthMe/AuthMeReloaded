@@ -517,10 +517,11 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         try {
             con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=? WHERE LOWER(" + columnName + ")=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=?, " + columnRealName + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
-            pst.setString(3, auth.getNickname());
+            pst.setString(3, auth.getRealName());
+            pst.setString(4, auth.getNickname());
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
