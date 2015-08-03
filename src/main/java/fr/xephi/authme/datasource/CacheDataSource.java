@@ -70,6 +70,7 @@ public class CacheDataSource implements DataSource {
             if (cache.containsKey(auth.getNickname())) {
                 cache.get(auth.getNickname()).setIp(auth.getIp());
                 cache.get(auth.getNickname()).setLastLogin(auth.getLastLogin());
+                cache.get(auth.getNickname()).setRealName(auth.getRealName());
             }
             return true;
         }
