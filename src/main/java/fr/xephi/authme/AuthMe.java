@@ -120,7 +120,6 @@ public class AuthMe extends JavaPlugin {
         this.database = database;
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public void onEnable() {
         authme = this;
