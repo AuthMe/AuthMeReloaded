@@ -141,7 +141,7 @@ public class AdminCommand implements CommandExecutor {
             }
             YamlConfiguration newConfig = YamlConfiguration.loadConfiguration(newConfigFile);
             Settings.reloadConfigOptions(newConfig);
-            m.reLoad();
+            m.reloadMessages();
             plugin.database.close();
             plugin.setupDatabase();
             m.send(sender, "reload");

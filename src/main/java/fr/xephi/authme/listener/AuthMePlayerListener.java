@@ -428,17 +428,17 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        if (Settings.isKickNonRegisteredEnabled && !Settings.antiBotInAction){
+        if (Settings.isKickNonRegisteredEnabled && !Settings.antiBotInAction) {
             if (!plugin.database.isAuthAvailable(name)) {
                 event.setKickMessage(m.send("reg_only")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
-        
-        if (Settings.antiBotInAction){
+
+        if (Settings.antiBotInAction) {
             if (!plugin.database.isAuthAvailable(name)) {
-                event.setKickMessage("AntiBot service in action! Non registered players can't connect until the bot attack stops!"); //Need to add string to messages
+                event.setKickMessage("AntiBot service in action! You actually need to be registered!");
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
@@ -658,31 +658,40 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         if (event.getPlayer() == null)
             return;
-        Player player = (Player) event.getPlayer();
+        final Player player = (Player) event.getPlayer();
         String name = player.getName().toLowerCase();
-
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
-
         if (plugin.getCitizensCommunicator().isNPC(player))
             return;
-
         if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
             return;
         }
-
         if (!plugin.database.isAuthAvailable(name)) {
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
         }
         event.setCancelled(true);
-        player.closeInventory();
+
+        /*
+         * @note little hack cause InventoryOpenEvent cannot be cancelled for
+         * real, cause no packet is send to server by client for the main inv
+         */
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                player.closeInventory();
+                ;
+            }
+
+        }, 1);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
