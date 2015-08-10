@@ -44,6 +44,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -463,6 +464,17 @@ public class AuthMePlayerListener implements Listener {
 
                 });
             return;
+        }
+
+        if (plugin.database.getType() != DataSource.DataSourceType.FILE) {
+            PlayerAuth auth = plugin.database.getAuth(name);
+            if (auth.getRealName() != null && !auth.getRealName().isEmpty() && !auth.getRealName().equalsIgnoreCase("Player") && !auth.getRealName().equals(player.getName())) {
+                event.setKickMessage(m.send("same_nick")[0]);
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                if (Settings.banUnsafeIp)
+                    plugin.getServer().banIP(player.getAddress().getAddress().getHostAddress());
+                return;
+            }
         }
 
         int min = Settings.getMinNickLength;
