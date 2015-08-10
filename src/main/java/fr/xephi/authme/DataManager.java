@@ -46,6 +46,8 @@ public class DataManager {
             return result.get();
         } catch (Exception e) {
             return (null);
+        } finally {
+            executor.shutdown();
         }
     }
 
@@ -158,5 +160,33 @@ public class DataManager {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " Permissions");
+    }
+
+    public boolean isOnline(Player player, final String name) {
+        if (player.isOnline())
+            return true;
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Boolean> result = executor.submit(new Callable<Boolean>() {
+
+            public synchronized Boolean call() throws Exception {
+                Boolean result = null;
+                try {
+                    for (OfflinePlayer op : Bukkit.getOnlinePlayers())
+                        if (op.getName().equalsIgnoreCase(name)) {
+                            result = true;
+                            break;
+                        }
+                } catch (Exception e) {
+                }
+                return result;
+            }
+        });
+        try {
+            return result.get().booleanValue();
+        } catch (Exception e) {
+            return (false);
+        } finally {
+            executor.shutdown();
+        }
     }
 }

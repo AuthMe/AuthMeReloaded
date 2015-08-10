@@ -446,21 +446,22 @@ public class AuthMePlayerListener implements Listener {
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
-        if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
+        if (plugin.dataManager.isOnline(player, name) && Settings.isForceSingleSessionEnabled) {
             event.setKickMessage(m.send("same_nick")[0]);
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            if (LimboCache.getInstance().hasLimboPlayer(name))
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
-                @Override
-                public void run() {
-                    LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                    if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-                        Utils.getInstance().addNormal(player, limbo.getGroup());
-                        LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
+                    @Override
+                    public void run() {
+                        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
+                        if (player != null && limbo != null && PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+                            Utils.getInstance().addNormal(player, limbo.getGroup());
+                            LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
+                        }
                     }
-                }
 
-            });
+                });
             return;
         }
 
