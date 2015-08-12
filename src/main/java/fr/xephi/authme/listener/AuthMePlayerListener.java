@@ -466,7 +466,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (plugin.database.getType() != DataSource.DataSourceType.FILE) {
+        if (plugin.database.isAuthAvailable(name) && plugin.database.getType() != DataSource.DataSourceType.FILE) {
             PlayerAuth auth = plugin.database.getAuth(name);
             if (auth.getRealName() != null && !auth.getRealName().isEmpty() && !auth.getRealName().equalsIgnoreCase("Player") && !auth.getRealName().equals(player.getName())) {
                 event.setKickMessage(m.send("same_nick")[0]);
