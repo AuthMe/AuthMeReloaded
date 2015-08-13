@@ -12,13 +12,15 @@ import fr.xephi.authme.ConsoleLogger;
 public class Messages extends CustomConfiguration {
 
     private static Messages singleton = null;
+    private String lang = "en";
 
-    public Messages(File file) {
+    public Messages(File file, String lang) {
         super(file);
         loadDefaults(file);
         loadFile();
         saveDefaults(file);
         singleton = this;
+        this.lang = lang;
     }
 
     /**
@@ -32,7 +34,7 @@ public class Messages extends CustomConfiguration {
         InputStream stream = AuthMe.getInstance().getResource(file.getName());
         if (stream == null)
             return;
-        
+
         setDefaults(YamlConfiguration.loadConfiguration(stream));
     }
 
@@ -67,12 +69,14 @@ public class Messages extends CustomConfiguration {
     }
 
     private void loadFile() {
-        this.load();
-        this.save();
+        load();
+        save();
     }
 
     public void send(CommandSender sender, String msg) {
-        String loc = (String) this.get(msg);
+        if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang))
+            singleton.reloadMessages();
+        String loc = (String) singleton.get(msg);
         if (loc == null) {
             loc = "Error with Translation files, please contact the admin for verify or update translation";
             ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml !");
@@ -83,13 +87,14 @@ public class Messages extends CustomConfiguration {
     }
 
     public String[] send(String msg) {
+        if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang))
+            singleton.reloadMessages();
         String s = null;
         try {
-            s = (String) this.get(msg);
+            s = (String) singleton.get(msg);
         } catch (Exception e) {
         }
-        if (s == null)
-        {
+        if (s == null) {
             ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml !");
             String[] loc = new String[1];
             loc[0] = "Error with " + msg + " translation; Please contact the admin for verify or update translation files";
@@ -109,9 +114,13 @@ public class Messages extends CustomConfiguration {
 
     public static Messages getInstance() {
         if (singleton == null) {
-            singleton = new Messages(new File(Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml"));
+            singleton = new Messages(new File(Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml"), Settings.messagesLanguage);
         }
         return singleton;
+    }
+
+    public void reloadMessages() {
+        singleton = new Messages(new File(Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml"), Settings.messagesLanguage);
     }
 
 }

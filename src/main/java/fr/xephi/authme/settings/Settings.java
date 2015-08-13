@@ -22,8 +22,8 @@ import fr.xephi.authme.security.HashAlgorithm;
 
 public final class Settings extends YamlConfiguration {
 
-    //This is not an option!
-	public static Boolean antiBotInAction = false;
+    // This is not an option!
+    public static Boolean antiBotInAction = false;
 
     public static String PLUGIN_FOLDER = "." + File.separator + "plugins" + File.separator + "AuthMe";
     public static final String CACHE_FOLDER = Settings.PLUGIN_FOLDER + File.separator + "cache";
@@ -62,17 +62,17 @@ public final class Settings extends YamlConfiguration {
             isResetInventoryIfCreative, isCachingEnabled,
             isKickOnWrongPasswordEnabled, getEnablePasswordVerifier,
             protectInventoryBeforeLogInEnabled, isBackupActivated,
-            isBackupOnStart, isBackupOnStop, isStopEnabled,
-            reloadSupport, rakamakUseIp, noConsoleSpam, removePassword,
-            displayOtherAccounts, useCaptcha, emailRegistration, multiverse,
-            chestshop, bungee, banUnsafeIp, doubleEmailCheck,
-            sessionExpireOnIpChange, disableSocialSpy, forceOnlyAfterLogin,
-            useEssentialsMotd, usePurge, purgePlayerDat, purgeEssentialsFile,
-            supportOldPassword, purgeLimitedCreative, purgeAntiXray,
-            purgePermissions, enableProtection, enableAntiBot, recallEmail,
-            useWelcomeMessage, broadcastWelcomeMessage, forceRegKick,
-            forceRegLogin, checkVeryGames, delayJoinMessage, noTeleport,
-            applyBlindEffect, customAttributes, generateImage;
+            isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
+            rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
+            useCaptcha, emailRegistration, multiverse, chestshop, bungee,
+            banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
+            disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
+            purgePlayerDat, purgeEssentialsFile, supportOldPassword,
+            purgeLimitedCreative, purgeAntiXray, purgePermissions,
+            enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
+            broadcastWelcomeMessage, forceRegKick, forceRegLogin,
+            checkVeryGames, delayJoinMessage, noTeleport, applyBlindEffect,
+            customAttributes, generateImage;
 
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
             getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
@@ -127,7 +127,7 @@ public final class Settings extends YamlConfiguration {
 
     @SuppressWarnings("unchecked")
     public static void loadVariables() {
-        messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en"));
+        messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en").toLowerCase());
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
         isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
@@ -603,22 +603,20 @@ public final class Settings extends YamlConfiguration {
     }
 
     public static String checkLang(String lang) {
-        for (messagesLang language : messagesLang.values()) {
-            if (lang.toLowerCase().contains(language.toString())) {
-                ConsoleLogger.info("Set Language: " + lang);
-                return lang;
-            }
+        if (new File(MESSAGE_FILE + "_" + lang + ".yml").exists()) {
+            ConsoleLogger.info("Set Language to: " + lang);
+            return lang;
         }
-        ConsoleLogger.info("Set Default Language: En ");
+        ConsoleLogger.info("Language file not found for " + lang + ", set to default language: en !");
         return "en";
     }
 
     public static void switchAntiBotMod(boolean mode) {
-        if (mode){
+        if (mode) {
             isKickNonRegisteredEnabled = true;
             antiBotInAction = true;
-        }else{
-        	isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
+        } else {
+            isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
             antiBotInAction = false;
         }
     }
@@ -683,32 +681,5 @@ public final class Settings extends YamlConfiguration {
             }
         }
         return correct;
-    }
-
-    public enum messagesLang {
-        en,
-        de,
-        br,
-        cz,
-        pl,
-        fr,
-        uk,
-        ru,
-        hu,
-        sk,
-        es,
-        fi,
-        zhtw,
-        zhhk,
-        zhcn,
-        lt,
-        it,
-        ko,
-        pt,
-        nl,
-        gl,
-        bg,
-        eu,
-        tr
     }
 }

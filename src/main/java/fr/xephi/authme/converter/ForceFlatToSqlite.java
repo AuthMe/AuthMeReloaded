@@ -21,8 +21,10 @@ public class ForceFlatToSqlite implements Converter {
         DataSource sqlite = null;
         try {
             sqlite = new SQLite();
-            for (PlayerAuth auth : data.getAllAuths())
+            for (PlayerAuth auth : data.getAllAuths()) {
+                auth.setRealName("Player");
                 sqlite.saveAuth(auth);
+            }
             plugin.getSettings().setValue("DataSource.backend", "sqlite");
             ConsoleLogger.info("Database successfully converted to sqlite !");
         } catch (Exception e) {

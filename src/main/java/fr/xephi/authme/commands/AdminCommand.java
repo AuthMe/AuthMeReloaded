@@ -141,7 +141,7 @@ public class AdminCommand implements CommandExecutor {
             }
             YamlConfiguration newConfig = YamlConfiguration.loadConfiguration(newConfigFile);
             Settings.reloadConfigOptions(newConfig);
-            m.reLoad();
+            m.reloadMessages();
             plugin.database.close();
             plugin.setupDatabase();
             m.send(sender, "reload");
@@ -477,7 +477,6 @@ public class AdminCommand implements CommandExecutor {
                 m.send(sender, "error");
                 return true;
             }
-            @SuppressWarnings("deprecation")
             Player target = Bukkit.getPlayer(name);
             PlayerCache.getInstance().removePlayer(name);
             Utils.getInstance().setGroup(name, groupType.UNREGISTERED);
@@ -560,7 +559,6 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage: /authme getip <onlineplayername>");
                 return true;
             }
-            @SuppressWarnings("deprecation")
             Player player = Bukkit.getPlayer(args[1]);
             if (player == null) {
                 sender.sendMessage("This player is not actually online");
@@ -576,7 +574,6 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             try {
-                @SuppressWarnings("deprecation")
                 Player player = Bukkit.getPlayer(args[1]);
                 if (player == null || !player.isOnline()) {
                     sender.sendMessage("Player needs to be online!");
@@ -591,6 +588,18 @@ public class AdminCommand implements CommandExecutor {
             } catch (Exception e) {
                 sender.sendMessage("An error occured while trying to get that player!");
             }
+        } else if (args[0].equalsIgnoreCase("resetname")) {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+                @Override
+                public void run() {
+                    List<PlayerAuth> auths = plugin.database.getAllAuths();
+                    for (PlayerAuth auth : auths) {
+                        auth.setRealName("Player");
+                        plugin.database.updateSession(auth);
+                    }
+                }
+            });
         } else {
             sender.sendMessage("Usage: /authme reload|register playername password|changepassword playername password|unregister playername");
         }
