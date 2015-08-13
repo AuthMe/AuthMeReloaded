@@ -227,7 +227,7 @@ public final class Settings extends YamlConfiguration {
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = configFile.getBoolean("Hooks.multiverse", true);
-        chestshop = configFile.getBoolean("Hooks.chestshop", true);
+        chestshop = configFile.getBoolean("Hooks.legacyChestshop", false);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
@@ -449,6 +449,9 @@ public final class Settings extends YamlConfiguration {
         }
         if (contains("Hooks.notifications"))
             set("Hooks.notifications", null);
+        if (contains("Hooks.chestshop"))
+            set("Hooks.chestshop", null);
+            set("Hooks.legacyChestshop", false);
         if (!contains("Email.generateImage")) {
             set("Email.generateImage", true);
             changes = true;
