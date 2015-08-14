@@ -367,8 +367,8 @@ Email:
 Hooks:
     # Do we need to hook with multiverse for spawn checking?
     multiverse: true
-    # Do we need to hook with ChestShop for prevent buy or selling ?
-    chestshop: true
+    # Do we need to hook with legacy ChestShop < 3.8.13 for prevent buy or selling ?
+    legacyChestshop: false
     # Do we need to hook with BungeeCord for get the real Player ip ?
     bungeecord: false
     # Do we need to disable Essentials SocialSpy on join ?
