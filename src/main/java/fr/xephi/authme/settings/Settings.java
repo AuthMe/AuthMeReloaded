@@ -449,9 +449,12 @@ public final class Settings extends YamlConfiguration {
         }
         if (contains("Hooks.notifications"))
             set("Hooks.notifications", null);
-        if (contains("Hooks.chestshop"))
+        boolean useChestShop = false;
+        if (contains("Hooks.chestshop")) {
+            useChestShop = getBoolean("Hooks.chestshop");
             set("Hooks.chestshop", null);
-            set("Hooks.legacyChestshop", false);
+        }
+        set("Hooks.legacyChestshop", useChestShop);
         if (!contains("Email.generateImage")) {
             set("Email.generateImage", true);
             changes = true;
