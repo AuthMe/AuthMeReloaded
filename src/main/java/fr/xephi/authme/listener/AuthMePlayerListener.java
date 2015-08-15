@@ -432,6 +432,9 @@ public class AuthMePlayerListener implements Listener {
     public void onPreLogin(AsyncPlayerPreLoginEvent event){
         final String name = event.getName().toLowerCase();
         final Player player = Bukkit.getServer().getPlayer(name);
+        
+        if (player == null)
+            return;
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
