@@ -15,14 +15,17 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -398,6 +401,61 @@ public class AuthMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerJoin(PlayerJoinEvent e) {
+        final PlayerJoinEvent event = e;
+
+        if (event.getPlayer() == null) {
+            return;
+        }
+
+        // Shedule login task so works after the prelogin
+        // (Fix found by Koolaid5000)
+        Bukkit.getScheduler().runTask(plugin, new Runnable(){
+            @Override
+            public void run() {
+                Player player = event.getPlayer();
+                String name = player.getName().toLowerCase();
+
+                plugin.management.performJoin(player);
+
+                // Remove the join message while the player isn't logging in
+                if ((Settings.enableProtection || Settings.delayJoinMessage) && name != null && event.getJoinMessage() != null) {
+                    joinMessage.put(name, event.getJoinMessage());
+                    event.setJoinMessage(null);
+                }
+            }
+        });    
+    }
+
+    @SuppressWarnings("deprecation")
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPreLogin(AsyncPlayerPreLoginEvent event){
+        final String name = event.getName().toLowerCase();
+        final Player player = Bukkit.getServer().getPlayer(name);
+
+        // Check if forceSingleSession is set to true, so kick player that has
+        // joined with same nick of online player
+        if (plugin.dataManager.isOnline(player, name) && Settings.isForceSingleSessionEnabled) {
+            event.setKickMessage(m.send("same_nick")[0]);
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            if (LimboCache.getInstance().hasLimboPlayer(name))
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    
+                    @Override
+                    public void run() {
+                        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
+                        if (limbo != null && PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+                            Utils.getInstance().addNormal(player, limbo.getGroup());
+                            LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
+                        }
+                    }
+    
+                });
+            return;
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
         if (player == null)
@@ -443,27 +501,6 @@ public class AuthMePlayerListener implements Listener {
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
-        }
-
-        // Check if forceSingleSession is set to true, so kick player that has
-        // joined with same nick of online player
-        if (plugin.dataManager.isOnline(player, name) && Settings.isForceSingleSessionEnabled) {
-            event.setKickMessage(m.send("same_nick")[0]);
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            if (LimboCache.getInstance().hasLimboPlayer(name))
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                        if (player != null && limbo != null && PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-                            Utils.getInstance().addNormal(player, limbo.getGroup());
-                            LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
-                        }
-                    }
-
-                });
-            return;
         }
 
         if (plugin.database.isAuthAvailable(name) && plugin.database.getType() != DataSource.DataSourceType.FILE) {
@@ -561,23 +598,6 @@ public class AuthMePlayerListener implements Listener {
                 event.setResult(PlayerLoginEvent.Result.KICK_FULL);
                 return;
             }
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getPlayer() == null) {
-            return;
-        }
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        plugin.management.performJoin(player);
-
-        // Remove the join message while the player isn't logging in
-        if ((Settings.enableProtection || Settings.delayJoinMessage) && name != null && event.getJoinMessage() != null) {
-            joinMessage.put(name, event.getJoinMessage());
-            event.setJoinMessage(null);
         }
     }
 
@@ -733,6 +753,35 @@ public class AuthMePlayerListener implements Listener {
             }
         }
         event.setResult(org.bukkit.event.Event.Result.DENY);
+        event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void playerHitPlayerEvent(EntityDamageByEntityEvent event) {
+        Entity damager = event.getDamager();
+        if (!(damager instanceof Player)){
+            return;
+        }
+
+        Player player = (Player) damager;
+        String name = player.getName().toLowerCase();
+
+        if (Utils.getInstance().isUnrestricted(player)) {
+            return;
+        }
+
+        if (plugin.getCitizensCommunicator().isNPC(player)) {
+            return;
+        }
+
+        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+            return;
+        }
+
+        if (!plugin.database.isAuthAvailable(name) && !Settings.isForcedRegistrationEnabled) {
+            return;
+        }
+
         event.setCancelled(true);
     }
 
