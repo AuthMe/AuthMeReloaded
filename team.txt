@@ -2,11 +2,11 @@ AuthMe-Team:
 
 Xephi (Xephi59) - Leader, Main developer
 darkwarriors (d4rkwarriors) - Old AuthMe Reloaded Author
-Kloudy - Developer
-Gnat008 - Developer
+Kloudy - Developer (Inactive, Will be avariable soon)
 Gabriele C. (sgdc3) - Ticket Manager, Project Page and Structure Manager, Contributor
 Maxetto - Ticket Manager, Italian Translator, Basic Developer, Contributor
-Trojaner25 - Ticket manager, Basic Developer
+Gnat008 - Contributor
+Trojaner25 - Ticket manager, Basic Developer (Need activation)
 irobin591 - DE Translator
 WaterCXubic - ZHHK Translator
 Bodyash - Russian/Ukrainian translator
