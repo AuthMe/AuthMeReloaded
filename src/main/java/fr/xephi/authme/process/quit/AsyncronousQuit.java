@@ -21,7 +21,7 @@ public class AsyncronousQuit {
 
     protected AuthMe plugin;
     protected DataSource database;
-    protected Player p;
+    protected Player player;
     protected Utils utils = Utils.getInstance();
     private String name;
     private ItemStack[] armor = null;
@@ -33,7 +33,7 @@ public class AsyncronousQuit {
 
     public AsyncronousQuit(Player p, AuthMe plugin, DataSource database,
             boolean isKick) {
-        this.p = p;
+        this.player = p;
         this.plugin = plugin;
         this.database = database;
         this.name = p.getName().toLowerCase();
@@ -41,7 +41,8 @@ public class AsyncronousQuit {
     }
 
     public void process() {
-        final Player player = p;
+        if (player == null)
+            return;
         if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
@@ -64,7 +65,8 @@ public class AsyncronousQuit {
                 inv = limbo.getInventory();
                 armor = limbo.getArmour();
             }
-            utils.addNormal(player, limbo.getGroup());
+            if (limbo.getGroup() != null && !limbo.getGroup().equals(""))
+                utils.addNormal(player, limbo.getGroup());
             needToChange = true;
             isOp = limbo.getOperator();
             isFlying = limbo.isFlying();
@@ -94,6 +96,7 @@ public class AsyncronousQuit {
             database.setUnlogged(name);
         }
         AuthMePlayerListener.gameMode.remove(name);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, inv, armor, isOp, isFlying, needToChange));
+        final Player p = player;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, p, inv, armor, isOp, isFlying, needToChange));
     }
 }
