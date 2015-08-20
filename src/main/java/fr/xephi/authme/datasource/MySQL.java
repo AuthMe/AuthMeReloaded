@@ -196,7 +196,7 @@ public class MySQL implements DataSource {
             pst.setString(1, user);
             rs = pst.executeQuery();
             return rs.next();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -246,7 +246,7 @@ public class MySQL implements DataSource {
             } else {
                 return null;
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return null;
         } finally {
@@ -456,7 +456,7 @@ public class MySQL implements DataSource {
                 if (rs != null && !rs.isClosed())
                     rs.close();
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -501,7 +501,7 @@ public class MySQL implements DataSource {
                 if (rs != null && !rs.isClosed())
                     rs.close();
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -523,7 +523,7 @@ public class MySQL implements DataSource {
             pst.setString(3, auth.getRealName());
             pst.setString(4, auth.getNickname());
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -542,7 +542,7 @@ public class MySQL implements DataSource {
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             return pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return 0;
         } finally {
@@ -570,7 +570,7 @@ public class MySQL implements DataSource {
             pst.setLong(1, until);
             pst.executeUpdate();
             return list;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
         } finally {
@@ -606,7 +606,7 @@ public class MySQL implements DataSource {
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, user);
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -629,7 +629,7 @@ public class MySQL implements DataSource {
             pst.setString(4, auth.getWorld());
             pst.setString(5, auth.getNickname());
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -654,7 +654,7 @@ public class MySQL implements DataSource {
                 countIp++;
             }
             return countIp;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return 0;
         } finally {
@@ -674,7 +674,7 @@ public class MySQL implements DataSource {
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -697,7 +697,7 @@ public class MySQL implements DataSource {
             pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -732,7 +732,7 @@ public class MySQL implements DataSource {
         if (st != null) {
             try {
                 st.close();
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
             }
         }
@@ -742,7 +742,7 @@ public class MySQL implements DataSource {
         if (rs != null) {
             try {
                 rs.close();
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
             }
         }
@@ -752,7 +752,7 @@ public class MySQL implements DataSource {
         if (con != null) {
             try {
                 con.close();
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
             }
         }
@@ -773,7 +773,7 @@ public class MySQL implements DataSource {
                 countIp.add(rs.getString(columnName));
             }
             return countIp;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
         } finally {
@@ -798,7 +798,7 @@ public class MySQL implements DataSource {
                 countIp.add(rs.getString(columnName));
             }
             return countIp;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
         } finally {
@@ -823,7 +823,7 @@ public class MySQL implements DataSource {
                 countEmail.add(rs.getString(columnName));
             }
             return countEmail;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return new ArrayList<String>();
         } finally {
@@ -844,7 +844,7 @@ public class MySQL implements DataSource {
                 pst.setString(1, name);
                 pst.executeUpdate();
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
         } finally {
             close(pst);
@@ -890,7 +890,7 @@ public class MySQL implements DataSource {
         while (con == null)
             try {
                 con = ds.getConnection();
-            } catch (SQLException e) {
+            } catch (Exception e) {
                 try {
                     reconnect(false);
                     con = ds.getConnection();
@@ -937,7 +937,7 @@ public class MySQL implements DataSource {
             rs = pst.executeQuery();
             if (rs.next())
                 return (rs.getInt(columnLogged) == 1);
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -958,7 +958,7 @@ public class MySQL implements DataSource {
             pst.setInt(1, 1);
             pst.setString(2, user);
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
         } finally {
@@ -979,7 +979,7 @@ public class MySQL implements DataSource {
                 pst.setInt(1, 0);
                 pst.setString(2, user);
                 pst.executeUpdate();
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
                 return;
             } finally {
@@ -999,7 +999,7 @@ public class MySQL implements DataSource {
             pst.setInt(1, 0);
             pst.setInt(2, 1);
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
         } finally {
@@ -1022,7 +1022,7 @@ public class MySQL implements DataSource {
             if (rs != null && rs.next()) {
                 result = rs.getInt(1);
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return result;
         } finally {
@@ -1042,7 +1042,7 @@ public class MySQL implements DataSource {
             pst.setString(1, newone);
             pst.setString(2, oldone);
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
         } finally {
@@ -1092,7 +1092,7 @@ public class MySQL implements DataSource {
                 if (pAuth != null)
                     auths.add(pAuth);
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
         } finally {
@@ -1143,7 +1143,7 @@ public class MySQL implements DataSource {
                 if (pAuth != null)
                     auths.add(pAuth);
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
         } finally {
