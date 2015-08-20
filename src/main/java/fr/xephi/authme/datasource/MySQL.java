@@ -121,6 +121,7 @@ public class MySQL implements DataSource {
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         config.addDataSourceProperty("autoReconnect", true);
+        config.setMaxLifetime(12000);
         config.setInitializationFailFast(false);
         ds = new HikariDataSource(config);
         ConsoleLogger.info("Connection pool ready");
@@ -914,6 +915,7 @@ public class MySQL implements DataSource {
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         config.addDataSourceProperty("autoReconnect", true);
         config.setInitializationFailFast(false);
+        config.setMaxLifetime(12000);
         config.setPoolName("AuthMeMYSQLPool");
         ds = new HikariDataSource(config);
         if (!reload)
