@@ -13,6 +13,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
@@ -113,6 +114,10 @@ public class AsyncronousLogin {
             m.send(player, "vb_nonActiv");
             return null;
         }
+        AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if (!event.canLogin())
+            return null;
         return pAuth;
     }
 
