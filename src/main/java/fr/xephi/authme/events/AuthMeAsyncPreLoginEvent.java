@@ -6,7 +6,7 @@ import org.bukkit.event.HandlerList;
 
 /**
  *
- * This event is call when AuthMe try to teleport a player
+ * This event is call when a player try to /login
  *
  * @author Xephi59
  */
