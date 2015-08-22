@@ -710,8 +710,11 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized void close() {
-        if (ds != null)
-            ds.close();
+        try {
+            if (ds != null)
+                ds.close();
+        } catch (Exception e) {
+        }
     }
 
     @Override
