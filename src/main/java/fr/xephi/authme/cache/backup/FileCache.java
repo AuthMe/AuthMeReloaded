@@ -505,9 +505,11 @@ public class FileCache {
                         else armours[i] = item;
                     }
                 } catch (final RuntimeException e) {
+                    //verbose
                     e.printStackTrace();
                     ConsoleLogger.showError("Error while reading file for " + player.getName() + ", some wipe inventory incoming...");
                 } catch (final Exception e) {
+                    //verbose
                     e.printStackTrace();
                     ConsoleLogger.showError("Error while reading file for " + player.getName() + ", some wipe inventory incoming...");
                 } finally {
@@ -517,10 +519,12 @@ public class FileCache {
                 return new DataFileCache(inv, armours, group, op, flying);
             }
         } catch (RuntimeException e) {
+            // Verbose
             e.printStackTrace();
             ConsoleLogger.showError("Error while reading file for " + player.getName() + ", some wipe inventory incoming...");
             return null;
         } catch (Exception e) {
+            // Verbose
             e.printStackTrace();
             ConsoleLogger.showError("Error while reading file for " + player.getName() + ", some wipe inventory incoming...");
             return null;
