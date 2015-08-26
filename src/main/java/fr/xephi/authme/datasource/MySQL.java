@@ -113,6 +113,7 @@ public class MySQL implements DataSource {
             throws ClassNotFoundException, SQLException, TimeoutException,
             NumberFormatException, PoolInitializationException {
         HikariConfig config = new HikariConfig();
+        config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
         config.setPassword(this.password);
