@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -21,6 +22,8 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
+
+import com.zaxxer.hikari.pool.PoolInitializationException;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -143,7 +146,38 @@ public class AdminCommand implements CommandExecutor {
             Settings.reloadConfigOptions(newConfig);
             m.reloadMessages();
             plugin.database.close();
-            plugin.setupDatabase();
+
+            try {
+                plugin.setupDatabase();
+            } catch (ClassNotFoundException nfe) {
+                ConsoleLogger.showError("Fatal error occurred! Authme instance ABORTED!");
+                if (Settings.isStopEnabled) {
+                    AuthMe.getInstance().getServer().shutdown();
+                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+                } else {
+                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+                }
+                return false;
+            } catch (SQLException sqle) {
+                ConsoleLogger.showError("Fatal error occurred! Authme instance ABORTED!");
+                if (Settings.isStopEnabled) {
+                    AuthMe.getInstance().getServer().shutdown();
+                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+                } else {
+                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+                }
+                return false;
+            } catch (PoolInitializationException pie) {
+                ConsoleLogger.showError("Fatal error occurred! Authme instance ABORTED!");
+                if (Settings.isStopEnabled) {
+                    AuthMe.getInstance().getServer().shutdown();
+                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+                } else {
+                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+                }
+                return false;
+            }
+
             m.send(sender, "reload");
         } else if (args[0].equalsIgnoreCase("lastlogin")) {
             if (args.length != 2) {
