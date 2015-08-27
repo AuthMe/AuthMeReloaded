@@ -56,13 +56,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
             player.setFlying(true);
         }
         // Player is now logout... Time to fire event !
-        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
-            }
-        });
+        Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
         m.send(player, "logout");
         ConsoleLogger.info(player.getDisplayName() + " logged out");
     }
