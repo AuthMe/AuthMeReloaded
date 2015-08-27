@@ -29,6 +29,7 @@ public enum HashAlgorithm {
     ROYALAUTH(fr.xephi.authme.security.crypts.ROYALAUTH.class),
     CRAZYCRYPT1(fr.xephi.authme.security.crypts.CRAZYCRYPT1.class),
     BCRYPT2Y(fr.xephi.authme.security.crypts.BCRYPT2Y.class),
+    SALTEDSHA512(fr.xephi.authme.security.crypts.SALTEDSHA512.class),
     CUSTOM(Null.class);
 
     Class<?> classe;
