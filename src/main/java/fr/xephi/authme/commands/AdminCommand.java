@@ -50,8 +50,8 @@ public class AdminCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command cmnd, String label,
-            String[] args) {
+    public boolean onCommand(final CommandSender sender, Command cmnd,
+            String label, String[] args) {
         if (args.length == 0) {
             sender.sendMessage("Usage:");
             sender.sendMessage("/authme reload - Reload the config");
@@ -468,34 +468,43 @@ public class AdminCommand implements CommandExecutor {
                     return true;
                 }
             }
-            try {
-                String name = args[1].toLowerCase();
-                String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
-                PlayerAuth auth = null;
-                if (PlayerCache.getInstance().isAuthenticated(name)) {
-                    auth = PlayerCache.getInstance().getAuth(name);
-                } else if (plugin.database.isAuthAvailable(name)) {
-                    auth = plugin.database.getAuth(name);
+            final String name = args[1].toLowerCase();
+            final String raw = args[2];
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+                @Override
+                public void run() {
+                    String hash;
+                    try {
+                        hash = PasswordSecurity.getHash(Settings.getPasswordHash, raw, name);
+                    } catch (NoSuchAlgorithmException e) {
+                        m.send(sender, "error");
+                        return;
+                    }
+                    PlayerAuth auth = null;
+                    if (PlayerCache.getInstance().isAuthenticated(name)) {
+                        auth = PlayerCache.getInstance().getAuth(name);
+                    } else if (plugin.database.isAuthAvailable(name)) {
+                        auth = plugin.database.getAuth(name);
+                    }
+                    if (auth == null) {
+                        m.send(sender, "unknown_user");
+                        return;
+                    }
+                    auth.setHash(hash);
+                    if (PasswordSecurity.userSalt.containsKey(name)) {
+                        auth.setSalt(PasswordSecurity.userSalt.get(name));
+                        plugin.database.updateSalt(auth);
+                    }
+                    if (!plugin.database.updatePassword(auth)) {
+                        m.send(sender, "error");
+                        return;
+                    }
+                    sender.sendMessage("pwd_changed");
+                    ConsoleLogger.info(name + "'s password changed");
                 }
-                if (auth == null) {
-                    m.send(sender, "unknown_user");
-                    return true;
-                }
-                auth.setHash(hash);
-                if (PasswordSecurity.userSalt.containsKey(name)) {
-                    auth.setSalt(PasswordSecurity.userSalt.get(name));
-                    plugin.database.updateSalt(auth);
-                }
-                if (!plugin.database.updatePassword(auth)) {
-                    m.send(sender, "error");
-                    return true;
-                }
-                sender.sendMessage("pwd_changed");
-                ConsoleLogger.info(args[1] + "'s password changed");
-            } catch (NoSuchAlgorithmException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-                m.send(sender, "error");
-            }
+
+            });
             return true;
         } else if (args[0].equalsIgnoreCase("unregister") || args[0].equalsIgnoreCase("unreg") || args[0].equalsIgnoreCase("del")) {
             if (args.length != 2) {

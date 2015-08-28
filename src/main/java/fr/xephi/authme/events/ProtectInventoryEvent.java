@@ -20,6 +20,7 @@ public class ProtectInventoryEvent extends CustomEvent {
 
     public ProtectInventoryEvent(Player player, ItemStack[] storedinventory,
             ItemStack[] storedarmor) {
+        super(true);
         this.player = player;
         this.storedinventory = storedinventory;
         this.storedarmor = storedarmor;

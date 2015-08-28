@@ -28,8 +28,7 @@ public class StoreInventoryEvent extends CustomEvent {
         try {
             this.inventory = fileCache.readCache(player).getInventory();
             this.armor = fileCache.readCache(player).getArmour();
-        } catch (Exception e)
-        {
+        } catch (Exception e) {
             this.inventory = player.getInventory().getContents();
             this.armor = player.getInventory().getArmorContents();
         }

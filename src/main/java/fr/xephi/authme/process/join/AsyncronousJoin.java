@@ -6,6 +6,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -176,25 +177,27 @@ public class AsyncronousJoin {
 
         }
         if (Settings.protectInventoryBeforeLogInEnabled) {
-            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+            try {
+                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
+                ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+                plugin.getServer().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    if (!Settings.noConsoleSpam)
+                        ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
+                } else {
+                    final ItemStack[] inv = ev.getEmptyArmor();
+                    final ItemStack[] armor = ev.getEmptyArmor();
+                    sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
-                @Override
-                public void run() {
-                    try {
-                        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                        ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-                        plugin.getServer().getPluginManager().callEvent(ev);
-                        if (ev.isCancelled()) {
-                            if (!Settings.noConsoleSpam)
-                                ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
-                        } else {
-                            plugin.api.setPlayerInventory(player, ev.getEmptyInventory(), ev.getEmptyArmor());
+                        @Override
+                        public void run() {
+                            plugin.api.setPlayerInventory(player, inv, armor);
                         }
-                    } catch (NullPointerException ex) {
-                    }
-                }
 
-            });
+                    });
+                }
+            } catch (NullPointerException ex) {
+            }
         }
         String[] msg;
         if (Settings.emailRegistration) {
@@ -262,21 +265,21 @@ public class AsyncronousJoin {
         else {
             if (Spawn.getInstance().getFirstSpawn() == null || Spawn.getInstance().getFirstSpawn().getWorld() == null)
                 return false;
-            final Location loc = Spawn.getInstance().getFirstSpawn();
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), Spawn.getInstance().getFirstSpawn());
+            plugin.getServer().getPluginManager().callEvent(tpEvent);
+            if (!tpEvent.isCancelled()) {
+                if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
+                    final Location fLoc = tpEvent.getTo();
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-                @Override
-                public void run() {
-                    FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), loc);
-                    plugin.getServer().getPluginManager().callEvent(tpEvent);
-                    if (!tpEvent.isCancelled()) {
-                        if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
-                            player.teleport(tpEvent.getTo());
+                        @Override
+                        public void run() {
+                            player.teleport(fLoc);
                         }
-                    }
-                }
 
-            });
+                    });
+                }
+            }
             return true;
         }
     }
