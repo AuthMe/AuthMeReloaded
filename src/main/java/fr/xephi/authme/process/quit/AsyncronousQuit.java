@@ -13,6 +13,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Settings;
@@ -97,6 +98,15 @@ public class AsyncronousQuit {
         }
         AuthMePlayerListener.gameMode.remove(name);
         final Player p = player;
+        RestoreInventoryEvent ev = new RestoreInventoryEvent(player, inv, armor, true);
+        Bukkit.getPluginManager().callEvent(ev);
+        if (ev.isCancelled()) {
+            inv = null;
+            armor = null;
+        } else {
+            inv = ev.getInventory();
+            armor = ev.getArmor();
+        }
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, p, inv, armor, isOp, isFlying, needToChange));
     }
 }

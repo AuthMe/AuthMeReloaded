@@ -22,6 +22,7 @@ public class PasswordEncryptionEvent extends Event {
     private String playerName = "";
 
     public PasswordEncryptionEvent(EncryptionMethod method, String playerName) {
+        super(true);
         this.method = method;
         this.playerName = playerName;
     }

@@ -13,6 +13,7 @@ public class ResetInventoryEvent extends CustomEvent {
     private Player player;
 
     public ResetInventoryEvent(Player player) {
+        super(true);
         this.player = player;
     }
 

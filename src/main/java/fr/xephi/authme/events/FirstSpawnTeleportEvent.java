@@ -16,6 +16,7 @@ public class FirstSpawnTeleportEvent extends CustomEvent {
     private Location from;
 
     public FirstSpawnTeleportEvent(Player player, Location from, Location to) {
+        super(true);
         this.player = player;
         this.from = from;
         this.to = to;
