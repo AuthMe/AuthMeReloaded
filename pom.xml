@@ -82,9 +82,7 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<include>org.slf4j:slf4j-api</include>
-							<include>org.apache.logging.log4j:log4j-slf4j-impl</include>
-							<include>com.zaxxer:HikariCP</include>
+							<include>com.zaxxer:HikariCP-Log4J</include>
 							<include>com.maxmind.geoip:geoip-api</include>
 							<include>com.sun.mail:javax.mail</include>
 							<include>com.comphenix.attribute:AttributeStorage</include>
