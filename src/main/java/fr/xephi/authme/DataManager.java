@@ -134,10 +134,13 @@ public class DataManager {
                     playerFile.delete();
                     i++;
                 } else {
-                    playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + Bukkit.getOfflinePlayer(name).getUniqueId() + ".yml");
-                    if (playerFile.exists()) {
-                        playerFile.delete();
-                        i++;
+                    try {
+                        playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + Bukkit.getOfflinePlayer(name).getUniqueId() + ".yml");
+                        if (playerFile.exists()) {
+                            playerFile.delete();
+                            i++;
+                        }
+                    } catch (Exception e) { // Don't do nothing if the method getUniqueId() isn't avariable ( MC version < 1.7.5 )
                     }
                 }
             } catch (Exception e) {

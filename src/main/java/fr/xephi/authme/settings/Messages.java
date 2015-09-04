@@ -1,12 +1,9 @@
 package fr.xephi.authme.settings;
 
 import java.io.File;
-import java.io.InputStream;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 
 public class Messages extends CustomConfiguration {
@@ -29,13 +26,11 @@ public class Messages extends CustomConfiguration {
      * @param filename
      *            The filename to open
      */
-    @SuppressWarnings("deprecation")
     public final void loadDefaults(File file) {
-        InputStream stream = AuthMe.getInstance().getResource(file.getName());
-        if (stream == null)
-            return;
-
-        setDefaults(YamlConfiguration.loadConfiguration(stream));
+        if(file.isFile()){
+            setDefaults(YamlConfiguration.loadConfiguration(file));
+        }
+        return;
     }
 
     /**

@@ -28,7 +28,7 @@ public final class Settings extends YamlConfiguration {
     public static String PLUGIN_FOLDER = "." + File.separator + "plugins" + File.separator + "AuthMe";
     public static final String CACHE_FOLDER = Settings.PLUGIN_FOLDER + File.separator + "cache";
     public static final String AUTH_FILE = Settings.PLUGIN_FOLDER + File.separator + "auths.db";
-    public static final String MESSAGE_FILE = Settings.PLUGIN_FOLDER + File.separator + "messages";
+    public static final String MESSAGE_FILE = Settings.PLUGIN_FOLDER + File.separator + "messages" + File.separator + "messages";
     public static final String SETTINGS_FILE = Settings.PLUGIN_FOLDER + File.separator + "config.yml";
     public static List<String> allowCommands = null;
     public static List<String> getJoinPermissions = null;

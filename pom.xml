@@ -56,6 +56,14 @@
 					<include>*.yml</include>
 				</includes>
 			</resource>
+			<resource>
+				<targetPath>./messages/</targetPath>
+				<filtering>false</filtering>
+				<directory>${basedir}/src/main/resources/messages/</directory>
+				<includes>
+					<include>*.yml</include>
+				</includes>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>
@@ -74,12 +82,13 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<include>com.maxmind.geoip:*</include>
-							<include>javax.mail:*</include>
-							<include>com.sun.mail:*</include>
-							<include>com.comphenix.attribute:*</include>
-							<include>org.mcstats.*:*</include>
-							<include>com.zaxxer:*</include>
+							<include>org.slf4j:slf4j-api</include>
+							<include>org.apache.logging.log4j:log4j-slf4j-impl</include>
+							<include>com.zaxxer:HikariCP</include>
+							<include>com.maxmind.geoip:geoip-api</include>
+							<include>com.sun.mail:javax.mail</include>
+							<include>com.comphenix.attribute:AttributeStorage</include>
+							<include>org.mcstats.bukkit:metrics</include>
 						</includes>
 					</artifactSet>
 					<relocations>
@@ -163,10 +172,10 @@
 			<url>http://repo.mcstats.org/content/repositories/snapshots/</url>
 		</repository>
 
-		<!-- Local repo for HikariCP-Log4j -->
+		<!-- sgdc3 HikariCP Log4J Repo -->
 		<repository>
-			<id>local-repo</id>
-			<url>file://${basedir}/localrepo</url>
+		    <id>hikaricp-log4j-releases</id>
+		    <url>http://nexus-sgdc3.rhcloud.com/nexus/content/repositories/hikaricp-log4j-releases/</url>
 		</repository>
 
 	</repositories>
@@ -175,37 +184,11 @@
 
 		<!-- Maven Dependencies -->
 
-		<!-- MySql Connection Pool -->
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.12</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-slf4j-impl</artifactId>
-			<version>2.0.3</version>
-			<scope>compile</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-api</artifactId>
-			<version>${log4j.version}</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
-		<!-- <dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<version>${log4j.version}</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency> -->
+		<!-- Database Connection Pool -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP-Log4j</artifactId>
-			<version>2.4.2-SNAPSHOT</version>
+			<artifactId>HikariCP-Log4J</artifactId>
+			<version>2.4.1</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
@@ -219,7 +202,7 @@
 			</exclusions>
 		</dependency>
 
-		<!-- SQLite Library -->
+		<!-- SQLite Connector -->
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
@@ -227,7 +210,13 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- Java Email API -->
+		<!-- Java Email API and Implementation -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.5.4</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
