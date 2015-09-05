@@ -82,7 +82,8 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<include>com.zaxxer:HikariCP-Log4J</include>
+							<include>com.zaxxer:HikariCP</include>
+							<include>org.slf4j:slf4j-simple</include>
 							<include>com.maxmind.geoip:geoip-api</include>
 							<include>com.sun.mail:javax.mail</include>
 							<include>com.comphenix.attribute:AttributeStorage</include>
@@ -172,8 +173,8 @@
 
 		<!-- sgdc3 HikariCP Log4J Repo -->
 		<repository>
-		    <id>hikaricp-log4j-releases</id>
-		    <url>http://nexus-sgdc3.rhcloud.com/nexus/content/repositories/hikaricp-log4j-releases/</url>
+			<id>hikaricp-log4j-releases</id>
+			<url>http://nexus-sgdc3.rhcloud.com/nexus/content/repositories/hikaricp-log4j-releases/</url>
 		</repository>
 
 	</repositories>
@@ -185,19 +186,9 @@
 		<!-- Database Connection Pool -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP-Log4J</artifactId>
+			<artifactId>HikariCP</artifactId>
 			<version>2.4.1</version>
 			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.apache.logging.log4j</groupId>
-					<artifactId>log4j-core</artifactId>
-				</exclusion>
-			</exclusions>
 		</dependency>
 
 		<!-- SQLite Connector -->
