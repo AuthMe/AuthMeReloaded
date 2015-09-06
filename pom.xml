@@ -13,6 +13,11 @@
 	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
 	<!-- See also: https://www.spigotmc.org/resources/authme-reloaded.6269/ -->
 
+	<organization>
+		<name>AuthMe-Team</name>
+		<url>https://github.com/AuthMe-Team</url>
+	</organization>
+
 	<scm>
 		<connection>scm:git:https://github.com/Xephi/AuthMeReloaded.git</connection>
 		<developerConnection>scm:git:git@github.com:Xephi/AuthMeReloaded.git</developerConnection>

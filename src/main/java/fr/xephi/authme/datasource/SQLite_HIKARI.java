@@ -126,9 +126,9 @@ public class SQLite_HIKARI implements DataSource {
         config.setJdbcUrl("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
         config.setInitializationFailFast(true); // Don't start the plugin if the database is unavariable
         config.setConnectionTestQuery("SELECT 1");
-        config.setMaxLifetime(60000); // 60 Sec
-        config.setIdleTimeout(45000); // 45 Sec
-        config.setMaximumPoolSize(50); // 50 Connections (including idle connections)
+        config.setMaxLifetime(180000); // 3 Min
+        config.setIdleTimeout(60000); // 1 Min
+        config.setMaximumPoolSize(50); // 50 (including idle connections)
         ds = new HikariDataSource(config);
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
