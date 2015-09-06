@@ -22,6 +22,14 @@ public class RestoreInventoryEvent extends CustomEvent {
         this.armor = armor;
     }
 
+    public RestoreInventoryEvent(Player player, ItemStack[] inventory,
+            ItemStack[] armor, boolean b) {
+        super(b);
+        this.player = player;
+        this.inventory = inventory;
+        this.armor = armor;
+    }
+
     public ItemStack[] getInventory() {
         return this.inventory;
     }

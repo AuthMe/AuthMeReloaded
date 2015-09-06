@@ -96,7 +96,12 @@ public class PasswordSecurity {
                 userSalt.put(playerName, salt);
                 break;
             case BCRYPT2Y:
-                salt = createSalt(22);
+                salt = createSalt(16);
+                userSalt.put(playerName, salt);
+                break;
+            case SALTEDSHA512:
+                salt = createSalt(32);
+                userSalt.put(playerName, salt);
                 break;
             case MD5:
             case SHA1:
@@ -165,7 +170,7 @@ public class PasswordSecurity {
                         PlayerAuth nAuth = AuthMe.getInstance().database.getAuth(playerName);
                         if (nAuth != null) {
                             nAuth.setHash(getHash(Settings.getPasswordHash, password, playerName));
-                            nAuth.setSalt(userSalt.get(playerName));
+                            nAuth.setSalt(userSalt.containsKey(playerName) ? userSalt.get(playerName) : "");
                             AuthMe.getInstance().database.updatePassword(nAuth);
                             AuthMe.getInstance().database.updateSalt(nAuth);
                         }
