@@ -8,7 +8,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -45,7 +44,7 @@ public class MySQL implements DataSource {
     private HikariDataSource ds;
     private String columnRealName;
 
-    public MySQL() {
+    public MySQL() throws ClassNotFoundException, SQLException, PoolInitializationException {
         this.host = Settings.getMySQLHost;
         this.port = Settings.getMySQLPort;
         this.username = Settings.getMySQLUsername;
@@ -67,73 +66,112 @@ public class MySQL implements DataSource {
         this.columnID = Settings.getMySQLColumnId;
         this.columnLogged = Settings.getMySQLColumnLogged;
         this.columnRealName = Settings.getMySQLColumnRealName;
+
+        // Set the connection arguments (and check if connection is ok)
         try {
-            this.connect();
-            this.setup();
-        } catch (ClassNotFoundException e) {
-            ConsoleLogger.showError(e.getMessage());
+            this.setConnectionArguments();
+        } catch (ClassNotFoundException ne) {
+            ConsoleLogger.showError(ne.getMessage());
+            ConsoleLogger.showError("Can't use the Hikari Connection Pool! Please, report this error to the developer! SHUTDOWN...");
+            this.close();
             if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
+            } else {
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            }
+            throw new ClassNotFoundException(ne.getMessage());
+        } catch (IllegalArgumentException ae) { // This means that there are problems with the hikaricp pool arguments!
+            ConsoleLogger.showError(ae.getMessage());
+            ConsoleLogger.showError("Invalid database arguments! Please check your configuration!");
+            ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
+            this.close();
+            if (Settings.isStopEnabled) {
+                AuthMe.getInstance().getServer().shutdown();
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            } else {
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            }
+            throw new IllegalArgumentException(ae);
+        } catch (PoolInitializationException ie) { // Can't initialize the connection pool!
+            ConsoleLogger.showError(ie.getMessage());
+            ConsoleLogger.showError("Can't connect to the MySql database! Please check your configuration!");
+            ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
+            this.close();
+            if (Settings.isStopEnabled) {
+                AuthMe.getInstance().getServer().shutdown();
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            } else {
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+            }
+            throw new PoolInitializationException(ie);
+        }
+
+        // Initialize the database
+        try {
+            this.setupConnection();
         } catch (SQLException e) {
             ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.showError("Can't initialize the MySQL database... Please check your database settings in the config.yml file! SHUTDOWN...");
+            ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
+            this.close();
             if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
-        } catch (TimeoutException e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
+            } else {
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
-        } catch (PoolInitializationException e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
             }
-            if (!Settings.isStopEnabled)
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
+            throw new SQLException(e);
         }
     }
 
-    private synchronized void connect()
-            throws ClassNotFoundException, SQLException, TimeoutException,
-            NumberFormatException, PoolInitializationException {
+    private synchronized void setConnectionArguments()
+            throws ClassNotFoundException, IllegalArgumentException {
         HikariConfig config = new HikariConfig();
-        config.setDriverClassName("com.mysql.jdbc.Driver");
+        config.setPoolName("AuthMeMYSQLPool");
+        config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
         config.setPassword(this.password);
-        config.setPoolName("AuthMeMYSQLPool");
         config.addDataSourceProperty("cachePrepStmts", "true");
         config.addDataSourceProperty("prepStmtCacheSize", "250");
         config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        config.addDataSourceProperty("autoReconnect", true);
-        config.setMaxLifetime(30000);
-        config.setInitializationFailFast(false);
+        config.addDataSourceProperty("autoReconnect", false);
+        config.setInitializationFailFast(true); // Don't start the plugin if the database is unavariable
+        config.setMaxLifetime(180000); // 3 Min
+        config.setIdleTimeout(60000); // 1 Min
+        config.setMaximumPoolSize(50); // 50 (including idle connections)
         ds = new HikariDataSource(config);
-        ConsoleLogger.info("Connection pool ready");
+        ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
-    private synchronized void setup() throws SQLException {
+    private synchronized void reloadArguments()
+            throws ClassNotFoundException, IllegalArgumentException {
+        if (ds != null){
+            ds.close();
+        }
+        setConnectionArguments();
+        ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
+    }
+
+    private synchronized Connection getConnection() {
+        Connection con = null;
+        while(con == null){
+            try {
+                con = ds.getConnection();
+            } catch (SQLException ce) {
+                return null;
+            }
+        }
+        return con;
+    }
+
+    private synchronized void setupConnection() throws SQLException {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             st = con.createStatement();
             st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1'," + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "'," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged + " SMALLINT NOT NULL DEFAULT '0'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
@@ -185,6 +223,7 @@ public class MySQL implements DataSource {
             close(st);
             close(con);
         }
+        ConsoleLogger.info("MySQL Setup finished");
     }
 
     @Override
@@ -193,7 +232,7 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
@@ -217,7 +256,7 @@ public class MySQL implements DataSource {
         PlayerAuth pAuth = null;
         int id = -1;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
@@ -264,7 +303,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             if ((columnSalt == null || columnSalt.isEmpty()) || (auth.getSalt() == null || auth.getSalt().isEmpty())) {
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnRealName + ") VALUES (?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
@@ -473,7 +512,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
@@ -518,7 +557,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=?, " + columnRealName + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
@@ -540,7 +579,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             return pst.executeUpdate();
@@ -560,7 +599,7 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         List<String> list = new ArrayList<String>();
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             rs = pst.executeQuery();
@@ -587,7 +626,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
                 ResultSet rs = null;
@@ -623,7 +662,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + " =?, " + lastlocY + "=?, " + lastlocZ + "=?, " + lastlocWorld + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
@@ -648,7 +687,7 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         int countIp = 0;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
@@ -671,7 +710,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnEmail + " =? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
@@ -694,7 +733,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + " =? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
@@ -710,26 +749,26 @@ public class MySQL implements DataSource {
     }
 
     @Override
+    public void reload() {
+        try {
+            reloadArguments();
+        } catch (Exception e) {
+            ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
+            if (Settings.isStopEnabled) {
+                AuthMe.getInstance().getServer().shutdown();
+            }
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+        }
+    }
+
+    @Override
     public synchronized void close() {
         try {
             if (ds != null)
                 ds.close();
         } catch (Exception e) {
-        }
-    }
-
-    @Override
-    public void reload() {
-        try {
-            reconnect(true);
-        } catch (Exception e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
         }
     }
 
@@ -770,7 +809,7 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         List<String> countIp = new ArrayList<String>();
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, auth.getIp());
             rs = pst.executeQuery();
@@ -795,7 +834,7 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         List<String> countIp = new ArrayList<String>();
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
@@ -820,7 +859,7 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         List<String> countEmail = new ArrayList<String>();
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
             pst.setString(1, email);
             rs = pst.executeQuery();
@@ -844,7 +883,7 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         try {
             for (String name : banned) {
-                con = makeSureConnectionIsReady();
+                con = getConnection();
                 pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, name);
                 pst.executeUpdate();
@@ -855,75 +894,6 @@ public class MySQL implements DataSource {
             close(pst);
             close(con);
         }
-    }
-
-    private synchronized Connection makeSureConnectionIsReady() {
-        Connection con = null;
-        try {
-            con = ds.getConnection();
-        } catch (Exception te) {
-            try {
-                con = null;
-                reconnect(false);
-            } catch (Exception e) {
-                ConsoleLogger.showError(e.getMessage());
-                if (Settings.isStopEnabled) {
-                    ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
-                    AuthMe.getInstance().getServer().shutdown();
-                }
-                if (!Settings.isStopEnabled)
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-        } catch (AssertionError ae) {
-            // Make sure assertionerror is caused by the connectionpoolmanager,
-            // else re-throw it
-            if (!ae.getMessage().equalsIgnoreCase("AuthMeDatabaseError"))
-                throw new AssertionError(ae.getMessage());
-            try {
-                con = null;
-                reconnect(false);
-            } catch (Exception e) {
-                ConsoleLogger.showError(e.getMessage());
-                if (Settings.isStopEnabled) {
-                    ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
-                    AuthMe.getInstance().getServer().shutdown();
-                }
-                if (!Settings.isStopEnabled)
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-        }
-        while (con == null)
-            try {
-                con = ds.getConnection();
-            } catch (Exception e) {
-                try {
-                    reconnect(false);
-                    con = ds.getConnection();
-                } catch (Exception ex) {
-                }
-            }
-        return con;
-    }
-
-    private synchronized void reconnect(boolean reload)
-            throws ClassNotFoundException, SQLException, TimeoutException,
-            PoolInitializationException {
-        if (ds != null)
-            ds.close();
-        HikariConfig config = new HikariConfig();
-        config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
-        config.setUsername(this.username);
-        config.setPassword(this.password);
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", "250");
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        config.addDataSourceProperty("autoReconnect", true);
-        config.setInitializationFailFast(false);
-        config.setMaxLifetime(12000);
-        config.setPoolName("AuthMeMYSQLPool");
-        ds = new HikariDataSource(config);
-        if (!reload)
-            ConsoleLogger.info("ConnectionPool was unavailable... Reconnected!");
     }
 
     @Override
@@ -937,7 +907,7 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, user);
             rs = pst.executeQuery();
@@ -959,7 +929,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setInt(1, 1);
             pst.setString(2, user);
@@ -980,7 +950,7 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         if (user != null)
             try {
-                con = makeSureConnectionIsReady();
+                con = getConnection();
                 pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
                 pst.setInt(1, 0);
                 pst.setString(2, user);
@@ -1000,7 +970,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnLogged + "=?;");
             pst.setInt(1, 0);
             pst.setInt(2, 1);
@@ -1022,7 +992,7 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
             rs = pst.executeQuery();
             if (rs != null && rs.next()) {
@@ -1043,7 +1013,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, newone);
             pst.setString(2, oldone);
@@ -1065,7 +1035,7 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -1116,7 +1086,7 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             rs = pst.executeQuery();
             while (rs.next()) {

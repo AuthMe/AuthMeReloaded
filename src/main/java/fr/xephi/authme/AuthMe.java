@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -34,6 +35,7 @@ import org.mcstats.Metrics;
 import com.earth2me.essentials.Essentials;
 import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.zaxxer.hikari.pool.PoolInitializationException;
 
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
@@ -214,7 +216,18 @@ public class AuthMe extends JavaPlugin {
             else ConsoleLogger.showError("Error while performing the backup!");
         }
 
-        setupDatabase();
+        try {
+            setupDatabase();
+        } catch (ClassNotFoundException nfe) {
+            ConsoleLogger.showError("Fatal error occurred! Authme initialization ABORTED!");
+            return;
+        } catch (SQLException sqle) {
+            ConsoleLogger.showError("Fatal error occurred! Authme initialization ABORTED!");
+            return;
+        } catch (PoolInitializationException pie) {
+            ConsoleLogger.showError("Fatal error occurred! Authme initialization ABORTED!");
+            return;
+        }
 
         dataManager = new DataManager(this);
 
@@ -800,7 +813,7 @@ public class AuthMe extends JavaPlugin {
         return realIP;
     }
 
-    public void setupDatabase() {
+    public void setupDatabase() throws ClassNotFoundException, PoolInitializationException, SQLException {
         /*
          * Backend MYSQL - FILE - SQLITE
          */
