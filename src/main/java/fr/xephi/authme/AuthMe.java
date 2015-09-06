@@ -626,9 +626,8 @@ public class AuthMe extends JavaPlugin {
         if (multiverse != null && Settings.multiverse) {
             try {
                 return multiverse.getMVWorldManager().getMVWorld(world).getSpawnLocation();
-            } catch (NullPointerException npe) {
-            } catch (ClassCastException cce) {
-            } catch (NoClassDefFoundError ncdfe) {
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return null;
@@ -792,7 +791,7 @@ public class AuthMe extends JavaPlugin {
     /**
      * Get Player real IP through VeryGames method
      * 
-     * @param Player
+     * @param player
      *            player
      */
     @Deprecated
