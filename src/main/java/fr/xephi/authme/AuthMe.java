@@ -231,8 +231,9 @@ public class AuthMe extends JavaPlugin {
 
         dataManager = new DataManager(this);
 
-        // Setup API
+        // Setup the new API
         api = new NewAPI(this);
+        // Old deprecated API
         new API(this);
 
         // Setup Management

@@ -154,15 +154,9 @@ public class MySQL implements DataSource {
         ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
-    private synchronized Connection getConnection() {
+    private synchronized Connection getConnection() throws SQLException {
         Connection con = null;
-        while(con == null){
-            try {
-                con = ds.getConnection();
-            } catch (SQLException ce) {
-                return null;
-            }
-        }
+        con = ds.getConnection();
         return con;
     }
 
