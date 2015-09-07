@@ -520,6 +520,7 @@ public class AdminCommand implements CommandExecutor {
                 m.send(sender, "error");
                 return true;
             }
+            @SuppressWarnings("deprecation")
             Player target = Bukkit.getPlayer(name);
             PlayerCache.getInstance().removePlayer(name);
             Utils.getInstance().setGroup(name, groupType.UNREGISTERED);
@@ -602,6 +603,7 @@ public class AdminCommand implements CommandExecutor {
                 sender.sendMessage("Usage: /authme getip <onlineplayername>");
                 return true;
             }
+            @SuppressWarnings("deprecation")
             Player player = Bukkit.getPlayer(args[1]);
             if (player == null) {
                 sender.sendMessage("This player is not actually online");
@@ -617,6 +619,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             try {
+                @SuppressWarnings("deprecation")
                 Player player = Bukkit.getPlayer(args[1]);
                 if (player == null || !player.isOnline()) {
                     sender.sendMessage("Player needs to be online!");
