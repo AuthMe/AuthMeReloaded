@@ -1,5 +1,8 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.settings.Settings;
+import org.bukkit.Bukkit;
+
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -7,10 +10,6 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.logging.Logger;
-
-import org.bukkit.Bukkit;
-
-import fr.xephi.authme.settings.Settings;
 
 public class ConsoleLogger {
 
