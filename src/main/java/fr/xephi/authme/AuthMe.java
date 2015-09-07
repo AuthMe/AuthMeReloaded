@@ -308,7 +308,7 @@ public class AuthMe extends JavaPlugin {
 
         // Sponsor message
         ConsoleLogger.info("AuthMe hooks perfectly with the VERYGAMES server hosting!");
-        ConsoleLogger.info("AuthMe builds are available on jenkins, thanks to our sponsor GameHosting.it - leader in Italy in Game Server Provider");
+        ConsoleLogger.info("Development builds are available on our jenkins, thanks to our sponsor GameHosting.it - leader in Italy as Game Server Provider");
 
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
     }
