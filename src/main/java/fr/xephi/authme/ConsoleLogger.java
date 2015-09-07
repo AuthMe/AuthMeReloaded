@@ -33,7 +33,7 @@ public class ConsoleLogger {
 
     public static void showError(String message) {
         if (AuthMe.getInstance().isEnabled()) {
-            log.warning("[AuthMe] ERROR: " + message);
+            log.warning("[AuthMe] " + message);
             if (Settings.useLogging) {
                 Calendar date = Calendar.getInstance();
                 final String actually = "[" + DateFormat.getDateInstance().format(date.getTime()) + ", " + date.get(Calendar.HOUR_OF_DAY) + ":" + date.get(Calendar.MINUTE) + ":" + date.get(Calendar.SECOND) + "] ERROR : " + message;

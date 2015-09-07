@@ -61,6 +61,7 @@ import fr.xephi.authme.datasource.DatabaseCalls;
 import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
+import fr.xephi.authme.datasource.SQLite_HIKARI;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeChestShopListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
@@ -307,9 +308,10 @@ public class AuthMe extends JavaPlugin {
         // Start Email recall task if needed
         recallEmail();
 
-        // Sponsor message
+        // Sponsor messages
         ConsoleLogger.info("AuthMe hooks perfectly with the VERYGAMES server hosting!");
-        ConsoleLogger.info("Development builds are available on our jenkins, thanks to our sponsor GameHosting.it - leader in Italy as Game Server Provider");
+        ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
+        ConsoleLogger.info("Do you want a good gameserver? Look at our sponsor GameHosting.it leader in Italy as Game Server Provider!");
 
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
     }
@@ -816,7 +818,7 @@ public class AuthMe extends JavaPlugin {
 
     public void setupDatabase() throws ClassNotFoundException, PoolInitializationException, SQLException {
         /*
-         * Backend MYSQL - FILE - SQLITE
+         * Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
          */
         switch (Settings.getDataSource) {
             case FILE:
@@ -830,6 +832,12 @@ public class AuthMe extends JavaPlugin {
                 final int b = database.getAccountsRegistered();
                 if (b >= 4000)
                     ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE UPGRADE TO MYSQL!!");
+                break;
+            case SQLITEHIKARI:
+                database = new SQLite_HIKARI();
+                final int b2 = database.getAccountsRegistered();
+                if (b2 >= 8000)
+                    ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH " + b2 + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE UPGRADE TO MYSQL!!");
                 break;
         }
 
