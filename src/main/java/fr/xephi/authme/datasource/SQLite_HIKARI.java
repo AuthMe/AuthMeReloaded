@@ -100,7 +100,7 @@ public class SQLite_HIKARI implements DataSource {
             this.setupConnection();
         } catch (SQLException e) {
             ConsoleLogger.showError(e.getMessage());
-            ConsoleLogger.showError("Can't initialize the MySQL database... Please check your database settings in the config.yml file! SHUTDOWN...");
+            ConsoleLogger.showError("Can't initialize the SQLite database... Please check your database settings in the config.yml file! SHUTDOWN...");
             ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
             this.close();
             if (Settings.isStopEnabled) {
@@ -133,30 +133,18 @@ public class SQLite_HIKARI implements DataSource {
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
-    private synchronized Connection getRawConnection() {
-        Connection con = null;
-        while(con == null){
-            try {
-                con = ds.getConnection();
-            } catch (SQLException ce) {
-                return null;
-            }
+    private synchronized void reloadArguments()
+            throws ClassNotFoundException, IllegalArgumentException {
+        if (ds != null){
+            ds.close();
         }
-        return con;
+        setConnectionArguments();
+        ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
-    private synchronized Connection getConnection() {
-        Connection con;
-        con = getRawConnection();
-        if(con == null){
-            ds.close();
-            ConsoleLogger.showError("Database connection is LOST! SHUTDOWN...");
-            if (Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().shutdown();
-            } else {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-        }
+    private synchronized Connection getConnection() throws SQLException {
+        Connection con = null;
+        con = ds.getConnection();
         return con;
     }
 
@@ -165,17 +153,7 @@ public class SQLite_HIKARI implements DataSource {
         Statement st = null;
         ResultSet rs = null;
         try {
-            con = getRawConnection();
-            if(con == null){
-                ds.close();
-                if (Settings.isStopEnabled) {
-                    ConsoleLogger.showError("Can't connect to the SQLite database... Please check your database settings in the config.yml file! SHUTDOWN...");
-                    AuthMe.getInstance().getServer().shutdown();
-                } else {
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-                }
-                return;
-            }
+            con = getConnection();
             st = con.createStatement();
             st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL," + columnLastLogin + " BIGINT," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
@@ -807,6 +785,17 @@ public class SQLite_HIKARI implements DataSource {
 
     @Override
     public void reload() {
+        try {
+            reloadArguments();
+        } catch (Exception e) {
+            ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.showError("Can't reconnect to SQLite database... Please check your SQLite informations ! SHUTDOWN...");
+            if (Settings.isStopEnabled) {
+                AuthMe.getInstance().getServer().shutdown();
+            }
+            if (!Settings.isStopEnabled)
+                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+        }
     }
 
     @Override

@@ -150,10 +150,9 @@ public class MySQL implements DataSource {
     }
 
     private synchronized Connection getConnection() throws SQLException {
-        if (connection == null || connection.isClosed()) {
-            connection = ds.getConnection();
-        }
-        return connection;
+        Connection con = null;
+        con = ds.getConnection();
+        return con;
     }
 
     private synchronized void setupConnection() throws SQLException {

@@ -231,8 +231,9 @@ public class AuthMe extends JavaPlugin {
 
         dataManager = new DataManager(this);
 
-        // Setup API
+        // Setup the new API
         api = new NewAPI(this);
+        // Old deprecated API
         new API(this);
 
         // Setup Management
@@ -308,6 +309,7 @@ public class AuthMe extends JavaPlugin {
 
         // Sponsor message
         ConsoleLogger.info("AuthMe hooks perfectly with the VERYGAMES server hosting!");
+        ConsoleLogger.info("Development builds are available on our jenkins, thanks to our sponsor GameHosting.it - leader in Italy as Game Server Provider");
 
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
     }
