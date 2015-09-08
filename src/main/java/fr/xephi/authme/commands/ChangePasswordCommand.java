@@ -1,19 +1,14 @@
 package fr.xephi.authme.commands;
 
-import java.security.NoSuchAlgorithmException;
-
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.task.ChangePasswordTask;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
 
 public class ChangePasswordCommand implements CommandExecutor {
 
@@ -25,8 +20,8 @@ public class ChangePasswordCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(final CommandSender sender, Command cmnd, String label,
-            final String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmnd, String label,
+                             String[] args) {
         if (!(sender instanceof Player)) {
             return true;
         }
@@ -36,8 +31,8 @@ public class ChangePasswordCommand implements CommandExecutor {
             return true;
         }
 
-        final Player player = (Player) sender;
-        final String name = player.getName().toLowerCase();
+        Player player = (Player) sender;
+        String name = player.getName().toLowerCase();
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
             m.send(player, "not_logged_in");
             return true;
@@ -67,35 +62,7 @@ public class ChangePasswordCommand implements CommandExecutor {
                 return true;
             }
         }
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, args[1], name);
-
-                    if (PasswordSecurity.comparePasswordWithHash(args[0], PlayerCache.getInstance().getAuth(name).getHash(), player.getName())) {
-                        PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
-                        auth.setHash(hashnew);
-                        if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
-                            auth.setSalt(PasswordSecurity.userSalt.get(name));
-                        else auth.setSalt("");
-                        if (!plugin.database.updatePassword(auth)) {
-                            m.send(player, "error");
-                            return;
-                        }
-                        plugin.database.updateSalt(auth);
-                        PlayerCache.getInstance().updatePlayer(auth);
-                        m.send(player, "pwd_changed");
-                        ConsoleLogger.info(player.getName() + " changed his password");
-                    } else {
-                        m.send(player, "wrong_pwd");
-                    }
-                } catch (NoSuchAlgorithmException ex) {
-                    ConsoleLogger.showError(ex.getMessage());
-                    m.send(sender, "error");
-                }
-            }
-        });
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new ChangePasswordTask(plugin, player, args[0]));
         return true;
     }
 }

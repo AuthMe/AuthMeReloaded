@@ -2,11 +2,7 @@ package fr.xephi.authme.cache.backup;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Scanner;
-import java.util.UUID;
+import java.util.*;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -44,9 +40,7 @@ public class FileCache {
             return;
         try {
             path = player.getUniqueId().toString();
-        } catch (Exception e) {
-            path = player.getName().toLowerCase();
-        } catch (Error e) {
+        } catch (Exception | Error e) {
             path = player.getName().toLowerCase();
         }
         File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "playerdatas.cache");
@@ -109,22 +103,19 @@ public class FileCache {
                     if (Settings.customAttributes) {
                         try {
                             Attributes attributes = new Attributes(item);
-                            if (attributes != null) {
-                                Iterator<Attribute> iter = attributes.values().iterator();
-                                Attribute a = null;
-                                while (iter.hasNext()) {
-                                    Attribute b = iter.next();
-                                    if (a != null && a == b)
-                                        break;
-                                    a = b;
-                                    if (a != null) {
-                                        if (a.getName() != null && a.getAttributeType() != null && a.getOperation() != null && a.getUUID() != null)
-                                            writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
-                                    }
+                            Iterator<Attribute> iter = attributes.values().iterator();
+                            Attribute a = null;
+                            while (iter.hasNext()) {
+                                Attribute b = iter.next();
+                                if (a != null && a == b)
+                                    break;
+                                a = b;
+                                if (a != null) {
+                                    if (a.getName() != null && a.getAttributeType() != null && a.getOperation() != null && a.getUUID() != null)
+                                        writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
                                 }
                             }
-                        } catch (Exception e) {
-                        } catch (Error e) {
+                        } catch (Exception | Error e) {
                         }
                     }
                 } else {
@@ -172,14 +163,13 @@ public class FileCache {
                     if (Settings.customAttributes) {
                         try {
                             Attributes attributes = new Attributes(item);
-                            if (attributes != null)
-                                while (attributes.values().iterator().hasNext()) {
-                                    Attribute a = attributes.values().iterator().next();
-                                    if (a != null) {
-                                        if (a.getName() != null && a.getAttributeType() != null && a.getOperation() != null && a.getUUID() != null && a.getAttributeType().getMinecraftId() != null)
-                                            writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
-                                    }
+                            while (attributes.values().iterator().hasNext()) {
+                                Attribute a = attributes.values().iterator().next();
+                                if (a != null) {
+                                    if (a.getName() != null && a.getAttributeType() != null && a.getOperation() != null && a.getUUID() != null && a.getAttributeType().getMinecraftId() != null)
+                                        writer.write("attribute=" + a.getName() + ";" + a.getAttributeType().getMinecraftId() + ";" + a.getAmount() + ";" + a.getOperation().getId() + ";" + a.getUUID().toString());
                                 }
+                            }
                         } catch (Exception e) {
                         }
                     }
@@ -197,9 +187,7 @@ public class FileCache {
         String path = "";
         try {
             path = player.getUniqueId().toString();
-        } catch (Exception e) {
-            path = player.getName().toLowerCase();
-        } catch (Error e) {
+        } catch (Exception | Error e) {
             path = player.getName().toLowerCase();
         }
         try {
@@ -232,13 +220,9 @@ public class FileCache {
                         final String[] playerInfo = line.split(";");
                         group = playerInfo[0];
 
-                        if (Integer.parseInt(playerInfo[1]) == 1) {
-                            op = true;
-                        } else op = false;
+                        op = Integer.parseInt(playerInfo[1]) == 1;
                         if (playerInfo.length > 2) {
-                            if (Integer.parseInt(playerInfo[2]) == 1)
-                                flying = true;
-                            else flying = false;
+                            flying = Integer.parseInt(playerInfo[2]) == 1;
                         }
 
                         continue;
@@ -275,9 +259,7 @@ public class FileCache {
                         }
                         if (!lores.isEmpty()) {
                             List<String> loreList = new ArrayList<String>();
-                            for (String s : lores.split("%newline%")) {
-                                loreList.add(s);
-                            }
+                            Collections.addAll(loreList, lores.split("%newline%"));
                             meta.setLore(loreList);
                         }
                         if (meta != null)
@@ -296,9 +278,7 @@ public class FileCache {
                             meta.setDisplayName(name);
                         if (!lores.isEmpty()) {
                             List<String> loreList = new ArrayList<String>();
-                            for (String s : lores.split("%newline%")) {
-                                loreList.add(s);
-                            }
+                            Collections.addAll(loreList, lores.split("%newline%"));
                             meta.setLore(loreList);
                         }
                         if (meta != null)
@@ -348,14 +328,13 @@ public class FileCache {
                         Attributes attributes = null;
                         count = 1;
                         boolean v = true;
-                        while (reader.hasNextLine() && v == true) {
+                        while (reader.hasNextLine() && v) {
                             String line = reader.nextLine();
                             switch (count) {
                                 case 1:
                                     item = new ItemStack(Material.getMaterial(line));
                                     if (item.getType() == Material.AIR)
                                         v = false;
-                                    meta = item.getItemMeta();
                                     count++;
                                     continue;
                                 case 2:
@@ -379,8 +358,7 @@ public class FileCache {
                             if (line.startsWith("lore=")) {
                                 line = line.substring(5);
                                 List<String> lore = new ArrayList<String>();
-                                for (String s : line.split("%newline%"))
-                                    lore.add(s);
+                                Collections.addAll(lore, line.split("%newline%"));
                                 meta.setLore(lore);
                                 item.setItemMeta(meta);
                                 continue;
@@ -430,7 +408,7 @@ public class FileCache {
                         Attributes attributes = null;
                         count = 1;
                         boolean v = true;
-                        while (reader.hasNextLine() && v == true) {
+                        while (reader.hasNextLine() && v) {
                             String line = reader.nextLine();
                             switch (count) {
                                 case 1:
@@ -460,9 +438,8 @@ public class FileCache {
                             }
                             if (line.startsWith("lore=")) {
                                 line = line.substring(5);
-                                List<String> lore = new ArrayList<String>();
-                                for (String s : line.split("%newline%"))
-                                    lore.add(s);
+                                List<String> lore = new ArrayList<>();
+                                Collections.addAll(lore, line.split("%newline%"));
                                 meta.setLore(lore);
                                 item.setItemMeta(meta);
                                 continue;
@@ -504,10 +481,6 @@ public class FileCache {
                             armours[i] = attributes.getStack();
                         else armours[i] = item;
                     }
-                } catch (final RuntimeException e) {
-                    //verbose
-                    e.printStackTrace();
-                    ConsoleLogger.showError("Error while reading file for " + player.getName() + ", some wipe inventory incoming...");
                 } catch (final Exception e) {
                     //verbose
                     e.printStackTrace();
@@ -518,11 +491,6 @@ public class FileCache {
                 }
                 return new DataFileCache(inv, armours, group, op, flying);
             }
-        } catch (RuntimeException e) {
-            // Verbose
-            e.printStackTrace();
-            ConsoleLogger.showError("Error while reading file for " + player.getName() + ", some wipe inventory incoming...");
-            return null;
         } catch (Exception e) {
             // Verbose
             e.printStackTrace();
@@ -535,9 +503,7 @@ public class FileCache {
         String path = "";
         try {
             path = player.getUniqueId().toString();
-        } catch (Exception e) {
-            path = player.getName().toLowerCase();
-        } catch (Error e) {
+        } catch (Exception | Error e) {
             path = player.getName().toLowerCase();
         }
         try {
@@ -562,9 +528,7 @@ public class FileCache {
         String path = "";
         try {
             path = player.getUniqueId().toString();
-        } catch (Exception e) {
-            path = player.getName().toLowerCase();
-        } catch (Error e) {
+        } catch (Exception | Error e) {
             path = player.getName().toLowerCase();
         }
         File file = new File(plugin.getDataFolder() + File.separator + "cache" + File.separator + path + File.separator + "playerdatas.cache");

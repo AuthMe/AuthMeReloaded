@@ -53,6 +53,7 @@ public class LimboCache {
                 operator = playerData.readCache(player).getOperator();
                 flying = playerData.readCache(player).isFlying();
             } catch (Exception e) {
+                ConsoleLogger.writeStackTrace(e);
                 ConsoleLogger.showError("Some error on reading cache of " + name);
             }
         } else {
@@ -65,12 +66,8 @@ public class LimboCache {
                 inv = null;
                 arm = null;
             }
-            if (player.isOp())
-                operator = true;
-            else operator = false;
-            if (player.isFlying())
-                flying = true;
-            else flying = false;
+            operator = player.isOp();
+            flying = player.isFlying();
             if (plugin.permission != null) {
                 try {
                     playerGroup = plugin.permission.getPrimaryGroup(player);

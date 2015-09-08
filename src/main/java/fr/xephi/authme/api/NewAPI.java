@@ -70,9 +70,7 @@ public class NewAPI {
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return true;
-        return CombatTagComunicator.isNPC(player);
+        return plugin.getCitizensCommunicator().isNPC(player) || CombatTagComunicator.isNPC(player);
     }
 
     /**
@@ -89,8 +87,7 @@ public class NewAPI {
             PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
 
             if (auth != null) {
-                Location loc = new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
-                return loc;
+                return new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
             } else {
                 return null;
             }
@@ -152,10 +149,7 @@ public class NewAPI {
                 return false;
             }
             PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com");
-            if (!plugin.database.saveAuth(auth)) {
-                return false;
-            }
-            return true;
+            return plugin.database.saveAuth(auth);
         } catch (NoSuchAlgorithmException ex) {
             return false;
         }
