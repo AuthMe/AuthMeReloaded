@@ -37,7 +37,6 @@ public class MySQL implements DataSource {
     private List<String> columnOthers;
     private HikariDataSource ds;
     private String columnRealName;
-    private Connection connection;
 
     public MySQL() throws ClassNotFoundException, SQLException, PoolInitializationException {
         this.host = Settings.getMySQLHost;

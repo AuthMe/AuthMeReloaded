@@ -35,13 +35,12 @@ public class PerformBackup {
         switch (Settings.getDataSource) {
             case FILE:
                 return FileBackup("auths.db");
-
             case MYSQL:
                 return MySqlBackup();
-
             case SQLITE:
                 return FileBackup(Settings.getMySQLDatabase + ".db");
-
+            case SQLITEHIKARI:
+                return FileBackup(Settings.getMySQLDatabase + ".db");
         }
 
         return false;
