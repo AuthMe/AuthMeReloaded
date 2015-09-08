@@ -48,11 +48,11 @@ public class ModuleManager implements Module {
     @Override
     public boolean load() {
         File dir = new File(plugin.getDataFolder() + File.separator + "modules");
-        String[] files = dir.list();
-        if (files == null || files.length == 0){
+        File[] files = dir.listFiles();
+        if (files == null) {
             return false;
         }
-        for (File pathToJar : dir.listFiles()) { // FindBugs: "possible null pointers" O_o ?
+        for (File pathToJar : files) {
             JarFile jarFile = null;
             try {
                 jarFile = new JarFile(pathToJar);
