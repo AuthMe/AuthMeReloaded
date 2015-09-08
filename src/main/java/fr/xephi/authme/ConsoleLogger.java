@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import com.google.common.base.Throwables;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 
@@ -59,4 +60,7 @@ public class ConsoleLogger {
         }
     }
 
+    public static void writeStackTrace(Exception ex){
+        writeLog(Throwables.getStackTraceAsString(ex));
+    }
 }

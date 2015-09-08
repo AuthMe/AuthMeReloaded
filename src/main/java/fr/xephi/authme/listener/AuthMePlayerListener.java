@@ -575,17 +575,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        int playersOnline = 0;
-        try {
-            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
-                playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
-            else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-        } catch (NoSuchMethodException ex) {
-        } // can never happen
-        catch (InvocationTargetException ex) {
-        } // can also never happen
-        catch (IllegalAccessException ex) {
-        } // can still never happen
+        int playersOnline = Utils.getOnlinePlayers().length;
         if (playersOnline > plugin.getServer().getMaxPlayers()) {
             event.allow();
             return;
@@ -625,13 +615,12 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
-
         if ((!Settings.isForceSingleSessionEnabled) && (event.getReason().contains(m.getString("same_nick")))) {
             event.setCancelled(true);
             return;
         }
 
+        Player player = event.getPlayer();
         plugin.management.performQuit(player, true);
     }
 

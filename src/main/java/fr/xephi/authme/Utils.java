@@ -1,18 +1,19 @@
 package fr.xephi.authme;
 
-import java.io.File;
-import java.util.Iterator;
-
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.events.AuthMeTeleportEvent;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
-import fr.xephi.authme.settings.Settings;
+import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Collection;
+import java.util.Iterator;
 
 public class Utils {
 
@@ -130,7 +131,7 @@ public class Utils {
     }
 
     public void packCoords(double x, double y, double z, String w,
-            final Player pl) {
+                           final Player pl) {
         World theWorld;
         if (w.equals("unavailableworld")) {
             theWorld = pl.getWorld();
@@ -171,13 +172,13 @@ public class Utils {
         NOTLOGGEDIN,
         LOGGEDIN
     }
-    
-    public static void purgeDirectory(File file){
+
+    public static void purgeDirectory(File file) {
         String files[] = file.list();
-        if (files != null && files.length != 0){
+        if (files != null && files.length != 0) {
             for (String temp : files) {
                 File fileDelete = new File(file, temp);
-                if (fileDelete.isDirectory()){
+                if (fileDelete.isDirectory()) {
                     purgeDirectory(fileDelete);
                     fileDelete.delete();
                 } else {
@@ -185,5 +186,19 @@ public class Utils {
                 }
             }
         }
+    }
+
+    public static Player[] getOnlinePlayers() {
+        Player[] players = null;
+        try {
+            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class) {
+                players = (Player[]) ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null)).toArray();
+            } else {
+                players = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null));
+            }
+        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
+            // can never happen
+        }
+        return players;
     }
 }

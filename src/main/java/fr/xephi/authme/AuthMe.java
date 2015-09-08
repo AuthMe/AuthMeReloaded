@@ -80,7 +80,7 @@ import net.milkbowl.vault.permission.Permission;
 
 public class AuthMe extends JavaPlugin {
 
-    public DataSource database = null;
+    public DataSource database;
     private Settings settings;
     private Messages m;
     public OtherAccounts otherAccounts;
@@ -178,9 +178,7 @@ public class AuthMe extends JavaPlugin {
             try {
                 Class.forName("org.apache.logging.log4j.core.Filter");
                 setLog4JFilter();
-            } catch (ClassNotFoundException e) {
-                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
-            } catch (NoClassDefFoundError e) {
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
                 ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
             }
         }
@@ -219,13 +217,8 @@ public class AuthMe extends JavaPlugin {
 
         try {
             setupDatabase();
-        } catch (ClassNotFoundException nfe) {
-            ConsoleLogger.showError("Fatal error occurred! Authme initialization ABORTED!");
-            return;
-        } catch (SQLException sqle) {
-            ConsoleLogger.showError("Fatal error occurred! Authme initialization ABORTED!");
-            return;
-        } catch (PoolInitializationException pie) {
+        } catch (ClassNotFoundException | SQLException | PoolInitializationException ex) {
+            ConsoleLogger.writeStackTrace(ex);
             ConsoleLogger.showError("Fatal error occurred! Authme initialization ABORTED!");
             return;
         }
@@ -275,25 +268,18 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.reloadSupport) {
             try {
-                int playersOnline = 0;
-                try {
-                    if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
-                        playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
-                    else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-                } catch (Exception ex) {
-                }
-                if (playersOnline < 1) {
-                    try {
+                int playersOnline = Utils.getOnlinePlayers().length;
+                if (database != null) {
+                    if (playersOnline < 1) {
                         database.purgeLogged();
-                    } catch (NullPointerException npe) {
-                    }
-                } else {
-                    for (PlayerAuth auth : database.getLoggedPlayers()) {
-                        if (auth == null)
-                            continue;
-                        auth.setLastLogin(new Date().getTime());
-                        database.updateSession(auth);
-                        PlayerCache.getInstance().addPlayer(auth);
+                    } else {
+                        for (PlayerAuth auth : database.getLoggedPlayers()) {
+                            if (auth == null)
+                                continue;
+                            auth.setLastLogin(new Date().getTime());
+                            database.updateSession(auth);
+                            PlayerCache.getInstance().addPlayer(auth);
+                        }
                     }
                 }
             } catch (Exception ex) {
@@ -400,38 +386,27 @@ public class AuthMe extends JavaPlugin {
             multiverse = null;
             return;
         }
-        if (this.getServer().getPluginManager().getPlugin("Multiverse-Core") != null && this.getServer().getPluginManager().getPlugin("Multiverse-Core").isEnabled()) {
+        if (this.getServer().getPluginManager().isPluginEnabled("Multiverse-Core")) {
             try {
                 multiverse = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
                 ConsoleLogger.info("Hooked correctly with Multiverse-Core");
-            } catch (NullPointerException npe) {
-                multiverse = null;
-            } catch (ClassCastException cce) {
-                multiverse = null;
-            } catch (NoClassDefFoundError ncdfe) {
-                multiverse = null;
+            } catch (Exception | NoClassDefFoundError ignored) {
             }
-        } else {
-            multiverse = null;
         }
     }
 
     public void checkEssentials() {
-        if (this.getServer().getPluginManager().getPlugin("Essentials") != null && this.getServer().getPluginManager().getPlugin("Essentials").isEnabled()) {
+        if (this.getServer().getPluginManager().isPluginEnabled("Essentials")) {
             try {
                 ess = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
                 ConsoleLogger.info("Hooked correctly with Essentials");
-            } catch (NullPointerException npe) {
-                ess = null;
-            } catch (ClassCastException cce) {
-                ess = null;
-            } catch (NoClassDefFoundError ncdfe) {
+            } catch (Exception | NoClassDefFoundError e) {
                 ess = null;
             }
         } else {
             ess = null;
         }
-        if (this.getServer().getPluginManager().getPlugin("EssentialsSpawn") != null && this.getServer().getPluginManager().getPlugin("EssentialsSpawn").isEnabled()) {
+        if (this.getServer().getPluginManager().isPluginEnabled("EssentialsSpawn")) {
             try {
                 essentialsSpawn = new EssSpawn().getLocation();
                 ConsoleLogger.info("Hooked correctly with EssentialsSpawn");
@@ -445,42 +420,24 @@ public class AuthMe extends JavaPlugin {
     }
 
     public void checkCombatTag() {
-        if (this.getServer().getPluginManager().getPlugin("CombatTag") != null && this.getServer().getPluginManager().getPlugin("CombatTag").isEnabled()) {
-            this.CombatTag = true;
-        } else {
-            this.CombatTag = false;
-        }
+        this.CombatTag = this.getServer().getPluginManager().isPluginEnabled("CombatTag");
     }
 
     public void checkCitizens() {
-        if (this.getServer().getPluginManager().getPlugin("Citizens") != null && this.getServer().getPluginManager().getPlugin("Citizens").isEnabled())
-            this.isCitizensActive = true;
-        else this.isCitizensActive = false;
+        this.isCitizensActive = this.getServer().getPluginManager().isPluginEnabled("Citizens");
     }
 
     @Override
     public void onDisable() {
-        int playersOnline = 0;
-        try {
-            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
-                playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
-            else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-        } catch (NoSuchMethodException ex) {
-        } // can never happen
-        catch (InvocationTargetException ex) {
-        } // can also never happen
-        catch (IllegalAccessException ex) {
-        } // can still never happen
-        if (playersOnline != 0)
-            for (Player player : Bukkit.getOnlinePlayers()) {
+        Player[] players = Utils.getOnlinePlayers();
+        if (players != null) {
+            for (Player player : players) {
                 this.savePlayer(player);
             }
+        }
 
         if (database != null) {
-            try {
-                database.close();
-            } catch (Exception e) {
-            }
+            database.close();
         }
 
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {
@@ -497,11 +454,8 @@ public class AuthMe extends JavaPlugin {
     }
 
     public void savePlayer(Player player) {
-        try {
-            if ((citizens.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
-                return;
-            }
-        } catch (Exception e) {
+        if ((citizens.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
+            return;
         }
         try {
             String name = player.getName().toLowerCase();
@@ -511,7 +465,7 @@ public class AuthMe extends JavaPlugin {
             }
             if (LimboCache.getInstance().hasLimboPlayer(name)) {
                 LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-                if (Settings.protectInventoryBeforeLogInEnabled.booleanValue()) {
+                if (Settings.protectInventoryBeforeLogInEnabled) {
                     player.getInventory().setArmorContents(limbo.getArmour());
                     player.getInventory().setContents(limbo.getInventory());
                 }
@@ -730,18 +684,8 @@ public class AuthMe extends JavaPlugin {
     }
 
     public String replaceAllInfos(String message, Player player) {
-        int playersOnline = 0;
         try {
-            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
-                playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
-            else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-        } catch (NoSuchMethodException ex) {
-        } // can never happen
-        catch (InvocationTargetException ex) {
-        } // can also never happen
-        catch (IllegalAccessException ex) {
-        } // can still never happen
-        try {
+            int playersOnline = Utils.getOnlinePlayers().length;
             message = message.replace("&", "\u00a7");
             message = message.replace("{PLAYER}", player.getName());
             message = message.replace("{ONLINE}", "" + playersOnline);
@@ -776,9 +720,7 @@ public class AuthMe extends JavaPlugin {
             if (ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
                 count++;
         }
-        if (count >= Settings.getMaxLoginPerIp)
-            return true;
-        return false;
+        return count >= Settings.getMaxLoginPerIp;
     }
 
     public boolean hasJoinedIp(String name, String ip) {
@@ -787,14 +729,12 @@ public class AuthMe extends JavaPlugin {
             if (ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
                 count++;
         }
-        if (count >= Settings.getMaxJoinPerIp)
-            return true;
-        return false;
+        return count >= Settings.getMaxJoinPerIp;
     }
 
     /**
      * Get Player real IP through VeryGames method
-     * 
+     *
      * @param player
      *            player
      */
