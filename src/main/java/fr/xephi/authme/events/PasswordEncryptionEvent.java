@@ -10,9 +10,9 @@ import fr.xephi.authme.security.crypts.EncryptionMethod;
  * This event is called when we need to compare or get an hash password, for set
  * a custom EncryptionMethod
  * </p>
- * 
+ *
  * @see fr.xephi.authme.security.crypts.EncryptionMethod
- * 
+ *
  * @author Xephi59
  */
 public class PasswordEncryptionEvent extends Event {
@@ -22,7 +22,7 @@ public class PasswordEncryptionEvent extends Event {
     private String playerName = "";
 
     public PasswordEncryptionEvent(EncryptionMethod method, String playerName) {
-        super(true);
+        super(false);
         this.method = method;
         this.playerName = playerName;
     }
