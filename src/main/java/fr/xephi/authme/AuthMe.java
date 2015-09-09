@@ -243,7 +243,9 @@ public class AuthMe extends JavaPlugin {
         pm.registerEvents(new AuthMeBlockListener(this), this);
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
-        if (ChestShop != 0) {
+
+        // Legacy chestshop hook
+        if (ChestShop != 0 && ChestShop < 3.813) {
             pm.registerEvents(new AuthMeChestShopListener(this), this);
             ConsoleLogger.info("Hooked successfully with ChestShop!");
         }
