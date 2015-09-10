@@ -39,26 +39,6 @@ DataSource:
     mySQLlastlocWorld: world
     # Column for RealName
     mySQLRealName: realname
-GroupOptions:
-    # if you want to set up a particulary Permission Group for
-    # users that arent registered yet. Pay attention this option
-    # is casesensitive!
-    # Example: UnregisteredPlayerGroup: GuestUser
-    UnregisteredPlayerGroup: ''
-    # Same as UnregisteredGroup if u want to set a switch 
-    # between unregistered and registered player group
-    # set the group name below
-    RegisteredPlayerGroup: ''
-    # with this option you can add specified permission onJoin
-    # like for example LoginBonus from another plugins, AuthMe
-    # will check onJoin if player has that permissions in his Group
-    # if true it add a temporany permissions to that user. This Field
-    # is needed beacuse AuthMe switch all unlogged players on a
-    # specified restricted Permission Group, so plugins that will use
-    # some particolary permissions on join doesnt work, without
-    # compiling option below!
-    Permissions:
-        PermissionsOnJoin: []
 settings:
     sessions:
         # Do you want to enable session? When enabled 
@@ -290,10 +270,10 @@ ExternalBoardOptions:
     # WordPress prefix defined during WordPress installation process
     wordpressTablePrefix: 'wp_'
 permission:
-    # take care with this options, if u dont want
+    # Take care with this options, if you dont want
     # to use Vault and Group Switching of
-    # AuthMe for unloggedIn players put False
-    # below, default is true.
+    # AuthMe for unloggedIn players put true
+    # below, default is false.
     EnablePermissionCheck: false
 BackupSystem:
    # Enable or Disable Automatic Backup
