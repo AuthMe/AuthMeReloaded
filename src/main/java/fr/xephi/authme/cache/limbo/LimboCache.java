@@ -1,19 +1,19 @@
 package fr.xephi.authme.cache.limbo;
 
-import java.util.concurrent.ConcurrentHashMap;
-
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.backup.DataFileCache;
+import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.events.ResetInventoryEvent;
+import fr.xephi.authme.events.StoreInventoryEvent;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.backup.FileCache;
-import fr.xephi.authme.events.ResetInventoryEvent;
-import fr.xephi.authme.events.StoreInventoryEvent;
-import fr.xephi.authme.settings.Settings;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class LimboCache {
 
@@ -48,13 +48,11 @@ public class LimboCache {
                 inv = null;
                 arm = null;
             }
-            try {
-                playerGroup = playerData.readCache(player).getGroup();
-                operator = playerData.readCache(player).getOperator();
-                flying = playerData.readCache(player).isFlying();
-            } catch (Exception e) {
-                ConsoleLogger.writeStackTrace(e);
-                ConsoleLogger.showError("Some error on reading cache of " + name);
+            DataFileCache cache = playerData.readCache(player);
+            if (cache != null) {
+                playerGroup = cache.getGroup();
+                operator = cache.getOperator();
+                flying = cache.isFlying();
             }
         } else {
             StoreInventoryEvent event = new StoreInventoryEvent(player);
