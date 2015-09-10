@@ -1,12 +1,11 @@
 package fr.xephi.authme.events;
 
+import fr.xephi.authme.cache.backup.DataFileCache;
+import fr.xephi.authme.cache.backup.FileCache;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import fr.xephi.authme.cache.backup.FileCache;
-
 /**
- *
  * This event is call just before write inventory content to cache
  *
  * @author Xephi59
@@ -25,10 +24,11 @@ public class StoreInventoryEvent extends CustomEvent {
 
     public StoreInventoryEvent(Player player, FileCache fileCache) {
         this.player = player;
-        try {
-            this.inventory = fileCache.readCache(player).getInventory();
-            this.armor = fileCache.readCache(player).getArmour();
-        } catch (Exception e) {
+        DataFileCache cache = fileCache.readCache(player);
+        if (cache != null) {
+            this.inventory = cache.getInventory();
+            this.armor = cache.getArmour();
+        } else {
             this.inventory = player.getInventory().getContents();
             this.armor = player.getInventory().getArmorContents();
         }
