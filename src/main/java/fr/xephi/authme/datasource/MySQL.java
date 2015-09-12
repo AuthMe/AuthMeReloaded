@@ -123,7 +123,7 @@ public class MySQL implements DataSource {
             throws ClassNotFoundException, IllegalArgumentException {
         HikariConfig config = new HikariConfig();
         config.setPoolName("AuthMeMYSQLPool");
-        config.setDataSourceClassName("com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource");
+        config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
         config.setPassword(this.password);
