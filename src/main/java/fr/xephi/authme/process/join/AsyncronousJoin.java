@@ -134,7 +134,7 @@ public class AsyncronousJoin {
             LimboCache.getInstance().updateLimboPlayer(player);
             try {
                 DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
-                playerBackup.createCache(player, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(), LimboCache.getInstance().getLimboPlayer(name).getOperator(), LimboCache.getInstance().getLimboPlayer(name).isFlying());
+                playerBackup.createCache(player, dataFile);
             } catch (Exception e) {
                 ConsoleLogger.showError("Error on creating an inventory cache for " + name + ", maybe inventory wipe in preparation...");
             }
