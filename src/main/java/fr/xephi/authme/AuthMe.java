@@ -140,18 +140,21 @@ public class AuthMe extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        // TODO: split the plugin in more modules
+        // TODO: remove vault as hard dependency
+
         server = getServer();
         PluginManager pm = server.getPluginManager();
 
-        authme = this;
+        // Setup the Logger
         authmeLogger.setParent(this.getLogger());
-        m = Messages.getInstance();
 
+        // Set the Instance
+        authme = this;
+
+        // Setup otherAccounts file
         otherAccounts = OtherAccounts.getInstance();
-
-        // TODOs
-        // TODO: split the plugin in more modules
-        // TODO: remove vault as hard dependency
 
         // Load settings and custom configurations
         // TODO: new configuration style (more files)
@@ -162,7 +165,6 @@ public class AuthMe extends JavaPlugin {
             this.getServer().shutdown();
             return;
         }
-
         // Configuration Security Warnings
         if (!Settings.isForceSingleSessionEnabled) {
             ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
@@ -170,6 +172,9 @@ public class AuthMe extends JavaPlugin {
         if (Settings.getSessionTimeout == 0 && Settings.isSessionsEnabled) {
             ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
         }
+
+        // Setup messages
+        m = Messages.getInstance();
 
         // Start the metrics service
         // TODO: add a setting to disable metrics
@@ -435,7 +440,7 @@ public class AuthMe extends JavaPlugin {
 
     // Check the presence of the Vault plugin and a permissions provider
     public void checkVault() {
-        if (server.getPluginManager().getPlugin("Vault").isEnabled()) {
+        if (server.getPluginManager().isPluginEnabled("Vault")) {
             RegisteredServiceProvider<Permission> permissionProvider = server.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
             if (permissionProvider != null) {
                 permission = permissionProvider.getProvider();
@@ -450,7 +455,7 @@ public class AuthMe extends JavaPlugin {
 
     // Check the version of the ChestShop plugin
     public void checkChestShop() {
-        if (Settings.legacyChestShop && server.getPluginManager().getPlugin("ChestShop").isEnabled()) {
+        if (Settings.legacyChestShop && server.getPluginManager().isPluginEnabled("ChestShop")) {
             try {
                 String rawver = com.Acrobot.ChestShop.ChestShop.getVersion();
                 double version = 0;
@@ -481,7 +486,7 @@ public class AuthMe extends JavaPlugin {
 
     // Check PerWorldInventories version
     public void checkPerWorldInventories() {
-        if (server.getPluginManager().getPlugin("PerWorldInventories").isEnabled()) {
+        if (server.getPluginManager().isPluginEnabled("PerWorldInventories")) {
             try {
             	double version = 0;
                 String ver = server.getPluginManager().getPlugin("PerWorldInventories").getDescription().getVersion();
@@ -503,7 +508,7 @@ public class AuthMe extends JavaPlugin {
 
     // Get the Multiverse plugin
     public void checkMultiverse() {
-        if (Settings.multiverse && this.getServer().getPluginManager().isPluginEnabled("Multiverse-Core")) {
+        if (Settings.multiverse && server.getPluginManager().isPluginEnabled("Multiverse-Core")) {
             try {
                 multiverse = (MultiverseCore) server.getPluginManager().getPlugin("Multiverse-Core");
                 ConsoleLogger.info("Hooked correctly with Multiverse-Core");
