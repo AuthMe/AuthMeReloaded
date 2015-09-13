@@ -28,7 +28,7 @@ public class JsonCache {
 
     public JsonCache(AuthMe plugin) {
         this.plugin = plugin;
-        cacheDir = new File(plugin.getDataFolder() + File.separator + "cache");
+        cacheDir = new File(plugin.getDataFolder(), "cache");
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
             ConsoleLogger.showError("Failed to create cache directory.");
         }

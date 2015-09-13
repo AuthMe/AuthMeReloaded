@@ -53,9 +53,9 @@ import java.util.zip.GZIPInputStream;
 
 public class AuthMe extends JavaPlugin {
 
-    public static Server server;
-    public static Logger authmeLogger = Logger.getLogger("AuthMe");
-    public static AuthMe authme;
+    private static Server server;
+    private static Logger authmeLogger = Logger.getLogger("AuthMe");
+    private static AuthMe authme;
     public Management management;
     public NewAPI api;
     private Utils utils = Utils.getInstance();
@@ -115,6 +115,8 @@ public class AuthMe extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Set the Instance
+        authme = this;
 
         // TODO: split the plugin in more modules
         // TODO: remove vault as hard dependency
@@ -124,9 +126,6 @@ public class AuthMe extends JavaPlugin {
 
         // Setup the Logger
         authmeLogger.setParent(this.getLogger());
-
-        // Set the Instance
-        authme = this;
 
         // Setup otherAccounts file
         otherAccounts = OtherAccounts.getInstance();
