@@ -1,23 +1,31 @@
 package fr.xephi.authme;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.SQLException;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
-
+import com.earth2me.essentials.Essentials;
+import com.maxmind.geoip.LookupService;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.zaxxer.hikari.pool.PoolInitializationException;
+import fr.xephi.authme.api.API;
+import fr.xephi.authme.api.NewAPI;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.backup.JsonCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.commands.*;
+import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.converter.ForceFlatToSqlite;
+import fr.xephi.authme.datasource.*;
+import fr.xephi.authme.listener.*;
+import fr.xephi.authme.plugin.manager.BungeeCordMessage;
+import fr.xephi.authme.plugin.manager.CitizensCommunicator;
+import fr.xephi.authme.plugin.manager.CombatTagComunicator;
+import fr.xephi.authme.plugin.manager.EssSpawn;
+import fr.xephi.authme.process.Management;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.OtherAccounts;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.Spawn;
+import net.milkbowl.vault.permission.Permission;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -31,51 +39,17 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.mcstats.Metrics;
 
-import com.earth2me.essentials.Essentials;
-import com.maxmind.geoip.LookupService;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.zaxxer.hikari.pool.PoolInitializationException;
-
-import fr.xephi.authme.api.API;
-import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.FileCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.commands.AdminCommand;
-import fr.xephi.authme.commands.CaptchaCommand;
-import fr.xephi.authme.commands.ChangePasswordCommand;
-import fr.xephi.authme.commands.ConverterCommand;
-import fr.xephi.authme.commands.EmailCommand;
-import fr.xephi.authme.commands.LoginCommand;
-import fr.xephi.authme.commands.LogoutCommand;
-import fr.xephi.authme.commands.RegisterCommand;
-import fr.xephi.authme.commands.UnregisterCommand;
-import fr.xephi.authme.converter.Converter;
-import fr.xephi.authme.converter.ForceFlatToSqlite;
-import fr.xephi.authme.datasource.CacheDataSource;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DatabaseCalls;
-import fr.xephi.authme.datasource.FlatFile;
-import fr.xephi.authme.datasource.MySQL;
-import fr.xephi.authme.datasource.SQLite;
-import fr.xephi.authme.datasource.SQLite_HIKARI;
-import fr.xephi.authme.listener.AuthMeBlockListener;
-import fr.xephi.authme.listener.AuthMeChestShopListener;
-import fr.xephi.authme.listener.AuthMeEntityListener;
-import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.listener.AuthMeServerListener;
-import fr.xephi.authme.plugin.manager.BungeeCordMessage;
-import fr.xephi.authme.plugin.manager.CitizensCommunicator;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
-import fr.xephi.authme.plugin.manager.EssSpawn;
-import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.OtherAccounts;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.Spawn;
-import net.milkbowl.vault.permission.Permission;
+import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
+import java.sql.SQLException;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+import java.util.zip.GZIPInputStream;
 
 public class AuthMe extends JavaPlugin {
 
@@ -90,7 +64,8 @@ public class AuthMe extends JavaPlugin {
     private Messages m;
     public DataManager dataManager;
     public DataSource database;
-    private FileCache playerBackup = new FileCache(this);
+
+    private JsonCache playerBackup = new JsonCache(this);
     public OtherAccounts otherAccounts;
     public Permission permission;
     public Essentials ess;
@@ -246,11 +221,11 @@ public class AuthMe extends JavaPlugin {
 
         // Do backup on start if enabled
         if (Settings.isBackupActivated && Settings.isBackupOnStart) {
-        	// Do backup and check return value!
-            if (new PerformBackup(this).DoBackup()){
+            // Do backup and check return value!
+            if (new PerformBackup(this).DoBackup()) {
                 ConsoleLogger.info("Backup performed correctly");
             } else {
-            	ConsoleLogger.showError("Error while performing the backup!");
+                ConsoleLogger.showError("Error while performing the backup!");
             }
         }
 
@@ -342,7 +317,7 @@ public class AuthMe extends JavaPlugin {
 
     @Override
     public void onDisable() {
-    	// Save player data
+        // Save player data
         Player[] players = Utils.getOnlinePlayers();
         if (players != null) {
             for (Player player : players) {
@@ -368,7 +343,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Stop/unload the server/plugin as defined in the configuration
-    public void stopOrUnload(){
+    public void stopOrUnload() {
         if (Settings.isStopEnabled) {
             ConsoleLogger.showError("THE SERVER IS GOING TO SHUTDOWN AS DEFINED IN THE CONFIGURATION!");
             AuthMe.getInstance().getServer().shutdown();
@@ -378,7 +353,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Show the exception message and stop/unload the server/plugin as defined in the configuration
-    public void stopOrUnload(Exception e){
+    public void stopOrUnload(Exception e) {
         ConsoleLogger.showError(e.getMessage());
         stopOrUnload();
     }
@@ -386,7 +361,7 @@ public class AuthMe extends JavaPlugin {
     // Initialize and setup the database
     public void setupDatabase() throws ClassNotFoundException, PoolInitializationException, SQLException {
         // Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
-    	int accounts = 0;
+        int accounts = 0;
         switch (Settings.getDataSource) {
             case FILE:
                 database = new FlatFile();
@@ -469,8 +444,8 @@ public class AuthMe extends JavaPlugin {
                         return;
                     }
                 }
-                if (version >= 3.813){
-                	return;
+                if (version >= 3.813) {
+                    return;
                 }
                 if (version < 3.50) {
                     ConsoleLogger.showError("Please Update your ChestShop version! Bugs may occur!");
@@ -488,7 +463,7 @@ public class AuthMe extends JavaPlugin {
     public void checkPerWorldInventories() {
         if (server.getPluginManager().isPluginEnabled("PerWorldInventories")) {
             try {
-            	double version = 0;
+                double version = 0;
                 String ver = server.getPluginManager().getPlugin("PerWorldInventories").getDescription().getVersion();
                 try {
                     version = Double.valueOf(ver.split(" ")[0]);
@@ -498,11 +473,11 @@ public class AuthMe extends JavaPlugin {
                     } catch (NumberFormatException nfee) {
                     }
                 }
-                if (version < 1.57){
+                if (version < 1.57) {
                     ConsoleLogger.showError("Please Update your PerWorldInventories version! INVENTORY WIPE may occur!");
-                }  
+                }
             } catch (Exception e) {
-            }  
+            }
         }
     }
 
@@ -513,10 +488,10 @@ public class AuthMe extends JavaPlugin {
                 multiverse = (MultiverseCore) server.getPluginManager().getPlugin("Multiverse-Core");
                 ConsoleLogger.info("Hooked correctly with Multiverse-Core");
             } catch (Exception | NoClassDefFoundError ignored) {
-            	multiverse = null;
+                multiverse = null;
             }
         } else {
-        	multiverse = null;
+            multiverse = null;
         }
     }
 
@@ -564,6 +539,7 @@ public class AuthMe extends JavaPlugin {
         }
         return false;
     }
+
     public boolean authmePermissible(CommandSender sender, String perm) {
         if (sender.hasPermission(perm)) {
             return true;
@@ -632,7 +608,7 @@ public class AuthMe extends JavaPlugin {
         if (cleared == null) {
             return;
         }
-        if (cleared.isEmpty()){
+        if (cleared.isEmpty()) {
             return;
         }
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
@@ -689,7 +665,7 @@ public class AuthMe extends JavaPlugin {
 
     // Return the essentials spawnpoint
     private Location getEssentialsSpawn() {
-        if (essentialsSpawn != null){
+        if (essentialsSpawn != null) {
             return essentialsSpawn;
         }
         return null;
@@ -840,8 +816,7 @@ public class AuthMe extends JavaPlugin {
     /**
      * Get Player real IP through VeryGames method
      *
-     * @param player
-     *            player
+     * @param player player
      */
     @Deprecated
     public String getVeryGamesIP(Player player) {
