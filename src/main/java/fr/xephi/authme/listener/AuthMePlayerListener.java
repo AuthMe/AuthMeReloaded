@@ -21,21 +21,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -407,7 +393,7 @@ public class AuthMePlayerListener implements Listener {
 
         // Shedule login task so works after the prelogin
         // (Fix found by Koolaid5000)
-        Bukkit.getScheduler().runTask(plugin, new Runnable(){
+        Bukkit.getScheduler().runTask(plugin, new Runnable() {
             @Override
             public void run() {
                 Player player = event.getPlayer();
@@ -421,7 +407,7 @@ public class AuthMePlayerListener implements Listener {
                     event.setJoinMessage(null);
                 }
             }
-        });    
+        });
     }
 
     @SuppressWarnings("deprecation")
@@ -429,7 +415,7 @@ public class AuthMePlayerListener implements Listener {
     public void onPreLogin(AsyncPlayerPreLoginEvent event){
         final String name = event.getName().toLowerCase();
         final Player player = Bukkit.getServer().getPlayer(name);
-        
+
         if (player == null)
             return;
 
@@ -440,7 +426,7 @@ public class AuthMePlayerListener implements Listener {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             if (LimboCache.getInstance().hasLimboPlayer(name))
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-    
+
                     @Override
                     public void run() {
                         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
@@ -449,7 +435,7 @@ public class AuthMePlayerListener implements Listener {
                             LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
                         }
                     }
-    
+
                 });
             return;
         }
@@ -678,6 +664,35 @@ public class AuthMePlayerListener implements Listener {
             event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
         }
         event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
+        if (event.getPlayer() == null)
+            return;
+
+        Player player = event.getPlayer();
+        String name = player.getName().toLowerCase();
+
+        if (Utils.getInstance().isUnrestricted(player)) {
+            return;
+        }
+
+        if (plugin.getCitizensCommunicator().isNPC(player)) {
+            return;
+        }
+
+        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+            return;
+        }
+
+        if (!plugin.database.isAuthAvailable(name)) {
+            if (!Settings.isForcedRegistrationEnabled) {
+                return;
+            }
+        }
+
         event.setCancelled(true);
     }
 
