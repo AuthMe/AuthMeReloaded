@@ -11,7 +11,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
@@ -31,7 +31,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     private AuthMe plugin;
     private DataSource database;
     private PluginManager pm;
-    private FileCache playerCache;
+    private JsonCache playerCache;
 
     public ProcessSyncronousPlayerLogin(Player player, AuthMe plugin,
             DataSource data) {
@@ -42,7 +42,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         this.name = player.getName().toLowerCase();
         this.limbo = LimboCache.getInstance().getLimboPlayer(name);
         this.auth = database.getAuth(name);
-        this.playerCache = new FileCache(plugin);
+        this.playerCache = new JsonCache(plugin);
     }
 
     public LimboPlayer getLimbo() {

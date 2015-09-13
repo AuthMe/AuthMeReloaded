@@ -19,7 +19,7 @@ import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.DataFileCache;
-import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
@@ -42,13 +42,13 @@ public class AsyncronousJoin {
     protected String name;
     private Utils utils = Utils.getInstance();
     private Messages m = Messages.getInstance();
-    private FileCache playerBackup;
+    private JsonCache playerBackup;
 
     public AsyncronousJoin(Player player, AuthMe plugin, DataSource database) {
         this.player = player;
         this.plugin = plugin;
         this.database = database;
-        this.playerBackup = new FileCache(plugin);
+        this.playerBackup = new JsonCache(plugin);
         this.name = player.getName().toLowerCase();
     }
 

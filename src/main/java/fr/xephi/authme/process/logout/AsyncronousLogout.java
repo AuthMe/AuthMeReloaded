@@ -10,7 +10,7 @@ import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.DataFileCache;
-import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
@@ -26,7 +26,7 @@ public class AsyncronousLogout {
     protected boolean canLogout = true;
     private Messages m = Messages.getInstance();
     private Utils utils = Utils.getInstance();
-    private FileCache playerBackup;
+    private JsonCache playerBackup;
 
     public AsyncronousLogout(Player player, AuthMe plugin,
             DataSource database) {
@@ -34,7 +34,7 @@ public class AsyncronousLogout {
         this.plugin = plugin;
         this.database = database;
         this.name = player.getName().toLowerCase();
-        this.playerBackup = new FileCache(plugin);
+        this.playerBackup = new JsonCache(plugin);
     }
 
     private void preLogout() {

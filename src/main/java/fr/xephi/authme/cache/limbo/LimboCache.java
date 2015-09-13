@@ -3,7 +3,7 @@ package fr.xephi.authme.cache.limbo;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.backup.DataFileCache;
-import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.events.ResetInventoryEvent;
 import fr.xephi.authme.events.StoreInventoryEvent;
 import fr.xephi.authme.settings.Settings;
@@ -19,13 +19,13 @@ public class LimboCache {
 
     private volatile static LimboCache singleton = null;
     public ConcurrentHashMap<String, LimboPlayer> cache;
-    private FileCache playerData;
+    private JsonCache playerData;
     public AuthMe plugin;
 
     private LimboCache(AuthMe plugin) {
         this.plugin = plugin;
         this.cache = new ConcurrentHashMap<String, LimboPlayer>();
-        this.playerData = new FileCache(plugin);
+        this.playerData = new JsonCache(plugin);
     }
 
     public void addLimboPlayer(Player player) {

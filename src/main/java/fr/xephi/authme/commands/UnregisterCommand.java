@@ -18,7 +18,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -31,11 +31,11 @@ public class UnregisterCommand implements CommandExecutor {
 
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
-    private FileCache playerCache;
+    private JsonCache playerCache;
 
     public UnregisterCommand(AuthMe plugin) {
         this.plugin = plugin;
-        this.playerCache = new FileCache(plugin);
+        this.playerCache = new JsonCache(plugin);
     }
 
     @Override

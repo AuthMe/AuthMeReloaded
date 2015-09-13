@@ -40,7 +40,7 @@ import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.commands.AdminCommand;
@@ -88,7 +88,7 @@ public class AuthMe extends JavaPlugin {
     public static AuthMe authme;
     public Permission permission;
     private Utils utils = Utils.getInstance();
-    private FileCache playerBackup = new FileCache(this);
+    private JsonCache playerBackup = new JsonCache(this);
     public CitizensCommunicator citizens;
     public boolean isCitizensActive = false;
     public SendMailSSL mail = null;
