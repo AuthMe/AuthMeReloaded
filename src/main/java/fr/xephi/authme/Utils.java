@@ -194,7 +194,7 @@ public class Utils {
     }
 
     @SuppressWarnings("unchecked")
-	public static Collection<? extends Player> getOnlinePlayers() {
+    public static Collection<? extends Player> getOnlinePlayers() {
         if (getOnlinePlayersIsCollection) {
             return Bukkit.getOnlinePlayers();
         }
