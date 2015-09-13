@@ -85,6 +85,7 @@ public class PasswordSecurity {
                 salt = BCRYPT.gensalt(8);
                 userSalt.put(playerName, salt);
                 break;
+            case PBKDF2DJANGO:
             case PBKDF2:
                 salt = createSalt(12);
                 userSalt.put(playerName, salt);
