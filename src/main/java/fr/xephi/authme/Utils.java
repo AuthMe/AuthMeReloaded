@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -19,8 +20,7 @@ public class Utils {
 
     private String currentGroup;
     private static Utils singleton;
-    int id;
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     public Utils(AuthMe plugin) {
         this.plugin = plugin;
@@ -112,11 +112,7 @@ public class Utils {
     }
 
     public boolean isUnrestricted(Player player) {
-        if (!Settings.isAllowRestrictedIp)
-            return false;
-        if (Settings.getUnrestrictedName == null || Settings.getUnrestrictedName.isEmpty())
-            return false;
-        return (Settings.getUnrestrictedName.contains(player.getName()));
+        return Settings.isAllowRestrictedIp && !(Settings.getUnrestrictedName == null || Settings.getUnrestrictedName.isEmpty()) && (Settings.getUnrestrictedName.contains(player.getName()));
     }
 
     public static Utils getInstance() {
@@ -125,9 +121,7 @@ public class Utils {
     }
 
     private boolean useGroupSystem() {
-        if (Settings.isPermissionCheckEnabled && !Settings.getUnloggedinGroup.isEmpty())
-            return true;
-        return false;
+        return Settings.isPermissionCheckEnabled && !Settings.getUnloggedinGroup.isEmpty();
     }
 
     public void packCoords(double x, double y, double z, String w,
@@ -189,15 +183,17 @@ public class Utils {
     }
 
     public static Player[] getOnlinePlayers() {
-        Player[] players = null;
+        Player[] players;
         try {
-            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class) {
-                players = (Player[]) ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null)).toArray();
+            Method m = Bukkit.class.getMethod("getOnlinePlayers");
+            if (m.getReturnType() == Collection.class) {
+                players = (Player[]) ((Collection<?>) m.invoke(null)).toArray();
             } else {
-                players = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null));
+                players = ((Player[]) m.invoke(null));
             }
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
             // can never happen
+            players = null;
         }
         return players;
     }
