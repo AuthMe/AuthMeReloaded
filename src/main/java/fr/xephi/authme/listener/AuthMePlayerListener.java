@@ -651,7 +651,7 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerInteract(PlayerInteractEvent event) {
         if (event.getPlayer() == null)
             return;
@@ -675,8 +675,9 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-        if (event.getClickedBlock() != null && event.getClickedBlock().getType() != Material.AIR)
+        if (event.getClickedBlock() != null){
             event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
+        }
         event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
         event.setCancelled(true);
     }
