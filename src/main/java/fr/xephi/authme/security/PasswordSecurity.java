@@ -18,7 +18,7 @@ import fr.xephi.authme.settings.Settings;
 public class PasswordSecurity {
 
     private static SecureRandom rnd = new SecureRandom();
-    public static HashMap<String, String> userSalt = new HashMap<String, String>();
+    public static HashMap<String, String> userSalt = new HashMap<>();
 
     public static String createSalt(int length)
             throws NoSuchAlgorithmException {
@@ -37,9 +37,7 @@ public class PasswordSecurity {
             if (alg != HashAlgorithm.CUSTOM)
                 method = (EncryptionMethod) alg.getclasse().newInstance();
             else method = null;
-        } catch (InstantiationException e) {
-            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new NoSuchAlgorithmException("Problem with this hash algorithm");
         }
         String salt = "";
@@ -135,9 +133,7 @@ public class PasswordSecurity {
             if (algo != HashAlgorithm.CUSTOM)
                 method = (EncryptionMethod) algo.getclasse().newInstance();
             else method = null;
-        } catch (InstantiationException e) {
-            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new NoSuchAlgorithmException("Problem with this hash algorithm");
         }
         PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);

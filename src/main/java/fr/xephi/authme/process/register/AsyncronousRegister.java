@@ -112,7 +112,7 @@ public class AsyncronousRegister {
                 return;
             }
         }
-        PlayerAuth auth = null;
+        PlayerAuth auth;
         try {
             final String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
             auth = new PlayerAuth(name, hashnew, getIp(), 0, (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email, player.getName());
@@ -130,12 +130,11 @@ public class AsyncronousRegister {
         plugin.mail.main(auth, password);
         ProcessSyncronousEmailRegister syncronous = new ProcessSyncronousEmailRegister(player, plugin);
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, syncronous);
-        return;
     }
 
     protected void passwordRegister() {
-        PlayerAuth auth = null;
-        String hash = "";
+        PlayerAuth auth;
+        String hash;
         try {
             hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
         } catch (NoSuchAlgorithmException e) {
@@ -159,6 +158,5 @@ public class AsyncronousRegister {
         plugin.otherAccounts.addPlayer(player.getUniqueId());
         ProcessSyncronousPasswordRegister syncronous = new ProcessSyncronousPasswordRegister(player, plugin);
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, syncronous);
-        return;
     }
 }

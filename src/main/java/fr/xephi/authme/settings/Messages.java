@@ -23,14 +23,13 @@ public class Messages extends CustomConfiguration {
     /**
      * Loads a file from the plugin jar and sets as default
      *
-     * @param filename
+     * @param file
      *            The filename to open
      */
     public final void loadDefaults(File file) {
         if(file.isFile()){
             setDefaults(YamlConfiguration.loadConfiguration(file));
         }
-        return;
     }
 
     /**
@@ -101,7 +100,7 @@ public class Messages extends CustomConfiguration {
         for (a = 0; a < i; a++) {
             loc[a] = ((String) this.get(msg)).split("&n")[a].replace("&", "\u00a7");
         }
-        if (loc == null || loc.length == 0) {
+        if (loc.length == 0) {
             loc[0] = "Error with " + msg + " translation; Please contact the admin for verify or update translation files";
         }
         return loc;

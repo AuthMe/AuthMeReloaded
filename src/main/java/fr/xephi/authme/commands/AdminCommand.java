@@ -1,30 +1,6 @@
 package fr.xephi.authme.commands;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import com.zaxxer.hikari.pool.PoolInitializationException;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
@@ -39,6 +15,28 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class AdminCommand implements CommandExecutor {
 
@@ -51,7 +49,7 @@ public class AdminCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(final CommandSender sender, Command cmnd,
-            String label, String[] args) {
+                             String label, String[] args) {
         if (args.length == 0) {
             sender.sendMessage("Usage:");
             sender.sendMessage("/authme reload - Reload the config");
@@ -289,13 +287,13 @@ public class AdminCommand implements CommandExecutor {
                 });
                 return true;
             }
-        } else
-            if (args[0].equalsIgnoreCase("register") || args[0].equalsIgnoreCase("reg")) {
+        } else if (args[0].equalsIgnoreCase("register") || args[0].equalsIgnoreCase("reg")) {
             if (args.length != 3) {
                 sender.sendMessage("Usage: /authme register <playername> <password>");
                 return true;
             }
-            String lowpass = args[2].toLowerCase();
+            final String name = args[1].toLowerCase();
+            final String lowpass = args[2].toLowerCase();
             if (lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null") || !lowpass.matches(Settings.getPassRegex)) {
                 m.send(sender, "password_error");
                 return true;
@@ -314,27 +312,32 @@ public class AdminCommand implements CommandExecutor {
                     return true;
                 }
             }
-            try {
-                String name = args[1].toLowerCase();
-                if (plugin.database.isAuthAvailable(name)) {
-                    m.send(sender, "user_regged");
-                    return true;
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        if (plugin.database.isAuthAvailable(name)) {
+                            m.send(sender, "user_regged");
+                            return;
+                        }
+                        String hash = PasswordSecurity.getHash(Settings.getPasswordHash, lowpass, name);
+                        PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0L, "your@email.com");
+                        if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
+                            auth.setSalt(PasswordSecurity.userSalt.get(name));
+                        else auth.setSalt("");
+                        if (!plugin.database.saveAuth(auth)) {
+                            m.send(sender, "error");
+                            return;
+                        }
+                        m.send(sender, "registered");
+                        ConsoleLogger.info(name + " registered");
+                    } catch (NoSuchAlgorithmException ex) {
+                        ConsoleLogger.showError(ex.getMessage());
+                        m.send(sender, "error");
+                    }
+
                 }
-                String hash = PasswordSecurity.getHash(Settings.getPasswordHash, args[2], name);
-                PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0L, "your@email.com");
-                if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
-                    auth.setSalt(PasswordSecurity.userSalt.get(name));
-                else auth.setSalt("");
-                if (!plugin.database.saveAuth(auth)) {
-                    m.send(sender, "error");
-                    return true;
-                }
-                m.send(sender, "registered");
-                ConsoleLogger.info(args[1] + " registered");
-            } catch (NoSuchAlgorithmException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-                m.send(sender, "error");
-            }
+            });
             return true;
         } else if (args[0].equalsIgnoreCase("getemail")) {
             if (args.length != 2) {
@@ -443,8 +446,7 @@ public class AdminCommand implements CommandExecutor {
                 ConsoleLogger.showError(ex.getMessage());
             }
             return true;
-        } else
-            if (args[0].equalsIgnoreCase("changepassword") || args[0].equalsIgnoreCase("cp")) {
+        } else if (args[0].equalsIgnoreCase("changepassword") || args[0].equalsIgnoreCase("cp")) {
             if (args.length != 3) {
                 sender.sendMessage("Usage: /authme changepassword <playername> <newpassword>");
                 return true;
@@ -555,8 +557,7 @@ public class AdminCommand implements CommandExecutor {
             m.send(sender, "unregistered");
             ConsoleLogger.info(args[1] + " unregistered");
             return true;
-        } else
-            if (args[0].equalsIgnoreCase("purgelastpos") || args[0].equalsIgnoreCase("resetposition")) {
+        } else if (args[0].equalsIgnoreCase("purgelastpos") || args[0].equalsIgnoreCase("resetposition")) {
             if (args.length != 2) {
                 sender.sendMessage("Usage: /authme purgelastpos <playername>");
                 return true;
