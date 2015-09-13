@@ -1,14 +1,16 @@
 package fr.xephi.authme.listener;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.PatternSyntaxException;
-
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.Utils;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.plugin.manager.CombatTagComunicator;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -23,26 +25,23 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.PatternSyntaxException;
 
 public class AuthMePlayerListener implements Listener {
 
-    public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<String, GameMode>();
-    public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<String, String>();
+    public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
-    public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<String, Boolean>();
-    private List<String> antibot = new ArrayList<String>();
+    public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
+    private List<String> antibot = new ArrayList<>();
 
     public AuthMePlayerListener(AuthMe plugin) {
         this.plugin = plugin;
@@ -115,7 +114,6 @@ public class AuthMePlayerListener implements Listener {
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -152,7 +150,6 @@ public class AuthMePlayerListener implements Listener {
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -189,7 +186,6 @@ public class AuthMePlayerListener implements Listener {
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -226,7 +222,6 @@ public class AuthMePlayerListener implements Listener {
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -264,7 +259,6 @@ public class AuthMePlayerListener implements Listener {
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -299,7 +293,6 @@ public class AuthMePlayerListener implements Listener {
 
         if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
             event.setCancelled(true);
-            return;
         }
     }
 
@@ -345,7 +338,6 @@ public class AuthMePlayerListener implements Listener {
             }
             if ((spawn.distance(player.getLocation()) > radius)) {
                 event.getPlayer().teleport(spawn);
-                return;
             }
         }
     }
@@ -402,7 +394,7 @@ public class AuthMePlayerListener implements Listener {
                 plugin.management.performJoin(player);
 
                 // Remove the join message while the player isn't logging in
-                if ((Settings.enableProtection || Settings.delayJoinMessage) && name != null && event.getJoinMessage() != null) {
+                if ((Settings.enableProtection || Settings.delayJoinMessage) && event.getJoinMessage() != null) {
                     joinMessage.put(name, event.getJoinMessage());
                     event.setJoinMessage(null);
                 }
@@ -412,7 +404,7 @@ public class AuthMePlayerListener implements Listener {
 
     @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPreLogin(AsyncPlayerPreLoginEvent event){
+    public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
         final Player player = Bukkit.getServer().getPlayer(name);
 
@@ -437,7 +429,6 @@ public class AuthMePlayerListener implements Listener {
                     }
 
                 });
-            return;
         }
     }
 
@@ -539,14 +530,14 @@ public class AuthMePlayerListener implements Listener {
         if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
             checkAntiBotMod(player);
             if (Settings.bungee) {
-                final ByteArrayOutputStream b = new ByteArrayOutputStream();
-                DataOutputStream out = new DataOutputStream(b);
-
                 try {
+                    final ByteArrayOutputStream b = new ByteArrayOutputStream();
+                    DataOutputStream out = new DataOutputStream(b);
                     out.writeUTF("IP");
+                    player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
                 } catch (IOException e) {
+                    ConsoleLogger.writeStackTrace(e);
                 }
-                player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
             }
             return;
         }
@@ -561,18 +552,15 @@ public class AuthMePlayerListener implements Listener {
         int playersOnline = Utils.getOnlinePlayers().size();
         if (playersOnline > plugin.getServer().getMaxPlayers()) {
             event.allow();
-            return;
         } else {
             final Player pl = plugin.generateKickPlayer(plugin.getServer().getOnlinePlayers());
             if (pl != null) {
                 pl.kickPlayer(m.send("kick_forvip")[0]);
                 event.allow();
-                return;
             } else {
                 ConsoleLogger.info("The player " + player.getName() + " tryed to join, but the server was full");
                 event.setKickMessage(m.send("kick_fullserver")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-                return;
             }
         }
     }
@@ -660,7 +648,7 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-        if (event.getClickedBlock() != null){
+        if (event.getClickedBlock() != null) {
             event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
         }
         event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
@@ -726,7 +714,6 @@ public class AuthMePlayerListener implements Listener {
             @Override
             public void run() {
                 player.closeInventory();
-                ;
             }
 
         }, 1);
@@ -764,7 +751,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void playerHitPlayerEvent(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
-        if (!(damager instanceof Player)){
+        if (!(damager instanceof Player)) {
             return;
         }
 
@@ -912,13 +899,11 @@ public class AuthMePlayerListener implements Listener {
         Location spawn = plugin.getSpawnLocation(player);
         if (Settings.isSaveQuitLocationEnabled && plugin.database.isAuthAvailable(name)) {
             final PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName(), player.getName());
-            try {
-                plugin.database.updateQuitLoc(auth);
-            } catch (NullPointerException npe) {
-            }
+            plugin.database.updateQuitLoc(auth);
         }
-        if (spawn != null && spawn.getWorld() != null)
+        if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

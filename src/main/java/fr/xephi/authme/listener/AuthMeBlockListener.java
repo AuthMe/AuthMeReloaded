@@ -1,15 +1,14 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.Utils;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.settings.Settings;
 
 public class AuthMeBlockListener implements Listener {
 
