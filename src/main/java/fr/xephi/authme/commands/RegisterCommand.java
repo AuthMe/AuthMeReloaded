@@ -1,15 +1,14 @@
 package fr.xephi.authme.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class RegisterCommand implements CommandExecutor {
 
@@ -23,26 +22,23 @@ public class RegisterCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmnd, String label,
-            String[] args) {
+                             String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("Player Only! Use 'authme register <playername> <password>' instead");
             return true;
         }
-        if (args.length == 0) {
-            m.send(sender, "usage_reg");
-        }
-        if (!plugin.authmePermissible(sender, "authme." + label.toLowerCase())) {
-            m.send(sender, "no_perm");
+        final Player player = (Player) sender;
+        if (args.length == 0 || (Settings.getEnablePasswordVerifier && args.length < 2)) {
+            m.send(player, "usage_reg");
             return true;
         }
-        final Player player = (Player) sender;
+        if (!plugin.authmePermissible(player, "authme." + label.toLowerCase())) {
+            m.send(player, "no_perm");
+            return true;
+        }
         if (Settings.emailRegistration && !Settings.getmailAccount.isEmpty()) {
             if (Settings.doubleEmailCheck) {
-                if (args.length < 2) {
-                    m.send(player, "usage_reg");
-                    return true;
-                }
-                if (!args[0].equals(args[1])) {
+                if (args.length < 2 || !args[0].equals(args[1])) {
                     m.send(player, "usage_reg");
                     return true;
                 }
@@ -55,10 +51,6 @@ public class RegisterCommand implements CommandExecutor {
             RandomString rand = new RandomString(Settings.getRecoveryPassLength);
             final String thePass = rand.nextString();
             plugin.management.performRegister(player, thePass, email);
-            return true;
-        }
-        if (args.length == 0 || (Settings.getEnablePasswordVerifier && args.length < 2)) {
-            m.send(player, "usage_reg");
             return true;
         }
         if (args.length > 1 && Settings.getEnablePasswordVerifier)
