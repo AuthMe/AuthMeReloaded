@@ -37,9 +37,8 @@ public class PerformBackup {
                 return FileBackup("auths.db");
             case MYSQL:
                 return MySqlBackup();
-            case SQLITE:
-                return FileBackup(Settings.getMySQLDatabase + ".db");
             case SQLITEHIKARI:
+            case SQLITE:
                 return FileBackup(Settings.getMySQLDatabase + ".db");
         }
 

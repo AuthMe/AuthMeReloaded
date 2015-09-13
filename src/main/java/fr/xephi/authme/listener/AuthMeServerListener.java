@@ -57,7 +57,7 @@ public class AuthMeServerListener implements Listener {
             return;
         }
         if (pluginName.equalsIgnoreCase("ChestShop")) {
-            plugin.ChestShop = 0;
+            plugin.legacyChestShop = false;
             ConsoleLogger.info("ChestShop has been disabled, unhook!");
         }
         if (pluginName.equalsIgnoreCase("CombatTag")) {
