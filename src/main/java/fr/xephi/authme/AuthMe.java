@@ -65,7 +65,7 @@ public class AuthMe extends JavaPlugin {
     public DataManager dataManager;
     public DataSource database;
 
-    private JsonCache playerBackup = new JsonCache(this);
+    private JsonCache playerBackup;
     public OtherAccounts otherAccounts;
     public Permission permission;
     public Essentials ess;
@@ -238,6 +238,9 @@ public class AuthMe extends JavaPlugin {
             stopOrUnload();
             return;
         }
+
+        // Setup the inventory backup
+        playerBackup = new JsonCache(this);
 
         // Set the DataManager
         dataManager = new DataManager(this);
