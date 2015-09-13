@@ -1,5 +1,6 @@
 DataSource:
-    # Can be set to: sqlite, mysql
+    # Can be set to: sqlite, sqlitehikari, mysql
+    # sqlitehikari should be more fast than normal sqlite but it's an experimental feature!
     backend: sqlite
     # Enable database caching
     caching: true

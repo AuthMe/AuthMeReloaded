@@ -122,9 +122,8 @@ public class SQLite_HIKARI implements DataSource {
             throws ClassNotFoundException, IllegalArgumentException {
         HikariConfig config = new HikariConfig();
         config.setPoolName("AuthMeSQLitePool");
-        config.setDataSourceClassName("org.sqlite.javax.SQLiteConnectionPoolDataSource");
+        config.setDriverClassName("org.sqlite.JDBC");
         config.setJdbcUrl("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
-        config.setInitializationFailFast(true); // Don't start the plugin if the database is unavariable
         config.setConnectionTestQuery("SELECT 1");
         config.setMaxLifetime(180000); // 3 Min
         config.setIdleTimeout(60000); // 1 Min
