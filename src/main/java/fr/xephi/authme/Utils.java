@@ -193,7 +193,8 @@ public class Utils {
         }
     }
 
-    public static Collection<? extends Player> getOnlinePlayers() {
+    @SuppressWarnings("unchecked")
+	public static Collection<? extends Player> getOnlinePlayers() {
         if (getOnlinePlayersIsCollection) {
             return Bukkit.getOnlinePlayers();
         }
@@ -203,7 +204,7 @@ public class Utils {
             }
             Object obj = getOnlinePlayers.invoke(null);
             if (obj instanceof Collection) {
-                return (Collection) obj;
+                return (Collection<? extends Player>) obj;
             }
             return Arrays.asList((Player[]) obj);
         } catch (Exception ignored) {
