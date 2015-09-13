@@ -71,7 +71,7 @@ public class AuthMe extends JavaPlugin {
     public Essentials ess;
     public Location essentialsSpawn;
     public MultiverseCore multiverse = null;
-    public LookupService ls = null;
+    public LookupService lookupService = null;
     public CitizensCommunicator citizens;
     public boolean isCitizensActive = false;
     public boolean CombatTag = false;
@@ -79,10 +79,10 @@ public class AuthMe extends JavaPlugin {
     public boolean BungeeCord = false;
     public boolean antibotMod = false;
     public boolean delayedAntiBot = true;
-    public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<String, BukkitTask>();
-    public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<String, Integer>();
-    public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<String, String>();
-    public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<String, String>();
+    public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
     protected static String vgUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
 
     public static AuthMe getInstance() {
@@ -264,22 +264,19 @@ public class AuthMe extends JavaPlugin {
 
         // Reload support hook
         if (Settings.reloadSupport) {
-            try {
-                int playersOnline = Utils.getOnlinePlayers().length;
-                if (database != null) {
-                    if (playersOnline < 1) {
-                        database.purgeLogged();
-                    } else {
-                        for (PlayerAuth auth : database.getLoggedPlayers()) {
-                            if (auth == null)
-                                continue;
-                            auth.setLastLogin(new Date().getTime());
-                            database.updateSession(auth);
-                            PlayerCache.getInstance().addPlayer(auth);
-                        }
+            int playersOnline = Utils.getOnlinePlayers().size();
+            if (database != null) {
+                if (playersOnline < 1) {
+                    database.purgeLogged();
+                } else {
+                    for (PlayerAuth auth : database.getLoggedPlayers()) {
+                        if (auth == null)
+                            continue;
+                        auth.setLastLogin(new Date().getTime());
+                        database.updateSession(auth);
+                        PlayerCache.getInstance().addPlayer(auth);
                     }
                 }
-            } catch (Exception ex) {
             }
         }
 
@@ -318,7 +315,7 @@ public class AuthMe extends JavaPlugin {
     @Override
     public void onDisable() {
         // Save player data
-        Player[] players = Utils.getOnlinePlayers();
+        Collection<? extends Player> players = Utils.getOnlinePlayers();
         if (players != null) {
             for (Player player : players) {
                 this.savePlayer(player);
@@ -361,7 +358,7 @@ public class AuthMe extends JavaPlugin {
     // Initialize and setup the database
     public void setupDatabase() throws ClassNotFoundException, PoolInitializationException, SQLException {
         // Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
-        int accounts = 0;
+        int accounts;
         switch (Settings.getDataSource) {
             case FILE:
                 database = new FlatFile();
@@ -391,11 +388,7 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
             Converter converter = new ForceFlatToSqlite(database, this);
-            try {
-                Thread t = new Thread(converter);
-                t.start();
-            } catch (Exception e) {
-            }
+            getServer().getScheduler().runTaskAsynchronously(this, converter);
             ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, next time server starts up, it will be changed to SQLite... Conversion will be started Asynchronously, it will not drop down your performance !");
             ConsoleLogger.showError("If you want to keep FlatFile, set file again into config at backend, but this message and this change will appear again at the next restart");
         }
@@ -431,29 +424,26 @@ public class AuthMe extends JavaPlugin {
     // Check the version of the ChestShop plugin
     public void checkChestShop() {
         if (Settings.legacyChestShop && server.getPluginManager().isPluginEnabled("ChestShop")) {
+            String rawver = com.Acrobot.ChestShop.ChestShop.getVersion();
+            double version;
             try {
-                String rawver = com.Acrobot.ChestShop.ChestShop.getVersion();
-                double version = 0;
+                version = Double.valueOf(rawver.split(" ")[0]);
+            } catch (NumberFormatException nfe) {
                 try {
-                    version = Double.valueOf(rawver.split(" ")[0]);
-                } catch (NumberFormatException nfe) {
-                    try {
-                        version = Double.valueOf(rawver.split("t")[0]);
-                    } catch (NumberFormatException nfee) {
-                        legacyChestShop = false;
-                        return;
-                    }
-                }
-                if (version >= 3.813) {
+                    version = Double.valueOf(rawver.split("t")[0]);
+                } catch (NumberFormatException nfee) {
+                    legacyChestShop = false;
                     return;
                 }
-                if (version < 3.50) {
-                    ConsoleLogger.showError("Please Update your ChestShop version! Bugs may occur!");
-                    return;
-                }
-                legacyChestShop = true;
-            } catch (Exception e) {
             }
+            if (version >= 3.813) {
+                return;
+            }
+            if (version < 3.50) {
+                ConsoleLogger.showError("Please Update your ChestShop version! Bugs may occur!");
+                return;
+            }
+            legacyChestShop = true;
         } else {
             legacyChestShop = false;
         }
@@ -462,21 +452,18 @@ public class AuthMe extends JavaPlugin {
     // Check PerWorldInventories version
     public void checkPerWorldInventories() {
         if (server.getPluginManager().isPluginEnabled("PerWorldInventories")) {
+            double version = 0;
+            String ver = server.getPluginManager().getPlugin("PerWorldInventories").getDescription().getVersion();
             try {
-                double version = 0;
-                String ver = server.getPluginManager().getPlugin("PerWorldInventories").getDescription().getVersion();
+                version = Double.valueOf(ver.split(" ")[0]);
+            } catch (NumberFormatException nfe) {
                 try {
-                    version = Double.valueOf(ver.split(" ")[0]);
-                } catch (NumberFormatException nfe) {
-                    try {
-                        version = Double.valueOf(ver.split("t")[0]);
-                    } catch (NumberFormatException nfee) {
-                    }
+                    version = Double.valueOf(ver.split("t")[0]);
+                } catch (NumberFormatException ignore) {
                 }
-                if (version < 1.57) {
-                    ConsoleLogger.showError("Please Update your PerWorldInventories version! INVENTORY WIPE may occur!");
-                }
-            } catch (Exception e) {
+            }
+            if (version < 1.57) {
+                ConsoleLogger.showError("Please Update your PerWorldInventories version! INVENTORY WIPE may occur!");
             }
         }
     }
@@ -554,34 +541,31 @@ public class AuthMe extends JavaPlugin {
         if ((citizens.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
             return;
         }
-        try {
-            String name = player.getName().toLowerCase();
-            if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-                final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName(), player.getName());
-                database.updateQuitLoc(auth);
-            }
-            if (LimboCache.getInstance().hasLimboPlayer(name)) {
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-                if (Settings.protectInventoryBeforeLogInEnabled) {
-                    player.getInventory().setArmorContents(limbo.getArmour());
-                    player.getInventory().setContents(limbo.getInventory());
-                }
-                if (!Settings.noTeleport) {
-                    player.teleport(limbo.getLoc());
-                }
-                this.utils.addNormal(player, limbo.getGroup());
-                player.setOp(limbo.getOperator());
-                limbo.getTimeoutTaskId().cancel();
-                LimboCache.getInstance().deleteLimboPlayer(name);
-                if (this.playerBackup.doesCacheExist(player)) {
-                    this.playerBackup.removeCache(player);
-                }
-            }
-            PlayerCache.getInstance().removePlayer(name);
-            database.setUnlogged(name);
-            player.saveData();
-        } catch (Exception ex) {
+        String name = player.getName().toLowerCase();
+        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
+            final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName(), player.getName());
+            database.updateQuitLoc(auth);
         }
+        if (LimboCache.getInstance().hasLimboPlayer(name)) {
+            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+            if (Settings.protectInventoryBeforeLogInEnabled) {
+                player.getInventory().setArmorContents(limbo.getArmour());
+                player.getInventory().setContents(limbo.getInventory());
+            }
+            if (!Settings.noTeleport) {
+                player.teleport(limbo.getLoc());
+            }
+            this.utils.addNormal(player, limbo.getGroup());
+            player.setOp(limbo.getOperator());
+            limbo.getTimeoutTaskId().cancel();
+            LimboCache.getInstance().deleteLimboPlayer(name);
+            if (this.playerBackup.doesCacheExist(player)) {
+                this.playerBackup.removeCache(player);
+            }
+        }
+        PlayerCache.getInstance().removePlayer(name);
+        database.setUnlogged(name);
+        player.saveData();
     }
 
     // Select the player to kick when a vip player join the server when full
@@ -686,8 +670,12 @@ public class AuthMe extends JavaPlugin {
     public void downloadGeoIp() {
         ConsoleLogger.info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com");
         File file = new File(getDataFolder(), "GeoIP.dat");
-        if (!file.exists()) {
-            try {
+        try {
+            if (file.exists()) {
+                if (lookupService == null) {
+                    lookupService = new LookupService(file);
+                }
+            } else {
                 String url = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
                 URL downloadUrl = new URL(url);
                 URLConnection conn = downloadUrl.openConnection();
@@ -706,35 +694,26 @@ public class AuthMe extends JavaPlugin {
                 }
                 output.close();
                 input.close();
-            } catch (Exception e) {
             }
+        } catch (Exception e) {
+            ConsoleLogger.writeStackTrace(e);
         }
     }
 
     // TODO: Need to review the code below!
 
     public String getCountryCode(String ip) {
-        try {
-            if (ls == null)
-                ls = new LookupService(new File(getDataFolder(), "GeoIP.dat"));
-            String code = ls.getCountry(ip).getCode();
-            if (code != null && !code.isEmpty())
-                return code;
-        } catch (Exception e) {
+        if (lookupService != null) {
+            return lookupService.getCountry(ip).getCode();
         }
-        return null;
+        return "--";
     }
 
     public String getCountryName(String ip) {
-        try {
-            if (ls == null)
-                ls = new LookupService(new File(getDataFolder(), "GeoIP.dat"));
-            String code = ls.getCountry(ip).getName();
-            if (code != null && !code.isEmpty())
-                return code;
-        } catch (Exception e) {
+        if (lookupService != null) {
+            return lookupService.getCountry(ip).getName();
         }
-        return null;
+        return "N/A";
     }
 
     public void switchAntiBotMod(boolean mode) {
@@ -765,20 +744,17 @@ public class AuthMe extends JavaPlugin {
     }
 
     public String replaceAllInfos(String message, Player player) {
-        try {
-            int playersOnline = Utils.getOnlinePlayers().length;
-            message = message.replace("&", "\u00a7");
-            message = message.replace("{PLAYER}", player.getName());
-            message = message.replace("{ONLINE}", "" + playersOnline);
-            message = message.replace("{MAXPLAYERS}", "" + this.getServer().getMaxPlayers());
-            message = message.replace("{IP}", getIP(player));
-            message = message.replace("{LOGINS}", "" + PlayerCache.getInstance().getLogged());
-            message = message.replace("{WORLD}", player.getWorld().getName());
-            message = message.replace("{SERVER}", this.getServer().getServerName());
-            message = message.replace("{VERSION}", this.getServer().getBukkitVersion());
-            message = message.replace("{COUNTRY}", this.getCountryName(getIP(player)));
-        } catch (Exception e) {
-        }
+        int playersOnline = Utils.getOnlinePlayers().size();
+        message = message.replace("&", "\u00a7");
+        message = message.replace("{PLAYER}", player.getName());
+        message = message.replace("{ONLINE}", "" + playersOnline);
+        message = message.replace("{MAXPLAYERS}", "" + this.getServer().getMaxPlayers());
+        message = message.replace("{IP}", getIP(player));
+        message = message.replace("{LOGINS}", "" + PlayerCache.getInstance().getLogged());
+        message = message.replace("{WORLD}", player.getWorld().getName());
+        message = message.replace("{SERVER}", this.getServer().getServerName());
+        message = message.replace("{VERSION}", this.getServer().getBukkitVersion());
+        message = message.replace("{COUNTRY}", this.getCountryName(getIP(player)));
         return message;
     }
 
@@ -831,7 +807,7 @@ public class AuthMe extends JavaPlugin {
             if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error") && !inputLine.contains("error")) {
                 realIP = inputLine;
             }
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
         return realIP;
     }

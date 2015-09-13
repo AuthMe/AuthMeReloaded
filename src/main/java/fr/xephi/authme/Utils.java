@@ -11,19 +11,30 @@ import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 
 public class Utils {
 
+    private static boolean getOnlinePlayersIsCollection;
     private String currentGroup;
     private static Utils singleton;
+    private static Method getOnlinePlayers;
     public final AuthMe plugin;
 
     public Utils(AuthMe plugin) {
         this.plugin = plugin;
+    }
+
+    static {
+        try {
+            Method m = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
+            getOnlinePlayersIsCollection = m.getReturnType() == Collection.class;
+        } catch (Exception ignored) {
+        }
     }
 
     public void setGroup(Player player, groupType group) {
@@ -182,19 +193,21 @@ public class Utils {
         }
     }
 
-    public static Player[] getOnlinePlayers() {
-        Player[] players;
-        try {
-            Method m = Bukkit.class.getMethod("getOnlinePlayers");
-            if (m.getReturnType() == Collection.class) {
-                players = (Player[]) ((Collection<?>) m.invoke(null)).toArray();
-            } else {
-                players = ((Player[]) m.invoke(null));
-            }
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException ex) {
-            // can never happen
-            players = null;
+    public static Collection<? extends Player> getOnlinePlayers() {
+        if (getOnlinePlayersIsCollection) {
+            return Bukkit.getOnlinePlayers();
         }
-        return players;
+        try {
+            if (getOnlinePlayers == null) {
+                getOnlinePlayers = Bukkit.class.getMethod("getOnlinePlayers");
+            }
+            Object obj = getOnlinePlayers.invoke(null);
+            if (obj instanceof Collection) {
+                return (Collection) obj;
+            }
+            return Arrays.asList((Player[]) obj);
+        } catch (Exception ignored) {
+        }
+        return Collections.emptyList();
     }
 }

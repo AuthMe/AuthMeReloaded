@@ -572,7 +572,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        int playersOnline = Utils.getOnlinePlayers().length;
+        int playersOnline = Utils.getOnlinePlayers().size();
         if (playersOnline > plugin.getServer().getMaxPlayers()) {
             event.allow();
             return;
