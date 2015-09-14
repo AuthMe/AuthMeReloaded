@@ -13,57 +13,9 @@ public class Messages extends CustomConfiguration {
 
     public Messages(File file, String lang) {
         super(file);
-        loadDefaults(file);
-        loadFile();
-        saveDefaults(file);
+        load();
         singleton = this;
         this.lang = lang;
-    }
-
-    /**
-     * Loads a file from the plugin jar and sets as default
-     *
-     * @param file The filename to open
-     */
-    public final void loadDefaults(File file) {
-        if (file.isFile()) {
-            setDefaults(YamlConfiguration.loadConfiguration(file));
-        }
-    }
-
-    /**
-     * Saves the configuration to disk
-     *
-     * @return True if saved successfully
-     */
-    public final boolean saved(File file) {
-        try {
-            save(file);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
-    /**
-     * Saves current configuration (plus defaults) to disk.
-     * <p>
-     * If defaults and configuration are empty, saves blank file.
-     *
-     * @return True if saved successfully
-     */
-    public final boolean saveDefaults(File file) {
-        options().copyDefaults(true);
-        options().copyHeader(true);
-        boolean success = saved(file);
-        options().copyDefaults(false);
-        options().copyHeader(false);
-        return success;
-    }
-
-    private void loadFile() {
-        load();
-        save();
     }
 
     public void send(CommandSender sender, String msg) {

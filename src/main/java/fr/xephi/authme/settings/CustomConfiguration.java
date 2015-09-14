@@ -17,7 +17,6 @@ public class CustomConfiguration extends YamlConfiguration {
 
     public CustomConfiguration(File file) {
         this.configFile = file;
-
         load();
     }
 
