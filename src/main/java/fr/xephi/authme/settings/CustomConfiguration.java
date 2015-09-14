@@ -1,21 +1,15 @@
 package fr.xephi.authme.settings;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
-import java.nio.charset.StandardCharsets;
-
+import com.google.common.io.Files;
+import com.google.common.io.Resources;
+import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import fr.xephi.authme.ConsoleLogger;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 
 public class CustomConfiguration extends YamlConfiguration {
 
@@ -43,7 +37,7 @@ public class CustomConfiguration extends YamlConfiguration {
     public boolean reLoad() {
         boolean out = true;
         if (!configFile.exists()) {
-            out = loadRessource(configFile);
+            out = loadResource(configFile);
         }
         if (out)
             load();
@@ -58,28 +52,28 @@ public class CustomConfiguration extends YamlConfiguration {
         }
     }
 
-    public boolean loadRessource(File file) {
-        boolean out = true;
+    public boolean loadResource(File file) {
         if (!file.exists()) {
             try {
-                String charset = System.getProperty("file.encoding");
-                String newline = System.getProperty("line.separator");
-                InputStream fis = getClass().getResourceAsStream("/" + file.getName());
-                BufferedReader reader = new BufferedReader(new InputStreamReader(fis, StandardCharsets.UTF_8));
-                String str;
-                Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), charset));
-                while ((str = reader.readLine()) != null) {
-                    writer.append(str).append(newline);
+                if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
+                    return false;
                 }
-                writer.flush();
-                writer.close();
-                reader.close();
-                fis.close();
+                if (!file.exists() && !file.createNewFile()) {
+                    return false;
+                }
+                int i = file.getPath().indexOf("AuthMe");
+                if (i > -1) {
+                    String path = file.getPath().substring(i + 6).replace('\\', '/');
+                    URL url = Resources.getResource(getClass(), path);
+                    byte[] bytes = Resources.toByteArray(url);
+                    Files.write(bytes, file);
+                    return true;
+                }
             } catch (Exception e) {
+                ConsoleLogger.writeStackTrace(e);
                 ConsoleLogger.showError("Failed to load config from JAR");
-                out = false;
             }
         }
-        return out;
+        return false;
     }
 }
