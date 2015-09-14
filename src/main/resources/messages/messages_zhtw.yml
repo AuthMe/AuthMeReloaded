@@ -39,7 +39,6 @@ usage_changepassword: '&b【AuthMe】&6用法: &c"/changepassword <舊密碼> <�
 name_len: '&b【AuthMe】&6你的暱稱 太長 / 太短 了!'
 regex: '&b【AuthMe】&6暱稱裡包含不能使用的字符'
 add_email: '&b【AuthMe】&6請使用 &c"/email add <你的Email> <再次輸入你的Email>" &6來添加 Email'
-bad_database_email: '&b【AuthMe】&6此指令只適用於有使用MySQL和SQLite的伺服器。'
 recovery_email: '&b【AuthMe】&6忘記密碼了嗎? 使用 &c"/email recovery <你的Email>"'
 usage_captcha: '&b【AuthMe】&6請用 &c"/captcha <theCaptcha>" &6來輸入你的驗證碼'
 wrong_captcha: '&b【AuthMe】&6錯誤的驗證碼'

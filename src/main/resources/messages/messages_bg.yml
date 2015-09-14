@@ -37,8 +37,6 @@ usage_changepassword: '&fКоманда: /changepassword СтараПарола 
 name_len: '&cТвоя никнейм е твърде малък или голям'
 regex: '&cТвоя никнейм съдържа забранени знацхи. Позволените са: REG_EX'
 add_email: '&cМоля добави своя имейл с : /email add имейл имейл'
-bad_database_email: '[AuthMe] Тази /email команда работи само с БД (MySQL и SQLite),
-  свържи се с Админ'
 recovery_email: '&cЗабравихте своята парола? Моля използвай /email recovery <имейл>'
 usage_captcha: '&cYou need to type a captcha, please type: /captcha <код>'
 wrong_captcha: '&cГрешен код, използвай : /captcha THE_CAPTCHA'

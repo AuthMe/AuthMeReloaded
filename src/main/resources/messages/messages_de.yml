@@ -36,7 +36,6 @@ usage_changepassword: '&cBenutze: /changepassword <altesPasswort> <neuesPasswort
 name_len: '&4Dein Nickname ist zu kurz oder zu lang'
 regex: '&4Dein Nickname enthält nicht erlaubte Zeichen. Zulässige Zeichen: REG_EX'
 add_email: '&3Bitte hinterlege Deine E-Mail Adresse: /email add <deineEmail> <emailBestätigen>'
-bad_database_email: '&4Der /email Befehl ist nur mit MySQL und SQLite kompatibel. Bitte kontaktiere einen Administrator!'
 recovery_email: '&3Passwort vergessen? Nutze "/email recovery <deineEmail>" für ein neues Passwort'
 usage_captcha: '&3Um dich einzuloggen, tippe dieses Captcha so ein: /captcha <theCaptcha>'
 wrong_captcha: '&cFalsches Captcha, bitte nutze: /captcha THE_CAPTCHA'

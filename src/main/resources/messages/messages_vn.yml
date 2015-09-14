@@ -1,8 +1,7 @@
 unknown_user: '&fNgười chơi không tồn tại trong cơ sở dữ liệu'
 unsafe_spawn: '&fNơi thoát server của bạn không an toàn, đang dịch chuyển bạn tới điểm spawn của server'
 not_logged_in: '&cChưa đăng nhập!'
-reg_voluntarily: '&fBạn có thể đăng kí tài khoản với lệnh
-  "/register mật-khẩu nhập-lại-mật-khẩu"'
+reg_voluntarily: '&fBạn có thể đăng kí tài khoản với lệnh "/register mật-khẩu nhập-lại-mật-khẩu"'
 usage_log: '&eSử dụng: /login password'
 wrong_pwd: '&cSai mật khẩu'
 unregistered: '&cHuỷ đăng kí thành công!'
@@ -35,8 +34,6 @@ usage_changepassword: '&eSử dụng: /changepassword mật-khẩu-cũ mật-kh�
 name_len: '&cTên đăng nhập của bạn quá ngắn hoặc quá dài'
 regex: '&cTên đăng nhập của bạn có chứa kí tự đặc biệt không được cho phép. Các kí tự hợp lệ: REG_EX'
 add_email: '&cVui lòng thêm địa chỉ email cho tài khoản với lệnh: /email add email-của-bạn nhập-lại-email-của-bạn'
-bad_database_email: '[AuthMe] Lệnh /email chỉ hoạt động với cơ sở dữ liệu MySQL và SQLite,
-  hãy liên hệ điều hành viên của server'
 recovery_email: '&cQuên mật khẩu? Hãy dùng lệnh /email recovery <email-của-bạn>'
 usage_captcha: '&cBạn cần nhập mã xác nhận: /captcha <mã-xác-nhận>'
 wrong_captcha: '&cSai mã xác nhận, nhập lại: /captcha <mã-xác-nhận>'
@@ -55,5 +52,4 @@ email_changed: '[AuthMe] Đã thay đổi email !'
 email_send: '[AuthMe] Đã gửi email khôi phục mật khẩu tới bạn !'
 country_banned: 'Rất tiếc, quốc gia của bạn không được phép gia nhập server'
 antibot_auto_enabled: '[AuthMe] AntiBot đã được kích hoạt vì lượng người chơi kết nối vượt quá giới hạn!'
-antibot_auto_disabled: '[AuthMe] AntiBot tự huỷ kích hoạt sau %m phút,
-  hi vọng lượng kết nối sẽ giảm bớt'
+antibot_auto_disabled: '[AuthMe] AntiBot tự huỷ kích hoạt sau %m phút, hi vọng lượng kết nối sẽ giảm bớt'

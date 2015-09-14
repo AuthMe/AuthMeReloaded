@@ -37,7 +37,6 @@ usage_changepassword: '&fPour changer de mot de passe, utilisez: /changepassword
 name_len: '&cVotre pseudo est trop long ou trop court'
 regex: '&cCaractères autorisés: REG_EX'
 add_email: '&cMerci d''ajouter votre email : /email add yourEmail confirmEmail'
-bad_database_email: '[AuthMe] La commande /email est disponible uniquement pour MySQL et SQLite, contactez un Admin'
 recovery_email: '&cVous avez oublié votre MotdePasse? Utilisez /email recovery <yourEmail>'
 usage_captcha: '&cTrop de tentatives de connexion échouées, utilisez: /captcha <leCaptcha>'
 wrong_captcha: '&cCaptcha incorrect, écrivez de nouveau : /captcha THE_CAPTCHA'

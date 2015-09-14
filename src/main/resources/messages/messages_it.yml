@@ -36,7 +36,6 @@ usage_changepassword: 'Utilizzo: /changepassword <vecchiaPassword> <nuovaPasswor
 name_len: '&cIl tuo nome utente è troppo corto o troppo lungo!'
 regex: '&cIl tuo nome utente contiene caratteri non consentiti. I caratteri consentiti sono: REG_EX'
 add_email: '&cPer poter recuperare la password in futuro, aggiungi un indirizzo email al tuo account con il comando: "/email add <tuaEmail> <confermaEmail>"'
-bad_database_email: 'Il comando /email è utilizzabile solo con un database MySQL o SQLite, riporta questo errore ad un Admin!'
 recovery_email: '&cHai dimenticato la tua password? Puoi recuperarla eseguendo il comando: "/email recovery <tuaEmail>"'
 usage_captcha: '&cAbbiamo bisogno che tu inserisca un captcha, perfavore scrivi: "/captcha THE_CAPTCHA"'
 wrong_captcha: '&cCaptcha sbagliato, perfavore riprova con il comando: "/captcha THE_CAPTCHA"'

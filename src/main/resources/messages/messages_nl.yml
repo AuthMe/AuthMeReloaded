@@ -35,7 +35,6 @@ usage_changepassword: 'Gebruik: /changepassword <oudWachtwoord> <nieuwWachtwoord
 name_len: '&cJouw gebruikersnaam is te kort'
 regex: '&cJouw gebruikersnaam bestaat uit illegale tekens. tegestaan chars: REG_EX'
 add_email: '&cVoeg uw email toe Alstublieft met: /email add jouw wachtwoord herhaalwachtwoord'
-bad_database_email: '[AuthMe] deze /email command is alleen beschikbaar met MySQL en SQLite, neem contact op met een Admin'
 recovery_email: '&cWachtwoord vergeten? gebruik alstublieft  /email recovery <Jouwemail>'
 usage_captcha: '&cGebruik: /captcha <deCaptcha>'
 wrong_captcha: '&cverkeerde Captcha, Gebruik alstublieft : /captcha THE_CAPTCHA'

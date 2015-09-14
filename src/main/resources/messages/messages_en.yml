@@ -36,7 +36,6 @@ usage_changepassword: '&cUsage: /changepassword <oldPassword> <newPassword>'
 name_len: '&4Your username is either too short or too long!'
 regex: '&4Your username contains illegal characters. Allowed chars: REG_EX'
 add_email: '&3Please add your email to your account with the command "/email add <yourEmail> <confirmEmail>"'
-bad_database_email: '&4The /email command is available only with MySQL and SQLite databases, please contact an Admin!' #This should be removed!
 recovery_email: '&3Forgot your password? Please use the command "/email recovery <yourEmail>"'
 usage_captcha: '&3To login you have to solve a captcha code, please use the command "/captcha <theCaptcha>"'
 wrong_captcha: '&cWrong Captcha, please type "/captcha THE_CAPTCHA" into the chat!'
