@@ -517,11 +517,7 @@ public class AdminCommand implements CommandExecutor {
                     if (Settings.applyBlindEffect)
                         target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
                     m.send(target, "unregistered");
-                } else {
-                    // Player isn't online, do nothing else
                 }
-            } else {
-                // Player does not exist, do nothing else
             }
             m.send(sender, "unregistered");
             ConsoleLogger.info(args[1] + " unregistered");

@@ -5,7 +5,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
-import org.bukkit.configuration.MemoryConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
@@ -15,14 +14,16 @@ import java.util.List;
 
 public final class Settings extends YamlConfiguration {
 
+    private AuthMe plugin;
+
     // This is not an option!
     public static Boolean antiBotInAction = false;
 
-    public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
-    public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
-    public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
-    public static final File MESSAGE_DIR = new File(PLUGIN_FOLDER, "messages");
-    public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
+    public static final File PLUGIN_FOLDER;
+    public static final File CACHE_FOLDER;
+    public static final File AUTH_FILE;
+    public static final File SETTINGS_FILE;
+    public static File messageFile;
     public static List<String> allowCommands = null;
     public static List<String> getJoinPermissions = null;
     public static List<String> getUnrestrictedName = null;
@@ -35,7 +36,6 @@ public final class Settings extends YamlConfiguration {
     public static List<String> forceCommandsAsConsole = null;
     public static List<String> forceRegisterCommands = null;
     public static List<String> forceRegisterCommandsAsConsole = null;
-    private AuthMe plugin;
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
     public static Boolean useLogging = false;
@@ -71,7 +71,7 @@ public final class Settings extends YamlConfiguration {
             getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
             getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
             getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup,
-            backupWindowsPath, getcUnrestrictedName, getRegisteredGroup,
+            backupWindowsPath, getRegisteredGroup,
             messagesLanguage, getMySQLlastlocX, getMySQLlastlocY,
             getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
             getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName,
@@ -91,17 +91,23 @@ public final class Settings extends YamlConfiguration {
 
     protected static YamlConfiguration configFile;
 
+    static {
+        PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
+        CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
+        AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
+        SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
+    }
+
     public Settings(AuthMe plugin) {
         configFile = (YamlConfiguration) plugin.getConfig();
         this.plugin = plugin;
         boolean exist = exists();
-        if (exist) {
-            load();
-        } else {
+        if (!exist) {
             plugin.saveDefaultConfig();
-            load();
         }
+        load();
         loadConfigOptions(exist);
+        messageFile = new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + messagesLanguage + ".yml");
     }
 
     public void loadConfigOptions(boolean exist) {
@@ -277,133 +283,127 @@ public final class Settings extends YamlConfiguration {
 
     }
 
-    public static void reloadConfigOptions(YamlConfiguration newConfig) {
-        configFile = newConfig;
-
-        loadVariables();
-    }
-
     public void mergeConfig() {
-        boolean changes = false;
+        int changes = 0;
         if (contains("Xenoforo.predefinedSalt"))
             set("Xenoforo.predefinedSalt", null);
         if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256"))
             set("settings.security.passwordHash", "XENFORO");
         if (!contains("Protection.enableProtection")) {
             set("Protection.enableProtection", false);
-            changes = true;
+            changes++;
         }
         if (!contains("Protection.countries")) {
-            countries = new ArrayList<String>();
+            countries = new ArrayList<>();
             countries.add("US");
             countries.add("GB");
             set("Protection.countries", countries);
-            changes = true;
+            changes++;
         }
         if (!contains("Protection.enableAntiBot")) {
             set("Protection.enableAntiBot", false);
-            changes = true;
+            changes++;
         }
         if (!contains("Protection.antiBotSensibility")) {
             set("Protection.antiBotSensibility", 5);
-            changes = true;
+            changes++;
         }
         if (!contains("Protection.antiBotDuration")) {
             set("Protection.antiBotDuration", 10);
-            changes = true;
+            changes++;
         }
         if (!contains("settings.forceCommands")) {
             set("settings.forceCommands", new ArrayList<String>());
-            changes = true;
+            changes++;
         }
         if (!contains("settings.forceCommandsAsConsole")) {
             set("settings.forceCommandsAsConsole", new ArrayList<String>());
-            changes = true;
+            changes++;
         }
         if (!contains("Email.recallPlayers")) {
             set("Email.recallPlayers", false);
-            changes = true;
+            changes++;
         }
         if (!contains("Email.delayRecall")) {
             set("Email.delayRecall", 5);
-            changes = true;
+            changes++;
         }
         if (!contains("settings.useWelcomeMessage")) {
             set("settings.useWelcomeMessage", true);
-            changes = true;
+            changes++;
         }
         if (!contains("settings.security.unsafePasswords")) {
-            List<String> str = new ArrayList<String>();
+            List<String> str = new ArrayList<>();
             str.add("123456");
             str.add("password");
             set("settings.security.unsafePasswords", str);
-            changes = true;
+            changes++;
         }
         if (!contains("Protection.countriesBlacklist")) {
-            countriesBlacklist = new ArrayList<String>();
+            countriesBlacklist = new ArrayList<>();
             countriesBlacklist.add("A1");
             set("Protection.countriesBlacklist", countriesBlacklist);
-            changes = true;
+            changes++;
         }
         if (!contains("settings.broadcastWelcomeMessage")) {
             set("settings.broadcastWelcomeMessage", false);
-            changes = true;
+            changes++;
         }
         if (!contains("settings.registration.forceKickAfterRegister")) {
             set("settings.registration.forceKickAfterRegister", false);
-            changes = true;
+            changes++;
         }
         if (!contains("settings.registration.forceLoginAfterRegister")) {
             set("settings.registration.forceLoginAfterRegister", false);
-            changes = true;
+            changes++;
         }
         if (!contains("DataSource.mySQLColumnLogged")) {
             set("DataSource.mySQLColumnLogged", "isLogged");
-            changes = true;
+            changes++;
         }
         if (!contains("settings.restrictions.spawnPriority")) {
             set("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
-            changes = true;
+            changes++;
         }
         if (!contains("settings.restrictions.maxLoginPerIp")) {
             set("settings.restrictions.maxLoginPerIp", 0);
-            changes = true;
+            changes++;
         }
         if (!contains("settings.restrictions.maxJoinPerIp")) {
             set("settings.restrictions.maxJoinPerIp", 0);
-            changes = true;
+            changes++;
         }
         if (!contains("VeryGames.enableIpCheck")) {
             set("VeryGames.enableIpCheck", false);
-            changes = true;
+            changes++;
         }
         if (getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*"))
             set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
         if (!contains("settings.delayJoinMessage")) {
             set("settings.delayJoinMessage", false);
-            changes = true;
+            changes++;
         }
         if (!contains("settings.restrictions.noTeleport")) {
             set("settings.restrictions.noTeleport", false);
-            changes = true;
+            changes++;
         }
         if (contains("Converter.Rakamak.newPasswordHash"))
             set("Converter.Rakamak.newPasswordHash", null);
         if (!contains("Converter.CrazyLogin.fileName")) {
             set("Converter.CrazyLogin.fileName", "accounts.db");
-            changes = true;
+            changes++;
         }
         if (!contains("settings.restrictions.allowedPasswordCharacters")) {
             set("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
-            changes = true;
+            changes++;
         }
         if (!contains("settings.applyBlindEffect")) {
             set("settings.applyBlindEffect", false);
-            changes = true;
+            changes++;
         }
         if (!contains("Email.emailBlacklisted")) {
             set("Email.emailBlacklisted", new ArrayList<String>());
-            changes = true;
+            changes++;
         }
         if (contains("Performances.useMultiThreading"))
             set("Performances.useMultiThreading", null);
@@ -419,23 +419,23 @@ public final class Settings extends YamlConfiguration {
 
         if (!contains("Email.emailWhitelisted")) {
             set("Email.emailWhitelisted", new ArrayList<String>());
-            changes = true;
+            changes++;
         }
         if (!contains("settings.forceRegisterCommands")) {
             set("settings.forceRegisterCommands", new ArrayList<String>());
-            changes = true;
+            changes++;
         }
         if (!contains("settings.forceRegisterCommandsAsConsole")) {
             set("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
-            changes = true;
+            changes++;
         }
         if (!contains("Hooks.customAttributes")) {
             set("Hooks.customAttributes", false);
-            changes = true;
+            changes++;
         }
         if (!contains("Purge.removePermissions")) {
             set("Purge.removePermissions", false);
-            changes = true;
+            changes++;
         }
         if (contains("Hooks.notifications"))
             set("Hooks.notifications", null);
@@ -447,19 +447,17 @@ public final class Settings extends YamlConfiguration {
         set("Hooks.legacyChestshop", useChestShop);
         if (!contains("Email.generateImage")) {
             set("Email.generateImage", true);
-            changes = true;
+            changes++;
         }
         if (!contains("DataSource.mySQLRealName")) {
             set("DataSource.mySQLRealName", "realname");
-            changes = true;
+            changes++;
         }
 
-        if (changes) {
-            plugin.getLogger().warning("Merge new Config Options - I'm not an error, please don't report me");
+        if (changes > 0) {
+            plugin.getLogger().warning("Merge " + changes + " new Config Options - I'm not an error, please don't report me");
             plugin.getLogger().warning("Please check your config.yml file for new configs!");
         }
-
-        return;
     }
 
     public void setValue(String key, Object value) {
@@ -506,7 +504,6 @@ public final class Settings extends YamlConfiguration {
                 if (testip.equalsIgnoreCase(ip)) {
                     trueonce = true;
                 }
-                ;
             }
         }
         if (!namefound) {
@@ -576,24 +573,8 @@ public final class Settings extends YamlConfiguration {
         return success;
     }
 
-    /**
-     * Clears current configuration defaults
-     */
-    public final void clearDefaults() {
-        setDefaults(new MemoryConfiguration());
-    }
-
-    /**
-     * Check loaded defaults against current configuration
-     *
-     * @return false When all defaults aren't present in config
-     */
-    public boolean checkDefaults() {
-        return getDefaults() == null || getKeys(true).containsAll(getDefaults().getKeys(true));
-    }
-
     public static String checkLang(String lang) {
-        if (new File(MESSAGE_DIR, "messages_" + lang + ".yml").exists()) {
+        if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
             ConsoleLogger.info("Set Language to: " + lang);
             return lang;
         }
@@ -636,13 +617,11 @@ public final class Settings extends YamlConfiguration {
         try {
             FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
             BufferedReader br = new BufferedReader(fr);
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 welcomeMsg.add(line);
             }
             br.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -5,6 +5,7 @@ import com.google.gson.*;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -28,7 +29,7 @@ public class JsonCache {
 
     public JsonCache(AuthMe plugin) {
         this.plugin = plugin;
-        cacheDir = new File(plugin.getDataFolder(), "cache");
+        cacheDir = Settings.CACHE_FOLDER;
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
             ConsoleLogger.showError("Failed to create cache directory.");
         }

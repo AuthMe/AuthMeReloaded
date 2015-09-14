@@ -104,13 +104,13 @@ public class Messages extends CustomConfiguration {
 
     public static Messages getInstance() {
         if (singleton == null) {
-            singleton = new Messages(new File(Settings.MESSAGE_DIR, "messages_" + Settings.messagesLanguage + ".yml"), Settings.messagesLanguage);
+            singleton = new Messages(Settings.messageFile, Settings.messagesLanguage);
         }
         return singleton;
     }
 
     public void reloadMessages() {
-        singleton = new Messages(new File(Settings.MESSAGE_DIR, "messages_" + Settings.messagesLanguage + ".yml"), Settings.messagesLanguage);
+        singleton = new Messages(Settings.messageFile, Settings.messagesLanguage);
     }
 
 }
