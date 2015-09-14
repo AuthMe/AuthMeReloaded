@@ -53,7 +53,7 @@ import java.util.zip.GZIPInputStream;
 
 public class AuthMe extends JavaPlugin {
 
-    private static Server server;
+    private final Server server = getServer();
     private static Logger authmeLogger = Logger.getLogger("AuthMe");
     private static AuthMe authme;
     public Management management;
@@ -76,7 +76,6 @@ public class AuthMe extends JavaPlugin {
     public boolean isCitizensActive = false;
     public boolean CombatTag = false;
     public boolean legacyChestShop = false;
-    public boolean BungeeCord = false;
     public boolean antibotMod = false;
     public boolean delayedAntiBot = true;
     public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
@@ -91,14 +90,6 @@ public class AuthMe extends JavaPlugin {
 
     public Settings getSettings() {
         return settings;
-    }
-
-    public DataSource getAuthMeDatabase() {
-        return database;
-    }
-
-    public void setAuthMeDatabase(DataSource database) {
-        this.database = database;
     }
 
     public void setMessages(Messages m) {
@@ -120,8 +111,6 @@ public class AuthMe extends JavaPlugin {
 
         // TODO: split the plugin in more modules
         // TODO: remove vault as hard dependency
-
-        server = getServer();
         PluginManager pm = server.getPluginManager();
 
         // Setup the Logger
@@ -131,9 +120,11 @@ public class AuthMe extends JavaPlugin {
         // TODO: new configuration style (more files)
         try {
             settings = new Settings(this);
+            settings.reload();
         } catch (Exception e) {
+            ConsoleLogger.writeStackTrace(e);
             ConsoleLogger.showError("Can't load the configuration file... Something went wrong, to avoid security issues the server will shutdown!");
-            this.getServer().shutdown();
+            server.shutdown();
             return;
         }
 
@@ -232,7 +223,7 @@ public class AuthMe extends JavaPlugin {
         // Connect to the database and setup tables
         try {
             setupDatabase();
-        } catch (ClassNotFoundException | SQLException | PoolInitializationException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.writeStackTrace(ex);
             ConsoleLogger.showError("Fatal error occurred during database connection! Authme initialization ABORTED!");
             stopOrUnload();
@@ -346,7 +337,7 @@ public class AuthMe extends JavaPlugin {
     public void stopOrUnload() {
         if (Settings.isStopEnabled) {
             ConsoleLogger.showError("THE SERVER IS GOING TO SHUTDOWN AS DEFINED IN THE CONFIGURATION!");
-            AuthMe.getInstance().getServer().shutdown();
+            server.shutdown();
         } else {
             server.getPluginManager().disablePlugin(AuthMe.getInstance());
         }
@@ -391,7 +382,7 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
             Converter converter = new ForceFlatToSqlite(database, this);
-            getServer().getScheduler().runTaskAsynchronously(this, converter);
+            server.getScheduler().runTaskAsynchronously(this, converter);
             ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, next time server starts up, it will be changed to SQLite... Conversion will be started Asynchronously, it will not drop down your performance !");
             ConsoleLogger.showError("If you want to keep FlatFile, set file again into config at backend, but this message and this change will appear again at the next restart");
         }
@@ -512,12 +503,12 @@ public class AuthMe extends JavaPlugin {
 
     // Check the presence of CombatTag
     public void checkCombatTag() {
-        this.CombatTag = this.getServer().getPluginManager().isPluginEnabled("CombatTag");
+        this.CombatTag = server.getPluginManager().isPluginEnabled("CombatTag");
     }
 
     // Check if Citizens is active
     public void checkCitizens() {
-        this.isCitizensActive = this.getServer().getPluginManager().isPluginEnabled("Citizens");
+        this.isCitizensActive = server.getPluginManager().isPluginEnabled("Citizens");
     }
 
     // Check if a player/command sender have a permission
@@ -703,8 +694,6 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    // TODO: Need to review the code below!
-
     public String getCountryCode(String ip) {
         if (lookupService != null) {
             return lookupService.getCountry(ip).getCode();
@@ -751,12 +740,12 @@ public class AuthMe extends JavaPlugin {
         message = message.replace("&", "\u00a7");
         message = message.replace("{PLAYER}", player.getName());
         message = message.replace("{ONLINE}", "" + playersOnline);
-        message = message.replace("{MAXPLAYERS}", "" + this.getServer().getMaxPlayers());
+        message = message.replace("{MAXPLAYERS}", "" + server.getMaxPlayers());
         message = message.replace("{IP}", getIP(player));
         message = message.replace("{LOGINS}", "" + PlayerCache.getInstance().getLogged());
         message = message.replace("{WORLD}", player.getWorld().getName());
-        message = message.replace("{SERVER}", this.getServer().getServerName());
-        message = message.replace("{VERSION}", this.getServer().getBukkitVersion());
+        message = message.replace("{SERVER}", server.getServerName());
+        message = message.replace("{VERSION}", server.getBukkitVersion());
         message = message.replace("{COUNTRY}", this.getCountryName(getIP(player)));
         return message;
     }

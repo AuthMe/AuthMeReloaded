@@ -1,18 +1,17 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.settings.Settings;
+import net.milkbowl.vault.permission.Permission;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
-import fr.xephi.authme.settings.Settings;
-import net.milkbowl.vault.permission.Permission;
 
 public class DataManager {
 
@@ -150,7 +149,7 @@ public class DataManager {
     }
 
     public synchronized void purgePermissions(List<String> cleared,
-            Permission permission) {
+                                              Permission permission) {
         int i = 0;
         for (String name : cleared) {
             try {
@@ -170,24 +169,19 @@ public class DataManager {
             return true;
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Boolean> result = executor.submit(new Callable<Boolean>() {
-
+            @Override
             public synchronized Boolean call() throws Exception {
-                Boolean result = null;
-                try {
-                    for (OfflinePlayer op : Utils.getOnlinePlayers())
-                        if (op.getName().equalsIgnoreCase(name)) {
-                            result = true;
-                            break;
-                        }
-                } catch (Exception e) {
-                }
-                return result;
+                for (OfflinePlayer op : Utils.getOnlinePlayers())
+                    if (op.getName().equalsIgnoreCase(name)) {
+                        return true;
+                    }
+                return false;
             }
         });
         try {
-            return result.get().booleanValue();
+            return result.get();
         } catch (Exception e) {
-            return (false);
+            return false;
         } finally {
             executor.shutdown();
         }

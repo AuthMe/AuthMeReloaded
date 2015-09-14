@@ -19,33 +19,34 @@ public final class Settings extends YamlConfiguration {
     // This is not an option!
     public static Boolean antiBotInAction = false;
 
-    public static final File PLUGIN_FOLDER;
-    public static final File CACHE_FOLDER;
-    public static final File AUTH_FILE;
-    public static final File SETTINGS_FILE;
+    public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
+    public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
+    public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
+    public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
+
     public static File messageFile;
-    public static List<String> allowCommands = null;
-    public static List<String> getJoinPermissions = null;
-    public static List<String> getUnrestrictedName = null;
-    private static List<String> getRestrictedIp;
-    public static List<String> getMySQLOtherUsernameColumn = null;
-    public static List<String> getForcedWorlds = null;
-    public static List<String> countries = null;
-    public static List<String> countriesBlacklist = null;
-    public static List<String> forceCommands = null;
-    public static List<String> forceCommandsAsConsole = null;
-    public static List<String> forceRegisterCommands = null;
-    public static List<String> forceRegisterCommandsAsConsole = null;
+    public static List<String> allowCommands;
+    public static List<String> getJoinPermissions;
+    public static List<String> getUnrestrictedName;
+    public static List<String> getRestrictedIp;
+    public static List<String> getMySQLOtherUsernameColumn;
+    public static List<String> getForcedWorlds;
+    public static List<String> countries;
+    public static List<String> countriesBlacklist;
+    public static List<String> forceCommands;
+    public static List<String> forceCommandsAsConsole;
+    public static List<String> forceRegisterCommands;
+    public static List<String> forceRegisterCommandsAsConsole;
+    public static List<String> welcomeMsg;
+    public static List<String> unsafePasswords;
+    public static List<String> emailBlacklist;
+    public static List<String> emailWhitelist;
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
-    public static Boolean useLogging = false;
+    public static boolean useLogging = false;
     public static int purgeDelay = 60;
-    public static List<String> welcomeMsg = null;
-    public static List<String> unsafePasswords;
-    public static List<String> emailBlacklist = null;
-    public static List<String> emailWhitelist = null;
 
-    public static Boolean isPermissionCheckEnabled, isRegistrationEnabled,
+    public static boolean isPermissionCheckEnabled, isRegistrationEnabled,
             isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
             isSessionsEnabled, isChatAllowed, isAllowRestrictedIp,
             isMovementAllowed, isKickNonRegisteredEnabled,
@@ -91,35 +92,28 @@ public final class Settings extends YamlConfiguration {
 
     protected static YamlConfiguration configFile;
 
-    static {
-        PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
-        CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
-        AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
-        SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
-    }
-
     public Settings(AuthMe plugin) {
         configFile = (YamlConfiguration) plugin.getConfig();
         this.plugin = plugin;
-        boolean exist = exists();
+    }
+
+    public final void reload() throws Exception {
+        plugin.getLogger().info("Loading Configuration File...");
+        boolean exist = SETTINGS_FILE.exists();
         if (!exist) {
             plugin.saveDefaultConfig();
         }
-        load();
-        loadConfigOptions(exist);
+        load(SETTINGS_FILE);
+        if (exist) {
+            mergeConfig();
+        }
+        loadVariables();
+        if (exist) {
+            saveDefaults();
+        }
         messageFile = new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + messagesLanguage + ".yml");
     }
 
-    public void loadConfigOptions(boolean exist) {
-        plugin.getLogger().info("Loading Configuration File...");
-        if (exist)
-            mergeConfig();
-
-        loadVariables();
-
-        if (exist)
-            saveDefaults();
-    }
 
     @SuppressWarnings("unchecked")
     public static void loadVariables() {
@@ -514,27 +508,6 @@ public final class Settings extends YamlConfiguration {
     }
 
     /**
-     * Loads the configuration from disk
-     *
-     * @return True if loaded successfully
-     */
-    public final boolean load() {
-        try {
-            load(SETTINGS_FILE);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
-    public final void reload() {
-        if (!exists()) {
-            plugin.saveDefaultConfig();
-        }
-        load();
-    }
-
-    /**
      * Saves the configuration to disk
      *
      * @return True if saved successfully
@@ -546,15 +519,6 @@ public final class Settings extends YamlConfiguration {
         } catch (Exception ex) {
             return false;
         }
-    }
-
-    /**
-     * Simple function for if the Configuration file exists
-     *
-     * @return True if configuration exists on disk
-     */
-    public final boolean exists() {
-        return SETTINGS_FILE.exists();
     }
 
     /**

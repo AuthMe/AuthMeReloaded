@@ -1,20 +1,19 @@
 package fr.xephi.authme.datasource;
 
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
-import fr.xephi.authme.Utils;
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import org.bukkit.entity.Player;
+
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class CacheDataSource implements DataSource {
 
     private DataSource source;
     public AuthMe plugin;
-    private ConcurrentHashMap<String, PlayerAuth> cache = new ConcurrentHashMap<String, PlayerAuth>();
+    private ConcurrentHashMap<String, PlayerAuth> cache = new ConcurrentHashMap<>();
 
     public CacheDataSource(AuthMe plugin, DataSource source) {
         this.plugin = plugin;
@@ -24,8 +23,9 @@ public class CacheDataSource implements DataSource {
          * load the server, but it will be much easier to check for an
          * isAuthAvailable !
          */
-        for (PlayerAuth auth : source.getAllAuths())
+        for (PlayerAuth auth : source.getAllAuths()) {
             cache.put(auth.getNickname().toLowerCase(), auth);
+        }
     }
 
     @Override
@@ -144,12 +144,8 @@ public class CacheDataSource implements DataSource {
         for (Player player : Utils.getOnlinePlayers()) {
             String user = player.getName().toLowerCase();
             if (PlayerCache.getInstance().isAuthenticated(user)) {
-                try {
-                    PlayerAuth auth = source.getAuth(user);
-                    cache.put(user, auth);
-                } catch (NullPointerException npe) {
-                }
-
+                PlayerAuth auth = source.getAuth(user);
+                cache.put(user, auth);
             }
         }
     }

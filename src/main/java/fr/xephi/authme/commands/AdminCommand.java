@@ -1,6 +1,5 @@
 package fr.xephi.authme.commands;
 
-import com.zaxxer.hikari.pool.PoolInitializationException;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
@@ -28,7 +27,6 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.security.NoSuchAlgorithmException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -110,48 +108,23 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
         } else if (args[0].equalsIgnoreCase("reload")) {
-            plugin.getSettings().reload();
-            m.reloadMessages();
-            plugin.database.close();
-
             try {
+                plugin.getSettings().reload();
+                m.reloadMessages();
+                plugin.database.close();
                 plugin.setupDatabase();
-            } catch (ClassNotFoundException nfe) {
+            } catch (Exception e) {
                 ConsoleLogger.showError("Fatal error occurred! Authme instance ABORTED!");
-                if (Settings.isStopEnabled) {
-                    AuthMe.getInstance().getServer().shutdown();
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-                } else {
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-                }
-                return false;
-            } catch (SQLException sqle) {
-                ConsoleLogger.showError("Fatal error occurred! Authme instance ABORTED!");
-                if (Settings.isStopEnabled) {
-                    AuthMe.getInstance().getServer().shutdown();
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-                } else {
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-                }
-                return false;
-            } catch (PoolInitializationException pie) {
-                ConsoleLogger.showError("Fatal error occurred! Authme instance ABORTED!");
-                if (Settings.isStopEnabled) {
-                    AuthMe.getInstance().getServer().shutdown();
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-                } else {
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-                }
+                plugin.stopOrUnload();
                 return false;
             }
-
             m.send(sender, "reload");
         } else if (args[0].equalsIgnoreCase("lastlogin")) {
             if (args.length != 2) {
                 sender.sendMessage("Usage: /authme lastlogin <playername>");
                 return true;
             }
-            PlayerAuth auth = null;
+            PlayerAuth auth;
             try {
                 auth = plugin.database.getAuth(args[1].toLowerCase());
             } catch (NullPointerException e) {
@@ -177,31 +150,30 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             if (!args[1].contains(".")) {
-                final CommandSender fSender = sender;
                 final String[] arguments = args;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
                     @Override
                     public void run() {
-                        PlayerAuth auth = null;
+                        PlayerAuth auth;
                         String message = "[AuthMe] ";
                         try {
                             auth = plugin.database.getAuth(arguments[1].toLowerCase());
                         } catch (NullPointerException npe) {
-                            m.send(fSender, "unknown_user");
+                            m.send(sender, "unknown_user");
                             return;
                         }
                         if (auth == null) {
-                            m.send(fSender, "unknown_user");
+                            m.send(sender, "unknown_user");
                             return;
                         }
                         List<String> accountList = plugin.database.getAllAuthsByName(auth);
                         if (accountList == null || accountList.isEmpty()) {
-                            m.send(fSender, "user_unknown");
+                            m.send(sender, "user_unknown");
                             return;
                         }
                         if (accountList.size() == 1) {
-                            fSender.sendMessage("[AuthMe] " + arguments[1] + " is a single account player");
+                            sender.sendMessage("[AuthMe] " + arguments[1] + " is a single account player");
                             return;
                         }
                         int i = 0;
@@ -214,13 +186,12 @@ public class AdminCommand implements CommandExecutor {
                                 message = message + ".";
                             }
                         }
-                        fSender.sendMessage("[AuthMe] " + arguments[1] + " has " + String.valueOf(accountList.size()) + " accounts");
-                        fSender.sendMessage(message);
+                        sender.sendMessage("[AuthMe] " + arguments[1] + " has " + String.valueOf(accountList.size()) + " accounts");
+                        sender.sendMessage(message);
                     }
                 });
                 return true;
             } else {
-                final CommandSender fSender = sender;
                 final String[] arguments = args;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -228,16 +199,16 @@ public class AdminCommand implements CommandExecutor {
                     public void run() {
                         String message = "[AuthMe] ";
                         if (arguments[1] == null) {
-                            fSender.sendMessage("[AuthMe] Please put a valid IP");
+                            sender.sendMessage("[AuthMe] Please put a valid IP");
                             return;
                         }
                         List<String> accountList = plugin.database.getAllAuthsByIp(arguments[1]);
                         if (accountList == null || accountList.isEmpty()) {
-                            fSender.sendMessage("[AuthMe] This IP does not exist in the database");
+                            sender.sendMessage("[AuthMe] This IP does not exist in the database");
                             return;
                         }
                         if (accountList.size() == 1) {
-                            fSender.sendMessage("[AuthMe] " + arguments[1] + " is a single account player");
+                            sender.sendMessage("[AuthMe] " + arguments[1] + " is a single account player");
                             return;
                         }
                         int i = 0;
@@ -250,8 +221,8 @@ public class AdminCommand implements CommandExecutor {
                                 message = message + ".";
                             }
                         }
-                        fSender.sendMessage("[AuthMe] " + arguments[1] + " has " + String.valueOf(accountList.size()) + " accounts");
-                        fSender.sendMessage(message);
+                        sender.sendMessage("[AuthMe] " + arguments[1] + " has " + String.valueOf(accountList.size()) + " accounts");
+                        sender.sendMessage(message);
                     }
                 });
                 return true;
@@ -374,7 +345,7 @@ public class AdminCommand implements CommandExecutor {
             }
             return true;
         } else if (args[0].equalsIgnoreCase("purgebannedplayers")) {
-            List<String> bannedPlayers = new ArrayList<String>();
+            List<String> bannedPlayers = new ArrayList<>();
             for (OfflinePlayer off : plugin.getServer().getBannedPlayers()) {
                 bannedPlayers.add(off.getName().toLowerCase());
             }
