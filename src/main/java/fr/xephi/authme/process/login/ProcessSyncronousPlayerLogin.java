@@ -177,7 +177,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
         // We can now display the join message
         if (AuthMePlayerListener.joinMessage.containsKey(name) && AuthMePlayerListener.joinMessage.get(name) != null && !AuthMePlayerListener.joinMessage.get(name).isEmpty()) {
-            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            for (Player p : Utils.getOnlinePlayers()) {
                 if (p.isOnline())
                     p.sendMessage(AuthMePlayerListener.joinMessage.get(name));
             }

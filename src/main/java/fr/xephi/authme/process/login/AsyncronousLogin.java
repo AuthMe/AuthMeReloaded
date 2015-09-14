@@ -3,6 +3,7 @@ package fr.xephi.authme.process.login;
 import java.util.Date;
 import java.util.List;
 
+import fr.xephi.authme.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -239,7 +240,7 @@ public class AsyncronousLogin {
          * uuidaccounts = uuidaccounts + ", "; } else { uuidaccounts =
          * uuidaccounts + "."; } }
          */
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getOnlinePlayers()) {
             if (plugin.authmePermissible(player, "authme.seeOtherAccounts")) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
                 player.sendMessage(message);

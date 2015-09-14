@@ -1,7 +1,5 @@
 package fr.xephi.authme.settings;
 
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
 import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,7 +7,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 public class CustomConfiguration extends YamlConfiguration {
 
@@ -62,15 +62,11 @@ public class CustomConfiguration extends YamlConfiguration {
                 if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
                     return false;
                 }
-                if (!file.exists() && !file.createNewFile()) {
-                    return false;
-                }
                 int i = file.getPath().indexOf("AuthMe");
                 if (i > -1) {
                     String path = file.getPath().substring(i + 6).replace('\\', '/');
-                    URL url = Resources.getResource(getClass(), path);
-                    byte[] bytes = Resources.toByteArray(url);
-                    Files.write(bytes, file);
+                    InputStream is = getClass().getResourceAsStream(path);
+                    Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     return true;
                 }
             } catch (Exception e) {

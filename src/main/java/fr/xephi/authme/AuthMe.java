@@ -731,7 +731,7 @@ public class AuthMe extends JavaPlugin {
 
             @Override
             public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
+                for (Player player : Utils.getOnlinePlayers()) {
                     if (player.isOnline()) {
                         String name = player.getName().toLowerCase();
                         if (database.isAuthAvailable(name))
@@ -776,7 +776,7 @@ public class AuthMe extends JavaPlugin {
 
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
-        for (Player player : this.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getOnlinePlayers()) {
             if (ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
                 count++;
         }
@@ -785,7 +785,7 @@ public class AuthMe extends JavaPlugin {
 
     public boolean hasJoinedIp(String name, String ip) {
         int count = 0;
-        for (Player player : this.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getOnlinePlayers()) {
             if (ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
                 count++;
         }

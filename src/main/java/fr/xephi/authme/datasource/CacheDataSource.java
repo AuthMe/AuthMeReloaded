@@ -3,6 +3,7 @@ package fr.xephi.authme.datasource;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
+import fr.xephi.authme.Utils;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
@@ -140,7 +141,7 @@ public class CacheDataSource implements DataSource {
     public void reload() {
         cache.clear();
         source.reload();
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getOnlinePlayers()) {
             String user = player.getName().toLowerCase();
             if (PlayerCache.getInstance().isAuthenticated(user)) {
                 try {

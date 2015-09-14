@@ -174,7 +174,7 @@ public class DataManager {
             public synchronized Boolean call() throws Exception {
                 Boolean result = null;
                 try {
-                    for (OfflinePlayer op : Bukkit.getOnlinePlayers())
+                    for (OfflinePlayer op : Utils.getOnlinePlayers())
                         if (op.getName().equalsIgnoreCase(name)) {
                             result = true;
                             break;

@@ -62,7 +62,7 @@ public class JsonCache {
 
         try {
             String data = gson.toJson(playerData);
-            Files.write(Paths.get(file.getPath()), data.getBytes());
+            Files.write(file.toPath(), data.getBytes());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -78,7 +78,7 @@ public class JsonCache {
 
         File file = new File(cacheDir, path + File.separator + "cache.json");
         try {
-            byte[] bytes = Files.readAllBytes(Paths.get(file.getPath()));
+            byte[] bytes = Files.readAllBytes(file.toPath());
             String str = new String(bytes);
             return gson.fromJson(str, DataFileCache.class);
         } catch (Exception e) {

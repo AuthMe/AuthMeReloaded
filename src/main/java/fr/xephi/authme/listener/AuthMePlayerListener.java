@@ -553,7 +553,7 @@ public class AuthMePlayerListener implements Listener {
         if (playersOnline > plugin.getServer().getMaxPlayers()) {
             event.allow();
         } else {
-            final Player pl = plugin.generateKickPlayer(plugin.getServer().getOnlinePlayers());
+            final Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
             if (pl != null) {
                 pl.kickPlayer(m.send("kick_forvip")[0]);
                 event.allow();
