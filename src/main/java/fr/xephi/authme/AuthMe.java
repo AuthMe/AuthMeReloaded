@@ -127,9 +127,6 @@ public class AuthMe extends JavaPlugin {
         // Setup the Logger
         authmeLogger.setParent(this.getLogger());
 
-        // Setup otherAccounts file
-        otherAccounts = OtherAccounts.getInstance();
-
         // Load settings and custom configurations
         // TODO: new configuration style (more files)
         try {
@@ -139,6 +136,10 @@ public class AuthMe extends JavaPlugin {
             this.getServer().shutdown();
             return;
         }
+
+        // Setup otherAccounts file
+        otherAccounts = OtherAccounts.getInstance();
+
         // Configuration Security Warnings
         if (!Settings.isForceSingleSessionEnabled) {
             ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");

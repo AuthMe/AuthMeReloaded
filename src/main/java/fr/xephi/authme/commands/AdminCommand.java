@@ -114,34 +114,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
         } else if (args[0].equalsIgnoreCase("reload")) {
-            File newConfigFile = new File("plugins" + File.separator + "AuthMe", "config.yml");
-            if (!newConfigFile.exists()) {
-                InputStream fis = getClass().getResourceAsStream("" + File.separator + "config.yml");
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(newConfigFile);
-                    byte[] buf = new byte[1024];
-                    int i = 0;
-
-                    while ((i = fis.read(buf)) != -1) {
-                        fos.write(buf, 0, i);
-                    }
-                } catch (Exception e) {
-                    ConsoleLogger.showError("Failed to load config from JAR");
-                } finally {
-                    try {
-                        if (fis != null) {
-                            fis.close();
-                        }
-                        if (fos != null) {
-                            fos.close();
-                        }
-                    } catch (Exception e) {
-                    }
-                }
-            }
-            YamlConfiguration newConfig = YamlConfiguration.loadConfiguration(newConfigFile);
-            Settings.reloadConfigOptions(newConfig);
+            plugin.getSettings().reload();
             m.reloadMessages();
             plugin.database.close();
 

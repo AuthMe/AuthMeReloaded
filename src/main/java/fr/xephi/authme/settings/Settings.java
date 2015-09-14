@@ -1,35 +1,28 @@
 package fr.xephi.authme.settings;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import org.bukkit.configuration.MemoryConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public final class Settings extends YamlConfiguration {
 
     // This is not an option!
     public static Boolean antiBotInAction = false;
 
-    public static String PLUGIN_FOLDER = "." + File.separator + "plugins" + File.separator + "AuthMe";
-    public static final String CACHE_FOLDER = Settings.PLUGIN_FOLDER + File.separator + "cache";
-    public static final String AUTH_FILE = Settings.PLUGIN_FOLDER + File.separator + "auths.db";
-    public static final String MESSAGE_FILE = Settings.PLUGIN_FOLDER + File.separator + "messages" + File.separator + "messages";
-    public static final String SETTINGS_FILE = Settings.PLUGIN_FOLDER + File.separator + "config.yml";
+    public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
+    public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
+    public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
+    public static final File MESSAGE_DIR = new File(PLUGIN_FOLDER, "messages");
+    public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
     public static List<String> allowCommands = null;
     public static List<String> getJoinPermissions = null;
     public static List<String> getUnrestrictedName = null;
@@ -43,7 +36,6 @@ public final class Settings extends YamlConfiguration {
     public static List<String> forceRegisterCommands = null;
     public static List<String> forceRegisterCommandsAsConsole = null;
     private AuthMe plugin;
-    private final File file;
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
     public static Boolean useLogging = false;
@@ -100,7 +92,7 @@ public final class Settings extends YamlConfiguration {
     protected static YamlConfiguration configFile;
 
     public Settings(AuthMe plugin) {
-        this.file = new File(plugin.getDataFolder(), "config.yml");
+        configFile = (YamlConfiguration) plugin.getConfig();
         this.plugin = plugin;
         boolean exist = exists();
         if (exist) {
@@ -109,8 +101,6 @@ public final class Settings extends YamlConfiguration {
             plugin.saveDefaultConfig();
             load();
         }
-        configFile = (YamlConfiguration) plugin.getConfig();
-        PLUGIN_FOLDER = plugin.getDataFolder().toString();
         loadConfigOptions(exist);
     }
 
@@ -519,14 +509,10 @@ public final class Settings extends YamlConfiguration {
                 ;
             }
         }
-        if (namefound == false) {
+        if (!namefound) {
             return true;
         } else {
-            if (trueonce == true) {
-                return true;
-            } else {
-                return false;
-            }
+            return trueonce;
         }
     }
 
@@ -537,7 +523,7 @@ public final class Settings extends YamlConfiguration {
      */
     public final boolean load() {
         try {
-            load(file);
+            load(SETTINGS_FILE);
             return true;
         } catch (Exception ex) {
             return false;
@@ -545,8 +531,9 @@ public final class Settings extends YamlConfiguration {
     }
 
     public final void reload() {
-        if (!exists())
+        if (!exists()) {
             plugin.saveDefaultConfig();
+        }
         load();
     }
 
@@ -557,7 +544,7 @@ public final class Settings extends YamlConfiguration {
      */
     public final boolean save() {
         try {
-            save(file);
+            save(SETTINGS_FILE);
             return true;
         } catch (Exception ex) {
             return false;
@@ -570,12 +557,12 @@ public final class Settings extends YamlConfiguration {
      * @return True if configuration exists on disk
      */
     public final boolean exists() {
-        return file.exists();
+        return SETTINGS_FILE.exists();
     }
 
     /**
      * Saves current configuration (plus defaults) to disk.
-     *
+     * <p>
      * If defaults and configuration are empty, saves blank file.
      *
      * @return True if saved successfully
@@ -602,14 +589,15 @@ public final class Settings extends YamlConfiguration {
      * @return false When all defaults aren't present in config
      */
     public boolean checkDefaults() {
-        if (getDefaults() == null) {
-            return true;
-        }
-        return getKeys(true).containsAll(getDefaults().getKeys(true));
+        return getDefaults() == null || getKeys(true).containsAll(getDefaults().getKeys(true));
     }
 
     public static String checkLang(String lang) {
-        if (new File(MESSAGE_FILE + "_" + lang + ".yml").exists()) {
+        if (new File(MESSAGE_DIR, "messages_" + lang + ".yml").exists()) {
+            ConsoleLogger.info("Set Language to: " + lang);
+            return lang;
+        }
+        if (AuthMe.class.getResourceAsStream("/messages/messages_" + lang + ".yml") != null) {
             ConsoleLogger.info("Set Language to: " + lang);
             return lang;
         }
@@ -629,7 +617,7 @@ public final class Settings extends YamlConfiguration {
 
     private static void getWelcomeMessage() {
         AuthMe plugin = AuthMe.getInstance();
-        welcomeMsg = new ArrayList<String>();
+        welcomeMsg = new ArrayList<>();
         if (!useWelcomeMessage) {
             return;
         }

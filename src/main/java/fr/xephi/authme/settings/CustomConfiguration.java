@@ -52,6 +52,10 @@ public class CustomConfiguration extends YamlConfiguration {
         }
     }
 
+    public File getConfigFile() {
+        return configFile;
+    }
+
     public boolean loadResource(File file) {
         if (!file.exists()) {
             try {
