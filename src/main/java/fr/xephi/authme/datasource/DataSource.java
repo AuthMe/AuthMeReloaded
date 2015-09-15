@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface DataSource {
 
-    public enum DataSourceType {
+    enum DataSourceType {
         MYSQL,
         FILE,
         SQLITE,

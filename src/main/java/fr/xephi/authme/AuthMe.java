@@ -53,13 +53,14 @@ import java.util.zip.GZIPInputStream;
 
 public class AuthMe extends JavaPlugin {
 
-    private final Server server = getServer();
-    private static Logger authmeLogger = Logger.getLogger("AuthMe");
     private static AuthMe authme;
+
+    private final Server server = getServer();
+    private final Logger authmeLogger = Logger.getLogger("AuthMe");
     public Management management;
     public NewAPI api;
     private Utils utils = Utils.getInstance();
-    public SendMailSSL mail = null;
+    public SendMailSSL mail;
     private Settings settings;
     private Messages m;
     public DataManager dataManager;
@@ -70,8 +71,8 @@ public class AuthMe extends JavaPlugin {
     public Permission permission;
     public Essentials ess;
     public Location essentialsSpawn;
-    public MultiverseCore multiverse = null;
-    public LookupService lookupService = null;
+    public MultiverseCore multiverse;
+    public LookupService lookupService;
     public CitizensCommunicator citizens;
     public boolean isCitizensActive = false;
     public boolean CombatTag = false;
@@ -82,7 +83,6 @@ public class AuthMe extends JavaPlugin {
     public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
     public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
     public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
-    protected static String vgUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
 
     public static AuthMe getInstance() {
         return authme;
@@ -131,14 +131,6 @@ public class AuthMe extends JavaPlugin {
         // Setup otherAccounts file
         otherAccounts = OtherAccounts.getInstance();
 
-        // Configuration Security Warnings
-        if (!Settings.isForceSingleSessionEnabled) {
-            ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
-        }
-        if (Settings.getSessionTimeout == 0 && Settings.isSessionsEnabled) {
-            ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
-        }
-
         // Setup messages
         m = Messages.getInstance();
 
@@ -148,8 +140,9 @@ public class AuthMe extends JavaPlugin {
             Metrics metrics = new Metrics(this);
             metrics.start();
             ConsoleLogger.info("Metrics started successfully!");
-        } catch (IOException e) {
+        } catch (Exception e) {
             // Failed to submit the metrics data
+            ConsoleLogger.writeStackTrace(e);
             ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway...");
         }
 
@@ -258,8 +251,8 @@ public class AuthMe extends JavaPlugin {
 
         // Reload support hook
         if (Settings.reloadSupport) {
-            int playersOnline = Utils.getOnlinePlayers().size();
             if (database != null) {
+                int playersOnline = Utils.getOnlinePlayers().size();
                 if (playersOnline < 1) {
                     database.purgeLogged();
                 } else {
@@ -281,21 +274,29 @@ public class AuthMe extends JavaPlugin {
         pm.registerEvents(new AuthMeServerListener(this), this);
 
         // Register commands
-        this.getCommand("authme").setExecutor(new AdminCommand(this));
-        this.getCommand("register").setExecutor(new RegisterCommand(this));
-        this.getCommand("login").setExecutor(new LoginCommand(this));
-        this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
-        this.getCommand("logout").setExecutor(new LogoutCommand(this));
-        this.getCommand("unregister").setExecutor(new UnregisterCommand(this));
-        this.getCommand("email").setExecutor(new EmailCommand(this));
-        this.getCommand("captcha").setExecutor(new CaptchaCommand(this));
-        this.getCommand("converter").setExecutor(new ConverterCommand(this));
+        getCommand("authme").setExecutor(new AdminCommand(this));
+        getCommand("register").setExecutor(new RegisterCommand(this));
+        getCommand("login").setExecutor(new LoginCommand(this));
+        getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
+        getCommand("logout").setExecutor(new LogoutCommand(this));
+        getCommand("unregister").setExecutor(new UnregisterCommand(this));
+        getCommand("email").setExecutor(new EmailCommand(this));
+        getCommand("captcha").setExecutor(new CaptchaCommand(this));
+        getCommand("converter").setExecutor(new ConverterCommand(this));
 
         // Purge on start if enabled
         autoPurge();
 
         // Start Email recall task if needed
         recallEmail();
+
+        // Configuration Security Warnings
+        if (!Settings.isForceSingleSessionEnabled) {
+            ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
+        }
+        if (Settings.getSessionTimeout == 0 && Settings.isSessionsEnabled) {
+            ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
+        }
 
         // Sponsor messages
         ConsoleLogger.info("AuthMe hooks perfectly with the VERYGAMES server hosting!");
@@ -331,6 +332,8 @@ public class AuthMe extends JavaPlugin {
 
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
+
+        authme = null;
     }
 
     // Stop/unload the server/plugin as defined in the configuration
@@ -789,7 +792,7 @@ public class AuthMe extends JavaPlugin {
     @Deprecated
     public String getVeryGamesIP(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();
-        String sUrl = vgUrl;
+        String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
         sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", "" + player.getAddress().getPort());
         try {
             URL url = new URL(sUrl);

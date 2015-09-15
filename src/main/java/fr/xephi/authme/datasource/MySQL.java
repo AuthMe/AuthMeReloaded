@@ -235,14 +235,13 @@ public class MySQL implements DataSource {
         }
     }
 
-    @SuppressWarnings("resource")
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
         PlayerAuth pAuth = null;
-        int id = -1;
+        int id;
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
@@ -1019,7 +1018,7 @@ public class MySQL implements DataSource {
 
     @Override
     public List<PlayerAuth> getAllAuths() {
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        List<PlayerAuth> auths = new ArrayList<>();
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -1028,7 +1027,7 @@ public class MySQL implements DataSource {
             pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth = null;
+                PlayerAuth pAuth;
                 int id = rs.getInt(columnID);
                 if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
                     pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
@@ -1052,11 +1051,9 @@ public class MySQL implements DataSource {
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
                         pAuth.setHash(new String(bytes));
                     }
-                    if (rsid != null)
-                        rsid.close();
+                    rsid.close();
                 }
-                if (pAuth != null)
-                    auths.add(pAuth);
+                auths.add(pAuth);
             }
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());

@@ -30,8 +30,7 @@ public class Management {
         this.pm = plugin.getServer().getPluginManager();
     }
 
-    public void performLogin(final Player player, final String password,
-            final boolean forceLogin) {
+    public void performLogin(final Player player, final String password, final boolean forceLogin) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
@@ -41,8 +40,7 @@ public class Management {
         });
     }
 
-    public void performRegister(final Player player, final String password,
-            final String email) {
+    public void performRegister(final Player player, final String password, final String email) {
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
             @Override

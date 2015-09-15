@@ -8,7 +8,7 @@ public class PlayerCache {
     private ConcurrentHashMap<String, PlayerAuth> cache;
 
     private PlayerCache() {
-        cache = new ConcurrentHashMap<String, PlayerAuth>();
+        cache = new ConcurrentHashMap<>();
     }
 
     public void addPlayer(PlayerAuth auth) {
