@@ -15,7 +15,6 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Settings;
 
 public class AsyncronousQuit {
@@ -44,7 +43,7 @@ public class AsyncronousQuit {
     public void process() {
         if (player == null)
             return;
-        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 

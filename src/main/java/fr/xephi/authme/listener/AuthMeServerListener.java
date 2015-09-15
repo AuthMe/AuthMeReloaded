@@ -59,9 +59,9 @@ public class AuthMeServerListener implements Listener {
             plugin.legacyChestShop = false;
             ConsoleLogger.info("ChestShop has been disabled, unhook!");
         }
-        if (pluginName.equalsIgnoreCase("CombatTag")) {
-            plugin.combatTag = false;
-            ConsoleLogger.info("CombatTag has been disabled, unhook!");
+        if (pluginName.equalsIgnoreCase("CombatTagPlus")) {
+            plugin.combatTagPlus = null;
+            ConsoleLogger.info("CombatTagPlus has been disabled, unhook!");
         }
         if (pluginName.equalsIgnoreCase("Vault")) {
             plugin.permission = null;
@@ -78,8 +78,8 @@ public class AuthMeServerListener implements Listener {
             plugin.checkMultiverse();
         if (pluginName.equalsIgnoreCase("ChestShop"))
             plugin.checkChestShop();
-        if (pluginName.equalsIgnoreCase("CombatTag"))
-            plugin.checkCombatTag();
+        if (pluginName.equalsIgnoreCase("CombatTagPlus"))
+            plugin.checkCombatTagPlus();
         if (pluginName.equalsIgnoreCase("Vault"))
             plugin.checkVault();
     }

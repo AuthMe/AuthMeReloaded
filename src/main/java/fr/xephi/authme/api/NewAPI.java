@@ -14,7 +14,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 
@@ -71,7 +70,7 @@ public class NewAPI {
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
-        return utils.isNPC(player) || CombatTagComunicator.isNPC(player);
+        return utils.isNPC(player);
     }
 
     /**

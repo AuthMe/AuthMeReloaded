@@ -27,7 +27,6 @@ import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
@@ -58,7 +57,7 @@ public class AsyncronousJoin {
         AuthMePlayerListener.gameMode.putIfAbsent(name, player.getGameMode());
         BukkitScheduler sched = plugin.getServer().getScheduler();
 
-        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player)) {
             return;
         }
 

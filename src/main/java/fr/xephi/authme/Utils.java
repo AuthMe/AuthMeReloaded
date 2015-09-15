@@ -215,7 +215,14 @@ public class Utils {
 
     public boolean isNPC(final Entity player) {
         try {
-            return player.hasMetadata("NPC");
+            if (player.hasMetadata("NPC")) {
+                return true;
+            } else if(plugin.combatTagPlus != null 
+                    && player instanceof Player 
+                    && plugin.combatTagPlus.getNpcPlayerHelper().isNpc((Player) player)) {
+                return true;
+            }
+            return false;
         } catch (Exception e) {
             return false;
         }

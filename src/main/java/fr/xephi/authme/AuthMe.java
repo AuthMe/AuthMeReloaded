@@ -16,7 +16,6 @@ import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.*;
 import fr.xephi.authme.listener.*;
 import fr.xephi.authme.plugin.manager.BungeeCordMessage;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.plugin.manager.EssSpawn;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Messages;
@@ -24,6 +23,8 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import net.milkbowl.vault.permission.Permission;
+import net.minelink.ctplus.CombatTagPlus;
+
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -62,7 +63,6 @@ public class AuthMe extends JavaPlugin {
     private Messages m;
     public DataManager dataManager;
     public DataSource database;
-
     private JsonCache playerBackup;
     public OtherAccounts otherAccounts;
     public Permission permission;
@@ -70,7 +70,7 @@ public class AuthMe extends JavaPlugin {
     public Location essentialsSpawn;
     public MultiverseCore multiverse;
     public LookupService lookupService;
-    public boolean combatTag = false;
+    public CombatTagPlus combatTagPlus = null;
     public boolean legacyChestShop = false;
     public boolean antibotMod = false;
     public boolean delayedAntiBot = true;
@@ -176,8 +176,8 @@ public class AuthMe extends JavaPlugin {
         // Find Permissions
         checkVault();
 
-        // Check Combat Tag Version
-        checkCombatTag();
+        // Check Combat Tag Plus Version
+        checkCombatTagPlus();
 
         // Check Multiverse
         checkMultiverse();
@@ -501,8 +501,17 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Check the presence of CombatTag
-    public void checkCombatTag() {
-        this.combatTag = server.getPluginManager().isPluginEnabled("CombatTag");
+    public void checkCombatTagPlus() {
+        if (server.getPluginManager().isPluginEnabled("CombatTagPlus")) {
+            try {
+                combatTagPlus = (CombatTagPlus) server.getPluginManager().getPlugin("CombatTagPlus");
+                ConsoleLogger.info("Hooked correctly with CombatTagPlus");
+            } catch (Exception | NoClassDefFoundError ingnored) {
+                combatTagPlus = null;
+            }
+        } else {
+            combatTagPlus = null;
+        }
     }
 
     // Check if a player/command sender have a permission
@@ -526,7 +535,7 @@ public class AuthMe extends JavaPlugin {
 
     // Save Player Data
     public void savePlayer(Player player) {
-        if ((utils.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
+        if ((utils.isNPC(player)) || (Utils.getInstance().isUnrestricted(player))) {
             return;
         }
         String name = player.getName().toLowerCase();

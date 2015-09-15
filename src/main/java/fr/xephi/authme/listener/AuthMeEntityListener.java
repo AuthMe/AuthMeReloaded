@@ -3,7 +3,6 @@ package fr.xephi.authme.listener;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -38,9 +37,6 @@ public class AuthMeEntityListener implements Listener {
 
         Player player = (Player) entity;
         String name = player.getName().toLowerCase();
-
-        if (CombatTagComunicator.isNPC(player))
-            return;
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
@@ -171,11 +167,7 @@ public class AuthMeEntityListener implements Listener {
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
-            return;
-        }
-
-        if (utils.isNPC(player))
+        if (Utils.getInstance().isUnrestricted(player) || utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
@@ -199,11 +191,7 @@ public class AuthMeEntityListener implements Listener {
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
-            return;
-        }
-
-        if (utils.isNPC(player))
+        if (Utils.getInstance().isUnrestricted(player) || utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {

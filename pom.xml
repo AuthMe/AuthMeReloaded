@@ -412,24 +412,6 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Anti PvPLogging plugin, http://www.spigotmc.org/resources/combat-tag.3182/ -->
-		<dependency>
-			<groupId>com.trc202</groupId>
-			<artifactId>CombatTag</artifactId>
-			<version>6.2.1-SNAPSHOT</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<!-- XAuth, another authentication plugin, required by the database converter -->
 		<dependency>
 			<groupId>de.luricos.bukkit</groupId>
