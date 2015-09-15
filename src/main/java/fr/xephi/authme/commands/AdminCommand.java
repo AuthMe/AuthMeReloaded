@@ -156,7 +156,7 @@ public class AdminCommand implements CommandExecutor {
                     @Override
                     public void run() {
                         PlayerAuth auth;
-                        String message = "[AuthMe] ";
+                        StringBuilder message = new StringBuilder("[AuthMe] ");
                         try {
                             auth = plugin.database.getAuth(arguments[1].toLowerCase());
                         } catch (NullPointerException npe) {
@@ -179,25 +179,24 @@ public class AdminCommand implements CommandExecutor {
                         int i = 0;
                         for (String account : accountList) {
                             i++;
-                            message = message + account;
+                            message.append(account);
                             if (i != accountList.size()) {
-                                message = message + ", ";
+                                message.append(", ");
                             } else {
-                                message = message + ".";
+                                message.append(".");
                             }
                         }
                         sender.sendMessage("[AuthMe] " + arguments[1] + " has " + String.valueOf(accountList.size()) + " accounts");
-                        sender.sendMessage(message);
+                        sender.sendMessage(message.toString());
                     }
                 });
                 return true;
             } else {
                 final String[] arguments = args;
                 Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
                     @Override
                     public void run() {
-                        String message = "[AuthMe] ";
+                        StringBuilder message = new StringBuilder("[AuthMe] ");
                         if (arguments[1] == null) {
                             sender.sendMessage("[AuthMe] Please put a valid IP");
                             return;
@@ -214,15 +213,15 @@ public class AdminCommand implements CommandExecutor {
                         int i = 0;
                         for (String account : accountList) {
                             i++;
-                            message = message + account;
+                            message.append(account);
                             if (i != accountList.size()) {
-                                message = message + ", ";
+                                message.append(", ");
                             } else {
-                                message = message + ".";
+                                message.append(".");
                             }
                         }
                         sender.sendMessage("[AuthMe] " + arguments[1] + " has " + String.valueOf(accountList.size()) + " accounts");
-                        sender.sendMessage(message);
+                        sender.sendMessage(message.toString());
                     }
                 });
                 return true;

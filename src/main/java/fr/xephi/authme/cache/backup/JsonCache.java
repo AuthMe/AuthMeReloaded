@@ -138,7 +138,7 @@ public class JsonCache {
         }
     }
 
-    private class PlayerDataDeserializer implements JsonDeserializer<DataFileCache> {
+    private static class PlayerDataDeserializer implements JsonDeserializer<DataFileCache> {
         @Override
         public DataFileCache deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
