@@ -12,16 +12,18 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CacheDataSource implements DataSource {
 
     private final DataSource source;
+    private final AuthMe plugin;
     private ConcurrentHashMap<String, PlayerAuth> cache = new ConcurrentHashMap<>();
 
-    public CacheDataSource(AuthMe plugin, DataSource src) {
+    public CacheDataSource(AuthMe pl, DataSource src) {
+        this.plugin = pl;
         this.source = src;
         /*
          * We need to load all players in cache ... It will took more time to
          * load the server, but it will be much easier to check for an
          * isAuthAvailable !
          */
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+        pl.getServer().getScheduler().runTaskAsynchronously(pl, new Runnable() {
             @Override
             public void run() {
                 for (PlayerAuth auth : source.getAllAuths()) {
@@ -46,12 +48,17 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized boolean saveAuth(PlayerAuth auth) {
-        if (source.saveAuth(auth)) {
-            cache.put(auth.getNickname(), auth);
-            return true;
-        }
-        return false;
+    public synchronized boolean saveAuth(final PlayerAuth auth) {
+        cache.put(auth.getNickname(), auth);
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (!source.saveAuth(auth)) {
+                    cache.remove(auth.getNickname());
+                }
+            }
+        });
+        return true;
     }
 
     @Override
