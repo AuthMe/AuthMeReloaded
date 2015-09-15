@@ -41,12 +41,8 @@ public class CacheDataSource implements DataSource {
         user = user.toLowerCase();
         if (cache.containsKey(user)) {
             return cache.get(user);
-        } else {
-            PlayerAuth auth = source.getAuth(user);
-            if (auth != null)
-                cache.put(user, auth);
-            return auth;
         }
+        return null;
     }
 
     @Override

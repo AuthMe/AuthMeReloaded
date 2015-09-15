@@ -56,7 +56,7 @@ public class AuthMe extends JavaPlugin {
     private static AuthMe authme;
 
     private final Server server = getServer();
-    private final Logger authmeLogger = Logger.getLogger("AuthMe");
+    private final Logger authmeLogger = getLogger();
     public Management management;
     public NewAPI api;
     private Utils utils = Utils.getInstance();
