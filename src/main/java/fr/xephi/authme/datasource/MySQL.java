@@ -149,7 +149,7 @@ public class MySQL implements DataSource {
     }
 
     private synchronized Connection getConnection() throws SQLException {
-        Connection con = null;
+        Connection con;
         con = ds.getConnection();
         return con;
     }
@@ -290,6 +290,7 @@ public class MySQL implements DataSource {
     public synchronized boolean saveAuth(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
+        ResultSet rs = null;
         try {
             con = getConnection();
             if ((columnSalt == null || columnSalt.isEmpty()) || (auth.getSalt() == null || auth.getSalt().isEmpty())) {
@@ -322,13 +323,11 @@ public class MySQL implements DataSource {
                 }
             }
             if (Settings.getPasswordHash == HashAlgorithm.PHPBB) {
-                int id;
-                ResultSet rs = null;
                 PreparedStatement pst2 = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst2.setString(1, auth.getNickname());
                 rs = pst2.executeQuery();
                 if (rs.next()) {
-                    id = rs.getInt(columnID);
+                    int id = rs.getInt(columnID);
                     // Insert player in phpbb_user_group
                     pst = con.prepareStatement("INSERT INTO " + Settings.getPhpbbPrefix + "user_group (group_id, user_id, group_leader, user_pending) VALUES (?,?,?,?);");
                     pst.setInt(1, Settings.getPhpbbGroup);
@@ -368,16 +367,15 @@ public class MySQL implements DataSource {
                     pst.executeUpdate();
                     pst.close();
                 }
+                rs.close();
                 pst2.close();
             }
             if (Settings.getPasswordHash == HashAlgorithm.WORDPRESS) {
-                int id;
-                ResultSet rs = null;
                 pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
-                    id = rs.getInt(columnID);
+                    int id = rs.getInt(columnID);
                     // First Name
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
@@ -463,15 +461,14 @@ public class MySQL implements DataSource {
                     pst.executeUpdate();
                     pst.close();
                 }
+                rs.close();
             }
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                int id;
-                ResultSet rs = null;
                 pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
-                    id = rs.getInt(columnID);
+                    int id = rs.getInt(columnID);
                     // Insert password in the correct table
                     pst = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
                     pst.setInt(1, id);
@@ -482,13 +479,13 @@ public class MySQL implements DataSource {
                     pst.setBlob(3, blob);
                     pst.executeUpdate();
                 }
-                if (rs != null && !rs.isClosed())
-                    rs.close();
+                rs.close();
             }
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
+            close(rs);
             close(pst);
             close(con);
         }
@@ -499,6 +496,7 @@ public class MySQL implements DataSource {
     public synchronized boolean updatePassword(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
+        ResultSet rs = null;
         try {
             con = getConnection();
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE LOWER(" + columnName + ")=?;");
@@ -507,13 +505,11 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
             pst.close();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                int id;
-                ResultSet rs = null;
                 pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
-                    id = rs.getInt(columnID);
+                    int id = rs.getInt(columnID);
                     // Insert password in the correct table
                     pst = con.prepareStatement("UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;");
                     byte[] bytes = auth.getHash().getBytes();
@@ -527,13 +523,13 @@ public class MySQL implements DataSource {
                     pst.setInt(2, id);
                     pst.executeUpdate();
                 }
-                if (rs != null && !rs.isClosed())
-                    rs.close();
+                rs.close();
             }
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
+            close(rs);
             close(pst);
             close(con);
         }
@@ -585,7 +581,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
@@ -601,7 +597,7 @@ public class MySQL implements DataSource {
             return list;
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -617,7 +613,7 @@ public class MySQL implements DataSource {
             con = getConnection();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
-                ResultSet rs = null;
+                ResultSet rs;
                 pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, user);
                 rs = pst.executeQuery();
@@ -753,37 +749,14 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized void close() {
-        try {
-            if (ds != null)
-                ds.close();
-        } catch (Exception e) {
-        }
+        if (ds != null)
+            ds.close();
     }
 
-    private void close(Statement st) {
-        if (st != null) {
+    private void close(AutoCloseable o) {
+        if (o != null) {
             try {
-                st.close();
-            } catch (Exception ex) {
-                ConsoleLogger.showError(ex.getMessage());
-            }
-        }
-    }
-
-    private void close(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (Exception ex) {
-                ConsoleLogger.showError(ex.getMessage());
-            }
-        }
-    }
-
-    private void close(Connection con) {
-        if (con != null) {
-            try {
-                con.close();
+                o.close();
             } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
             }
@@ -795,7 +768,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
@@ -807,7 +780,7 @@ public class MySQL implements DataSource {
             return countIp;
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -820,7 +793,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
@@ -832,7 +805,7 @@ public class MySQL implements DataSource {
             return countIp;
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -845,7 +818,7 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countEmail = new ArrayList<String>();
+        List<String> countEmail = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
@@ -857,7 +830,7 @@ public class MySQL implements DataSource {
             return countEmail;
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -924,12 +897,10 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
             close(con);
         }
-        return;
     }
 
     @Override
@@ -945,12 +916,10 @@ public class MySQL implements DataSource {
                 pst.executeUpdate();
             } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                return;
             } finally {
                 close(pst);
                 close(con);
             }
-        return;
     }
 
     @Override
@@ -965,12 +934,10 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
             close(con);
         }
-        return;
     }
 
     @Override
@@ -978,7 +945,7 @@ public class MySQL implements DataSource {
         int result = 0;
         Connection con = null;
         PreparedStatement pst = null;
-        ResultSet rs = null;
+        ResultSet rs;
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
@@ -1008,12 +975,10 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
             close(con);
         }
-        return;
     }
 
     @Override
@@ -1042,7 +1007,7 @@ public class MySQL implements DataSource {
                     }
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                    ResultSet rsid = null;
+                    ResultSet rsid;
                     pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
                     rsid = pst.executeQuery();
@@ -1068,7 +1033,7 @@ public class MySQL implements DataSource {
 
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        List<PlayerAuth> auths = new ArrayList<>();
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -1077,7 +1042,7 @@ public class MySQL implements DataSource {
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth = null;
+                PlayerAuth pAuth;
                 int id = rs.getInt(columnID);
                 if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
                     pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
@@ -1092,7 +1057,7 @@ public class MySQL implements DataSource {
                     }
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                    ResultSet rsid = null;
+                    ResultSet rsid;
                     pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
                     rsid = pst.executeQuery();
@@ -1101,11 +1066,9 @@ public class MySQL implements DataSource {
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
                         pAuth.setHash(new String(bytes));
                     }
-                    if (rsid != null)
-                        rsid.close();
+                    rsid.close();
                 }
-                if (pAuth != null)
-                    auths.add(pAuth);
+                auths.add(pAuth);
             }
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
