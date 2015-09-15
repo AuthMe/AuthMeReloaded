@@ -15,6 +15,7 @@ import org.bukkit.event.entity.*;
 public class AuthMeEntityListener implements Listener {
 
     public AuthMe instance;
+    private Utils utils = Utils.getInstance();
 
     public AuthMeEntityListener(AuthMe instance) {
         this.instance = instance;
@@ -32,7 +33,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity))
+        if (utils.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -64,7 +65,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity))
+        if (utils.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -114,7 +115,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity))
+        if (utils.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -141,7 +142,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(entity))
+        if (utils.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -174,7 +175,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(player))
+        if (utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
@@ -202,7 +203,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (instance.citizens.isNPC(player))
+        if (utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {

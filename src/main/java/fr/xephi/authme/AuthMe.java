@@ -16,7 +16,6 @@ import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.*;
 import fr.xephi.authme.listener.*;
 import fr.xephi.authme.plugin.manager.BungeeCordMessage;
-import fr.xephi.authme.plugin.manager.CitizensCommunicator;
 import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.plugin.manager.EssSpawn;
 import fr.xephi.authme.process.Management;
@@ -71,8 +70,6 @@ public class AuthMe extends JavaPlugin {
     public Location essentialsSpawn;
     public MultiverseCore multiverse;
     public LookupService lookupService;
-    public CitizensCommunicator citizens;
-    public boolean isCitizensActive = false;
     public boolean CombatTag = false;
     public boolean legacyChestShop = false;
     public boolean antibotMod = false;
@@ -98,9 +95,6 @@ public class AuthMe extends JavaPlugin {
         return m;
     }
 
-    public CitizensCommunicator getCitizensCommunicator() {
-        return citizens;
-    }
 
     @Override
     public void onEnable() {
@@ -181,10 +175,6 @@ public class AuthMe extends JavaPlugin {
 
         // Find Permissions
         checkVault();
-
-        // Check Citizens Version
-        citizens = new CitizensCommunicator(this);
-        checkCitizens();
 
         // Check Combat Tag Version
         checkCombatTag();
@@ -515,11 +505,6 @@ public class AuthMe extends JavaPlugin {
         this.CombatTag = server.getPluginManager().isPluginEnabled("CombatTag");
     }
 
-    // Check if Citizens is active
-    public void checkCitizens() {
-        this.isCitizensActive = server.getPluginManager().isPluginEnabled("Citizens");
-    }
-
     // Check if a player/command sender have a permission
     public boolean authmePermissible(Player player, String perm) {
         if (player.hasPermission(perm)) {
@@ -541,7 +526,7 @@ public class AuthMe extends JavaPlugin {
 
     // Save Player Data
     public void savePlayer(Player player) {
-        if ((citizens.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
+        if ((utils.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
             return;
         }
         String name = player.getName().toLowerCase();

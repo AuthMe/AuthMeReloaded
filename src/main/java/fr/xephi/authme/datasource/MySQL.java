@@ -263,6 +263,7 @@ public class MySQL implements DataSource {
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                     rs.close();
+                    pst.close();
                     pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
                     rs = pst.executeQuery();

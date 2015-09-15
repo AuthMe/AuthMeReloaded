@@ -44,7 +44,7 @@ public class AsyncronousQuit {
     public void process() {
         if (player == null)
             return;
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
 

@@ -23,6 +23,7 @@ public class NewAPI {
     public static final String newline = System.getProperty("line.separator");
     public static NewAPI singleton;
     public AuthMe plugin;
+    private Utils utils = Utils.getInstance();
 
     public NewAPI(AuthMe plugin) {
         this.plugin = plugin;
@@ -70,7 +71,7 @@ public class NewAPI {
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
-        return plugin.getCitizensCommunicator().isNPC(player) || CombatTagComunicator.isNPC(player);
+        return utils.isNPC(player) || CombatTagComunicator.isNPC(player);
     }
 
     /**

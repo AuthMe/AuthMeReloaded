@@ -40,6 +40,7 @@ public class AuthMePlayerListener implements Listener {
     public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     private Messages m = Messages.getInstance();
     public AuthMe plugin;
+    private Utils utils = Utils.getInstance();
     public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
     private List<String> antibot = new ArrayList<>();
 
@@ -305,7 +306,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
 
@@ -440,7 +441,7 @@ public class AuthMePlayerListener implements Listener {
         final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
 
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
 
@@ -608,7 +609,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (plugin.getCitizensCommunicator().isNPC(player))
+        if (utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
@@ -636,7 +637,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (plugin.getCitizensCommunicator().isNPC(player))
+        if (utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
@@ -667,7 +668,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (plugin.getCitizensCommunicator().isNPC(player)) {
+        if (utils.isNPC(player)) {
             return;
         }
 
@@ -693,7 +694,7 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.getInstance().isUnrestricted(player)) {
             return;
         }
-        if (plugin.getCitizensCommunicator().isNPC(player))
+        if (utils.isNPC(player))
             return;
         if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
             return;
@@ -732,7 +733,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (plugin.getCitizensCommunicator().isNPC(player))
+        if (utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
@@ -762,7 +763,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (plugin.getCitizensCommunicator().isNPC(player)) {
+        if (utils.isNPC(player)) {
             return;
         }
 
@@ -786,7 +787,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
 
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
 
@@ -814,7 +815,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (plugin.getCitizensCommunicator().isNPC(player))
+        if (utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
@@ -886,7 +887,7 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player))
             return;
 
-        if (plugin.getCitizensCommunicator().isNPC(player))
+        if (utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(name))
@@ -921,7 +922,7 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player))
             return;
 
-        if (plugin.getCitizensCommunicator().isNPC(player))
+        if (utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(name))

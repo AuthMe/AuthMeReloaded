@@ -129,12 +129,6 @@
 			<url>https://ci.drtshock.net/plugin/repository/everything</url>
 		</repository>
 
-		<!-- Citizens API 2.X Repo -->
-		<repository>
-			<id>citizensapi-repo</id>
-			<url>http://ci.citizensnpcs.co/plugin/repository/project/CitizensAPI/LastSuccessful/repository</url>
-		</repository>
-
 		<!-- CombatTagPlus Repo -->
 		<repository>
 			<id>minelink-thirdparty</id>
@@ -286,24 +280,6 @@
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>VaultAPI</artifactId>
 			<version>1.5</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<!-- Citizens 2.X, NPC plugin, http://dev.bukkit.org/bukkit-plugins/citizens/ -->
-		<dependency>
-			<groupId>net.citizensnpcs</groupId>
-			<artifactId>citizensapi</artifactId>
-			<version>2.0.16-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>

@@ -58,7 +58,7 @@ public class AsyncronousJoin {
         AuthMePlayerListener.gameMode.putIfAbsent(name, player.getGameMode());
         BukkitScheduler sched = plugin.getServer().getScheduler();
 
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
             return;
         }
 

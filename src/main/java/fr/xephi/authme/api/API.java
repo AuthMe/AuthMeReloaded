@@ -20,6 +20,7 @@ public class API {
 
     public static final String newline = System.getProperty("line.separator");
     public static AuthMe instance;
+    private Utils utils = Utils.getInstance();
 
     @Deprecated
     public API(AuthMe instance) {
@@ -65,7 +66,7 @@ public class API {
      */
     @Deprecated
     public boolean isaNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player))
+        if (utils.isNPC(player))
             return true;
         return CombatTagComunicator.isNPC(player);
     }
@@ -77,7 +78,7 @@ public class API {
      */
     @Deprecated
     public boolean isNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player))
+        if (utils.isNPC(player))
             return true;
         return CombatTagComunicator.isNPC(player);
     }

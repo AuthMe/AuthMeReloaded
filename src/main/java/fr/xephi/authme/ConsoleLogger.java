@@ -14,14 +14,13 @@ import java.util.logging.Logger;
 public class ConsoleLogger {
 
     private static final Logger log = AuthMe.getInstance().getLogger();
-    private static final DateFormat format = DateFormat.getDateTimeInstance();
 
 
     public static void info(String message) {
         if (AuthMe.getInstance().isEnabled()) {
             log.info("[AuthMe] " + message);
             if (Settings.useLogging) {
-                writeLog("[" + format.format(new Date()) + "] " + message);
+                writeLog("[" + DateFormat.getDateTimeInstance().format(new Date()) + "] " + message);
             }
         }
     }
@@ -30,7 +29,7 @@ public class ConsoleLogger {
         if (AuthMe.getInstance().isEnabled()) {
             log.warning("[AuthMe] " + message);
             if (Settings.useLogging) {
-                writeLog("[" + format.format(new Date()) + "] ERROR: " + message);
+                writeLog("[" + DateFormat.getDateTimeInstance().format(new Date()) + "] ERROR: " + message);
             }
         }
     }

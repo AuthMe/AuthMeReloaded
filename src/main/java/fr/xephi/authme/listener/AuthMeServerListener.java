@@ -63,10 +63,6 @@ public class AuthMeServerListener implements Listener {
             plugin.CombatTag = false;
             ConsoleLogger.info("CombatTag has been disabled, unhook!");
         }
-        if (pluginName.equalsIgnoreCase("Citizens")) {
-            plugin.isCitizensActive = false;
-            ConsoleLogger.info("Citizens has been disabled, unhook!");
-        }
         if (pluginName.equalsIgnoreCase("Vault")) {
             plugin.permission = null;
             ConsoleLogger.showError("Vault has been disabled, unhook permissions!");
@@ -84,8 +80,6 @@ public class AuthMeServerListener implements Listener {
             plugin.checkChestShop();
         if (pluginName.equalsIgnoreCase("CombatTag"))
             plugin.checkCombatTag();
-        if (pluginName.equalsIgnoreCase("Citizens"))
-            plugin.checkCitizens();
         if (pluginName.equalsIgnoreCase("Vault"))
             plugin.checkVault();
     }

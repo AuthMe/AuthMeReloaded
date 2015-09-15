@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -210,5 +211,13 @@ public class Utils {
         } catch (Exception ignored) {
         }
         return Collections.emptyList();
+    }
+
+    public boolean isNPC(final Entity player) {
+        try {
+            return player.hasMetadata("NPC");
+        } catch (Exception e) {
+            return false;
+        }
     }
 }
