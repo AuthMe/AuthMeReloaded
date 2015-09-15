@@ -90,6 +90,7 @@
 							<include>com.zaxxer:HikariCP</include>
 							<include>org.slf4j:slf4j-simple</include>
 							<include>org.slf4j:slf4j-api</include>
+							<include>com.google.code.gson:gson</include>
 							<include>com.maxmind.geoip:geoip-api</include>
 							<include>com.sun.mail:javax.mail</include>
 							<include>com.comphenix.attribute:AttributeStorage</include>
@@ -202,6 +203,14 @@
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.11.1</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Google JSON Library -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3.1</version>
 			<scope>compile</scope>
 		</dependency>
 
