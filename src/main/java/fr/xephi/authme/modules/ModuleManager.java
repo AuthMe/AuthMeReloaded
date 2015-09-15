@@ -1,5 +1,9 @@
 package fr.xephi.authme.modules;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.settings.Settings;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -10,56 +14,69 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-
-public class ModuleManager implements Module {
+public class ModuleManager {
 
     private AuthMe plugin;
-    private ModuleManager instance;
-    private List<Module> modules = new ArrayList<Module>();
+
+    private List<Module> modules = new ArrayList<>();
 
     public ModuleManager(AuthMe plugin) {
         this.plugin = plugin;
     }
 
-    @Override
-    public String getName() {
-        return "AuthMe Module Manager";
+    public boolean isModuleEnabled(String name) {
+        for (Module m : modules) {
+            if (m.getName().equalsIgnoreCase(name))
+                return true;
+        }
+        return false;
     }
 
-    @Override
-    public AuthMe getInstanceOfAuthMe() {
-        return this.plugin;
+    public boolean isModuleEnabled(Module.ModuleType type) {
+        for (Module m : modules) {
+            if (m.getType() == type)
+                return true;
+        }
+        return false;
     }
 
-    @Override
-    public Module getInstance() {
-        if (this.instance == null)
-            instance = new ModuleManager(AuthMe.getInstance());
-        return instance;
+    public Module getModule(String name) {
+        for (Module m : modules) {
+            if (m.getName().equalsIgnoreCase(name))
+                return m;
+        }
+        return null;
     }
 
-    @Override
-    public ModuleType getType() {
-        return (Module.ModuleType.MANAGER);
+    public Module getModule(Module.ModuleType type) {
+        for (Module m : modules) {
+            if (m.getType() == type)
+                return m;
+        }
+        return null;
     }
 
-    @Override
-    public boolean load() {
-        File dir = new File(plugin.getDataFolder() + File.separator + "modules");
+    public int loadModules() {
+        File dir = Settings.MODULE_FOLDER;
+        int count = 0;
+        if (!dir.isDirectory()) {
+            dir.mkdirs();
+            return count;
+        }
+
         File[] files = dir.listFiles();
         if (files == null) {
-            return false;
+            return count;
         }
         for (File pathToJar : files) {
             JarFile jarFile = null;
+            URLClassLoader cl = null;
             try {
                 jarFile = new JarFile(pathToJar);
-                Enumeration<?> e = jarFile.entries();
-                URL[] urls = { new URL("jar:file:" + pathToJar.getAbsolutePath() + "!/") };
-                URLClassLoader cl = URLClassLoader.newInstance(urls);
+                URL[] urls = {new URL("jar:file:" + pathToJar.getAbsolutePath() + "!/")};
+                cl = URLClassLoader.newInstance(urls);
 
+                Enumeration<?> e = jarFile.entries();
                 while (e.hasMoreElements()) {
                     JarEntry je = (JarEntry) e.nextElement();
                     if (je.isDirectory() || !je.getName().endsWith("Main.class")) {
@@ -68,35 +85,40 @@ public class ModuleManager implements Module {
                     String className = je.getName().substring(0, je.getName().length() - 6);
                     className = className.replace('/', '.');
                     Class<?> c = cl.loadClass(className);
+                    if (!Module.class.isAssignableFrom(c)) {
+                        continue;
+                    }
+
                     Module mod = (Module) c.newInstance();
                     mod.load();
                     modules.add(mod);
+                    count++;
                     break;
-
                 }
+
             } catch (Exception ex) {
+                ConsoleLogger.writeStackTrace(ex);
                 ConsoleLogger.showError("Cannot load " + pathToJar.getName() + " jar file !");
             } finally {
-                if (jarFile != null)
-                    try {
+                try {
+                    if (jarFile != null) {
                         jarFile.close();
-                    } catch (IOException e) {
                     }
+                    if (cl != null) {
+                        cl.close();
+                    }
+                } catch (IOException ignored) {
+                }
             }
         }
-        return true;
+        return count;
     }
 
-    @Override
-    public boolean unload() {
-        try {
-            for (Module mod : modules) {
-                mod.unload();
-                modules.remove(mod);
-            }
-        } catch (Exception e) {
+    public void unloadModules() {
+        for (Module m : modules) {
+            m.unload();
+            modules.remove(m);
         }
-        return true;
     }
 
 }
