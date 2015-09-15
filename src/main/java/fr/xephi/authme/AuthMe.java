@@ -3,7 +3,6 @@ package fr.xephi.authme;
 import com.earth2me.essentials.Essentials;
 import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.zaxxer.hikari.pool.PoolInitializationException;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -42,7 +41,6 @@ import org.mcstats.Metrics;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.sql.SQLException;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -216,8 +214,9 @@ public class AuthMe extends JavaPlugin {
         // Connect to the database and setup tables
         try {
             setupDatabase();
-        } catch (Exception ex) {
-            ConsoleLogger.writeStackTrace(ex);
+        } catch (Exception e) {
+            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.showError(e.getMessage());
             ConsoleLogger.showError("Fatal error occurred during database connection! Authme initialization ABORTED!");
             stopOrUnload();
             return;
@@ -353,9 +352,9 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Initialize and setup the database
-    public void setupDatabase() throws ClassNotFoundException, PoolInitializationException, SQLException {
+    public void setupDatabase() throws Exception {
         // Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
-        int accounts;
+        boolean isSQLite = false;
         switch (Settings.getDataSource) {
             case FILE:
                 database = new FlatFile();
@@ -365,16 +364,23 @@ public class AuthMe extends JavaPlugin {
                 break;
             case SQLITE:
                 database = new SQLite();
-                accounts = database.getAccountsRegistered();
-                if (accounts >= 4000)
-                    ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH " + accounts + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE UPGRADE TO MYSQL!!");
+                isSQLite = true;
                 break;
             case SQLITEHIKARI:
                 database = new SQLite_HIKARI();
-                accounts = database.getAccountsRegistered();
-                if (accounts >= 8000)
-                    ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH " + accounts + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE UPGRADE TO MYSQL!!");
+                isSQLite = true;
                 break;
+        }
+
+        if (isSQLite) {
+            server.getScheduler().runTaskAsynchronously(this, new Runnable() {
+                @Override
+                public void run() {
+                    int accounts = database.getAccountsRegistered();
+                    if (accounts >= 4000)
+                        ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH " + accounts + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE UPGRADE TO MYSQL!!");
+                }
+            });
         }
 
         if (Settings.isCachingEnabled) {

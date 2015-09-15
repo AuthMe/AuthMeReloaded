@@ -1,21 +1,15 @@
 package fr.xephi.authme.datasource;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import com.zaxxer.hikari.pool.PoolInitializationException;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SQLite_HIKARI implements DataSource {
 
@@ -37,7 +31,7 @@ public class SQLite_HIKARI implements DataSource {
     private String columnLogged;
     private String columnRealName;
 
-    public SQLite_HIKARI() throws ClassNotFoundException, SQLException, PoolInitializationException {
+    public SQLite_HIKARI() throws ClassNotFoundException, SQLException {
         this.database = Settings.getMySQLDatabase;
         this.tableName = Settings.getMySQLTablename;
         this.columnName = Settings.getMySQLColumnName;
@@ -55,61 +49,22 @@ public class SQLite_HIKARI implements DataSource {
         this.columnLogged = Settings.getMySQLColumnLogged;
         this.columnRealName = Settings.getMySQLColumnRealName;
 
-        // Set the connection arguments (and check if connection is ok)
+        // Set the connection arguments
         try {
             this.setConnectionArguments();
-        } catch (ClassNotFoundException ne) {
-            ConsoleLogger.showError(ne.getMessage());
-            ConsoleLogger.showError("Can't use the Hikari Connection Pool! Please, report this error to the developer! SHUTDOWN...");
-            this.close();
-            if (Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().shutdown();
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            } else {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-            throw new ClassNotFoundException(ne.getMessage());
-        } catch (IllegalArgumentException ae) { // This means that there are problems with the hikaricp pool arguments!
-            ConsoleLogger.showError(ae.getMessage());
-            ConsoleLogger.showError("Invalid database arguments! Please check your configuration!");
-            ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
-            this.close();
-            if (Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().shutdown();
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            } else {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-            throw new IllegalArgumentException(ae);
-        } catch (PoolInitializationException ie) { // Can't initialize the connection pool!
-            ConsoleLogger.showError(ie.getMessage());
-            ConsoleLogger.showError("Can't connect to the SQLite database! Please check your configuration!");
-            ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
-            this.close();
-            if (Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().shutdown();
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            } else {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-            throw new PoolInitializationException(ie);
+        } catch (RuntimeException rt) {
+            ConsoleLogger.showError("Can't use the Hikari Connection Pool! Please, report this error to the developer!");
+            throw rt;
         }
 
         // Initialize the database
         try {
             this.setupConnection();
         } catch (SQLException e) {
-            ConsoleLogger.showError(e.getMessage());
+            this.close();
             ConsoleLogger.showError("Can't initialize the SQLite database... Please check your database settings in the config.yml file! SHUTDOWN...");
             ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
-            this.close();
-            if (Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().shutdown();
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            } else {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-            throw new SQLException(e);
+            throw e;
         }
     }
 
@@ -118,11 +73,10 @@ public class SQLite_HIKARI implements DataSource {
         return DataSourceType.SQLITEHIKARI;
     }
 
-    private synchronized void setConnectionArguments()
-            throws ClassNotFoundException, IllegalArgumentException {
+    private synchronized void setConnectionArguments() throws RuntimeException {
         HikariConfig config = new HikariConfig();
         config.setPoolName("AuthMeSQLitePool");
-        config.setDriverClassName("org.sqlite.JDBC");
+        config.setDriverClassName("org.sqlite.JDBC"); // RuntimeException
         config.setJdbcUrl("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
         config.setConnectionTestQuery("SELECT 1");
         config.setMaxLifetime(180000); // 3 Min
@@ -134,7 +88,7 @@ public class SQLite_HIKARI implements DataSource {
 
     private synchronized void reloadArguments()
             throws ClassNotFoundException, IllegalArgumentException {
-        if (ds != null){
+        if (ds != null) {
             ds.close();
         }
         setConnectionArguments();
@@ -142,9 +96,7 @@ public class SQLite_HIKARI implements DataSource {
     }
 
     private synchronized Connection getConnection() throws SQLException {
-        Connection con = null;
-        con = ds.getConnection();
-        return con;
+        return ds.getConnection();
     }
 
     private synchronized void setupConnection() throws SQLException {
@@ -357,7 +309,7 @@ public class SQLite_HIKARI implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
@@ -369,7 +321,7 @@ public class SQLite_HIKARI implements DataSource {
             return list;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -492,7 +444,7 @@ public class SQLite_HIKARI implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
@@ -504,9 +456,9 @@ public class SQLite_HIKARI implements DataSource {
             return countIp;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } catch (NullPointerException npe) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -519,7 +471,7 @@ public class SQLite_HIKARI implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
@@ -531,9 +483,9 @@ public class SQLite_HIKARI implements DataSource {
             return countIp;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } catch (NullPointerException npe) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -546,7 +498,7 @@ public class SQLite_HIKARI implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countEmail = new ArrayList<String>();
+        List<String> countEmail = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
@@ -558,9 +510,9 @@ public class SQLite_HIKARI implements DataSource {
             return countEmail;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } catch (NullPointerException npe) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -622,12 +574,10 @@ public class SQLite_HIKARI implements DataSource {
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
             close(con);
         }
-        return;
     }
 
     @Override
@@ -643,12 +593,10 @@ public class SQLite_HIKARI implements DataSource {
                 pst.executeUpdate();
             } catch (SQLException ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                return;
             } finally {
                 close(pst);
                 close(con);
             }
-        return;
     }
 
     @Override
@@ -663,19 +611,17 @@ public class SQLite_HIKARI implements DataSource {
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
             close(con);
         }
-        return;
     }
 
     @Override
     public int getAccountsRegistered() {
         Connection con = null;
         PreparedStatement pst = null;
-        ResultSet rs = null;
+        ResultSet rs;
         int result = 0;
         try {
             con = getConnection();
@@ -706,26 +652,24 @@ public class SQLite_HIKARI implements DataSource {
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
             close(con);
         }
-        return;
     }
 
     @Override
     public List<PlayerAuth> getAllAuths() {
         Connection con = null;
         PreparedStatement pst = null;
-        ResultSet rs = null;
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        ResultSet rs;
+        List<PlayerAuth> auths = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth = null;
+                PlayerAuth pAuth;
                 if (rs.getString(columnIp).isEmpty()) {
                     pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "127.0.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                 } else {
@@ -735,8 +679,7 @@ public class SQLite_HIKARI implements DataSource {
                         pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     }
                 }
-                if (pAuth != null)
-                    auths.add(pAuth);
+                auths.add(pAuth);
             }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -752,14 +695,14 @@ public class SQLite_HIKARI implements DataSource {
     public List<PlayerAuth> getLoggedPlayers() {
         Connection con = null;
         PreparedStatement pst = null;
-        ResultSet rs = null;
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        ResultSet rs;
+        List<PlayerAuth> auths = new ArrayList<>();
         try {
             con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth = null;
+                PlayerAuth pAuth;
                 if (rs.getString(columnIp).isEmpty()) {
                     pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "127.0.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                 } else {
@@ -769,12 +712,10 @@ public class SQLite_HIKARI implements DataSource {
                         pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     }
                 }
-                if (pAuth != null)
-                    auths.add(pAuth);
+                auths.add(pAuth);
             }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return auths;
         } finally {
             close(pst);
             close(con);
@@ -799,37 +740,14 @@ public class SQLite_HIKARI implements DataSource {
 
     @Override
     public synchronized void close() {
-        try {
-            if (ds != null)
-                ds.close();
-        } catch (Exception e) {
-        }
+        if (ds != null)
+            ds.close();
     }
 
-    private void close(Statement st) {
-        if (st != null) {
+    private void close(AutoCloseable o) {
+        if (o != null) {
             try {
-                st.close();
-            } catch (Exception ex) {
-                ConsoleLogger.showError(ex.getMessage());
-            }
-        }
-    }
-
-    private void close(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (Exception ex) {
-                ConsoleLogger.showError(ex.getMessage());
-            }
-        }
-    }
-
-    private void close(Connection con) {
-        if (con != null) {
-            try {
-                con.close();
+                o.close();
             } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
             }
