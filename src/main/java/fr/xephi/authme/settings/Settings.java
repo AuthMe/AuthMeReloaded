@@ -20,9 +20,11 @@ public final class Settings extends YamlConfiguration {
     public static Boolean antiBotInAction = false;
 
     public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
+    public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
     public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
     public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
+    public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
 
     public static File messageFile;
     public static List<String> allowCommands;
