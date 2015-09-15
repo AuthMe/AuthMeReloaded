@@ -1,5 +1,6 @@
 package fr.xephi.authme.settings;
 
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -64,7 +65,7 @@ public class CustomConfiguration extends YamlConfiguration {
                 int i = file.getPath().indexOf("AuthMe");
                 if (i > -1) {
                     String path = file.getPath().substring(i + 6).replace('\\', '/');
-                    InputStream is = getClass().getResourceAsStream(path);
+                    InputStream is = AuthMe.class.getResourceAsStream(path);
                     Files.copy(is, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
                     return true;
                 }
