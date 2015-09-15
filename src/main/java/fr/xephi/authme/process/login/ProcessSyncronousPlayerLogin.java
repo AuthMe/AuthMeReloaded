@@ -9,7 +9,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
+import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -166,7 +166,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
                 Utils.forceGM(player);
 
             // Restore Permission Group
-            Utils.getInstance().setGroup(player, groupType.LOGGEDIN);
+            Utils.getInstance().setGroup(player, GroupType.LOGGEDIN);
 
             // Cleanup no longer used temporary data
             LimboCache.getInstance().deleteLimboPlayer(name);

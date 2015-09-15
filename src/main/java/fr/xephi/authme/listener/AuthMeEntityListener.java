@@ -136,7 +136,7 @@ public class AuthMeEntityListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void EntityRegainHealthEvent(EntityRegainHealthEvent event) {
+    public void entityRegainHealthEvent(EntityRegainHealthEvent event) {
         Entity entity = event.getEntity();
         if (!(entity instanceof Player)) {
             return;

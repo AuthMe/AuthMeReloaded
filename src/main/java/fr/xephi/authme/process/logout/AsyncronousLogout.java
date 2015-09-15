@@ -6,7 +6,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
+import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.DataFileCache;
@@ -79,7 +79,7 @@ public class AsyncronousLogout {
         if (LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().deleteLimboPlayer(name);
         LimboCache.getInstance().addLimboPlayer(player);
-        utils.setGroup(player, groupType.NOTLOGGEDIN);
+        utils.setGroup(player, GroupType.NOTLOGGEDIN);
         if (Settings.protectInventoryBeforeLogInEnabled) {
             player.getInventory().clear();
             // create cache file for handling lost of inventories on unlogged in

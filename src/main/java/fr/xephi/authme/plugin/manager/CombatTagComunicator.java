@@ -22,7 +22,7 @@ public abstract class CombatTagComunicator {
      * @return true if the player is an NPC
      */
     public static boolean isNPC(Entity player) {
-        if (!AuthMe.getInstance().CombatTag)
+        if (!AuthMe.getInstance().combatTag)
             return false;
         try {
             if (Bukkit.getServer().getPluginManager().getPlugin("CombatTag") != null) {

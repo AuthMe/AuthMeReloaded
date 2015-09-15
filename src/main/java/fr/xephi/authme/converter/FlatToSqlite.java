@@ -2,7 +2,6 @@ package fr.xephi.authme.converter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
@@ -90,12 +89,10 @@ public class FlatToSqlite implements Converter {
             close();
             sender.sendMessage("The FlatFile has been converted to " + database + ".db file");
             return;
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            sender.sendMessage("Can't open the flat database file! Does it exist?");
         }
-        sender.sendMessage("Errors appears while trying to convert to SQLite");
         return;
     }
 

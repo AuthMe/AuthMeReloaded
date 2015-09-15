@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
+import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -82,7 +82,7 @@ public class UnregisterCommand implements CommandExecutor {
                     player.saveData();
                     PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                     if (!Settings.getRegisteredGroup.isEmpty())
-                        Utils.getInstance().setGroup(player, groupType.UNREGISTERED);
+                        Utils.getInstance().setGroup(player, GroupType.UNREGISTERED);
                     LimboCache.getInstance().addLimboPlayer(player);
                     int delay = Settings.getRegistrationTimeout * 20;
                     int interval = Settings.getWarnMessageInterval;
@@ -97,7 +97,7 @@ public class UnregisterCommand implements CommandExecutor {
                     return true;
                 }
                 if (!Settings.unRegisteredGroup.isEmpty()) {
-                    Utils.getInstance().setGroup(player, Utils.groupType.UNREGISTERED);
+                    Utils.getInstance().setGroup(player, Utils.GroupType.UNREGISTERED);
                 }
                 PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                 // check if Player cache File Exist and delete it, preventing

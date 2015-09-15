@@ -3,7 +3,7 @@ package fr.xephi.authme.commands;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
+import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -464,7 +464,7 @@ public class AdminCommand implements CommandExecutor {
             @SuppressWarnings("deprecation")
             Player target = Bukkit.getPlayer(name);
             PlayerCache.getInstance().removePlayer(name);
-            Utils.getInstance().setGroup(name, groupType.UNREGISTERED);
+            Utils.getInstance().setGroup(name, GroupType.UNREGISTERED);
             if (target != null) {
                 if (target.isOnline()) {
                     if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {

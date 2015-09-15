@@ -70,7 +70,7 @@ public class AuthMe extends JavaPlugin {
     public Location essentialsSpawn;
     public MultiverseCore multiverse;
     public LookupService lookupService;
-    public boolean CombatTag = false;
+    public boolean combatTag = false;
     public boolean legacyChestShop = false;
     public boolean antibotMod = false;
     public boolean delayedAntiBot = true;
@@ -194,7 +194,7 @@ public class AuthMe extends JavaPlugin {
         // Do backup on start if enabled
         if (Settings.isBackupActivated && Settings.isBackupOnStart) {
             // Do backup and check return value!
-            if (new PerformBackup(this).DoBackup()) {
+            if (new PerformBackup(this).doBackup()) {
                 ConsoleLogger.info("Backup performed correctly");
             } else {
                 ConsoleLogger.showError("Error while performing the backup!");
@@ -313,7 +313,7 @@ public class AuthMe extends JavaPlugin {
 
         // Do backup on stop if enabled
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {
-            Boolean Backup = new PerformBackup(this).DoBackup();
+            Boolean Backup = new PerformBackup(this).doBackup();
             if (Backup)
                 ConsoleLogger.info("Backup performed correctly.");
             else ConsoleLogger.showError("Error while performing the backup!");
@@ -502,7 +502,7 @@ public class AuthMe extends JavaPlugin {
 
     // Check the presence of CombatTag
     public void checkCombatTag() {
-        this.CombatTag = server.getPluginManager().isPluginEnabled("CombatTag");
+        this.combatTag = server.getPluginManager().isPluginEnabled("CombatTag");
     }
 
     // Check if a player/command sender have a permission

@@ -100,12 +100,9 @@ public class RakamakConverter implements Converter {
             }
             ConsoleLogger.info("Rakamak database has been imported correctly");
             sender.sendMessage("Rakamak database has been imported correctly");
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            sender.sendMessage("Error file not found");
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            sender.sendMessage("Error IOException");
+            sender.sendMessage("Can't open the rakamak database file! Does it exist?");
         }
     }
 }

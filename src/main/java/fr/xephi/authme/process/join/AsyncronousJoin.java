@@ -15,7 +15,7 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
+import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.DataFileCache;
@@ -151,7 +151,7 @@ public class AsyncronousJoin {
                 });
             }
             if (!Settings.unRegisteredGroup.isEmpty()) {
-                utils.setGroup(player, Utils.groupType.UNREGISTERED);
+                utils.setGroup(player, Utils.GroupType.UNREGISTERED);
             }
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
@@ -216,9 +216,9 @@ public class AsyncronousJoin {
         if (!LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().addLimboPlayer(player);
         if (database.isAuthAvailable(name)) {
-            utils.setGroup(player, groupType.NOTLOGGEDIN);
+            utils.setGroup(player, GroupType.NOTLOGGEDIN);
         } else {
-            utils.setGroup(player, groupType.UNREGISTERED);
+            utils.setGroup(player, GroupType.UNREGISTERED);
         }
         sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 

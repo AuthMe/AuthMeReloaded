@@ -30,7 +30,7 @@ public class PerformBackup {
         this.setInstance(instance);
     }
 
-    public boolean DoBackup() {
+    public boolean doBackup() {
 
         switch (Settings.getDataSource) {
             case FILE:

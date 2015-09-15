@@ -38,12 +38,12 @@ public class Utils {
         }
     }
 
-    public void setGroup(Player player, groupType group) {
+    public void setGroup(Player player, GroupType group) {
         setGroup(player.getName(), group);
     }
 
     @SuppressWarnings("deprecation")
-    public void setGroup(String player, groupType group) {
+    public void setGroup(String player, GroupType group) {
         if (!Settings.isPermissionCheckEnabled)
             return;
         if (plugin.permission == null)
@@ -172,7 +172,7 @@ public class Utils {
             player.setGameMode(GameMode.SURVIVAL);
     }
 
-    public enum groupType {
+    public enum GroupType {
         UNREGISTERED,
         REGISTERED,
         NOTLOGGEDIN,

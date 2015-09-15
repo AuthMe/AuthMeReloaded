@@ -108,7 +108,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         }
 
         if (!Settings.getRegisteredGroup.isEmpty()) {
-            Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
+            Utils.getInstance().setGroup(player, Utils.GroupType.REGISTERED);
         }
         m.send(player, "registered");
         if (!Settings.getmailAccount.isEmpty())
