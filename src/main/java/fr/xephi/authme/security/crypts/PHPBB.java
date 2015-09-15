@@ -14,7 +14,6 @@ import java.security.NoSuchAlgorithmException;
  */
 public class PHPBB implements EncryptionMethod {
 
-    private static final int PHP_VERSION = 4;
     private String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public String phpbb_hash(String password, String salt) {
@@ -42,7 +41,7 @@ public class PHPBB implements EncryptionMethod {
             iteration_count_log2 = 8;
         }
         String output = "$H$";
-        output += itoa64.charAt(Math.min(iteration_count_log2 + ((PHP_VERSION >= 5) ? 5 : 3), 30));
+        output += itoa64.charAt(Math.min(iteration_count_log2 + 3, 30));
         output += _hash_encode64(input, 6);
         return output;
     }
