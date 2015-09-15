@@ -16,12 +16,9 @@ import java.util.jar.JarFile;
 
 public class ModuleManager {
 
-    private AuthMe plugin;
-
     private List<Module> modules = new ArrayList<>();
 
     public ModuleManager(AuthMe plugin) {
-        this.plugin = plugin;
     }
 
     public boolean isModuleEnabled(String name) {
