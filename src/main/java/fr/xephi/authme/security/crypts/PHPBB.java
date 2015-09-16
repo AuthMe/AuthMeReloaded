@@ -50,24 +50,24 @@ public class PHPBB implements EncryptionMethod {
      * Encode hash
      */
     private String _hash_encode64(String input, int count) {
-        String output = "";
+        StringBuilder output = new StringBuilder();
         int i = 0;
         do {
             int value = input.charAt(i++);
-            output += itoa64.charAt(value & 0x3f);
+            output.append(itoa64.charAt(value & 0x3f));
             if (i < count)
                 value |= input.charAt(i) << 8;
-            output += itoa64.charAt((value >> 6) & 0x3f);
+            output.append(itoa64.charAt((value >> 6) & 0x3f));
             if (i++ >= count)
                 break;
             if (i < count)
                 value |= input.charAt(i) << 16;
-            output += itoa64.charAt((value >> 12) & 0x3f);
+            output.append(itoa64.charAt((value >> 12) & 0x3f));
             if (i++ >= count)
                 break;
-            output += itoa64.charAt((value >> 18) & 0x3f);
+            output.append(itoa64.charAt((value >> 18) & 0x3f));
         } while (i < count);
-        return output;
+        return output.toString();
     }
 
     String _hash_crypt_private(String password, String setting) {

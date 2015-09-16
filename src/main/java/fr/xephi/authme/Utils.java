@@ -12,7 +12,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.Method;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -180,16 +182,19 @@ public class Utils {
     }
 
     public static void purgeDirectory(File file) {
-        String files[] = file.list();
-        if (files != null && files.length != 0) {
-            for (String temp : files) {
-                File fileDelete = new File(file, temp);
-                if (fileDelete.isDirectory()) {
-                    purgeDirectory(fileDelete);
-                    fileDelete.delete();
-                } else {
-                    fileDelete.delete();
-                }
+        if (!file.isDirectory()) {
+            return;
+        }
+        File[] files = file.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File target : files) {
+            if(target.isDirectory()) {
+                purgeDirectory(target);
+                target.delete();
+            } else {
+                target.delete();
             }
         }
     }
