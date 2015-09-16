@@ -64,58 +64,29 @@ public class MySQL implements DataSource {
         // Set the connection arguments (and check if connection is ok)
         try {
             this.setConnectionArguments();
-        } catch (ClassNotFoundException ne) {
-            ConsoleLogger.showError(ne.getMessage());
+        } catch (RuntimeException e) {
+            if (e instanceof IllegalArgumentException) {
+                ConsoleLogger.showError("Invalid database arguments! Please check your configuration!");
+                ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
+                throw new IllegalArgumentException(e);
+            }
+            if (e instanceof PoolInitializationException) {
+                ConsoleLogger.showError("Can't initialize database connection! Please check your configuration!");
+                ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
+                throw new PoolInitializationException(e);
+            }
             ConsoleLogger.showError("Can't use the Hikari Connection Pool! Please, report this error to the developer! SHUTDOWN...");
-            this.close();
-            if (Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().shutdown();
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            } else {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-            throw new ClassNotFoundException(ne.getMessage());
-        } catch (IllegalArgumentException ae) { // This means that there are problems with the hikaricp pool arguments!
-            ConsoleLogger.showError(ae.getMessage());
-            ConsoleLogger.showError("Invalid database arguments! Please check your configuration!");
-            ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
-            this.close();
-            if (Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().shutdown();
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            } else {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-            throw new IllegalArgumentException(ae);
-        } catch (PoolInitializationException ie) { // Can't initialize the connection pool!
-            ConsoleLogger.showError(ie.getMessage());
-            ConsoleLogger.showError("Can't connect to the MySql database! Please check your configuration!");
-            ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
-            this.close();
-            if (Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().shutdown();
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            } else {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-            throw new PoolInitializationException(ie);
+            throw e;
         }
 
         // Initialize the database
         try {
             this.setupConnection();
         } catch (SQLException e) {
-            ConsoleLogger.showError(e.getMessage());
+            this.close();
             ConsoleLogger.showError("Can't initialize the MySQL database... Please check your database settings in the config.yml file! SHUTDOWN...");
             ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
-            this.close();
-            if (Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().shutdown();
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            } else {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-            throw new SQLException(e);
+            throw e;
         }
     }
 
