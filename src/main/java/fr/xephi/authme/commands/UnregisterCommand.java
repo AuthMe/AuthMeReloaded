@@ -109,6 +109,10 @@ public class UnregisterCommand implements CommandExecutor {
                         }
                         if (Settings.applyBlindEffect)
                             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
+                        if (!Settings.isMovementAllowed) {
+                            player.setWalkSpeed(0.0f);
+                            player.setFlySpeed(0.0f);
+                        }
                         m.send(player, "unregistered");
                         ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                         if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {

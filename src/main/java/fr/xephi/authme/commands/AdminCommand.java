@@ -486,6 +486,10 @@ public class AdminCommand implements CommandExecutor {
                     LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
                     if (Settings.applyBlindEffect)
                         target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
+                    if (!Settings.isMovementAllowed) {
+                        target.setWalkSpeed(0.0f);
+                        target.setFlySpeed(0.0f);
+                    }
                     m.send(target, "unregistered");
                 }
             }
