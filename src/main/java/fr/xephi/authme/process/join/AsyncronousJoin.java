@@ -1,17 +1,5 @@
 package fr.xephi.authme.process.join;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
@@ -32,6 +20,17 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 public class AsyncronousJoin {
 
@@ -62,10 +61,7 @@ public class AsyncronousJoin {
         }
 
         if (plugin.ess != null && Settings.disableSocialSpy) {
-            try {
-                plugin.ess.getUser(player.getName().toLowerCase()).setSocialSpyEnabled(false);
-            } catch (NoSuchMethodError e) {
-            }
+            plugin.ess.getUser(player).setSocialSpyEnabled(false);
         }
 
         final String ip = plugin.getIP(player);
@@ -289,7 +285,7 @@ public class AsyncronousJoin {
     }
 
     private void placePlayerSafely(final Player player,
-            final Location spawnLoc) {
+                                   final Location spawnLoc) {
         Location loc = null;
         if (spawnLoc == null)
             return;
