@@ -1,6 +1,8 @@
 package fr.xephi.authme.cache.backup;
 
+import com.google.common.base.Charsets;
 import com.google.common.io.BaseEncoding;
+import com.google.common.io.Files;
 import com.google.gson.*;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -18,7 +20,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
-import java.nio.file.Files;
 
 public class JsonCache {
 
@@ -61,7 +62,8 @@ public class JsonCache {
 
         try {
             String data = gson.toJson(playerData);
-            Files.write(file.toPath(), data.getBytes());
+            Files.touch(file);
+            Files.write(data, file, Charsets.UTF_8);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -76,9 +78,12 @@ public class JsonCache {
         }
 
         File file = new File(cacheDir, path + File.separator + "cache.json");
+        if (!file.exists()) {
+            return null;
+        }
+
         try {
-            byte[] bytes = Files.readAllBytes(file.toPath());
-            String str = new String(bytes);
+            String str = Files.toString(file, Charsets.UTF_8);
             return gson.fromJson(str, DataFileCache.class);
         } catch (Exception e) {
             e.printStackTrace();
@@ -142,17 +147,37 @@ public class JsonCache {
         @Override
         public DataFileCache deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
-            String group = jsonObject.get("group").getAsString();
-            boolean operator = jsonObject.get("operator").getAsBoolean();
-            boolean flying = jsonObject.get("flying").getAsBoolean();
+            if (jsonObject == null) {
+                return null;
+            }
+            JsonElement e;
+            String group = null;
+            boolean operator = false;
+            boolean flying = false;
+
+            if ((e = jsonObject.get("group")) != null) {
+                group = e.getAsString();
+            }
+            if ((e = jsonObject.get("operator")) != null) {
+                operator = e.getAsBoolean();
+            }
+            if ((e = jsonObject.get("flying")) != null) {
+                flying = e.getAsBoolean();
+            }
 
             JsonArray arr;
+            ItemStack[] inv = null;
+            ItemStack[] armour = null;
 
-            arr = jsonObject.get("inventory").getAsJsonArray();
-            ItemStack[] inv = getItems(arr);
+            if (jsonObject.has("inventory")) {
+                arr = jsonObject.get("inventory").getAsJsonArray();
+                inv = getItems(arr);
+            }
 
-            arr = jsonObject.get("armour").getAsJsonArray();
-            ItemStack[] armour = getItems(arr);
+            if (jsonObject.has("armour")) {
+                arr = jsonObject.get("armour").getAsJsonArray();
+                armour = getItems(arr);
+            }
 
             return new DataFileCache(inv, armour, group, operator, flying);
         }

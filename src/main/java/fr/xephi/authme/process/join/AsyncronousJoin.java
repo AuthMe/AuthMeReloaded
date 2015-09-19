@@ -195,7 +195,8 @@ public class AsyncronousJoin {
 
                     });
                 }
-            } catch (NullPointerException ex) {
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
         String[] msg;

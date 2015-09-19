@@ -34,9 +34,7 @@ public class NewAPI {
 
     /**
      * Hook into AuthMe
-     * 
-     * @return
-     * 
+     *
      * @return AuthMe plugin
      */
     public static NewAPI getInstance() {
