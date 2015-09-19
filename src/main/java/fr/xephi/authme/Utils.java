@@ -12,9 +12,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.Method;
-import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;

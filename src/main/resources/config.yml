@@ -8,6 +8,8 @@ DataSource:
     mySQLHost: 127.0.0.1
     # Database Port
     mySQLPort: '3306'
+    # MySql Max Connections
+    mySQLMaxConections: 25
     # Username about Database Connection Infos
     mySQLUsername: authme
     # Password about Database Connection Infos

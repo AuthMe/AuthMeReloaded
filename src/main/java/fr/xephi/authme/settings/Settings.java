@@ -90,7 +90,7 @@ public final class Settings extends YamlConfiguration {
             getMailPort, maxLoginTry, captchaLength, saltLength,
             getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
             antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
-            getMaxJoinPerIp;
+            getMaxJoinPerIp, getMySQLMaxConnections;
 
     protected static YamlConfiguration configFile;
 
@@ -152,6 +152,7 @@ public final class Settings extends YamlConfiguration {
         isCachingEnabled = configFile.getBoolean("DataSource.caching", true);
         getMySQLHost = configFile.getString("DataSource.mySQLHost", "127.0.0.1");
         getMySQLPort = configFile.getString("DataSource.mySQLPort", "3306");
+        getMySQLMaxConnections = configFile.getInt("DataSource.mySQLMaxConections", 25);
         getMySQLUsername = configFile.getString("DataSource.mySQLUsername", "authme");
         getMySQLPassword = configFile.getString("DataSource.mySQLPassword", "12345");
         getMySQLDatabase = configFile.getString("DataSource.mySQLDatabase", "authme");
@@ -280,178 +281,197 @@ public final class Settings extends YamlConfiguration {
     }
 
     public void mergeConfig() {
-        int changes = 0;
-        if (contains("Xenoforo.predefinedSalt"))
+        boolean changes = false;
+        if (contains("Xenoforo.predefinedSalt")) {
             set("Xenoforo.predefinedSalt", null);
-        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256"))
+            changes = true;
+        }
+        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
             set("settings.security.passwordHash", "XENFORO");
+            changes = true;
+        }
         if (!contains("Protection.enableProtection")) {
             set("Protection.enableProtection", false);
-            changes++;
+            changes = true;
+        }
+        if (!contains("DataSource.mySQLMaxConections")) {
+            set("DataSource.mySQLMaxConections", 25);
+            changes = true;
         }
         if (!contains("Protection.countries")) {
             countries = new ArrayList<>();
             countries.add("US");
             countries.add("GB");
             set("Protection.countries", countries);
-            changes++;
+            changes = true;
         }
         if (!contains("Protection.enableAntiBot")) {
             set("Protection.enableAntiBot", false);
-            changes++;
+            changes = true;
         }
         if (!contains("Protection.antiBotSensibility")) {
             set("Protection.antiBotSensibility", 5);
-            changes++;
+            changes = true;
         }
         if (!contains("Protection.antiBotDuration")) {
             set("Protection.antiBotDuration", 10);
-            changes++;
+            changes = true;
         }
         if (!contains("settings.forceCommands")) {
             set("settings.forceCommands", new ArrayList<String>());
-            changes++;
+            changes = true;
         }
         if (!contains("settings.forceCommandsAsConsole")) {
             set("settings.forceCommandsAsConsole", new ArrayList<String>());
-            changes++;
+            changes = true;
         }
         if (!contains("Email.recallPlayers")) {
             set("Email.recallPlayers", false);
-            changes++;
+            changes = true;
         }
         if (!contains("Email.delayRecall")) {
             set("Email.delayRecall", 5);
-            changes++;
+            changes = true;
         }
         if (!contains("settings.useWelcomeMessage")) {
             set("settings.useWelcomeMessage", true);
-            changes++;
+            changes = true;
         }
         if (!contains("settings.security.unsafePasswords")) {
             List<String> str = new ArrayList<>();
             str.add("123456");
             str.add("password");
             set("settings.security.unsafePasswords", str);
-            changes++;
+            changes = true;
         }
         if (!contains("Protection.countriesBlacklist")) {
             countriesBlacklist = new ArrayList<>();
             countriesBlacklist.add("A1");
             set("Protection.countriesBlacklist", countriesBlacklist);
-            changes++;
+            changes = true;
         }
         if (!contains("settings.broadcastWelcomeMessage")) {
             set("settings.broadcastWelcomeMessage", false);
-            changes++;
+            changes = true;
         }
         if (!contains("settings.registration.forceKickAfterRegister")) {
             set("settings.registration.forceKickAfterRegister", false);
-            changes++;
+            changes = true;
         }
         if (!contains("settings.registration.forceLoginAfterRegister")) {
             set("settings.registration.forceLoginAfterRegister", false);
-            changes++;
+            changes = true;
         }
         if (!contains("DataSource.mySQLColumnLogged")) {
             set("DataSource.mySQLColumnLogged", "isLogged");
-            changes++;
+            changes = true;
         }
         if (!contains("settings.restrictions.spawnPriority")) {
             set("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
-            changes++;
+            changes = true;
         }
         if (!contains("settings.restrictions.maxLoginPerIp")) {
             set("settings.restrictions.maxLoginPerIp", 0);
-            changes++;
+            changes = true;
         }
         if (!contains("settings.restrictions.maxJoinPerIp")) {
             set("settings.restrictions.maxJoinPerIp", 0);
-            changes++;
+            changes = true;
         }
         if (!contains("VeryGames.enableIpCheck")) {
             set("VeryGames.enableIpCheck", false);
-            changes++;
+            changes = true;
         }
-        if (getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*"))
+        if (getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*")) {
             set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
+            changes = true;
+        }
         if (!contains("settings.delayJoinMessage")) {
             set("settings.delayJoinMessage", false);
-            changes++;
+            changes = true;
         }
         if (!contains("settings.restrictions.noTeleport")) {
             set("settings.restrictions.noTeleport", false);
-            changes++;
+            changes = true;
         }
-        if (contains("Converter.Rakamak.newPasswordHash"))
+        if (contains("Converter.Rakamak.newPasswordHash")) {
             set("Converter.Rakamak.newPasswordHash", null);
+            changes = true;
+        }
         if (!contains("Converter.CrazyLogin.fileName")) {
             set("Converter.CrazyLogin.fileName", "accounts.db");
-            changes++;
+            changes = true;
         }
         if (!contains("settings.restrictions.allowedPasswordCharacters")) {
             set("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
-            changes++;
+            changes = true;
         }
         if (!contains("settings.applyBlindEffect")) {
             set("settings.applyBlindEffect", false);
-            changes++;
+            changes = true;
         }
         if (!contains("Email.emailBlacklisted")) {
             set("Email.emailBlacklisted", new ArrayList<String>());
-            changes++;
+            changes = true;
         }
-        if (contains("Performances.useMultiThreading"))
+        if (contains("Performances.useMultiThreading")) {
             set("Performances.useMultiThreading", null);
-
-        if (contains("Performances"))
+            changes = true;
+        }
+        if (contains("Performances")) {
             set("Performances", null);
-
-        if (contains("Passpartu.enablePasspartu"))
+            changes = true;
+        }
+        if (contains("Passpartu.enablePasspartu")) {
             set("Passpartu.enablePasspartu", null);
-
-        if (contains("Passpartu"))
+            changes = true;
+        }
+        if (contains("Passpartu")) {
             set("Passpartu", null);
-
+            changes = true;
+        }
         if (!contains("Email.emailWhitelisted")) {
             set("Email.emailWhitelisted", new ArrayList<String>());
-            changes++;
+            changes = true;
         }
         if (!contains("settings.forceRegisterCommands")) {
             set("settings.forceRegisterCommands", new ArrayList<String>());
-            changes++;
+            changes = true;
         }
         if (!contains("settings.forceRegisterCommandsAsConsole")) {
             set("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
-            changes++;
+            changes = true;
         }
         if (!contains("Hooks.customAttributes")) {
             set("Hooks.customAttributes", false);
-            changes++;
+            changes = true;
         }
         if (!contains("Purge.removePermissions")) {
             set("Purge.removePermissions", false);
-            changes++;
+            changes = true;
         }
-        if (contains("Hooks.notifications"))
+        if (contains("Hooks.notifications")) {
             set("Hooks.notifications", null);
-        boolean useChestShop = false;
-        if (contains("Hooks.chestshop")) {
-            useChestShop = getBoolean("Hooks.chestshop");
-            set("Hooks.chestshop", null);
+            changes = true;
         }
-        set("Hooks.legacyChestshop", useChestShop);
+        if (contains("Hooks.chestshop")) {
+            if(getBoolean("Hooks.chestshop")) {
+                set("Hooks.legacyChestshop", true);
+            }
+            set("Hooks.chestshop", null);
+            changes = true;
+        }
         if (!contains("Email.generateImage")) {
             set("Email.generateImage", true);
-            changes++;
+            changes = true;
         }
         if (!contains("DataSource.mySQLRealName")) {
             set("DataSource.mySQLRealName", "realname");
-            changes++;
+            changes = true;
         }
 
-        if (changes > 0) {
-            plugin.getLogger().warning("Merge " + changes + " new Config Options - I'm not an error, please don't report me");
+        if (changes) {
+            plugin.getLogger().warning("Merged new Config Options - I'm not an error, please don't report me");
             plugin.getLogger().warning("Please check your config.yml file for new configs!");
         }
     }

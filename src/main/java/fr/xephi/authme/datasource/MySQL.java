@@ -37,6 +37,7 @@ public class MySQL implements DataSource {
     private List<String> columnOthers;
     private HikariDataSource ds;
     private String columnRealName;
+    private int maxConnections;
 
     public MySQL() throws ClassNotFoundException, SQLException, PoolInitializationException {
         this.host = Settings.getMySQLHost;
@@ -60,6 +61,7 @@ public class MySQL implements DataSource {
         this.columnID = Settings.getMySQLColumnId;
         this.columnLogged = Settings.getMySQLColumnLogged;
         this.columnRealName = Settings.getMySQLColumnRealName;
+        this.maxConnections = Settings.getMySQLMaxConnections;
 
         // Set the connection arguments (and check if connection is ok)
         try {
@@ -105,7 +107,7 @@ public class MySQL implements DataSource {
         config.setInitializationFailFast(true); // Don't start the plugin if the database is unavariable
         config.setMaxLifetime(180000); // 3 Min
         config.setIdleTimeout(60000); // 1 Min
-        config.setMaximumPoolSize(50); // 50 (including idle connections)
+        config.setMaximumPoolSize(maxConnections);
         ds = new HikariDataSource(config);
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
