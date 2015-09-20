@@ -7,7 +7,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.inventory.ItemStack;
 
 public class AuthMeBlockListener implements Listener {
 
@@ -31,7 +30,6 @@ public class AuthMeBlockListener implements Listener {
         if (player == null || Utils.checkAuth(player)) {
             return;
         }
-        Utils.fixDurability(player.getItemInHand());
         event.setCancelled(true);
     }
 
