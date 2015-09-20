@@ -17,14 +17,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class LimboCache {
 
-    private volatile static LimboCache singleton = null;
+    private volatile static LimboCache singleton;
     public ConcurrentHashMap<String, LimboPlayer> cache;
     private JsonCache playerData;
     public AuthMe plugin;
 
     private LimboCache(AuthMe plugin) {
         this.plugin = plugin;
-        this.cache = new ConcurrentHashMap<String, LimboPlayer>();
+        this.cache = new ConcurrentHashMap<>();
         this.playerData = new JsonCache(plugin);
     }
 
@@ -77,7 +77,7 @@ public class LimboCache {
         }
 
         if (Settings.isForceSurvivalModeEnabled) {
-            if (Settings.isResetInventoryIfCreative && player.getGameMode() == GameMode.CREATIVE) {
+            if (Settings.isResetInventoryIfCreative && gameMode == GameMode.CREATIVE) {
                 ResetInventoryEvent event = new ResetInventoryEvent(player);
                 Bukkit.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
@@ -123,7 +123,7 @@ public class LimboCache {
         if (this.hasLimboPlayer(player.getName().toLowerCase())) {
             this.deleteLimboPlayer(player.getName().toLowerCase());
         }
-        this.addLimboPlayer(player);
+        addLimboPlayer(player);
     }
 
 }

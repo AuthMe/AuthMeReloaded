@@ -127,11 +127,28 @@ public class AsyncronousJoin {
                 }
             placePlayerSafely(player, spawnLoc);
             LimboCache.getInstance().updateLimboPlayer(player);
-            try {
-                DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
-                playerBackup.createCache(player, dataFile);
-            } catch (Exception e) {
-                ConsoleLogger.showError("Error on creating an inventory cache for " + name + ", maybe inventory wipe in preparation...");
+            DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
+            playerBackup.createCache(player, dataFile);
+            // protect inventory
+            if (Settings.protectInventoryBeforeLogInEnabled) {
+                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
+                ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+                plugin.getServer().getPluginManager().callEvent(ev);
+                if (ev.isCancelled()) {
+                    if (!Settings.noConsoleSpam)
+                        ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
+                } else {
+                    final ItemStack[] inv = ev.getEmptyArmor();
+                    final ItemStack[] armor = ev.getEmptyArmor();
+                    sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+
+                        @Override
+                        public void run() {
+                            plugin.api.setPlayerInventory(player, inv, armor);
+                        }
+
+                    });
+                }
             }
         } else {
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
@@ -170,26 +187,6 @@ public class AsyncronousJoin {
                     });
                 }
 
-        }
-        if (Settings.protectInventoryBeforeLogInEnabled) {
-            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-            ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-            plugin.getServer().getPluginManager().callEvent(ev);
-            if (ev.isCancelled()) {
-                if (!Settings.noConsoleSpam)
-                    ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
-            } else {
-                final ItemStack[] inv = ev.getEmptyArmor();
-                final ItemStack[] armor = ev.getEmptyArmor();
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        plugin.api.setPlayerInventory(player, inv, armor);
-                    }
-
-                });
-            }
         }
         String[] msg;
         if (Settings.emailRegistration) {
