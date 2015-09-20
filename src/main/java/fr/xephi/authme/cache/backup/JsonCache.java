@@ -106,6 +106,7 @@ public class JsonCache {
             contents = dataFileCache.getInventory();
             arr = new JsonArray();
             putItems(contents, arr);
+            jsonObject.add("inventory", arr);
 
             // armour
             contents = dataFileCache.getArmour();
