@@ -1,7 +1,6 @@
 package fr.xephi.authme.cache.backup;
 
 import com.google.common.base.Charsets;
-import com.google.common.io.BaseEncoding;
 import com.google.common.io.Files;
 import com.google.gson.*;
 import fr.xephi.authme.AuthMe;
@@ -14,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -133,7 +133,7 @@ public class JsonCache {
                     BukkitObjectOutputStream objectOut = new BukkitObjectOutputStream(baos);
                     objectOut.writeObject(item);
                     objectOut.close();
-                    val.addProperty("item", BaseEncoding.base64().encode(baos.toByteArray()));
+                    val.addProperty("item", Base64Coder.encodeLines(baos.toByteArray()));
                 } catch (IOException e) {
                     e.printStackTrace();
                     continue;
@@ -187,7 +187,7 @@ public class JsonCache {
             for (int i = 0; i < arr.size(); i++) {
                 JsonObject item = arr.get(i).getAsJsonObject();
                 String encoded = item.get("item").getAsString();
-                byte[] decoded = BaseEncoding.base64().decode(encoded);
+                byte[] decoded = Base64Coder.decode(encoded);
                 try {
                     ByteArrayInputStream baos = new ByteArrayInputStream(decoded);
                     BukkitObjectInputStream objectIn = new BukkitObjectInputStream(baos);

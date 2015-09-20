@@ -172,27 +172,23 @@ public class AsyncronousJoin {
 
         }
         if (Settings.protectInventoryBeforeLogInEnabled) {
-            try {
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
-                plugin.getServer().getPluginManager().callEvent(ev);
-                if (ev.isCancelled()) {
-                    if (!Settings.noConsoleSpam)
-                        ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
-                } else {
-                    final ItemStack[] inv = ev.getEmptyArmor();
-                    final ItemStack[] armor = ev.getEmptyArmor();
-                    sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
+            ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+            plugin.getServer().getPluginManager().callEvent(ev);
+            if (ev.isCancelled()) {
+                if (!Settings.noConsoleSpam)
+                    ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
+            } else {
+                final ItemStack[] inv = ev.getEmptyArmor();
+                final ItemStack[] armor = ev.getEmptyArmor();
+                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
-                        @Override
-                        public void run() {
-                            plugin.api.setPlayerInventory(player, inv, armor);
-                        }
+                    @Override
+                    public void run() {
+                        plugin.api.setPlayerInventory(player, inv, armor);
+                    }
 
-                    });
-                }
-            } catch (Exception ex) {
-                ex.printStackTrace();
+                });
             }
         }
         String[] msg;

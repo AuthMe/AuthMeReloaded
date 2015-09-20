@@ -1,10 +1,10 @@
 package fr.xephi.authme.security.crypts;
 
-import java.security.NoSuchAlgorithmException;
-
 import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
+
 import javax.xml.bind.DatatypeConverter;
+import java.security.NoSuchAlgorithmException;
 
 public class CryptPBKDF2Django implements EncryptionMethod {
 
@@ -20,7 +20,7 @@ public class CryptPBKDF2Django implements EncryptionMethod {
 
     @Override
     public boolean comparePassword(String hash, String password,
-            String playerName) throws NoSuchAlgorithmException {
+                                   String playerName) throws NoSuchAlgorithmException {
         String[] line = hash.split("\\$");
         String salt = line[2];
         byte[] derivedKey = DatatypeConverter.parseBase64Binary(line[3]);
