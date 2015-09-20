@@ -10,6 +10,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -111,10 +112,23 @@ public class ModuleManager {
         return count;
     }
 
+    public void unloadModule(String name) {
+        Iterator<Module> it = modules.iterator();
+        while (it.hasNext()) {
+            Module m = it.next();
+            if (m.getName().equalsIgnoreCase(name)) {
+                m.unload();
+                it.remove();
+                return;
+            }
+        }
+    }
+
     public void unloadModules() {
-        for (Module m : modules) {
-            m.unload();
-            modules.remove(m);
+        Iterator<Module> it = modules.iterator();
+        while (it.hasNext()) {
+            it.next().unload();
+            it.remove();
         }
     }
 

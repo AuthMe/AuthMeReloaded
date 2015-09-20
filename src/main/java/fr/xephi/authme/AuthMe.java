@@ -15,6 +15,7 @@ import fr.xephi.authme.converter.Converter;
 import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.*;
 import fr.xephi.authme.listener.*;
+import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.plugin.manager.BungeeCordMessage;
 import fr.xephi.authme.plugin.manager.EssSpawn;
 import fr.xephi.authme.process.Management;
@@ -24,7 +25,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import net.milkbowl.vault.permission.Permission;
 import net.minelink.ctplus.CombatTagPlus;
-
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -64,15 +64,22 @@ public class AuthMe extends JavaPlugin {
     public DataSource database;
     private JsonCache playerBackup;
     public OtherAccounts otherAccounts;
-    public Permission permission;
-    public Essentials ess;
     public Location essentialsSpawn;
-    public MultiverseCore multiverse;
     public LookupService lookupService;
-    public CombatTagPlus combatTagPlus = null;
     public boolean legacyChestShop = false;
     public boolean antibotMod = false;
     public boolean delayedAntiBot = true;
+
+    // Hooks TODO: move into modules
+    public Permission permission;
+    public Essentials ess;
+    public MultiverseCore multiverse;
+    public CombatTagPlus combatTagPlus;
+
+    // Manager
+    private ModuleManager moduleManager;
+
+    // TODO: Create Manager for fields below
     public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
     public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
     public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
@@ -101,6 +108,9 @@ public class AuthMe extends JavaPlugin {
         authme = this;
 
         // TODO: split the plugin in more modules
+        moduleManager = new ModuleManager(this);
+        int loaded = moduleManager.loadModules();
+
         // TODO: remove vault as hard dependency
         PluginManager pm = server.getPluginManager();
 
@@ -312,16 +322,17 @@ public class AuthMe extends JavaPlugin {
 
         // Do backup on stop if enabled
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {
-            Boolean Backup = new PerformBackup(this).doBackup();
+            boolean Backup = new PerformBackup(this).doBackup();
             if (Backup)
                 ConsoleLogger.info("Backup performed correctly.");
             else ConsoleLogger.showError("Error while performing the backup!");
         }
 
+        // Unload modules
+        moduleManager.unloadModules();
+
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
-
-        authme = null;
     }
 
     // Stop/unload the server/plugin as defined in the configuration

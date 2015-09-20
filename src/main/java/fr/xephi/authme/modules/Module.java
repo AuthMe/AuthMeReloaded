@@ -1,28 +1,24 @@
 package fr.xephi.authme.modules;
 
-import fr.xephi.authme.AuthMe;
+public abstract class Module {
 
-public interface Module {
-
-    public String getName();
-
-    public AuthMe getInstanceOfAuthMe();
-
-    public Module getInstance();
-
-    public enum ModuleType {
+    enum ModuleType {
         MANAGER,
         MYSQL,
         REDIS,
         ACTIONS,
         CONVERTERS,
         EMAILS,
-        CUSTOM;
+        CUSTOM
     }
 
-    public ModuleType getType();
+    public abstract String getName();
 
-    public boolean load();
+    public abstract ModuleType getType();
 
-    public boolean unload();
+    public void load() {
+    }
+
+    public void unload() {
+    }
 }
