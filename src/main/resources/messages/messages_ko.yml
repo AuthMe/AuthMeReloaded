@@ -40,7 +40,6 @@ usage_changepassword: '&f사용법: /changepassword 기존비밀번호 새로운
 name_len: '&c당신의 이름은 너무 짧거나 너무 깁니다'
 regex: '&c당신의 이름에는 불법적인 글자들이 포함되어있습니다. 허용된 글자: REG_EX'
 add_email: '&c당신의 이메일을 추가해주세요 : /email add 당신의이메일 이메일재입력'
-bad_database_email: '[AuthMe] 이 /email 명령어는 오직 MySQL와 SQLite에서만 가능합니다, 관리자에게 문의해주세요'
 recovery_email: '&c비밀번호를 잊어버리셨다고요? /email recovery <당신의이메일>을 사용하세요'
 usage_captcha: '&c보안문자 입력이 필요합니다, 입력해주세요: /captcha <theCaptcha>'
 wrong_captcha: '&c잘못된 보안문자, 사용해주세요 : /captcha THE_CAPTCHA'

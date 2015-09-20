@@ -5,13 +5,18 @@
 
 	<groupId>fr.xephi</groupId>
 	<artifactId>authme</artifactId>
-	<version>5.0-SNAPSHOT</version>
+	<version>5.1-SNAPSHOT</version>
 
 	<name>AuthMeReloaded</name>
 	<description>Authentication plugin for CraftBukkit/Spigot!</description>
 	<inceptionYear>2013</inceptionYear>
 	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
 	<!-- See also: https://www.spigotmc.org/resources/authme-reloaded.6269/ -->
+
+	<organization>
+		<name>AuthMe-Team</name>
+		<url>https://github.com/AuthMe-Team</url>
+	</organization>
 
 	<scm>
 		<connection>scm:git:https://github.com/Xephi/AuthMeReloaded.git</connection>
@@ -56,6 +61,14 @@
 					<include>*.yml</include>
 				</includes>
 			</resource>
+			<resource>
+				<targetPath>./messages/</targetPath>
+				<filtering>false</filtering>
+				<directory>${basedir}/src/main/resources/messages/</directory>
+				<includes>
+					<include>*.yml</include>
+				</includes>
+			</resource>
 		</resources>
 		<plugins>
 			<plugin>
@@ -74,13 +87,14 @@
 				<configuration>
 					<artifactSet>
 						<includes>
-							<include>com.maxmind.geoip:*</include>
-							<include>javax.mail:*</include>
-							<include>com.sun.mail:*</include>
-							<include>com.comphenix.attribute:*</include>
-							<include>org.mcstats.*:*</include>
-							<include>com.zaxxer:*</include>
-							<include>org.slf4j:*</include>
+							<include>com.zaxxer:HikariCP</include>
+							<include>org.slf4j:slf4j-simple</include>
+							<include>org.slf4j:slf4j-api</include>
+							<include>com.google.code.gson:gson</include>
+							<include>com.maxmind.geoip:geoip-api</include>
+							<include>com.sun.mail:javax.mail</include>
+							<include>com.comphenix.attribute:AttributeStorage</include>
+							<include>org.mcstats.bukkit:metrics</include>
 						</includes>
 					</artifactSet>
 					<relocations>
@@ -114,12 +128,6 @@
 		<repository>
 			<id>ess-repo</id>
 			<url>https://ci.drtshock.net/plugin/repository/everything</url>
-		</repository>
-
-		<!-- Citizens API 2.X Repo -->
-		<repository>
-			<id>citizensapi-repo</id>
-			<url>http://ci.citizensnpcs.co/plugin/repository/project/CitizensAPI/LastSuccessful/repository</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
@@ -170,18 +178,7 @@
 
 		<!-- Maven Dependencies -->
 
-		<!-- MySql Connection Pool -->
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>5.1.36</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>1.7.12</version>
-			<scope>compile</scope>
-		</dependency>
+		<!-- Database Connection Pool -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
@@ -189,17 +186,19 @@
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
-					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
-				</exclusion>
-				<exclusion>
 					<groupId>org.slf4j</groupId>
-					<artifactId>slf4j-simple</artifactId>
 				</exclusion>
 			</exclusions>
 		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-simple</artifactId>
+			<version>1.7.12</version>
+			<scope>compile</scope>
+		</dependency>
 
-		<!-- SQLite Library -->
+		<!-- SQLite Connector -->
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
@@ -207,12 +206,32 @@
 			<scope>compile</scope>
 		</dependency>
 
-		<!-- Java Email API -->
+		<!-- Google JSON Library -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.3.1</version>
+			<scope>compile</scope>
+		</dependency>
+
+		<!-- Java Email API and Implementation -->
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.5.4</version>
+			<scope>compile</scope>
+		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.4</version>
 			<scope>compile</scope>
+			<exclusions>
+				<exclusion>
+					<artifactId>activation</artifactId>
+					<groupId>javax.activation</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 
@@ -270,24 +289,6 @@
 			<groupId>net.milkbowl.vault</groupId>
 			<artifactId>VaultAPI</artifactId>
 			<version>1.5</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
-		<!-- Citizens 2.X, NPC plugin, http://dev.bukkit.org/bukkit-plugins/citizens/ -->
-		<dependency>
-			<groupId>net.citizensnpcs</groupId>
-			<artifactId>citizensapi</artifactId>
-			<version>2.0.16-SNAPSHOT</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
@@ -420,24 +421,6 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Anti PvPLogging plugin, http://www.spigotmc.org/resources/combat-tag.3182/ -->
-		<dependency>
-			<groupId>com.trc202</groupId>
-			<artifactId>CombatTag</artifactId>
-			<version>6.2.1-SNAPSHOT</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-
 		<!-- XAuth, another authentication plugin, required by the database converter -->
 		<dependency>
 			<groupId>de.luricos.bukkit</groupId>
@@ -557,9 +540,7 @@
 				</exclusion>
 				<exclusion>
 					<artifactId>simplechestlock</artifactId>
-					<groupId>
-                        com.webkonsept.bukkit.simplechestlock
-                    </groupId>
+					<groupId>com.webkonsept.bukkit.simplechestlock</groupId>
 				</exclusion>
 				<exclusion>
 					<artifactId>commandbook</artifactId>

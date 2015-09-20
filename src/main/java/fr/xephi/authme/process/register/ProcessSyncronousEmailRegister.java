@@ -31,7 +31,7 @@ public class ProcessSyncronousEmailRegister implements Runnable {
     public void run() {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (!Settings.getRegisteredGroup.isEmpty()) {
-            Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
+            Utils.setGroup(player, Utils.GroupType.REGISTERED);
         }
         m.send(player, "vb_nonActiv");
         int time = Settings.getRegistrationTimeout * 20;
@@ -39,12 +39,12 @@ public class ProcessSyncronousEmailRegister implements Runnable {
 
         BukkitScheduler sched = plugin.getServer().getScheduler();
         if (time != 0 && limbo != null) {
-        	limbo.getTimeoutTaskId().cancel();
+            limbo.getTimeoutTaskId().cancel();
             BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
             limbo.setTimeoutTaskId(id);
         }
         if (limbo != null){
-        	limbo.getMessageTaskId().cancel();
+            limbo.getMessageTaskId().cancel();
             BukkitTask nwMsg = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
             limbo.setMessageTaskId(nwMsg);
         }

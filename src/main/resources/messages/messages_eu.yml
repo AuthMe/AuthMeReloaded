@@ -36,7 +36,6 @@ usage_changepassword: '&fErabili: /changepassword pasahitzZaharra pasahitzBerria
 name_len: '&cZure erabiltzaile izena motzegia edo luzeegia da'
 regex: '&cZure erabiltzaileak karaktere debekatuak ditu. Karaktere onartuak: REG_EX'
 add_email: '&cMesedez gehitu zure emaila : /email add yourEmail confirmEmail'
-bad_database_email: '[AuthMe]  /email komandoa MySql-rekin bakarrik dago erabilgarri. Jarri kontaktuan administratzaile batekin'
 recovery_email: '&cPasahitza ahaztu duzu? Erabili /email recovery <zureemaila>'
 usage_captcha: '&cYou need to type a captcha, please type: /captcha <theCaptcha>'
 wrong_captcha: '&cWrong Captcha, please use : /captcha THE_CAPTCHA'

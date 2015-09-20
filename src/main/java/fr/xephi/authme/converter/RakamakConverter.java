@@ -2,7 +2,6 @@ package fr.xephi.authme.converter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -100,12 +99,9 @@ public class RakamakConverter implements Converter {
             }
             ConsoleLogger.info("Rakamak database has been imported correctly");
             sender.sendMessage("Rakamak database has been imported correctly");
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            sender.sendMessage("Error file not found");
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            sender.sendMessage("Error IOException");
+            sender.sendMessage("Can't open the rakamak database file! Does it exist?");
         }
     }
 }

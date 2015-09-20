@@ -14,7 +14,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 
@@ -34,9 +33,7 @@ public class NewAPI {
 
     /**
      * Hook into AuthMe
-     * 
-     * @return
-     * 
+     *
      * @return AuthMe plugin
      */
     public static NewAPI getInstance() {
@@ -70,9 +67,7 @@ public class NewAPI {
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return true;
-        return CombatTagComunicator.isNPC(player);
+        return Utils.isNPC(player);
     }
 
     /**
@@ -81,7 +76,7 @@ public class NewAPI {
      * @return true if the player is unrestricted
      */
     public boolean isUnrestricted(Player player) {
-        return Utils.getInstance().isUnrestricted(player);
+        return Utils.isUnrestricted(player);
     }
 
     public Location getLastLocation(Player player) {
@@ -89,8 +84,7 @@ public class NewAPI {
             PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
 
             if (auth != null) {
-                Location loc = new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
-                return loc;
+                return new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
             } else {
                 return null;
             }
@@ -152,10 +146,7 @@ public class NewAPI {
                 return false;
             }
             PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com");
-            if (!plugin.database.saveAuth(auth)) {
-                return false;
-            }
-            return true;
+            return plugin.database.saveAuth(auth);
         } catch (NoSuchAlgorithmException ex) {
             return false;
         }

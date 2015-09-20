@@ -3,7 +3,6 @@ package fr.xephi.authme.converter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -79,10 +78,9 @@ public class FlatToSql implements Converter {
             sql.close();
             br.close();
             ConsoleLogger.info("The FlatFile has been converted to authme.sql file");
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.showError("Can't open the flat database file! Does it exist?");
         }
     }
 }

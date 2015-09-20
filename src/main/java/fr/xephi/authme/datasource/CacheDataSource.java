@@ -1,30 +1,36 @@
 package fr.xephi.authme.datasource;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.Utils;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import org.bukkit.entity.Player;
+
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.entity.Player;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-
 public class CacheDataSource implements DataSource {
 
-    private DataSource source;
-    public AuthMe plugin;
-    private ConcurrentHashMap<String, PlayerAuth> cache = new ConcurrentHashMap<String, PlayerAuth>();
+    private final DataSource source;
+    private final AuthMe plugin;
+    private ConcurrentHashMap<String, PlayerAuth> cache = new ConcurrentHashMap<>();
 
-    public CacheDataSource(AuthMe plugin, DataSource source) {
-        this.plugin = plugin;
-        this.source = source;
+    public CacheDataSource(AuthMe pl, DataSource src) {
+        this.plugin = pl;
+        this.source = src;
         /*
          * We need to load all players in cache ... It will took more time to
          * load the server, but it will be much easier to check for an
          * isAuthAvailable !
          */
-        for (PlayerAuth auth : source.getAllAuths())
-            cache.put(auth.getNickname().toLowerCase(), auth);
+        pl.getServer().getScheduler().runTaskAsynchronously(pl, new Runnable() {
+            @Override
+            public void run() {
+                for (PlayerAuth auth : source.getAllAuths()) {
+                    cache.put(auth.getNickname().toLowerCase(), auth);
+                }
+            }
+        });
     }
 
     @Override
@@ -37,21 +43,22 @@ public class CacheDataSource implements DataSource {
         user = user.toLowerCase();
         if (cache.containsKey(user)) {
             return cache.get(user);
-        } else {
-            PlayerAuth auth = source.getAuth(user);
-            if (auth != null)
-                cache.put(user, auth);
-            return auth;
         }
+        return null;
     }
 
     @Override
-    public synchronized boolean saveAuth(PlayerAuth auth) {
-        if (source.saveAuth(auth)) {
-            cache.put(auth.getNickname(), auth);
-            return true;
-        }
-        return false;
+    public synchronized boolean saveAuth(final PlayerAuth auth) {
+        cache.put(auth.getNickname(), auth);
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (!source.saveAuth(auth)) {
+                    cache.remove(auth.getNickname());
+                }
+            }
+        });
+        return true;
     }
 
     @Override
@@ -140,15 +147,11 @@ public class CacheDataSource implements DataSource {
     public void reload() {
         cache.clear();
         source.reload();
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getOnlinePlayers()) {
             String user = player.getName().toLowerCase();
             if (PlayerCache.getInstance().isAuthenticated(user)) {
-                try {
-                    PlayerAuth auth = source.getAuth(user);
-                    cache.put(user, auth);
-                } catch (NullPointerException npe) {
-                }
-
+                PlayerAuth auth = source.getAuth(user);
+                cache.put(user, auth);
             }
         }
     }

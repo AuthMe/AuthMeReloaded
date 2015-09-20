@@ -1,5 +1,25 @@
 package fr.xephi.authme.process.join;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.Utils;
+import fr.xephi.authme.Utils.GroupType;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.backup.DataFileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.FirstSpawnTeleportEvent;
+import fr.xephi.authme.events.ProtectInventoryEvent;
+import fr.xephi.authme.events.SpawnTeleportEvent;
+import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.task.TimeoutTask;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -12,43 +32,20 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.DataFileCache;
-import fr.xephi.authme.cache.backup.FileCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.events.FirstSpawnTeleportEvent;
-import fr.xephi.authme.events.ProtectInventoryEvent;
-import fr.xephi.authme.events.SpawnTeleportEvent;
-import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.Spawn;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
-
 public class AsyncronousJoin {
 
     protected Player player;
     protected DataSource database;
     protected AuthMe plugin;
     protected String name;
-    private Utils utils = Utils.getInstance();
     private Messages m = Messages.getInstance();
-    private FileCache playerBackup;
+    private JsonCache playerBackup;
 
     public AsyncronousJoin(Player player, AuthMe plugin, DataSource database) {
         this.player = player;
         this.plugin = plugin;
         this.database = database;
-        this.playerBackup = new FileCache(plugin);
+        this.playerBackup = new JsonCache(plugin);
         this.name = player.getName().toLowerCase();
     }
 
@@ -58,15 +55,12 @@ public class AsyncronousJoin {
         AuthMePlayerListener.gameMode.putIfAbsent(name, player.getGameMode());
         BukkitScheduler sched = plugin.getServer().getScheduler();
 
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
             return;
         }
 
         if (plugin.ess != null && Settings.disableSocialSpy) {
-            try {
-                plugin.ess.getUser(player.getName().toLowerCase()).setSocialSpyEnabled(false);
-            } catch (NoSuchMethodError e) {
-            }
+            plugin.ess.getUser(player).setSocialSpyEnabled(false);
         }
 
         final String ip = plugin.getIP(player);
@@ -100,7 +94,8 @@ public class AsyncronousJoin {
             }
         }
         final Location spawnLoc = plugin.getSpawnLocation(player);
-        if (database.isAuthAvailable(name)) {
+        final boolean isAuthAvailable = database.isAuthAvailable(name);
+        if (isAuthAvailable) {
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
                 sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -132,52 +127,10 @@ public class AsyncronousJoin {
                 }
             placePlayerSafely(player, spawnLoc);
             LimboCache.getInstance().updateLimboPlayer(player);
-            try {
-                DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
-                playerBackup.createCache(player, dataFile, LimboCache.getInstance().getLimboPlayer(name).getGroup(), LimboCache.getInstance().getLimboPlayer(name).getOperator(), LimboCache.getInstance().getLimboPlayer(name).isFlying());
-            } catch (Exception e) {
-                ConsoleLogger.showError("Error on creating an inventory cache for " + name + ", maybe inventory wipe in preparation...");
-            }
-        } else {
-            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                        Utils.forceGM(player);
-                    }
-
-                });
-            }
-            if (!Settings.unRegisteredGroup.isEmpty()) {
-                utils.setGroup(player, Utils.groupType.UNREGISTERED);
-            }
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (!Settings.noTeleport)
-                if (!needFirstspawn() && Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                    sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                        @Override
-                        public void run() {
-                            SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
-                            plugin.getServer().getPluginManager().callEvent(tpEvent);
-                            if (!tpEvent.isCancelled()) {
-                                if (player.isOnline() && tpEvent.getTo() != null) {
-                                    if (tpEvent.getTo().getWorld() != null)
-                                        player.teleport(tpEvent.getTo());
-                                }
-                            }
-                        }
-
-                    });
-                }
-
-        }
-        if (Settings.protectInventoryBeforeLogInEnabled) {
-            try {
+            DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
+            playerBackup.createCache(player, dataFile);
+            // protect inventory
+            if (Settings.protectInventoryBeforeLogInEnabled) {
                 LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
                 plugin.getServer().getPluginManager().callEvent(ev);
@@ -196,14 +149,49 @@ public class AsyncronousJoin {
 
                     });
                 }
-            } catch (NullPointerException ex) {
             }
+        } else {
+            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
+                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+
+                    @Override
+                    public void run() {
+                        AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
+                        Utils.forceGM(player);
+                    }
+
+                });
+            }
+            if (!Settings.unRegisteredGroup.isEmpty()) {
+                Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
+            }
+            if (!Settings.isForcedRegistrationEnabled) {
+                return;
+            }
+            if (!Settings.noTeleport)
+                if (!needFirstspawn() && Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
+                    sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+                        @Override
+                        public void run() {
+                            SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
+                            plugin.getServer().getPluginManager().callEvent(tpEvent);
+                            if (!tpEvent.isCancelled()) {
+                                if (player.isOnline() && tpEvent.getTo() != null) {
+                                    if (tpEvent.getTo().getWorld() != null)
+                                        player.teleport(tpEvent.getTo());
+                                }
+                            }
+                        }
+
+                    });
+                }
+
         }
         String[] msg;
         if (Settings.emailRegistration) {
-            msg = database.isAuthAvailable(name) ? m.send("login_msg") : m.send("reg_email_msg");
+            msg = isAuthAvailable ? m.send("login_msg") : m.send("reg_email_msg");
         } else {
-            msg = database.isAuthAvailable(name) ? m.send("login_msg") : m.send("reg_msg");
+            msg = isAuthAvailable ? m.send("login_msg") : m.send("reg_msg");
         }
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
@@ -215,10 +203,10 @@ public class AsyncronousJoin {
         }
         if (!LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().addLimboPlayer(player);
-        if (database.isAuthAvailable(name)) {
-            utils.setGroup(player, groupType.NOTLOGGEDIN);
+        if (isAuthAvailable) {
+            Utils.setGroup(player, GroupType.NOTLOGGEDIN);
         } else {
-            utils.setGroup(player, groupType.UNREGISTERED);
+            Utils.setGroup(player, GroupType.UNREGISTERED);
         }
         sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -235,10 +223,14 @@ public class AsyncronousJoin {
                     player.performCommand("motd");
                 if (Settings.applyBlindEffect)
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
+                if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
+                    player.setWalkSpeed(0.0f);
+                    player.setFlySpeed(0.0f);
+                }
             }
 
         });
-        if (Settings.isSessionsEnabled && database.isAuthAvailable(name) && (PlayerCache.getInstance().isAuthenticated(name) || database.isLogged(name))) {
+        if (Settings.isSessionsEnabled && isAuthAvailable && (PlayerCache.getInstance().isAuthenticated(name) || database.isLogged(name))) {
             if (plugin.sessions.containsKey(name))
                 plugin.sessions.get(name).cancel();
             plugin.sessions.remove(name);
@@ -260,32 +252,31 @@ public class AsyncronousJoin {
     }
 
     private boolean needFirstspawn() {
-        if (database.isAuthAvailable(player.getName().toLowerCase()) && player.hasPlayedBefore())
+        if (player.hasPlayedBefore())
             return false;
-        else {
-            if (Spawn.getInstance().getFirstSpawn() == null || Spawn.getInstance().getFirstSpawn().getWorld() == null)
-                return false;
-            FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), Spawn.getInstance().getFirstSpawn());
-            plugin.getServer().getPluginManager().callEvent(tpEvent);
-            if (!tpEvent.isCancelled()) {
-                if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
-                    final Location fLoc = tpEvent.getTo();
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        if (Spawn.getInstance().getFirstSpawn() == null || Spawn.getInstance().getFirstSpawn().getWorld() == null)
+            return false;
+        FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), Spawn.getInstance().getFirstSpawn());
+        plugin.getServer().getPluginManager().callEvent(tpEvent);
+        if (!tpEvent.isCancelled()) {
+            if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
+                final Location fLoc = tpEvent.getTo();
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-                        @Override
-                        public void run() {
-                            player.teleport(fLoc);
-                        }
+                    @Override
+                    public void run() {
+                        player.teleport(fLoc);
+                    }
 
-                    });
-                }
+                });
             }
-            return true;
         }
+        return true;
+
     }
 
     private void placePlayerSafely(final Player player,
-            final Location spawnLoc) {
+                                   final Location spawnLoc) {
         Location loc = null;
         if (spawnLoc == null)
             return;
@@ -293,7 +284,7 @@ public class AsyncronousJoin {
             return;
         if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())))
             return;
-        if (!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore())
+        if (!player.hasPlayedBefore())
             return;
         Block b = player.getLocation().getBlock();
         if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL) {

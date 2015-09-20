@@ -43,22 +43,23 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         }
         BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
-        try {
-            if (player.isInsideVehicle())
-                player.getVehicle().eject();
-        } catch (NullPointerException npe) {
-        }
+        if (player.isInsideVehicle() && player.getVehicle() != null)
+            player.getVehicle().eject();
         if (Settings.applyBlindEffect)
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
         player.setOp(false);
         if (!Settings.isMovementAllowed) {
             player.setAllowFlight(true);
             player.setFlying(true);
+            if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
+                player.setFlySpeed(0.0f);
+                player.setWalkSpeed(0.0f);
+            }
         }
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
         m.send(player, "logout");
-        ConsoleLogger.info(player.getDisplayName() + " logged out");
+        ConsoleLogger.info(player.getName() + " logged out");
     }
 
 }

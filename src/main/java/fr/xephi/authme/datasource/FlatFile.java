@@ -1,20 +1,14 @@
 package fr.xephi.authme.datasource;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Settings;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlatFile implements DataSource {
 
@@ -32,7 +26,7 @@ public class FlatFile implements DataSource {
     private File source;
 
     public FlatFile() {
-        source = new File(Settings.AUTH_FILE);
+        source = Settings.AUTH_FILE;
         try {
             source.createNewFile();
         } catch (IOException e) {
@@ -41,9 +35,10 @@ public class FlatFile implements DataSource {
                 ConsoleLogger.showError("Can't use FLAT FILE... SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
             }
-            if (!Settings.isStopEnabled)
+            if (!Settings.isStopEnabled) {
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
+            }
+            e.printStackTrace();
         }
     }
 
@@ -108,7 +103,7 @@ public class FlatFile implements DataSource {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equals(auth.getNickname())) {
@@ -167,7 +162,7 @@ public class FlatFile implements DataSource {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equalsIgnoreCase(auth.getNickname())) {
@@ -226,7 +221,7 @@ public class FlatFile implements DataSource {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equalsIgnoreCase(auth.getNickname())) {

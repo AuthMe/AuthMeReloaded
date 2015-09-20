@@ -1,16 +1,16 @@
 package fr.xephi.authme.datasource;
 
-import java.util.List;
-
 import fr.xephi.authme.cache.auth.PlayerAuth;
+
+import java.util.List;
 
 public interface DataSource {
 
-    public enum DataSourceType {
-
+    enum DataSourceType {
         MYSQL,
         FILE,
-        SQLITE
+        SQLITE,
+        SQLITEHIKARI
     }
 
     boolean isAuthAvailable(String user);

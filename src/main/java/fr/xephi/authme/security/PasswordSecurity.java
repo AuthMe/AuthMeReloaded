@@ -1,24 +1,23 @@
 package fr.xephi.authme.security;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.HashMap;
-
-import org.bukkit.Bukkit;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.security.crypts.BCRYPT;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.Bukkit;
+
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.HashMap;
 
 public class PasswordSecurity {
 
     private static SecureRandom rnd = new SecureRandom();
-    public static HashMap<String, String> userSalt = new HashMap<String, String>();
+    public static HashMap<String, String> userSalt = new HashMap<>();
 
     public static String createSalt(int length)
             throws NoSuchAlgorithmException {
@@ -31,15 +30,13 @@ public class PasswordSecurity {
     }
 
     public static String getHash(HashAlgorithm alg, String password,
-            String playerName) throws NoSuchAlgorithmException {
+                                 String playerName) throws NoSuchAlgorithmException {
         EncryptionMethod method;
         try {
             if (alg != HashAlgorithm.CUSTOM)
                 method = (EncryptionMethod) alg.getclasse().newInstance();
             else method = null;
-        } catch (InstantiationException e) {
-            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new NoSuchAlgorithmException("Problem with this hash algorithm");
         }
         String salt = "";
@@ -85,6 +82,7 @@ public class PasswordSecurity {
                 salt = BCRYPT.gensalt(8);
                 userSalt.put(playerName, salt);
                 break;
+            case PBKDF2DJANGO:
             case PBKDF2:
                 salt = createSalt(12);
                 userSalt.put(playerName, salt);
@@ -127,43 +125,39 @@ public class PasswordSecurity {
     }
 
     public static boolean comparePasswordWithHash(String password, String hash,
-            String playerName) throws NoSuchAlgorithmException {
+                                                  String playerName) throws NoSuchAlgorithmException {
         HashAlgorithm algo = Settings.getPasswordHash;
         EncryptionMethod method;
         try {
             if (algo != HashAlgorithm.CUSTOM)
                 method = (EncryptionMethod) algo.getclasse().newInstance();
-            else method = null;
-        } catch (InstantiationException e) {
-            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
-        } catch (IllegalAccessException e) {
-            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
-        }
-        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
-        Bukkit.getPluginManager().callEvent(event);
-        method = event.getMethod();
-        if (method == null)
-            throw new NoSuchAlgorithmException("Unknown hash algorithm");
+            else
+                method = null;
 
-        try {
+            PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
+            Bukkit.getPluginManager().callEvent(event);
+            method = event.getMethod();
+
+            if (method == null)
+                throw new NoSuchAlgorithmException("Unknown hash algorithm");
+
             if (method.comparePassword(hash, password, playerName))
                 return true;
-        } catch (Exception e) {
-        }
-        if (Settings.supportOldPassword) {
-            try {
+
+            if (Settings.supportOldPassword) {
                 if (compareWithAllEncryptionMethod(password, hash, playerName))
                     return true;
-            } catch (Exception e) {
             }
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
         }
         return false;
     }
 
     private static boolean compareWithAllEncryptionMethod(String password,
-            String hash, String playerName) throws NoSuchAlgorithmException {
+                                                          String hash, String playerName) throws NoSuchAlgorithmException {
         for (HashAlgorithm algo : HashAlgorithm.values()) {
-            if (algo != HashAlgorithm.CUSTOM)
+            if (algo != HashAlgorithm.CUSTOM) {
                 try {
                     EncryptionMethod method = (EncryptionMethod) algo.getclasse().newInstance();
                     if (method.comparePassword(hash, password, playerName)) {
@@ -176,8 +170,9 @@ public class PasswordSecurity {
                         }
                         return true;
                     }
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
+            }
         }
         return false;
     }

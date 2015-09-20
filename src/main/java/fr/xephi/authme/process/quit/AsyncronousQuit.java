@@ -15,7 +15,6 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.settings.Settings;
 
 public class AsyncronousQuit {
@@ -23,7 +22,6 @@ public class AsyncronousQuit {
     protected AuthMe plugin;
     protected DataSource database;
     protected Player player;
-    protected Utils utils = Utils.getInstance();
     private String name;
     private ItemStack[] armor = null;
     private ItemStack[] inv = null;
@@ -44,7 +42,7 @@ public class AsyncronousQuit {
     public void process() {
         if (player == null)
             return;
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
             return;
         }
 
@@ -67,7 +65,7 @@ public class AsyncronousQuit {
                 armor = limbo.getArmour();
             }
             if (limbo.getGroup() != null && !limbo.getGroup().equals(""))
-                utils.addNormal(player, limbo.getGroup());
+                Utils.addNormal(player, limbo.getGroup());
             needToChange = true;
             isOp = limbo.getOperator();
             isFlying = limbo.isFlying();

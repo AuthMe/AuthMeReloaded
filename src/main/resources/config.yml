@@ -1,5 +1,7 @@
 DataSource:
-    # Can be set to: sqlite, mysql
+    # What type of database do you want to use?
+    # Can be set to: sqlite, sqlitehikari, mysql
+    # (sqlitehikari should be more fast than normal sqlite but it's an experimental feature!)
     backend: sqlite
     # Enable database caching
     caching: true
@@ -7,6 +9,8 @@ DataSource:
     mySQLHost: 127.0.0.1
     # Database Port
     mySQLPort: '3306'
+    # MySql Max Connections
+    mySQLMaxConections: 25
     # Username about Database Connection Infos
     mySQLUsername: authme
     # Password about Database Connection Infos
@@ -39,46 +43,30 @@ DataSource:
     mySQLlastlocWorld: world
     # Column for RealName
     mySQLRealName: realname
-GroupOptions:
-    # if you want to set up a particulary Permission Group for
-    # users that arent registered yet. Pay attention this option
-    # is casesensitive!
-    # Example: UnregisteredPlayerGroup: GuestUser
-    UnregisteredPlayerGroup: ''
-    # Same as UnregisteredGroup if u want to set a switch 
-    # between unregistered and registered player group
-    # set the group name below
-    RegisteredPlayerGroup: ''
-    # with this option you can add specified permission onJoin
-    # like for example LoginBonus from another plugins, AuthMe
-    # will check onJoin if player has that permissions in his Group
-    # if true it add a temporany permissions to that user. This Field
-    # is needed beacuse AuthMe switch all unlogged players on a
-    # specified restricted Permission Group, so plugins that will use
-    # some particolary permissions on join doesnt work, without
-    # compiling option below!
-    Permissions:
-        PermissionsOnJoin: []
 settings:
     sessions:
-        # Do you want to enable session? When enabled 
-        # the ip of a player will be bound to the nickname
-        # of the player on login. As long as neither of those
-        # two change players don't have to login on a reconnect
+        # Do you want to enable the session feature? 
+        # If enabled, when a player authenticates successfully,
+        # his IP and his nickname is saved.
+        # The next time the player joins the server, if his IP 
+        # is the same of the last time, and the timeout time
+        # hasn't expired, he will not need to authenticate.
         enabled: false
-        # After how many minutes a session should timeout?
-        # 0 for unlimitted sessions, use 0 at your own risk!
-        # consider that session will end only after timeout, and
-        # if player's ip is changed but the timeout treshould isent
-        # ended, player will kick out of sever for invalidSession!
+        # After how many minutes a session should expire?
+        # 0 for unlimited time (Very dangerous, use it at your own risk!)
+        # Consider that session will end only after the timeout time, and
+        # if the player's ip has changed but the timeout hasn't expired,
+        # player will be kicked out of sever due to invalidSession!
         timeout: 10
-        # Do we need to timeout the session if the player is offline
-        # And try to login with an another IP Address?
-        sessionExpireOnIpChange: false
+        # Should the session expire if the player try to login with an
+        # another IP Address?
+        sessionExpireOnIpChange: true
     restrictions:
-        # Can unregistered/unlogged players chat and see chat, care , that block all commands except followers
+        # Can not authenticated players chat and see the chat log? 
+        # Care that this feature blocks also all the commands not
+        # listed in the list below.
         allowChat: false
-        # Commands allowed when a player is unlogged
+        # Commands allowed when a player is not authenticated
         allowCommands:
         - /login
         - /register
@@ -86,54 +74,52 @@ settings:
         - /reg
         - /email
         - /captcha
-        # Maximum Registration per IP default: 1
+        # Max number of allowed registrations per IP (default: 1)
         maxRegPerIp: 1
-        # Max allowed nick length
+        # Max allowed username length
         maxNicknameLength: 16
-        # Player that is online arent 
-        # kick out for "logged in from another
-        # Location", this options will prevent players that would exploit
-        # your account when you are playing
+        # When this setting is enabled, online players can't be kicked out
+        # due to "Logged in from another Location"
+        # This setting will prevent potetial security exploits.
         ForceSingleSession: true
-        # Teleport every time player join at World Spawn location, 
-        # even if they loggedin successfully,
-        #  all quit and previus location will
-        # overwrite with World Spawn. Different From
-        #  "teleportUnAuthedToSpawn"
-        # that teleport player back to his quit or kick position, 
-        # when he loggedin
+        # If enabled, every player will be teleported to the world spawnpoint
+        # after successful authentication.
+        # The quit location of the player will be overwritten.
+        # This is different from "teleportUnAuthedToSpawn" that teleport player
+        # back to his quit location after the authentication.
         ForceSpawnLocOnJoinEnabled: false
-        # This will prevent all lost of quit position, when player
-        # isent loggedin
+        # This option will save the quit location of the players.
         SaveQuitLocation: false
-        # For activate Restricted user by ip u need
-        # to set True this option and configure the field
-        # AllowedRestrctedUser as show below
+        # To activate the restricted user feature you need
+        # to enable this option and configure the
+        # AllowedRestrctedUser field.
         AllowRestrictedUser: false
-        # Restricted user will kick players that 
-        # is listed below and they dont
-        # meet the match of username;ip
-        # Example playername;127.0.0.1 , if playername 
-        # hasent 127.0.0.1 as ip address
-        # he will not be allowed to join the server
+        # The restricted user feature will kick players listed below
+        # if they dont match of the defined ip address.
+        # Example:
+        #   AllowedRestrictedUser:
+        #   - playername;127.0.0.1
         AllowedRestrictedUser:
         - playername;127.0.0.1
         # Should unregistered players be kicked immediatly?
         kickNonRegistered: false
-        # Should fail password players be kicked immediatly?
+        # Should players be kicked on wrong password?
         kickOnWrongPassword: false
-        # should not loged in players be teleported to spawn?
-        # On login they will be teleported back to their normal
-        # position
+        # Should not logged in players be teleported to the spawn?
+        # After the authentication they will be teleported back to
+        # their normal position.
         teleportUnAuthedToSpawn: false
-        # min allowed nick length 
+        # Minimum allowed nick length 
         minNicknameLength: 4
         # Can unregistered players walk around?
         allowMovement: false
-        # After what time players who fail to login or register
-        # should be kicked. Set to 0 to disable.
+        # Should not authenticated players have speed = 0?
+        # This will reset the fly/walk speed to default value after the login.
+        removeSpeed: true
+        # After how many time players who fail to login or register
+        # should be kicked? Set to 0 to disable.
         timeout: 30
-        # Regex sintax for allowed Char in player name.
+        # Regex sintax of allowed characters in the player name.
         allowedNicknameCharacters: '[a-zA-Z0-9_]*'
         # How far can unregistered players walk? Set to 0
         # for unlimited radius
@@ -200,7 +186,7 @@ settings:
         # possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB,
         # PLAINTEXT ( unhashed password),
         # MYBB, IPB3, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,
-        # DOUBLEMD5, PBKDF2, WORDPRESS, ROYALAUTH, CUSTOM(for developpers only)
+        # DOUBLEMD5, PBKDF2, PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM(for developpers only)
         passwordHash: SHA256
         # salt length for the SALTED2MD5 MD5(MD5(password)+salt)
         doubleMD5SaltLength: 8
@@ -290,10 +276,10 @@ ExternalBoardOptions:
     # WordPress prefix defined during WordPress installation process
     wordpressTablePrefix: 'wp_'
 permission:
-    # take care with this options, if u dont want
+    # Take care with this options, if you dont want
     # to use Vault and Group Switching of
-    # AuthMe for unloggedIn players put False
-    # below, default is true.
+    # AuthMe for unloggedIn players put true
+    # below, default is false.
     EnablePermissionCheck: false
 BackupSystem:
    # Enable or Disable Automatic Backup

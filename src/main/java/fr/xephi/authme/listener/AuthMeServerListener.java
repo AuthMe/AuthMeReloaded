@@ -1,16 +1,16 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.Utils;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListPingEvent;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
 
 public class AuthMeServerListener implements Listener {
 
@@ -28,10 +28,10 @@ public class AuthMeServerListener implements Listener {
         if (Settings.countries.isEmpty())
             return;
         if (!Settings.countriesBlacklist.isEmpty()) {
-            if (Settings.countriesBlacklist.contains(plugin.getCountryCode(event.getAddress().getHostAddress())))
+            if (Settings.countriesBlacklist.contains(Utils.getCountryCode(event.getAddress().getHostAddress())))
                 event.setMotd(m.send("country_banned")[0]);
         }
-        if (Settings.countries.contains(plugin.getCountryCode(event.getAddress().getHostAddress()))) {
+        if (Settings.countries.contains(Utils.getCountryCode(event.getAddress().getHostAddress()))) {
             event.setMotd(plugin.getServer().getMotd());
         } else {
             event.setMotd(m.send("country_banned")[0]);
@@ -57,16 +57,12 @@ public class AuthMeServerListener implements Listener {
             return;
         }
         if (pluginName.equalsIgnoreCase("ChestShop")) {
-            plugin.ChestShop = 0;
+            plugin.legacyChestShop = false;
             ConsoleLogger.info("ChestShop has been disabled, unhook!");
         }
-        if (pluginName.equalsIgnoreCase("CombatTag")) {
-            plugin.CombatTag = false;
-            ConsoleLogger.info("CombatTag has been disabled, unhook!");
-        }
-        if (pluginName.equalsIgnoreCase("Citizens")) {
-            plugin.isCitizensActive = false;
-            ConsoleLogger.info("Citizens has been disabled, unhook!");
+        if (pluginName.equalsIgnoreCase("CombatTagPlus")) {
+            plugin.combatTagPlus = null;
+            ConsoleLogger.info("CombatTagPlus has been disabled, unhook!");
         }
         if (pluginName.equalsIgnoreCase("Vault")) {
             plugin.permission = null;
@@ -83,10 +79,8 @@ public class AuthMeServerListener implements Listener {
             plugin.checkMultiverse();
         if (pluginName.equalsIgnoreCase("ChestShop"))
             plugin.checkChestShop();
-        if (pluginName.equalsIgnoreCase("CombatTag"))
-            plugin.checkCombatTag();
-        if (pluginName.equalsIgnoreCase("Citizens"))
-            plugin.checkCitizens();
+        if (pluginName.equalsIgnoreCase("CombatTagPlus"))
+            plugin.checkCombatTagPlus();
         if (pluginName.equalsIgnoreCase("Vault"))
             plugin.checkVault();
     }

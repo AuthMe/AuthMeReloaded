@@ -12,7 +12,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 
@@ -65,9 +64,7 @@ public class API {
      */
     @Deprecated
     public boolean isaNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player))
-            return true;
-        return CombatTagComunicator.isNPC(player);
+        return Utils.isNPC(player);
     }
 
     /**
@@ -77,9 +74,7 @@ public class API {
      */
     @Deprecated
     public boolean isNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player))
-            return true;
-        return CombatTagComunicator.isNPC(player);
+        return Utils.isNPC(player);
     }
 
     /**
@@ -89,7 +84,7 @@ public class API {
      */
     @Deprecated
     public static boolean isUnrestricted(Player player) {
-        return Utils.getInstance().isUnrestricted(player);
+        return Utils.isUnrestricted(player);
     }
 
     @Deprecated

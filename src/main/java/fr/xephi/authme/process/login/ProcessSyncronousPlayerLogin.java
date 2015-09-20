@@ -9,9 +9,9 @@ import org.bukkit.potion.PotionEffectType;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
+import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
@@ -31,7 +31,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     private AuthMe plugin;
     private DataSource database;
     private PluginManager pm;
-    private FileCache playerCache;
+    private JsonCache playerCache;
 
     public ProcessSyncronousPlayerLogin(Player player, AuthMe plugin,
             DataSource data) {
@@ -42,7 +42,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         this.name = player.getName().toLowerCase();
         this.limbo = LimboCache.getInstance().getLimboPlayer(name);
         this.auth = database.getAuth(name);
-        this.playerCache = new FileCache(plugin);
+        this.playerCache = new JsonCache(plugin);
     }
 
     public LimboPlayer getLimbo() {
@@ -63,7 +63,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     }
 
     protected void packQuitLocation() {
-        Utils.getInstance().packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
+        Utils.packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
     }
 
     protected void teleportBackFromSpawn() {
@@ -103,7 +103,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         for (String command : Settings.forceCommands) {
             try {
                 player.performCommand(command.replace("%p", player.getName()));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         for (String command : Settings.forceCommandsAsConsole) {
@@ -125,20 +125,13 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
              * world inventory !
              */
             player.setGameMode(limbo.getGameMode());
-            if (!Settings.forceOnlyAfterLogin) {
-                // Inventory - Make it after restore GameMode , cause we need to
-                // restore the
-                // right inventory in the right gamemode
-                if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
-                    restoreInventory();
-                }
-            } else {
-                // Inventory - Make it before force the survival GameMode to
-                // cancel all
-                // inventory problem
-                if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
-                    restoreInventory();
-                }
+            // Inventory - Make it after restore GameMode , cause we need to
+            // restore the
+            // right inventory in the right gamemode
+            if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
+                restoreInventory();
+            }
+            if (Settings.forceOnlyAfterLogin) {
                 player.setGameMode(GameMode.SURVIVAL);
             }
 
@@ -166,7 +159,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
                 Utils.forceGM(player);
 
             // Restore Permission Group
-            Utils.getInstance().setGroup(player, groupType.LOGGEDIN);
+            Utils.setGroup(player, GroupType.LOGGEDIN);
 
             // Cleanup no longer used temporary data
             LimboCache.getInstance().deleteLimboPlayer(name);
@@ -177,7 +170,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
         // We can now display the join message
         if (AuthMePlayerListener.joinMessage.containsKey(name) && AuthMePlayerListener.joinMessage.get(name) != null && !AuthMePlayerListener.joinMessage.get(name).isEmpty()) {
-            for (Player p : Bukkit.getServer().getOnlinePlayers()) {
+            for (Player p : Utils.getOnlinePlayers()) {
                 if (p.isOnline())
                     p.sendMessage(AuthMePlayerListener.joinMessage.get(name));
             }
@@ -186,6 +179,10 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
         if (Settings.applyBlindEffect)
             player.removePotionEffect(PotionEffectType.BLINDNESS);
+        if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
+            player.setWalkSpeed(0.2f);
+            player.setFlySpeed(0.1f);
+        }
 
         // The Loginevent now fires (as intended) after everything is processed
         Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));

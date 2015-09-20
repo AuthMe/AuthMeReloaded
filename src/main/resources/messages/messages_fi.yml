@@ -36,7 +36,6 @@ usage_changepassword: '&fKäyttötapa: /changepassword vanhaSalasana uusiSalasan
 name_len: '&cPelaajanimesi on liian lyhyt tai pitkä'
 regex: '&cPelaajanimesi sisältää luvattomia merkkejä. Hyväksytyt merkit: REG_EX'
 add_email: '&cLisää sähköpostisi: /email add sähköpostisi sähköpostisiUudelleen'
-bad_database_email: '[AuthMe] Tämä /email komento on vain käytössä MySQLlän kanssa. Ota yhteys palveluntarjoojaan'
 recovery_email: '&cUnohtuiko salasana? Käytä komentoa: /email recovery <Sähköpostisi>'
 usage_captcha: '&cKäyttötapa: /captcha <Captcha>'
 wrong_captcha: '&cVäärä varmistus, käytä : /captcha CAPTCHA'

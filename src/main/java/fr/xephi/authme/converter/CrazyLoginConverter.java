@@ -2,7 +2,6 @@ package fr.xephi.authme.converter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
@@ -70,10 +69,9 @@ public class CrazyLoginConverter implements Converter {
             }
             users.close();
             ConsoleLogger.info("CrazyLogin database has been imported correctly");
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.showError("Can't open the crazylogin database file! Does it exist?");
         }
     }
 

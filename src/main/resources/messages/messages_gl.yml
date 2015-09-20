@@ -37,8 +37,6 @@ usage_changepassword: '&fUso: /changepassword <contrasinalVello> <contrasinalNov
 name_len: '&cO teu nome é demasiado curto ou demasiado longo'
 regex: '&cO teu nome contén caracteres ilegais. Caracteres permitidos: REG_EX'
 add_email: '&cPor favor, engade o teu correo electrónico con: /email add <oTeuCorreo> <confirmarCorreo>'
-bad_database_email: '[AuthMe] Este comando /email só está dispoñible con MySQL e SQLite,
-  contacta cun administrador'
 recovery_email: '&cOlvidaches o contrasinal? Por favor, usa /email recovery <oTeuCorreo>'
 usage_captcha: '&cNecesitas escribir un captcha, por favor escribe: /captcha <oCaptcha>'
 wrong_captcha: '&cCaptcha equivocado, por favor usa: /captcha THE_CAPTCHA'

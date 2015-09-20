@@ -11,8 +11,7 @@ public class DataFileCache {
     private boolean flying;
 
     public DataFileCache(ItemStack[] inventory, ItemStack[] armor) {
-        this.inventory = inventory;
-        this.armor = armor;
+        this(inventory, armor, "", false, false);
     }
 
     public DataFileCache(ItemStack[] inventory, ItemStack[] armor,

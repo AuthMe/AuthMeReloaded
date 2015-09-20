@@ -1,59 +1,54 @@
 package fr.xephi.authme.settings;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.bukkit.configuration.MemoryConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public final class Settings extends YamlConfiguration {
+
+    private AuthMe plugin;
 
     // This is not an option!
     public static Boolean antiBotInAction = false;
 
-    public static String PLUGIN_FOLDER = "." + File.separator + "plugins" + File.separator + "AuthMe";
-    public static final String CACHE_FOLDER = Settings.PLUGIN_FOLDER + File.separator + "cache";
-    public static final String AUTH_FILE = Settings.PLUGIN_FOLDER + File.separator + "auths.db";
-    public static final String MESSAGE_FILE = Settings.PLUGIN_FOLDER + File.separator + "messages";
-    public static final String SETTINGS_FILE = Settings.PLUGIN_FOLDER + File.separator + "config.yml";
-    public static List<String> allowCommands = null;
-    public static List<String> getJoinPermissions = null;
-    public static List<String> getUnrestrictedName = null;
-    private static List<String> getRestrictedIp;
-    public static List<String> getMySQLOtherUsernameColumn = null;
-    public static List<String> getForcedWorlds = null;
-    public static List<String> countries = null;
-    public static List<String> countriesBlacklist = null;
-    public static List<String> forceCommands = null;
-    public static List<String> forceCommandsAsConsole = null;
-    public static List<String> forceRegisterCommands = null;
-    public static List<String> forceRegisterCommandsAsConsole = null;
-    private AuthMe plugin;
-    private final File file;
+    public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
+    public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
+    public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
+    public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
+    public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
+    public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
+
+    public static File messageFile;
+    public static List<String> allowCommands;
+    public static List<String> getJoinPermissions;
+    public static List<String> getUnrestrictedName;
+    public static List<String> getRestrictedIp;
+    public static List<String> getMySQLOtherUsernameColumn;
+    public static List<String> getForcedWorlds;
+    public static List<String> countries;
+    public static List<String> countriesBlacklist;
+    public static List<String> forceCommands;
+    public static List<String> forceCommandsAsConsole;
+    public static List<String> forceRegisterCommands;
+    public static List<String> forceRegisterCommandsAsConsole;
+    public static List<String> welcomeMsg;
+    public static List<String> unsafePasswords;
+    public static List<String> emailBlacklist;
+    public static List<String> emailWhitelist;
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
-    public static Boolean useLogging = false;
+    public static boolean useLogging = false;
     public static int purgeDelay = 60;
-    public static List<String> welcomeMsg = null;
-    public static List<String> unsafePasswords;
-    public static List<String> emailBlacklist = null;
-    public static List<String> emailWhitelist = null;
 
-    public static Boolean isPermissionCheckEnabled, isRegistrationEnabled,
+    public static boolean isPermissionCheckEnabled, isRegistrationEnabled,
             isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
             isSessionsEnabled, isChatAllowed, isAllowRestrictedIp,
             isMovementAllowed, isKickNonRegisteredEnabled,
@@ -64,7 +59,7 @@ public final class Settings extends YamlConfiguration {
             protectInventoryBeforeLogInEnabled, isBackupActivated,
             isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
             rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-            useCaptcha, emailRegistration, multiverse, chestshop, bungee,
+            useCaptcha, emailRegistration, multiverse, legacyChestShop, bungee,
             banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
             disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
             purgePlayerDat, purgeEssentialsFile, supportOldPassword,
@@ -72,14 +67,14 @@ public final class Settings extends YamlConfiguration {
             enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
             broadcastWelcomeMessage, forceRegKick, forceRegLogin,
             checkVeryGames, delayJoinMessage, noTeleport, applyBlindEffect,
-            customAttributes, generateImage;
+            customAttributes, generateImage, isRemoveSpeedEnabled;
 
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
             getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
             getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
             getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
             getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup,
-            backupWindowsPath, getcUnrestrictedName, getRegisteredGroup,
+            backupWindowsPath, getRegisteredGroup,
             messagesLanguage, getMySQLlastlocX, getMySQLlastlocY,
             getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
             getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName,
@@ -95,35 +90,32 @@ public final class Settings extends YamlConfiguration {
             getMailPort, maxLoginTry, captchaLength, saltLength,
             getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
             antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
-            getMaxJoinPerIp;
+            getMaxJoinPerIp, getMySQLMaxConnections;
 
     protected static YamlConfiguration configFile;
 
     public Settings(AuthMe plugin) {
-        this.file = new File(plugin.getDataFolder(), "config.yml");
-        this.plugin = plugin;
-        boolean exist = exists();
-        if (exist) {
-            load();
-        } else {
-            plugin.saveDefaultConfig();
-            load();
-        }
         configFile = (YamlConfiguration) plugin.getConfig();
-        PLUGIN_FOLDER = plugin.getDataFolder().toString();
-        loadConfigOptions(exist);
+        this.plugin = plugin;
     }
 
-    public void loadConfigOptions(boolean exist) {
+    public final void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
-        if (exist)
+        boolean exist = SETTINGS_FILE.exists();
+        if (!exist) {
+            plugin.saveDefaultConfig();
+        }
+        load(SETTINGS_FILE);
+        if (exist) {
             mergeConfig();
-
+        }
         loadVariables();
-
-        if (exist)
+        if (exist) {
             saveDefaults();
+        }
+        messageFile = new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + messagesLanguage + ".yml");
     }
+
 
     @SuppressWarnings("unchecked")
     public static void loadVariables() {
@@ -144,6 +136,7 @@ public final class Settings extends YamlConfiguration {
         isAllowRestrictedIp = configFile.getBoolean("settings.restrictions.AllowRestrictedUser", false);
         getRestrictedIp = configFile.getStringList("settings.restrictions.AllowedRestrictedUser");
         isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
+        isRemoveSpeedEnabled = configFile.getBoolean("settings.restrictions.removeSpeed", true);
         getMovementRadius = configFile.getInt("settings.restrictions.allowedMovementRadius", 100);
         getJoinPermissions = configFile.getStringList("GroupOptions.Permissions.PermissionsOnJoin");
         isKickOnWrongPasswordEnabled = configFile.getBoolean("settings.restrictions.kickOnWrongPassword", false);
@@ -160,6 +153,7 @@ public final class Settings extends YamlConfiguration {
         isCachingEnabled = configFile.getBoolean("DataSource.caching", true);
         getMySQLHost = configFile.getString("DataSource.mySQLHost", "127.0.0.1");
         getMySQLPort = configFile.getString("DataSource.mySQLPort", "3306");
+        getMySQLMaxConnections = configFile.getInt("DataSource.mySQLMaxConections", 25);
         getMySQLUsername = configFile.getString("DataSource.mySQLUsername", "authme");
         getMySQLPassword = configFile.getString("DataSource.mySQLPassword", "12345");
         getMySQLDatabase = configFile.getString("DataSource.mySQLDatabase", "authme");
@@ -227,12 +221,12 @@ public final class Settings extends YamlConfiguration {
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = configFile.getBoolean("Hooks.multiverse", true);
-        chestshop = configFile.getBoolean("Hooks.legacyChestshop", false);
+        legacyChestShop = configFile.getBoolean("Hooks.legacyChestshop", false);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
         doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
-        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
+        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", true);
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
@@ -287,24 +281,30 @@ public final class Settings extends YamlConfiguration {
 
     }
 
-    public static void reloadConfigOptions(YamlConfiguration newConfig) {
-        configFile = newConfig;
-
-        loadVariables();
-    }
-
     public void mergeConfig() {
         boolean changes = false;
-        if (contains("Xenoforo.predefinedSalt"))
+        if (contains("Xenoforo.predefinedSalt")) {
             set("Xenoforo.predefinedSalt", null);
-        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256"))
+            changes = true;
+        }
+        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
             set("settings.security.passwordHash", "XENFORO");
+            changes = true;
+        }
         if (!contains("Protection.enableProtection")) {
             set("Protection.enableProtection", false);
             changes = true;
         }
+        if (!contains("settings.restrictions.removeSpeed")) {
+            set("settings.restrictions.removeSpeed", true);
+            changes = true;
+        }
+        if (!contains("DataSource.mySQLMaxConections")) {
+            set("DataSource.mySQLMaxConections", 25);
+            changes = true;
+        }
         if (!contains("Protection.countries")) {
-            countries = new ArrayList<String>();
+            countries = new ArrayList<>();
             countries.add("US");
             countries.add("GB");
             set("Protection.countries", countries);
@@ -343,14 +343,14 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (!contains("settings.security.unsafePasswords")) {
-            List<String> str = new ArrayList<String>();
+            List<String> str = new ArrayList<>();
             str.add("123456");
             str.add("password");
             set("settings.security.unsafePasswords", str);
             changes = true;
         }
         if (!contains("Protection.countriesBlacklist")) {
-            countriesBlacklist = new ArrayList<String>();
+            countriesBlacklist = new ArrayList<>();
             countriesBlacklist.add("A1");
             set("Protection.countriesBlacklist", countriesBlacklist);
             changes = true;
@@ -387,8 +387,10 @@ public final class Settings extends YamlConfiguration {
             set("VeryGames.enableIpCheck", false);
             changes = true;
         }
-        if (getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*"))
+        if (getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*")) {
             set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
+            changes = true;
+        }
         if (!contains("settings.delayJoinMessage")) {
             set("settings.delayJoinMessage", false);
             changes = true;
@@ -397,8 +399,10 @@ public final class Settings extends YamlConfiguration {
             set("settings.restrictions.noTeleport", false);
             changes = true;
         }
-        if (contains("Converter.Rakamak.newPasswordHash"))
+        if (contains("Converter.Rakamak.newPasswordHash")) {
             set("Converter.Rakamak.newPasswordHash", null);
+            changes = true;
+        }
         if (!contains("Converter.CrazyLogin.fileName")) {
             set("Converter.CrazyLogin.fileName", "accounts.db");
             changes = true;
@@ -415,18 +419,22 @@ public final class Settings extends YamlConfiguration {
             set("Email.emailBlacklisted", new ArrayList<String>());
             changes = true;
         }
-        if (contains("Performances.useMultiThreading"))
+        if (contains("Performances.useMultiThreading")) {
             set("Performances.useMultiThreading", null);
-
-        if (contains("Performances"))
+            changes = true;
+        }
+        if (contains("Performances")) {
             set("Performances", null);
-
-        if (contains("Passpartu.enablePasspartu"))
+            changes = true;
+        }
+        if (contains("Passpartu.enablePasspartu")) {
             set("Passpartu.enablePasspartu", null);
-
-        if (contains("Passpartu"))
+            changes = true;
+        }
+        if (contains("Passpartu")) {
             set("Passpartu", null);
-
+            changes = true;
+        }
         if (!contains("Email.emailWhitelisted")) {
             set("Email.emailWhitelisted", new ArrayList<String>());
             changes = true;
@@ -447,14 +455,17 @@ public final class Settings extends YamlConfiguration {
             set("Purge.removePermissions", false);
             changes = true;
         }
-        if (contains("Hooks.notifications"))
+        if (contains("Hooks.notifications")) {
             set("Hooks.notifications", null);
-        boolean useChestShop = false;
-        if (contains("Hooks.chestshop")) {
-            useChestShop = getBoolean("Hooks.chestshop");
-            set("Hooks.chestshop", null);
+            changes = true;
         }
-        set("Hooks.legacyChestshop", useChestShop);
+        if (contains("Hooks.chestshop")) {
+            if(getBoolean("Hooks.chestshop")) {
+                set("Hooks.legacyChestshop", true);
+            }
+            set("Hooks.chestshop", null);
+            changes = true;
+        }
         if (!contains("Email.generateImage")) {
             set("Email.generateImage", true);
             changes = true;
@@ -465,11 +476,9 @@ public final class Settings extends YamlConfiguration {
         }
 
         if (changes) {
-            plugin.getLogger().warning("Merge new Config Options - I'm not an error, please don't report me");
+            plugin.getLogger().warning("Merged new Config Options - I'm not an error, please don't report me");
             plugin.getLogger().warning("Please check your config.yml file for new configs!");
         }
-
-        return;
     }
 
     public void setValue(String key, Object value) {
@@ -516,38 +525,13 @@ public final class Settings extends YamlConfiguration {
                 if (testip.equalsIgnoreCase(ip)) {
                     trueonce = true;
                 }
-                ;
             }
         }
-        if (namefound == false) {
+        if (!namefound) {
             return true;
         } else {
-            if (trueonce == true) {
-                return true;
-            } else {
-                return false;
-            }
+            return trueonce;
         }
-    }
-
-    /**
-     * Loads the configuration from disk
-     *
-     * @return True if loaded successfully
-     */
-    public final boolean load() {
-        try {
-            load(file);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
-    public final void reload() {
-        if (!exists())
-            plugin.saveDefaultConfig();
-        load();
     }
 
     /**
@@ -557,7 +541,7 @@ public final class Settings extends YamlConfiguration {
      */
     public final boolean save() {
         try {
-            save(file);
+            save(SETTINGS_FILE);
             return true;
         } catch (Exception ex) {
             return false;
@@ -565,17 +549,8 @@ public final class Settings extends YamlConfiguration {
     }
 
     /**
-     * Simple function for if the Configuration file exists
-     *
-     * @return True if configuration exists on disk
-     */
-    public final boolean exists() {
-        return file.exists();
-    }
-
-    /**
      * Saves current configuration (plus defaults) to disk.
-     *
+     * <p>
      * If defaults and configuration are empty, saves blank file.
      *
      * @return True if saved successfully
@@ -589,27 +564,12 @@ public final class Settings extends YamlConfiguration {
         return success;
     }
 
-    /**
-     * Clears current configuration defaults
-     */
-    public final void clearDefaults() {
-        setDefaults(new MemoryConfiguration());
-    }
-
-    /**
-     * Check loaded defaults against current configuration
-     *
-     * @return false When all defaults aren't present in config
-     */
-    public boolean checkDefaults() {
-        if (getDefaults() == null) {
-            return true;
-        }
-        return getKeys(true).containsAll(getDefaults().getKeys(true));
-    }
-
     public static String checkLang(String lang) {
-        if (new File(MESSAGE_FILE + "_" + lang + ".yml").exists()) {
+        if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
+            ConsoleLogger.info("Set Language to: " + lang);
+            return lang;
+        }
+        if (AuthMe.class.getResourceAsStream("/messages/messages_" + lang + ".yml") != null) {
             ConsoleLogger.info("Set Language to: " + lang);
             return lang;
         }
@@ -629,7 +589,7 @@ public final class Settings extends YamlConfiguration {
 
     private static void getWelcomeMessage() {
         AuthMe plugin = AuthMe.getInstance();
-        welcomeMsg = new ArrayList<String>();
+        welcomeMsg = new ArrayList<>();
         if (!useWelcomeMessage) {
             return;
         }
@@ -648,13 +608,11 @@ public final class Settings extends YamlConfiguration {
         try {
             FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
             BufferedReader br = new BufferedReader(fr);
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 welcomeMsg.add(line);
             }
             br.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

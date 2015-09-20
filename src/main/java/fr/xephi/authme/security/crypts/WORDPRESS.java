@@ -8,13 +8,12 @@ import java.util.Arrays;
 
 public class WORDPRESS implements EncryptionMethod {
 
-    private static String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private int iterationCountLog2 = 8;
+    private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private SecureRandom randomGen = new SecureRandom();
 
     private String encode64(byte[] src, int count) {
         int i, value;
-        String output = "";
+        StringBuilder output = new StringBuilder();
         i = 0;
 
         if (src.length < count) {
@@ -26,24 +25,24 @@ public class WORDPRESS implements EncryptionMethod {
         do {
             value = src[i] + (src[i] < 0 ? 256 : 0);
             ++i;
-            output += itoa64.charAt(value & 63);
+            output.append(itoa64.charAt(value & 63));
             if (i < count) {
                 value |= (src[i] + (src[i] < 0 ? 256 : 0)) << 8;
             }
-            output += itoa64.charAt((value >> 6) & 63);
+            output.append(itoa64.charAt((value >> 6) & 63));
             if (i++ >= count) {
                 break;
             }
             if (i < count) {
                 value |= (src[i] + (src[i] < 0 ? 256 : 0)) << 16;
             }
-            output += itoa64.charAt((value >> 12) & 63);
+            output.append(itoa64.charAt((value >> 12) & 63));
             if (i++ >= count) {
                 break;
             }
-            output += itoa64.charAt((value >> 18) & 63);
+            output.append(itoa64.charAt((value >> 18) & 63));
         } while (i < count);
-        return output;
+        return output.toString();
     }
 
     private String crypt(String password, String setting) {
@@ -86,7 +85,8 @@ public class WORDPRESS implements EncryptionMethod {
 
     private String gensaltPrivate(byte[] input) {
         String output = "$P$";
-        output += itoa64.charAt(Math.min(this.iterationCountLog2 + 5, 30));
+        int iterationCountLog2 = 8;
+        output += itoa64.charAt(Math.min(iterationCountLog2 + 5, 30));
         output += encode64(input, 6);
         return output;
     }

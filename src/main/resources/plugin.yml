@@ -4,7 +4,7 @@ website: http://dev.bukkit.org/bukkit-plugins/authme-reloaded/
 description: AuthMe prevents people, which aren't logged in, from doing stuff like placing blocks, moving, typing commands or seeing the inventory of the player.
 main: fr.xephi.authme.AuthMe
 version: ${project.version}
-softdepend: [Vault, ChestShop, Multiverse-Core, Citizens, CombatTag, Essentials, EssentialsSpawn]
+softdepend: [Vault, ChestShop, Multiverse-Core, Citizens, CombatTag, Essentials, EssentialsSpawn, PerWorldInventories]
 commands:
     register:
         description: Register an account

@@ -6,11 +6,11 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
+import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.DataFileCache;
-import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
@@ -25,8 +25,7 @@ public class AsyncronousLogout {
     protected DataSource database;
     protected boolean canLogout = true;
     private Messages m = Messages.getInstance();
-    private Utils utils = Utils.getInstance();
-    private FileCache playerBackup;
+    private JsonCache playerBackup;
 
     public AsyncronousLogout(Player player, AuthMe plugin,
             DataSource database) {
@@ -34,7 +33,7 @@ public class AsyncronousLogout {
         this.plugin = plugin;
         this.database = database;
         this.name = player.getName().toLowerCase();
-        this.playerBackup = new FileCache(plugin);
+        this.playerBackup = new JsonCache(plugin);
     }
 
     private void preLogout() {
@@ -79,14 +78,13 @@ public class AsyncronousLogout {
         if (LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().deleteLimboPlayer(name);
         LimboCache.getInstance().addLimboPlayer(player);
-        utils.setGroup(player, groupType.NOTLOGGEDIN);
+        Utils.setGroup(player, GroupType.NOTLOGGEDIN);
         if (Settings.protectInventoryBeforeLogInEnabled) {
             player.getInventory().clear();
             // create cache file for handling lost of inventories on unlogged in
             // status
             DataFileCache playerData = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
-            if (playerData != null)
-                playerBackup.createCache(player, playerData, LimboCache.getInstance().getLimboPlayer(name).getGroup(), LimboCache.getInstance().getLimboPlayer(name).getOperator(), LimboCache.getInstance().getLimboPlayer(name).isFlying());
+            playerBackup.createCache(player, playerData);
         }
         sched.scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerLogout(p, plugin));
     }

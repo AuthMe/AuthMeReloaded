@@ -36,7 +36,6 @@ usage_changepassword: '&ePanaudojimas: /changepassword senasSlaptazodis naujasSl
 name_len: '&cJusu varsdas yra per ilgas arba per trumpas.'
 regex: '&cJusu varde yra neledziamu simboliu, leidziami: REG_EX'
 add_email: '&ePrasau pridekite savo el.pasta : /email add Email confirmEmail'
-bad_database_email: '&c[AuthMe] si /email komanda leidziama tik su MySQL ir SQLite, susisiekite su administratorium'
 recovery_email: '&cPamirsote slaptazodi? Rasykite: /email recovery el.pastas'
 usage_captcha: '&cPanaudojimas: /captcha <theCaptcha>'
 wrong_captcha: '&cNeteisinga Captcha, naudokite : /captcha THE_CAPTCHA'

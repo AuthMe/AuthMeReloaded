@@ -1,13 +1,8 @@
 package fr.xephi.authme.settings;
 
-import java.io.File;
-import java.io.InputStream;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import org.bukkit.command.CommandSender;
+import java.io.File;
 
 public class Messages extends CustomConfiguration {
 
@@ -16,61 +11,9 @@ public class Messages extends CustomConfiguration {
 
     public Messages(File file, String lang) {
         super(file);
-        loadDefaults(file);
-        loadFile();
-        saveDefaults(file);
+        load();
         singleton = this;
         this.lang = lang;
-    }
-
-    /**
-     * Loads a file from the plugin jar and sets as default
-     *
-     * @param filename
-     *            The filename to open
-     */
-    @SuppressWarnings("deprecation")
-    public final void loadDefaults(File file) {
-        InputStream stream = AuthMe.getInstance().getResource(file.getName());
-        if (stream == null)
-            return;
-
-        setDefaults(YamlConfiguration.loadConfiguration(stream));
-    }
-
-    /**
-     * Saves the configuration to disk
-     *
-     * @return True if saved successfully
-     */
-    public final boolean saved(File file) {
-        try {
-            save(file);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
-    /**
-     * Saves current configuration (plus defaults) to disk.
-     *
-     * If defaults and configuration are empty, saves blank file.
-     *
-     * @return True if saved successfully
-     */
-    public final boolean saveDefaults(File file) {
-        options().copyDefaults(true);
-        options().copyHeader(true);
-        boolean success = saved(file);
-        options().copyDefaults(false);
-        options().copyHeader(false);
-        return success;
-    }
-
-    private void loadFile() {
-        load();
-        save();
     }
 
     public void send(CommandSender sender, String msg) {
@@ -79,7 +22,7 @@ public class Messages extends CustomConfiguration {
         String loc = (String) singleton.get(msg);
         if (loc == null) {
             loc = "Error with Translation files, please contact the admin for verify or update translation";
-            ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml !");
+            ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + getConfigFile() + " !");
         }
         for (String l : loc.split("&n")) {
             sender.sendMessage(l.replace("&", "\u00a7"));
@@ -87,15 +30,12 @@ public class Messages extends CustomConfiguration {
     }
 
     public String[] send(String msg) {
-        if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang))
+        if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang)) {
             singleton.reloadMessages();
-        String s = null;
-        try {
-            s = (String) singleton.get(msg);
-        } catch (Exception e) {
         }
+        String s = (String) singleton.get(msg);
         if (s == null) {
-            ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml !");
+            ConsoleLogger.showError("Error with the " + msg + " translation, verify in your " + getConfigFile() + " !");
             String[] loc = new String[1];
             loc[0] = "Error with " + msg + " translation; Please contact the admin for verify or update translation files";
             return (loc);
@@ -106,7 +46,7 @@ public class Messages extends CustomConfiguration {
         for (a = 0; a < i; a++) {
             loc[a] = ((String) this.get(msg)).split("&n")[a].replace("&", "\u00a7");
         }
-        if (loc == null || loc.length == 0) {
+        if (loc.length == 0) {
             loc[0] = "Error with " + msg + " translation; Please contact the admin for verify or update translation files";
         }
         return loc;
@@ -114,13 +54,13 @@ public class Messages extends CustomConfiguration {
 
     public static Messages getInstance() {
         if (singleton == null) {
-            singleton = new Messages(new File(Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml"), Settings.messagesLanguage);
+            singleton = new Messages(Settings.messageFile, Settings.messagesLanguage);
         }
         return singleton;
     }
 
     public void reloadMessages() {
-        singleton = new Messages(new File(Settings.MESSAGE_FILE + "_" + Settings.messagesLanguage + ".yml"), Settings.messagesLanguage);
+        singleton = new Messages(Settings.messageFile, Settings.messagesLanguage);
     }
 
 }
