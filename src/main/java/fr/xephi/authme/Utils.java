@@ -291,19 +291,4 @@ public class Utils {
             return false;
         }
     }
-
-    public static void fixDurability(final ItemStack item) {
-        if (item == null || item.getType().getMaxDurability() == 0)
-            return;
-        final short old = item.getDurability();
-        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-            @Override
-            public void run() {
-                int diff = old - item.getDurability();
-                if (diff != 0) {
-                    item.setDurability((short) (item.getDurability() + diff));
-                }
-            }
-        }, 1);
-    }
 }

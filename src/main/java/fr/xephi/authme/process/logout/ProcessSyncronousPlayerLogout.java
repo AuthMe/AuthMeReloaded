@@ -59,7 +59,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
         m.send(player, "logout");
-        ConsoleLogger.info(player.getDisplayName() + " logged out");
+        ConsoleLogger.info(player.getName() + " logged out");
     }
 
 }

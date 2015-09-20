@@ -8,7 +8,6 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
-import org.bukkit.inventory.ItemStack;
 
 public class AuthMeEntityListener implements Listener {
 
@@ -28,11 +27,6 @@ public class AuthMeEntityListener implements Listener {
         Player player = (Player) entity;
         if (Utils.checkAuth(player)) {
             return;
-        }
-        for (ItemStack item : player.getInventory().getArmorContents()) {
-            if (item != null) {
-                Utils.fixDurability(item);
-            }
         }
         player.setFireTicks(0);
         event.setDamage(0.0);
@@ -66,7 +60,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        Utils.fixDurability(player.getItemInHand());
         event.setCancelled(true);
     }
 
@@ -153,7 +146,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        Utils.fixDurability(player.getItemInHand());
         event.setCancelled(true);
     }
 

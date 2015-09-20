@@ -20,7 +20,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -404,11 +403,6 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player == null || Utils.checkAuth(player))
             return;
-
-        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-            Utils.fixDurability(player.getItemInHand());
-        }
-
         event.setCancelled(true);
     }
 
@@ -530,7 +524,6 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player == null || Utils.checkAuth(player))
             return;
-        Utils.fixDurability(player.getItemInHand());
         event.setCancelled(true);
     }
 
@@ -539,7 +532,6 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player == null || Utils.checkAuth(player))
             return;
-        Utils.fixDurability(player.getItemInHand());
         event.setCancelled(true);
     }
 }
