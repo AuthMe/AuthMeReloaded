@@ -1,13 +1,10 @@
 package fr.xephi.authme.plugin.manager;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
+import fr.xephi.authme.AuthMe;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
-
-import fr.xephi.authme.AuthMe;
 
 public class BungeeCordMessage implements PluginMessageListener {
 
@@ -19,19 +16,16 @@ public class BungeeCordMessage implements PluginMessageListener {
 
     @Override
     public void onPluginMessageReceived(String channel, Player player,
-            byte[] message) {
+                                        byte[] message) {
         if (!channel.equals("BungeeCord")) {
             return;
         }
-        try {
-            final DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
-            String subchannel = in.readUTF();
-            if (subchannel.equals("IP")) { // We need only the IP channel
-                String ip = in.readUTF();
-                plugin.realIp.put(player.getName().toLowerCase(), ip);
-                // Put the IP (only the ip not the port) in the hashmap
-            }
-        } catch (IOException ex) {
+        ByteArrayDataInput in = ByteStreams.newDataInput(message);
+        String subChannel = in.readUTF();
+        if (subChannel.equals("IP")) { // We need only the IP channel
+            String ip = in.readUTF();
+            // Put the IP (only the ip not the port) in the hashMap
+            plugin.realIp.put(player.getName().toLowerCase(), ip);
         }
     }
 
