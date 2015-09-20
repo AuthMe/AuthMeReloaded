@@ -94,7 +94,8 @@ public class AsyncronousJoin {
             }
         }
         final Location spawnLoc = plugin.getSpawnLocation(player);
-        if (database.isAuthAvailable(name)) {
+        final boolean isAuthAvailable = database.isAuthAvailable(name);
+        if (isAuthAvailable) {
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
                 sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -170,7 +171,6 @@ public class AsyncronousJoin {
             if (!Settings.noTeleport)
                 if (!needFirstspawn() && Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                     sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
                         @Override
                         public void run() {
                             SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
@@ -189,9 +189,9 @@ public class AsyncronousJoin {
         }
         String[] msg;
         if (Settings.emailRegistration) {
-            msg = database.isAuthAvailable(name) ? m.send("login_msg") : m.send("reg_email_msg");
+            msg = isAuthAvailable ? m.send("login_msg") : m.send("reg_email_msg");
         } else {
-            msg = database.isAuthAvailable(name) ? m.send("login_msg") : m.send("reg_msg");
+            msg = isAuthAvailable ? m.send("login_msg") : m.send("reg_msg");
         }
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
@@ -203,7 +203,7 @@ public class AsyncronousJoin {
         }
         if (!LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().addLimboPlayer(player);
-        if (database.isAuthAvailable(name)) {
+        if (isAuthAvailable) {
             Utils.setGroup(player, GroupType.NOTLOGGEDIN);
         } else {
             Utils.setGroup(player, GroupType.UNREGISTERED);
@@ -230,7 +230,7 @@ public class AsyncronousJoin {
             }
 
         });
-        if (Settings.isSessionsEnabled && database.isAuthAvailable(name) && (PlayerCache.getInstance().isAuthenticated(name) || database.isLogged(name))) {
+        if (Settings.isSessionsEnabled && isAuthAvailable && (PlayerCache.getInstance().isAuthenticated(name) || database.isLogged(name))) {
             if (plugin.sessions.containsKey(name))
                 plugin.sessions.get(name).cancel();
             plugin.sessions.remove(name);
@@ -252,28 +252,27 @@ public class AsyncronousJoin {
     }
 
     private boolean needFirstspawn() {
-        if (database.isAuthAvailable(player.getName().toLowerCase()) && player.hasPlayedBefore())
+        if (player.hasPlayedBefore())
             return false;
-        else {
-            if (Spawn.getInstance().getFirstSpawn() == null || Spawn.getInstance().getFirstSpawn().getWorld() == null)
-                return false;
-            FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), Spawn.getInstance().getFirstSpawn());
-            plugin.getServer().getPluginManager().callEvent(tpEvent);
-            if (!tpEvent.isCancelled()) {
-                if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
-                    final Location fLoc = tpEvent.getTo();
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        if (Spawn.getInstance().getFirstSpawn() == null || Spawn.getInstance().getFirstSpawn().getWorld() == null)
+            return false;
+        FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), Spawn.getInstance().getFirstSpawn());
+        plugin.getServer().getPluginManager().callEvent(tpEvent);
+        if (!tpEvent.isCancelled()) {
+            if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
+                final Location fLoc = tpEvent.getTo();
+                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-                        @Override
-                        public void run() {
-                            player.teleport(fLoc);
-                        }
+                    @Override
+                    public void run() {
+                        player.teleport(fLoc);
+                    }
 
-                    });
-                }
+                });
             }
-            return true;
         }
+        return true;
+
     }
 
     private void placePlayerSafely(final Player player,
@@ -285,7 +284,7 @@ public class AsyncronousJoin {
             return;
         if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())))
             return;
-        if (!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore())
+        if (!player.hasPlayedBefore())
             return;
         Block b = player.getLocation().getBlock();
         if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL) {
