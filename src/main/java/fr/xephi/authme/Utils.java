@@ -21,7 +21,6 @@ import java.util.Iterator;
 public class Utils {
 
     private static boolean getOnlinePlayersIsCollection;
-    private static Utils singleton;
     private static Method getOnlinePlayers;
     public static AuthMe plugin;
 

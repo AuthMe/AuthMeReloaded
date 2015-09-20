@@ -188,7 +188,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         if (!Settings.isMovementAllowed) {
             player.setWalkSpeed(0.2f);
-            player.setFlySpeed(0.4f);
+            player.setFlySpeed(0.1f);
         }
 
         // The Loginevent now fires (as intended) after everything is processed
