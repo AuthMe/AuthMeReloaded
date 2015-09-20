@@ -187,7 +187,7 @@ public class JsonCache {
             for (int i = 0; i < arr.size(); i++) {
                 JsonObject item = arr.get(i).getAsJsonObject();
                 String encoded = item.get("item").getAsString();
-                byte[] decoded = Base64Coder.decode(encoded);
+                byte[] decoded = Base64Coder.decodeLines(encoded);
                 try {
                     ByteArrayInputStream baos = new ByteArrayInputStream(decoded);
                     BukkitObjectInputStream objectIn = new BukkitObjectInputStream(baos);
