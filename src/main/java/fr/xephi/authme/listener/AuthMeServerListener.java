@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.Utils;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.event.EventHandler;
@@ -27,10 +28,10 @@ public class AuthMeServerListener implements Listener {
         if (Settings.countries.isEmpty())
             return;
         if (!Settings.countriesBlacklist.isEmpty()) {
-            if (Settings.countriesBlacklist.contains(plugin.getCountryCode(event.getAddress().getHostAddress())))
+            if (Settings.countriesBlacklist.contains(Utils.getCountryCode(event.getAddress().getHostAddress())))
                 event.setMotd(m.send("country_banned")[0]);
         }
-        if (Settings.countries.contains(plugin.getCountryCode(event.getAddress().getHostAddress()))) {
+        if (Settings.countries.contains(Utils.getCountryCode(event.getAddress().getHostAddress()))) {
             event.setMotd(plugin.getServer().getMotd());
         } else {
             event.setMotd(m.send("country_banned")[0]);

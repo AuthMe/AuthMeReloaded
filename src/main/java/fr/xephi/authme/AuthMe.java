@@ -175,7 +175,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Download GeoIp.dat file
-        downloadGeoIp();
+        Utils.checkGeoIP();
 
         // Load MailApi if needed
         if (!Settings.getmailAccount.isEmpty() && !Settings.getmailPassword.isEmpty()) {
@@ -673,54 +673,6 @@ public class AuthMe extends JavaPlugin {
         return player.getWorld().getSpawnLocation();
     }
 
-    // Download GeoIp data
-    public void downloadGeoIp() {
-        ConsoleLogger.info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com");
-        File file = new File(getDataFolder(), "GeoIP.dat");
-        try {
-            if (file.exists()) {
-                if (lookupService == null) {
-                    lookupService = new LookupService(file);
-                }
-            } else {
-                String url = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
-                URL downloadUrl = new URL(url);
-                URLConnection conn = downloadUrl.openConnection();
-                conn.setConnectTimeout(10000);
-                conn.connect();
-                InputStream input = conn.getInputStream();
-                if (url.endsWith(".gz")) {
-                    input = new GZIPInputStream(input);
-                }
-                OutputStream output = new FileOutputStream(file);
-                byte[] buffer = new byte[2048];
-                int length = input.read(buffer);
-                while (length >= 0) {
-                    output.write(buffer, 0, length);
-                    length = input.read(buffer);
-                }
-                output.close();
-                input.close();
-            }
-        } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
-        }
-    }
-
-    public String getCountryCode(String ip) {
-        if (lookupService != null) {
-            return lookupService.getCountry(ip).getCode();
-        }
-        return "--";
-    }
-
-    public String getCountryName(String ip) {
-        if (lookupService != null) {
-            return lookupService.getCountry(ip).getName();
-        }
-        return "N/A";
-    }
-
     public void switchAntiBotMod(boolean mode) {
         this.antibotMod = mode;
         Settings.switchAntiBotMod(mode);
@@ -759,7 +711,7 @@ public class AuthMe extends JavaPlugin {
         message = message.replace("{WORLD}", player.getWorld().getName());
         message = message.replace("{SERVER}", server.getServerName());
         message = message.replace("{VERSION}", server.getBukkitVersion());
-        message = message.replace("{COUNTRY}", this.getCountryName(getIP(player)));
+        message = message.replace("{COUNTRY}", Utils.getCountryName(getIP(player)));
         return message;
     }
 

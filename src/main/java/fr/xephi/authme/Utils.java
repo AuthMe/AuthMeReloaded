@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import com.maxmind.geoip.LookupService;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
@@ -13,24 +14,86 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.zip.GZIPInputStream;
 
 public class Utils {
 
+    public static AuthMe plugin;
+
     private static boolean getOnlinePlayersIsCollection;
     private static Method getOnlinePlayers;
-    public static AuthMe plugin;
+    private static LookupService lookupService;
 
     static {
         plugin = AuthMe.getInstance();
+        checkGeoIP();
         try {
             Method m = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
             getOnlinePlayersIsCollection = m.getReturnType() == Collection.class;
         } catch (Exception ignored) {
         }
+    }
+
+    // Check and Download GeoIP data if not exist
+    public static boolean checkGeoIP() {
+        if (lookupService != null) {
+            return true;
+        }
+        ConsoleLogger.info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com");
+        File file = new File(Settings.PLUGIN_FOLDER, "GeoIP.dat");
+        try {
+            if (file.exists()) {
+                if (lookupService == null) {
+                    lookupService = new LookupService(file);
+                    return true;
+                }
+            }
+            String url = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
+            URL downloadUrl = new URL(url);
+            URLConnection conn = downloadUrl.openConnection();
+            conn.setConnectTimeout(10000);
+            conn.connect();
+            InputStream input = conn.getInputStream();
+            if (conn.getURL().toString().endsWith(".gz")) {
+                input = new GZIPInputStream(input);
+            }
+            OutputStream output = new FileOutputStream(file);
+            byte[] buffer = new byte[2048];
+            int length = input.read(buffer);
+            while (length >= 0) {
+                output.write(buffer, 0, length);
+                length = input.read(buffer);
+            }
+            output.close();
+            input.close();
+        } catch (Exception e) {
+            ConsoleLogger.writeStackTrace(e);
+            return false;
+        }
+        return checkGeoIP();
+    }
+
+    public static String getCountryCode(String ip) {
+        if (checkGeoIP()) {
+            return lookupService.getCountry(ip).getCode();
+        }
+        return "--";
+    }
+
+    public static String getCountryName(String ip) {
+        if (checkGeoIP()) {
+            return lookupService.getCountry(ip).getName();
+        }
+        return "N/A";
     }
 
     public static void setGroup(Player player, GroupType group) {

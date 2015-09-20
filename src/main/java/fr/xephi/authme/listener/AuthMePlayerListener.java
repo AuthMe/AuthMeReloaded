@@ -249,7 +249,7 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         if (!Settings.countriesBlacklist.isEmpty()) {
-            String code = plugin.getCountryCode(event.getAddress().getHostAddress());
+            String code = Utils.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (Settings.countriesBlacklist.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
@@ -257,7 +257,7 @@ public class AuthMePlayerListener implements Listener {
             }
         }
         if (Settings.enableProtection && !Settings.countries.isEmpty()) {
-            String code = plugin.getCountryCode(event.getAddress().getHostAddress());
+            String code = Utils.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || (!Settings.countries.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
