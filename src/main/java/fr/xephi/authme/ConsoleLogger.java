@@ -8,19 +8,24 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
 
 public class ConsoleLogger {
 
     private static final Logger log = AuthMe.getInstance().getLogger();
-
+    private static final DateFormat df = new SimpleDateFormat("[MM-dd HH:mm:ss]");
 
     public static void info(String message) {
         if (AuthMe.getInstance().isEnabled()) {
             log.info("[AuthMe] " + message);
             if (Settings.useLogging) {
-                writeLog("[" + DateFormat.getDateTimeInstance().format(new Date()) + "] " + message);
+                String dateTime;
+                synchronized (df) {
+                    dateTime = df.format(new Date());
+                }
+                writeLog(dateTime + " " + message);
             }
         }
     }
@@ -29,7 +34,11 @@ public class ConsoleLogger {
         if (AuthMe.getInstance().isEnabled()) {
             log.warning("[AuthMe] " + message);
             if (Settings.useLogging) {
-                writeLog("[" + DateFormat.getDateTimeInstance().format(new Date()) + "] ERROR: " + message);
+                String dateTime;
+                synchronized (df) {
+                    dateTime = df.format(new Date());
+                }
+                writeLog(dateTime + " ERROR: " + message);
             }
         }
     }
@@ -44,6 +53,10 @@ public class ConsoleLogger {
     }
 
     public static void writeStackTrace(Exception ex) {
-        writeLog(Throwables.getStackTraceAsString(ex));
+        String dateTime;
+        synchronized (df) {
+            dateTime = df.format(new Date());
+        }
+        writeLog(dateTime + " " + Throwables.getStackTraceAsString(ex));
     }
 }
