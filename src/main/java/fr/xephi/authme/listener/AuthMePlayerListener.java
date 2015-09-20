@@ -1,5 +1,8 @@
 package fr.xephi.authme.listener;
 
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
@@ -349,14 +352,9 @@ public class AuthMePlayerListener implements Listener {
         if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
             checkAntiBotMod(player);
             if (Settings.bungee) {
-                try {
-                    final ByteArrayOutputStream b = new ByteArrayOutputStream();
-                    DataOutputStream out = new DataOutputStream(b);
-                    out.writeUTF("IP");
-                    player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
-                } catch (IOException e) {
-                    ConsoleLogger.writeStackTrace(e);
-                }
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeUTF("IP");
+                player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
             }
             return;
         }
