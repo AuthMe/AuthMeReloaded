@@ -31,7 +31,7 @@ public class ProcessSyncronousEmailRegister implements Runnable {
     public void run() {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (!Settings.getRegisteredGroup.isEmpty()) {
-            Utils.getInstance().setGroup(player, Utils.GroupType.REGISTERED);
+            Utils.setGroup(player, Utils.GroupType.REGISTERED);
         }
         m.send(player, "vb_nonActiv");
         int time = Settings.getRegistrationTimeout * 20;

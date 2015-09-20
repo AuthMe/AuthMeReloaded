@@ -1,13 +1,5 @@
 package fr.xephi.authme.process.register;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
@@ -21,6 +13,13 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 public class ProcessSyncronousPasswordRegister implements Runnable {
 
@@ -39,7 +38,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         for (String command : Settings.forceRegisterCommands) {
             try {
                 player.performCommand(command.replace("%p", player.getName()));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         for (String command : Settings.forceRegisterCommandsAsConsole) {
@@ -71,10 +70,8 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         }
         BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
-        try {
-            if (player.isInsideVehicle())
-                player.getVehicle().eject();
-        } catch (NullPointerException npe) {
+        if (player.isInsideVehicle() && player.getVehicle() != null) {
+            player.getVehicle().eject();
         }
     }
 
@@ -108,7 +105,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         }
 
         if (!Settings.getRegisteredGroup.isEmpty()) {
-            Utils.getInstance().setGroup(player, Utils.GroupType.REGISTERED);
+            Utils.setGroup(player, Utils.GroupType.REGISTERED);
         }
         m.send(player, "registered");
         if (!Settings.getmailAccount.isEmpty())

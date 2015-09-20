@@ -14,7 +14,6 @@ import org.bukkit.event.entity.*;
 public class AuthMeEntityListener implements Listener {
 
     public AuthMe instance;
-    private Utils utils = Utils.getInstance();
 
     public AuthMeEntityListener(AuthMe instance) {
         this.instance = instance;
@@ -28,11 +27,11 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (Utils.getInstance().isUnrestricted((Player) entity)) {
+        if (Utils.isUnrestricted((Player) entity)) {
             return;
         }
 
-        if (utils.isNPC(entity))
+        if (Utils.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -61,7 +60,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (utils.isNPC(entity))
+        if (Utils.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -111,7 +110,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (utils.isNPC(entity))
+        if (Utils.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -138,7 +137,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (utils.isNPC(entity))
+        if (Utils.isNPC(entity))
             return;
 
         Player player = (Player) entity;
@@ -167,7 +166,7 @@ public class AuthMeEntityListener implements Listener {
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player) || utils.isNPC(player))
+        if (Utils.isUnrestricted(player) || Utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
@@ -191,7 +190,7 @@ public class AuthMeEntityListener implements Listener {
         Player player = (Player) event.getEntity();
         String name = player.getName().toLowerCase();
 
-        if (Utils.getInstance().isUnrestricted(player) || utils.isNPC(player))
+        if (Utils.isUnrestricted(player) || Utils.isNPC(player))
             return;
 
         if (PlayerCache.getInstance().isAuthenticated(player.getName())) {

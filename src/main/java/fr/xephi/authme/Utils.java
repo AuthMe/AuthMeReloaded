@@ -21,16 +21,12 @@ import java.util.Iterator;
 public class Utils {
 
     private static boolean getOnlinePlayersIsCollection;
-    private String currentGroup;
     private static Utils singleton;
     private static Method getOnlinePlayers;
-    public final AuthMe plugin;
-
-    public Utils(AuthMe plugin) {
-        this.plugin = plugin;
-    }
+    public static AuthMe plugin;
 
     static {
+        plugin = AuthMe.getInstance();
         try {
             Method m = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
             getOnlinePlayersIsCollection = m.getReturnType() == Collection.class;
@@ -38,17 +34,18 @@ public class Utils {
         }
     }
 
-    public void setGroup(Player player, GroupType group) {
+    public static void setGroup(Player player, GroupType group) {
         setGroup(player.getName(), group);
     }
 
     @SuppressWarnings("deprecation")
-    public void setGroup(String player, GroupType group) {
+    public static void setGroup(String player, GroupType group) {
         if (!Settings.isPermissionCheckEnabled)
             return;
         if (plugin.permission == null)
             return;
         String name = player;
+        String currentGroup;
         try {
             World world = null;
             currentGroup = plugin.permission.getPrimaryGroup(world, name);
@@ -88,11 +85,10 @@ public class Utils {
                 break;
             }
         }
-        return;
     }
 
     @SuppressWarnings("deprecation")
-    public boolean addNormal(Player player, String group) {
+    public static boolean addNormal(Player player, String group) {
         if (!useGroupSystem()) {
             return false;
         }
@@ -123,20 +119,15 @@ public class Utils {
         }
     }
 
-    public boolean isUnrestricted(Player player) {
+    public static boolean isUnrestricted(Player player) {
         return Settings.isAllowRestrictedIp && !(Settings.getUnrestrictedName == null || Settings.getUnrestrictedName.isEmpty()) && (Settings.getUnrestrictedName.contains(player.getName()));
     }
 
-    public static Utils getInstance() {
-        singleton = new Utils(AuthMe.getInstance());
-        return singleton;
-    }
-
-    private boolean useGroupSystem() {
+    private static boolean useGroupSystem() {
         return Settings.isPermissionCheckEnabled && !Settings.getUnloggedinGroup.isEmpty();
     }
 
-    public void packCoords(double x, double y, double z, String w,
+    public static void packCoords(double x, double y, double z, String w,
                            final Player pl) {
         World theWorld;
         if (w.equals("unavailableworld")) {
@@ -216,7 +207,7 @@ public class Utils {
         return Collections.emptyList();
     }
 
-    public boolean isNPC(final Entity player) {
+    public static boolean isNPC(final Entity player) {
         try {
             if (player.hasMetadata("NPC")) {
                 return true;

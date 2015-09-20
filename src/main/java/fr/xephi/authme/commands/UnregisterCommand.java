@@ -84,7 +84,7 @@ public class UnregisterCommand implements CommandExecutor {
                             player.saveData();
                             PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                             if (!Settings.getRegisteredGroup.isEmpty())
-                                Utils.getInstance().setGroup(player, GroupType.UNREGISTERED);
+                                Utils.setGroup(player, GroupType.UNREGISTERED);
                             LimboCache.getInstance().addLimboPlayer(player);
                             int delay = Settings.getRegistrationTimeout * 20;
                             int interval = Settings.getWarnMessageInterval;
@@ -99,7 +99,7 @@ public class UnregisterCommand implements CommandExecutor {
                             return;
                         }
                         if (!Settings.unRegisteredGroup.isEmpty()) {
-                            Utils.getInstance().setGroup(player, Utils.GroupType.UNREGISTERED);
+                            Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
                         }
                         PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                         // check if Player cache File Exist and delete it, preventing

@@ -22,7 +22,6 @@ public class NewAPI {
     public static final String newline = System.getProperty("line.separator");
     public static NewAPI singleton;
     public AuthMe plugin;
-    private Utils utils = Utils.getInstance();
 
     public NewAPI(AuthMe plugin) {
         this.plugin = plugin;
@@ -68,7 +67,7 @@ public class NewAPI {
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
-        return utils.isNPC(player);
+        return Utils.isNPC(player);
     }
 
     /**
@@ -77,7 +76,7 @@ public class NewAPI {
      * @return true if the player is unrestricted
      */
     public boolean isUnrestricted(Player player) {
-        return Utils.getInstance().isUnrestricted(player);
+        return Utils.isUnrestricted(player);
     }
 
     public Location getLastLocation(Player player) {

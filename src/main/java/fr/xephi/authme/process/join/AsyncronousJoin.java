@@ -38,7 +38,6 @@ public class AsyncronousJoin {
     protected DataSource database;
     protected AuthMe plugin;
     protected String name;
-    private Utils utils = Utils.getInstance();
     private Messages m = Messages.getInstance();
     private JsonCache playerBackup;
 
@@ -56,7 +55,7 @@ public class AsyncronousJoin {
         AuthMePlayerListener.gameMode.putIfAbsent(name, player.getGameMode());
         BukkitScheduler sched = plugin.getServer().getScheduler();
 
-        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player)) {
+        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
             return;
         }
 
@@ -163,7 +162,7 @@ public class AsyncronousJoin {
                 });
             }
             if (!Settings.unRegisteredGroup.isEmpty()) {
-                utils.setGroup(player, Utils.GroupType.UNREGISTERED);
+                Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
             }
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
@@ -205,9 +204,9 @@ public class AsyncronousJoin {
         if (!LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().addLimboPlayer(player);
         if (database.isAuthAvailable(name)) {
-            utils.setGroup(player, GroupType.NOTLOGGEDIN);
+            Utils.setGroup(player, GroupType.NOTLOGGEDIN);
         } else {
-            utils.setGroup(player, GroupType.UNREGISTERED);
+            Utils.setGroup(player, GroupType.UNREGISTERED);
         }
         sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 

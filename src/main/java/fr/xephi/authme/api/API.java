@@ -19,7 +19,6 @@ public class API {
 
     public static final String newline = System.getProperty("line.separator");
     public static AuthMe instance;
-    private Utils utils = Utils.getInstance();
 
     @Deprecated
     public API(AuthMe instance) {
@@ -65,7 +64,7 @@ public class API {
      */
     @Deprecated
     public boolean isaNPC(Player player) {
-        return utils.isNPC(player);
+        return Utils.isNPC(player);
     }
 
     /**
@@ -75,7 +74,7 @@ public class API {
      */
     @Deprecated
     public boolean isNPC(Player player) {
-        return utils.isNPC(player);
+        return Utils.isNPC(player);
     }
 
     /**
@@ -85,7 +84,7 @@ public class API {
      */
     @Deprecated
     public static boolean isUnrestricted(Player player) {
-        return Utils.getInstance().isUnrestricted(player);
+        return Utils.isUnrestricted(player);
     }
 
     @Deprecated

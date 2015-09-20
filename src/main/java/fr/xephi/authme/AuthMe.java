@@ -57,7 +57,6 @@ public class AuthMe extends JavaPlugin {
     private final Logger authmeLogger = Logger.getLogger("AuthMe");
     public Management management;
     public NewAPI api;
-    private Utils utils = Utils.getInstance();
     public SendMailSSL mail;
     private Settings settings;
     private Messages m;
@@ -535,7 +534,7 @@ public class AuthMe extends JavaPlugin {
 
     // Save Player Data
     public void savePlayer(Player player) {
-        if ((utils.isNPC(player)) || (Utils.getInstance().isUnrestricted(player))) {
+        if ((Utils.isNPC(player)) || (Utils.isUnrestricted(player))) {
             return;
         }
         String name = player.getName().toLowerCase();
@@ -552,7 +551,7 @@ public class AuthMe extends JavaPlugin {
             if (!Settings.noTeleport) {
                 player.teleport(limbo.getLoc());
             }
-            this.utils.addNormal(player, limbo.getGroup());
+            Utils.addNormal(player, limbo.getGroup());
             player.setOp(limbo.getOperator());
             limbo.getTimeoutTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);

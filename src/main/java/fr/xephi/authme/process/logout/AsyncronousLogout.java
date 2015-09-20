@@ -25,7 +25,6 @@ public class AsyncronousLogout {
     protected DataSource database;
     protected boolean canLogout = true;
     private Messages m = Messages.getInstance();
-    private Utils utils = Utils.getInstance();
     private JsonCache playerBackup;
 
     public AsyncronousLogout(Player player, AuthMe plugin,
@@ -79,7 +78,7 @@ public class AsyncronousLogout {
         if (LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().deleteLimboPlayer(name);
         LimboCache.getInstance().addLimboPlayer(player);
-        utils.setGroup(player, GroupType.NOTLOGGEDIN);
+        Utils.setGroup(player, GroupType.NOTLOGGEDIN);
         if (Settings.protectInventoryBeforeLogInEnabled) {
             player.getInventory().clear();
             // create cache file for handling lost of inventories on unlogged in

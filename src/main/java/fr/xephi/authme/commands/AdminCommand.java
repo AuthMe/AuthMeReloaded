@@ -464,7 +464,7 @@ public class AdminCommand implements CommandExecutor {
             @SuppressWarnings("deprecation")
             Player target = Bukkit.getPlayer(name);
             PlayerCache.getInstance().removePlayer(name);
-            Utils.getInstance().setGroup(name, GroupType.UNREGISTERED);
+            Utils.setGroup(name, GroupType.UNREGISTERED);
             if (target != null) {
                 if (target.isOnline()) {
                     if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {

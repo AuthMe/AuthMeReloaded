@@ -63,7 +63,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     }
 
     protected void packQuitLocation() {
-        Utils.getInstance().packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
+        Utils.packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
     }
 
     protected void teleportBackFromSpawn() {
@@ -166,7 +166,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
                 Utils.forceGM(player);
 
             // Restore Permission Group
-            Utils.getInstance().setGroup(player, GroupType.LOGGEDIN);
+            Utils.setGroup(player, GroupType.LOGGEDIN);
 
             // Cleanup no longer used temporary data
             LimboCache.getInstance().deleteLimboPlayer(name);

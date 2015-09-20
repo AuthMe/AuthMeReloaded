@@ -22,7 +22,6 @@ public class AsyncronousQuit {
     protected AuthMe plugin;
     protected DataSource database;
     protected Player player;
-    protected Utils utils = Utils.getInstance();
     private String name;
     private ItemStack[] armor = null;
     private ItemStack[] inv = null;
@@ -43,7 +42,7 @@ public class AsyncronousQuit {
     public void process() {
         if (player == null)
             return;
-        if (utils.isNPC(player) || Utils.getInstance().isUnrestricted(player)) {
+        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
             return;
         }
 
@@ -66,7 +65,7 @@ public class AsyncronousQuit {
                 armor = limbo.getArmour();
             }
             if (limbo.getGroup() != null && !limbo.getGroup().equals(""))
-                utils.addNormal(player, limbo.getGroup());
+                Utils.addNormal(player, limbo.getGroup());
             needToChange = true;
             isOp = limbo.getOperator();
             isFlying = limbo.isFlying();
