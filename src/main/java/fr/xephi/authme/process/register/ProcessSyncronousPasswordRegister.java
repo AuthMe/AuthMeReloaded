@@ -120,8 +120,8 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
             player.setWalkSpeed(0.2f);
             player.setFlySpeed(0.1f);
         }
-        // The Loginevent now fires (as intended) after everything is processed
-        Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
+        // The LoginEvent now fires (as intended) after everything is processed
+        plugin.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
         player.saveData();
 
         if (!Settings.noConsoleSpam)
@@ -133,7 +133,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
             return;
         }
 
-        // Request Login after Registation
+        // Request Login after Registration
         if (Settings.forceRegLogin) {
             forceLogin(player);
             return;
@@ -143,7 +143,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {
                 for (String s : Settings.welcomeMsg) {
-                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
+                    plugin.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
                 }
             } else {
                 for (String s : Settings.welcomeMsg) {

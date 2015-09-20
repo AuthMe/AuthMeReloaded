@@ -103,7 +103,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         for (String command : Settings.forceCommands) {
             try {
                 player.performCommand(command.replace("%p", player.getName()));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         for (String command : Settings.forceCommandsAsConsole) {
@@ -125,20 +125,13 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
              * world inventory !
              */
             player.setGameMode(limbo.getGameMode());
-            if (!Settings.forceOnlyAfterLogin) {
-                // Inventory - Make it after restore GameMode , cause we need to
-                // restore the
-                // right inventory in the right gamemode
-                if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
-                    restoreInventory();
-                }
-            } else {
-                // Inventory - Make it before force the survival GameMode to
-                // cancel all
-                // inventory problem
-                if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
-                    restoreInventory();
-                }
+            // Inventory - Make it after restore GameMode , cause we need to
+            // restore the
+            // right inventory in the right gamemode
+            if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
+                restoreInventory();
+            }
+            if (Settings.forceOnlyAfterLogin) {
                 player.setGameMode(GameMode.SURVIVAL);
             }
 

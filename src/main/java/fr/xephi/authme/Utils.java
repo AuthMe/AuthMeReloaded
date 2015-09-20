@@ -16,7 +16,6 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 
 public class Utils {
 
@@ -34,68 +33,58 @@ public class Utils {
     }
 
     public static void setGroup(Player player, GroupType group) {
-        setGroup(player.getName(), group);
-    }
-
-    @SuppressWarnings("deprecation")
-    public static void setGroup(String player, GroupType group) {
         if (!Settings.isPermissionCheckEnabled)
             return;
         if (plugin.permission == null)
             return;
-        String name = player;
         String currentGroup;
         try {
-            World world = null;
-            currentGroup = plugin.permission.getPrimaryGroup(world, name);
+            currentGroup = plugin.permission.getPrimaryGroup(player);
         } catch (UnsupportedOperationException e) {
             ConsoleLogger.showError("Your permission plugin (" + plugin.permission.getName() + ") doesn't support the Group system... unhook!");
             plugin.permission = null;
             return;
         }
-        World world = null;
         switch (group) {
             case UNREGISTERED: {
-                plugin.permission.playerRemoveGroup(world, name, currentGroup);
-                plugin.permission.playerAddGroup(world, name, Settings.unRegisteredGroup);
+                plugin.permission.playerRemoveGroup(player, currentGroup);
+                plugin.permission.playerAddGroup(player, Settings.unRegisteredGroup);
                 break;
             }
             case REGISTERED: {
-                plugin.permission.playerRemoveGroup(world, name, currentGroup);
-                plugin.permission.playerAddGroup(world, name, Settings.getRegisteredGroup);
+                plugin.permission.playerRemoveGroup(player, currentGroup);
+                plugin.permission.playerAddGroup(player, Settings.getRegisteredGroup);
                 break;
             }
             case NOTLOGGEDIN: {
                 if (!useGroupSystem())
                     break;
-                plugin.permission.playerRemoveGroup(world, name, currentGroup);
-                plugin.permission.playerAddGroup(world, name, Settings.getUnloggedinGroup);
+                plugin.permission.playerRemoveGroup(player, currentGroup);
+                plugin.permission.playerAddGroup(player, Settings.getUnloggedinGroup);
                 break;
             }
             case LOGGEDIN: {
                 if (!useGroupSystem())
                     break;
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name.toLowerCase());
+                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
                 if (limbo == null)
                     break;
                 String realGroup = limbo.getGroup();
-                plugin.permission.playerRemoveGroup(world, name, currentGroup);
-                plugin.permission.playerAddGroup(world, name, realGroup);
+                plugin.permission.playerRemoveGroup(player, currentGroup);
+                plugin.permission.playerAddGroup(player, realGroup);
                 break;
             }
         }
     }
 
-    @SuppressWarnings("deprecation")
     public static boolean addNormal(Player player, String group) {
         if (!useGroupSystem()) {
             return false;
         }
         if (plugin.permission == null)
             return false;
-        World world = null;
         try {
-            if (plugin.permission.playerRemoveGroup(world, player.getName().toString(), Settings.getUnloggedinGroup) && plugin.permission.playerAddGroup(world, player.getName().toString(), group)) {
+            if (plugin.permission.playerRemoveGroup(player, Settings.getUnloggedinGroup) && plugin.permission.playerAddGroup(player, group)) {
                 return true;
             }
         } catch (UnsupportedOperationException e) {
@@ -106,12 +95,12 @@ public class Utils {
         return false;
     }
 
-    public void hasPermOnJoin(Player player) {
+    // TODO: remove if not needed
+    @SuppressWarnings("unused")
+    public static void hasPermOnJoin(Player player) {
         if (plugin.permission == null)
             return;
-        Iterator<String> iter = Settings.getJoinPermissions.iterator();
-        while (iter.hasNext()) {
-            String permission = iter.next();
+        for (String permission : Settings.getJoinPermissions) {
             if (plugin.permission.playerHas(player, permission)) {
                 plugin.permission.playerAddTransient(player, permission);
             }
@@ -127,7 +116,7 @@ public class Utils {
     }
 
     public static void packCoords(double x, double y, double z, String w,
-                           final Player pl) {
+                                  final Player pl) {
         World theWorld;
         if (w.equals("unavailableworld")) {
             theWorld = pl.getWorld();
@@ -158,7 +147,7 @@ public class Utils {
      * Used for force player GameMode
      */
     public static void forceGM(Player player) {
-        if (!AuthMe.getInstance().authmePermissible(player, "authme.bypassforcesurvival"))
+        if (!plugin.authmePermissible(player, "authme.bypassforcesurvival"))
             player.setGameMode(GameMode.SURVIVAL);
     }
 
@@ -178,7 +167,7 @@ public class Utils {
             return;
         }
         for (File target : files) {
-            if(target.isDirectory()) {
+            if (target.isDirectory()) {
                 purgeDirectory(target);
                 target.delete();
             } else {
@@ -210,8 +199,8 @@ public class Utils {
         try {
             if (player.hasMetadata("NPC")) {
                 return true;
-            } else if(plugin.combatTagPlus != null 
-                    && player instanceof Player 
+            } else if (plugin.combatTagPlus != null
+                    && player instanceof Player
                     && plugin.combatTagPlus.getNpcPlayerHelper().isNpc((Player) player)) {
                 return true;
             }
