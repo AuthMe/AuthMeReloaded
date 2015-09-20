@@ -464,7 +464,6 @@ public class AuthMePlayerListener implements Listener {
             return;
         if (checkAuth((Player) event.getWhoClicked()))
             return;
-        event.setResult(org.bukkit.event.Event.Result.DENY);
         event.setCancelled(true);
     }
 
