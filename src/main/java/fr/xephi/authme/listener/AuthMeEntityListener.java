@@ -8,7 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
-import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class AuthMeEntityListener implements Listener {
 
@@ -29,7 +29,11 @@ public class AuthMeEntityListener implements Listener {
         if (Utils.checkAuth(player)) {
             return;
         }
-
+        for (ItemStack item : player.getInventory().getArmorContents()) {
+            if (item != null) {
+                Utils.fixDurability(item);
+            }
+        }
         player.setFireTicks(0);
         event.setDamage(0.0);
         event.setCancelled(true);
@@ -57,10 +61,12 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        if (Utils.checkAuth((Player) entity)) {
+        Player player = (Player) entity;
+        if (Utils.checkAuth(player)) {
             return;
         }
 
+        Utils.fixDurability(player.getItemInHand());
         event.setCancelled(true);
     }
 
@@ -134,4 +140,21 @@ public class AuthMeEntityListener implements Listener {
 
         event.setCancelled(true);
     }
+
+    @EventHandler
+    public void onShoot(EntityShootBowEvent event) {
+        Entity entity = event.getEntity();
+        if (entity == null || !(entity instanceof Player)) {
+            return;
+        }
+
+        Player player = (Player) entity;
+        if (Utils.checkAuth(player)) {
+            return;
+        }
+
+        Utils.fixDurability(player.getItemInHand());
+        event.setCancelled(true);
+    }
+
 }

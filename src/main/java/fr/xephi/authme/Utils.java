@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -289,5 +290,20 @@ public class Utils {
         } catch (Exception e) {
             return false;
         }
+    }
+
+    public static void fixDurability(final ItemStack item) {
+        if (item == null || item.getType().getMaxDurability() == 0)
+            return;
+        final short old = item.getDurability();
+        plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+            @Override
+            public void run() {
+                int diff = old - item.getDurability();
+                if (diff != 0) {
+                    item.setDurability((short) (item.getDurability() + diff));
+                }
+            }
+        }, 1);
     }
 }

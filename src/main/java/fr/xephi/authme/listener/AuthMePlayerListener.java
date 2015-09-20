@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -400,8 +401,14 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        Player player = event.getPlayer();
+        if (player == null || Utils.checkAuth(player))
             return;
+
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+            Utils.fixDurability(player.getItemInHand());
+        }
+
         event.setCancelled(true);
     }
 
@@ -487,7 +494,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        if (Utils.checkAuth(player))
+        if (player == null || Utils.checkAuth(player))
             return;
         String name = player.getName().toLowerCase();
         Location spawn = plugin.getSpawnLocation(player);
@@ -515,6 +522,24 @@ public class AuthMePlayerListener implements Listener {
             causeByAuthMe.remove(name);
             return;
         }
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerShear(PlayerShearEntityEvent event) {
+        Player player = event.getPlayer();
+        if (player == null || Utils.checkAuth(player))
+            return;
+        Utils.fixDurability(player.getItemInHand());
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onPlayerFish(PlayerFishEvent event) {
+        Player player = event.getPlayer();
+        if (player == null || Utils.checkAuth(player))
+            return;
+        Utils.fixDurability(player.getItemInHand());
         event.setCancelled(true);
     }
 }

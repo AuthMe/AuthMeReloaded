@@ -2,10 +2,12 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.inventory.ItemStack;
 
 public class AuthMeBlockListener implements Listener {
 
@@ -25,8 +27,11 @@ public class AuthMeBlockListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        Player player = event.getPlayer();
+        if (player == null || Utils.checkAuth(player)) {
             return;
+        }
+        Utils.fixDurability(player.getItemInHand());
         event.setCancelled(true);
     }
 
