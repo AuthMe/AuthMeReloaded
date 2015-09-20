@@ -43,11 +43,8 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         }
         BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
-        try {
-            if (player.isInsideVehicle())
-                player.getVehicle().eject();
-        } catch (NullPointerException npe) {
-        }
+        if (player.isInsideVehicle() && player.getVehicle() != null)
+            player.getVehicle().eject();
         if (Settings.applyBlindEffect)
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
         player.setOp(false);
