@@ -46,23 +46,46 @@ public class AuthMePlayerListener implements Listener {
         this.plugin = plugin;
     }
 
+    private boolean checkAuth(Player player) {
+        if (player == null) return true;
+        String name = player.getName().toLowerCase();
+        if (Utils.isUnrestricted(player)) {
+            return true;
+        }
+        if (PlayerCache.getInstance().isAuthenticated(name)) {
+            return true;
+        }
+        if (!plugin.database.isAuthAvailable(name)) {
+            if (!Settings.isForcedRegistrationEnabled) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void handleChat(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
+        if (!checkAuth(player)) {
+            String cmd = event.getMessage().split(" ")[0];
+            if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
+                event.setCancelled(true);
+            }
+            if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
+                m.send(player, "login_msg");
+            } else {
+                if (Settings.emailRegistration) {
+                    m.send(player, "reg_email_msg");
+                } else {
+                    m.send(player, "reg_msg");
+                }
+            }
+        }
+    }
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (event.getPlayer() == null)
+        if (checkAuth(event.getPlayer()))
             return;
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        if (!plugin.database.isAuthAvailable(name))
-            if (!Settings.isForcedRegistrationEnabled)
-                return;
 
         String msg = event.getMessage();
         if (msg.equalsIgnoreCase("/worldedit cui"))
@@ -82,240 +105,39 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
-        }
+        handleChat(event);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerHighChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
-        }
+        handleChat(event);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
-        }
+        handleChat(event);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
-        }
+        handleChat(event);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerEarlyChat(final AsyncPlayerChatEvent event) {
-        if (event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
-        }
+    public void onPlayerEarlyChat(AsyncPlayerChatEvent event) {
+        handleChat(event);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerLowChat(AsyncPlayerChatEvent event) {
-        if (event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-            } else {
-                m.send(player, "reg_msg");
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
-        }
+        handleChat(event);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.getPlayer() == null) {
-            return;
-        }
-
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
+        if (checkAuth(player))
             return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        if (!Settings.isForcedRegistrationEnabled) {
-            if (!plugin.database.isAuthAvailable(name))
-                return;
-        }
 
         if (!Settings.isMovementAllowed) {
             if (!event.getFrom().getBlock().equals(event.getTo().getBlock()))
@@ -375,9 +197,7 @@ public class AuthMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(PlayerJoinEvent e) {
-        final PlayerJoinEvent event = e;
-
+    public void onPlayerJoin(final PlayerJoinEvent event) {
         if (event.getPlayer() == null) {
             return;
         }
@@ -464,7 +284,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (Settings.isKickNonRegisteredEnabled && !Settings.antiBotInAction) {
-            if (!plugin.database.isAuthAvailable(name)) {
+            if (!isAuthAvailable) {
                 event.setKickMessage(m.send("reg_only")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -472,14 +292,14 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (Settings.antiBotInAction) {
-            if (!plugin.database.isAuthAvailable(name)) {
+            if (!isAuthAvailable) {
                 event.setKickMessage("AntiBot service in action! You actually need to be registered!");
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
 
-        if (plugin.database.isAuthAvailable(name) && plugin.database.getType() != DataSource.DataSourceType.FILE) {
+        if (isAuthAvailable && plugin.database.getType() != DataSource.DataSourceType.FILE) {
             PlayerAuth auth = plugin.database.getAuth(name);
             if (auth.getRealName() != null && !auth.getRealName().isEmpty() && !auth.getRealName().equalsIgnoreCase("Player") && !auth.getRealName().equals(player.getName())) {
                 event.setKickMessage(m.send("same_nick")[0]);
@@ -575,7 +395,7 @@ public class AuthMePlayerListener implements Listener {
 
         plugin.management.performQuit(player, false);
 
-        if (plugin.database.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
+        if (plugin.database.isAuthAvailable(name) && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
             event.setQuitMessage(null);
     }
 
@@ -596,108 +416,30 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (event.getPlayer() == null) {
+        if (checkAuth(event.getPlayer()))
             return;
-        }
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player)) {
-            return;
-        }
-
-        if (Utils.isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.getPlayer() == null)
+        if (checkAuth(event.getPlayer()))
             return;
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player)) {
-            return;
-        }
-
-        if (Utils.isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
-        if (event.getPlayer() == null)
+        if (checkAuth(event.getPlayer()))
             return;
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player)) {
-            return;
-        }
-
-        if (Utils.isNPC(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-
         event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
-        if (event.getPlayer() == null)
-            return;
         final Player player = (Player) event.getPlayer();
-        String name = player.getName().toLowerCase();
-        if (Utils.isUnrestricted(player)) {
+        if (checkAuth(player))
             return;
-        }
-        if (Utils.isNPC(player))
-            return;
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setCancelled(true);
 
         /*
@@ -720,25 +462,8 @@ public class AuthMePlayerListener implements Listener {
             return;
         if (!(event.getWhoClicked() instanceof Player))
             return;
-        Player player = (Player) event.getWhoClicked();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player)) {
+        if (checkAuth((Player) event.getWhoClicked()))
             return;
-        }
-
-        if (Utils.isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setResult(org.bukkit.event.Event.Result.DENY);
         event.setCancelled(true);
     }
@@ -749,141 +474,46 @@ public class AuthMePlayerListener implements Listener {
         if (!(damager instanceof Player)) {
             return;
         }
-
-        Player player = (Player) damager;
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player)) {
+        if (checkAuth((Player) damager))
             return;
-        }
-
-        if (Utils.isNPC(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name) && !Settings.isForcedRegistrationEnabled) {
-            return;
-        }
 
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (event.getPlayer() == null) {
+        if (checkAuth(event.getPlayer()))
             return;
-        }
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (event.getPlayer() == null) {
+        if (checkAuth(event.getPlayer()))
             return;
-        }
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player) || Utils.isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-        if (event.getPlayer() == null) {
+        if (checkAuth(event.getPlayer()))
             return;
-        }
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
-        if (event.getPlayer() == null) {
+        if (checkAuth(event.getPlayer()))
             return;
-        }
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-        if (Utils.isUnrestricted(player)) {
-            return;
-        }
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        if (event.getPlayer() == null) {
-            return;
-        }
-
         Player player = event.getPlayer();
+        if (checkAuth(player))
+            return;
         String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player) || Utils.isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        if (!plugin.database.isAuthAvailable(name))
-            if (!Settings.isForcedRegistrationEnabled)
-                return;
-
         Location spawn = plugin.getSpawnLocation(player);
         if (Settings.isSaveQuitLocationEnabled && plugin.database.isAuthAvailable(name)) {
             final PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName(), player.getName());
@@ -896,31 +526,19 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
-        if (event.getPlayer() == null)
-            return;
-
         Player player = event.getPlayer();
-
+        if (player == null)
+            return;
         if (plugin.authmePermissible(player, "authme.bypassforcesurvival"))
+            return;
+        if (checkAuth(player))
             return;
 
         String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player) || Utils.isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        if (!plugin.database.isAuthAvailable(name))
-            if (!Settings.isForcedRegistrationEnabled)
-                return;
-
         if (causeByAuthMe.containsKey(name)) {
             causeByAuthMe.remove(name);
             return;
         }
-
         event.setCancelled(true);
     }
 }
