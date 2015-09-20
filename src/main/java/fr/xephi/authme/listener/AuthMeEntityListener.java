@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 
 public class AuthMeEntityListener implements Listener {
 
@@ -109,6 +110,20 @@ public class AuthMeEntityListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onLowestEntityInteract(EntityInteractEvent event) {
         Entity entity = event.getEntity();
+        if (entity == null || !(entity instanceof Player)) {
+            return;
+        }
+
+        if (Utils.checkAuth((Player) entity)) {
+            return;
+        }
+
+        event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onProjectileLaunch(ProjectileLaunchEvent event) {
+        Entity entity = (Entity) event.getEntity().getShooter();
         if (entity == null || !(entity instanceof Player)) {
             return;
         }
