@@ -21,26 +21,8 @@ public class AuthMeChestShopListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPreTransaction(PreTransactionEvent event) {
-        if (event.getClient() == null) {
+        if (Utils.checkAuth(event.getClient()))
             return;
-        }
-
-        Player player = event.getClient();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setCancelled(TransactionOutcome.OTHER);
     }
 }

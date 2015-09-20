@@ -2,9 +2,6 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.settings.Settings;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -21,51 +18,15 @@ public class AuthMeBlockListener implements Listener {
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.getPlayer() == null) {
+        if (Utils.checkAuth(event.getPlayer()))
             return;
-        }
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        if (!instance.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.getPlayer() == null) {
+        if (Utils.checkAuth(event.getPlayer()))
             return;
-        }
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.isUnrestricted(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        if (!instance.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
         event.setCancelled(true);
     }
 

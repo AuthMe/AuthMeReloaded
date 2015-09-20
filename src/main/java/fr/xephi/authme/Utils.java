@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
@@ -105,6 +106,23 @@ public class Utils {
                 plugin.permission.playerAddTransient(player, permission);
             }
         }
+    }
+
+    // TODO: Move to a Manager
+    public static boolean checkAuth(Player player) {
+        if (player == null || Utils.isUnrestricted(player)) {
+            return true;
+        }
+        String name = player.getName().toLowerCase();
+        if (PlayerCache.getInstance().isAuthenticated(name)) {
+            return true;
+        }
+        if (!plugin.database.isAuthAvailable(name)) {
+            if (!Settings.isForcedRegistrationEnabled) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static boolean isUnrestricted(Player player) {

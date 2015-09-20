@@ -45,26 +45,9 @@ public class AuthMePlayerListener implements Listener {
         this.plugin = plugin;
     }
 
-    private boolean checkAuth(Player player) {
-        if (player == null) return true;
-        String name = player.getName().toLowerCase();
-        if (Utils.isUnrestricted(player)) {
-            return true;
-        }
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return true;
-        }
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     private void handleChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (!checkAuth(player)) {
+        if (!Utils.checkAuth(player)) {
             String cmd = event.getMessage().split(" ")[0];
             if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
                 event.setCancelled(true);
@@ -83,7 +66,7 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer()))
             return;
 
         String msg = event.getMessage();
@@ -135,7 +118,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (checkAuth(player))
+        if (Utils.checkAuth(player))
             return;
 
         if (!Settings.isMovementAllowed) {
@@ -410,21 +393,21 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
-        if (checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
@@ -432,7 +415,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
-        if (checkAuth(player))
+        if (Utils.checkAuth(player))
             return;
         event.setCancelled(true);
 
@@ -456,7 +439,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         if (!(event.getWhoClicked() instanceof Player))
             return;
-        if (checkAuth((Player) event.getWhoClicked()))
+        if (Utils.checkAuth((Player) event.getWhoClicked()))
             return;
         event.setCancelled(true);
     }
@@ -467,7 +450,7 @@ public class AuthMePlayerListener implements Listener {
         if (!(damager instanceof Player)) {
             return;
         }
-        if (checkAuth((Player) damager))
+        if (Utils.checkAuth((Player) damager))
             return;
 
         event.setCancelled(true);
@@ -475,28 +458,28 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-        if (checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
-        if (checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
@@ -504,7 +487,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
-        if (checkAuth(player))
+        if (Utils.checkAuth(player))
             return;
         String name = player.getName().toLowerCase();
         Location spawn = plugin.getSpawnLocation(player);
@@ -524,7 +507,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         if (plugin.authmePermissible(player, "authme.bypassforcesurvival"))
             return;
-        if (checkAuth(player))
+        if (Utils.checkAuth(player))
             return;
 
         String name = player.getName().toLowerCase();
