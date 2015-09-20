@@ -406,14 +406,14 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
         if (Utils.checkAuth(event.getPlayer()))
             return;
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
         if (Utils.checkAuth(player))
@@ -459,7 +459,16 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        Player player = event.getPlayer();
+        if (player == null || Utils.checkAuth(player))
+            return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
+        Player player = event.getPlayer();
+        if (player == null || Utils.checkAuth(player))
             return;
         event.setCancelled(true);
     }
@@ -519,7 +528,7 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerShear(PlayerShearEntityEvent event) {
         Player player = event.getPlayer();
         if (player == null || Utils.checkAuth(player))
@@ -527,8 +536,16 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerFish(PlayerFishEvent event) {
+        Player player = event.getPlayer();
+        if (player == null || Utils.checkAuth(player))
+            return;
+        event.setCancelled(true);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    public void onPlayerEditBook(PlayerEditBookEvent event) {
         Player player = event.getPlayer();
         if (player == null || Utils.checkAuth(player))
             return;

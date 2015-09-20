@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -122,12 +123,16 @@ public class AuthMeEntityListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        Entity entity = (Entity) event.getEntity().getShooter();
-        if (entity == null || !(entity instanceof Player)) {
+        Projectile projectile = event.getEntity();
+        if (projectile == null)
+            return;
+
+        Entity shooter = (Entity) projectile.getShooter();
+        if (shooter == null || !(shooter instanceof Player)) {
             return;
         }
 
-        if (Utils.checkAuth((Player) entity)) {
+        if (Utils.checkAuth((Player) shooter)) {
             return;
         }
 
