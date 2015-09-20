@@ -647,10 +647,6 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-        if (event.getClickedBlock() != null) {
-            event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
-        }
-        event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
         event.setCancelled(true);
     }
 
