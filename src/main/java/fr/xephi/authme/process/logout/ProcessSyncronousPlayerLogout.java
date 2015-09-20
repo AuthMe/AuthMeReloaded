@@ -54,7 +54,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         if (!Settings.isMovementAllowed) {
             player.setAllowFlight(true);
             player.setFlying(true);
-            if (Settings.isRemoveSpeedEnabled) {
+            if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
                 player.setFlySpeed(0.0f);
                 player.setWalkSpeed(0.0f);
             }
