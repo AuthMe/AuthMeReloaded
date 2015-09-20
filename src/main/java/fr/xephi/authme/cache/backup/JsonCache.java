@@ -209,7 +209,7 @@ public class JsonCache {
         } catch (Exception | Error e) {
             path = player.getName().toLowerCase();
         }
-        File file = new File(cacheDir, path + File.separator + "cache.json");
+        File file = new File(cacheDir, path);
         if (file.exists()) {
             Utils.purgeDirectory(file);
             if (!file.delete()) {
