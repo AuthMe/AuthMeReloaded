@@ -67,7 +67,7 @@ public final class Settings extends YamlConfiguration {
             enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
             broadcastWelcomeMessage, forceRegKick, forceRegLogin,
             checkVeryGames, delayJoinMessage, noTeleport, applyBlindEffect,
-            customAttributes, generateImage;
+            customAttributes, generateImage, isRemoveSpeedEnabled;
 
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
             getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
@@ -136,6 +136,7 @@ public final class Settings extends YamlConfiguration {
         isAllowRestrictedIp = configFile.getBoolean("settings.restrictions.AllowRestrictedUser", false);
         getRestrictedIp = configFile.getStringList("settings.restrictions.AllowedRestrictedUser");
         isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
+        isRemoveSpeedEnabled = configFile.getBoolean("settings.restrictions.removeSpeed", true);
         getMovementRadius = configFile.getInt("settings.restrictions.allowedMovementRadius", 100);
         getJoinPermissions = configFile.getStringList("GroupOptions.Permissions.PermissionsOnJoin");
         isKickOnWrongPasswordEnabled = configFile.getBoolean("settings.restrictions.kickOnWrongPassword", false);
@@ -225,7 +226,7 @@ public final class Settings extends YamlConfiguration {
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
         doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
-        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", false);
+        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", true);
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
@@ -292,6 +293,10 @@ public final class Settings extends YamlConfiguration {
         }
         if (!contains("Protection.enableProtection")) {
             set("Protection.enableProtection", false);
+            changes = true;
+        }
+        if (!contains("settings.restrictions.removeSpeed")) {
+            set("settings.restrictions.removeSpeed", true);
             changes = true;
         }
         if (!contains("DataSource.mySQLMaxConections")) {

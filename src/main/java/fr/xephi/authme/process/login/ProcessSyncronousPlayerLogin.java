@@ -186,7 +186,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
         if (Settings.applyBlindEffect)
             player.removePotionEffect(PotionEffectType.BLINDNESS);
-        if (!Settings.isMovementAllowed) {
+        if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
             player.setWalkSpeed(0.2f);
             player.setFlySpeed(0.1f);
         }
