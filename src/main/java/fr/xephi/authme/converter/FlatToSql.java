@@ -1,18 +1,12 @@
 package fr.xephi.authme.converter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
 
+import java.io.*;
+
 /**
- *
  * @author Xephi59
  */
 public class FlatToSql implements Converter {
@@ -29,8 +23,6 @@ public class FlatToSql implements Converter {
     private static String columnEmail;
     private static String columnLogged;
     private static String columnID;
-    private static File source;
-    private static File output;
 
     public FlatToSql() {
         tableName = Settings.getMySQLTablename;
@@ -50,9 +42,9 @@ public class FlatToSql implements Converter {
     @Override
     public void run() {
         try {
-            source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
+            File source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
             source.createNewFile();
-            output = new File(AuthMe.getInstance().getDataFolder() + File.separator + "authme.sql");
+            File output = new File(AuthMe.getInstance().getDataFolder() + File.separator + "authme.sql");
             output.createNewFile();
             BufferedReader br = new BufferedReader(new FileReader(source));
             BufferedWriter sql = new BufferedWriter(new FileWriter(output));

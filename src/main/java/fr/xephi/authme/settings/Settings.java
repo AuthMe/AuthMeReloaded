@@ -14,7 +14,8 @@ import java.util.List;
 
 public final class Settings extends YamlConfiguration {
 
-    private AuthMe plugin;
+    private static AuthMe plugin;
+    private static Settings instance;
 
     // This is not an option!
     public static Boolean antiBotInAction = false;
@@ -94,24 +95,25 @@ public final class Settings extends YamlConfiguration {
 
     protected static YamlConfiguration configFile;
 
-    public Settings(AuthMe plugin) {
+    public Settings(AuthMe pl) {
         configFile = (YamlConfiguration) plugin.getConfig();
-        this.plugin = plugin;
+        plugin = pl;
+        instance = this;
     }
 
-    public final void reload() throws Exception {
+    public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
         boolean exist = SETTINGS_FILE.exists();
         if (!exist) {
             plugin.saveDefaultConfig();
         }
-        load(SETTINGS_FILE);
+        instance.load(SETTINGS_FILE);
         if (exist) {
-            mergeConfig();
+            instance.mergeConfig();
         }
         loadVariables();
         if (exist) {
-            saveDefaults();
+            instance.saveDefaults();
         }
         messageFile = new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + messagesLanguage + ".yml");
     }
@@ -481,9 +483,9 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
-    public void setValue(String key, Object value) {
-        this.set(key, value);
-        this.save();
+    public static void setValue(String key, Object value) {
+        instance.set(key, value);
+        save();
     }
 
     private static HashAlgorithm getPasswordHash() {
@@ -539,9 +541,9 @@ public final class Settings extends YamlConfiguration {
      *
      * @return True if saved successfully
      */
-    public final boolean save() {
+    public static boolean save() {
         try {
-            save(SETTINGS_FILE);
+            instance.save(SETTINGS_FILE);
             return true;
         } catch (Exception ex) {
             return false;
