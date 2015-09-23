@@ -1,7 +1,6 @@
 package fr.xephi.authme;
 
 import com.earth2me.essentials.Essentials;
-import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
@@ -119,7 +118,7 @@ public class AuthMe extends JavaPlugin {
         // TODO: new configuration style (more files)
         try {
             settings = new Settings(this);
-            settings.reload();
+            Settings.reload();
         } catch (Exception e) {
             ConsoleLogger.writeStackTrace(e);
             ConsoleLogger.showError("Can't load the configuration file... Something went wrong, to avoid security issues the server will shutdown!");
