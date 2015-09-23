@@ -64,7 +64,6 @@ public class AuthMe extends JavaPlugin {
     private JsonCache playerBackup;
     public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
-    public LookupService lookupService;
     public boolean legacyChestShop = false;
     public boolean antibotMod = false;
     public boolean delayedAntiBot = true;
@@ -768,5 +767,14 @@ public class AuthMe extends JavaPlugin {
         return realIP;
     }
 
+    @Deprecated
+    public String getCountryCode(String ip) {
+        return Utils.getCountryCode(ip);
+    }
+
+    @Deprecated
+    public String getCountryName(String ip) {
+        return Utils.getCountryName(ip);
+    }
 
 }
