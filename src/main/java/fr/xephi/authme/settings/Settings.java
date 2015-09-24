@@ -18,7 +18,7 @@ public final class Settings extends YamlConfiguration {
     private static Settings instance;
 
     // This is not an option!
-    public static Boolean antiBotInAction = false;
+    public static boolean antiBotInAction = false;
 
     public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
@@ -513,11 +513,11 @@ public final class Settings extends YamlConfiguration {
      * return false if ip and name doesnt amtch with player that join the
      * server, so player has a restricted access
      */
-    public static Boolean getRestrictedIp(String name, String ip) {
+    public static boolean getRestrictedIp(String name, String ip) {
 
         Iterator<String> iter = getRestrictedIp.iterator();
-        Boolean trueonce = false;
-        Boolean namefound = false;
+        boolean trueonce = false;
+        boolean namefound = false;
         while (iter.hasNext()) {
             String[] args = iter.next().split(";");
             String testname = args[0];
@@ -529,11 +529,7 @@ public final class Settings extends YamlConfiguration {
                 }
             }
         }
-        if (!namefound) {
-            return true;
-        } else {
-            return trueonce;
-        }
+        return !namefound || trueonce;
     }
 
     /**
