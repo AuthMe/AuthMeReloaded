@@ -96,9 +96,9 @@ public final class Settings extends YamlConfiguration {
     protected static YamlConfiguration configFile;
 
     public Settings(AuthMe pl) {
-        configFile = (YamlConfiguration) plugin.getConfig();
-        plugin = pl;
         instance = this;
+        plugin = pl;
+        configFile = (YamlConfiguration) plugin.getConfig();
     }
 
     public static void reload() throws Exception {
