@@ -37,7 +37,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.mcstats.Metrics;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
@@ -382,9 +383,9 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.isCachingEnabled) {
             database = new CacheDataSource(this, database);
+        } else {
+            database = new DatabaseCalls(database);
         }
-
-        database = new DatabaseCalls(database);
 
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
             Converter converter = new ForceFlatToSqlite(database, this);
