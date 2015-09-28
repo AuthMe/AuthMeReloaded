@@ -16,12 +16,10 @@ import java.util.concurrent.Executors;
 public class CacheDataSource implements DataSource {
 
     private final DataSource source;
-    private final AuthMe plugin;
     private final ExecutorService exec;
     private final ConcurrentHashMap<String, PlayerAuth> cache = new ConcurrentHashMap<>();
 
     public CacheDataSource(AuthMe pl, DataSource src) {
-        this.plugin = pl;
         this.source = src;
         this.exec = Executors.newCachedThreadPool();
 

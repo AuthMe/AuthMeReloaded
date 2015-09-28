@@ -107,6 +107,7 @@ public class AuthMe extends JavaPlugin {
 
         // TODO: split the plugin in more modules
         moduleManager = new ModuleManager(this);
+        @SuppressWarnings("unused")
         int loaded = moduleManager.loadModules();
 
         // TODO: remove vault as hard dependency
