@@ -67,14 +67,10 @@ public class AsyncronousRegister {
             allowRegister = false;
         }
 
-        else if (!Settings.unsafePasswords.isEmpty()) {
-            if (Settings.unsafePasswords.contains(password.toLowerCase())) {
-                m.send(player, "password_error_unsafe");
-                allowRegister = false;
-            }
-        }
-
-        else if (database.isAuthAvailable(name)) {
+        else if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(password.toLowerCase())) {
+            m.send(player, "password_error_unsafe");
+            allowRegister = false;
+        } else if (database.isAuthAvailable(name)) {
             m.send(player, "user_regged");
             allowRegister = false;
         }
