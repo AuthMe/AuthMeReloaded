@@ -3,6 +3,8 @@
 <hr>
 #####Development tools:
 
+- DEVELOPMENT TEAM REPO (<strong>please send PRs here!</strong>): <a href="https://github.com/AuthMe-Team/AuthMeReloaded">Github Development Page</a>
+
 - Developers ChatRoom: [![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 - Build status: [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/55bab9e8653762002000190a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55bab9e8653762002000190a)
