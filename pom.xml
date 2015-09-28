@@ -127,7 +127,7 @@
 		<!-- EssentialsX Repo -->
 		<repository>
 			<id>ess-repo</id>
-			<url>https://ci.drtshock.net/plugin/repository/everything</url>
+			<url>http://ci.drtshock.net/plugin/repository/everything</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
@@ -257,7 +257,7 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 
+		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project,
 			http://bukkit.org/ -->
 		<dependency>
 			<groupId>org.bukkit</groupId>
