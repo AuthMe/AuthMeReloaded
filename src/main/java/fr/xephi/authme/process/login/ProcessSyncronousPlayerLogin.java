@@ -42,7 +42,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         this.name = player.getName().toLowerCase();
         this.limbo = LimboCache.getInstance().getLimboPlayer(name);
         this.auth = database.getAuth(name);
-        this.playerCache = new JsonCache(plugin);
+        this.playerCache = new JsonCache();
     }
 
     public LimboPlayer getLimbo() {
@@ -92,10 +92,11 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     }
 
     protected void restoreInventory() {
-        RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+        RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
             plugin.api.setPlayerInventory(player, event.getInventory(), event.getArmor());
+            plugin.inventoryProtector.sendInventoryPacket(player);
         }
     }
 
@@ -128,7 +129,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             // Inventory - Make it after restore GameMode , cause we need to
             // restore the
             // right inventory in the right gamemode
-            if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
+            if (Settings.protectInventoryBeforeLogInEnabled  && plugin.inventoryProtector != null) {
                 restoreInventory();
             }
             if (Settings.forceOnlyAfterLogin) {

@@ -294,6 +294,14 @@
 			<optional>true</optional>
 		</dependency>
 
+                <!--ProtocolLib http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
+                <dependency>
+                    <groupId>com.comphenix.protocol</groupId>
+                    <artifactId>ProtocolLib</artifactId>
+                    <version>3.4.0</version>
+                    <optional>true</optional>
+                </dependency>
+
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>

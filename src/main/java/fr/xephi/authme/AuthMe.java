@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import fr.xephi.authme.api.API;
@@ -73,6 +74,7 @@ public class AuthMe extends JavaPlugin {
     public Essentials ess;
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
+    public AuthMeInventoryListener inventoryProtector;
 
     // Manager
     private ModuleManager moduleManager;
@@ -199,6 +201,9 @@ public class AuthMe extends JavaPlugin {
         // Check Essentials
         checkEssentials();
 
+        //Check if the protocollib is available. If so we could listen for inventory protection
+        checkProtocolLib();
+
         // Do backup on start if enabled
         if (Settings.isBackupActivated && Settings.isBackupOnStart) {
             // Do backup and check return value!
@@ -221,7 +226,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Setup the inventory backup
-        playerBackup = new JsonCache(this);
+        playerBackup = new JsonCache();
 
         // Set the DataManager
         dataManager = new DataManager(this);
@@ -523,6 +528,13 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
+    public void checkProtocolLib() {
+        if (server.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            inventoryProtector = new AuthMeInventoryListener(this);
+            ProtocolLibrary.getProtocolManager().addPacketListener(inventoryProtector);
+        }
+    }
+
     // Check if a player/command sender have a permission
     public boolean authmePermissible(Player player, String perm) {
         if (player.hasPermission(perm)) {
@@ -554,13 +566,10 @@ public class AuthMe extends JavaPlugin {
         }
         if (LimboCache.getInstance().hasLimboPlayer(name)) {
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-            if (Settings.protectInventoryBeforeLogInEnabled) {
-                player.getInventory().setArmorContents(limbo.getArmour());
-                player.getInventory().setContents(limbo.getInventory());
-            }
             if (!Settings.noTeleport) {
                 player.teleport(limbo.getLoc());
             }
+
             Utils.addNormal(player, limbo.getGroup());
             player.setOp(limbo.getOperator());
             limbo.getTimeoutTaskId().cancel();

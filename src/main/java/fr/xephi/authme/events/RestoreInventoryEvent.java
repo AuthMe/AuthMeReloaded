@@ -4,8 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- *
- * This event restore the inventory from cache
+ * This event restore the inventory.
  *
  * @author Xephi59
  */
@@ -15,16 +14,14 @@ public class RestoreInventoryEvent extends CustomEvent {
     private ItemStack[] armor;
     private Player player;
 
-    public RestoreInventoryEvent(Player player, ItemStack[] inventory,
-            ItemStack[] armor) {
+    public RestoreInventoryEvent(Player player) {
         this.player = player;
-        this.inventory = inventory;
-        this.armor = armor;
+        this.inventory = player.getInventory().getContents();
+        this.armor = player.getInventory().getArmorContents();
     }
 
-    public RestoreInventoryEvent(Player player, ItemStack[] inventory,
-            ItemStack[] armor, boolean b) {
-        super(b);
+    public RestoreInventoryEvent(Player player, boolean async) {
+        super(async);
         this.player = player;
         this.inventory = inventory;
         this.armor = armor;
@@ -53,5 +50,4 @@ public class RestoreInventoryEvent extends CustomEvent {
     public void setPlayer(Player player) {
         this.player = player;
     }
-
 }
