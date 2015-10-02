@@ -208,13 +208,12 @@ public class AuthMePlayerListener implements Listener {
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
         final Player player = Bukkit.getServer().getPlayer(name);
-
         if (player == null)
             return;
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
-        if (plugin.dataManager.isOnline(player, name) && Settings.isForceSingleSessionEnabled) {
+        if (Settings.isForceSingleSessionEnabled && plugin.dataManager.isOnline(player, name)) {
             event.setKickMessage(m.send("same_nick")[0]);
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             if (LimboCache.getInstance().hasLimboPlayer(name))
@@ -228,7 +227,6 @@ public class AuthMePlayerListener implements Listener {
                             LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
                         }
                     }
-
                 });
         }
     }
@@ -283,7 +281,8 @@ public class AuthMePlayerListener implements Listener {
 
         if (isAuthAvailable && plugin.database.getType() != DataSource.DataSourceType.FILE) {
             PlayerAuth auth = plugin.database.getAuth(name);
-            if (auth.getRealName() != null && !auth.getRealName().isEmpty() && !auth.getRealName().equalsIgnoreCase("Player") && !auth.getRealName().equals(player.getName())) {
+            if (auth.getRealName() != null && !auth.getRealName().isEmpty()
+                    && !auth.getRealName().equalsIgnoreCase("Player") && !auth.getRealName().equalsIgnoreCase(name)) {
                 event.setKickMessage(m.send("same_nick")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 if (Settings.banUnsafeIp)
