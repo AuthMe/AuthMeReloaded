@@ -160,7 +160,6 @@ public class Utils {
     }
 
     // TODO: remove if not needed
-    @SuppressWarnings("unused")
     public static void hasPermOnJoin(Player player) {
         if (plugin.permission == null)
             return;

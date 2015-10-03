@@ -95,7 +95,6 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         Bukkit.getServer().getPluginManager().callEvent(event);
         if (!event.isCancelled()) {
-            plugin.api.setPlayerInventory(player, event.getInventory(), event.getArmor());
             plugin.inventoryProtector.sendInventoryPacket(player);
         }
     }

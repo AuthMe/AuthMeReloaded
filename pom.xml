@@ -6,6 +6,7 @@
 	<groupId>fr.xephi</groupId>
 	<artifactId>authme</artifactId>
 	<version>5.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
 	<name>AuthMeReloaded</name>
 	<description>Authentication plugin for CraftBukkit/Spigot!</description>
@@ -88,9 +89,8 @@
 					<artifactSet>
 						<includes>
 							<include>com.zaxxer:HikariCP</include>
-							<include>org.slf4j:slf4j-simple</include>
+							<include>org.slf4j:slf4j-jdk14</include>
 							<include>org.slf4j:slf4j-api</include>
-							<include>com.google.code.gson:gson</include>
 							<include>com.maxmind.geoip:geoip-api</include>
 							<include>com.sun.mail:javax.mail</include>
 							<include>com.comphenix.attribute:AttributeStorage</include>
@@ -194,7 +194,7 @@
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
+			<artifactId>slf4j-jdk14</artifactId>
 			<version>1.7.12</version>
 			<scope>compile</scope>
 			<optional>true</optional>
@@ -308,13 +308,23 @@
 			<optional>true</optional>
 		</dependency>
 
-                <!--ProtocolLib http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
-                <dependency>
-                    <groupId>com.comphenix.protocol</groupId>
-                    <artifactId>ProtocolLib</artifactId>
-                    <version>3.4.0</version>
-                    <optional>true</optional>
-                </dependency>
+		<!--ProtocolLib http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
+		<dependency>
+			<groupId>com.comphenix.protocol</groupId>
+			<artifactId>ProtocolLib</artifactId>
+			<version>3.4.0</version>
+			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>cglib-nodep</artifactId>
+					<groupId>cglib</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>BukkitExecutors</artifactId>
+					<groupId>com.comphenix.executors</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
 		<dependency>

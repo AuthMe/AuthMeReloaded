@@ -4,9 +4,7 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.Bukkit;
 
 public class ProcessSyncronousPlayerQuit implements Runnable {
 
@@ -28,11 +26,6 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
 
     @Override
     public void run() {
-        RestoreInventoryEvent ev = new RestoreInventoryEvent(player);
-        Bukkit.getPluginManager().callEvent(ev);
-        if (!ev.isCancelled()) {
-            plugin.api.setPlayerInventory(player, ev.getInventory(), ev.getArmor());
-        }
 
         if (needToChange) {
             player.setOp(isOp);

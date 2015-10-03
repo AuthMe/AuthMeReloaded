@@ -95,9 +95,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
             if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 Bukkit.getPluginManager().callEvent(event);
-                if (!event.isCancelled() && event.getArmor() != null && event.getInventory() != null) {
-                    player.getInventory().setContents(event.getInventory());
-                    player.getInventory().setArmorContents(event.getArmor());
+                if (!event.isCancelled()) {
                     plugin.inventoryProtector.sendInventoryPacket(player);
                 }
             }
