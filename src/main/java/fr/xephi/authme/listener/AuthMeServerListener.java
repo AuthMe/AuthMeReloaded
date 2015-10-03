@@ -68,6 +68,10 @@ public class AuthMeServerListener implements Listener {
             plugin.permission = null;
             ConsoleLogger.showError("Vault has been disabled, unhook permissions!");
         }
+        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+            plugin.inventoryProtector = null;
+            ConsoleLogger.showError("ProtocolLib has been disabled, unhook packet inventory protection!");
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -83,5 +87,8 @@ public class AuthMeServerListener implements Listener {
             plugin.checkCombatTagPlus();
         if (pluginName.equalsIgnoreCase("Vault"))
             plugin.checkVault();
+        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+            plugin.checkProtocolLib();
+        }
     }
 }

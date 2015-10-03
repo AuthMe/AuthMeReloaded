@@ -3,7 +3,6 @@ package fr.xephi.authme.process.quit;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
@@ -13,7 +12,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 
@@ -23,8 +21,6 @@ public class AsyncronousQuit {
     protected DataSource database;
     protected Player player;
     private String name;
-    private ItemStack[] armor = null;
-    private ItemStack[] inv = null;
     private boolean isOp = false;
     private boolean isFlying = false;
     private boolean needToChange = false;
@@ -60,10 +56,6 @@ public class AsyncronousQuit {
 
         if (LimboCache.getInstance().hasLimboPlayer(name)) {
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-            if (Settings.protectInventoryBeforeLogInEnabled && player.hasPlayedBefore()) {
-                inv = limbo.getInventory();
-                armor = limbo.getArmour();
-            }
             if (limbo.getGroup() != null && !limbo.getGroup().equals(""))
                 Utils.addNormal(player, limbo.getGroup());
             needToChange = true;
@@ -94,17 +86,8 @@ public class AsyncronousQuit {
             PlayerCache.getInstance().removePlayer(name);
             database.setUnlogged(name);
         }
+
         AuthMePlayerListener.gameMode.remove(name);
-        final Player p = player;
-        RestoreInventoryEvent ev = new RestoreInventoryEvent(player, inv, armor, true);
-        Bukkit.getPluginManager().callEvent(ev);
-        if (ev.isCancelled()) {
-            inv = null;
-            armor = null;
-        } else {
-            inv = ev.getInventory();
-            armor = ev.getArmor();
-        }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, p, inv, armor, isOp, isFlying, needToChange));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, isFlying, needToChange));
     }
 }

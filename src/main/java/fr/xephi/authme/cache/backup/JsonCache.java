@@ -3,20 +3,13 @@ package fr.xephi.authme.cache.backup;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 import com.google.gson.*;
-import fr.xephi.authme.AuthMe;
+
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.util.io.BukkitObjectInputStream;
-import org.bukkit.util.io.BukkitObjectOutputStream;
-import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
@@ -24,11 +17,9 @@ import java.lang.reflect.Type;
 public class JsonCache {
 
     private final Gson gson;
-    private final AuthMe plugin;
     private final File cacheDir;
 
-    public JsonCache(AuthMe plugin) {
-        this.plugin = plugin;
+    public JsonCache() {
         cacheDir = Settings.CACHE_FOLDER;
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
             ConsoleLogger.showError("Failed to create cache directory.");
@@ -99,48 +90,7 @@ public class JsonCache {
             jsonObject.addProperty("operator", dataFileCache.getOperator());
             jsonObject.addProperty("flying", dataFileCache.isFlying());
 
-            JsonArray arr;
-            ItemStack[] contents;
-
-            // inventory
-            contents = dataFileCache.getInventory();
-            arr = new JsonArray();
-            putItems(contents, arr);
-            jsonObject.add("inventory", arr);
-
-            // armour
-            contents = dataFileCache.getArmour();
-            arr = new JsonArray();
-            putItems(contents, arr);
-            jsonObject.add("armour", arr);
-
             return jsonObject;
-        }
-
-        private void putItems(ItemStack[] contents, JsonArray target) {
-            for (ItemStack item : contents) {
-                if (item == null) {
-                    item = new ItemStack(Material.AIR);
-                }
-                JsonObject val = new JsonObject();
-                if (item.getType() == Material.SKULL_ITEM) {
-                    SkullMeta meta = (SkullMeta) item.getItemMeta();
-                    if (meta.hasOwner() && (meta.getOwner() == null || meta.getOwner().isEmpty())) {
-                        item.setItemMeta(plugin.getServer().getItemFactory().getItemMeta(Material.SKULL_ITEM));
-                    }
-                }
-                try {
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    BukkitObjectOutputStream objectOut = new BukkitObjectOutputStream(baos);
-                    objectOut.writeObject(item);
-                    objectOut.close();
-                    val.addProperty("item", Base64Coder.encodeLines(baos.toByteArray()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    continue;
-                }
-                target.add(val);
-            }
         }
     }
 
@@ -166,39 +116,7 @@ public class JsonCache {
                 flying = e.getAsBoolean();
             }
 
-            JsonArray arr;
-            ItemStack[] inv = null;
-            ItemStack[] armour = null;
-
-            if (jsonObject.has("inventory")) {
-                arr = jsonObject.get("inventory").getAsJsonArray();
-                inv = getItems(arr);
-            }
-
-            if (jsonObject.has("armour")) {
-                arr = jsonObject.get("armour").getAsJsonArray();
-                armour = getItems(arr);
-            }
-
-            return new DataFileCache(inv, armour, group, operator, flying);
-        }
-
-        private ItemStack[] getItems(JsonArray arr) {
-            ItemStack[] contents = new ItemStack[arr.size()];
-            for (int i = 0; i < arr.size(); i++) {
-                JsonObject item = arr.get(i).getAsJsonObject();
-                String encoded = item.get("item").getAsString();
-                byte[] decoded = Base64Coder.decodeLines(encoded);
-                try {
-                    ByteArrayInputStream baos = new ByteArrayInputStream(decoded);
-                    BukkitObjectInputStream objectIn = new BukkitObjectInputStream(baos);
-                    contents[i] = (ItemStack) objectIn.readObject();
-                    objectIn.close();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            return contents;
+            return new DataFileCache(group, operator, flying);
         }
     }
 

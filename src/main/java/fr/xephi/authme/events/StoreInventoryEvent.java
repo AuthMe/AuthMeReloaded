@@ -1,6 +1,5 @@
 package fr.xephi.authme.events;
 
-import fr.xephi.authme.cache.backup.DataFileCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,14 +23,8 @@ public class StoreInventoryEvent extends CustomEvent {
 
     public StoreInventoryEvent(Player player, JsonCache jsonCache) {
         this.player = player;
-        DataFileCache cache = jsonCache.readCache(player);
-        if (cache != null) {
-            this.inventory = cache.getInventory();
-            this.armor = cache.getArmour();
-        } else {
-            this.inventory = player.getInventory().getContents();
-            this.armor = player.getInventory().getArmorContents();
-        }
+        this.inventory = player.getInventory().getContents();
+        this.armor = player.getInventory().getArmorContents();
     }
 
     public ItemStack[] getInventory() {
@@ -57,5 +50,4 @@ public class StoreInventoryEvent extends CustomEvent {
     public void setPlayer(Player player) {
         this.player = player;
     }
-
 }
