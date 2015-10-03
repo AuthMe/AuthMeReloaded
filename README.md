@@ -43,6 +43,8 @@ McStats: http://mcstats.org/plugin/AuthMe
 #####Running Requirements:
 >- Java 1.7 (should work also with Java 1.8)
 >- Spigot or CraftBukkit (1.7.10 or 1.8.X)
+>- Vault
+>- Protocollib
 
 <hr>
 ###Plugin Description:
