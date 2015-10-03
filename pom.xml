@@ -200,20 +200,20 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- Log4J Logger (for the filter) -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+			<version>2.0-beta9</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- SQLite Connector -->
 		<dependency>
 			<groupId>org.xerial</groupId>
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.11.1</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- Google JSON Library -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.3.1</version>
 			<scope>compile</scope>
 			<optional>true</optional>
 		</dependency>
@@ -273,6 +273,20 @@
 			<version>${bukkitVersion}</version>
 			<scope>provided</scope>
 			<optional>true</optional>
+			<exclusions>
+				<exclusion>
+					<artifactId>junit</artifactId>
+					<groupId>junit</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>json-simple</artifactId>
+					<groupId>com.googlecode.json-simple</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>persistence-api</artifactId>
+					<groupId>javax.persistence</groupId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 
 		<!-- Attribute -->
@@ -348,6 +362,26 @@
 				<exclusion>
 					<artifactId>CommandHandler</artifactId>
 					<groupId>com.pneumaticraft.commandhandler</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>SerializationConfig</artifactId>
+					<groupId>me.main__.util</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>Logging</artifactId>
+					<groupId>com.dumptruckman.minecraft</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>metrics</artifactId>
+					<groupId>org.mcstats.bukkit</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>buscript</artifactId>
+					<groupId>com.dumptruckman.minecraft</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>junit</artifactId>
+					<groupId>junit</groupId>
 				</exclusion>
 			</exclusions>
 			<optional>true</optional>
@@ -478,6 +512,10 @@
 					<artifactId>AccountsClient</artifactId>
 					<groupId>com.mojang</groupId>
 				</exclusion>
+				<exclusion>
+					<artifactId>log4j-core</artifactId>
+					<groupId>org.apache.logging.log4j</groupId>
+				</exclusion>
 			</exclusions>
 			<optional>true</optional>
 		</dependency>
@@ -572,6 +610,10 @@
 				<exclusion>
 					<artifactId>lockette</artifactId>
 					<groupId>org.yi.acru.bukkit.lockette</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>log4j-core</artifactId>
+					<groupId>org.apache.logging.log4j</groupId>
 				</exclusion>
 			</exclusions>
 			<optional>true</optional>
