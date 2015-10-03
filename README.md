@@ -134,6 +134,6 @@ GameHosting.it is leader in Italy as Game Server Provider. With its own DataCent
 [![GameHosting](http://www.gamehosting.it/images/bn3.png)](http://www.gamehosting.it)
 
 #####Credits
-<p>Team members: Xephi(Main Developer, Author), Maxetto(Contributor) and sgdc3(Contributor)
+<p>Team members: look at the <a href="https://github.com/AuthMe-Team/AuthMeReloaded/blob/master/team.txt">team.txt file</a>
 <p>Credit for old version of the plugin to: d4rkwarriors, fabe1337 , Whoami2 and pomo4ka</p>
 <p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>
