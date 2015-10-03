@@ -271,6 +271,7 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
+        // TODO: Add message to the messages file!!!
         if (Settings.antiBotInAction) {
             if (!isAuthAvailable) {
                 event.setKickMessage("AntiBot service in action! You actually need to be registered!");
