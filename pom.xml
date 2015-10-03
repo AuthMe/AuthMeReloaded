@@ -56,7 +56,7 @@
 			<resource>
 				<targetPath>.</targetPath>
 				<filtering>true</filtering>
-				<directory>${basedir}/src/main/resources/</directory>
+				<directory>src/main/resources/</directory>
 				<includes>
 					<include>*.yml</include>
 				</includes>
@@ -64,7 +64,7 @@
 			<resource>
 				<targetPath>./messages/</targetPath>
 				<filtering>false</filtering>
-				<directory>${basedir}/src/main/resources/messages/</directory>
+				<directory>src/main/resources/messages/</directory>
 				<includes>
 					<include>*.yml</include>
 				</includes>
@@ -121,13 +121,13 @@
 		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
 		<repository>
 			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/groups/public</url>
+			<url>http://hub.spigotmc.org/nexus/content/groups/public</url>
 		</repository>
 
 		<!-- EssentialsX Repo -->
 		<repository>
 			<id>ess-repo</id>
-			<url>https://ci.drtshock.net/plugin/repository/everything</url>
+			<url>http://ci.drtshock.net/plugin/repository/everything</url>
 		</repository>
 
 		<!-- CombatTagPlus Repo -->
@@ -190,12 +190,14 @@
 					<groupId>org.slf4j</groupId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
 			<artifactId>slf4j-simple</artifactId>
 			<version>1.7.12</version>
 			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- SQLite Connector -->
@@ -204,6 +206,7 @@
 			<artifactId>sqlite-jdbc</artifactId>
 			<version>3.8.11.1</version>
 			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- Google JSON Library -->
@@ -212,6 +215,7 @@
 			<artifactId>gson</artifactId>
 			<version>2.3.1</version>
 			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- Java Email API and Implementation -->
@@ -220,6 +224,7 @@
 			<artifactId>javax.mail-api</artifactId>
 			<version>1.5.4</version>
 			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>com.sun.mail</groupId>
@@ -232,6 +237,7 @@
 					<groupId>javax.activation</groupId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
 
 
@@ -241,6 +247,7 @@
 			<artifactId>geoip-api</artifactId>
 			<version>1.2.15</version>
 			<scope>compile</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- Metrics API -->
@@ -255,15 +262,17 @@
 					<artifactId>bukkit</artifactId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
 
-		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project, 
+		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project,
 			http://bukkit.org/ -->
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
 			<version>${bukkitVersion}</version>
 			<scope>provided</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- Attribute -->
@@ -282,7 +291,16 @@
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
+
+                <!--ProtocolLib http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
+                <dependency>
+                    <groupId>com.comphenix.protocol</groupId>
+                    <artifactId>ProtocolLib</artifactId>
+                    <version>3.4.0</version>
+                    <optional>true</optional>
+                </dependency>
 
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
 		<dependency>
@@ -300,6 +318,7 @@
 					<artifactId>craftbukkit</artifactId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
@@ -331,6 +350,7 @@
 					<groupId>com.pneumaticraft.commandhandler</groupId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- Essentials plugin -->
@@ -345,6 +365,7 @@
 					<artifactId>spigot-api</artifactId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- Anti PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
@@ -419,6 +440,7 @@
 					<groupId>org.mcstats.bukkit</groupId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- XAuth, another authentication plugin, required by the database converter -->
@@ -457,6 +479,7 @@
 					<groupId>com.mojang</groupId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- ChestShop, on our maven repo http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
@@ -551,6 +574,7 @@
 					<groupId>org.yi.acru.bukkit.lockette</groupId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
 		</dependency>
 
 	</dependencies>

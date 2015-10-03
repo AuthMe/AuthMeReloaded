@@ -18,7 +18,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -34,7 +33,7 @@ public class UnregisterCommand implements CommandExecutor {
 
     public UnregisterCommand(AuthMe plugin) {
         this.plugin = plugin;
-        this.playerCache = new JsonCache(plugin);
+        this.playerCache = new JsonCache();
     }
 
     @Override
@@ -79,8 +78,7 @@ public class UnregisterCommand implements CommandExecutor {
                                     player.teleport(tpEvent.getTo());
                                 }
                             }
-                            player.getInventory().setContents(new ItemStack[36]);
-                            player.getInventory().setArmorContents(new ItemStack[4]);
+                            
                             player.saveData();
                             PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                             if (!Settings.getRegisteredGroup.isEmpty())

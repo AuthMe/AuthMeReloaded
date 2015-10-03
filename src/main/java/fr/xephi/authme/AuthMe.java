@@ -1,7 +1,7 @@
 package fr.xephi.authme;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.earth2me.essentials.Essentials;
-import com.maxmind.geoip.LookupService;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
@@ -38,7 +38,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.mcstats.Metrics;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Calendar;
@@ -64,7 +65,6 @@ public class AuthMe extends JavaPlugin {
     private JsonCache playerBackup;
     public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
-    public LookupService lookupService;
     public boolean legacyChestShop = false;
     public boolean antibotMod = false;
     public boolean delayedAntiBot = true;
@@ -74,6 +74,7 @@ public class AuthMe extends JavaPlugin {
     public Essentials ess;
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
+    public AuthMeInventoryListener inventoryProtector;
 
     // Manager
     private ModuleManager moduleManager;
@@ -108,6 +109,7 @@ public class AuthMe extends JavaPlugin {
 
         // TODO: split the plugin in more modules
         moduleManager = new ModuleManager(this);
+        @SuppressWarnings("unused")
         int loaded = moduleManager.loadModules();
 
         // TODO: remove vault as hard dependency
@@ -120,7 +122,7 @@ public class AuthMe extends JavaPlugin {
         // TODO: new configuration style (more files)
         try {
             settings = new Settings(this);
-            settings.reload();
+            Settings.reload();
         } catch (Exception e) {
             ConsoleLogger.writeStackTrace(e);
             ConsoleLogger.showError("Can't load the configuration file... Something went wrong, to avoid security issues the server will shutdown!");
@@ -199,6 +201,9 @@ public class AuthMe extends JavaPlugin {
         // Check Essentials
         checkEssentials();
 
+        //Check if the protocollib is available. If so we could listen for inventory protection
+        checkProtocolLib();
+
         // Do backup on start if enabled
         if (Settings.isBackupActivated && Settings.isBackupOnStart) {
             // Do backup and check return value!
@@ -221,7 +226,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Setup the inventory backup
-        playerBackup = new JsonCache(this);
+        playerBackup = new JsonCache();
 
         // Set the DataManager
         dataManager = new DataManager(this);
@@ -384,9 +389,9 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.isCachingEnabled) {
             database = new CacheDataSource(this, database);
+        } else {
+            database = new DatabaseCalls(database);
         }
-
-        database = new DatabaseCalls(database);
 
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
             Converter converter = new ForceFlatToSqlite(database, this);
@@ -523,6 +528,13 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
+    public void checkProtocolLib() {
+        if (server.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            inventoryProtector = new AuthMeInventoryListener(this);
+            ProtocolLibrary.getProtocolManager().addPacketListener(inventoryProtector);
+        }
+    }
+
     // Check if a player/command sender have a permission
     public boolean authmePermissible(Player player, String perm) {
         if (player.hasPermission(perm)) {
@@ -554,13 +566,10 @@ public class AuthMe extends JavaPlugin {
         }
         if (LimboCache.getInstance().hasLimboPlayer(name)) {
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-            if (Settings.protectInventoryBeforeLogInEnabled) {
-                player.getInventory().setArmorContents(limbo.getArmour());
-                player.getInventory().setContents(limbo.getInventory());
-            }
             if (!Settings.noTeleport) {
                 player.teleport(limbo.getLoc());
             }
+
             Utils.addNormal(player, limbo.getGroup());
             player.setOp(limbo.getOperator());
             limbo.getTimeoutTaskId().cancel();
@@ -768,5 +777,14 @@ public class AuthMe extends JavaPlugin {
         return realIP;
     }
 
+    @Deprecated
+    public String getCountryCode(String ip) {
+        return Utils.getCountryCode(ip);
+    }
+
+    @Deprecated
+    public String getCountryName(String ip) {
+        return Utils.getCountryName(ip);
+    }
 
 }

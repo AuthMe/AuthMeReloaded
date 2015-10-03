@@ -109,7 +109,7 @@ public class AdminCommand implements CommandExecutor {
             }
         } else if (args[0].equalsIgnoreCase("reload")) {
             try {
-                plugin.getSettings().reload();
+                Settings.reload();
                 m.reloadMessages();
                 plugin.database.close();
                 plugin.setupDatabase();

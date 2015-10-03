@@ -91,14 +91,17 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
                     player.teleport(tpEvent.getTo());
                 }
             }
-            if (Settings.protectInventoryBeforeLogInEnabled && limbo.getInventory() != null && limbo.getArmour() != null) {
-                RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+
+            if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
+                RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 Bukkit.getPluginManager().callEvent(event);
                 if (!event.isCancelled() && event.getArmor() != null && event.getInventory() != null) {
                     player.getInventory().setContents(event.getInventory());
                     player.getInventory().setArmorContents(event.getArmor());
+                    plugin.inventoryProtector.sendInventoryPacket(player);
                 }
             }
+
             limbo.getTimeoutTaskId().cancel();
             limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
@@ -153,6 +156,5 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 
         // Register is now finish , we can force all commands
         forceCommands();
-
     }
 }

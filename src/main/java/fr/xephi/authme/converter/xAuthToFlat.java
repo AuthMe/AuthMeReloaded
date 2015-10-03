@@ -1,5 +1,13 @@
 package fr.xephi.authme.converter;
 
+import de.luricos.bukkit.xAuth.database.DatabaseTables;
+import de.luricos.bukkit.xAuth.utils.xAuthLog;
+import de.luricos.bukkit.xAuth.xAuth;
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.datasource.DataSource;
+import org.bukkit.command.CommandSender;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -7,15 +15,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
-import de.luricos.bukkit.xAuth.xAuth;
-import de.luricos.bukkit.xAuth.database.DatabaseTables;
-import de.luricos.bukkit.xAuth.utils.xAuthLog;
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource;
 
 public class xAuthToFlat {
 
@@ -82,7 +81,7 @@ public class xAuthToFlat {
     }
 
     public List<Integer> getXAuthPlayers() {
-        List<Integer> xP = new ArrayList<Integer>();
+        List<Integer> xP = new ArrayList<>();
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -95,7 +94,7 @@ public class xAuthToFlat {
             }
         } catch (SQLException e) {
             xAuthLog.severe("Cannot import xAuthPlayers", e);
-            return new ArrayList<Integer>();
+            return new ArrayList<>();
         } finally {
             xAuth.getPlugin().getDatabaseController().close(conn, ps, rs);
         }

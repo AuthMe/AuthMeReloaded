@@ -62,7 +62,7 @@ public class ChangePasswordCommand implements CommandExecutor {
                 return true;
             }
         }
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new ChangePasswordTask(plugin, player, args[0]));
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new ChangePasswordTask(plugin, player, args[0], args[1]));
         return true;
     }
 }

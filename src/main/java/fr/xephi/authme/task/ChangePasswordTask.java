@@ -15,12 +15,14 @@ public class ChangePasswordTask implements Runnable {
 
     private final AuthMe plugin;
     private final Player player;
-    private String password;
+    private final String oldPassword;
+    private final String newPassword;
 
-    public ChangePasswordTask(AuthMe plugin, Player player, String password) {
+    public ChangePasswordTask(AuthMe plugin, Player player, String oldPassword, String newPassword) {
         this.plugin = plugin;
         this.player = player;
-        this.password = password;
+        this.oldPassword = oldPassword;
+        this.newPassword = newPassword;
     }
 
     @Override
@@ -28,13 +30,15 @@ public class ChangePasswordTask implements Runnable {
         Messages m = Messages.getInstance();
         try {
             String name = player.getName().toLowerCase();
-            String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
-            if (PasswordSecurity.comparePasswordWithHash(password, PlayerCache.getInstance().getAuth(name).getHash(), player.getName())) {
-                PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
+            String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, newPassword, name);
+            PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
+            if (PasswordSecurity.comparePasswordWithHash(oldPassword, auth.getHash(), player.getName())) {
                 auth.setHash(hashnew);
-                if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
+                if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null) {
                     auth.setSalt(PasswordSecurity.userSalt.get(name));
-                else auth.setSalt("");
+                } else {
+                    auth.setSalt("");
+                }
                 if (!plugin.database.updatePassword(auth)) {
                     m.send(player, "error");
                     return;
