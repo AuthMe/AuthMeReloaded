@@ -27,7 +27,7 @@ public class API {
 
     /**
      * Hook into AuthMe
-     * 
+     *
      * @return AuthMe instance
      */
     @Deprecated
@@ -48,7 +48,7 @@ public class API {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is authenticate
      */
@@ -58,7 +58,7 @@ public class API {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is a npc
      */
@@ -68,7 +68,7 @@ public class API {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is a npc
      */
@@ -78,7 +78,7 @@ public class API {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if the player is unrestricted
      */
@@ -115,7 +115,7 @@ public class API {
     }
 
     /**
-     * 
+     *
      * @param playerName
      * @return true if player is registered
      */
@@ -146,7 +146,7 @@ public class API {
 
     /**
      * Register a player
-     * 
+     *
      * @param String
      *            playerName, String password
      * @return true if the player is register correctly
@@ -159,7 +159,7 @@ public class API {
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com");
+            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com", playerName);
             if (!instance.database.saveAuth(auth)) {
                 return false;
             }
@@ -171,7 +171,7 @@ public class API {
 
     /**
      * Force a player to login
-     * 
+     *
      * @param Player
      *            player
      */

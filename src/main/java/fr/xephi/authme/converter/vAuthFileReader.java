@@ -44,9 +44,9 @@ public class vAuthFileReader {
                     }
                     if (pname == null)
                         continue;
-                    auth = new PlayerAuth(pname.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com");
+                    auth = new PlayerAuth(pname.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", pname);
                 } else {
-                    auth = new PlayerAuth(name.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com");
+                    auth = new PlayerAuth(name.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", name);
                 }
                 database.saveAuth(auth);
             }

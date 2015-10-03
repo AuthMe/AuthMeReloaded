@@ -30,7 +30,7 @@ public class RoyalAuthConverter implements Converter {
                 if (!file.exists())
                     continue;
                 RoyalAuthYamlReader ra = new RoyalAuthYamlReader(file);
-                PlayerAuth auth = new PlayerAuth(name, ra.getHash(), "127.0.0.1", ra.getLastLogin(), "your@email.com");
+                PlayerAuth auth = new PlayerAuth(name, ra.getHash(), "127.0.0.1", ra.getLastLogin(), "your@email.com", o.getName());
                 data.saveAuth(auth);
             } catch (Exception e) {
                 ConsoleLogger.writeStackTrace(e);

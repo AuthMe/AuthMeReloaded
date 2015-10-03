@@ -49,10 +49,10 @@ public class CrazyLoginConverter implements Converter {
                         continue;
                     if (args[0].equalsIgnoreCase("name"))
                         continue;
-                    String player = args[0].toLowerCase();
+                    String playerName = args[0].toLowerCase();
                     String psw = args[1];
                     if (psw != null) {
-                        PlayerAuth auth = new PlayerAuth(player, psw, "127.0.0.1", System.currentTimeMillis(), player);
+                        PlayerAuth auth = new PlayerAuth(playerName, psw, "127.0.0.1", System.currentTimeMillis(), playerName);
                         database.saveAuth(auth);
                     }
                 }

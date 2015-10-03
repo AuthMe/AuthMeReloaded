@@ -260,7 +260,7 @@ public class AdminCommand implements CommandExecutor {
                             return;
                         }
                         String hash = PasswordSecurity.getHash(Settings.getPasswordHash, lowpass, name);
-                        PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0L, "your@email.com");
+                        PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0L, "your@email.com", name);
                         if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
                             auth.setSalt(PasswordSecurity.userSalt.get(name));
                         else auth.setSalt("");

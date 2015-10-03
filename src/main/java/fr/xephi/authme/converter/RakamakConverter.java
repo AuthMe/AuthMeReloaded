@@ -74,17 +74,17 @@ public class RakamakConverter implements Converter {
             }
             users.close();
             for (Entry<String, String> m : playerPSW.entrySet()) {
-                String player = m.getKey();
-                String psw = playerPSW.get(player);
+                String playerName = m.getKey();
+                String psw = playerPSW.get(playerName);
                 String ip;
                 if (useIP) {
-                    ip = playerIP.get(player);
+                    ip = playerIP.get(playerName);
                 } else {
                     ip = "127.0.0.1";
                 }
-                PlayerAuth auth = new PlayerAuth(player, psw, ip, System.currentTimeMillis(), player);
-                if (PasswordSecurity.userSalt.containsKey(player))
-                    auth.setSalt(PasswordSecurity.userSalt.get(player));
+                PlayerAuth auth = new PlayerAuth(playerName, psw, ip, System.currentTimeMillis(), playerName);
+                if (PasswordSecurity.userSalt.containsKey(playerName))
+                    auth.setSalt(PasswordSecurity.userSalt.get(playerName));
                 database.saveAuth(auth);
             }
             ConsoleLogger.info("Rakamak database has been imported correctly");

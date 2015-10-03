@@ -47,7 +47,7 @@ public class xAuthToFlat {
                 String pl = getIdPlayer(id);
                 String psw = getPassword(id);
                 if (psw != null && !psw.isEmpty() && pl != null) {
-                    PlayerAuth auth = new PlayerAuth(pl, psw, "192.168.0.1", 0, "your@email.com");
+                    PlayerAuth auth = new PlayerAuth(pl, psw, "192.168.0.1", 0, "your@email.com", pl);
                     database.saveAuth(auth);
                 }
             }

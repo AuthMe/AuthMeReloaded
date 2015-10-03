@@ -51,7 +51,7 @@ public class NewAPI {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is authenticate
      */
@@ -60,7 +60,7 @@ public class NewAPI {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is a npc
      */
@@ -69,7 +69,7 @@ public class NewAPI {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if the player is unrestricted
      */
@@ -93,7 +93,7 @@ public class NewAPI {
     }
 
     /**
-     * 
+     *
      * @param playerName
      * @return true if player is registered
      */
@@ -121,7 +121,7 @@ public class NewAPI {
 
     /**
      * Register a player
-     * 
+     *
      * @param String
      *            playerName, String password
      * @return true if the player is register correctly
@@ -133,7 +133,7 @@ public class NewAPI {
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com");
+            PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com", playerName);
             return plugin.database.saveAuth(auth);
         } catch (NoSuchAlgorithmException ex) {
             return false;
@@ -142,7 +142,7 @@ public class NewAPI {
 
     /**
      * Force a player to login
-     * 
+     *
      * @param Player
      *            player
      */

@@ -173,11 +173,8 @@ public class EmailCommand implements CommandExecutor {
                     plugin.database.updatePassword(auth);
                     plugin.mail.main(auth, thePass);
                     m.send(player, "email_send");
-                } catch (NoSuchAlgorithmException ex) {
+                } catch (NoSuchAlgorithmException | NoClassDefFoundError ex) {
                     ConsoleLogger.showError(ex.getMessage());
-                    m.send(sender, "error");
-                } catch (NoClassDefFoundError ncdfe) {
-                    ConsoleLogger.showError(ncdfe.getMessage());
                     m.send(sender, "error");
                 }
             } else {

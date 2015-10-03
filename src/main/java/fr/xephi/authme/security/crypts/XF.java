@@ -44,7 +44,7 @@ public class XF implements EncryptionMethod {
     }
 
     public String regmatch(String pattern, String line) {
-        List<String> allMatches = new ArrayList<String>();
+        List<String> allMatches = new ArrayList<>();
         Matcher m = Pattern.compile(pattern).matcher(line);
         while (m.find()) {
             allMatches.add(m.group(1));

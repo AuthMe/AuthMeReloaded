@@ -33,10 +33,10 @@ public class PHPFUSION implements EncryptionMethod {
                 hash.append(hex);
             }
             digest = hash.toString();
-        } catch (UnsupportedEncodingException e) {
-        } catch (InvalidKeyException e) {
-        } catch (NoSuchAlgorithmException e) {
+        } catch (UnsupportedEncodingException | InvalidKeyException | NoSuchAlgorithmException e) {
+            //ingore
         }
+
         return digest;
     }
 
