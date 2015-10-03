@@ -189,7 +189,8 @@ public class Utils {
     }
 
     public static boolean isUnrestricted(Player player) {
-        return Settings.isAllowRestrictedIp && !(Settings.getUnrestrictedName == null || Settings.getUnrestrictedName.isEmpty()) && (Settings.getUnrestrictedName.contains(player.getName()));
+        return Settings.isAllowRestrictedIp && !Settings.getUnrestrictedName.isEmpty()
+                && (Settings.getUnrestrictedName.contains(player.getName()));
     }
 
     private static boolean useGroupSystem() {

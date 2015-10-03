@@ -119,7 +119,6 @@ public final class Settings extends YamlConfiguration {
     }
 
 
-    @SuppressWarnings("unchecked")
     public static void loadVariables() {
         messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en").toLowerCase());
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
@@ -185,7 +184,7 @@ public final class Settings extends YamlConfiguration {
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
-        allowCommands = (List<String>) configFile.getList("settings.restrictions.allowCommands");
+        allowCommands = configFile.getStringList("settings.restrictions.allowCommands");
         if (configFile.contains("allowCommands")) {
             if (!allowCommands.contains("/login"))
                 allowCommands.add("/login");
@@ -210,7 +209,7 @@ public final class Settings extends YamlConfiguration {
         getmailSMTP = configFile.getString("Email.mailSMTP", "smtp.gmail.com");
         getMailPort = configFile.getInt("Email.mailPort", 465);
         getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
-        getMySQLOtherUsernameColumn = (List<String>) configFile.getList("ExternalBoardOptions.mySQLOtherUsernameColumns", new ArrayList<String>());
+        getMySQLOtherUsernameColumn = configFile.getStringList("ExternalBoardOptions.mySQLOtherUsernameColumns");
         displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
         getMySQLColumnId = configFile.getString("DataSource.mySQLColumnId", "id");
         getmailSenderName = configFile.getString("Email.mailSenderName", "");
@@ -274,7 +273,7 @@ public final class Settings extends YamlConfiguration {
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
         forceRegisterCommands = configFile.getStringList("settings.forceRegisterCommands");
-        forceRegisterCommandsAsConsole = (List<String>) configFile.getList("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
+        forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
         generateImage = configFile.getBoolean("Email.generateImage", true);
 
@@ -289,7 +288,8 @@ public final class Settings extends YamlConfiguration {
             set("Xenoforo.predefinedSalt", null);
             changes = true;
         }
-        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
+        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") ||
+                configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
             set("settings.security.passwordHash", "XENFORO");
             changes = true;
         }
@@ -462,7 +462,7 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (contains("Hooks.chestshop")) {
-            if(getBoolean("Hooks.chestshop")) {
+            if (getBoolean("Hooks.chestshop")) {
                 set("Hooks.legacyChestshop", true);
             }
             set("Hooks.chestshop", null);
