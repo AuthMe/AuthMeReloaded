@@ -192,9 +192,6 @@ public class AuthMe extends JavaPlugin {
         // Check Multiverse
         checkMultiverse();
 
-        // Check PerWorldInventories Version
-        checkPerWorldInventories();
-
         // Check ChestShop
         checkChestShop();
 
@@ -453,25 +450,6 @@ public class AuthMe extends JavaPlugin {
             legacyChestShop = true;
         } else {
             legacyChestShop = false;
-        }
-    }
-
-    // Check PerWorldInventories version
-    public void checkPerWorldInventories() {
-        if (server.getPluginManager().isPluginEnabled("PerWorldInventories")) {
-            double version = 0;
-            String ver = server.getPluginManager().getPlugin("PerWorldInventories").getDescription().getVersion();
-            try {
-                version = Double.valueOf(ver.split(" ")[0]);
-            } catch (NumberFormatException nfe) {
-                try {
-                    version = Double.valueOf(ver.split("t")[0]);
-                } catch (NumberFormatException ignore) {
-                }
-            }
-            if (version < 1.57) {
-                ConsoleLogger.showError("Please Update your PerWorldInventories version! INVENTORY WIPE may occur!");
-            }
         }
     }
 
