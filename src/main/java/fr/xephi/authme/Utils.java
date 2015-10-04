@@ -175,15 +175,18 @@ public class Utils {
         if (player == null || Utils.isUnrestricted(player)) {
             return true;
         }
+
         String name = player.getName().toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return true;
         }
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
+
+        if (!Settings.isForcedRegistrationEnabled) {
+            if (!plugin.database.isAuthAvailable(name)) {
                 return true;
             }
         }
+
         return false;
     }
 

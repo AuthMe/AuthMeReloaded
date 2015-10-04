@@ -9,7 +9,6 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
@@ -66,9 +65,6 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
-            return;
-
         String msg = event.getMessage();
         if (msg.equalsIgnoreCase("/worldedit cui"))
             return;
@@ -81,8 +77,10 @@ public class AuthMePlayerListener implements Listener {
         if (Settings.allowCommands.contains(cmd))
             return;
 
-        event.setMessage("/notloggedin");
-        event.setCancelled(true);
+        if (!Utils.checkAuth(event.getPlayer())) {
+            event.setMessage("/notloggedin");
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -246,48 +244,34 @@ public class AuthMePlayerListener implements Listener {
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED)
             return;
 
-        if (!Settings.countriesBlacklist.isEmpty()) {
+        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable
+                && !plugin.authmePermissible(player, "authme.bypassantibot")) {
             String code = Utils.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || (Settings.countriesBlacklist.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+            if (((code == null) || Settings.countriesBlacklist.contains(code))) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
-        if (Settings.enableProtection && !Settings.countries.isEmpty()) {
+        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable
+                && !plugin.authmePermissible(player, "authme.bypassantibot")) {
             String code = Utils.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || (!Settings.countries.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+            if (((code == null) || !Settings.countries.contains(code))) {
                 event.setKickMessage(m.send("country_banned")[0]);
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
-
-        if (Settings.isKickNonRegisteredEnabled && !Settings.antiBotInAction) {
-            if (!isAuthAvailable) {
-                event.setKickMessage(m.send("reg_only")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
 
         // TODO: Add message to the messages file!!!
-        if (Settings.antiBotInAction) {
-            if (!isAuthAvailable) {
+        if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
+            if (Settings.antiBotInAction) {
                 event.setKickMessage("AntiBot service in action! You actually need to be registered!");
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
-            }
-        }
-
-        if (isAuthAvailable && plugin.database.getType() != DataSource.DataSourceType.FILE) {
-            PlayerAuth auth = plugin.database.getAuth(name);
-            if (auth.getRealName() != null && !auth.getRealName().isEmpty()
-                    && !auth.getRealName().equalsIgnoreCase("Player") && !auth.getRealName().equalsIgnoreCase(name)) {
-                event.setKickMessage(m.send("same_nick")[0]);
+            } else {
+                event.setKickMessage(m.send("reg_only")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                if (Settings.banUnsafeIp)
-                    plugin.getServer().banIP(player.getAddress().getAddress().getHostAddress());
                 return;
             }
         }
@@ -372,7 +356,7 @@ public class AuthMePlayerListener implements Listener {
 
         plugin.management.performQuit(player, false);
 
-        if (plugin.database.isAuthAvailable(name) && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
+        if (!PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
             event.setQuitMessage(null);
     }
 
@@ -430,7 +414,6 @@ public class AuthMePlayerListener implements Listener {
             public void run() {
                 player.closeInventory();
             }
-
         }, 1);
     }
 
