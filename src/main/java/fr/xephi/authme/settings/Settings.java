@@ -60,7 +60,7 @@ public final class Settings extends YamlConfiguration {
             protectInventoryBeforeLogInEnabled, isBackupActivated,
             isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
             rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-            useCaptcha, emailRegistration, multiverse, legacyChestShop, bungee,
+            useCaptcha, emailRegistration, multiverse, bungee,
             banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
             disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
             purgePlayerDat, purgeEssentialsFile, supportOldPassword,
@@ -222,7 +222,6 @@ public final class Settings extends YamlConfiguration {
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = configFile.getBoolean("Hooks.multiverse", true);
-        legacyChestShop = configFile.getBoolean("Hooks.legacyChestshop", false);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
@@ -462,10 +461,11 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (contains("Hooks.chestshop")) {
-            if (getBoolean("Hooks.chestshop")) {
-                set("Hooks.legacyChestshop", true);
-            }
             set("Hooks.chestshop", null);
+            changes = true;
+        }
+        if (contains("Hooks.legacyChestshop")) {
+            set("Hooks.legacyChestshop", null);
             changes = true;
         }
         if (!contains("Email.generateImage")) {

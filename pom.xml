@@ -160,11 +160,12 @@
 			<url>http://repo.luricos.de/content/repositories/releases</url>
 		</repository>
 
-		<!-- Xephi Repo (ChestShop) -->
+		<!-- Xephi Repo
 		<repository>
 			<id>xephi-repo</id>
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
+		-->
 
 		<!-- Metrics Snapshots Repo -->
 		<repository>
@@ -521,105 +522,6 @@
 				<exclusion>
 					<artifactId>AccountsClient</artifactId>
 					<groupId>com.mojang</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>log4j-core</artifactId>
-					<groupId>org.apache.logging.log4j</groupId>
-				</exclusion>
-			</exclusions>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- ChestShop, on our maven repo http://dev.bukkit.org/bukkit-plugins/chestshop/ -->
-		<dependency>
-			<groupId>com.acrobot.chestshop</groupId>
-			<artifactId>chestshop</artifactId>
-			<version>3.8.12</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>Vault</artifactId>
-					<groupId>net.milkbowl.vault</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>odditem</artifactId>
-					<groupId>info.somethingodd</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>scrollingmenusign</artifactId>
-					<groupId>me.desht</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>truezip</artifactId>
-					<groupId>de.schlichtherle</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>residence</artifactId>
-					<groupId>net.t00thpick1</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>Heroes</artifactId>
-					<groupId>com.herocraftonline.heroes</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>HeroChat</artifactId>
-					<groupId>com.dthielke.herochat</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>worldguard</artifactId>
-					<groupId>com.sk89q</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>worldedit</artifactId>
-					<groupId>com.sk89q</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>lwc</artifactId>
-					<groupId>com.griefcraft.lwc</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>js</artifactId>
-					<groupId>rhino</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jchronic</artifactId>
-					<groupId>com.sk89q</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>deadbolt</artifactId>
-					<groupId>com.daemitus.deadbolt</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>bukkit-classloader-check</artifactId>
-					<groupId>com.sk89q.spigot</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>jsr305</artifactId>
-					<groupId>com.google.code.findbugs</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>opencsv</artifactId>
-					<groupId>net.sf.opencsv</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>simplechestlock</artifactId>
-					<groupId>com.webkonsept.bukkit.simplechestlock</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>commandbook</artifactId>
-					<groupId>com.sk89q</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>lockette</artifactId>
-					<groupId>org.yi.acru.bukkit.lockette</groupId>
 				</exclusion>
 				<exclusion>
 					<artifactId>log4j-core</artifactId>

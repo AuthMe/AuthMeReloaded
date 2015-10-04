@@ -65,7 +65,6 @@ public class AuthMe extends JavaPlugin {
     private JsonCache playerBackup;
     public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
-    public boolean legacyChestShop = false;
     public boolean antibotMod = false;
     public boolean delayedAntiBot = true;
 
@@ -192,9 +191,6 @@ public class AuthMe extends JavaPlugin {
         // Check Multiverse
         checkMultiverse();
 
-        // Check ChestShop
-        checkChestShop();
-
         // Check Essentials
         checkEssentials();
 
@@ -240,12 +236,6 @@ public class AuthMe extends JavaPlugin {
         if (Settings.bungee) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
-        }
-
-        // Legacy chestshop hook
-        if (legacyChestShop) {
-            pm.registerEvents(new AuthMeChestShopListener(this), this);
-            ConsoleLogger.info("Hooked successfully with ChestShop!");
         }
 
         // Reload support hook
@@ -425,34 +415,6 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    // Check the version of the ChestShop plugin
-    public void checkChestShop() {
-        if (Settings.legacyChestShop && server.getPluginManager().isPluginEnabled("ChestShop")) {
-            String rawver = com.Acrobot.ChestShop.ChestShop.getVersion();
-            double version;
-            try {
-                version = Double.valueOf(rawver.split(" ")[0]);
-            } catch (NumberFormatException nfe) {
-                try {
-                    version = Double.valueOf(rawver.split("t")[0]);
-                } catch (NumberFormatException nfee) {
-                    legacyChestShop = false;
-                    return;
-                }
-            }
-            if (version >= 3.813) {
-                return;
-            }
-            if (version < 3.50) {
-                ConsoleLogger.showError("Please Update your ChestShop version! Bugs may occur!");
-                return;
-            }
-            legacyChestShop = true;
-        } else {
-            legacyChestShop = false;
-        }
-    }
-
     // Get the Multiverse plugin
     public void checkMultiverse() {
         if (Settings.multiverse && server.getPluginManager().isPluginEnabled("Multiverse-Core")) {
@@ -506,10 +468,16 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
+    // Check the presence of the ProtocolLib plugin
     public void checkProtocolLib() {
-        if (server.getPluginManager().isPluginEnabled("ProtocolLib")) {
-            inventoryProtector = new AuthMeInventoryListener(this);
-            ProtocolLibrary.getProtocolManager().addPacketListener(inventoryProtector);
+        if (Settings.protectInventoryBeforeLogInEnabled) {
+            if (server.getPluginManager().isPluginEnabled("ProtocolLib")) {
+                inventoryProtector = new AuthMeInventoryListener(this);
+                ProtocolLibrary.getProtocolManager().addPacketListener(inventoryProtector);
+            } else {
+                ConsoleLogger.showError("WARNING!!! The protectInventory feature requires ProtocolLib! Disabling it...");
+                Settings.protectInventoryBeforeLogInEnabled = false;
+            }
         }
     }
 
