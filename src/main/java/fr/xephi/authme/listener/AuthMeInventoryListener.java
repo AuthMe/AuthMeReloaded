@@ -22,19 +22,17 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.InvocationTargetException;
-
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Level;
-
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 public class AuthMeInventoryListener extends PacketAdapter {
 
@@ -72,6 +70,7 @@ public class AuthMeInventoryListener extends PacketAdapter {
         inventoryPacket.getIntegers().write(0, PLAYER_INVENTORY);
 
         ItemStack[] playerCrafting = new ItemStack[PLAYER_CRAFTING_SIZE];
+        Arrays.fill(playerCrafting, new ItemStack(Material.AIR));
         ItemStack[] armorContents = player.getInventory().getArmorContents();
         ItemStack[] mainInventory = player.getInventory().getContents();
 
