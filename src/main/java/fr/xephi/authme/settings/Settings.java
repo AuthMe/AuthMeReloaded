@@ -14,10 +14,11 @@ import java.util.List;
 
 public final class Settings extends YamlConfiguration {
 
-    private AuthMe plugin;
+    private static AuthMe plugin;
+    private static Settings instance;
 
     // This is not an option!
-    public static Boolean antiBotInAction = false;
+    public static boolean antiBotInAction = false;
 
     public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
@@ -59,7 +60,7 @@ public final class Settings extends YamlConfiguration {
             protectInventoryBeforeLogInEnabled, isBackupActivated,
             isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
             rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-            useCaptcha, emailRegistration, multiverse, legacyChestShop, bungee,
+            useCaptcha, emailRegistration, multiverse, bungee,
             banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
             disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
             purgePlayerDat, purgeEssentialsFile, supportOldPassword,
@@ -94,30 +95,30 @@ public final class Settings extends YamlConfiguration {
 
     protected static YamlConfiguration configFile;
 
-    public Settings(AuthMe plugin) {
+    public Settings(AuthMe pl) {
+        instance = this;
+        plugin = pl;
         configFile = (YamlConfiguration) plugin.getConfig();
-        this.plugin = plugin;
     }
 
-    public final void reload() throws Exception {
+    public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
         boolean exist = SETTINGS_FILE.exists();
         if (!exist) {
             plugin.saveDefaultConfig();
         }
-        load(SETTINGS_FILE);
+        instance.load(SETTINGS_FILE);
         if (exist) {
-            mergeConfig();
+            instance.mergeConfig();
         }
         loadVariables();
         if (exist) {
-            saveDefaults();
+            instance.saveDefaults();
         }
         messageFile = new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + messagesLanguage + ".yml");
     }
 
 
-    @SuppressWarnings("unchecked")
     public static void loadVariables() {
         messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en").toLowerCase());
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
@@ -183,7 +184,7 @@ public final class Settings extends YamlConfiguration {
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
-        allowCommands = (List<String>) configFile.getList("settings.restrictions.allowCommands");
+        allowCommands = configFile.getStringList("settings.restrictions.allowCommands");
         if (configFile.contains("allowCommands")) {
             if (!allowCommands.contains("/login"))
                 allowCommands.add("/login");
@@ -208,7 +209,7 @@ public final class Settings extends YamlConfiguration {
         getmailSMTP = configFile.getString("Email.mailSMTP", "smtp.gmail.com");
         getMailPort = configFile.getInt("Email.mailPort", 465);
         getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
-        getMySQLOtherUsernameColumn = (List<String>) configFile.getList("ExternalBoardOptions.mySQLOtherUsernameColumns", new ArrayList<String>());
+        getMySQLOtherUsernameColumn = configFile.getStringList("ExternalBoardOptions.mySQLOtherUsernameColumns");
         displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
         getMySQLColumnId = configFile.getString("DataSource.mySQLColumnId", "id");
         getmailSenderName = configFile.getString("Email.mailSenderName", "");
@@ -221,7 +222,6 @@ public final class Settings extends YamlConfiguration {
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = configFile.getBoolean("Hooks.multiverse", true);
-        legacyChestShop = configFile.getBoolean("Hooks.legacyChestshop", false);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
@@ -272,7 +272,7 @@ public final class Settings extends YamlConfiguration {
         emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
         emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
         forceRegisterCommands = configFile.getStringList("settings.forceRegisterCommands");
-        forceRegisterCommandsAsConsole = (List<String>) configFile.getList("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
+        forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
         generateImage = configFile.getBoolean("Email.generateImage", true);
 
@@ -287,7 +287,8 @@ public final class Settings extends YamlConfiguration {
             set("Xenoforo.predefinedSalt", null);
             changes = true;
         }
-        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") || configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
+        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") ||
+                configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
             set("settings.security.passwordHash", "XENFORO");
             changes = true;
         }
@@ -460,10 +461,11 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (contains("Hooks.chestshop")) {
-            if(getBoolean("Hooks.chestshop")) {
-                set("Hooks.legacyChestshop", true);
-            }
             set("Hooks.chestshop", null);
+            changes = true;
+        }
+        if (contains("Hooks.legacyChestshop")) {
+            set("Hooks.legacyChestshop", null);
             changes = true;
         }
         if (!contains("Email.generateImage")) {
@@ -481,9 +483,9 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
-    public void setValue(String key, Object value) {
-        this.set(key, value);
-        this.save();
+    public static void setValue(String key, Object value) {
+        instance.set(key, value);
+        save();
     }
 
     private static HashAlgorithm getPasswordHash() {
@@ -511,11 +513,11 @@ public final class Settings extends YamlConfiguration {
      * return false if ip and name doesnt amtch with player that join the
      * server, so player has a restricted access
      */
-    public static Boolean getRestrictedIp(String name, String ip) {
+    public static boolean getRestrictedIp(String name, String ip) {
 
         Iterator<String> iter = getRestrictedIp.iterator();
-        Boolean trueonce = false;
-        Boolean namefound = false;
+        boolean trueonce = false;
+        boolean namefound = false;
         while (iter.hasNext()) {
             String[] args = iter.next().split(";");
             String testname = args[0];
@@ -527,11 +529,7 @@ public final class Settings extends YamlConfiguration {
                 }
             }
         }
-        if (!namefound) {
-            return true;
-        } else {
-            return trueonce;
-        }
+        return !namefound || trueonce;
     }
 
     /**
@@ -539,9 +537,9 @@ public final class Settings extends YamlConfiguration {
      *
      * @return True if saved successfully
      */
-    public final boolean save() {
+    public static boolean save() {
         try {
-            save(SETTINGS_FILE);
+            instance.save(SETTINGS_FILE);
             return true;
         } catch (Exception ex) {
             return false;

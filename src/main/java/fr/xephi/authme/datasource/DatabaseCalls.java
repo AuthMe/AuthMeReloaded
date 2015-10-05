@@ -4,7 +4,9 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class DatabaseCalls implements DataSource {
 
@@ -214,13 +216,8 @@ public class DatabaseCalls implements DataSource {
 
     @Override
     public synchronized void close() {
-        try {
-            exec.shutdown();
-            exec.awaitTermination(10, TimeUnit.SECONDS);
-            database.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        exec.shutdown();
+        database.close();
     }
 
     @Override

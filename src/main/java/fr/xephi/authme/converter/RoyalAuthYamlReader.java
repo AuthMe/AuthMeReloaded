@@ -1,8 +1,8 @@
 package fr.xephi.authme.converter;
 
-import java.io.File;
-
 import fr.xephi.authme.settings.CustomConfiguration;
+
+import java.io.File;
 
 public class RoyalAuthYamlReader extends CustomConfiguration {
 

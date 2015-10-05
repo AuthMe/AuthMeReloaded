@@ -160,7 +160,6 @@ public class Utils {
     }
 
     // TODO: remove if not needed
-    @SuppressWarnings("unused")
     public static void hasPermOnJoin(Player player) {
         if (plugin.permission == null)
             return;
@@ -176,20 +175,24 @@ public class Utils {
         if (player == null || Utils.isUnrestricted(player)) {
             return true;
         }
+
         String name = player.getName().toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             return true;
         }
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
+
+        if (!Settings.isForcedRegistrationEnabled) {
+            if (!plugin.database.isAuthAvailable(name)) {
                 return true;
             }
         }
+
         return false;
     }
 
     public static boolean isUnrestricted(Player player) {
-        return Settings.isAllowRestrictedIp && !(Settings.getUnrestrictedName == null || Settings.getUnrestrictedName.isEmpty()) && (Settings.getUnrestrictedName.contains(player.getName()));
+        return Settings.isAllowRestrictedIp && !Settings.getUnrestrictedName.isEmpty()
+                && (Settings.getUnrestrictedName.contains(player.getName()));
     }
 
     private static boolean useGroupSystem() {

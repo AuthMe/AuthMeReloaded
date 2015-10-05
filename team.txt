@@ -1,9 +1,12 @@
 AuthMe-Team:
 
 Active staff:
-Xephi (Xephi59) - Leader, Main developer
-Gabriele C. (sgdc3) - Ticket Manager, Project Page and Structure Manager, Contributor
+Xephi (Xephi59) - Leader, Main developer (temporary inactive)
 DNx5 - Developer
+games647 - Developer
+Gabriele C. (sgdc3) - Project Manager, Contributor
+
+Staff to contact:
 CryLegend - Contributor, AuthMeBridge Developer (Need activation)
 
 External Contributors:

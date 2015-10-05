@@ -6,10 +6,7 @@ import fr.xephi.authme.Utils;
 import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.DataFileCache;
-import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
@@ -26,7 +23,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -39,13 +35,11 @@ public class AsyncronousJoin {
     protected AuthMe plugin;
     protected String name;
     private Messages m = Messages.getInstance();
-    private JsonCache playerBackup;
 
     public AsyncronousJoin(Player player, AuthMe plugin, DataSource database) {
         this.player = player;
         this.plugin = plugin;
         this.database = database;
-        this.playerBackup = new JsonCache(plugin);
         this.name = player.getName().toLowerCase();
     }
 
@@ -127,27 +121,14 @@ public class AsyncronousJoin {
                 }
             placePlayerSafely(player, spawnLoc);
             LimboCache.getInstance().updateLimboPlayer(player);
-            DataFileCache dataFile = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
-            playerBackup.createCache(player, dataFile);
             // protect inventory
-            if (Settings.protectInventoryBeforeLogInEnabled) {
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                ProtectInventoryEvent ev = new ProtectInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+            if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
+                ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 plugin.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
+                    plugin.inventoryProtector.sendInventoryPacket(player);
                     if (!Settings.noConsoleSpam)
                         ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
-                } else {
-                    final ItemStack[] inv = ev.getEmptyArmor();
-                    final ItemStack[] armor = ev.getEmptyArmor();
-                    sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                        @Override
-                        public void run() {
-                            plugin.api.setPlayerInventory(player, inv, armor);
-                        }
-
-                    });
                 }
             }
         } else {

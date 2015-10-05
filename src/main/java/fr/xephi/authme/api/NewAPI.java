@@ -6,11 +6,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -53,7 +51,7 @@ public class NewAPI {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is authenticate
      */
@@ -62,7 +60,7 @@ public class NewAPI {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is a npc
      */
@@ -71,7 +69,7 @@ public class NewAPI {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if the player is unrestricted
      */
@@ -94,18 +92,8 @@ public class NewAPI {
         }
     }
 
-    public void setPlayerInventory(Player player, ItemStack[] content,
-            ItemStack[] armor) {
-        try {
-            player.getInventory().setContents(content);
-            player.getInventory().setArmorContents(armor);
-        } catch (Exception npe) {
-            ConsoleLogger.showError("Some error appear while trying to set inventory for " + player.getName());
-        }
-    }
-
     /**
-     * 
+     *
      * @param playerName
      * @return true if player is registered
      */
@@ -133,7 +121,7 @@ public class NewAPI {
 
     /**
      * Register a player
-     * 
+     *
      * @param String
      *            playerName, String password
      * @return true if the player is register correctly
@@ -145,7 +133,7 @@ public class NewAPI {
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com");
+            PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com", playerName);
             return plugin.database.saveAuth(auth);
         } catch (NoSuchAlgorithmException ex) {
             return false;
@@ -154,7 +142,7 @@ public class NewAPI {
 
     /**
      * Force a player to login
-     * 
+     *
      * @param Player
      *            player
      */

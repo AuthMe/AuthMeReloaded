@@ -4,7 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * 
+ *
  * This event is call just after store inventory into cache and will empty the
  * player inventory.
  *
@@ -18,12 +18,11 @@ public class ProtectInventoryEvent extends CustomEvent {
     private ItemStack[] emptyArmor = null;
     private Player player;
 
-    public ProtectInventoryEvent(Player player, ItemStack[] storedinventory,
-            ItemStack[] storedarmor) {
+    public ProtectInventoryEvent(Player player) {
         super(true);
         this.player = player;
-        this.storedinventory = storedinventory;
-        this.storedarmor = storedarmor;
+        this.storedinventory = player.getInventory().getContents();
+        this.storedarmor = player.getInventory().getArmorContents();
         this.emptyInventory = new ItemStack[36];
         this.emptyArmor = new ItemStack[4];
     }

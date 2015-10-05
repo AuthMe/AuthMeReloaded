@@ -1,10 +1,9 @@
 package fr.xephi.authme.converter;
 
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
+import org.bukkit.command.CommandSender;
 
 public class vAuthConverter implements Converter {
 

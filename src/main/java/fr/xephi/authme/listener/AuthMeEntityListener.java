@@ -9,6 +9,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
+import org.bukkit.projectiles.ProjectileSource;
 
 public class AuthMeEntityListener implements Listener {
 
@@ -121,13 +122,14 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    // TODO: Need to check this, player can't throw snowball but the item is taken.
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         Projectile projectile = event.getEntity();
         if (projectile == null)
             return;
 
-        Entity shooter = (Entity) projectile.getShooter();
+        ProjectileSource shooter = projectile.getShooter();
         if (shooter == null || !(shooter instanceof Player)) {
             return;
         }
@@ -139,7 +141,7 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onShoot(EntityShootBowEvent event) {
         Entity entity = event.getEntity();
         if (entity == null || !(entity instanceof Player)) {

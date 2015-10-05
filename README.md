@@ -3,6 +3,8 @@
 <hr>
 #####Development tools:
 
+- DEVELOPMENT TEAM REPO (<strong>please send PRs here!</strong>): <a href="https://github.com/AuthMe-Team/AuthMeReloaded">Github Development Page</a>
+
 - Developers ChatRoom: [![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 - Build status: [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/55bab9e8653762002000190a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55bab9e8653762002000190a)
@@ -41,6 +43,8 @@ McStats: http://mcstats.org/plugin/AuthMe
 #####Running Requirements:
 >- Java 1.7 (should work also with Java 1.8)
 >- Spigot or CraftBukkit (1.7.10 or 1.8.X)
+>- Vault
+>- Protocollib
 
 <hr>
 ###Plugin Description:
@@ -130,6 +134,6 @@ GameHosting.it is leader in Italy as Game Server Provider. With its own DataCent
 [![GameHosting](http://www.gamehosting.it/images/bn3.png)](http://www.gamehosting.it)
 
 #####Credits
-<p>Team members: Xephi(Main Developer, Author), Maxetto(Contributor) and sgdc3(Contributor)
+<p>Team members: look at the <a href="https://github.com/AuthMe-Team/AuthMeReloaded/blob/master/team.txt">team.txt file</a>
 <p>Credit for old version of the plugin to: d4rkwarriors, fabe1337 , Whoami2 and pomo4ka</p>
 <p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>

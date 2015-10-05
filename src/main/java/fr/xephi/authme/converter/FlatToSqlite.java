@@ -1,44 +1,44 @@
 package fr.xephi.authme.converter;
 
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.settings.Settings;
+import org.bukkit.command.CommandSender;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import org.bukkit.command.CommandSender;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Settings;
+import java.sql.*;
 
 public class FlatToSqlite implements Converter {
 
     public CommandSender sender;
-
+    private String tableName;
+    private String columnName;
+    private String columnPassword;
+    private String columnIp;
+    private String columnLastLogin;
+    private String lastlocX;
+    private String lastlocY;
+    private String lastlocZ;
+    private String lastlocWorld;
+    private String columnEmail;
+    private String database;
+    private String columnID;
+    private Connection con;
     public FlatToSqlite(CommandSender sender) {
         this.sender = sender;
     }
 
-    private static String tableName;
-    private static String columnName;
-    private static String columnPassword;
-    private static String columnIp;
-    private static String columnLastLogin;
-    private static String lastlocX;
-    private static String lastlocY;
-    private static String lastlocZ;
-    private static String lastlocWorld;
-    private static String columnEmail;
-    private static File source;
-    private static String database;
-    private static String columnID;
-    private static Connection con;
+    private static void close(AutoCloseable o) {
+        if (o != null) {
+            try {
+                o.close();
+            } catch (Exception ex) {
+                ConsoleLogger.showError(ex.getMessage());
+            }
+        }
+    }
 
     @Override
     public void run() {
@@ -55,6 +55,12 @@ public class FlatToSqlite implements Converter {
         columnEmail = Settings.getMySQLColumnEmail;
         columnID = Settings.getMySQLColumnId;
 
+        File source = new File(Settings.PLUGIN_FOLDER, "auths.db");
+        if (!source.exists()) {
+            sender.sendMessage("Source file for FlatFile database not found... Aborting");
+            return;
+        }
+
         try {
             connect();
             setup();
@@ -62,14 +68,12 @@ public class FlatToSqlite implements Converter {
             sender.sendMessage("Some error appeared while trying to setup and connect to sqlite database... Aborting");
             return;
         }
-        try {
-            source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
-            source.createNewFile();
-            BufferedReader br = new BufferedReader(new FileReader(source));
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(source))) {
             String line;
             int i = 1;
             String newline;
-            while ((line = br.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args.length == 4)
                     newline = "INSERT INTO " + tableName + " VALUES (" + i + ", '" + args[0] + "', '" + args[1] + "', '" + args[2] + "', " + args[3] + ", 0, 0, 0, 'world', 'your@email.com');";
@@ -84,25 +88,23 @@ public class FlatToSqlite implements Converter {
                     saveAuth(newline);
                 i = i + 1;
             }
-            br.close();
-            ConsoleLogger.info("The FlatFile has been converted to " + database + ".db file");
-            close();
-            sender.sendMessage("The FlatFile has been converted to " + database + ".db file");
-            return;
+            String resp = "The FlatFile has been converted to " + database + ".db file";
+            ConsoleLogger.info(resp);
+            sender.sendMessage(resp);
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            sender.sendMessage("Can't open the flat database file! Does it exist?");
+            sender.sendMessage("Can't open the flat database file!");
+        } finally {
+            close(con);
         }
-        return;
     }
 
-    private synchronized static void connect()
-            throws ClassNotFoundException, SQLException {
+    private synchronized void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
     }
 
-    private synchronized static void setup() throws SQLException {
+    private synchronized void setup() throws SQLException {
         Statement st = null;
         ResultSet rs = null;
         try {
@@ -145,7 +147,7 @@ public class FlatToSqlite implements Converter {
         }
     }
 
-    private static synchronized boolean saveAuth(String s) {
+    private synchronized boolean saveAuth(String s) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement(s);
@@ -157,33 +159,5 @@ public class FlatToSqlite implements Converter {
             close(pst);
         }
         return true;
-    }
-
-    private static void close(Statement st) {
-        if (st != null) {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-            }
-        }
-    }
-
-    private static void close(ResultSet rs) {
-        if (rs != null) {
-            try {
-                rs.close();
-            } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-            }
-        }
-    }
-
-    public synchronized static void close() {
-        try {
-            con.close();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-        }
     }
 }

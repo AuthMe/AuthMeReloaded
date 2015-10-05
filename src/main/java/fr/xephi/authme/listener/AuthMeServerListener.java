@@ -56,10 +56,6 @@ public class AuthMeServerListener implements Listener {
             ConsoleLogger.info("Multiverse-Core has been disabled, unhook!");
             return;
         }
-        if (pluginName.equalsIgnoreCase("ChestShop")) {
-            plugin.legacyChestShop = false;
-            ConsoleLogger.info("ChestShop has been disabled, unhook!");
-        }
         if (pluginName.equalsIgnoreCase("CombatTagPlus")) {
             plugin.combatTagPlus = null;
             ConsoleLogger.info("CombatTagPlus has been disabled, unhook!");
@@ -67,6 +63,10 @@ public class AuthMeServerListener implements Listener {
         if (pluginName.equalsIgnoreCase("Vault")) {
             plugin.permission = null;
             ConsoleLogger.showError("Vault has been disabled, unhook permissions!");
+        }
+        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+            plugin.inventoryProtector = null;
+            ConsoleLogger.showError("ProtocolLib has been disabled, unhook packet inventory protection!");
         }
     }
 
@@ -77,11 +77,12 @@ public class AuthMeServerListener implements Listener {
             plugin.checkEssentials();
         if (pluginName.equalsIgnoreCase("Multiverse-Core"))
             plugin.checkMultiverse();
-        if (pluginName.equalsIgnoreCase("ChestShop"))
-            plugin.checkChestShop();
         if (pluginName.equalsIgnoreCase("CombatTagPlus"))
             plugin.checkCombatTagPlus();
         if (pluginName.equalsIgnoreCase("Vault"))
             plugin.checkVault();
+        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+            plugin.checkProtocolLib();
+        }
     }
 }
