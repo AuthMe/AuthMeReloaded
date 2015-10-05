@@ -95,6 +95,7 @@
 							<include>com.sun.mail:javax.mail</include>
 							<include>com.comphenix.attribute:AttributeStorage</include>
 							<include>org.mcstats.bukkit:metrics</include>
+							<include>com.google.code.gson:gson</include>
 						</includes>
 					</artifactSet>
 					<relocations>
@@ -238,6 +239,15 @@
 					<groupId>javax.activation</groupId>
 				</exclusion>
 			</exclusions>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- GSON required for 1.7.X compatibility -->
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.4</version>
+			<scope>compile</scope>
 			<optional>true</optional>
 		</dependency>
 

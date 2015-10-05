@@ -24,7 +24,6 @@ import org.bukkit.scheduler.BukkitTask;
 import org.apache.logging.log4j.LogManager;
 
 import org.mcstats.Metrics;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import net.milkbowl.vault.permission.Permission;
@@ -474,7 +473,7 @@ public class AuthMe extends JavaPlugin {
         if (Settings.protectInventoryBeforeLogInEnabled) {
             if (server.getPluginManager().isPluginEnabled("ProtocolLib")) {
                 inventoryProtector = new AuthMeInventoryListener(this);
-                ProtocolLibrary.getProtocolManager().addPacketListener(inventoryProtector);
+                inventoryProtector.register();
             } else {
                 ConsoleLogger.showError("WARNING!!! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;

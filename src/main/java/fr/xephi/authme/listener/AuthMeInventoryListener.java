@@ -60,6 +60,10 @@ public class AuthMeInventoryListener extends PacketAdapter {
         }
     }
 
+    public void register() {
+        ProtocolLibrary.getProtocolManager().addPacketListener(this);
+    }
+
     public void sendInventoryPacket(Player player) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         PacketContainer inventoryPacket = protocolManager.createPacket(PacketType.Play.Server.WINDOW_ITEMS);
