@@ -258,6 +258,10 @@ public class AuthMe extends JavaPlugin {
 
         // Register events
         pm.registerEvents(new AuthMePlayerListener(this), this);
+        // Try to register 1.8 player listeners
+        ConsoleLogger.info("Trying to register bukkit 1.8 listeners, if an error is shown below please don't report it!");
+        ConsoleLogger.info("It only means that you're using a previous version of the server.");
+        pm.registerEvents(new AuthMePlayerListener18(this), this);
         pm.registerEvents(new AuthMeBlockListener(this), this);
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
