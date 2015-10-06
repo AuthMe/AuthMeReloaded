@@ -24,7 +24,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import org.mcstats.Metrics;
-import com.comphenix.protocol.ProtocolLibrary;
 import net.milkbowl.vault.permission.Permission;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import com.earth2me.essentials.Essentials;
@@ -57,8 +56,9 @@ import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.datasource.SQLite_HIKARI;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
-import fr.xephi.authme.listener.AuthMeInventoryListener;
+import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.plugin.manager.BungeeCordMessage;
