@@ -73,9 +73,9 @@ import fr.xephi.authme.settings.Spawn;
 public class AuthMe extends JavaPlugin {
 
     private static AuthMe authme;
+    private static Server server;
+    private Logger authmeLogger;
 
-    private final Server server = getServer();
-    private Logger authmeLogger = Logger.getLogger("AuthMe");
     public Management management;
     public NewAPI api;
     public SendMailSSL mail;
@@ -96,7 +96,7 @@ public class AuthMe extends JavaPlugin {
     public CombatTagPlus combatTagPlus;
     public AuthMeInventoryPacketAdapter inventoryProtector;
 
-    // Manager
+    // Module manager
     private ModuleManager moduleManager;
 
     // TODO: Create Manager for fields below
@@ -124,6 +124,8 @@ public class AuthMe extends JavaPlugin {
     @Override
     public void onEnable() {
         // Set the Instance
+        server = getServer();
+        authmeLogger = Logger.getLogger("AuthMe");
         authme = this;
 
         // TODO: split the plugin in more modules
