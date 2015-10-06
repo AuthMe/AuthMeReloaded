@@ -58,6 +58,7 @@ import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.modules.ModuleManager;
@@ -279,6 +280,12 @@ public class AuthMe extends JavaPlugin {
 
         // Register events
         pm.registerEvents(new AuthMePlayerListener(this), this);
+        // Try to register 1.6 player listeners
+        try {
+            Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
+            pm.registerEvents(new AuthMePlayerListener16(this), this);
+        } catch (ClassNotFoundException ignore) {
+        }
         // Try to register 1.8 player listeners
         try {
             Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");

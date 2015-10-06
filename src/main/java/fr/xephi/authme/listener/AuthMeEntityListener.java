@@ -2,7 +2,11 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.Utils;
+
+import java.lang.reflect.Method;
+
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -14,9 +18,16 @@ import org.bukkit.projectiles.ProjectileSource;
 public class AuthMeEntityListener implements Listener {
 
     public AuthMe instance;
+    private static Method getShooter;
+    private static boolean shooterIsProjectileSource;
 
     public AuthMeEntityListener(AuthMe instance) {
         this.instance = instance;
+        try {
+            Method m = Projectile.class.getDeclaredMethod("getShooter");
+            shooterIsProjectileSource = m.getReturnType() != LivingEntity.class;
+        } catch (Exception ignored) {
+        }
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -31,7 +42,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
         player.setFireTicks(0);
-        event.setDamage(0.0);
+        event.setDamage(0);
         event.setCancelled(true);
     }
 
@@ -90,7 +101,7 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        event.setAmount(0.0);
+        event.setAmount(0);
         event.setCancelled(true);
     }
 
@@ -126,15 +137,29 @@ public class AuthMeEntityListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         Projectile projectile = event.getEntity();
-        if (projectile == null)
-            return;
-
-        ProjectileSource shooter = projectile.getShooter();
-        if (shooter == null || !(shooter instanceof Player)) {
+        Player player = null;
+        if (projectile == null) {
             return;
         }
 
-        if (Utils.checkAuth((Player) shooter)) {
+        if (shooterIsProjectileSource) {
+            ProjectileSource shooter = projectile.getShooter();
+            if (shooter == null || !(shooter instanceof Player)) {
+                return;
+            }
+            player = (Player) shooter;
+        } else {
+            try {
+                if (getShooter == null) {
+                    getShooter = Projectile.class.getMethod("getShooter");
+                }
+                Object obj = getShooter.invoke(null);
+                player = (Player) obj;
+            } catch (Exception ignored) {
+            }
+        }
+
+        if (Utils.checkAuth(player)) {
             return;
         }
 

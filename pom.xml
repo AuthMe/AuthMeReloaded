@@ -276,8 +276,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Spigot-Api, http://www.spigotmc.org/ Based on the Bukkit project,
-			http://bukkit.org/ -->
+		<!-- Bukkit API, http://www.spigotmc.org/ or http://bukkit.org/ -->
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
@@ -324,6 +323,7 @@
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
 			<version>3.4.0</version>
+			<scope>provided</scope>
 			<optional>true</optional>
 			<exclusions>
 				<exclusion>
