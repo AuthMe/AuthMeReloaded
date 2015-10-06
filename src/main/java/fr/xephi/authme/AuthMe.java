@@ -1,42 +1,5 @@
 package fr.xephi.authme;
 
-import com.earth2me.essentials.Essentials;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import fr.xephi.authme.api.API;
-import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.JsonCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.commands.*;
-import fr.xephi.authme.converter.Converter;
-import fr.xephi.authme.converter.ForceFlatToSqlite;
-import fr.xephi.authme.datasource.*;
-import fr.xephi.authme.listener.*;
-import fr.xephi.authme.modules.ModuleManager;
-import fr.xephi.authme.plugin.manager.BungeeCordMessage;
-import fr.xephi.authme.plugin.manager.EssSpawn;
-import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.OtherAccounts;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.Spawn;
-import net.milkbowl.vault.permission.Permission;
-import net.minelink.ctplus.CombatTagPlus;
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-import org.mcstats.Metrics;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -47,13 +10,71 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import org.apache.logging.log4j.LogManager;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
+import org.mcstats.Metrics;
+import com.comphenix.protocol.ProtocolLibrary;
+import net.milkbowl.vault.permission.Permission;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.earth2me.essentials.Essentials;
+import net.minelink.ctplus.CombatTagPlus;
+
+import fr.xephi.authme.api.API;
+import fr.xephi.authme.api.NewAPI;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.backup.JsonCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.commands.AdminCommand;
+import fr.xephi.authme.commands.CaptchaCommand;
+import fr.xephi.authme.commands.ChangePasswordCommand;
+import fr.xephi.authme.commands.ConverterCommand;
+import fr.xephi.authme.commands.EmailCommand;
+import fr.xephi.authme.commands.LoginCommand;
+import fr.xephi.authme.commands.LogoutCommand;
+import fr.xephi.authme.commands.RegisterCommand;
+import fr.xephi.authme.commands.UnregisterCommand;
+import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.converter.ForceFlatToSqlite;
+import fr.xephi.authme.datasource.CacheDataSource;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DatabaseCalls;
+import fr.xephi.authme.datasource.FlatFile;
+import fr.xephi.authme.datasource.MySQL;
+import fr.xephi.authme.datasource.SQLite;
+import fr.xephi.authme.datasource.SQLite_HIKARI;
+import fr.xephi.authme.listener.AuthMeBlockListener;
+import fr.xephi.authme.listener.AuthMeEntityListener;
+import fr.xephi.authme.listener.AuthMeInventoryListener;
+import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.AuthMeServerListener;
+import fr.xephi.authme.modules.ModuleManager;
+import fr.xephi.authme.plugin.manager.BungeeCordMessage;
+import fr.xephi.authme.plugin.manager.EssSpawn;
+import fr.xephi.authme.process.Management;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.OtherAccounts;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.Spawn;
 
 public class AuthMe extends JavaPlugin {
 
     private static AuthMe authme;
 
     private final Server server = getServer();
-    private final Logger authmeLogger = Logger.getLogger("AuthMe");
+    private Logger authmeLogger = Logger.getLogger("AuthMe");
     public Management management;
     public NewAPI api;
     public SendMailSSL mail;
@@ -99,7 +120,6 @@ public class AuthMe extends JavaPlugin {
         return m;
     }
 
-
     @Override
     public void onEnable() {
         // Set the Instance
@@ -114,7 +134,9 @@ public class AuthMe extends JavaPlugin {
         PluginManager pm = server.getPluginManager();
 
         // Setup the Logger
-        authmeLogger.setParent(this.getLogger());
+        if (authmeLogger == null)
+            authmeLogger = this.getLogger();
+        else authmeLogger.setParent(this.getLogger());
 
         // Load settings and custom configurations
         // TODO: new configuration style (more files)
@@ -192,7 +214,8 @@ public class AuthMe extends JavaPlugin {
         // Check Essentials
         checkEssentials();
 
-        //Check if the protocollib is available. If so we could listen for inventory protection
+        // Check if the protocollib is available. If so we could listen for
+        // inventory protection
         checkProtocolLib();
 
         // Do backup on start if enabled
@@ -340,7 +363,8 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    // Show the exception message and stop/unload the server/plugin as defined in the configuration
+    // Show the exception message and stop/unload the server/plugin as defined
+    // in the configuration
     public void stopOrUnload(Exception e) {
         ConsoleLogger.showError(e.getMessage());
         stopOrUnload();
@@ -370,6 +394,7 @@ public class AuthMe extends JavaPlugin {
 
         if (isSQLite) {
             server.getScheduler().runTaskAsynchronously(this, new Runnable() {
+
                 @Override
                 public void run() {
                     int accounts = database.getAccountsRegistered();
@@ -563,13 +588,17 @@ public class AuthMe extends JavaPlugin {
         }
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
         if (Settings.purgeEssentialsFile && this.ess != null)
-            dataManager.purgeEssentials(cleared); // name to UUID convertion needed with latest versions
+            dataManager.purgeEssentials(cleared); // name to UUID convertion
+                                                  // needed with latest versions
         if (Settings.purgePlayerDat)
-            dataManager.purgeDat(cleared); // name to UUID convertion needed with latest versions of MC
+            dataManager.purgeDat(cleared); // name to UUID convertion needed
+                                           // with latest versions of MC
         if (Settings.purgeLimitedCreative)
             dataManager.purgeLimitedCreative(cleared);
         if (Settings.purgeAntiXray)
-            dataManager.purgeAntiXray(cleared); // IDK if it uses UUID or names... (Actually it purges only names!)
+            dataManager.purgeAntiXray(cleared); // IDK if it uses UUID or
+                                                // names... (Actually it purges
+                                                // only names!)
         if (Settings.purgePermissions)
             dataManager.purgePermissions(cleared, permission);
     }
@@ -712,7 +741,8 @@ public class AuthMe extends JavaPlugin {
     /**
      * Get Player real IP through VeryGames method
      *
-     * @param player player
+     * @param player
+     *            player
      */
     @Deprecated
     public String getVeryGamesIP(Player player) {
