@@ -34,7 +34,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Level;
 
-public class AuthMeInventoryListener extends PacketAdapter {
+public class AuthMeInventoryPacketAdapter extends PacketAdapter {
 
     private static final int PLAYER_INVENTORY = 0;
     //http://wiki.vg/Inventory#Inventory (0-4 crafting, 5-8 armor, 9-35 main inventory, 36-44 inventory)
@@ -42,7 +42,7 @@ public class AuthMeInventoryListener extends PacketAdapter {
     private static final int PLAYER_CRAFTING_SIZE = 5;
     private static final int HOTBAR_SIZE = 9;
 
-    public AuthMeInventoryListener(AuthMe plugin) {
+    public AuthMeInventoryPacketAdapter(AuthMe plugin) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
     }
 
