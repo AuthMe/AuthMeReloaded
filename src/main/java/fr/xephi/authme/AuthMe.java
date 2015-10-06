@@ -348,6 +348,7 @@ public class AuthMe extends JavaPlugin {
 
     // Initialize and setup the database
     public void setupDatabase() throws Exception {
+        if (database != null) database.close();
         // Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
         boolean isSQLite = false;
         switch (Settings.getDataSource) {
@@ -704,6 +705,10 @@ public class AuthMe extends JavaPlugin {
         return count >= Settings.getMaxJoinPerIp;
     }
 
+    public ModuleManager getModuleManager() {
+        return moduleManager;
+    }
+
     /**
      * Get Player real IP through VeryGames method
      *
@@ -736,5 +741,4 @@ public class AuthMe extends JavaPlugin {
     public String getCountryName(String ip) {
         return Utils.getCountryName(ip);
     }
-
 }

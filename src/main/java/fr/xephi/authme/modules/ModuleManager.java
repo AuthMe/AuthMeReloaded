@@ -112,6 +112,11 @@ public class ModuleManager {
         return count;
     }
 
+    public void reloadModules(){
+        unloadModules();
+        loadModules();
+    }
+
     public void unloadModule(String name) {
         Iterator<Module> it = modules.iterator();
         while (it.hasNext()) {

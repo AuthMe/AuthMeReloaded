@@ -110,11 +110,12 @@ public class AdminCommand implements CommandExecutor {
         } else if (args[0].equalsIgnoreCase("reload")) {
             try {
                 Settings.reload();
+                plugin.getModuleManager().reloadModules();
                 m.reloadMessages();
-                plugin.database.close();
                 plugin.setupDatabase();
             } catch (Exception e) {
                 ConsoleLogger.showError("Fatal error occurred! Authme instance ABORTED!");
+                ConsoleLogger.writeStackTrace(e);
                 plugin.stopOrUnload();
                 return false;
             }
