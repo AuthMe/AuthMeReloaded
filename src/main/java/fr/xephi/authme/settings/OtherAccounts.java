@@ -45,7 +45,7 @@ public class OtherAccounts extends CustomConfiguration {
                 save();
             }
         } catch (NoSuchMethodError | Exception e) {
-            //ingore
+            //ignore
         }
     }
 

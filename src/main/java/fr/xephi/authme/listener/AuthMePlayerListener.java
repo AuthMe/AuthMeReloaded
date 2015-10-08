@@ -449,14 +449,6 @@ public class AuthMePlayerListener implements Listener {
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerInteractAtEntity(PlayerInteractAtEntityEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
-            return;
-        event.setCancelled(true);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         if (Utils.checkAuth(event.getPlayer()))
             return;
@@ -527,11 +519,4 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
-    public void onPlayerEditBook(PlayerEditBookEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
-            return;
-        event.setCancelled(true);
-    }
 }

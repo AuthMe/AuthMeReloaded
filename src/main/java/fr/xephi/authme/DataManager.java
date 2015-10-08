@@ -103,21 +103,26 @@ public class DataManager {
         for (String name : cleared) {
             try {
                 org.bukkit.OfflinePlayer player = getOfflinePlayer(name);
-                if (player == null)
+                File playerFile = null;
+                if (player == null) {
                     continue;
-                String playerName = player.getName();
-                File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + playerName + ".dat");
+                }
+
+                try {
+                    playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
+                } catch(Exception ignore) {
+                }
                 if (playerFile.exists()) {
                     playerFile.delete();
                     i++;
                 } else {
-                    playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
+                    playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getName() + ".dat");
                     if (playerFile.exists()) {
                         playerFile.delete();
                         i++;
                     }
                 }
-            } catch (Exception e) {
+            } catch (Exception ignore) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " .dat Files");
@@ -128,18 +133,19 @@ public class DataManager {
         int i = 0;
         for (String name : cleared) {
             try {
-                File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + name + ".yml");
+                File playerFile = null;
+                try {
+                    playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");                    
+                } catch(Exception ignore) {
+                }
                 if (playerFile.exists()) {
                     playerFile.delete();
                     i++;
                 } else {
-                    try {
-                        playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + Bukkit.getOfflinePlayer(name).getUniqueId() + ".yml");
-                        if (playerFile.exists()) {
-                            playerFile.delete();
-                            i++;
-                        }
-                    } catch (Exception e) { // Don't do nothing if the method getUniqueId() isn't avariable ( MC version < 1.7.5 )
+                    playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + name + ".yml");
+                    if (playerFile.exists()) {
+                        playerFile.delete();
+                        i++;
                     }
                 }
             } catch (Exception e) {

@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-
 import org.apache.logging.log4j.LogManager;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -22,11 +22,12 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.mcstats.Metrics;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.earth2me.essentials.Essentials;
+import org.mcstats.Metrics;
+import net.milkbowl.vault.permission.Permission;
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.earth2me.essentials.Essentials;
+import net.minelink.ctplus.CombatTagPlus;
 
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
@@ -55,8 +56,10 @@ import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.datasource.SQLite_HIKARI;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
-import fr.xephi.authme.listener.AuthMeInventoryListener;
+import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.AuthMePlayerListener16;
+import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.plugin.manager.BungeeCordMessage;
@@ -66,15 +69,13 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import net.milkbowl.vault.permission.Permission;
-import net.minelink.ctplus.CombatTagPlus;
 
 public class AuthMe extends JavaPlugin {
 
     private static AuthMe authme;
+    private static Server server;
+    private Logger authmeLogger;
 
-    private final Server server = getServer();
-    private Logger authmeLogger = Logger.getLogger("AuthMe");
     public Management management;
     public NewAPI api;
     public SendMailSSL mail;
@@ -93,9 +94,9 @@ public class AuthMe extends JavaPlugin {
     public Essentials ess;
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
-    public AuthMeInventoryListener inventoryProtector;
+    public AuthMeInventoryPacketAdapter inventoryProtector;
 
-    // Manager
+    // Module manager
     private ModuleManager moduleManager;
 
     // TODO: Create Manager for fields below
@@ -123,6 +124,8 @@ public class AuthMe extends JavaPlugin {
     @Override
     public void onEnable() {
         // Set the Instance
+        server = getServer();
+        authmeLogger = Logger.getLogger("AuthMe");
         authme = this;
 
         // TODO: split the plugin in more modules
@@ -157,7 +160,6 @@ public class AuthMe extends JavaPlugin {
         m = Messages.getInstance();
 
         // Start the metrics service
-        // TODO: add a setting to disable metrics
         try {
             Metrics metrics = new Metrics(this);
             metrics.start();
@@ -280,6 +282,18 @@ public class AuthMe extends JavaPlugin {
 
         // Register events
         pm.registerEvents(new AuthMePlayerListener(this), this);
+        // Try to register 1.6 player listeners
+        try {
+            Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
+            pm.registerEvents(new AuthMePlayerListener16(this), this);
+        } catch (ClassNotFoundException ignore) {
+        }
+        // Try to register 1.8 player listeners
+        try {
+            Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
+            pm.registerEvents(new AuthMePlayerListener18(this), this);
+        } catch (ClassNotFoundException ignore) {
+        }
         pm.registerEvents(new AuthMeBlockListener(this), this);
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
@@ -367,6 +381,7 @@ public class AuthMe extends JavaPlugin {
 
     // Initialize and setup the database
     public void setupDatabase() throws Exception {
+        if (database != null) database.close();
         // Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
         boolean isSQLite = false;
         switch (Settings.getDataSource) {
@@ -496,8 +511,8 @@ public class AuthMe extends JavaPlugin {
     public void checkProtocolLib() {
         if (Settings.protectInventoryBeforeLogInEnabled) {
             if (server.getPluginManager().isPluginEnabled("ProtocolLib")) {
-                inventoryProtector = new AuthMeInventoryListener(this);
-                ProtocolLibrary.getProtocolManager().addPacketListener(inventoryProtector);
+                inventoryProtector = new AuthMeInventoryPacketAdapter(this);
+                inventoryProtector.register();
             } else {
                 ConsoleLogger.showError("WARNING!!! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
@@ -728,6 +743,10 @@ public class AuthMe extends JavaPlugin {
         return count >= Settings.getMaxJoinPerIp;
     }
 
+    public ModuleManager getModuleManager() {
+        return moduleManager;
+    }
+
     /**
      * Get Player real IP through VeryGames method
      *
@@ -761,5 +780,4 @@ public class AuthMe extends JavaPlugin {
     public String getCountryName(String ip) {
         return Utils.getCountryName(ip);
     }
-
 }
