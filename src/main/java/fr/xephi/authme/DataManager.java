@@ -1,17 +1,18 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.settings.Settings;
-import net.milkbowl.vault.permission.Permission;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
+import fr.xephi.authme.settings.Settings;
+import net.milkbowl.vault.permission.Permission;
 
 public class DataManager {
 

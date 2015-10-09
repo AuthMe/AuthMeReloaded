@@ -1,17 +1,18 @@
 package fr.xephi.authme.converter;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.datasource.DataSource;
 
 public class vAuthFileReader {
 

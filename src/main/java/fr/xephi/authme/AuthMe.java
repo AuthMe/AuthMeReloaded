@@ -10,8 +10,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
-import org.apache.logging.log4j.LogManager;
 
+import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
@@ -22,12 +22,10 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-
 import org.mcstats.Metrics;
-import net.milkbowl.vault.permission.Permission;
-import com.onarandombox.MultiverseCore.MultiverseCore;
+
 import com.earth2me.essentials.Essentials;
-import net.minelink.ctplus.CombatTagPlus;
+import com.onarandombox.MultiverseCore.MultiverseCore;
 
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
@@ -69,6 +67,8 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
+import net.milkbowl.vault.permission.Permission;
+import net.minelink.ctplus.CombatTagPlus;
 
 public class AuthMe extends JavaPlugin {
 

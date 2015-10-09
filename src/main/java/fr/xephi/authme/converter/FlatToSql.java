@@ -1,10 +1,15 @@
 package fr.xephi.authme.converter;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
-
-import java.io.*;
 
 /**
  * @author Xephi59

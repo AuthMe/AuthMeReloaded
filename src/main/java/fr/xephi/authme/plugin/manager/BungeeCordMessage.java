@@ -1,10 +1,12 @@
 package fr.xephi.authme.plugin.manager;
 
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteStreams;
-import fr.xephi.authme.AuthMe;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
+
+import fr.xephi.authme.AuthMe;
 
 public class BungeeCordMessage implements PluginMessageListener {
 

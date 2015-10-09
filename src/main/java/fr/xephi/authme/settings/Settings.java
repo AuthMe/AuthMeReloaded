@@ -1,16 +1,22 @@
 package fr.xephi.authme.settings;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 public final class Settings extends YamlConfiguration {
 

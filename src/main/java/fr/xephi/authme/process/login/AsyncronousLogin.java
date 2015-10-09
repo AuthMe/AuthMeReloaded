@@ -1,5 +1,12 @@
 package fr.xephi.authme.process.login;
 
+import java.util.Date;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.Utils;
@@ -14,12 +21,6 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.util.Date;
-import java.util.List;
 
 public class AsyncronousLogin {
 

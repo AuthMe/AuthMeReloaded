@@ -1,8 +1,8 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
-
 import java.util.List;
+
+import fr.xephi.authme.cache.auth.PlayerAuth;
 
 public interface DataSource {
 

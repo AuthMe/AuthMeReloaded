@@ -1,9 +1,5 @@
 package fr.xephi.authme;
 
-import com.google.common.base.Throwables;
-import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.settings.Settings;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
@@ -11,6 +7,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.logging.Logger;
+
+import com.google.common.base.Throwables;
+
+import fr.xephi.authme.api.NewAPI;
+import fr.xephi.authme.settings.Settings;
 
 public class ConsoleLogger {
 

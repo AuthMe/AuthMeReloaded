@@ -1,5 +1,12 @@
 package fr.xephi.authme.cache.limbo;
 
+import java.util.concurrent.ConcurrentHashMap;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.backup.DataFileCache;
@@ -7,12 +14,6 @@ import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.events.ResetInventoryEvent;
 import fr.xephi.authme.events.StoreInventoryEvent;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 public class LimboCache {
 
