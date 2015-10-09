@@ -23,6 +23,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
 
 import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
@@ -162,6 +163,25 @@ public class AuthMe extends JavaPlugin {
         // Start the metrics service
         try {
             Metrics metrics = new Metrics(this);
+            Graph messagesLanguage = metrics.createGraph("Messages language");
+            Graph databaseBackend = metrics.createGraph("Database backend");
+
+            // Custom graphs
+            if(Settings.messageFile.exists()) {
+                messagesLanguage.addPlotter(new Metrics.Plotter(Settings.messagesLanguage) {
+                    @Override
+                    public int getValue() {
+                            return 1;
+                    }
+                });
+            }
+            databaseBackend.addPlotter(new Metrics.Plotter(Settings.getDataSource.toString()) {
+                @Override
+                public int getValue() {
+                        return 1;
+                }
+            });
+
             metrics.start();
             ConsoleLogger.info("Metrics started successfully!");
         } catch (Exception e) {
