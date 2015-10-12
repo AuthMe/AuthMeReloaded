@@ -43,12 +43,14 @@ DataSource:
     mySQLlastlocWorld: world
     # Column for RealName
     mySQLRealName: realname
+    # Enable this when you allow registration through a website
+    mySQLWebsite: false
 settings:
     sessions:
-        # Do you want to enable the session feature? 
+        # Do you want to enable the session feature?
         # If enabled, when a player authenticates successfully,
         # his IP and his nickname is saved.
-        # The next time the player joins the server, if his IP 
+        # The next time the player joins the server, if his IP
         # is the same of the last time, and the timeout time
         # hasn't expired, he will not need to authenticate.
         enabled: false
@@ -62,7 +64,7 @@ settings:
         # another IP Address?
         sessionExpireOnIpChange: true
     restrictions:
-        # Can not authenticated players chat and see the chat log? 
+        # Can not authenticated players chat and see the chat log?
         # Care that this feature blocks also all the commands not
         # listed in the list below.
         allowChat: false
@@ -109,7 +111,7 @@ settings:
         # After the authentication they will be teleported back to
         # their normal position.
         teleportUnAuthedToSpawn: false
-        # Minimum allowed nick length 
+        # Minimum allowed nick length
         minNicknameLength: 4
         # Can unregistered players walk around?
         allowMovement: false
@@ -161,25 +163,25 @@ settings:
     security:
         # minimum Length of password
         minPasswordLength: 5
-        # this is very important options, 
+        # this is very important options,
         # every time player join the server,
-        # if they are registered, AuthMe will switch him 
+        # if they are registered, AuthMe will switch him
         # to unLoggedInGroup, this
-        # should prevent all major exploit. 
+        # should prevent all major exploit.
         # So you can set up on your Permission Plugin
-        # this special group with 0 permissions, or permissions to chat, 
+        # this special group with 0 permissions, or permissions to chat,
         # or permission to
-        # send private message or all other perms that you want, 
+        # send private message or all other perms that you want,
         # the better way is to set up
         # this group with few permissions,
         # so if player try to exploit some account,
         # they can
         # do anything except what you set in perm Group.
-        # After a correct logged-in player will be 
+        # After a correct logged-in player will be
         # moved to his correct permissions group!
-        # Pay attention group name is case sensitive, 
-        # so Admin is different from admin, 
-        # otherwise your group will be wiped, 
+        # Pay attention group name is case sensitive,
+        # so Admin is different from admin,
+        # otherwise your group will be wiped,
         # and player join in default group []!
         # Example unLoggedinGroup: NotLogged
         unLoggedinGroup: unLoggedinGroup
@@ -244,7 +246,7 @@ settings:
     # Force these commands after /register as a server console, without any '/', use %p for replace with player name
     forceRegisterCommandsAsConsole: []
     # Do we need to display the welcome message (welcome.txt) after a register or a login?
-    # You can use colors in this welcome.txt + some replaced strings : 
+    # You can use colors in this welcome.txt + some replaced strings :
     # {PLAYER} : player name, {ONLINE} : display number of online players, {MAXPLAYERS} : display server slots,
     # {IP} : player ip, {LOGINS} : number of players logged, {WORLD} : player current world, {SERVER} : server name
     # {VERSION} : get current bukkit version, {COUNTRY} : player country
