@@ -69,12 +69,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     protected void teleportBackFromSpawn() {
         AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
         pm.callEvent(tpEvent);
-        if (!tpEvent.isCancelled()) {
-            Location fLoc = tpEvent.getTo();
-            if (!fLoc.getChunk().isLoaded()) {
-                fLoc.getChunk().load();
-            }
-            player.teleport(fLoc);
+        if (!tpEvent.isCancelled() && tpEvent.getTo() != null) {
+            player.teleport(tpEvent.getTo());
         }
     }
 
@@ -82,12 +78,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         Location spawnL = plugin.getSpawnLocation(player);
         SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnL, true);
         pm.callEvent(tpEvent);
-        if (!tpEvent.isCancelled()) {
-            Location fLoc = tpEvent.getTo();
-            if (!fLoc.getChunk().isLoaded()) {
-                fLoc.getChunk().load();
-            }
-            player.teleport(fLoc);
+        if (!tpEvent.isCancelled() && tpEvent.getTo() != null) {
+            player.teleport(tpEvent.getTo());
         }
     }
 

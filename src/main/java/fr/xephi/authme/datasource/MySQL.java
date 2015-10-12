@@ -19,6 +19,8 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
+import org.bukkit.Bukkit;
+
 public class MySQL implements DataSource {
 
     private String host;
@@ -106,9 +108,15 @@ public class MySQL implements DataSource {
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
         config.setPassword(this.password);
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", "250");
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        if (Settings.isMySQLWebsite)
+        {
+            config.addDataSourceProperty("cachePrepStmts", "false");
+        }
+        else {
+            config.addDataSourceProperty("cachePrepStmts", "true");
+            config.addDataSourceProperty("prepStmtCacheSize", "250");
+            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        }
         config.addDataSourceProperty("autoReconnect", false);
         config.setInitializationFailFast(true); // Don't start the plugin if the database is unavariable
         config.setMaxLifetime(180000); // 3 Min
@@ -128,9 +136,24 @@ public class MySQL implements DataSource {
     }
 
     private synchronized Connection getConnection() throws SQLException {
-        Connection con;
-        con = ds.getConnection();
-        return con;
+    	if (!ds.isClosed())
+    	{
+            Connection con;
+            con = ds.getConnection();
+            return con;
+    	}
+    	ConsoleLogger.showError("Can't open a database connection!");
+    	if (Settings.isStopEnabled)
+    	{
+    		ConsoleLogger.showError("Server will ShuttingDown for Security reason");
+    		Bukkit.getScheduler().scheduleSyncDelayedTask(AuthMe.getInstance(), new Runnable(){
+				@Override
+				public void run() {
+					AuthMe.getInstance().getServer().shutdown();
+				}
+    		});
+    	}
+    	return null;
     }
 
     private synchronized void setupConnection() throws SQLException {
@@ -138,7 +161,8 @@ public class MySQL implements DataSource {
         Statement st = null;
         ResultSet rs = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return;
             st = con.createStatement();
             st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1'," + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "'," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged + " SMALLINT NOT NULL DEFAULT '0'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
@@ -185,6 +209,8 @@ public class MySQL implements DataSource {
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnRealName + " VARCHAR(255) NOT NULL DEFAULT 'Player' AFTER " + columnLogged + ";");
             }
+            if (Settings.isMySQLWebsite)
+            	st.execute("SET GLOBAL query_cache_size = 0; SET GLOBAL query_cache_type = 0;");
         } finally {
             close(rs);
             close(st);
@@ -199,7 +225,8 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return true;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
@@ -222,7 +249,8 @@ public class MySQL implements DataSource {
         PlayerAuth pAuth = null;
         int id;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return null;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
@@ -272,7 +300,8 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return false;
             if ((columnSalt == null || columnSalt.isEmpty()) || (auth.getSalt() == null || auth.getSalt().isEmpty())) {
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnRealName + ") VALUES (?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
@@ -478,7 +507,8 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return false;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
@@ -521,7 +551,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return false;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=?, " + columnRealName + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
@@ -543,7 +574,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return 0;
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             return pst.executeUpdate();
@@ -563,7 +595,8 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         List<String> list = new ArrayList<>();
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return list;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             rs = pst.executeQuery();
@@ -590,7 +623,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return false;
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
                 ResultSet rs;
@@ -626,7 +660,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return false;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + " =?, " + lastlocY + "=?, " + lastlocZ + "=?, " + lastlocWorld + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
@@ -651,7 +686,8 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         int countIp = 0;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return 0;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
@@ -674,7 +710,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return false;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnEmail + " =? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
@@ -697,7 +734,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return false;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + " =? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
@@ -729,7 +767,7 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized void close() {
-        if (ds != null)
+        if (ds != null && !ds.isClosed())
             ds.close();
     }
 
@@ -750,7 +788,8 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         List<String> countIp = new ArrayList<>();
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return countIp;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, auth.getIp());
             rs = pst.executeQuery();
@@ -775,7 +814,8 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         List<String> countIp = new ArrayList<>();
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return countIp;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
@@ -800,7 +840,8 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         List<String> countEmail = new ArrayList<>();
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return countEmail;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
             pst.setString(1, email);
             rs = pst.executeQuery();
@@ -823,8 +864,9 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
+            if ((con = getConnection()) == null)
+            	return;
             for (String name : banned) {
-                con = getConnection();
                 pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, name);
                 pst.executeUpdate();
@@ -848,7 +890,8 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return false;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, user);
             rs = pst.executeQuery();
@@ -870,7 +913,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setInt(1, 1);
             pst.setString(2, user);
@@ -889,7 +933,8 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         if (user != null)
             try {
-                con = getConnection();
+                if ((con = getConnection()) == null)
+                	return;
                 pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
                 pst.setInt(1, 0);
                 pst.setString(2, user);
@@ -907,7 +952,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnLogged + "=?;");
             pst.setInt(1, 0);
             pst.setInt(2, 1);
@@ -927,7 +973,8 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return result;
             pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
             rs = pst.executeQuery();
             if (rs != null && rs.next()) {
@@ -948,7 +995,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, newone);
             pst.setString(2, oldone);
@@ -968,7 +1016,8 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return auths;
             pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
             rs = pst.executeQuery();
             while (rs.next()) {
@@ -1018,7 +1067,8 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = getConnection();
+            if ((con = getConnection()) == null)
+            	return auths;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             rs = pst.executeQuery();
             while (rs.next()) {

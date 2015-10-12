@@ -283,19 +283,17 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Reload support hook
-        if (Settings.reloadSupport) {
-            if (database != null) {
-                int playersOnline = Utils.getOnlinePlayers().size();
-                if (playersOnline < 1) {
-                    database.purgeLogged();
-                } else {
-                    for (PlayerAuth auth : database.getLoggedPlayers()) {
-                        if (auth == null)
-                            continue;
-                        auth.setLastLogin(new Date().getTime());
-                        database.updateSession(auth);
-                        PlayerCache.getInstance().addPlayer(auth);
-                    }
+        if (database != null) {
+            int playersOnline = Utils.getOnlinePlayers().size();
+            if (playersOnline < 1) {
+                database.purgeLogged();
+            } else if (Settings.reloadSupport) {
+                for (PlayerAuth auth : database.getLoggedPlayers()) {
+                    if (auth == null)
+                        continue;
+                    auth.setLastLogin(new Date().getTime());
+                    database.updateSession(auth);
+                    PlayerCache.getInstance().addPlayer(auth);
                 }
             }
         }
@@ -362,11 +360,6 @@ public class AuthMe extends JavaPlugin {
             }
         }
 
-        // Close the database
-        if (database != null) {
-            database.close();
-        }
-
         // Do backup on stop if enabled
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {
             boolean Backup = new PerformBackup(this).doBackup();
@@ -377,6 +370,11 @@ public class AuthMe extends JavaPlugin {
 
         // Unload modules
         moduleManager.unloadModules();
+
+        // Close the database
+        if (database != null) {
+            database.close();
+        }
 
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
@@ -584,7 +582,6 @@ public class AuthMe extends JavaPlugin {
             }
         }
         PlayerCache.getInstance().removePlayer(name);
-        database.setUnlogged(name);
         player.saveData();
     }
 

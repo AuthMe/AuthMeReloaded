@@ -234,6 +234,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             }
             final String name = args[1].toLowerCase();
+            final String realName = args[1];
             final String lowpass = args[2].toLowerCase();
             if (lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null") || !lowpass.matches(Settings.getPassRegex)) {
                 m.send(sender, "password_error");
@@ -262,7 +263,7 @@ public class AdminCommand implements CommandExecutor {
                             return;
                         }
                         String hash = PasswordSecurity.getHash(Settings.getPasswordHash, lowpass, name);
-                        PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0L, "your@email.com", name);
+                        PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0L, "your@email.com", realName);
                         if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null)
                             auth.setSalt(PasswordSecurity.userSalt.get(name));
                         else auth.setSalt("");
@@ -270,6 +271,9 @@ public class AdminCommand implements CommandExecutor {
                             m.send(sender, "error");
                             return;
                         }
+                        plugin.database.setUnlogged(name);
+                        if (Bukkit.getPlayerExact(realName) != null)
+                        	Bukkit.getPlayerExact(realName).kickPlayer("An admin just registered you, please log again");
                         m.send(sender, "registered");
                         ConsoleLogger.info(name + " registered");
                     } catch (NoSuchAlgorithmException ex) {
