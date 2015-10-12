@@ -263,19 +263,17 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Reload support hook
-        if (Settings.reloadSupport) {
-            if (database != null) {
-                int playersOnline = Utils.getOnlinePlayers().size();
-                if (playersOnline < 1) {
-                    database.purgeLogged();
-                } else {
-                    for (PlayerAuth auth : database.getLoggedPlayers()) {
-                        if (auth == null)
-                            continue;
-                        auth.setLastLogin(new Date().getTime());
-                        database.updateSession(auth);
-                        PlayerCache.getInstance().addPlayer(auth);
-                    }
+        if (database != null) {
+            int playersOnline = Utils.getOnlinePlayers().size();
+            if (playersOnline < 1) {
+                database.purgeLogged();
+            } else if (Settings.reloadSupport) {
+                for (PlayerAuth auth : database.getLoggedPlayers()) {
+                    if (auth == null)
+                        continue;
+                    auth.setLastLogin(new Date().getTime());
+                    database.updateSession(auth);
+                    PlayerCache.getInstance().addPlayer(auth);
                 }
             }
         }
@@ -564,7 +562,6 @@ public class AuthMe extends JavaPlugin {
             }
         }
         PlayerCache.getInstance().removePlayer(name);
-        database.setUnlogged(name);
         player.saveData();
     }
 
