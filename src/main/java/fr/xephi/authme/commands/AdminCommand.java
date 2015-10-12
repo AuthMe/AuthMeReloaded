@@ -255,6 +255,7 @@ public class AdminCommand implements CommandExecutor {
                 }
             }
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                @SuppressWarnings("deprecation")
                 @Override
                 public void run() {
                     try {

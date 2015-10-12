@@ -9,6 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.PoolInitializationException;
@@ -18,8 +20,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
-
-import org.bukkit.Bukkit;
 
 public class MySQL implements DataSource {
 
