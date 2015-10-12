@@ -342,11 +342,6 @@ public class AuthMe extends JavaPlugin {
             }
         }
 
-        // Close the database
-        if (database != null) {
-            database.close();
-        }
-
         // Do backup on stop if enabled
         if (Settings.isBackupActivated && Settings.isBackupOnStop) {
             boolean Backup = new PerformBackup(this).doBackup();
@@ -357,6 +352,11 @@ public class AuthMe extends JavaPlugin {
 
         // Unload modules
         moduleManager.unloadModules();
+
+        // Close the database
+        if (database != null) {
+            database.close();
+        }
 
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
