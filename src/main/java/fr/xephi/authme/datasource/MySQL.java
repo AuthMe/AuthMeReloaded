@@ -102,9 +102,15 @@ public class MySQL implements DataSource {
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
         config.setPassword(this.password);
-        config.addDataSourceProperty("cachePrepStmts", "true");
-        config.addDataSourceProperty("prepStmtCacheSize", "250");
-        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        if (Settings.isMySQLWebsite)
+        {
+            config.addDataSourceProperty("cachePrepStmts", "false");
+        }
+        else {
+            config.addDataSourceProperty("cachePrepStmts", "true");
+            config.addDataSourceProperty("prepStmtCacheSize", "250");
+            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        }
         config.addDataSourceProperty("autoReconnect", false);
         config.setInitializationFailFast(true); // Don't start the plugin if the database is unavariable
         config.setMaxLifetime(180000); // 3 Min
@@ -197,6 +203,8 @@ public class MySQL implements DataSource {
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnRealName + " VARCHAR(255) NOT NULL DEFAULT 'Player' AFTER " + columnLogged + ";");
             }
+            if (Settings.isMySQLWebsite)
+            	st.execute("SET GLOBAL query_cache_size = 0; SET GLOBAL query_cache_type = 0;");
         } finally {
             close(rs);
             close(st);
