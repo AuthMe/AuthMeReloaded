@@ -1,17 +1,18 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.settings.Settings;
-import net.milkbowl.vault.permission.Permission;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
+import fr.xephi.authme.settings.Settings;
+import net.milkbowl.vault.permission.Permission;
 
 public class DataManager {
 
@@ -110,7 +111,7 @@ public class DataManager {
 
                 try {
                     playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
-                } catch(Exception ignore) {
+                } catch (Exception ignore) {
                 }
                 if (playerFile.exists()) {
                     playerFile.delete();
@@ -135,8 +136,8 @@ public class DataManager {
             try {
                 File playerFile = null;
                 try {
-                    playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");                    
-                } catch(Exception ignore) {
+                    playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");
+                } catch (Exception ignore) {
                 }
                 if (playerFile.exists()) {
                     playerFile.delete();
@@ -155,7 +156,7 @@ public class DataManager {
     }
 
     public synchronized void purgePermissions(List<String> cleared,
-                                              Permission permission) {
+            Permission permission) {
         int i = 0;
         for (String name : cleared) {
             try {
@@ -175,6 +176,7 @@ public class DataManager {
             return true;
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Boolean> result = executor.submit(new Callable<Boolean>() {
+
             @Override
             public synchronized Boolean call() throws Exception {
                 for (OfflinePlayer op : Utils.getOnlinePlayers())
@@ -191,5 +193,14 @@ public class DataManager {
         } finally {
             executor.shutdown();
         }
+    }
+
+    public Player getOnlinePlayerLower(String name) {
+        name = name.toLowerCase();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name))
+                return player;
+        }
+        return null;
     }
 }
