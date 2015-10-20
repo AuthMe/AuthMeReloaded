@@ -352,6 +352,8 @@ Email:
     - 10minutemail.com
     # WhiteList only these domains for emails
     emailWhitelisted: []
+    # Do we need to send new password draw in an image ?
+    generateImage: false
 Hooks:
     # Do we need to hook with multiverse for spawn checking?
     multiverse: true

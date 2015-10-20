@@ -145,7 +145,7 @@ public class DataManager {
     }
 
     public synchronized void purgePermissions(List<String> cleared,
-                                              Permission permission) {
+            Permission permission) {
         int i = 0;
         for (String name : cleared) {
             try {
@@ -165,6 +165,7 @@ public class DataManager {
             return true;
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<Boolean> result = executor.submit(new Callable<Boolean>() {
+
             @Override
             public synchronized Boolean call() throws Exception {
                 for (OfflinePlayer op : Utils.getOnlinePlayers())
@@ -181,5 +182,14 @@ public class DataManager {
         } finally {
             executor.shutdown();
         }
+    }
+
+    public Player getOnlinePlayerLower(String name) {
+        name = name.toLowerCase();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name))
+                return player;
+        }
+        return null;
     }
 }
