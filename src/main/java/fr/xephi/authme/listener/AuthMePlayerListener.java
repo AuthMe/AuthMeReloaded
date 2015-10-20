@@ -209,6 +209,7 @@ public class AuthMePlayerListener implements Listener {
         // Shedule login task so works after the prelogin
         // (Fix found by Koolaid5000)
         Bukkit.getScheduler().runTask(plugin, new Runnable() {
+
             @Override
             public void run() {
                 Player player = event.getPlayer();
@@ -225,28 +226,27 @@ public class AuthMePlayerListener implements Listener {
         });
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
-        final Player player = Bukkit.getServer().getPlayer(name);
+        final Player player = plugin.dataManager.getOnlinePlayerLower(name);
         if (player == null)
             return;
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
-        if (Settings.isForceSingleSessionEnabled && plugin.dataManager.isOnline(player, name)) {
-            event.setKickMessage(m.send("same_nick")[0]);
+        if (Settings.isForceSingleSessionEnabled) {
+            event.setKickMessage(m.getString("same_nick"));
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             if (LimboCache.getInstance().hasLimboPlayer(name))
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
                     @Override
                     public void run() {
-                        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                        if (limbo != null && PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
+                        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+                        if (limbo != null && PlayerCache.getInstance().isAuthenticated(name)) {
                             Utils.addNormal(player, limbo.getGroup());
-                            LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
+                            LimboCache.getInstance().deleteLimboPlayer(name);
                         }
                     }
                 });
@@ -268,8 +268,7 @@ public class AuthMePlayerListener implements Listener {
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED)
             return;
 
-        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable
-                && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !plugin.authmePermissible(player, "authme.bypassantibot")) {
             String code = Utils.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || Settings.countriesBlacklist.contains(code))) {
                 event.setKickMessage(m.send("country_banned")[0]);
@@ -277,8 +276,7 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable
-                && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !plugin.authmePermissible(player, "authme.bypassantibot")) {
             String code = Utils.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || !Settings.countries.contains(code))) {
                 event.setKickMessage(m.send("country_banned")[0]);

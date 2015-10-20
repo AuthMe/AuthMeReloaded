@@ -95,14 +95,14 @@ public class SendMailSSL {
                             ConsoleLogger.showError("Unable to send new password as image! Using normal text! Dest: " + mail);
                         }
                     }
-                    
+
                     Transport transport = session.getTransport("smtp");
                     message.setContent(multipart);
 
                     try {
                         transport.connect(smtp, acc, password);
                     } catch (Exception e) {
-                        ConsoleLogger.showError("Can't connect to your SMTP server! Aborting! Can't send recorvery email to " + mail);
+                        ConsoleLogger.showError("Can't connect to your SMTP server! Aborting! Can't send recovery email to " + mail);
                         if (file != null)
                             file.delete();
                         return;

@@ -280,7 +280,7 @@ public final class Settings extends YamlConfiguration {
         forceRegisterCommands = configFile.getStringList("settings.forceRegisterCommands");
         forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
-        generateImage = configFile.getBoolean("Email.generateImage", true);
+        generateImage = configFile.getBoolean("Email.generateImage", false);
         isMySQLWebsite = configFile.getBoolean("DataSource.mySQLWebsite", false);
 
         // Load the welcome message
@@ -476,7 +476,7 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (!contains("Email.generateImage")) {
-            set("Email.generateImage", true);
+            set("Email.generateImage", false);
             changes = true;
         }
         if (!contains("DataSource.mySQLRealName")) {
