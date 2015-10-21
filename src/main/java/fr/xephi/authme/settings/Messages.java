@@ -1,8 +1,10 @@
 package fr.xephi.authme.settings;
 
-import fr.xephi.authme.ConsoleLogger;
-import org.bukkit.command.CommandSender;
 import java.io.File;
+
+import org.bukkit.command.CommandSender;
+
+import fr.xephi.authme.ConsoleLogger;
 
 public class Messages extends CustomConfiguration {
 

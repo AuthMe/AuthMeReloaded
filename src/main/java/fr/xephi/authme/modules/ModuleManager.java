@@ -1,9 +1,5 @@
 package fr.xephi.authme.modules;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Settings;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -14,6 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.settings.Settings;
 
 public class ModuleManager {
 

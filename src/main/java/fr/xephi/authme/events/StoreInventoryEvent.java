@@ -1,8 +1,9 @@
 package fr.xephi.authme.events;
 
-import fr.xephi.authme.cache.backup.JsonCache;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import fr.xephi.authme.cache.backup.JsonCache;
 
 /**
  * This event is call just before write inventory content to cache

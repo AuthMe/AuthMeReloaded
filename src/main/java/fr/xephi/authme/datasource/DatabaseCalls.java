@@ -1,12 +1,12 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import fr.xephi.authme.cache.auth.PlayerAuth;
 
 public class DatabaseCalls implements DataSource {
 

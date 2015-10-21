@@ -104,20 +104,16 @@ public class DataManager {
         for (String name : cleared) {
             try {
                 org.bukkit.OfflinePlayer player = getOfflinePlayer(name);
-                File playerFile = null;
                 if (player == null) {
                     continue;
                 }
 
                 try {
-                    playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
-                } catch (Exception ignore) {
-                }
-                if (playerFile.exists()) {
+                    File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
                     playerFile.delete();
                     i++;
-                } else {
-                    playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getName() + ".dat");
+                } catch(Exception ignore) {
+                    File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getName() + ".dat");
                     if (playerFile.exists()) {
                         playerFile.delete();
                         i++;
@@ -134,22 +130,15 @@ public class DataManager {
         int i = 0;
         for (String name : cleared) {
             try {
-                File playerFile = null;
-                try {
-                    playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");
-                } catch (Exception ignore) {
-                }
+                File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");                    
+                playerFile.delete();
+                i++;
+            } catch (Exception e) {
+                File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + name + ".yml");
                 if (playerFile.exists()) {
                     playerFile.delete();
                     i++;
-                } else {
-                    playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + name + ".yml");
-                    if (playerFile.exists()) {
-                        playerFile.delete();
-                        i++;
-                    }
                 }
-            } catch (Exception e) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");

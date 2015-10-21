@@ -1,10 +1,11 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
-import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
+import java.security.NoSuchAlgorithmException;
 
 import javax.xml.bind.DatatypeConverter;
-import java.security.NoSuchAlgorithmException;
+
+import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
+import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
 
 public class CryptPBKDF2Django implements EncryptionMethod {
 

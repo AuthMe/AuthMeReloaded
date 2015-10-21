@@ -1,5 +1,9 @@
 package fr.xephi.authme.task;
 
+import java.security.NoSuchAlgorithmException;
+
+import org.bukkit.entity.Player;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -7,9 +11,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.entity.Player;
-
-import java.security.NoSuchAlgorithmException;
 
 public class ChangePasswordTask implements Runnable {
 

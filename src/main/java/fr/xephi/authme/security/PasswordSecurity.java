@@ -1,18 +1,19 @@
 package fr.xephi.authme.security;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.HashMap;
+
+import org.bukkit.Bukkit;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.security.crypts.BCRYPT;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.Bukkit;
-
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.HashMap;
 
 public class PasswordSecurity {
 

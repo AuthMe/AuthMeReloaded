@@ -1,18 +1,5 @@
 package fr.xephi.authme;
 
-import com.maxmind.geoip.LookupService;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
-import fr.xephi.authme.settings.Settings;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
@@ -24,6 +11,21 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.zip.GZIPInputStream;
+
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
+import com.maxmind.geoip.LookupService;
+
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.events.AuthMeTeleportEvent;
+import fr.xephi.authme.settings.Settings;
 
 public class Utils {
 
