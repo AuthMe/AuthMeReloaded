@@ -219,15 +219,6 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- SQLite Connector -->
-		<dependency>
-			<groupId>org.xerial</groupId>
-			<artifactId>sqlite-jdbc</artifactId>
-			<version>3.8.11.2</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
-
 		<!-- Java Email API and Implementation
 		<dependency>
 			<groupId>javax.mail</groupId>
