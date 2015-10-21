@@ -86,7 +86,9 @@
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.4.1</version>
 				<configuration>
-					<artifactSet>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+					<minimizeJar>true</minimizeJar>
+					<!-- <artifactSet>
 						<includes>
 							<include>com.zaxxer:HikariCP</include>
 							<include>org.slf4j:slf4j-jdk14</include>
@@ -97,7 +99,7 @@
 							<include>org.mcstats.bukkit:metrics</include>
 							<include>com.google.code.gson:gson</include>
 						</includes>
-					</artifactSet>
+					</artifactSet> -->
 					<relocations>
 						<relocation>
 							<pattern>org.mcstats</pattern>
@@ -167,18 +169,17 @@
 			<url>http://repo.luricos.de/content/repositories/releases</url>
 		</repository>
 
-		<!-- Xephi Repo
+		<!-- Xephi Repo (Metrics)-->
 		<repository>
 			<id>xephi-repo</id>
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
-		-->
 
-		<!-- Metrics Snapshots Repo -->
+		<!-- Metrics Snapshots Repo (Too instable! 60% UPTIME)
 		<repository>
 			<id>mcstats-snapshots</id>
 			<url>http://repo.mcstats.org/content/repositories/snapshots/</url>
-		</repository>
+		</repository> -->
 
 	</repositories>
 
@@ -212,6 +213,7 @@
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
+			<!-- Can't use newer versions due to api changes! -->
 			<version>2.0-beta9</version>
 			<scope>provided</scope>
 			<optional>true</optional>
@@ -226,14 +228,14 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Java Email API and Implementation -->
+		<!-- Java Email API and Implementation
 		<dependency>
 			<groupId>javax.mail</groupId>
 			<artifactId>javax.mail-api</artifactId>
 			<version>1.5.4</version>
 			<scope>compile</scope>
 			<optional>true</optional>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
@@ -297,6 +299,10 @@
 				<exclusion>
 					<artifactId>json-simple</artifactId>
 					<groupId>com.googlecode.json-simple</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>gson</artifactId>
+					<groupId>com.google.code.gson</groupId>
 				</exclusion>
 				<exclusion>
 					<artifactId>persistence-api</artifactId>
