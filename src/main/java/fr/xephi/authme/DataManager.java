@@ -186,7 +186,7 @@ public class DataManager {
 
     public Player getOnlinePlayerLower(String name) {
         name = name.toLowerCase();
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : Utils.getOnlinePlayers()) {
             if (player.getName().equalsIgnoreCase(name))
                 return player;
         }
