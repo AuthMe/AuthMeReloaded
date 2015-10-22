@@ -105,6 +105,10 @@
 							<pattern>org.mcstats</pattern>
 							<shadedPattern>fr.xephi.authme</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>com.google.gson</pattern>
+							<shadedPattern>fr.xephi.authme.libs.gson</shadedPattern>
+						</relocation>
 					</relocations>
 				</configuration>
 				<executions>
@@ -219,14 +223,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Java Email API and Implementation
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
-			<version>1.5.4</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency> -->
+		<!-- Java Email API and Implementation -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
