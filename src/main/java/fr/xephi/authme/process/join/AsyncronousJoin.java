@@ -153,6 +153,7 @@ public class AsyncronousJoin {
             if (!Settings.noTeleport)
                 if (!needFirstspawn() && Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                     sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+
                         @Override
                         public void run() {
                             SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
@@ -258,8 +259,7 @@ public class AsyncronousJoin {
     }
 
     private void placePlayerSafely(final Player player,
-                                   final Location spawnLoc) {
-        Location loc = null;
+            final Location spawnLoc) {
         if (spawnLoc == null)
             return;
         if (!Settings.noTeleport)
@@ -268,30 +268,29 @@ public class AsyncronousJoin {
             return;
         if (!player.hasPlayedBefore())
             return;
-        Block b = player.getLocation().getBlock();
-        if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL) {
-            m.send(player, "unsafe_spawn");
-            if (spawnLoc.getWorld() != null)
-                loc = spawnLoc;
-        } else {
-            Block c = player.getLocation().add(0D, 1D, 0D).getBlock();
-            if (c.getType() == Material.PORTAL || c.getType() == Material.ENDER_PORTAL) {
-                m.send(player, "unsafe_spawn");
-                if (spawnLoc.getWorld() != null)
-                    loc = spawnLoc;
-            }
-        }
-        if (loc != null) {
-            final Location floc = loc;
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
-                @Override
-                public void run() {
-                    player.teleport(floc);
+            @Override
+            public void run() {
+                Location loc = null;
+                Block b = player.getLocation().getBlock();
+                if (b.getType() == Material.PORTAL || b.getType() == Material.ENDER_PORTAL) {
+                    m.send(player, "unsafe_spawn");
+                    if (spawnLoc.getWorld() != null)
+                        loc = spawnLoc;
+                } else {
+                    Block c = player.getLocation().add(0D, 1D, 0D).getBlock();
+                    if (c.getType() == Material.PORTAL || c.getType() == Material.ENDER_PORTAL) {
+                        m.send(player, "unsafe_spawn");
+                        if (spawnLoc.getWorld() != null)
+                            loc = spawnLoc;
+                    }
                 }
+                if (loc != null)
+                    player.teleport(loc);
+            }
 
-            });
-        }
+        });
     }
 
 }
