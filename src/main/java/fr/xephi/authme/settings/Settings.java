@@ -55,9 +55,12 @@ public final class Settings extends YamlConfiguration {
     public static boolean useLogging = false;
     public static int purgeDelay = 60;
 
+    // Due to compatibility issues with plugins like FactionsChat
+    public static Boolean isChatAllowed;
+
     public static boolean isPermissionCheckEnabled, isRegistrationEnabled,
             isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
-            isSessionsEnabled, isChatAllowed, isAllowRestrictedIp,
+            isSessionsEnabled, isAllowRestrictedIp,
             isMovementAllowed, isKickNonRegisteredEnabled,
             isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
             isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
