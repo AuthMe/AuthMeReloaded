@@ -88,18 +88,6 @@
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					<minimizeJar>true</minimizeJar>
-					<!-- <artifactSet>
-						<includes>
-							<include>com.zaxxer:HikariCP</include>
-							<include>org.slf4j:slf4j-jdk14</include>
-							<include>org.slf4j:slf4j-api</include>
-							<include>com.maxmind.geoip:geoip-api</include>
-							<include>com.sun.mail:javax.mail</include>
-							<include>com.comphenix.attribute:AttributeStorage</include>
-							<include>org.mcstats.bukkit:metrics</include>
-							<include>com.google.code.gson:gson</include>
-						</includes>
-					</artifactSet> -->
 					<relocations>
 						<relocation>
 							<pattern>org.mcstats</pattern>
@@ -143,12 +131,6 @@
 			<url>http://repo.minelink.net/content/repositories/public</url>
 		</repository>
 
-		<!-- Attribute Repo -->
-		<repository>
-			<id>comphenix-repo</id>
-			<url>http://repo.comphenix.net/content/repositories/public</url>
-		</repository>
-
 		<!-- ProtocolLib Repo -->
 		<repository>
 			<id>dmulloy2-repo</id>
@@ -179,17 +161,16 @@
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
 
-		<!-- Metrics Snapshots Repo (Too instable! 60% UPTIME)
+		<!-- Metrics Snapshots Repo (Always offline! 60% UPTIME)
 		<repository>
 			<id>mcstats-snapshots</id>
 			<url>http://repo.mcstats.org/content/repositories/snapshots/</url>
-		</repository> -->
+		</repository>
+		-->
 
 	</repositories>
 
 	<dependencies>
-
-		<!-- Maven Dependencies -->
 
 		<!-- Database Connection Pool -->
 		<dependency>
@@ -213,7 +194,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Log4J Logger (for the filter) -->
+		<!-- Log4J Logger (required by the console filter) -->
 		<dependency>
 			<groupId>org.apache.logging.log4j</groupId>
 			<artifactId>log4j-core</artifactId>
@@ -223,7 +204,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Java Email API and Implementation -->
+		<!-- Java Email Implementation -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
 			<artifactId>javax.mail</artifactId>
@@ -238,7 +219,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- GSON required for 1.7.X compatibility -->
+		<!-- GSON (required to provide 1.7.10 and below compatibility) -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
@@ -246,7 +227,6 @@
 			<scope>compile</scope>
 			<optional>true</optional>
 		</dependency>
-
 
 		<!-- Maxmind GeoIp API -->
 		<dependency>
@@ -299,26 +279,7 @@
 			</exclusions>
 		</dependency>
 
-		<!-- Attribute -->
-		<dependency>
-			<groupId>com.comphenix.attribute</groupId>
-			<artifactId>AttributeStorage</artifactId>
-			<version>0.0.2-SNAPSHOT</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-			</exclusions>
-			<optional>true</optional>
-		</dependency>
-
-		<!--ProtocolLib http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
+		<!-- ProtocolLib, http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
 		<dependency>
 			<groupId>com.comphenix.protocol</groupId>
 			<artifactId>ProtocolLib</artifactId>
@@ -408,7 +369,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Essentials plugin -->
+		<!-- EssentialsX plugin, http://www.spigotmc.org/resources/essentialsx.9089/ -->
 		<dependency>
 			<groupId>net.ess3</groupId>
 			<artifactId>EssentialsX</artifactId>
@@ -423,7 +384,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Anti PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
+		<!-- Anti-PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
 		<dependency>
 			<groupId>net.minelink</groupId>
 			<artifactId>CombatTagPlus</artifactId>
