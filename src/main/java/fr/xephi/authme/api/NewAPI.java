@@ -150,4 +150,39 @@ public class NewAPI {
         plugin.management.performLogin(player, "dontneed", true);
     }
 
+    /**
+     * Force a player to logout
+     *
+     * @param Player
+     * 			player
+     */
+    public void forceLogout(Player player)
+    {
+    	plugin.management.performLogout(player);
+    }
+
+    /**
+     * Force a player to register
+     *
+     * @param Player
+     * 			player
+     * @param String
+     * 			password
+     */
+    public void forceRegister(Player player, String password)
+    {
+    	plugin.management.performRegister(player, password, null);
+    }
+
+    /**
+     * Force a player to unregister
+     *
+     * @param Player
+     * 			player
+     */
+    public void forceUnregister(Player player)
+    {
+    	forceLogout(player);
+    	plugin.management.performUnregister(player, "", true);
+    }
 }

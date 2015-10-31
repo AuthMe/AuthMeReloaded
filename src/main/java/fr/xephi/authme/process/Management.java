@@ -10,11 +10,12 @@ import fr.xephi.authme.process.login.AsyncronousLogin;
 import fr.xephi.authme.process.logout.AsyncronousLogout;
 import fr.xephi.authme.process.quit.AsyncronousQuit;
 import fr.xephi.authme.process.register.AsyncronousRegister;
+import fr.xephi.authme.process.unregister.AsyncronousUnregister;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
 
 /**
- * 
+ *
  * @authors Xephi59,
  *          <a href="http://dev.bukkit.org/profiles/Possible/">Possible</a>
  *
@@ -81,4 +82,14 @@ public class Management {
 
         });
     }
+
+	public void performUnregister(final Player player, final String password, final boolean force) {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+
+            @Override
+            public void run() {
+                new AsyncronousUnregister(player, password, force, plugin).process();
+            }
+        });
+	}
 }
