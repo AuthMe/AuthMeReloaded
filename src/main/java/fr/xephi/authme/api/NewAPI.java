@@ -182,7 +182,6 @@ public class NewAPI {
      */
     public void forceUnregister(Player player)
     {
-    	forceLogout(player);
     	plugin.management.performUnregister(player, "", true);
     }
 }
