@@ -106,7 +106,18 @@ public class AuthMe extends JavaPlugin {
     public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
     public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
 
-    public static AuthMe getInstance() {
+    // In case we need to cache PlayerAuths, prevent connection before it's done
+    private boolean canConnect = true;
+
+    public boolean isCanConnect() {
+		return canConnect;
+	}
+
+	public void setCanConnect(boolean canConnect) {
+		this.canConnect = canConnect;
+	}
+
+	public static AuthMe getInstance() {
         return authme;
     }
 
