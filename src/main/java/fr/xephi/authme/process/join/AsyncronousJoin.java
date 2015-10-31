@@ -58,6 +58,21 @@ public class AsyncronousJoin {
             plugin.ess.getUser(player).setSocialSpyEnabled(false);
         }
 
+        if (!plugin.isCanConnect())
+        {
+        	final GameMode gM = AuthMePlayerListener.gameMode.get(name);
+            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+
+                @Override
+                public void run() {
+                    AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
+                    player.setGameMode(gM);
+                    player.kickPlayer("Server is loading, please wait before joining!");
+                }
+
+            });
+        }
+
         final String ip = plugin.getIP(player);
         if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
             final GameMode gM = AuthMePlayerListener.gameMode.get(name);

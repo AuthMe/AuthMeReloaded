@@ -20,9 +20,10 @@ public class CacheDataSource implements DataSource {
     private final ExecutorService exec;
     private final ConcurrentHashMap<String, PlayerAuth> cache = new ConcurrentHashMap<>();
 
-    public CacheDataSource(AuthMe pl, DataSource src) {
+    public CacheDataSource(final AuthMe pl, DataSource src) {
         this.source = src;
         this.exec = Executors.newCachedThreadPool();
+        pl.setCanConnect(false);
 
         /*
          * We need to load all players in cache ... It will took more time to
@@ -35,6 +36,7 @@ public class CacheDataSource implements DataSource {
                 for (PlayerAuth auth : source.getAllAuths()) {
                     cache.put(auth.getNickname().toLowerCase(), auth);
                 }
+                pl.setCanConnect(true);
             }
         });
     }
