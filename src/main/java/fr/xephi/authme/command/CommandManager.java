@@ -1,6 +1,6 @@
 package fr.xephi.authme.command;
 
-import com.timvisee.dungeonmaze.command.executable.*;
+import fr.xephi.authme.command.executable.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,14 +28,13 @@ public class CommandManager {
     @SuppressWarnings("SpellCheckingInspection")
     public void registerCommands() {
         // Register the base Dungeon Maze command
-        CommandDescription dungeonMazeCommand = new CommandDescription(
-                new DungeonMazeCommand(),
+        CommandDescription authMeCommand = new CommandDescription(
+                new AuthMeCommand(),
                 new ArrayList<String>() {{
-                    add("dungeonmaze");
-                    add("dm");
+                    add("authme");
                 }},
                 "Main command",
-                "The main Dungeon Maze command. The root for all the other commands.", null);
+                "The main AuthMeReloaded command. The root for all the other commands.", null);
 
         // Register the help command
         CommandDescription helpCommand = new CommandDescription(
@@ -48,12 +47,12 @@ public class CommandManager {
                     add("?");
                 }},
                 "View help",
-                "View detailed help pages about Dungeon Maze commands.",
-                dungeonMazeCommand);
+                "View detailed help pages about AuthMeReloaded commands.",
+                authMeCommand);
         helpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         helpCommand.setMaximumArguments(false);
 
-        // Register the create command
+        /*// Register the create command
         CommandDescription createWorldCommand = new CommandDescription(
                 new CreateWorldCommand(),
                 new ArrayList<String>() {{
@@ -236,10 +235,10 @@ public class CommandManager {
                 "Version info",
                 "Show detailed information about the installed Dungeon Maze version, and shows the developers, contributors, license and other information.",
                 dungeonMazeCommand);
-        versionCommand.setMaximumArguments(false);
+        versionCommand.setMaximumArguments(false);*/
 
-        // Add the base command to the commands array
-        this.commandDescriptions.add(dungeonMazeCommand);
+        // Add the base commands to the commands array
+        this.commandDescriptions.add(authMeCommand);
     }
 
     /**
