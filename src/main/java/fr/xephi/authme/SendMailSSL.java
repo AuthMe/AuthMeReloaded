@@ -112,9 +112,7 @@ public class SendMailSSL {
                     if (file != null)
                         file.delete();
 
-                } catch (RuntimeException e) {
-                    ConsoleLogger.showError("Some error occurred while trying to send a email to " + mail);
-                } catch (Exception e) {
+                } catch(Exception e) {
                     ConsoleLogger.showError("Some error occurred while trying to send a email to " + mail);
                 }
             }
