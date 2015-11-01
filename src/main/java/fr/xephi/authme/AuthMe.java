@@ -721,6 +721,10 @@ public class AuthMe extends JavaPlugin {
         Settings.switchAntiBotMod(mode);
     }
 
+    public boolean getAntiBotModMode() {
+        return this.antibotMod;
+    }
+
     private void recallEmail() {
         if (!Settings.recallEmail)
             return;

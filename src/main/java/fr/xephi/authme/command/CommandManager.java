@@ -317,6 +317,20 @@ public class CommandManager {
                 authMeCommand);
         purgeBannedPlayersCommand.setCommandPermissions("authme.admin.purgebannedplayers", CommandPermissions.DefaultPermission.OP_ONLY);
 
+        // Register the switchantibot command
+        CommandDescription switchAntiBotCommand = new CommandDescription(
+                new PurgeLastPositionCommand(),
+                new ArrayList<String>() {{
+                    add("switchantibot");
+                    add("toggleantibot");
+                    add("antibot");
+                }},
+                "Switch AntiBot mode",
+                "Switch or toggle the AntiBot mode to the specified state.",
+                authMeCommand);
+        switchAntiBotCommand.setCommandPermissions("authme.admin.switchantibot", CommandPermissions.DefaultPermission.OP_ONLY);
+        switchAntiBotCommand.addArgument(new CommandArgumentDescription("mode", "ON / OFF", true));
+
         // Register the reload command
         CommandDescription reloadCommand = new CommandDescription(
                 new ReloadCommand(),
