@@ -353,7 +353,7 @@ public class AuthMe extends JavaPlugin {
         //getCommand("logout").setExecutor(new LogoutCommand(this));
         //getCommand("unregister").setExecutor(new UnregisterCommand(this));
         //getCommand("email").setExecutor(new EmailCommand(this));
-        getCommand("captcha").setExecutor(new CaptchaCommand(this));
+        //getCommand("captcha").setExecutor(new CaptchaCommand(this));
         getCommand("converter").setExecutor(new ConverterCommand(this));
 
         // Purge on start if enabled

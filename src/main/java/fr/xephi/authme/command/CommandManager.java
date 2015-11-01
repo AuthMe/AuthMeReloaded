@@ -496,6 +496,7 @@ public class CommandManager {
                 "Add E-mail",
                 "Add an new E-Mail address to your account.",
                 emailBaseCommand);
+        addEmailCommand.setCommandPermissions("authme.email.add", CommandPermissions.DefaultPermission.ALLOWED);
         addEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
         addEmailCommand.addArgument(new CommandArgumentDescription("verifyEmail", "Email address verification", false));
 
@@ -510,6 +511,7 @@ public class CommandManager {
                 "Change E-mail",
                 "Change an E-Mail address of your account.",
                 emailBaseCommand);
+        changeEmailCommand.setCommandPermissions("authme.email.change", CommandPermissions.DefaultPermission.ALLOWED);
         changeEmailCommand.addArgument(new CommandArgumentDescription("oldEmail", "Old email address", false));
         changeEmailCommand.addArgument(new CommandArgumentDescription("newEmail", "New email address", false));
 
@@ -525,6 +527,7 @@ public class CommandManager {
                 "Recover using E-mail",
                 "Recover your account using an E-mail address.",
                 emailBaseCommand);
+        recoverEmailCommand.setCommandPermissions("authme.email.recover", CommandPermissions.DefaultPermission.ALLOWED);
         recoverEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
 
         // Register the help command
@@ -543,6 +546,35 @@ public class CommandManager {
         emailHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         emailHelpCommand.setMaximumArguments(false);
 
+        // Register the base captcha command
+        CommandDescription captchaBaseCommand = new CommandDescription(
+                new ChangePasswordCommand(),
+                new ArrayList<String>() {{
+                    add("captcha");
+                    add("capt");
+                }},
+                "Captcha command",
+                "Captcha command for AuthMeReloaded.", null);
+        captchaBaseCommand.setCommandPermissions("authme.captcha", CommandPermissions.DefaultPermission.ALLOWED);
+        captchaBaseCommand.addArgument(new CommandArgumentDescription("captcha", "The captcha", false));
+        captchaBaseCommand.setMaximumArguments(false);
+
+        // Register the help command
+        CommandDescription captchaHelpCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("help");
+                    add("hlp");
+                    add("h");
+                    add("sos");
+                    add("?");
+                }},
+                "View help",
+                "View detailed help pages about AuthMeReloaded change captcha commands.",
+                captchaBaseCommand);
+        captchaHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        captchaHelpCommand.setMaximumArguments(false);
+
         // Add the base commands to the commands array
         this.commandDescriptions.add(authMeBaseCommand);
         this.commandDescriptions.add(loginBaseCommand);
@@ -551,6 +583,7 @@ public class CommandManager {
         this.commandDescriptions.add(unregisterBaseCommand);
         this.commandDescriptions.add(changePasswordBaseCommand);
         this.commandDescriptions.add(emailBaseCommand);
+        this.commandDescriptions.add(captchaBaseCommand);
     }
 
     /**
