@@ -1,6 +1,6 @@
 package fr.xephi.authme.command;
 
-import com.timvisee.dungeonmaze.command.help.HelpProvider;
+import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
