@@ -1,4 +1,4 @@
-package fr.xephi.authme.commands.dynamic;
+package fr.xephi.authme.command;
 
 import org.bukkit.command.CommandSender;
 

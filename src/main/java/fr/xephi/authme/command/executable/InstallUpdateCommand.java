@@ -1,4 +1,4 @@
-package fr.xephi.authme.commands.dynamic.executable;
+package fr.xephi.authme.command.executable;
 
 import com.timvisee.dungeonmaze.Core;
 import com.timvisee.dungeonmaze.command.CommandParts;
@@ -9,7 +9,7 @@ import com.timvisee.dungeonmaze.util.Profiler;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-public class CheckUpdatesCommand extends ExecutableCommand {
+public class InstallUpdateCommand extends ExecutableCommand {
 
     /**
      * Execute the command.
@@ -35,6 +35,8 @@ public class CheckUpdatesCommand extends ExecutableCommand {
 
         // Get the update checker instance
         Updater uc = service.getUpdateChecker();
+
+        // TODO: Automatically install the actual update!
 
         // Show a status message
         sender.sendMessage(ChatColor.YELLOW + "Update checking succeed, took " + p.getTimeFormatted() + "!");
@@ -64,13 +66,8 @@ public class CheckUpdatesCommand extends ExecutableCommand {
         // Check whether the update was installed or not
         if(uc.getResult() == Updater.UpdateResult.SUCCESS)
             sender.sendMessage(ChatColor.GREEN + "New version installed (" + String.valueOf(newVer) + "). Server reboot required!");
-
-        else {
-            sender.sendMessage(ChatColor.GREEN + "New version found: " + String.valueOf(newVer));
-            //noinspection SpellCheckingInspection
-            sender.sendMessage(ChatColor.GREEN + "Use " + ChatColor.GOLD + "/dm installupdate" +
-                    ChatColor.GREEN + " to automatically install the new version!");
-        }
+        else
+            sender.sendMessage(ChatColor.DARK_RED + "Automatic installation failed, please update manually!");
 
         // Return the result
         return true;

@@ -1,4 +1,4 @@
-package fr.xephi.authme.commands.dynamic.help;
+package fr.xephi.authme.command.help;
 
 import com.timvisee.dungeonmaze.Core;
 import com.timvisee.dungeonmaze.command.*;

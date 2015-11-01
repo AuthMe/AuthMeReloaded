@@ -1,4 +1,4 @@
-package fr.xephi.authme.commands.dynamic;
+package fr.xephi.authme.command;
 
 import com.timvisee.dungeonmaze.Core;
 import com.timvisee.dungeonmaze.permission.PermissionsManager;

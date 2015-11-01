@@ -1,4 +1,4 @@
-package fr.xephi.authme.commands.dynamic.executable;
+package fr.xephi.authme.command.executable;
 
 import com.timvisee.dungeonmaze.Core;
 import com.timvisee.dungeonmaze.command.CommandParts;

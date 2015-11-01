@@ -1,4 +1,4 @@
-package fr.xephi.authme.commands.dynamic;
+package fr.xephi.authme.command;
 
 import com.timvisee.dungeonmaze.util.StringUtils;
 import org.bukkit.command.CommandSender;
