@@ -207,6 +207,18 @@ public class CommandManager {
                 authMeCommand);
         setSpawnCommand.setCommandPermissions("authme.admin.setspawn", CommandPermissions.DefaultPermission.OP_ONLY);
 
+        // Register the setfirstspawn command
+        CommandDescription setFirstSpawnCommand = new CommandDescription(
+                new SetFirstSpawnCommand(),
+                new ArrayList<String>() {{
+                    add("setfirstspawn");
+                    add("chgfirstspawn");
+                }},
+                "Change the first spawn",
+                "Change the first player's spawn to your current position.",
+                authMeCommand);
+        setFirstSpawnCommand.setCommandPermissions("authme.admin.setfirstspawn", CommandPermissions.DefaultPermission.OP_ONLY);
+
         // Register the purge command
         CommandDescription purgeCommand = new CommandDescription(
                 new PurgeCommand(),
