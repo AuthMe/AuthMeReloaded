@@ -219,6 +219,18 @@ public class CommandManager {
                 authMeCommand);
         setSpawnCommand.setCommandPermissions("authme.admin.setspawn", CommandPermissions.DefaultPermission.OP_ONLY);
 
+        // Register the firstspawn command
+        CommandDescription firstSpawnCommand = new CommandDescription(
+                new FirstSpawnCommand(),
+                new ArrayList<String>() {{
+                    add("firstspawn");
+                    add("firsthome");
+                }},
+                "Teleport to first spawn",
+                "Teleport to the first spawn.",
+                authMeCommand);
+        firstSpawnCommand.setCommandPermissions("authme.admin.firstspawn", CommandPermissions.DefaultPermission.OP_ONLY);
+
         // Register the setfirstspawn command
         CommandDescription setFirstSpawnCommand = new CommandDescription(
                 new SetFirstSpawnCommand(),
