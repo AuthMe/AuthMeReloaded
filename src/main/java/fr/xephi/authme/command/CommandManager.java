@@ -336,6 +336,7 @@ public class CommandManager {
                 }},
                 "Login command",
                 "Command to login using AuthMeReloaded.", null);
+        loginBaseCommand.setCommandPermissions("authme.login", CommandPermissions.DefaultPermission.ALLOWED);
         loginBaseCommand.addArgument(new CommandArgumentDescription("password", "Login password", true));
 
         // Add the base commands to the commands array
