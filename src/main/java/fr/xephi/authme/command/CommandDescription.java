@@ -1,10 +1,11 @@
 package fr.xephi.authme.command;
 
-import com.timvisee.dungeonmaze.util.StringUtils;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
@@ -21,7 +22,7 @@ public class CommandDescription {
     /** The parent command. */
     private CommandDescription parent = null;
     /** The child labels. */
-    private List<CommandDescription> childs = new ArrayList<>();
+    private List<CommandDescription> children = new ArrayList<>();
     /** The command arguments. */
     private List<CommandArgumentDescription> arguments = new ArrayList<>();
     /** Defines whether there is an argument maximum or not. */
@@ -487,12 +488,12 @@ public class CommandDescription {
     }
 
     /**
-     * Get all command childs.
+     * Get all command children.
      *
-     * @return Command childs.
+     * @return Command children.
      */
-    public List<CommandDescription> getChilds() {
-        return this.childs;
+    public List<CommandDescription> getChildren() {
+        return this.children;
     }
 
     /**
@@ -514,7 +515,7 @@ public class CommandDescription {
             return true;
 
         // The command description to add as a child
-        if(!this.childs.add(commandDescription))
+        if(!this.children.add(commandDescription))
             return false;
 
         // Set this description as parent on the child
@@ -522,17 +523,17 @@ public class CommandDescription {
     }
 
     /**
-     * Set the childs of this command.
+     * Set the children of this command.
      *
-     * @param childs New command childs. Null to remove all childs.
+     * @param children New command children. Null to remove all children.
      */
-    public void setChilds(List<CommandDescription> childs) {
-        // Check whether the childs list should be cleared
-        if(childs == null)
-            this.childs.clear();
+    public void setChildren(List<CommandDescription> children) {
+        // Check whether the children list should be cleared
+        if(children == null)
+            this.children.clear();
 
         else
-            this.childs = childs;
+            this.children = children;
     }
 
     /**
@@ -541,7 +542,7 @@ public class CommandDescription {
      * @return True if this command has any child labels.
      */
     public boolean hasChilds() {
-        return (this.childs.size() != 0);
+        return (this.children.size() != 0);
     }
 
     /**
@@ -559,7 +560,7 @@ public class CommandDescription {
             return false;
 
         // Check whether this child exists, return the result
-        return this.childs.contains(commandDescription);
+        return this.children.contains(commandDescription);
     }
 
     /**
@@ -765,15 +766,20 @@ public class CommandDescription {
         CommandParts newArguments = new CommandParts(queryReference.getRange(getParentCount() + 1));
 
         // Handle the child's, if this command has any
-        if(getChilds().size() > 0) {
+        if(getChildren().size() > 0) {
             // Get a new instance of the child's list, and sort them by their difference in comparison to the query reference
-            List<CommandDescription> commandChilds = new ArrayList<>(getChilds());
-            Collections.sort(commandChilds, (o1, o2) -> Double.compare(
-                    o1.getCommandDifference(queryReference),
-                    o2.getCommandDifference(queryReference)));
+            List<CommandDescription> commandChildren = new ArrayList<>(getChildren());
+            Collections.sort(commandChildren, new Comparator<CommandDescription>() {
+                @Override
+                public int compare(CommandDescription o1, CommandDescription o2) {
+                    return Double.compare(
+                            o1.getCommandDifference(queryReference),
+                            o2.getCommandDifference(queryReference));
+                }
+            });
 
             // Get the difference of the first child in the list
-            double firstChildDifference = commandChilds.get(0).getCommandDifference(queryReference, true);
+            double firstChildDifference = commandChildren.get(0).getCommandDifference(queryReference, true);
 
             // Check if the reference perfectly suits the arguments of the current command if it doesn't perfectly suits a child command
             if(firstChildDifference > 0.0)
@@ -781,7 +787,7 @@ public class CommandDescription {
                     return new FoundCommandResult(this, newReference, newArguments, queryReference);
 
             // Loop through each child
-            for(CommandDescription child : commandChilds) {
+            for(CommandDescription child : commandChildren) {
                 // Get the best suitable command
                 FoundCommandResult result = child.findCommand(queryReference);
                 if(result != null)

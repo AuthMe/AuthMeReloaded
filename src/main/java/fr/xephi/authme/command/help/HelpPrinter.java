@@ -182,14 +182,14 @@ public class HelpPrinter {
      */
     public static void printChildren(CommandSender sender, CommandDescription command, CommandParts commandReference) {
         // Make sure there are child's
-        if(command.getChilds().size() <= 0)
+        if(command.getChildren().size() <= 0)
             return;
 
         // Print the header
         sender.sendMessage(ChatColor.GOLD + "Commands:");
 
         // Loop through each child
-        for(CommandDescription child : command.getChilds())
+        for(CommandDescription child : command.getChildren())
             sender.sendMessage(" " + HelpSyntaxHelper.getCommandSyntax(child, commandReference, null, false) + ChatColor.GRAY + ChatColor.ITALIC + " : " + child.getDescription());
     }
 }
