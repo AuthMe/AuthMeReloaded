@@ -2,6 +2,7 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.*;
 import fr.xephi.authme.command.executable.authme.*;
+import fr.xephi.authme.command.executable.login.LoginCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class CommandManager {
     @SuppressWarnings("SpellCheckingInspection")
     public void registerCommands() {
         // Register the base Dungeon Maze command
-        CommandDescription authMeCommand = new CommandDescription(
+        CommandDescription authMeBaseCommand = new CommandDescription(
                 new AuthMeCommand(),
                 new ArrayList<String>() {{
                     add("authme");
@@ -49,7 +50,7 @@ public class CommandManager {
                 }},
                 "View help",
                 "View detailed help pages about AuthMeReloaded commands.",
-                authMeCommand);
+                authMeBaseCommand);
         helpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         helpCommand.setMaximumArguments(false);
 
@@ -62,7 +63,7 @@ public class CommandManager {
                 }},
                 "Register a player",
                 "Register the specified player with the specified password.",
-                authMeCommand);
+                authMeBaseCommand);
         registerCommand.setCommandPermissions("authme.admin.register", CommandPermissions.DefaultPermission.OP_ONLY);
         registerCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
         registerCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
@@ -78,7 +79,7 @@ public class CommandManager {
                 }},
                 "Unregister a player",
                 "Unregister the specified player.",
-                authMeCommand);
+                authMeBaseCommand);
         unregisterCommand.setCommandPermissions("authme.admin.unregister", CommandPermissions.DefaultPermission.OP_ONLY);
         unregisterCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
 
@@ -91,7 +92,7 @@ public class CommandManager {
                 }},
                 "Enforce login player",
                 "Enforce the specified player to login.",
-                authMeCommand);
+                authMeBaseCommand);
         forceLoginCommand.setCommandPermissions("authme.admin.forcelogin", CommandPermissions.DefaultPermission.OP_ONLY);
         forceLoginCommand.addArgument(new CommandArgumentDescription("player", "Online player name", true));
 
@@ -106,7 +107,7 @@ public class CommandManager {
                 }},
                 "Change player's password",
                 "Change the password of a player.",
-                authMeCommand);
+                authMeBaseCommand);
         changePasswordCommand.setCommandPermissions("authme.admin.changepassword", CommandPermissions.DefaultPermission.OP_ONLY);
         changePasswordCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
         changePasswordCommand.addArgument(new CommandArgumentDescription("pwd", "New password", false));
@@ -120,7 +121,7 @@ public class CommandManager {
                 }},
                 "Player's last login",
                 "View the date of the specified players last login",
-                authMeCommand);
+                authMeBaseCommand);
         lastLoginCommand.setCommandPermissions("authme.admin.lastlogin", CommandPermissions.DefaultPermission.OP_ONLY);
         lastLoginCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
 
@@ -133,7 +134,7 @@ public class CommandManager {
                 }},
                 "Display player accounts",
                 "Display all accounts of a player by it's player name or IP.",
-                authMeCommand);
+                authMeBaseCommand);
         accountsCommand.setCommandPermissions("authme.admin.accounts", CommandPermissions.DefaultPermission.OP_ONLY);
         accountsCommand.addArgument(new CommandArgumentDescription("player", "Player name or IP", true));
 
@@ -148,7 +149,7 @@ public class CommandManager {
                 }},
                 "Display player's email",
                 "Display the email address of the specified player if set.",
-                authMeCommand);
+                authMeBaseCommand);
         getEmailCommand.setCommandPermissions("authme.admin.getemail", CommandPermissions.DefaultPermission.OP_ONLY);
         getEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
 
@@ -163,7 +164,7 @@ public class CommandManager {
                 }},
                 "Change player's email",
                 "Change the email address of the specified player.",
-                authMeCommand);
+                authMeBaseCommand);
         setEmailCommand.setCommandPermissions("authme.admin.chgemail", CommandPermissions.DefaultPermission.OP_ONLY);
         setEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
         setEmailCommand.addArgument(new CommandArgumentDescription("email", "Player email", false));
@@ -177,7 +178,7 @@ public class CommandManager {
                 }},
                 "Get player's IP",
                 "Get the IP address of the specified online player.",
-                authMeCommand);
+                authMeBaseCommand);
         getIpCommand.setCommandPermissions("authme.admin.getip", CommandPermissions.DefaultPermission.OP_ONLY);
         getIpCommand.addArgument(new CommandArgumentDescription("player", "Online player name", true));
 
@@ -190,7 +191,7 @@ public class CommandManager {
                 }},
                 "Teleport to spawn",
                 "Teleport to the spawn.",
-                authMeCommand);
+                authMeBaseCommand);
         spawnCommand.setCommandPermissions("authme.admin.spawn", CommandPermissions.DefaultPermission.OP_ONLY);
 
         // Register the setspawn command
@@ -202,7 +203,7 @@ public class CommandManager {
                 }},
                 "Change the spawn",
                 "Change the player's spawn to your current position.",
-                authMeCommand);
+                authMeBaseCommand);
         setSpawnCommand.setCommandPermissions("authme.admin.setspawn", CommandPermissions.DefaultPermission.OP_ONLY);
 
         // Register the firstspawn command
@@ -214,7 +215,7 @@ public class CommandManager {
                 }},
                 "Teleport to first spawn",
                 "Teleport to the first spawn.",
-                authMeCommand);
+                authMeBaseCommand);
         firstSpawnCommand.setCommandPermissions("authme.admin.firstspawn", CommandPermissions.DefaultPermission.OP_ONLY);
 
         // Register the setfirstspawn command
@@ -226,7 +227,7 @@ public class CommandManager {
                 }},
                 "Change the first spawn",
                 "Change the first player's spawn to your current position.",
-                authMeCommand);
+                authMeBaseCommand);
         setFirstSpawnCommand.setCommandPermissions("authme.admin.setfirstspawn", CommandPermissions.DefaultPermission.OP_ONLY);
 
         // Register the purge command
@@ -238,7 +239,7 @@ public class CommandManager {
                 }},
                 "Purge old data",
                 "Purge old AuthMeReloaded data longer than the specified amount of days ago.",
-                authMeCommand);
+                authMeBaseCommand);
         purgeCommand.setCommandPermissions("authme.admin.purge", CommandPermissions.DefaultPermission.OP_ONLY);
         purgeCommand.addArgument(new CommandArgumentDescription("days", "Number of days", false));
 
@@ -255,7 +256,7 @@ public class CommandManager {
                 }},
                 "Purge player's last position",
                 "Purge the last know position of the specified player.",
-                authMeCommand);
+                authMeBaseCommand);
         purgeLastPositionCommand.setCommandPermissions("authme.admin.purgelastpos", CommandPermissions.DefaultPermission.OP_ONLY);
         purgeLastPositionCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
 
@@ -270,7 +271,7 @@ public class CommandManager {
                 }},
                 "Purge banned palyers data",
                 "Purge all AuthMeReloaded data for banned players.",
-                authMeCommand);
+                authMeBaseCommand);
         purgeBannedPlayersCommand.setCommandPermissions("authme.admin.purgebannedplayers", CommandPermissions.DefaultPermission.OP_ONLY);
 
         // Register the switchantibot command
@@ -283,7 +284,7 @@ public class CommandManager {
                 }},
                 "Switch AntiBot mode",
                 "Switch or toggle the AntiBot mode to the specified state.",
-                authMeCommand);
+                authMeBaseCommand);
         switchAntiBotCommand.setCommandPermissions("authme.admin.switchantibot", CommandPermissions.DefaultPermission.OP_ONLY);
         switchAntiBotCommand.addArgument(new CommandArgumentDescription("mode", "ON / OFF", true));
 
@@ -309,7 +310,7 @@ public class CommandManager {
                 }},
                 "Reload plugin",
                 "Reload the AuthMeReloaded plugin.",
-                authMeCommand);
+                authMeBaseCommand);
         reloadCommand.setCommandPermissions("authme.admin.reload", CommandPermissions.DefaultPermission.OP_ONLY);
 
         // Register the version command
@@ -324,11 +325,22 @@ public class CommandManager {
                 }},
                 "Version info",
                 "Show detailed information about the installed AuthMeReloaded version, and shows the developers, contributors, license and other information.",
-                authMeCommand);
+                authMeBaseCommand);
         versionCommand.setMaximumArguments(false);
 
+        // Register the base Dungeon Maze command
+        CommandDescription loginBaseCommand = new CommandDescription(
+                new LoginCommand(),
+                new ArrayList<String>() {{
+                    add("authme");
+                }},
+                "Login command",
+                "Command to login using AuthMeReloaded.", null);
+        loginBaseCommand.addArgument(new CommandArgumentDescription("password", "Login password", true));
+
         // Add the base commands to the commands array
-        this.commandDescriptions.add(authMeCommand);
+        this.commandDescriptions.add(authMeBaseCommand);
+        this.commandDescriptions.add(loginBaseCommand);
     }
 
     /**

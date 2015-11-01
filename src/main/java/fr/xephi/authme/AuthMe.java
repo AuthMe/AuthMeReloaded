@@ -348,7 +348,7 @@ public class AuthMe extends JavaPlugin {
         // Register commands
         //getCommand("authme").setExecutor(new AdminCommand(this));
         getCommand("register").setExecutor(new RegisterCommand(this));
-        getCommand("login").setExecutor(new LoginCommand(this));
+        //getCommand("login").setExecutor(new LoginCommand(this));
         getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
         getCommand("logout").setExecutor(new LogoutCommand(this));
         getCommand("unregister").setExecutor(new UnregisterCommand(this));
