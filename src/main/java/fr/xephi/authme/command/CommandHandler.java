@@ -1,5 +1,6 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -100,7 +101,7 @@ public class CommandHandler {
         // Get a suitable command for this reference, and make sure it isn't null
         FoundCommandResult result = this.commandManager.findCommand(commandReference);
         if(result == null) {
-            sender.sendMessage(ChatColor.DARK_RED + "Failed to parse Dungeon Maze command!");
+            sender.sendMessage(ChatColor.DARK_RED + "Failed to parse " + AuthMe.PLUGIN_NAME + " command!");
             return false;
         }
 

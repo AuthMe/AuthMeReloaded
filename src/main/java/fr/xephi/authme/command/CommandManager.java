@@ -332,7 +332,7 @@ public class CommandManager {
         CommandDescription loginBaseCommand = new CommandDescription(
                 new LoginCommand(),
                 new ArrayList<String>() {{
-                    add("authme");
+                    add("login");
                 }},
                 "Login command",
                 "Command to login using AuthMeReloaded.", null);
