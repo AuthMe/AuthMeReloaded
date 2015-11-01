@@ -136,6 +136,19 @@ public class CommandManager {
         lastLoginCommand.setCommandPermissions("authme.admin.lastlogin", CommandPermissions.DefaultPermission.OP_ONLY);
         lastLoginCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
 
+        // Register the accounts command
+        CommandDescription accountsCommand = new CommandDescription(
+                new AccountsCommand(),
+                new ArrayList<String>() {{
+                    add("accounts");
+                    add("account");
+                }},
+                "Display player accounts",
+                "Display all accounts of a player by it's player name or IP.",
+                authMeCommand);
+        accountsCommand.setCommandPermissions("authme.admin.accounts", CommandPermissions.DefaultPermission.OP_ONLY);
+        accountsCommand.addArgument(new CommandArgumentDescription("player", "Player name or IP", true));
+
         // Register the purge command
         CommandDescription purgeCommand = new CommandDescription(
                 new PurgeCommand(),
