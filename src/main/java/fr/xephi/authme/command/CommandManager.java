@@ -35,7 +35,7 @@ public class CommandManager {
                     add("authme");
                 }},
                 "Main command",
-                "The main AuthMeReloaded command. The root for all the other commands.", null);
+                "The main AuthMeReloaded command. The root for all admin commands.", null);
 
         // Register the help command
         CommandDescription helpCommand = new CommandDescription(
@@ -89,8 +89,8 @@ public class CommandManager {
                     add("forcelogin");
                     add("login");
                 }},
-                "Force login player",
-                "Force the specified player to login.",
+                "Enforce login player",
+                "Enforce the specified player to login.",
                 authMeCommand);
         forceLoginCommand.setCommandPermissions("authme.admin.forcelogin", CommandPermissions.DefaultPermission.OP_ONLY);
         forceLoginCommand.addArgument(new CommandArgumentDescription("player", "Online player name", true));
@@ -99,6 +99,7 @@ public class CommandManager {
         CommandDescription changePasswordCommand = new CommandDescription(
                 new RegisterCommand(),
                 new ArrayList<String>() {{
+                    add("password");
                     add("changepassword");
                     add("changepass");
                     add("cp");
@@ -108,7 +109,7 @@ public class CommandManager {
                 authMeCommand);
         changePasswordCommand.setCommandPermissions("authme.admin.changepassword", CommandPermissions.DefaultPermission.OP_ONLY);
         changePasswordCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
-        changePasswordCommand.addArgument(new CommandArgumentDescription("password", "New password", false));
+        changePasswordCommand.addArgument(new CommandArgumentDescription("pwd", "New password", false));
 
         // Register the purge command
         CommandDescription lastLoginCommand = new CommandDescription(
@@ -245,10 +246,10 @@ public class CommandManager {
         CommandDescription purgeLastPositionCommand = new CommandDescription(
                 new PurgeLastPositionCommand(),
                 new ArrayList<String>() {{
+                    add("resetpos");
                     add("purgelastposition");
                     add("purgelastpos");
                     add("resetposition");
-                    add("resetpos");
                     add("resetlastposition");
                     add("resetlastpos");
                 }},
@@ -288,7 +289,7 @@ public class CommandManager {
 
 //        // Register the resetname command
 //        CommandDescription resetNameCommand = new CommandDescription(
-//                new SwitchAntiBotCommand(),
+//                new ResetNameCommand(),
 //                new ArrayList<String>() {{
 //                    add("resetname");
 //                    add("resetnames");
