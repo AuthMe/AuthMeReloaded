@@ -34,12 +34,6 @@ public class LoginCommand extends ExecutableCommand {
         // Get the player instance
         final Player player = (Player) sender;
 
-        // Make sure the password is set
-        if(commandArguments.getCount() == 0) {
-            m.send(player, "usage_log");
-            return true;
-        }
-
         // Get the password
         String playerPass = commandArguments.get(0);
 
