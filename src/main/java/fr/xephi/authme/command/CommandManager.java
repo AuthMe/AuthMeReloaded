@@ -69,6 +69,7 @@ public class CommandManager {
                 new ArrayList<String>() {{
                     add("register");
                     add("reg");
+                    add("r");
                 }},
                 "Register a player",
                 "Register the specified player with the specified password.",
@@ -83,6 +84,7 @@ public class CommandManager {
                 new ArrayList<String>() {{
                     add("unregister");
                     add("unreg");
+                    add("unr");
                     add("delete");
                     add("del");
                 }},
@@ -315,7 +317,6 @@ public class CommandManager {
                 new ArrayList<String>() {{
                     add("reload");
                     add("rld");
-                    add("r");
                 }},
                 "Reload plugin",
                 "Reload the AuthMeReloaded plugin.",
