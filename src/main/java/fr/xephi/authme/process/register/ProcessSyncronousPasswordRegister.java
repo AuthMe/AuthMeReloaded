@@ -85,10 +85,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
                 Location loca = plugin.getSpawnLocation(player);
                 RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
                 plugin.getServer().getPluginManager().callEvent(tpEvent);
-                if (!tpEvent.isCancelled()) {
-                    if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                    }
+                if (!tpEvent.isCancelled() && tpEvent.getTo() != null) {
                     player.teleport(tpEvent.getTo());
                 }
             }
