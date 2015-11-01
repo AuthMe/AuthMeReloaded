@@ -1,7 +1,7 @@
 package fr.xephi.authme.command;
 
-import com.timvisee.dungeonmaze.util.ListUtils;
-import com.timvisee.dungeonmaze.util.StringUtils;
+import fr.xephi.authme.util.ListUtils;
+import fr.xephi.authme.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
