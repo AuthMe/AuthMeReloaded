@@ -1,10 +1,10 @@
 package fr.xephi.authme.command.help;
 
 import com.timvisee.dungeonmaze.Core;
-import fr.xephi.authme.commands.CommandArgumentDescription;
-import fr.xephi.authme.commands.CommandDescription;
-import fr.xephi.authme.commands.CommandParts;
-import fr.xephi.authme.commands.CommandPermissions;
+import fr.xephi.authme.command.CommandArgumentDescription;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandPermissions;
 import com.timvisee.dungeonmaze.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
