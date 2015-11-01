@@ -1,9 +1,9 @@
 package fr.xephi.authme.command.help;
 
-import com.timvisee.dungeonmaze.command.CommandArgumentDescription;
-import com.timvisee.dungeonmaze.command.CommandDescription;
-import com.timvisee.dungeonmaze.command.CommandParts;
-import com.timvisee.dungeonmaze.util.ListUtils;
+import fr.xephi.authme.command.CommandArgumentDescription;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.util.ListUtils;
 import org.bukkit.ChatColor;
 
 public class HelpSyntaxHelper {
