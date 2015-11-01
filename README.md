@@ -1,6 +1,10 @@
 <p align="center"><img src="http://i61.tinypic.com/291dm49.png"></p>
 <p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
 <hr>
+
+####Development history:
+[![Guava AuthMe History Video](http://img.youtube.com/vi/hJRzNfYyd9k/hqdefault.jpg)](https://www.youtube.com/watch?v=hJRzNfYyd9k)
+
 #####Development tools:
 
 - DEVELOPMENT TEAM REPO (<strong>please send PRs here!</strong>): <a href="https://github.com/AuthMe-Team/AuthMeReloaded">Github Development Page</a>
