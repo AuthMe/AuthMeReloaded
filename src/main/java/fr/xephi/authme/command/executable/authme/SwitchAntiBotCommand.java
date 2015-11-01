@@ -1,11 +1,12 @@
 package fr.xephi.authme.command.executable.authme;
 
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.help.HelpProvider;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 public class SwitchAntiBotCommand extends ExecutableCommand {
 

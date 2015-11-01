@@ -1,10 +1,11 @@
 package fr.xephi.authme.command.help;
 
+import org.bukkit.ChatColor;
+
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.util.ListUtils;
-import org.bukkit.ChatColor;
 
 public class HelpSyntaxHelper {
 

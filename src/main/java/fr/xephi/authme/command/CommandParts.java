@@ -1,10 +1,10 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.util.ListUtils;
-import fr.xephi.authme.util.StringUtils;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.xephi.authme.util.ListUtils;
+import fr.xephi.authme.util.StringUtils;
 
 public class CommandParts {
 

@@ -1,12 +1,13 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.util.StringUtils;
-import org.bukkit.command.CommandSender;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+
+import org.bukkit.command.CommandSender;
+
+import fr.xephi.authme.util.StringUtils;
 
 @SuppressWarnings("UnusedDeclaration")
 public class CommandDescription {

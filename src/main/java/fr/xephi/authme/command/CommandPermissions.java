@@ -1,13 +1,14 @@
 package fr.xephi.authme.command;
 
-//import com.timvisee.dungeonmaze.Core;
-//import com.timvisee.dungeonmaze.permission.PermissionsManager;
-import fr.xephi.authme.AuthMe;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+//import com.timvisee.dungeonmaze.Core;
+//import com.timvisee.dungeonmaze.permission.PermissionsManager;
+import fr.xephi.authme.AuthMe;
 
 @SuppressWarnings("UnusedDeclaration")
 public class CommandPermissions {

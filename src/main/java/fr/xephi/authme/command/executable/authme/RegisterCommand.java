@@ -1,5 +1,10 @@
 package fr.xephi.authme.command.executable.authme;
 
+import java.security.NoSuchAlgorithmException;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -8,10 +13,6 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
-import java.security.NoSuchAlgorithmException;
 
 public class RegisterCommand extends ExecutableCommand {
 

@@ -1,9 +1,12 @@
 package fr.xephi.authme.command.help;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.FoundCommandResult;
 
 public class HelpProvider {
 

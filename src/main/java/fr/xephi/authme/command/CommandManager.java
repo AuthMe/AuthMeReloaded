@@ -1,10 +1,29 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.command.executable.*;
-import fr.xephi.authme.command.executable.authme.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import fr.xephi.authme.command.executable.HelpCommand;
+import fr.xephi.authme.command.executable.authme.AccountsCommand;
+import fr.xephi.authme.command.executable.authme.AuthMeCommand;
 import fr.xephi.authme.command.executable.authme.ChangePasswordCommand;
+import fr.xephi.authme.command.executable.authme.FirstSpawnCommand;
+import fr.xephi.authme.command.executable.authme.ForceLoginCommand;
+import fr.xephi.authme.command.executable.authme.GetEmailCommand;
+import fr.xephi.authme.command.executable.authme.GetIpCommand;
+import fr.xephi.authme.command.executable.authme.LastLoginCommand;
+import fr.xephi.authme.command.executable.authme.PurgeBannedPlayersCommand;
+import fr.xephi.authme.command.executable.authme.PurgeCommand;
+import fr.xephi.authme.command.executable.authme.PurgeLastPositionCommand;
 import fr.xephi.authme.command.executable.authme.RegisterCommand;
+import fr.xephi.authme.command.executable.authme.ReloadCommand;
+import fr.xephi.authme.command.executable.authme.SetEmailCommand;
+import fr.xephi.authme.command.executable.authme.SetFirstSpawnCommand;
+import fr.xephi.authme.command.executable.authme.SetSpawnCommand;
+import fr.xephi.authme.command.executable.authme.SpawnCommand;
+import fr.xephi.authme.command.executable.authme.SwitchAntiBotCommand;
 import fr.xephi.authme.command.executable.authme.UnregisterCommand;
+import fr.xephi.authme.command.executable.authme.VersionCommand;
 import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
 import fr.xephi.authme.command.executable.converter.ConverterCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
@@ -12,9 +31,6 @@ import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @SuppressWarnings("UnusedDeclaration")
 public class CommandManager {

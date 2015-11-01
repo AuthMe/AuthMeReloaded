@@ -1,5 +1,10 @@
 package fr.xephi.authme.command.executable.email;
 
+import java.security.NoSuchAlgorithmException;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -10,10 +15,6 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
-import java.security.NoSuchAlgorithmException;
 
 public class RecoverEmailCommand extends ExecutableCommand {
 

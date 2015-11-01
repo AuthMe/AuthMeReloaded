@@ -1,5 +1,8 @@
 package fr.xephi.authme.command.executable.captcha;
 
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandParts;
@@ -7,8 +10,6 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class CaptchaCommand extends ExecutableCommand {
 

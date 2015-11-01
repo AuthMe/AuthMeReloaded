@@ -1,14 +1,15 @@
 package fr.xephi.authme.command.executable.authme;
 
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Messages;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
-import java.util.List;
 
 public class AccountsCommand extends ExecutableCommand {
 

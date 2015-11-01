@@ -1,13 +1,21 @@
 package fr.xephi.authme.command.executable.converter;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.converter.*;
+import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.converter.CrazyLoginConverter;
+import fr.xephi.authme.converter.FlatToSql;
+import fr.xephi.authme.converter.FlatToSqlite;
+import fr.xephi.authme.converter.RakamakConverter;
+import fr.xephi.authme.converter.RoyalAuthConverter;
+import fr.xephi.authme.converter.SqlToFlat;
+import fr.xephi.authme.converter.vAuthConverter;
+import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.settings.Messages;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 public class ConverterCommand extends ExecutableCommand {
 
