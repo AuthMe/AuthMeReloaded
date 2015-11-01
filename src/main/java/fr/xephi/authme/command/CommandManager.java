@@ -153,6 +153,19 @@ public class CommandManager {
         unregisterCommand.setCommandPermissions("authme.admin.unregister", CommandPermissions.DefaultPermission.OP_ONLY);
         unregisterCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
 
+        // Register the forcelogin command
+        CommandDescription forceLoginCommand = new CommandDescription(
+                new ForceLoginCommand(),
+                new ArrayList<String>() {{
+                    add("forcelogin");
+                    add("login");
+                }},
+                "Force login player",
+                "Force the specified player to login.",
+                authMeCommand);
+        forceLoginCommand.setCommandPermissions("authme.admin.forcelogin", CommandPermissions.DefaultPermission.OP_ONLY);
+        forceLoginCommand.addArgument(new CommandArgumentDescription("player", "Online player name", true));
+
         // Register the changepassword command
         CommandDescription changePasswordCommand = new CommandDescription(
                 new RegisterCommand(),
@@ -237,19 +250,6 @@ public class CommandManager {
                 authMeCommand);
         getIpCommand.setCommandPermissions("authme.admin.getip", CommandPermissions.DefaultPermission.OP_ONLY);
         getIpCommand.addArgument(new CommandArgumentDescription("player", "Online player name", true));
-
-        // Register the forcelogin command
-        CommandDescription forceLoginCommand = new CommandDescription(
-                new ForceLoginCommand(),
-                new ArrayList<String>() {{
-                    add("forcelogin");
-                    add("login");
-                }},
-                "Force login player",
-                "Force the specified player to login.",
-                authMeCommand);
-        forceLoginCommand.setCommandPermissions("authme.admin.forcelogin", CommandPermissions.DefaultPermission.OP_ONLY);
-        forceLoginCommand.addArgument(new CommandArgumentDescription("player", "Online player name", true));
 
         // Register the spawn command
         CommandDescription spawnCommand = new CommandDescription(
