@@ -52,7 +52,7 @@ public class CommandManager {
     /**
      * Register all commands.
      */
-    @SuppressWarnings("SpellCheckingInspection")
+    @SuppressWarnings({ "SpellCheckingInspection", "serial" })
     public void registerCommands() {
         // Register the base AuthMe Reloaded command
         CommandDescription authMeBaseCommand = new CommandDescription(

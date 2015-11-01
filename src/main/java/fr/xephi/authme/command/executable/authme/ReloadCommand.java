@@ -34,7 +34,7 @@ public class ReloadCommand extends ExecutableCommand {
         Messages m = Messages.getInstance();
 
         // Show a status message
-        //sender.sendMessage(ChatColor.YELLOW + "Reloading AuthMeReloaded...");
+        // sender.sendMessage(ChatColor.YELLOW + "Reloading AuthMeReloaded...");
 
         try {
             Settings.reload();
@@ -49,10 +49,11 @@ public class ReloadCommand extends ExecutableCommand {
         }
 
         // Show a status message
+        // TODO: add the profiler result
         m.send(sender, "reload");
 
         // AuthMeReloaded reloaded, show a status message
-        //sender.sendMessage(ChatColor.GREEN + "AuthMeReloaded has been reloaded successfully, took " + p.getTimeFormatted() + "!");
+        // sender.sendMessage(ChatColor.GREEN + "AuthMeReloaded has been reloaded successfully, took " + p.getTimeFormatted() + "!");
         return true;
     }
 }
