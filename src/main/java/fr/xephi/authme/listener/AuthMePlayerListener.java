@@ -66,35 +66,30 @@ public class AuthMePlayerListener implements Listener {
 
     private void handleChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (!Utils.checkAuth(player)) {
-            String cmd = event.getMessage().split(" ")[0];
-            if (cmd.startsWith("/")) {
-                if (Settings.allowCommands.contains(cmd)) {
-                    return;
-                }
-            } else {
-                if (Settings.isChatAllowed) {
-                    return;
-                }
-            }
-            event.setCancelled(true);
+        if (Utils.checkAuth(player))
+            return;
 
-            if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
-                m.send(player, "login_msg");
+        if (Settings.isChatAllowed) {
+            return;
+        }
+        event.setCancelled(true);
+
+        if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
+            m.send(player, "login_msg");
+        } else {
+            if (Settings.emailRegistration) {
+                m.send(player, "reg_email_msg");
             } else {
-                if (Settings.emailRegistration) {
-                    m.send(player, "reg_email_msg");
-                } else {
-                    m.send(player, "reg_msg");
-                }
+                m.send(player, "reg_msg");
             }
         }
+
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String cmd = event.getMessage().split(" ")[0];
-        if (Settings.useEssentialsMotd && cmd.equalsIgnoreCase("/motd"))
+        String cmd = event.getMessage().split(" ")[0].toLowerCase();
+        if (Settings.useEssentialsMotd && cmd.equals("/motd"))
             return;
         if (Settings.allowCommands.contains(cmd))
             return;
