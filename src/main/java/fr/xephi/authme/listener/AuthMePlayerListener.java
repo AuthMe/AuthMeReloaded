@@ -143,13 +143,11 @@ public class AuthMePlayerListener implements Listener {
                 player.setWalkSpeed(0.0f);
                 player.setFlySpeed(0.0f);
             }
-            if (!event.getFrom().getBlock().equals(event.getTo().getBlock())) {
-                event.setTo(event.getFrom());
-            }
+            event.setTo(event.getFrom());
             return;
         }
 
-        if (Settings.getMovementRadius == 0) {
+        if (Settings.getMovementRadius <= 0) {
             return;
         }
 
@@ -218,7 +216,7 @@ public class AuthMePlayerListener implements Listener {
                 plugin.management.performJoin(player);
 
                 // Remove the join message while the player isn't logging in
-                if ((Settings.enableProtection || Settings.delayJoinMessage) && event.getJoinMessage() != null) {
+                if (Settings.delayJoinMessage && event.getJoinMessage() != null) {
                     joinMessage.put(name, event.getJoinMessage());
                     event.setJoinMessage(null);
                 }
@@ -378,7 +376,8 @@ public class AuthMePlayerListener implements Listener {
 
         plugin.management.performQuit(player, false);
 
-        if (!PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
+        // TODO: rename delayjoinmessage setting
+        if (!PlayerCache.getInstance().isAuthenticated(name) && Settings.delayJoinMessages)
             event.setQuitMessage(null);
     }
 
