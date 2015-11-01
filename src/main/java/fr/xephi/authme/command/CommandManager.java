@@ -319,7 +319,7 @@ public class CommandManager {
 
         // Register the switchantibot command
         CommandDescription switchAntiBotCommand = new CommandDescription(
-                new PurgeLastPositionCommand(),
+                new SwitchAntiBotCommand(),
                 new ArrayList<String>() {{
                     add("switchantibot");
                     add("toggleantibot");
