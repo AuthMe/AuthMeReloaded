@@ -41,7 +41,7 @@ public class ReloadCommand extends ExecutableCommand {
             Messages.getInstance().reloadMessages();
             plugin.setupDatabase();
         } catch (Exception e) {
-            ConsoleLogger.showError("Fatal error occurred! Authme instance ABORTED!");
+            ConsoleLogger.showError("Fatal error occurred! AuthMe instance ABORTED!");
             ConsoleLogger.writeStackTrace(e);
             plugin.stopOrUnload();
             return false;
