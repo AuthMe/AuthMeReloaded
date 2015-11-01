@@ -17,6 +17,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -335,8 +336,9 @@ public class AuthMe extends JavaPlugin {
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
 
+        // TODO: This is moving to AuthMe.onCommand();
         // Register commands
-        getCommand("authme").setExecutor(new AdminCommand(this));
+        //getCommand("authme").setExecutor(new AdminCommand(this));
         getCommand("register").setExecutor(new RegisterCommand(this));
         getCommand("login").setExecutor(new LoginCommand(this));
         getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
@@ -824,5 +826,26 @@ public class AuthMe extends JavaPlugin {
      */
     public CommandHandler getCommandHandler() {
         return this.commandHandler;
+    }
+
+    /**
+     * Handle Bukkit commands.
+     *
+     * @param sender The command sender (Bukkit).
+     * @param cmd The command (Bukkit).
+     * @param commandLabel The command label (Bukkit).
+     * @param args The command arguments (Bukkit).
+     *
+     * @return True if the command was executed, false otherwise.
+     */
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        // Get the command handler, and make sure it's valid
+        CommandHandler commandHandler = this.getCommandHandler();
+        if(commandHandler == null)
+            return false;
+
+        // Handle the command, return the result
+        return commandHandler.onCommand(sender, cmd, commandLabel, args);
     }
 }
