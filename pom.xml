@@ -502,5 +502,12 @@
 			<optional>true</optional>
 		</dependency>
 
+        <!-- String comparison library. Used for dynamic help system. -->
+        <dependency>
+            <groupId>net.ricecode</groupId>
+            <artifactId>string-similarity</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+
 	</dependencies>
 </project>
