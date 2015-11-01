@@ -286,6 +286,18 @@ public class CommandManager {
         switchAntiBotCommand.setCommandPermissions("authme.admin.switchantibot", CommandPermissions.DefaultPermission.OP_ONLY);
         switchAntiBotCommand.addArgument(new CommandArgumentDescription("mode", "ON / OFF", true));
 
+//        // Register the resetname command
+//        CommandDescription resetNameCommand = new CommandDescription(
+//                new SwitchAntiBotCommand(),
+//                new ArrayList<String>() {{
+//                    add("resetname");
+//                    add("resetnames");
+//                }},
+//                "Reset name",
+//                "Reset name",
+//                authMeCommand);
+//        resetNameCommand.setCommandPermissions("authme.admin.resetname", CommandPermissions.DefaultPermission.OP_ONLY);
+
         // Register the reload command
         CommandDescription reloadCommand = new CommandDescription(
                 new ReloadCommand(),
