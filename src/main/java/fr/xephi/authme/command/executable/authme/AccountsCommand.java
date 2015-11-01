@@ -25,6 +25,7 @@ public class AccountsCommand extends ExecutableCommand {
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
+
         // Messages instance
         final Messages m = Messages.getInstance();
 

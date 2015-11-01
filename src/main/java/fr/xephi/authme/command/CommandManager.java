@@ -164,6 +164,21 @@ public class CommandManager {
         accountsCommand.setCommandPermissions("authme.admin.accounts", CommandPermissions.DefaultPermission.OP_ONLY);
         accountsCommand.addArgument(new CommandArgumentDescription("player", "Player name or IP", true));
 
+        // Register the getemail command
+        CommandDescription getEmailCommand = new CommandDescription(
+                new RegisterCommand(),
+                new ArrayList<String>() {{
+                    add("getemail");
+                    add("getmail");
+                    add("email");
+                    add("mail");
+                }},
+                "Display player's email",
+                "Display the email address of the specified player if set.",
+                authMeCommand);
+        getEmailCommand.setCommandPermissions("authme.admin.getemail", CommandPermissions.DefaultPermission.OP_ONLY);
+        getEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
+
         // Register the purge command
         CommandDescription purgeCommand = new CommandDescription(
                 new PurgeCommand(),

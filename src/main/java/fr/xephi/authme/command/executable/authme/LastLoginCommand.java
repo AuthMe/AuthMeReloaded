@@ -24,6 +24,7 @@ public class LastLoginCommand extends ExecutableCommand {
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance
         AuthMe plugin = AuthMe.getInstance();
+
         // Messages instance
         Messages m = Messages.getInstance();
 

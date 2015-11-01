@@ -29,6 +29,7 @@ public class ReloadCommand extends ExecutableCommand {
 
         // AuthMe plugin instance
         AuthMe plugin = AuthMe.getInstance();
+
         // Messages instance
         Messages m = Messages.getInstance();
 
