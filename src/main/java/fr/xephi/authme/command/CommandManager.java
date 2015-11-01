@@ -226,7 +226,7 @@ public class CommandManager {
                     add("purge");
                     add("delete");
                 }},
-                "Purge AuthMeReloaded data",
+                "Purge old data",
                 "Purge old AuthMeReloaded data longer than the specified amount of days ago.",
                 authMeCommand);
         purgeCommand.setCommandPermissions("authme.admin.purge", CommandPermissions.DefaultPermission.OP_ONLY);
@@ -240,7 +240,7 @@ public class CommandManager {
                     add("rld");
                     add("r");
                 }},
-                "Reload AuthMeReloaded",
+                "Reload plugin",
                 "Reload the AuthMeReloaded plugin.",
                 authMeCommand);
         reloadCommand.setCommandPermissions("authme.admin.reload", CommandPermissions.DefaultPermission.OP_ONLY);
