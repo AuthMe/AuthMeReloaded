@@ -5,6 +5,7 @@ import fr.xephi.authme.command.executable.authme.*;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
+import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 
@@ -511,6 +512,20 @@ public class CommandManager {
                 emailBaseCommand);
         changeEmailCommand.addArgument(new CommandArgumentDescription("oldEmail", "Old email address", false));
         changeEmailCommand.addArgument(new CommandArgumentDescription("newEmail", "New email address", false));
+
+        // Register the recover command
+        CommandDescription recoverEmailCommand = new CommandDescription(
+                new RecoverEmailCommand(),
+                new ArrayList<String>() {{
+                    add("recover");
+                    add("recovery");
+                    add("recoveremail");
+                    add("recovermail");
+                }},
+                "Recover using E-mail",
+                "Recover your account using an E-mail address.",
+                emailBaseCommand);
+        recoverEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
 
         // Register the help command
         CommandDescription emailHelpCommand = new CommandDescription(
