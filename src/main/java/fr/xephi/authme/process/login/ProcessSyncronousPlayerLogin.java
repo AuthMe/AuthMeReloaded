@@ -8,8 +8,8 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.GroupType;
+import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;

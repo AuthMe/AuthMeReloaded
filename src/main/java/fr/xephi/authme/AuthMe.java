@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import fr.xephi.authme.command.CommandHandler;
+import fr.xephi.authme.util.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

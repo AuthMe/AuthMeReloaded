@@ -9,7 +9,7 @@ import org.bukkit.event.server.ServerListPingEvent;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
+import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 
