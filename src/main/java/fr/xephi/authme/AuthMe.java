@@ -344,7 +344,7 @@ public class AuthMe extends JavaPlugin {
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
 
-        // TODO: This is moving to AuthMe.onCommand();
+        // TODO: This is moved to CommandManager.registerCommands() handled by AuthMe.onCommand() -- timvisee
         // Register commands
         //getCommand("authme").setExecutor(new AdminCommand(this));
         //getCommand("register").setExecutor(new RegisterCommand(this));
@@ -354,7 +354,7 @@ public class AuthMe extends JavaPlugin {
         //getCommand("unregister").setExecutor(new UnregisterCommand(this));
         //getCommand("email").setExecutor(new EmailCommand(this));
         //getCommand("captcha").setExecutor(new CaptchaCommand(this));
-        getCommand("converter").setExecutor(new ConverterCommand(this));
+        //getCommand("converter").setExecutor(new ConverterCommand(this));
 
         // Purge on start if enabled
         autoPurge();

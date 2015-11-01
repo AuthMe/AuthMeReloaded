@@ -575,6 +575,36 @@ public class CommandManager {
         captchaHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         captchaHelpCommand.setMaximumArguments(false);
 
+        // Register the base converter command
+        CommandDescription converterBaseCommand = new CommandDescription(
+                new ChangePasswordCommand(),
+                new ArrayList<String>() {{
+                    add("convert");
+                    add("converter");
+                    add("conv");
+                }},
+                "Convert command",
+                "Convert command for AuthMeReloaded.", null);
+        converterBaseCommand.setCommandPermissions("authme.converter", CommandPermissions.DefaultPermission.ALLOWED);
+        converterBaseCommand.addArgument(new CommandArgumentDescription("job", "Conversion job: flattosql / flattosqlite /| xauth / crazylogin / rakamak / royalauth / vauth / sqltoflat", false));
+        converterBaseCommand.setMaximumArguments(false);
+
+        // Register the help command
+        CommandDescription converterHelpCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("help");
+                    add("hlp");
+                    add("h");
+                    add("sos");
+                    add("?");
+                }},
+                "View help",
+                "View detailed help pages about AuthMeReloaded change captcha commands.",
+                converterBaseCommand);
+        converterHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        converterHelpCommand.setMaximumArguments(false);
+
         // Add the base commands to the commands array
         this.commandDescriptions.add(authMeBaseCommand);
         this.commandDescriptions.add(loginBaseCommand);
@@ -584,6 +614,7 @@ public class CommandManager {
         this.commandDescriptions.add(changePasswordBaseCommand);
         this.commandDescriptions.add(emailBaseCommand);
         this.commandDescriptions.add(captchaBaseCommand);
+        this.commandDescriptions.add(converterBaseCommand);
     }
 
     /**
