@@ -1,6 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.*;
+import fr.xephi.authme.command.executable.authme.*;
 
 import java.util.ArrayList;
 import java.util.List;
