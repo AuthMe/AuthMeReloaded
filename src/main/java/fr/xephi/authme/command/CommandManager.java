@@ -225,6 +225,19 @@ public class CommandManager {
         setEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
         setEmailCommand.addArgument(new CommandArgumentDescription("email", "Player email", false));
 
+        // Register the getip command
+        CommandDescription getIpCommand = new CommandDescription(
+                new GetIpCommand(),
+                new ArrayList<String>() {{
+                    add("getip");
+                    add("ip");
+                }},
+                "Get player's IP",
+                "Get the IP address of the specified online player.",
+                authMeCommand);
+        getIpCommand.setCommandPermissions("authme.admin.getip", CommandPermissions.DefaultPermission.OP_ONLY);
+        getIpCommand.addArgument(new CommandArgumentDescription("player", "Online player name", false));
+
         // Register the spawn command
         CommandDescription spawnCommand = new CommandDescription(
                 new SpawnCommand(),
