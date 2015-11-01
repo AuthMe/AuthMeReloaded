@@ -195,6 +195,18 @@ public class CommandManager {
         setEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
         setEmailCommand.addArgument(new CommandArgumentDescription("email", "Player email", false));
 
+        // Register the spawn command
+        CommandDescription spawnCommand = new CommandDescription(
+                new SpawnCommand(),
+                new ArrayList<String>() {{
+                    add("spawn");
+                    add("home");
+                }},
+                "Teleport to spawn",
+                "Teleport to the spawn.",
+                authMeCommand);
+        spawnCommand.setCommandPermissions("authme.admin.spawn", CommandPermissions.DefaultPermission.OP_ONLY);
+
         // Register the setspawn command
         CommandDescription setSpawnCommand = new CommandDescription(
                 new SetSpawnCommand(),
