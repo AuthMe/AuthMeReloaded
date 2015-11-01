@@ -355,9 +355,40 @@ public class CommandManager {
         loginHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         loginHelpCommand.setMaximumArguments(false);
 
+        // Register the base register command
+        CommandDescription registerBaseCommand = new CommandDescription(
+                new RegisterCommand(),
+                new ArrayList<String>() {{
+                    add("register");
+                    add("reg");
+                }},
+                "Registration command",
+                "Command to register using AuthMeReloaded.", null);
+        registerBaseCommand.setCommandPermissions("authme.register", CommandPermissions.DefaultPermission.ALLOWED);
+        registerBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
+        registerBaseCommand.addArgument(new CommandArgumentDescription("verifyPassword", "Verify password", false));
+        registerBaseCommand.setMaximumArguments(false);
+
+        // Register the help command
+        CommandDescription registerHelpCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("help");
+                    add("hlp");
+                    add("h");
+                    add("sos");
+                    add("?");
+                }},
+                "View help",
+                "View detailed help pages about AuthMeReloaded register commands.",
+                registerBaseCommand);
+        registerHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        registerHelpCommand.setMaximumArguments(false);
+
         // Add the base commands to the commands array
         this.commandDescriptions.add(authMeBaseCommand);
         this.commandDescriptions.add(loginBaseCommand);
+        this.commandDescriptions.add(registerBaseCommand);
     }
 
     /**
