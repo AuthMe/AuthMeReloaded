@@ -195,6 +195,18 @@ public class CommandManager {
         setEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
         setEmailCommand.addArgument(new CommandArgumentDescription("email", "Player email", false));
 
+        // Register the setspawn command
+        CommandDescription setSpawnCommand = new CommandDescription(
+                new SetSpawnCommand(),
+                new ArrayList<String>() {{
+                    add("setspawn");
+                    add("chgspawn");
+                }},
+                "Change the spawn",
+                "Change the player's spawn to your current position.",
+                authMeCommand);
+        setSpawnCommand.setCommandPermissions("authme.admin.setspawn", CommandPermissions.DefaultPermission.OP_ONLY);
+
         // Register the purge command
         CommandDescription purgeCommand = new CommandDescription(
                 new PurgeCommand(),
