@@ -6,7 +6,6 @@ import fr.xephi.authme.command.executable.authme.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.authme.RegisterCommand;
 import fr.xephi.authme.command.executable.authme.UnregisterCommand;
 import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
-import fr.xephi.authme.command.executable.changepassword.*;
 import fr.xephi.authme.command.executable.converter.ConverterCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
