@@ -8,15 +8,10 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Profiler;
-import org.bukkit.ChatColor;
+//import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class ReloadCommand extends ExecutableCommand {
-
-    /** AuthMe plugin instance. */
-    private AuthMe plugin = AuthMe.getInstance();
-    /** Messages instance. */
-    private Messages m = Messages.getInstance();
 
     /**
      * Execute the command.
@@ -32,13 +27,18 @@ public class ReloadCommand extends ExecutableCommand {
         // Profile the reload process
         Profiler p = new Profiler(true);
 
+        // AuthMe plugin instance
+        AuthMe plugin = AuthMe.getInstance();
+        // Messages instance
+        Messages m = Messages.getInstance();
+
         // Show a status message
-        sender.sendMessage(ChatColor.YELLOW + "Reloading Dungeon Maze...");
+        //sender.sendMessage(ChatColor.YELLOW + "Reloading AuthMeReloaded...");
 
         try {
             Settings.reload();
             plugin.getModuleManager().reloadModules();
-            m.reloadMessages();
+            Messages.getInstance().reloadMessages();
             plugin.setupDatabase();
         } catch (Exception e) {
             ConsoleLogger.showError("Fatal error occurred! Authme instance ABORTED!");
@@ -46,10 +46,12 @@ public class ReloadCommand extends ExecutableCommand {
             plugin.stopOrUnload();
             return false;
         }
+
+        // Show a status message
         m.send(sender, "reload");
 
-        // Dungeon Maze reloaded, show a status message
-        sender.sendMessage(ChatColor.GREEN + "Dungeon Maze has been reloaded successfully, took " + p.getTimeFormatted() + "!");
+        // AuthMeReloaded reloaded, show a status message
+        //sender.sendMessage(ChatColor.GREEN + "AuthMeReloaded has been reloaded successfully, took " + p.getTimeFormatted() + "!");
         return true;
     }
 }
