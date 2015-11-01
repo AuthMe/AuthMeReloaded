@@ -1,4 +1,4 @@
-package fr.xephi.authme;
+package fr.xephi.authme.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.zip.GZIPInputStream;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
