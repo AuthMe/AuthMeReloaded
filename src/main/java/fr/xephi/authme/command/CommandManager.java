@@ -2,7 +2,9 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.*;
 import fr.xephi.authme.command.executable.authme.*;
+import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
+import fr.xephi.authme.command.executable.converter.ConverterCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
@@ -418,7 +420,7 @@ public class CommandManager {
 
         // Register the base unregister command
         CommandDescription unregisterBaseCommand = new CommandDescription(
-                new RegisterCommand(),
+                new UnregisterCommand(),
                 new ArrayList<String>() {{
                     add("unregister");
                     add("unreg");
@@ -548,7 +550,7 @@ public class CommandManager {
 
         // Register the base captcha command
         CommandDescription captchaBaseCommand = new CommandDescription(
-                new ChangePasswordCommand(),
+                new CaptchaCommand(),
                 new ArrayList<String>() {{
                     add("captcha");
                     add("capt");
@@ -577,7 +579,7 @@ public class CommandManager {
 
         // Register the base converter command
         CommandDescription converterBaseCommand = new CommandDescription(
-                new ChangePasswordCommand(),
+                new ConverterCommand(),
                 new ArrayList<String>() {{
                     add("convert");
                     add("converter");
