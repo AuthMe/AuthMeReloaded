@@ -286,6 +286,23 @@ public class CommandManager {
         purgeCommand.setCommandPermissions("authme.admin.purge", CommandPermissions.DefaultPermission.OP_ONLY);
         purgeCommand.addArgument(new CommandArgumentDescription("days", "Number of days", false));
 
+        // Register the purgelastposition command
+        CommandDescription purgeLastPositionCommand = new CommandDescription(
+                new PurgeLastPositionCommand(),
+                new ArrayList<String>() {{
+                    add("purgelastposition");
+                    add("purgelastpos");
+                    add("resetposition");
+                    add("resetpos");
+                    add("resetlastposition");
+                    add("resetlastpos");
+                }},
+                "Purge player's last position",
+                "Purge the last know position of the specified player.",
+                authMeCommand);
+        purgeLastPositionCommand.setCommandPermissions("authme.admin.purgelastpos", CommandPermissions.DefaultPermission.OP_ONLY);
+        purgeLastPositionCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
+
         // Register the purgebannedplayers command
         CommandDescription purgeBannedPlayersCommand = new CommandDescription(
                 new PurgeBannedPlayersCommand(),
