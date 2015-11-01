@@ -1,17 +1,18 @@
 package fr.xephi.authme.command.help;
 
-import com.timvisee.dungeonmaze.Core;
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.CommandPermissions;
-import com.timvisee.dungeonmaze.util.StringUtils;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class HelpPrinter {
@@ -103,7 +104,7 @@ public class HelpPrinter {
         for(String node : permissions.getPermissionNodes()) {
             boolean nodePermission = true;
             if(sender instanceof Player)
-                nodePermission = Core.getPermissionsManager().hasPermission((Player) sender, node, false);
+                nodePermission = AuthMe.getInstance().authmePermissible((Player) sender, node);
             final String nodePermsString = ChatColor.GRAY + (nodePermission ? ChatColor.ITALIC + " (Permission!)" : ChatColor.ITALIC + " (No Permission!)");
             sender.sendMessage(" " + ChatColor.YELLOW + ChatColor.ITALIC + node + nodePermsString);
         }
@@ -160,7 +161,12 @@ public class HelpPrinter {
         }
 
         // Sort the alternatives
-        Collections.sort(alternatives, (o1, o2) -> Double.compare(StringUtils.getDifference(usedLabel, o1), StringUtils.getDifference(usedLabel, o2)));
+        Collections.sort(alternatives, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return Double.compare(StringUtils.getDifference(usedLabel, o1), StringUtils.getDifference(usedLabel, o2));
+            }
+        });
 
         // Print each alternative with proper syntax
         for(String alternative : alternatives)
