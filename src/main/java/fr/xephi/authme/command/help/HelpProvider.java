@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.help;
 
-import com.timvisee.dungeonmaze.Core;
-import com.timvisee.dungeonmaze.command.*;
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.*;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -33,9 +33,9 @@ public class HelpProvider {
      */
     public static void showHelp(CommandSender sender, CommandParts reference, CommandParts helpQuery, boolean showCommand, boolean showDescription, boolean showArguments, boolean showPermissions, boolean showAlternatives, boolean showCommands) {
         // Find the command for this help query, one with and one without a prefixed base command
-        FoundCommandResult result = Core.getCommandHandler().getCommandManager().findCommand(new CommandParts(helpQuery.getList()));
+        FoundCommandResult result = AuthMe.getInstance().getCommandHandler().getCommandManager().findCommand(new CommandParts(helpQuery.getList()));
         CommandParts commandReferenceOther = new CommandParts(reference.get(0), helpQuery.getList());
-        FoundCommandResult resultOther = Core.getCommandHandler().getCommandManager().findCommand(commandReferenceOther);
+        FoundCommandResult resultOther = AuthMe.getInstance().getCommandHandler().getCommandManager().findCommand(commandReferenceOther);
         if(resultOther != null) {
             if(result == null)
                 result = resultOther;
