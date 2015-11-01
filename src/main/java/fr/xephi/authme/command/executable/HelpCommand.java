@@ -1,8 +1,8 @@
 package fr.xephi.authme.command.executable;
 
-import com.timvisee.dungeonmaze.command.CommandParts;
-import com.timvisee.dungeonmaze.command.ExecutableCommand;
-import com.timvisee.dungeonmaze.command.help.HelpProvider;
+import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.command.CommandSender;
 
 public class HelpCommand extends ExecutableCommand {
