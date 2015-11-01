@@ -588,7 +588,7 @@ public class CommandManager {
                 }},
                 "Convert command",
                 "Convert command for AuthMeReloaded.", null);
-        converterBaseCommand.setCommandPermissions("authme.converter", CommandPermissions.DefaultPermission.ALLOWED);
+        converterBaseCommand.setCommandPermissions("authme.converter", CommandPermissions.DefaultPermission.OP_ONLY);
         converterBaseCommand.addArgument(new CommandArgumentDescription("job", "Conversion job: flattosql / flattosqlite /| xauth / crazylogin / rakamak / royalauth / vauth / sqltoflat", false));
         converterBaseCommand.setMaximumArguments(false);
 
