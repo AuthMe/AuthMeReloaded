@@ -232,6 +232,20 @@ public class CommandManager {
         purgeCommand.setCommandPermissions("authme.admin.purge", CommandPermissions.DefaultPermission.OP_ONLY);
         purgeCommand.addArgument(new CommandArgumentDescription("days", "Number of days", false));
 
+        // Register the purgebannedplayers command
+        CommandDescription purgeBannedPlayersCommand = new CommandDescription(
+                new PurgeBannedPlayersCommand(),
+                new ArrayList<String>() {{
+                    add("purgebannedplayers");
+                    add("purgebannedplayer");
+                    add("deletebannedplayers");
+                    add("deletebannedplayer");
+                }},
+                "Purge banned palyers data",
+                "Purge all AuthMeReloaded data for banned players.",
+                authMeCommand);
+        purgeBannedPlayersCommand.setCommandPermissions("authme.admin.purgebannedplayers", CommandPermissions.DefaultPermission.OP_ONLY);
+
         // Register the reload command
         CommandDescription reloadCommand = new CommandDescription(
                 new ReloadCommand(),
