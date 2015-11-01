@@ -2,6 +2,8 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.*;
 import fr.xephi.authme.command.executable.authme.*;
+import fr.xephi.authme.command.executable.changepassword.*;
+import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 
 import java.util.ArrayList;
@@ -385,10 +387,41 @@ public class CommandManager {
         registerHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         registerHelpCommand.setMaximumArguments(false);
 
+        // Register the base changepassword command
+        CommandDescription changePasswordBaseCommand = new CommandDescription(
+                new ChangePasswordCommand(),
+                new ArrayList<String>() {{
+                    add("changepassword");
+                    add("changepass");
+                }},
+                "Change password command",
+                "Command to change your password using AuthMeReloaded.", null);
+        changePasswordBaseCommand.setCommandPermissions("authme.changepassword", CommandPermissions.DefaultPermission.ALLOWED);
+        changePasswordBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
+        changePasswordBaseCommand.addArgument(new CommandArgumentDescription("verifyPassword", "Verify password", false));
+        changePasswordBaseCommand.setMaximumArguments(false);
+
+        // Register the help command
+        CommandDescription changePasswordHelpCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("help");
+                    add("hlp");
+                    add("h");
+                    add("sos");
+                    add("?");
+                }},
+                "View help",
+                "View detailed help pages about AuthMeReloaded register commands.",
+                changePasswordBaseCommand);
+        changePasswordHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        changePasswordHelpCommand.setMaximumArguments(false);
+
         // Add the base commands to the commands array
         this.commandDescriptions.add(authMeBaseCommand);
         this.commandDescriptions.add(loginBaseCommand);
         this.commandDescriptions.add(registerBaseCommand);
+        this.commandDescriptions.add(changePasswordBaseCommand);
     }
 
     /**
