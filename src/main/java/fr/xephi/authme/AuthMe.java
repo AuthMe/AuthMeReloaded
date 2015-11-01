@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import fr.xephi.authme.command.CommandHandler;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -77,6 +78,9 @@ public class AuthMe extends JavaPlugin {
     private static Server server;
     private Logger authmeLogger;
 
+    // TODO: Move this to a better place! -- timvisee
+    private CommandHandler commandHandler = null;
+
     public Management management;
     public NewAPI api;
     public SendMailSSL mail;
@@ -139,6 +143,10 @@ public class AuthMe extends JavaPlugin {
         server = getServer();
         authmeLogger = Logger.getLogger("AuthMe");
         authme = this;
+
+        // Set up and initialize the command handler
+        this.commandHandler = new CommandHandler(false);
+        this.commandHandler.init();
 
         // TODO: split the plugin in more modules
         moduleManager = new ModuleManager(this);
@@ -807,5 +815,14 @@ public class AuthMe extends JavaPlugin {
     @Deprecated
     public String getCountryName(String ip) {
         return Utils.getCountryName(ip);
+    }
+
+    /**
+     * Get the command handler instance.
+     *
+     * @return Command handler.
+     */
+    public CommandHandler getCommandHandler() {
+        return this.commandHandler;
     }
 }
