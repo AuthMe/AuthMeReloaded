@@ -39,7 +39,7 @@ public class CommandManager {
                 "The main AuthMeReloaded command. The root for all admin commands.", null);
 
         // Register the help command
-        CommandDescription helpCommand = new CommandDescription(
+        CommandDescription authMeHelpCommand = new CommandDescription(
                 new HelpCommand(),
                 new ArrayList<String>() {{
                     add("help");
@@ -51,8 +51,8 @@ public class CommandManager {
                 "View help",
                 "View detailed help pages about AuthMeReloaded commands.",
                 authMeBaseCommand);
-        helpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
-        helpCommand.setMaximumArguments(false);
+        authMeHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        authMeHelpCommand.setMaximumArguments(false);
 
         // Register the register command
         CommandDescription registerCommand = new CommandDescription(
@@ -338,6 +338,22 @@ public class CommandManager {
                 "Command to login using AuthMeReloaded.", null);
         loginBaseCommand.setCommandPermissions("authme.login", CommandPermissions.DefaultPermission.ALLOWED);
         loginBaseCommand.addArgument(new CommandArgumentDescription("password", "Login password", false));
+
+        // Register the help command
+        CommandDescription loginHelpCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("help");
+                    add("hlp");
+                    add("h");
+                    add("sos");
+                    add("?");
+                }},
+                "View help",
+                "View detailed help pages about AuthMeReloaded login commands.",
+                loginBaseCommand);
+        loginHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        loginHelpCommand.setMaximumArguments(false);
 
         // Add the base commands to the commands array
         this.commandDescriptions.add(authMeBaseCommand);
