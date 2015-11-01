@@ -121,7 +121,7 @@ public class CommandManager {
                 "List Dungeon Mazes",
                 "Lists the available Dungeon Maze worlds and shows some additional information.",
                 dungeonMazeCommand);
-        listWorldCommand.setCommandPermissions("dungeonmaze.command.listworlds", CommandPermissions.DefaultPermission.OP_ONLY);
+        listWorldCommand.setCommandPermissions("dungeonmaze.command.listworlds", CommandPermissions.DefaultPermission.OP_ONLY);*/
 
         // Register the reload command
         CommandDescription reloadCommand = new CommandDescription(
@@ -131,13 +131,12 @@ public class CommandManager {
                     add("rld");
                     add("r");
                 }},
-                "Reload Dungeon Maze",
-                "Reload the Dungeon Maze plugin.",
-                dungeonMazeCommand);
-        reloadCommand.setCommandPermissions("dungeonmaze.command.reload", CommandPermissions.DefaultPermission.OP_ONLY);
-        reloadCommand.addArgument(new CommandArgumentDescription("force", "True or False to force reload.", true));
+                "Reload AuthMeReloaded",
+                "Reload the AuthMeReloaded plugin.",
+                authMeCommand);
+        reloadCommand.setCommandPermissions("authme.admin.reload", CommandPermissions.DefaultPermission.OP_ONLY);
 
-        // Register the reload permissions command
+        /* // Register the reload permissions command
         CommandDescription reloadPermissionsCommand = new CommandDescription(
                 new ReloadPermissionsCommand(),
                 new ArrayList<String>() {{
