@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
+import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
