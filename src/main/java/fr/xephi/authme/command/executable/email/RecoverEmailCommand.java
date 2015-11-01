@@ -83,6 +83,7 @@ public class RecoverEmailCommand extends ExecutableCommand {
                 plugin.mail.main(auth, thePass);
                 m.send(player, "email_send");
             } catch (NoSuchAlgorithmException | NoClassDefFoundError ex) {
+                ex.printStackTrace();
                 ConsoleLogger.showError(ex.getMessage());
                 m.send(sender, "error");
             }

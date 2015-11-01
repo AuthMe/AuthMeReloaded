@@ -206,9 +206,9 @@
 
 		<!-- Java Email Implementation -->
 		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
-			<version>1.5.1</version>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>javax.mail</artifactId>
+			<version>1.5.4</version>
 			<scope>compile</scope>
 			<exclusions>
 				<exclusion>
