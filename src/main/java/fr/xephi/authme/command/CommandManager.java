@@ -220,7 +220,7 @@ public class CommandManager {
                 "Show detailed information about all the Dungeon Maze serivces.",
                 dungeonMazeCommand);
         serviceCommand.setMaximumArguments(false);
-        serviceCommand.setCommandPermissions("dungeonmaze.command.services", CommandPermissions.DefaultPermission.OP_ONLY);
+        serviceCommand.setCommandPermissions("dungeonmaze.command.services", CommandPermissions.DefaultPermission.OP_ONLY);*/
 
         // Register the version command
         CommandDescription versionCommand = new CommandDescription(
@@ -233,9 +233,9 @@ public class CommandManager {
                     add("info");
                 }},
                 "Version info",
-                "Show detailed information about the installed Dungeon Maze version, and shows the developers, contributors, license and other information.",
-                dungeonMazeCommand);
-        versionCommand.setMaximumArguments(false);*/
+                "Show detailed information about the installed AuthMeReloaded version, and shows the developers, contributors, license and other information.",
+                authMeCommand);
+        versionCommand.setMaximumArguments(false);
 
         // Add the base commands to the commands array
         this.commandDescriptions.add(authMeCommand);
