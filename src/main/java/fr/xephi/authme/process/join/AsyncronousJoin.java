@@ -58,8 +58,7 @@ public class AsyncronousJoin {
             plugin.ess.getUser(player).setSocialSpyEnabled(false);
         }
 
-        if (!plugin.isCanConnect())
-        {
+        if (!plugin.canConnect()) {
         	final GameMode gM = AuthMePlayerListener.gameMode.get(name);
             sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 

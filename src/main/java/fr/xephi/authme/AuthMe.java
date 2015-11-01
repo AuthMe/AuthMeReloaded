@@ -109,7 +109,7 @@ public class AuthMe extends JavaPlugin {
     // In case we need to cache PlayerAuths, prevent connection before it's done
     private boolean canConnect = true;
 
-    public boolean isCanConnect() {
+    public boolean canConnect() {
 		return canConnect;
 	}
 
