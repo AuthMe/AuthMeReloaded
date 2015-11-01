@@ -138,6 +138,21 @@ public class CommandManager {
         registerCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
         registerCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
 
+        // Register the unregister command
+        CommandDescription unregisterCommand = new CommandDescription(
+                new UnregisterCommand(),
+                new ArrayList<String>() {{
+                    add("unregister");
+                    add("unreg");
+                    add("delete");
+                    add("del");
+                }},
+                "Unregister a player",
+                "Unregister the specified player.",
+                authMeCommand);
+        unregisterCommand.setCommandPermissions("authme.admin.unregister", CommandPermissions.DefaultPermission.OP_ONLY);
+        unregisterCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
+
         // Register the changepassword command
         CommandDescription changePasswordCommand = new CommandDescription(
                 new RegisterCommand(),
