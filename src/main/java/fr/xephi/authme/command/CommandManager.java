@@ -4,6 +4,7 @@ import fr.xephi.authme.command.executable.*;
 import fr.xephi.authme.command.executable.authme.*;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
+import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 
@@ -483,7 +484,7 @@ public class CommandManager {
                 "E-mail command",
                 "The AuthMe Reloaded E-mail command. The root for all E-mail commands.", null);
 
-        // Register the help command
+        // Register the add command
         CommandDescription addEmailCommand = new CommandDescription(
                 new AddEmailCommand(),
                 new ArrayList<String>() {{
@@ -492,10 +493,24 @@ public class CommandManager {
                     add("addmail");
                 }},
                 "Add E-mail",
-                "Add a new E-Mail address to your account.",
+                "Add an new E-Mail address to your account.",
                 emailBaseCommand);
         addEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
         addEmailCommand.addArgument(new CommandArgumentDescription("verifyEmail", "Email address verification", false));
+
+        // Register the change command
+        CommandDescription changeEmailCommand = new CommandDescription(
+                new ChangeEmailCommand(),
+                new ArrayList<String>() {{
+                    add("change");
+                    add("changeemail");
+                    add("changemail");
+                }},
+                "Change E-mail",
+                "Change an E-Mail address of your account.",
+                emailBaseCommand);
+        changeEmailCommand.addArgument(new CommandArgumentDescription("oldEmail", "Old email address", false));
+        changeEmailCommand.addArgument(new CommandArgumentDescription("newEmail", "New email address", false));
 
         // Register the help command
         CommandDescription emailHelpCommand = new CommandDescription(
