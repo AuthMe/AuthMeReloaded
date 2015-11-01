@@ -77,6 +77,7 @@ public class AuthMePlayerListener implements Listener {
                     return;
                 }
             }
+            event.setCancelled(true);
 
             if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
                 m.send(player, "login_msg");
