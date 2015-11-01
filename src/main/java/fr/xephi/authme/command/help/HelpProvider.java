@@ -95,7 +95,7 @@ public class HelpProvider {
         }
 
         // Print the help header
-        sender.sendMessage(ChatColor.GOLD + "==========[ DUNGEON MAZE HELP ]==========");
+        sender.sendMessage(ChatColor.GOLD + "==========[ " + AuthMe.PLUGIN_NAME.toUpperCase() + " HELP ]==========");
 
         // Print the command help information
         if(showCommand)
