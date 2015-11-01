@@ -13,11 +13,6 @@ import org.bukkit.entity.Player;
 public class CaptchaCommand extends ExecutableCommand {
 
     /**
-     * RandomString instance, for captcha generation.
-     */
-    public static RandomString randStr = new RandomString(Settings.captchaLength);
-
-    /**
      * Execute the command.
      *
      * @param sender The command sender.
@@ -33,6 +28,9 @@ public class CaptchaCommand extends ExecutableCommand {
 
         // Messages instance
         final Messages m = Messages.getInstance();
+
+        // Random string instance, for captcha generation (I think) -- timvisee
+        RandomString randStr = new RandomString(Settings.captchaLength);
 
         // Get the parameter values
         String captcha = commandArguments.get(0);
