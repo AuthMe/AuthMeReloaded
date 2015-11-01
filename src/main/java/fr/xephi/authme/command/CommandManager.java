@@ -166,7 +166,7 @@ public class CommandManager {
 
         // Register the getemail command
         CommandDescription getEmailCommand = new CommandDescription(
-                new RegisterCommand(),
+                new GetEmailCommand(),
                 new ArrayList<String>() {{
                     add("getemail");
                     add("getmail");
@@ -178,6 +178,22 @@ public class CommandManager {
                 authMeCommand);
         getEmailCommand.setCommandPermissions("authme.admin.getemail", CommandPermissions.DefaultPermission.OP_ONLY);
         getEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
+
+        // Register the setemail command
+        CommandDescription setEmailCommand = new CommandDescription(
+                new SetEmailCommand(),
+                new ArrayList<String>() {{
+                    add("chgemail");
+                    add("chgmail");
+                    add("setemail");
+                    add("setmail");
+                }},
+                "Change player's email",
+                "Change the email address of the specified player.",
+                authMeCommand);
+        setEmailCommand.setCommandPermissions("authme.admin.chgemail", CommandPermissions.DefaultPermission.OP_ONLY);
+        setEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
+        setEmailCommand.addArgument(new CommandArgumentDescription("email", "Player email", false));
 
         // Register the purge command
         CommandDescription purgeCommand = new CommandDescription(
