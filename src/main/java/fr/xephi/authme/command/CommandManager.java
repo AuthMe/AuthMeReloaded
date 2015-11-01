@@ -124,6 +124,19 @@ public class CommandManager {
         listWorldCommand.setCommandPermissions("dungeonmaze.command.listworlds", CommandPermissions.DefaultPermission.OP_ONLY);*/
 
         // Register the purge command
+        CommandDescription lastLoginCommand = new CommandDescription(
+                new LastLoginCommand(),
+                new ArrayList<String>() {{
+                    add("lastlogin");
+                    add("ll");
+                }},
+                "Player's last login",
+                "View the date of the specified players last login",
+                authMeCommand);
+        lastLoginCommand.setCommandPermissions("authme.admin.lastlogin", CommandPermissions.DefaultPermission.OP_ONLY);
+        lastLoginCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
+
+        // Register the purge command
         CommandDescription purgeCommand = new CommandDescription(
                 new PurgeCommand(),
                 new ArrayList<String>() {{
