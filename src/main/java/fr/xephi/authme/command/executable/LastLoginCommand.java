@@ -1,16 +1,13 @@
 package fr.xephi.authme.command.executable;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Profiler;
 import org.bukkit.command.CommandSender;
 
-//import org.bukkit.ChatColor;
 import java.util.Date;
 
 public class LastLoginCommand extends ExecutableCommand {
@@ -42,7 +39,7 @@ public class LastLoginCommand extends ExecutableCommand {
         // Validate the player
         PlayerAuth auth;
         try {
-            auth = plugin.database.getAuth(args[1].toLowerCase());
+            auth = plugin.database.getAuth(playerName.toLowerCase());
         } catch (NullPointerException e) {
             m.send(sender, "unknown_user");
             return true;
@@ -66,7 +63,7 @@ public class LastLoginCommand extends ExecutableCommand {
         String lastIP = auth.getIp();
 
         // Show the player status
-        sender.sendMessage("[AuthMe] " + args[1] + " last login : " + date.toString());
+        sender.sendMessage("[AuthMe] " + playerName + " last login : " + date.toString());
         sender.sendMessage("[AuthMe] The player " + auth.getNickname() + " is unlogged since " + msg);
         sender.sendMessage("[AuthMe] Last Player's IP: " + lastIP);
         return true;
