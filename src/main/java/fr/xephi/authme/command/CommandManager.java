@@ -123,6 +123,19 @@ public class CommandManager {
                 dungeonMazeCommand);
         listWorldCommand.setCommandPermissions("dungeonmaze.command.listworlds", CommandPermissions.DefaultPermission.OP_ONLY);*/
 
+        // Register the purge command
+        CommandDescription purgeCommand = new CommandDescription(
+                new ReloadCommand(),
+                new ArrayList<String>() {{
+                    add("purge");
+                    add("delete");
+                }},
+                "Purge AuthMeReloaded data",
+                "Purge old AuthMeReloaded data longer than the specified amount of days ago.",
+                authMeCommand);
+        purgeCommand.setCommandPermissions("authme.admin.purge", CommandPermissions.DefaultPermission.OP_ONLY);
+        purgeCommand.addArgument(new CommandArgumentDescription("days", "Number of days", false));
+
         // Register the reload command
         CommandDescription reloadCommand = new CommandDescription(
                 new ReloadCommand(),
