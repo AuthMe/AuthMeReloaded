@@ -3,6 +3,7 @@ package fr.xephi.authme.command;
 import fr.xephi.authme.command.executable.*;
 import fr.xephi.authme.command.executable.authme.*;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
+import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 
@@ -31,7 +32,7 @@ public class CommandManager {
      */
     @SuppressWarnings("SpellCheckingInspection")
     public void registerCommands() {
-        // Register the base Dungeon Maze command
+        // Register the base AuthMe Reloaded command
         CommandDescription authMeBaseCommand = new CommandDescription(
                 new AuthMeCommand(),
                 new ArrayList<String>() {{
@@ -378,7 +379,7 @@ public class CommandManager {
                     add("?");
                 }},
                 "View help",
-                "View detailed help pages about AuthMeReloaded register commands.",
+                "View detailed help pages about AuthMeReloaded logout commands.",
                 logoutBaseCommand);
         logoutHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         logoutHelpCommand.setMaximumArguments(false);
@@ -437,7 +438,7 @@ public class CommandManager {
                     add("?");
                 }},
                 "View help",
-                "View detailed help pages about AuthMeReloaded register commands.",
+                "View detailed help pages about AuthMeReloaded unregister commands.",
                 unregisterBaseCommand);
         unregisterHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         unregisterHelpCommand.setMaximumArguments(false);
@@ -467,10 +468,50 @@ public class CommandManager {
                     add("?");
                 }},
                 "View help",
-                "View detailed help pages about AuthMeReloaded register commands.",
+                "View detailed help pages about AuthMeReloaded change password commands.",
                 changePasswordBaseCommand);
         changePasswordHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         changePasswordHelpCommand.setMaximumArguments(false);
+
+        // Register the base Dungeon Maze command
+        CommandDescription emailBaseCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("email");
+                    add("mail");
+                }},
+                "E-mail command",
+                "The AuthMe Reloaded E-mail command. The root for all E-mail commands.", null);
+
+        // Register the help command
+        CommandDescription addEmailCommand = new CommandDescription(
+                new AddEmailCommand(),
+                new ArrayList<String>() {{
+                    add("add");
+                    add("addemail");
+                    add("addmail");
+                }},
+                "Add E-mail",
+                "Add a new E-Mail address to your account.",
+                emailBaseCommand);
+        addEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
+        addEmailCommand.addArgument(new CommandArgumentDescription("verifyEmail", "Email address verification", false));
+
+        // Register the help command
+        CommandDescription emailHelpCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("help");
+                    add("hlp");
+                    add("h");
+                    add("sos");
+                    add("?");
+                }},
+                "View help",
+                "View detailed help pages about AuthMeReloaded help commands.",
+                emailBaseCommand);
+        emailHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        emailHelpCommand.setMaximumArguments(false);
 
         // Add the base commands to the commands array
         this.commandDescriptions.add(authMeBaseCommand);
@@ -479,6 +520,7 @@ public class CommandManager {
         this.commandDescriptions.add(registerBaseCommand);
         this.commandDescriptions.add(unregisterBaseCommand);
         this.commandDescriptions.add(changePasswordBaseCommand);
+        this.commandDescriptions.add(emailBaseCommand);
     }
 
     /**
