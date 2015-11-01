@@ -2,7 +2,6 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.*;
 import fr.xephi.authme.command.executable.authme.*;
-import fr.xephi.authme.command.executable.changepassword.*;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 
