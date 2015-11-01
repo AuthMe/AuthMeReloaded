@@ -75,6 +75,14 @@ import net.minelink.ctplus.CombatTagPlus;
 
 public class AuthMe extends JavaPlugin {
 
+    /** Defines the name of the plugin. */
+    // TODO: Create a getter method for this constant, and make it private
+    public static final String PLUGIN_NAME = "AuthMeReloaded";
+    /** Defines the current AuthMeReloaded version name. */
+    private static final String PLUGIN_VERSION_NAME = "5.1-SNAPSHOT";
+    /** Defines the current AuthMeReloaded version code. */
+    private static final int PLUGIN_VERSION_CODE = 100; // Increase this number by one when an update is released
+
     private static AuthMe authme;
     private static Server server;
     private Logger authmeLogger;
@@ -847,5 +855,23 @@ public class AuthMe extends JavaPlugin {
 
         // Handle the command, return the result
         return commandHandler.onCommand(sender, cmd, commandLabel, args);
+    }
+
+    /**
+     * Get the current installed AuthMeReloaded version name.
+     *
+     * @return The version name of the currently installed AuthMeReloaded instance.
+     */
+    public static String getVersionName() {
+        return PLUGIN_VERSION_NAME;
+    }
+
+    /**
+     * Get the current installed AuthMeReloaded version code.
+     *
+     * @return The version code of the currently installed AuthMeReloaded instance.
+     */
+    public static int getVersionCode() {
+        return PLUGIN_VERSION_CODE;
     }
 }
