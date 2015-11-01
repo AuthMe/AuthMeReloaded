@@ -4,6 +4,7 @@ import fr.xephi.authme.command.executable.*;
 import fr.xephi.authme.command.executable.authme.*;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
+import fr.xephi.authme.command.executable.logout.LogoutCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -356,6 +357,32 @@ public class CommandManager {
         loginHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         loginHelpCommand.setMaximumArguments(false);
 
+        // Register the base logout command
+        CommandDescription logoutBaseCommand = new CommandDescription(
+                new LogoutCommand(),
+                new ArrayList<String>() {{
+                    add("logout");
+                }},
+                "Logout command",
+                "Command to logout using AuthMeReloaded.", null);
+        logoutBaseCommand.setCommandPermissions("authme.logout", CommandPermissions.DefaultPermission.ALLOWED);
+
+        // Register the help command
+        CommandDescription logoutHelpCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("help");
+                    add("hlp");
+                    add("h");
+                    add("sos");
+                    add("?");
+                }},
+                "View help",
+                "View detailed help pages about AuthMeReloaded register commands.",
+                logoutBaseCommand);
+        logoutHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        logoutHelpCommand.setMaximumArguments(false);
+
         // Register the base register command
         CommandDescription registerBaseCommand = new CommandDescription(
                 new RegisterCommand(),
@@ -419,6 +446,7 @@ public class CommandManager {
         // Add the base commands to the commands array
         this.commandDescriptions.add(authMeBaseCommand);
         this.commandDescriptions.add(loginBaseCommand);
+        this.commandDescriptions.add(logoutBaseCommand);
         this.commandDescriptions.add(registerBaseCommand);
         this.commandDescriptions.add(changePasswordBaseCommand);
     }

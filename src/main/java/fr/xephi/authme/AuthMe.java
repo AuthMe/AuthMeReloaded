@@ -350,7 +350,7 @@ public class AuthMe extends JavaPlugin {
         //getCommand("register").setExecutor(new RegisterCommand(this));
         //getCommand("login").setExecutor(new LoginCommand(this));
         //getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
-        getCommand("logout").setExecutor(new LogoutCommand(this));
+        //getCommand("logout").setExecutor(new LogoutCommand(this));
         getCommand("unregister").setExecutor(new UnregisterCommand(this));
         getCommand("email").setExecutor(new EmailCommand(this));
         getCommand("captcha").setExecutor(new CaptchaCommand(this));
