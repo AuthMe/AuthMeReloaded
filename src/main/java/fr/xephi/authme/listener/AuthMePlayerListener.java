@@ -52,10 +52,11 @@ import fr.xephi.authme.settings.Settings;
 
 public class AuthMePlayerListener implements Listener {
 
+    public AuthMe plugin;
+    private Messages m = Messages.getInstance();
+
     public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
-    private Messages m = Messages.getInstance();
-    public AuthMe plugin;
     public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
     private List<String> antibot = new ArrayList<>();
 
@@ -67,9 +68,16 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (!Utils.checkAuth(player)) {
             String cmd = event.getMessage().split(" ")[0];
-            if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-                event.setCancelled(true);
+            if (cmd.startsWith("/")) {
+                if (Settings.allowCommands.contains(cmd)) {
+                    return;
+                }
+            } else {
+                if (Settings.isChatAllowed) {
+                    return;
+                }
             }
+
             if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
                 m.send(player, "login_msg");
             } else {
@@ -84,22 +92,14 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String msg = event.getMessage();
-        if (msg.equalsIgnoreCase("/worldedit cui"))
-            return;
-
-        String cmd = msg.split(" ")[0];
-        if (cmd.equalsIgnoreCase("/login") || cmd.equalsIgnoreCase("/register") || cmd.equalsIgnoreCase("/l") || cmd.equalsIgnoreCase("/reg") || cmd.equalsIgnoreCase("/email") || cmd.equalsIgnoreCase("/captcha"))
-            return;
+        String cmd = event.getMessage().split(" ")[0];
         if (Settings.useEssentialsMotd && cmd.equalsIgnoreCase("/motd"))
             return;
         if (Settings.allowCommands.contains(cmd))
             return;
-
-        if (!Utils.checkAuth(event.getPlayer())) {
-            event.setMessage("/notloggedin");
-            event.setCancelled(true);
-        }
+        if (Utils.checkAuth(event.getPlayer()))
+            return;
+        event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -216,7 +216,7 @@ public class AuthMePlayerListener implements Listener {
                 plugin.management.performJoin(player);
 
                 // Remove the join message while the player isn't logging in
-                if (Settings.delayJoinMessage && event.getJoinMessage() != null) {
+                if (Settings.delayJoinLeaveMessages && event.getJoinMessage() != null) {
                     joinMessage.put(name, event.getJoinMessage());
                     event.setJoinMessage(null);
                 }
@@ -372,13 +372,12 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+
+        if (!Utils.checkAuth(player) && Settings.delayJoinLeaveMessages) {
+            event.setQuitMessage(null);
+        }
 
         plugin.management.performQuit(player, false);
-
-        // TODO: rename delayjoinmessage setting
-        if (!PlayerCache.getInstance().isAuthenticated(name) && Settings.delayJoinMessages)
-            event.setQuitMessage(null);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

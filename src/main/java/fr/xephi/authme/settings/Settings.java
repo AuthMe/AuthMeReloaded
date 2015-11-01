@@ -76,7 +76,7 @@ public final class Settings extends YamlConfiguration {
             purgeLimitedCreative, purgeAntiXray, purgePermissions,
             enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
             broadcastWelcomeMessage, forceRegKick, forceRegLogin,
-            checkVeryGames, delayJoinMessage, noTeleport, applyBlindEffect,
+            checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
             customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
 
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
@@ -273,7 +273,7 @@ public final class Settings extends YamlConfiguration {
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
-        delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
+        delayJoinLeaveMessages = configFile.getBoolean("settings.delayJoinLeaveMessage", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
@@ -402,8 +402,12 @@ public final class Settings extends YamlConfiguration {
             set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
             changes = true;
         }
-        if (!contains("settings.delayJoinMessage")) {
-            set("settings.delayJoinMessage", false);
+        if (contains("settings.delayJoinMessage")) {
+            set("settings.delayJoinMessage", null);
+            changes = true;
+        }
+        if (!contains("settings.delayJoinLeaveMessages")) {
+            set("settings.delayJoinLeaveMessages", true);
             changes = true;
         }
         if (!contains("settings.restrictions.noTeleport")) {
