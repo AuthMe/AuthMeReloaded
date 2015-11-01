@@ -113,6 +113,8 @@ public class SendMailSSL {
                         file.delete();
 
                 } catch(Exception e) {
+                    // Print the stack trace
+                    e.printStackTrace();
                     ConsoleLogger.showError("Some error occurred while trying to send a email to " + mail);
                 }
             }
