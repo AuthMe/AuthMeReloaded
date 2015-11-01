@@ -488,6 +488,22 @@ public class CommandManager {
                 "E-mail command",
                 "The AuthMe Reloaded E-mail command. The root for all E-mail commands.", null);
 
+        // Register the help command
+        CommandDescription emailHelpCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("help");
+                    add("hlp");
+                    add("h");
+                    add("sos");
+                    add("?");
+                }},
+                "View help",
+                "View detailed help pages about AuthMeReloaded help commands.",
+                emailBaseCommand);
+        emailHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        emailHelpCommand.setMaximumArguments(false);
+
         // Register the add command
         CommandDescription addEmailCommand = new CommandDescription(
                 new AddEmailCommand(),
@@ -532,22 +548,6 @@ public class CommandManager {
                 emailBaseCommand);
         recoverEmailCommand.setCommandPermissions("authme.email.recover", CommandPermissions.DefaultPermission.ALLOWED);
         recoverEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
-
-        // Register the help command
-        CommandDescription emailHelpCommand = new CommandDescription(
-                new HelpCommand(),
-                new ArrayList<String>() {{
-                    add("help");
-                    add("hlp");
-                    add("h");
-                    add("sos");
-                    add("?");
-                }},
-                "View help",
-                "View detailed help pages about AuthMeReloaded help commands.",
-                emailBaseCommand);
-        emailHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
-        emailHelpCommand.setMaximumArguments(false);
 
         // Register the base captcha command
         CommandDescription captchaBaseCommand = new CommandDescription(
