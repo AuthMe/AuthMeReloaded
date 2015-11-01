@@ -124,6 +124,20 @@ public class CommandManager {
                 dungeonMazeCommand);
         listWorldCommand.setCommandPermissions("dungeonmaze.command.listworlds", CommandPermissions.DefaultPermission.OP_ONLY);*/
 
+        // Register the register command
+        CommandDescription registerCommand = new CommandDescription(
+                new RegisterCommand(),
+                new ArrayList<String>() {{
+                    add("register");
+                    add("reg");
+                }},
+                "Register a player",
+                "Register the specified player with the specified password.",
+                authMeCommand);
+        registerCommand.setCommandPermissions("authme.admin.register", CommandPermissions.DefaultPermission.OP_ONLY);
+        registerCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
+        registerCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
+
         // Register the purge command
         CommandDescription lastLoginCommand = new CommandDescription(
                 new LastLoginCommand(),
