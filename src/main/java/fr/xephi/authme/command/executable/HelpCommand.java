@@ -1,4 +1,4 @@
-package fr.xephi.authme.command.executable.authme;
+package fr.xephi.authme.command.executable;
 
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
