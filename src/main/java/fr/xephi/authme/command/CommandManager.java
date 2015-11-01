@@ -125,7 +125,7 @@ public class CommandManager {
 
         // Register the purge command
         CommandDescription purgeCommand = new CommandDescription(
-                new ReloadCommand(),
+                new PurgeCommand(),
                 new ArrayList<String>() {{
                     add("purge");
                     add("delete");
