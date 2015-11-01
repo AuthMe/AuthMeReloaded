@@ -3,6 +3,8 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.command.help.HelpProvider;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 public class SwitchAntiBotCommand extends ExecutableCommand {
@@ -40,7 +42,15 @@ public class SwitchAntiBotCommand extends ExecutableCommand {
             return true;
         }
 
-        // Invalid command arguments, return false
-        return false;
+        // Show the invalid arguments warning
+        sender.sendMessage(ChatColor.DARK_RED + "Invalid AntiBot mode!");
+
+        // Show the command argument help
+        HelpProvider.showHelp(sender, commandReference, commandReference, true, false, true, false, false, false);
+
+        // Show the command to use for detailed help
+        CommandParts helpCommandReference = new CommandParts(commandReference.getRange(1));
+        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/" + commandReference.get(0) + " help " + helpCommandReference);
+        return true;
     }
 }
