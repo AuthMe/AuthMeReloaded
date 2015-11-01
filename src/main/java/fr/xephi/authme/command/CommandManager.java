@@ -138,6 +138,21 @@ public class CommandManager {
         registerCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
         registerCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
 
+        // Register the changepassword command
+        CommandDescription changePasswordCommand = new CommandDescription(
+                new RegisterCommand(),
+                new ArrayList<String>() {{
+                    add("changepassword");
+                    add("changepass");
+                    add("cp");
+                }},
+                "Change player's password",
+                "Change the password of a player.",
+                authMeCommand);
+        changePasswordCommand.setCommandPermissions("authme.admin.changepassword", CommandPermissions.DefaultPermission.OP_ONLY);
+        changePasswordCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
+        changePasswordCommand.addArgument(new CommandArgumentDescription("password", "New password", false));
+
         // Register the purge command
         CommandDescription lastLoginCommand = new CommandDescription(
                 new LastLoginCommand(),
