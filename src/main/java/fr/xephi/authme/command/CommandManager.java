@@ -413,6 +413,35 @@ public class CommandManager {
         registerHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         registerHelpCommand.setMaximumArguments(false);
 
+        // Register the base unregister command
+        CommandDescription unregisterBaseCommand = new CommandDescription(
+                new RegisterCommand(),
+                new ArrayList<String>() {{
+                    add("unregister");
+                    add("unreg");
+                }},
+                "Unregistration command",
+                "Command to unregister using AuthMeReloaded.", null);
+        unregisterBaseCommand.setCommandPermissions("authme.unregister", CommandPermissions.DefaultPermission.ALLOWED);
+        unregisterBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
+        unregisterBaseCommand.setMaximumArguments(false);
+
+        // Register the help command
+        CommandDescription unregisterHelpCommand = new CommandDescription(
+                new HelpCommand(),
+                new ArrayList<String>() {{
+                    add("help");
+                    add("hlp");
+                    add("h");
+                    add("sos");
+                    add("?");
+                }},
+                "View help",
+                "View detailed help pages about AuthMeReloaded register commands.",
+                unregisterBaseCommand);
+        unregisterHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
+        unregisterHelpCommand.setMaximumArguments(false);
+
         // Register the base changepassword command
         CommandDescription changePasswordBaseCommand = new CommandDescription(
                 new ChangePasswordCommand(),
@@ -448,6 +477,7 @@ public class CommandManager {
         this.commandDescriptions.add(loginBaseCommand);
         this.commandDescriptions.add(logoutBaseCommand);
         this.commandDescriptions.add(registerBaseCommand);
+        this.commandDescriptions.add(unregisterBaseCommand);
         this.commandDescriptions.add(changePasswordBaseCommand);
     }
 
