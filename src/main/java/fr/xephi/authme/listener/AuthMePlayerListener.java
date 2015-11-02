@@ -130,6 +130,9 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
+        if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0)
+            return;
+
         Player player = event.getPlayer();
         if (Utils.checkAuth(player))
             return;
