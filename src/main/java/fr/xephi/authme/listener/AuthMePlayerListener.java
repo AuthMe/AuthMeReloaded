@@ -201,8 +201,16 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        if (event.getPlayer() == null) {
+        if (event.getPlayer() == null)
             return;
+
+        final Player player = event.getPlayer();
+        String name = player.getName().toLowerCase();
+
+        // Remove the join message while the player isn't logging in
+        if (Settings.delayJoinLeaveMessages && event.getJoinMessage() != null) {
+            joinMessage.put(name, event.getJoinMessage());
+            event.setJoinMessage(null);
         }
 
         // Shedule login task so works after the prelogin
@@ -211,16 +219,7 @@ public class AuthMePlayerListener implements Listener {
 
             @Override
             public void run() {
-                Player player = event.getPlayer();
-                String name = player.getName().toLowerCase();
-
                 plugin.management.performJoin(player);
-
-                // Remove the join message while the player isn't logging in
-                if (Settings.delayJoinLeaveMessages && event.getJoinMessage() != null) {
-                    joinMessage.put(name, event.getJoinMessage());
-                    event.setJoinMessage(null);
-                }
             }
         });
     }
