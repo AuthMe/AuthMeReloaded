@@ -26,9 +26,11 @@ public class VersionCommand extends ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "==========[ " + AuthMe.PLUGIN_NAME.toUpperCase() + " ABOUT ]==========");
         sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.PLUGIN_NAME + " v" + AuthMe.getVersionName() + ChatColor.GRAY + " (code: " + AuthMe.getVersionCode() + ")");
         sender.sendMessage(ChatColor.GOLD + "Developers:");
-        printDeveloper(sender, "Xephi", "xephi", "Lead Developer");
-        printDeveloper(sender, "Sgdc3", "sgdc3", "Code Contributor");
-        printDeveloper(sender, "Tim Visee", "timvisee", "Code Contributor");
+        printDeveloper(sender, "Xephi", "xephi59", "Lead Developer");
+        printDeveloper(sender, "DNx5", "DNx5", "Developer");
+        printDeveloper(sender, "games647", "games647", "Developer");
+        printDeveloper(sender, "Tim Visee", "timvisee", "Developer");
+        printDeveloper(sender, "Sgdc3", "sgdc3", "Project manager, Contributor");
         sender.sendMessage(ChatColor.GOLD + "Website: " + ChatColor.WHITE + "http://dev.bukkit.org/bukkit-plugins/authme-reloaded/");
         sender.sendMessage(ChatColor.GOLD + "License: " + ChatColor.WHITE + "GNU GPL v3.0" + ChatColor.GRAY + ChatColor.ITALIC + " (See LICENSE file)");
         sender.sendMessage(ChatColor.GOLD + "Copyright: " + ChatColor.WHITE + "Copyright (c) Xephi 2015. All rights reserved.");
