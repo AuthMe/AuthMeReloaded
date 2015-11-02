@@ -66,12 +66,12 @@ public class AuthMePlayerListener implements Listener {
 
     private void handleChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
+
+        if (Settings.isChatAllowed)
+            return;
         if (Utils.checkAuth(player))
             return;
 
-        if (Settings.isChatAllowed) {
-            return;
-        }
         event.setCancelled(true);
 
         if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
