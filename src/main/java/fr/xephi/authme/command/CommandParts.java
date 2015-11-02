@@ -165,7 +165,6 @@ public class CommandParts {
      *
      * @return The result from zero to above. A negative number will be returned on error.
      */
-    @SuppressWarnings("UnusedDeclaration")
     public double getDifference(CommandParts other) {
         return getDifference(other, false);
     }

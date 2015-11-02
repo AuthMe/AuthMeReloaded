@@ -9,7 +9,6 @@ import org.bukkit.command.CommandSender;
 
 import fr.xephi.authme.util.StringUtils;
 
-@SuppressWarnings("UnusedDeclaration")
 public class CommandDescription {
 
     /** Defines the acceptable labels. */

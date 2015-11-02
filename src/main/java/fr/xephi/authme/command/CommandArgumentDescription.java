@@ -17,7 +17,6 @@ public class CommandArgumentDescription {
      * @param label The argument label.
      * @param description The argument description.
      */
-    @SuppressWarnings("UnusedDeclaration")
     public CommandArgumentDescription(String label, String description) {
         this(label, description, false);
     }

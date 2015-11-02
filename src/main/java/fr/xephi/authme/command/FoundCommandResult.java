@@ -57,7 +57,6 @@ public class FoundCommandResult {
      * @param commandDescription The command description.
      *
      */
-    @SuppressWarnings("UnusedDeclaration")
     public void setCommandDescription(CommandDescription commandDescription) {
         this.commandDescription = commandDescription;
     }

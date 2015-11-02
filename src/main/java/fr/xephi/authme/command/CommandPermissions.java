@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 //import com.timvisee.dungeonmaze.permission.PermissionsManager;
 import fr.xephi.authme.AuthMe;
 
-@SuppressWarnings("UnusedDeclaration")
 public class CommandPermissions {
 
     /** Defines the permission nodes required to have permission to execute this command. */

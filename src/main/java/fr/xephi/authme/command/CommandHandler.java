@@ -89,8 +89,7 @@ public class CommandHandler {
      *
      * @return True if the command was executed, false otherwise.
      */
-    @SuppressWarnings("unused")
-    public boolean onCommand(CommandSender sender, @SuppressWarnings("UnusedParameters") org.bukkit.command.Command bukkitCommand, String bukkitCommandLabel, String[] bukkitArgs) {
+    public boolean onCommand(CommandSender sender, org.bukkit.command.Command bukkitCommand, String bukkitCommandLabel, String[] bukkitArgs) {
         // Process the arguments
         List<String> args = processArguments(bukkitArgs);
 

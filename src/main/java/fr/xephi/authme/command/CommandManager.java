@@ -32,7 +32,6 @@ import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 
-@SuppressWarnings("UnusedDeclaration")
 public class CommandManager {
 
     /** The list of commandDescriptions. */
@@ -52,7 +51,7 @@ public class CommandManager {
     /**
      * Register all commands.
      */
-    @SuppressWarnings({ "SpellCheckingInspection", "serial" })
+    @SuppressWarnings({ "serial" })
     public void registerCommands() {
         // Register the base AuthMe Reloaded command
         CommandDescription authMeBaseCommand = new CommandDescription(
