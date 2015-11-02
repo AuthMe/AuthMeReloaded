@@ -216,17 +216,15 @@ public class Utils {
         if (theWorld == null)
             theWorld = pl.getWorld();
         final World world = theWorld;
-        final Location locat = new Location(world, x, y, z);
+        final Location loc = new Location(world, x, y, z);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
             @Override
             public void run() {
-                AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, locat);
+                AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, loc);
                 plugin.getServer().getPluginManager().callEvent(tpEvent);
                 if (!tpEvent.isCancelled()) {
-                    if (!tpEvent.getTo().getChunk().isLoaded())
-                        tpEvent.getTo().getChunk().load();
                     pl.teleport(tpEvent.getTo());
                 }
             }
