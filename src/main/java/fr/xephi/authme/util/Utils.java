@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.zip.GZIPInputStream;
 
+import fr.xephi.authme.events.SpawnTeleportEvent;
+import fr.xephi.authme.settings.Spawn;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -295,6 +297,17 @@ public class Utils {
             return false;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public static void teleportToSpawn(Player player) {
+        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
+            Location spawn = plugin.getSpawnLocation(player);
+            AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawn);
+            plugin.getServer().getPluginManager().callEvent(tpEvent);
+            if (!tpEvent.isCancelled()) {
+                player.teleport(tpEvent.getTo());
+            }
         }
     }
 }

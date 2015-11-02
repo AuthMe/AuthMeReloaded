@@ -1,14 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -21,6 +12,14 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 public class UnregisterCommand extends ExecutableCommand {
 
@@ -30,7 +29,6 @@ public class UnregisterCommand extends ExecutableCommand {
      * @param sender           The command sender.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
-     *
      * @return True if the command was executed successfully, false otherwise.
      */
     @Override
@@ -62,33 +60,25 @@ public class UnregisterCommand extends ExecutableCommand {
         Player target = Bukkit.getPlayer(playerNameLowerCase);
         PlayerCache.getInstance().removePlayer(playerNameLowerCase);
         Utils.setGroup(target, Utils.GroupType.UNREGISTERED);
-        if (target != null) {
-            if (target.isOnline()) {
-                if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-                    Location spawn = plugin.getSpawnLocation(target);
-                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(target, target.getLocation(), spawn, false);
-                    plugin.getServer().getPluginManager().callEvent(tpEvent);
-                    if (!tpEvent.isCancelled()) {
-                        target.teleport(tpEvent.getTo());
-                    }
-                }
-                LimboCache.getInstance().addLimboPlayer(target);
-                int delay = Settings.getRegistrationTimeout * 20;
-                int interval = Settings.getWarnMessageInterval;
-                BukkitScheduler scheduler = sender.getServer().getScheduler();
-                if (delay != 0) {
-                    BukkitTask id = scheduler.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, playerNameLowerCase, target), delay);
-                    LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTaskId(id);
-                }
-                LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTaskId(scheduler.runTaskAsynchronously(plugin, new MessageTask(plugin, playerNameLowerCase, m.send("reg_msg"), interval)));
-                if (Settings.applyBlindEffect)
-                    target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
-                if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-                    target.setWalkSpeed(0.0f);
-                    target.setFlySpeed(0.0f);
-                }
-                m.send(target, "unregistered");
+        if (target != null && target.isOnline()) {
+            Utils.teleportToSpawn(target);
+            LimboCache.getInstance().addLimboPlayer(target);
+            int delay = Settings.getRegistrationTimeout * 20;
+            int interval = Settings.getWarnMessageInterval;
+            BukkitScheduler scheduler = sender.getServer().getScheduler();
+            if (delay != 0) {
+                BukkitTask id = scheduler.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, playerNameLowerCase, target), delay);
+                LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTaskId(id);
             }
+            LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTaskId(scheduler.runTaskAsynchronously(plugin, new MessageTask(plugin, playerNameLowerCase, m.send("reg_msg"), interval)));
+            if (Settings.applyBlindEffect)
+                target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
+            if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
+                target.setWalkSpeed(0.0f);
+                target.setFlySpeed(0.0f);
+            }
+            m.send(target, "unregistered");
+
         }
 
         // Show a status message

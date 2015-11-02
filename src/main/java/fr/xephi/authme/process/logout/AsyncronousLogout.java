@@ -55,22 +55,12 @@ public class AsyncronousLogout {
 
         PlayerCache.getInstance().removePlayer(name);
         database.setUnlogged(name);
-        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-            Location spawnLoc = plugin.getSpawnLocation(p);
-            final AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(p, spawnLoc);
-            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    plugin.getServer().getPluginManager().callEvent(tpEvent);
-                    if (!tpEvent.isCancelled()) {
-                        if (tpEvent.getTo() != null)
-                            p.teleport(tpEvent.getTo());
-                    }
-                }
-            });
-        }
-
+        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                Utils.teleportToSpawn(p);
+            }
+        });
         if (LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().deleteLimboPlayer(name);
         LimboCache.getInstance().addLimboPlayer(player);
