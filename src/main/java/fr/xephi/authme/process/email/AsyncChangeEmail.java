@@ -71,13 +71,21 @@ public class AsyncChangeEmail {
                     return;
                 }
                 PlayerCache.getInstance().updatePlayer(auth);
+                if (oldEmail == null) {
+                    m.send(player, "email_added");
+                    player.sendMessage(auth.getEmail());
+                    return;
+                }
                 m.send(player, "email_changed");
                 player.sendMessage(Arrays.toString(m.send("email_defined")) + auth.getEmail());
             } else {
-                if (!plugin.database.isAuthAvailable(playerName)) {
+                if (plugin.database.isAuthAvailable(playerName)) {
                     m.send(player, "login_msg");
                 } else {
-                    m.send(player, "reg_email_msg");
+                    if (Settings.emailRegistration)
+                        m.send(player, "reg_email_msg");
+                    else
+                        m.send(player, "reg_msg");
                 }
             }
         } catch (Exception e) {

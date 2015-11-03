@@ -692,6 +692,7 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
             return false;
         } finally {
             close(pst);

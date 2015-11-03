@@ -9,10 +9,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class CacheDataSource implements DataSource {
 
@@ -229,23 +226,15 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public synchronized boolean updateEmail(final PlayerAuth auth) {
-        if (!cache.containsKey(auth.getNickname())) {
+        try {
+            return exec.submit(new Callable<Boolean>() {
+                public Boolean call() {
+                    return source.updateEmail(auth);
+                }
+            }).get();
+        } catch (Exception e) {
             return false;
         }
-        PlayerAuth cachedAuth = cache.get(auth.getNickname());
-        final String oldEmail = cachedAuth.getEmail();
-        cachedAuth.setEmail(auth.getEmail());
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (!source.updateEmail(auth)) {
-                    if (cache.containsKey(auth.getNickname())) {
-                        cache.get(auth.getNickname()).setEmail(oldEmail);
-                    }
-                }
-            }
-        });
-        return true;
     }
 
     @Override
