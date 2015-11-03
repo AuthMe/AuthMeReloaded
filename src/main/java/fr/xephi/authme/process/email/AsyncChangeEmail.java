@@ -73,6 +73,12 @@ public class AsyncChangeEmail {
                 PlayerCache.getInstance().updatePlayer(auth);
                 m.send(player, "email_changed");
                 player.sendMessage(Arrays.toString(m.send("email_defined")) + auth.getEmail());
+            } else {
+                if (!plugin.database.isAuthAvailable(playerName)) {
+                    m.send(player, "login_msg");
+                } else {
+                    m.send(player, "reg_email_msg");
+                }
             }
         } catch (Exception e) {
             ConsoleLogger.showError(e.getMessage());

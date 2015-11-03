@@ -19,75 +19,92 @@ import org.bukkit.scheduler.BukkitScheduler;
  */
 public class Management {
 
-    private final AuthMe pl;
+    private final AuthMe plugin;
     private final BukkitScheduler sched;
     public static RandomString rdm = new RandomString(Settings.captchaLength);
 
     public Management(AuthMe plugin) {
-        this.pl = plugin;
-        this.sched = pl.getServer().getScheduler();
+        this.plugin = plugin;
+        this.sched = this.plugin.getServer().getScheduler();
     }
 
     public void performLogin(final Player player, final String password, final boolean forceLogin) {
-        sched.runTaskAsynchronously(pl, new Runnable() {
+        sched.runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
             public void run() {
-                new AsyncronousLogin(player, password, forceLogin, pl, pl.database).process();
+                new AsyncronousLogin(player, password, forceLogin, plugin, plugin.database).process();
             }
         });
     }
 
     public void performLogout(final Player player) {
-        sched.runTaskAsynchronously(pl, new Runnable() {
+        sched.runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
             public void run() {
-                new AsyncronousLogout(player, pl, pl.database).process();
+                new AsyncronousLogout(player, plugin, plugin.database).process();
             }
         });
     }
 
     public void performRegister(final Player player, final String password, final String email) {
-        sched.runTaskAsynchronously(pl, new Runnable() {
+        sched.runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
             public void run() {
-                new AsyncRegister(player, password, email, pl, pl.database).process();
+                new AsyncRegister(player, password, email, plugin, plugin.database).process();
             }
         });
     }
 
     public void performUnregister(final Player player, final String password, final boolean force) {
-        sched.runTaskAsynchronously(pl, new Runnable() {
+        sched.runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
             public void run() {
-                new AsyncronousUnregister(player, password, force, pl).process();
+                new AsyncronousUnregister(player, password, force, plugin).process();
             }
         });
     }
 
     public void performJoin(final Player player) {
-        sched.runTaskAsynchronously(pl, new Runnable() {
+        sched.runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
             public void run() {
-                new AsyncronousJoin(player, pl, pl.database).process();
+                new AsyncronousJoin(player, plugin, plugin.database).process();
             }
 
         });
     }
 
     public void performQuit(final Player player, final boolean isKick) {
-        sched.runTaskAsynchronously(pl, new Runnable() {
+        sched.runTaskAsynchronously(plugin, new Runnable() {
 
             @Override
             public void run() {
-                new AsyncronousQuit(player, pl, pl.database, isKick).process();
+                new AsyncronousQuit(player, plugin, plugin.database, isKick).process();
             }
 
         });
     }
 
+    public void performAddEmail(final Player player, final String newEmail, final String newEmailVerify) {
+        sched.runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                new AsyncChangeEmail(player, plugin, null, newEmail, newEmailVerify).process();
+            }
+        });
+    }
+
+    public void performChangeEmail(final Player player, final String oldEmail, final String newEmail) {
+        sched.runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                new AsyncChangeEmail(player, plugin, oldEmail, newEmail).process();
+            }
+        });
+    }
 }
