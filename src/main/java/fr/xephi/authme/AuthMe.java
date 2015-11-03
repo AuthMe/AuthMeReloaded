@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -35,15 +36,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.commands.AdminCommand;
-import fr.xephi.authme.commands.CaptchaCommand;
-import fr.xephi.authme.commands.ChangePasswordCommand;
-import fr.xephi.authme.commands.ConverterCommand;
-import fr.xephi.authme.commands.EmailCommand;
-import fr.xephi.authme.commands.LoginCommand;
-import fr.xephi.authme.commands.LogoutCommand;
-import fr.xephi.authme.commands.RegisterCommand;
-import fr.xephi.authme.commands.UnregisterCommand;
+import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.converter.Converter;
 import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.CacheDataSource;
@@ -68,14 +61,26 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.util.Utils;
 import net.milkbowl.vault.permission.Permission;
 import net.minelink.ctplus.CombatTagPlus;
 
 public class AuthMe extends JavaPlugin {
 
+    /** Defines the name of the plugin. */
+    // TODO: Create a getter method for this constant, and make it private
+    public static final String PLUGIN_NAME = "AuthMeReloaded";
+    /** Defines the current AuthMeReloaded version name. */
+    private static final String PLUGIN_VERSION_NAME = "5.1-SNAPSHOT";
+    /** Defines the current AuthMeReloaded version code. */
+    private static final int PLUGIN_VERSION_CODE = 100; // Increase this number by one when an update is released
+
     private static AuthMe authme;
     private static Server server;
     private Logger authmeLogger;
+
+    // TODO: Move this to a better place! -- timvisee
+    private CommandHandler commandHandler = null;
 
     public Management management;
     public NewAPI api;
@@ -109,7 +114,7 @@ public class AuthMe extends JavaPlugin {
     // In case we need to cache PlayerAuths, prevent connection before it's done
     private boolean canConnect = true;
 
-    public boolean isCanConnect() {
+    public boolean canConnect() {
 		return canConnect;
 	}
 
@@ -139,6 +144,10 @@ public class AuthMe extends JavaPlugin {
         server = getServer();
         authmeLogger = Logger.getLogger("AuthMe");
         authme = this;
+
+        // Set up and initialize the command handler
+        this.commandHandler = new CommandHandler(false);
+        this.commandHandler.init();
 
         // TODO: split the plugin in more modules
         moduleManager = new ModuleManager(this);
@@ -327,16 +336,17 @@ public class AuthMe extends JavaPlugin {
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
 
+        // TODO: This is moved to CommandManager.registerCommands() handled by AuthMe.onCommand() -- timvisee
         // Register commands
-        getCommand("authme").setExecutor(new AdminCommand(this));
-        getCommand("register").setExecutor(new RegisterCommand(this));
-        getCommand("login").setExecutor(new LoginCommand(this));
-        getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
-        getCommand("logout").setExecutor(new LogoutCommand(this));
-        getCommand("unregister").setExecutor(new UnregisterCommand(this));
-        getCommand("email").setExecutor(new EmailCommand(this));
-        getCommand("captcha").setExecutor(new CaptchaCommand(this));
-        getCommand("converter").setExecutor(new ConverterCommand(this));
+        //getCommand("authme").setExecutor(new AdminCommand(this));
+        //getCommand("register").setExecutor(new RegisterCommand(this));
+        //getCommand("login").setExecutor(new LoginCommand(this));
+        //getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
+        //getCommand("logout").setExecutor(new LogoutCommand(this));
+        //getCommand("unregister").setExecutor(new UnregisterCommand(this));
+        //getCommand("email").setExecutor(new EmailCommand(this));
+        //getCommand("captcha").setExecutor(new CaptchaCommand(this));
+        //getCommand("converter").setExecutor(new ConverterCommand(this));
 
         // Purge on start if enabled
         autoPurge();
@@ -703,6 +713,10 @@ public class AuthMe extends JavaPlugin {
         Settings.switchAntiBotMod(mode);
     }
 
+    public boolean getAntiBotModMode() {
+        return this.antibotMod;
+    }
+
     private void recallEmail() {
         if (!Settings.recallEmail)
             return;
@@ -807,5 +821,53 @@ public class AuthMe extends JavaPlugin {
     @Deprecated
     public String getCountryName(String ip) {
         return Utils.getCountryName(ip);
+    }
+
+    /**
+     * Get the command handler instance.
+     *
+     * @return Command handler.
+     */
+    public CommandHandler getCommandHandler() {
+        return this.commandHandler;
+    }
+
+    /**
+     * Handle Bukkit commands.
+     *
+     * @param sender The command sender (Bukkit).
+     * @param cmd The command (Bukkit).
+     * @param commandLabel The command label (Bukkit).
+     * @param args The command arguments (Bukkit).
+     *
+     * @return True if the command was executed, false otherwise.
+     */
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+        // Get the command handler, and make sure it's valid
+        CommandHandler commandHandler = this.getCommandHandler();
+        if(commandHandler == null)
+            return false;
+
+        // Handle the command, return the result
+        return commandHandler.onCommand(sender, cmd, commandLabel, args);
+    }
+
+    /**
+     * Get the current installed AuthMeReloaded version name.
+     *
+     * @return The version name of the currently installed AuthMeReloaded instance.
+     */
+    public static String getVersionName() {
+        return PLUGIN_VERSION_NAME;
+    }
+
+    /**
+     * Get the current installed AuthMeReloaded version code.
+     *
+     * @return The version code of the currently installed AuthMeReloaded instance.
+     */
+    public static int getVersionCode() {
+        return PLUGIN_VERSION_CODE;
     }
 }

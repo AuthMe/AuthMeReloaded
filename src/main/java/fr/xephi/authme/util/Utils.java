@@ -1,4 +1,4 @@
-package fr.xephi.authme;
+package fr.xephi.authme.util;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,6 +12,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.zip.GZIPInputStream;
 
+import fr.xephi.authme.events.SpawnTeleportEvent;
+import fr.xephi.authme.settings.Spawn;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -21,6 +23,8 @@ import org.bukkit.entity.Player;
 
 import com.maxmind.geoip.LookupService;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
@@ -212,17 +216,15 @@ public class Utils {
         if (theWorld == null)
             theWorld = pl.getWorld();
         final World world = theWorld;
-        final Location locat = new Location(world, x, y, z);
+        final Location loc = new Location(world, x, y, z);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
             @Override
             public void run() {
-                AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, locat);
+                AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, loc);
                 plugin.getServer().getPluginManager().callEvent(tpEvent);
                 if (!tpEvent.isCancelled()) {
-                    if (!tpEvent.getTo().getChunk().isLoaded())
-                        tpEvent.getTo().getChunk().load();
                     pl.teleport(tpEvent.getTo());
                 }
             }
@@ -293,6 +295,17 @@ public class Utils {
             return false;
         } catch (Exception e) {
             return false;
+        }
+    }
+
+    public static void teleportToSpawn(Player player) {
+        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
+            Location spawn = plugin.getSpawnLocation(player);
+            AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawn);
+            plugin.getServer().getPluginManager().callEvent(tpEvent);
+            if (!tpEvent.isCancelled()) {
+                player.teleport(tpEvent.getTo());
+            }
         }
     }
 }

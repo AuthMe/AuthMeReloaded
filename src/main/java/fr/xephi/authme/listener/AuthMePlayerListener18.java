@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
+import fr.xephi.authme.util.Utils;
 
 public class AuthMePlayerListener18 implements Listener {
 

@@ -83,10 +83,10 @@ public class SQLite_HIKARI implements DataSource {
         config.setPoolName("AuthMeSQLitePool");
         config.setDriverClassName("org.sqlite.JDBC"); // RuntimeException
         config.setJdbcUrl("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
-        config.setConnectionTestQuery("SELECT 1");
         config.setMaxLifetime(180000); // 3 Min
         config.setIdleTimeout(60000); // 1 Min
-        config.setMaximumPoolSize(50); // 50 (including idle connections)
+        config.setMinimumIdle(2);
+        config.setMaximumPoolSize(8); // don't set too much
         ds = new HikariDataSource(config);
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
@@ -472,13 +472,12 @@ public class SQLite_HIKARI implements DataSource {
     }
 
     @Override
-    public List<String> getAllAuthsByIp(String ip) {
-        Connection con = null;
+    public List<String> getAllAuthsByIp(String ip) throws SQLException {
+        final Connection con = getConnection();
         PreparedStatement pst = null;
         ResultSet rs = null;
         List<String> countIp = new ArrayList<>();
         try {
-            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
@@ -486,11 +485,6 @@ public class SQLite_HIKARI implements DataSource {
                 countIp.add(rs.getString(columnName));
             }
             return countIp;
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
-        } catch (NullPointerException npe) {
-            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -499,13 +493,12 @@ public class SQLite_HIKARI implements DataSource {
     }
 
     @Override
-    public List<String> getAllAuthsByEmail(String email) {
-        Connection con = null;
+    public List<String> getAllAuthsByEmail(String email) throws SQLException {
+        final Connection con = getConnection();
         PreparedStatement pst = null;
         ResultSet rs = null;
         List<String> countEmail = new ArrayList<>();
         try {
-            con = getConnection();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
             pst.setString(1, email);
             rs = pst.executeQuery();
@@ -513,11 +506,6 @@ public class SQLite_HIKARI implements DataSource {
                 countEmail.add(rs.getString(columnName));
             }
             return countEmail;
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
-        } catch (NullPointerException npe) {
-            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);

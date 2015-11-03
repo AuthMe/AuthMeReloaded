@@ -1,22 +1,16 @@
 package fr.xephi.authme.settings;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public final class Settings extends YamlConfiguration {
 
@@ -76,7 +70,7 @@ public final class Settings extends YamlConfiguration {
             purgeLimitedCreative, purgeAntiXray, purgePermissions,
             enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
             broadcastWelcomeMessage, forceRegKick, forceRegLogin,
-            checkVeryGames, delayJoinMessage, noTeleport, applyBlindEffect,
+            checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
             customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
 
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
@@ -193,21 +187,22 @@ public final class Settings extends YamlConfiguration {
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
-        allowCommands = configFile.getStringList("settings.restrictions.allowCommands");
-        if (configFile.contains("allowCommands")) {
-            if (!allowCommands.contains("/login"))
-                allowCommands.add("/login");
-            if (!allowCommands.contains("/register"))
-                allowCommands.add("/register");
-            if (!allowCommands.contains("/l"))
-                allowCommands.add("/l");
-            if (!allowCommands.contains("/reg"))
-                allowCommands.add("/reg");
-            if (!allowCommands.contains("/email"))
-                allowCommands.add("/email");
-            if (!allowCommands.contains("/captcha"))
-                allowCommands.add("/captcha");
+        allowCommands = new ArrayList<>();
+        for (String cmd : configFile.getStringList("settings.restrictions.allowCommands")) {
+            allowCommands.add(cmd.toLowerCase());
         }
+        if (!allowCommands.contains("/login"))
+            allowCommands.add("/login");
+        if (!allowCommands.contains("/register"))
+            allowCommands.add("/register");
+        if (!allowCommands.contains("/l"))
+            allowCommands.add("/l");
+        if (!allowCommands.contains("/reg"))
+            allowCommands.add("/reg");
+        if (!allowCommands.contains("/email"))
+            allowCommands.add("/email");
+        if (!allowCommands.contains("/captcha"))
+            allowCommands.add("/captcha");
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
@@ -273,7 +268,7 @@ public final class Settings extends YamlConfiguration {
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
-        delayJoinMessage = configFile.getBoolean("settings.delayJoinMessage", false);
+        delayJoinLeaveMessages = configFile.getBoolean("settings.delayJoinLeaveMessage", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
@@ -402,8 +397,12 @@ public final class Settings extends YamlConfiguration {
             set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
             changes = true;
         }
-        if (!contains("settings.delayJoinMessage")) {
-            set("settings.delayJoinMessage", false);
+        if (contains("settings.delayJoinMessage")) {
+            set("settings.delayJoinMessage", null);
+            changes = true;
+        }
+        if (!contains("settings.delayJoinLeaveMessages")) {
+            set("settings.delayJoinLeaveMessages", true);
             changes = true;
         }
         if (!contains("settings.restrictions.noTeleport")) {
@@ -487,8 +486,8 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (!contains("DataSource.mySQLQueryCache")) {
-        	set("DataSource.mySQLWebsite", false);
-        	changes = true;
+            set("DataSource.mySQLWebsite", false);
+            changes = true;
         }
 
         if (changes) {

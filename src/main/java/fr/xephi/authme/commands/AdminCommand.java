@@ -1,11 +1,19 @@
 package fr.xephi.authme.commands;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.events.SpawnTeleportEvent;
+import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -18,20 +26,11 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.GroupType;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.events.SpawnTeleportEvent;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.Spawn;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
+import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 
 public class AdminCommand implements CommandExecutor {
 
@@ -195,7 +194,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             } else {
                 final String[] arguments = args;
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                     @Override
                     public void run() {
                         StringBuilder message = new StringBuilder("[AuthMe] ");
@@ -203,7 +202,15 @@ public class AdminCommand implements CommandExecutor {
                             sender.sendMessage("[AuthMe] Please put a valid IP");
                             return;
                         }
-                        List<String> accountList = plugin.database.getAllAuthsByIp(arguments[1]);
+                        List<String> accountList = null;
+                        try {
+                            accountList = plugin.database.getAllAuthsByIp(arguments[1]);
+                        } catch (Exception e) {
+                            ConsoleLogger.showError(e.getMessage());
+                            ConsoleLogger.writeStackTrace(e);
+                            m.send(sender, "error");
+                            return;
+                        }
                         if (accountList == null || accountList.isEmpty()) {
                             sender.sendMessage("[AuthMe] This IP does not exist in the database");
                             return;
@@ -274,7 +281,7 @@ public class AdminCommand implements CommandExecutor {
                         }
                         plugin.database.setUnlogged(name);
                         if (Bukkit.getPlayerExact(realName) != null)
-                        	Bukkit.getPlayerExact(realName).kickPlayer("An admin just registered you, please log again");
+                            Bukkit.getPlayerExact(realName).kickPlayer("An admin just registered you, please log again");
                         m.send(sender, "registered");
                         ConsoleLogger.info(name + " registered");
                     } catch (NoSuchAlgorithmException ex) {
@@ -472,33 +479,32 @@ public class AdminCommand implements CommandExecutor {
             Player target = Bukkit.getPlayer(name);
             PlayerCache.getInstance().removePlayer(name);
             Utils.setGroup(target, GroupType.UNREGISTERED);
-            if (target != null) {
-                if (target.isOnline()) {
-                    if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-                        Location spawn = plugin.getSpawnLocation(target);
-                        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(target, target.getLocation(), spawn, false);
-                        plugin.getServer().getPluginManager().callEvent(tpEvent);
-                        if (!tpEvent.isCancelled()) {
-                            target.teleport(tpEvent.getTo());
-                        }
+            if (target != null && target.isOnline()) {
+                if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
+                    Location spawn = plugin.getSpawnLocation(target);
+                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(target, target.getLocation(), spawn, false);
+                    plugin.getServer().getPluginManager().callEvent(tpEvent);
+                    if (!tpEvent.isCancelled()) {
+                        target.teleport(tpEvent.getTo());
                     }
-                    LimboCache.getInstance().addLimboPlayer(target);
-                    int delay = Settings.getRegistrationTimeout * 20;
-                    int interval = Settings.getWarnMessageInterval;
-                    BukkitScheduler sched = sender.getServer().getScheduler();
-                    if (delay != 0) {
-                        BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, target), delay);
-                        LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
-                    }
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
-                    if (Settings.applyBlindEffect)
-                        target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
-                    if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-                        target.setWalkSpeed(0.0f);
-                        target.setFlySpeed(0.0f);
-                    }
-                    m.send(target, "unregistered");
                 }
+                LimboCache.getInstance().addLimboPlayer(target);
+                int delay = Settings.getRegistrationTimeout * 20;
+                int interval = Settings.getWarnMessageInterval;
+                BukkitScheduler sched = sender.getServer().getScheduler();
+                if (delay != 0) {
+                    BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, target), delay);
+                    LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
+                }
+                LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
+                if (Settings.applyBlindEffect)
+                    target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
+                if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
+                    target.setWalkSpeed(0.0f);
+                    target.setFlySpeed(0.0f);
+                }
+                m.send(target, "unregistered");
+
             }
             m.send(sender, "unregistered");
             ConsoleLogger.info(args[1] + " unregistered");

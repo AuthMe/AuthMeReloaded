@@ -20,7 +20,7 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
+import fr.xephi.authme.util.Utils;
 
 public class AuthMeEntityListener implements Listener {
 

@@ -10,7 +10,7 @@ DataSource:
     # Database Port
     mySQLPort: '3306'
     # MySql Max Connections
-    mySQLMaxConections: 25
+    mySQLMaxConections: 8
     # Username about Database Connection Infos
     mySQLUsername: authme
     # Password about Database Connection Infos
@@ -253,8 +253,8 @@ settings:
     useWelcomeMessage: true
     # Do we need to broadcast the welcome message to all server or only to the player? set true for server or false for player
     broadcastWelcomeMessage: false
-    # Do we need to delay the X has joined the game after /login ?
-    delayJoinMessage: false
+    # Do we need to delay the join/leave message to be displayed only when the player is authenticated ?
+    delayJoinLeaveMessages: true
     # Do we need to add potion effect Blinding before login/register ?
     applyBlindEffect: false
 ExternalBoardOptions:

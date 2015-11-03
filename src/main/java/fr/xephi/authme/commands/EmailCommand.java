@@ -1,13 +1,5 @@
 package fr.xephi.authme.commands;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -16,9 +8,14 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import java.security.NoSuchAlgorithmException;
 
 /**
- *
  * @author Xephi59
  */
 public class EmailCommand implements CommandExecutor {
@@ -32,7 +29,7 @@ public class EmailCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmnd, String label,
-            String[] args) {
+                             String[] args) {
         if (!(sender instanceof Player)) {
             return true;
         }
@@ -57,81 +54,13 @@ public class EmailCommand implements CommandExecutor {
                 m.send(player, "usage_email_add");
                 return true;
             }
-            if (Settings.getmaxRegPerEmail > 0) {
-                if (!plugin.authmePermissible(sender, "authme.allow2accounts") && plugin.database.getAllAuthsByEmail(args[1]).size() >= Settings.getmaxRegPerEmail) {
-                    m.send(player, "max_reg");
-                    return true;
-                }
-            }
-            if (args[1].equals(args[2]) && PlayerCache.getInstance().isAuthenticated(name)) {
-                PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
-                if (auth.getEmail() == null || (!auth.getEmail().equals("your@email.com") && !auth.getEmail().isEmpty())) {
-                    m.send(player, "usage_email_change");
-                    return true;
-                }
-                if (!Settings.isEmailCorrect(args[1])) {
-                    m.send(player, "email_invalid");
-                    return true;
-                }
-                auth.setEmail(args[1]);
-                if (!plugin.database.updateEmail(auth)) {
-                    m.send(player, "error");
-                    return true;
-                }
-                PlayerCache.getInstance().updatePlayer(auth);
-                m.send(player, "email_added");
-                player.sendMessage(auth.getEmail());
-            } else if (PlayerCache.getInstance().isAuthenticated(name)) {
-                m.send(player, "email_confirm");
-            } else {
-                if (!plugin.database.isAuthAvailable(name)) {
-                    m.send(player, "login_msg");
-                } else {
-                    m.send(player, "reg_email_msg");
-                }
-            }
+            plugin.management.performAddEmail(player, args[1], args[2]);
         } else if (args[0].equalsIgnoreCase("change")) {
             if (args.length != 3) {
                 m.send(player, "usage_email_change");
                 return true;
             }
-            if (Settings.getmaxRegPerEmail > 0) {
-                if (!plugin.authmePermissible(sender, "authme.allow2accounts") && plugin.database.getAllAuthsByEmail(args[2]).size() >= Settings.getmaxRegPerEmail) {
-                    m.send(player, "max_reg");
-                    return true;
-                }
-            }
-            if (PlayerCache.getInstance().isAuthenticated(name)) {
-                PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
-                if (auth.getEmail() == null || auth.getEmail().equals("your@email.com") || auth.getEmail().isEmpty()) {
-                    m.send(player, "usage_email_add");
-                    return true;
-                }
-                if (!args[1].equals(auth.getEmail())) {
-                    m.send(player, "old_email_invalid");
-                    return true;
-                }
-                if (!Settings.isEmailCorrect(args[2])) {
-                    m.send(player, "new_email_invalid");
-                    return true;
-                }
-                auth.setEmail(args[2]);
-                if (!plugin.database.updateEmail(auth)) {
-                    m.send(player, "error");
-                    return true;
-                }
-                PlayerCache.getInstance().updatePlayer(auth);
-                m.send(player, "email_changed");
-                player.sendMessage(Arrays.toString(m.send("email_defined")) + auth.getEmail());
-            } else if (PlayerCache.getInstance().isAuthenticated(name)) {
-                m.send(player, "email_confirm");
-            } else {
-                if (!plugin.database.isAuthAvailable(name)) {
-                    m.send(player, "login_msg");
-                } else {
-                    m.send(player, "reg_email_msg");
-                }
-            }
+            plugin.management.performChangeEmail(player, args[1], args[2]);
         }
         if (args[0].equalsIgnoreCase("recovery")) {
             if (args.length != 2) {
@@ -151,7 +80,7 @@ public class EmailCommand implements CommandExecutor {
                     RandomString rand = new RandomString(Settings.getRecoveryPassLength);
                     String thePass = rand.nextString();
                     String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, thePass, name);
-                    PlayerAuth auth = null;
+                    PlayerAuth auth;
                     if (PlayerCache.getInstance().isAuthenticated(name)) {
                         auth = PlayerCache.getInstance().getAuth(name);
                     } else if (plugin.database.isAuthAvailable(name)) {

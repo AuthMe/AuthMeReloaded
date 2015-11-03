@@ -7,7 +7,7 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
+import fr.xephi.authme.util.Utils;
 
 public class AuthMeBlockListener implements Listener {
 

@@ -19,8 +19,8 @@ import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 
 public class JsonCache {
 

@@ -11,8 +11,6 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -22,6 +20,8 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.Utils.GroupType;
 
 public class AsyncronousUnregister {
 
@@ -55,15 +55,7 @@ public class AsyncronousUnregister {
                     return;
                 }
                 if (Settings.isForcedRegistrationEnabled) {
-                    if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-                        Location spawn = plugin.getSpawnLocation(player);
-                        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
-                        plugin.getServer().getPluginManager().callEvent(tpEvent);
-                        if (!tpEvent.isCancelled()) {
-                            player.teleport(tpEvent.getTo());
-                        }
-                    }
-
+                    Utils.teleportToSpawn(player);
                     player.saveData();
                     PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
                     if (!Settings.getRegisteredGroup.isEmpty())
@@ -98,22 +90,11 @@ public class AsyncronousUnregister {
                 }
                 m.send(player, "unregistered");
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
-                if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-                    Location spawn = plugin.getSpawnLocation(player);
-                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawn, false);
-                    plugin.getServer().getPluginManager().callEvent(tpEvent);
-                    if (!tpEvent.isCancelled()) {
-                        if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                            tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                        }
-                        player.teleport(tpEvent.getTo());
-                    }
-                }
-                return;
+                Utils.teleportToSpawn(player);
             } else {
                 m.send(player, "wrong_pwd");
             }
-        } catch (NoSuchAlgorithmException ex) {
+        } catch (NoSuchAlgorithmException ignored) {
         }
     }
 }

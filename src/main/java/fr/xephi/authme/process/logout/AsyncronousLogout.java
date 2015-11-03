@@ -5,8 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -14,6 +12,8 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.Utils.GroupType;
 
 public class AsyncronousLogout {
 
@@ -55,22 +55,12 @@ public class AsyncronousLogout {
 
         PlayerCache.getInstance().removePlayer(name);
         database.setUnlogged(name);
-        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-            Location spawnLoc = plugin.getSpawnLocation(p);
-            final AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(p, spawnLoc);
-            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    plugin.getServer().getPluginManager().callEvent(tpEvent);
-                    if (!tpEvent.isCancelled()) {
-                        if (tpEvent.getTo() != null)
-                            p.teleport(tpEvent.getTo());
-                    }
-                }
-            });
-        }
-
+        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                Utils.teleportToSpawn(p);
+            }
+        });
         if (LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().deleteLimboPlayer(name);
         LimboCache.getInstance().addLimboPlayer(player);

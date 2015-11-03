@@ -42,20 +42,21 @@ import com.google.common.io.ByteStreams;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 
 public class AuthMePlayerListener implements Listener {
 
+    public AuthMe plugin;
+    private Messages m = Messages.getInstance();
+
     public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
-    private Messages m = Messages.getInstance();
-    public AuthMe plugin;
     public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
     private List<String> antibot = new ArrayList<>();
 
@@ -65,41 +66,36 @@ public class AuthMePlayerListener implements Listener {
 
     private void handleChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
-        if (!Utils.checkAuth(player)) {
-            String cmd = event.getMessage().split(" ")[0];
-            if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-                event.setCancelled(true);
-            }
-            if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
-                m.send(player, "login_msg");
+
+        if (Settings.isChatAllowed)
+            return;
+        if (Utils.checkAuth(player))
+            return;
+
+        event.setCancelled(true);
+
+        if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
+            m.send(player, "login_msg");
+        } else {
+            if (Settings.emailRegistration) {
+                m.send(player, "reg_email_msg");
             } else {
-                if (Settings.emailRegistration) {
-                    m.send(player, "reg_email_msg");
-                } else {
-                    m.send(player, "reg_msg");
-                }
+                m.send(player, "reg_msg");
             }
         }
+
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        String msg = event.getMessage();
-        if (msg.equalsIgnoreCase("/worldedit cui"))
-            return;
-
-        String cmd = msg.split(" ")[0];
-        if (cmd.equalsIgnoreCase("/login") || cmd.equalsIgnoreCase("/register") || cmd.equalsIgnoreCase("/l") || cmd.equalsIgnoreCase("/reg") || cmd.equalsIgnoreCase("/email") || cmd.equalsIgnoreCase("/captcha"))
-            return;
-        if (Settings.useEssentialsMotd && cmd.equalsIgnoreCase("/motd"))
+        String cmd = event.getMessage().split(" ")[0].toLowerCase();
+        if (Settings.useEssentialsMotd && cmd.equals("/motd"))
             return;
         if (Settings.allowCommands.contains(cmd))
             return;
-
-        if (!Utils.checkAuth(event.getPlayer())) {
-            event.setMessage("/notloggedin");
-            event.setCancelled(true);
-        }
+        if (Utils.checkAuth(event.getPlayer()))
+            return;
+        event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -134,22 +130,25 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
+        if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0)
+            return;
+
         Player player = event.getPlayer();
         if (Utils.checkAuth(player))
             return;
 
         if (!Settings.isMovementAllowed) {
-            if (Settings.isRemoveSpeedEnabled) {
-                player.setWalkSpeed(0.0f);
-                player.setFlySpeed(0.0f);
-            }
-            if (!event.getFrom().getBlock().equals(event.getTo().getBlock())) {
+            if (event.getFrom().distance(event.getTo()) > 0) {
+                if (Settings.isRemoveSpeedEnabled) {
+                    player.setWalkSpeed(0.0f);
+                    player.setFlySpeed(0.0f);
+                }
                 event.setTo(event.getFrom());
+                return;
             }
-            return;
         }
 
-        if (Settings.getMovementRadius == 0) {
+        if (Settings.getMovementRadius <= 0) {
             return;
         }
 
@@ -202,8 +201,16 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(final PlayerJoinEvent event) {
-        if (event.getPlayer() == null) {
+        if (event.getPlayer() == null)
             return;
+
+        final Player player = event.getPlayer();
+        String name = player.getName().toLowerCase();
+
+        // Remove the join message while the player isn't logging in
+        if (Settings.delayJoinLeaveMessages && event.getJoinMessage() != null) {
+            joinMessage.put(name, event.getJoinMessage());
+            event.setJoinMessage(null);
         }
 
         // Shedule login task so works after the prelogin
@@ -212,16 +219,7 @@ public class AuthMePlayerListener implements Listener {
 
             @Override
             public void run() {
-                Player player = event.getPlayer();
-                String name = player.getName().toLowerCase();
-
                 plugin.management.performJoin(player);
-
-                // Remove the join message while the player isn't logging in
-                if ((Settings.enableProtection || Settings.delayJoinMessage) && event.getJoinMessage() != null) {
-                    joinMessage.put(name, event.getJoinMessage());
-                    event.setJoinMessage(null);
-                }
             }
         });
     }
@@ -374,12 +372,12 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+
+        if (!Utils.checkAuth(player) && Settings.delayJoinLeaveMessages) {
+            event.setQuitMessage(null);
+        }
 
         plugin.management.performQuit(player, false);
-
-        if (!PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
-            event.setQuitMessage(null);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

@@ -6,22 +6,22 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.Utils;
 
-public class ProcessSyncronousEmailRegister implements Runnable {
+public class ProcessSyncEmailRegister implements Runnable {
 
     protected Player player;
     protected String name;
     private AuthMe plugin;
     private Messages m = Messages.getInstance();
 
-    public ProcessSyncronousEmailRegister(Player player, AuthMe plugin) {
+    public ProcessSyncEmailRegister(Player player, AuthMe plugin) {
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.plugin = plugin;

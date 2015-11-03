@@ -8,8 +8,6 @@ import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.GroupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -21,6 +19,8 @@ import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.Utils.GroupType;
 
 public class ProcessSyncronousPlayerLogin implements Runnable {
 

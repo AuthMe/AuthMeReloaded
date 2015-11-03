@@ -210,12 +210,13 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.4</version>
 			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>activation</artifactId>
-					<groupId>javax.activation</groupId>
-				</exclusion>
-			</exclusions>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>javax.mail</groupId>
+			<artifactId>javax.mail-api</artifactId>
+			<version>1.5.4</version>
+			<scope>compile</scope>
 			<optional>true</optional>
 		</dependency>
 
@@ -501,6 +502,13 @@
 			</exclusions>
 			<optional>true</optional>
 		</dependency>
+
+        <!-- String comparison library. Used for dynamic help system. -->
+        <dependency>
+            <groupId>net.ricecode</groupId>
+            <artifactId>string-similarity</artifactId>
+            <version>1.0.0</version>
+        </dependency>
 
 	</dependencies>
 </project>

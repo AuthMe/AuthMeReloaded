@@ -6,7 +6,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -14,6 +13,7 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 
 public class AsyncronousQuit {
 

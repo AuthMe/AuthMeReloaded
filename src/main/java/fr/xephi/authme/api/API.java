@@ -9,11 +9,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 
 public class API {
 
