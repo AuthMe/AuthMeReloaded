@@ -686,6 +686,7 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
             return false;
         } finally {
             close(pst);
@@ -745,6 +746,7 @@ public class MySQL implements DataSource {
                 o.close();
             } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
+                ConsoleLogger.writeStackTrace(ex);
             }
         }
     }
@@ -802,14 +804,13 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByEmail(String email) {
-        Connection con = null;
+    public synchronized List<String> getAllAuthsByEmail(String email) throws SQLException {
+        final Connection con = getConnection();
         PreparedStatement pst = null;
         ResultSet rs = null;
         List<String> countEmail = new ArrayList<>();
+
         try {
-            if ((con = getConnection()) == null)
-                return countEmail;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
             pst.setString(1, email);
             rs = pst.executeQuery();
@@ -817,9 +818,6 @@ public class MySQL implements DataSource {
                 countEmail.add(rs.getString(columnName));
             }
             return countEmail;
-        } catch (Exception ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);

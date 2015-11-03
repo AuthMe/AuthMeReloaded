@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -35,9 +36,9 @@ public interface DataSource {
 
     List<String> getAllAuthsByName(PlayerAuth auth);
 
-    List<String> getAllAuthsByIp(String ip);
+    List<String> getAllAuthsByIp(String ip) throws Exception;
 
-    List<String> getAllAuthsByEmail(String email);
+    List<String> getAllAuthsByEmail(String email) throws Exception;
 
     boolean updateEmail(PlayerAuth auth);
 

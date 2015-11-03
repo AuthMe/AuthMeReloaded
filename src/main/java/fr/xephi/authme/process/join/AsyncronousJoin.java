@@ -70,6 +70,7 @@ public class AsyncronousJoin {
                 }
 
             });
+            return;
         }
 
         final String ip = plugin.getIP(player);
