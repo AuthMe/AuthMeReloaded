@@ -100,13 +100,7 @@ public class MySQL implements DataSource {
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
         config.setPassword(this.password);
-        if (Settings.isMySQLWebsite) {
-            config.addDataSourceProperty("cachePrepStmts", "false");
-        } else {
-            config.addDataSourceProperty("cachePrepStmts", "true");
-            config.addDataSourceProperty("prepStmtCacheSize", "250");
-            config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-        }
+        config.addDataSourceProperty("cachePrepStmts", "false");
         config.addDataSourceProperty("autoReconnect", false);
         config.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
         config.setMaxLifetime(180000); // 3 Min
