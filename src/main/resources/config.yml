@@ -10,7 +10,7 @@ DataSource:
     # Database Port
     mySQLPort: '3306'
     # MySql Max Connections
-    mySQLMaxConections: 25
+    mySQLMaxConections: 8
     # Username about Database Connection Infos
     mySQLUsername: authme
     # Password about Database Connection Infos
