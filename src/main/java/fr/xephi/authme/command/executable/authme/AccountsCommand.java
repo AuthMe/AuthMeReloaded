@@ -2,6 +2,7 @@ package fr.xephi.authme.command.executable.authme;
 
 import java.util.List;
 
+import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -79,11 +80,20 @@ public class AccountsCommand extends ExecutableCommand {
             });
             return true;
         } else {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
+                    List<String> accountList;
+                    try {
+                        accountList = plugin.database.getAllAuthsByIp(playerQueryFinal);
+                    } catch (Exception e) {
+                        ConsoleLogger.showError(e.getMessage());
+                        ConsoleLogger.writeStackTrace(e);
+                        m.send(sender, "error");
+                        return;
+                    }
+
                     StringBuilder message = new StringBuilder("[AuthMe] ");
-                    List<String> accountList = plugin.database.getAllAuthsByIp(playerQueryFinal);
                     if (accountList == null || accountList.isEmpty()) {
                         sender.sendMessage("[AuthMe] This IP does not exist in the database");
                         return;

@@ -194,7 +194,7 @@ public class AdminCommand implements CommandExecutor {
                 return true;
             } else {
                 final String[] arguments = args;
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                     @Override
                     public void run() {
                         StringBuilder message = new StringBuilder("[AuthMe] ");
@@ -202,7 +202,15 @@ public class AdminCommand implements CommandExecutor {
                             sender.sendMessage("[AuthMe] Please put a valid IP");
                             return;
                         }
-                        List<String> accountList = plugin.database.getAllAuthsByIp(arguments[1]);
+                        List<String> accountList = null;
+                        try {
+                            accountList = plugin.database.getAllAuthsByIp(arguments[1]);
+                        } catch (Exception e) {
+                            ConsoleLogger.showError(e.getMessage());
+                            ConsoleLogger.writeStackTrace(e);
+                            m.send(sender, "error");
+                            return;
+                        }
                         if (accountList == null || accountList.isEmpty()) {
                             sender.sendMessage("[AuthMe] This IP does not exist in the database");
                             return;

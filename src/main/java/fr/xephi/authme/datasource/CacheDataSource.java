@@ -1,18 +1,18 @@
 package fr.xephi.authme.datasource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class CacheDataSource implements DataSource {
 
@@ -281,25 +281,21 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByIp(String ip) {
-        List<String> result = new ArrayList<>();
-        for (Map.Entry<String, PlayerAuth> stringPlayerAuthEntry : cache.entrySet()) {
-            PlayerAuth p = stringPlayerAuthEntry.getValue();
-            if (p.getIp().equals(ip))
-                result.add(p.getNickname());
-        }
-        return result;
+    public synchronized List<String> getAllAuthsByIp(final String ip) throws Exception {
+        return exec.submit(new Callable<List<String>>() {
+            public List<String> call() throws Exception {
+                return source.getAllAuthsByIp(ip);
+            }
+        }).get();
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByEmail(String email) {
-        List<String> result = new ArrayList<>();
-        for (Map.Entry<String, PlayerAuth> stringPlayerAuthEntry : cache.entrySet()) {
-            PlayerAuth p = stringPlayerAuthEntry.getValue();
-            if (p.getEmail().equals(email))
-                result.add(p.getNickname());
-        }
-        return result;
+    public synchronized List<String> getAllAuthsByEmail(final String email) throws Exception {
+        return exec.submit(new Callable<List<String>>() {
+            public List<String> call() throws Exception {
+                return source.getAllAuthsByEmail(email);
+            }
+        }).get();
     }
 
     @Override

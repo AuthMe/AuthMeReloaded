@@ -9,7 +9,7 @@ import fr.xephi.authme.process.join.AsyncronousJoin;
 import fr.xephi.authme.process.login.AsyncronousLogin;
 import fr.xephi.authme.process.logout.AsyncronousLogout;
 import fr.xephi.authme.process.quit.AsyncronousQuit;
-import fr.xephi.authme.process.register.AsyncronousRegister;
+import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.process.unregister.AsyncronousUnregister;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
@@ -46,7 +46,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncronousRegister(player, password, email, plugin, plugin.database).process();
+                new AsyncRegister(player, password, email, plugin, plugin.database).process();
             }
         });
     }

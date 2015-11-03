@@ -14,14 +14,14 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 
-public class ProcessSyncronousEmailRegister implements Runnable {
+public class ProcessSyncEmailRegister implements Runnable {
 
     protected Player player;
     protected String name;
     private AuthMe plugin;
     private Messages m = Messages.getInstance();
 
-    public ProcessSyncronousEmailRegister(Player player, AuthMe plugin) {
+    public ProcessSyncEmailRegister(Player player, AuthMe plugin) {
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.plugin = plugin;
