@@ -1,6 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;

@@ -2,7 +2,6 @@ package fr.xephi.authme.process.register;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -12,9 +11,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.LoginEvent;
-import fr.xephi.authme.events.RegisterTeleportEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
