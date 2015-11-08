@@ -45,7 +45,6 @@ import fr.xephi.authme.datasource.DatabaseCalls;
 import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
-import fr.xephi.authme.datasource.SQLite_HIKARI;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
@@ -432,10 +431,6 @@ public class AuthMe extends JavaPlugin {
                 break;
             case SQLITE:
                 database = new SQLite();
-                isSQLite = true;
-                break;
-            case SQLITEHIKARI:
-                database = new SQLite_HIKARI();
                 isSQLite = true;
                 break;
         }

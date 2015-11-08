@@ -9,8 +9,7 @@ public interface DataSource {
     enum DataSourceType {
         MYSQL,
         FILE,
-        SQLITE,
-        SQLITEHIKARI
+        SQLITE
     }
 
     boolean isAuthAvailable(String user);
