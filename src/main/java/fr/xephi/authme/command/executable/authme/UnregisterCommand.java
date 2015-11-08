@@ -1,25 +1,24 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.command.CommandParts;
-import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.events.SpawnTeleportEvent;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
+
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.Utils;
 
 public class UnregisterCommand extends ExecutableCommand {
 

@@ -45,7 +45,7 @@ public class AsyncronousQuit {
         String ip = plugin.getIP(player);
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
-            if (Settings.isSaveQuitLocationEnabled && database.isAuthAvailable(name)) {
+            if (Settings.isSaveQuitLocationEnabled) {
                 Location loc = player.getLocation();
                 PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName(), player.getName());
                 database.updateQuitLoc(auth);

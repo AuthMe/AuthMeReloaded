@@ -1,5 +1,8 @@
 package fr.xephi.authme.process;
 
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.process.email.AsyncChangeEmail;
 import fr.xephi.authme.process.join.AsyncronousJoin;
@@ -10,8 +13,6 @@ import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.process.unregister.AsyncronousUnregister;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  * @authors Xephi59,

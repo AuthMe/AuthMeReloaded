@@ -1,9 +1,8 @@
 DataSource:
     # What type of database do you want to use?
-    # Can be set to: sqlite, sqlitehikari, mysql
-    # (sqlitehikari should be more fast than normal sqlite but it's an experimental feature!)
+    # Valid values: sqlite, mysql
     backend: sqlite
-    # Enable database caching
+    # Enable database caching, should improve database performance
     caching: true
     # Database location
     mySQLHost: 127.0.0.1
@@ -136,6 +135,7 @@ settings:
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
         # WorldNames where we need to force the spawn location for ForceSpawnLocOnJoinEnabled
+        # CASE SENSITIVE
         ForceSpawnOnTheseWorlds:
         - world
         - world_nether

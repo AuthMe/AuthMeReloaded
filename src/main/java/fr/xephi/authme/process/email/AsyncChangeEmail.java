@@ -1,14 +1,15 @@
 package fr.xephi.authme.process.email;
 
+import java.util.Arrays;
+
+import org.bukkit.entity.Player;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.entity.Player;
-
-import java.util.Arrays;
 
 public class AsyncChangeEmail {
 

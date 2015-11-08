@@ -1,5 +1,10 @@
 package fr.xephi.authme.process.register;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
+
+import org.bukkit.entity.Player;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -8,10 +13,6 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.entity.Player;
-
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 
 public class AsyncRegister {
 

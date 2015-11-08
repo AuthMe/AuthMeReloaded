@@ -200,7 +200,7 @@ public class AuthMePlayerListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(final PlayerJoinEvent event) {
+    public void onPlayerJoin(PlayerJoinEvent event) {
         if (event.getPlayer() == null)
             return;
 
@@ -227,15 +227,14 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
-        final Player player = plugin.dataManager.getOnlinePlayerLower(name);
+        final Player player = plugin.getServer().getPlayer(name);
         if (player == null)
             return;
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
-        if (Settings.isForceSingleSessionEnabled) {
-            event.setKickMessage(m.getString("same_nick"));
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+        if (Settings.isForceSingleSessionEnabled && player.isOnline()) {
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, m.getString("same_nick"));
             if (LimboCache.getInstance().hasLimboPlayer(name))
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 

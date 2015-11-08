@@ -2,7 +2,6 @@ package fr.xephi.authme.process.unregister;
 
 import java.security.NoSuchAlgorithmException;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -14,7 +13,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;

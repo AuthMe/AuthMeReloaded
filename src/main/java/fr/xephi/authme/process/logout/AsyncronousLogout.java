@@ -1,6 +1,5 @@
 package fr.xephi.authme.process.logout;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -9,9 +8,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 
