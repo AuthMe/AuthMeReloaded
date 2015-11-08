@@ -2,57 +2,61 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-
+    
 	<groupId>fr.xephi</groupId>
 	<artifactId>authme</artifactId>
 	<version>5.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
-
+    
 	<name>AuthMeReloaded</name>
 	<description>Authentication plugin for CraftBukkit/Spigot!</description>
 	<inceptionYear>2013</inceptionYear>
 	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
 	<!-- See also: https://www.spigotmc.org/resources/authme-reloaded.6269/ -->
-
+    
 	<organization>
 		<name>AuthMe-Team</name>
 		<url>https://github.com/AuthMe-Team</url>
 	</organization>
-
+    
 	<scm>
 		<connection>scm:git:https://github.com/Xephi/AuthMeReloaded.git</connection>
 		<developerConnection>scm:git:git@github.com:Xephi/AuthMeReloaded.git</developerConnection>
 		<url>http://github.com/Xephi/AuthMeReloaded</url>
 	</scm>
-
-	<!-- Official Build Server -->
+    
 	<ciManagement>
 		<system>jenkins</system>
 		<url>http://ci.xephi.fr/job/AuthMeReloaded/</url>
 	</ciManagement>
-
+    
 	<issueManagement>
 		<system>GitHub</system>
 		<url>https://github.com/Xephi/AuthMeReloaded/issues</url>
 	</issueManagement>
-
+    
 	<licenses>
 		<license>
 			<name>The GNU General Public Licence version 3 (GPLv3)</name>
 			<url>http://www.gnu.org/licenses/gpl-3.0.html</url>
 		</license>
 	</licenses>
-
+    
 	<properties>
+        <!-- Project Properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <mainClass>fr.xephi.authme.AuthMe</mainClass>
+		<buildNumber>CustomBuild</buildNumber>
+        <pluginAuthors>[Xephi, sgdc3, DNx5, timvisee, games647]</pluginAuthors>
+        
 		<!-- Change Compiler Version (JDK) HERE! -->
 		<javaVersion>1.7</javaVersion>
-		<!-- Change MC Version HERE! -->
+		<!-- Change Bukkit Version HERE! -->
 		<bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
 	</properties>
 
 	<build>
-		<finalName>AuthMe-${project.version}</finalName>
+		<finalName>${project.name}</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>
@@ -112,7 +116,6 @@
 	</build>
 
 	<repositories>
-
 		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
 		<repository>
 			<id>spigot-repo</id>
@@ -155,23 +158,14 @@
 			<url>http://repo.luricos.de/content/repositories/releases</url>
 		</repository>
 
-		<!-- Xephi Repo (Metrics)-->
+		<!-- Xephi Repo -->
 		<repository>
 			<id>xephi-repo</id>
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
-
-		<!-- Metrics Snapshots Repo (Always offline! 60% UPTIME)
-		<repository>
-			<id>mcstats-snapshots</id>
-			<url>http://repo.mcstats.org/content/repositories/snapshots/</url>
-		</repository>
-		-->
-
 	</repositories>
 
 	<dependencies>
-
 		<!-- Database Connection Pool -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
@@ -511,6 +505,5 @@
 			<scope>compile</scope>
 			<optional>true</optional>
         </dependency>
-
 	</dependencies>
 </project>
