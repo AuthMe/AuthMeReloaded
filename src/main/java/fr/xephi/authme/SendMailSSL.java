@@ -12,6 +12,7 @@ import javax.imageio.ImageIO;
 import javax.mail.BodyPart;
 import javax.mail.Message;
 import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
@@ -62,8 +63,16 @@ public class SendMailSSL {
                     props.put("mail.smtp.host", smtp);
                     props.put("mail.smtp.auth", "true");
                     props.put("mail.smtp.port", port);
+                    props.put("mail.smtp.socketFactory.port", port);
+                    props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
                     props.put("mail.smtp.starttls.enable", true);
-                    Session session = Session.getInstance(props, null);
+                    props.put("mail.smtp.socketFactory.fallback", false);
+                    Session session = Session.getInstance(props, new javax.mail.Authenticator() {
+
+                        protected PasswordAuthentication getPasswordAuthentication() {
+                            return new PasswordAuthentication(acc, password);
+                        }
+                    });
 
                     Message message = new MimeMessage(session);
                     try {
@@ -71,7 +80,7 @@ public class SendMailSSL {
                     } catch (UnsupportedEncodingException uee) {
                         message.setFrom(new InternetAddress(acc));
                     }
-                    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mail));
+                    message.addRecipient(Message.RecipientType.TO, new InternetAddress(mail));
                     message.setSubject(subject);
                     message.setSentDate(new Date());
                     BodyPart messageBodyPart = new MimeBodyPart();
@@ -96,23 +105,20 @@ public class SendMailSSL {
                         }
                     }
 
-                    Transport transport = session.getTransport("smtp");
                     message.setContent(multipart);
-
                     try {
-                        transport.connect(smtp, acc, password);
+                        Transport transport = session.getTransport("smtp");
+                        transport.connect(smtp, Integer.parseInt(port), acc, password);
+                        transport.sendMessage(message, message.getAllRecipients());
+                        transport.close();
                     } catch (Exception e) {
-                        ConsoleLogger.showError("Can't connect to your SMTP server! Aborting! Can't send recovery email to " + mail);
-                        if (file != null)
-                            file.delete();
-                        return;
+                        e.printStackTrace();
+                        ConsoleLogger.showError("Cannot send email to " + mail + ", an error occured!");
                     }
-                    transport.sendMessage(message, message.getAllRecipients());
-
                     if (file != null)
                         file.delete();
 
-                } catch(Exception e) {
+                } catch (Exception e) {
                     // Print the stack trace
                     e.printStackTrace();
                     ConsoleLogger.showError("Some error occurred while trying to send a email to " + mail);

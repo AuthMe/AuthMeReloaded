@@ -87,7 +87,7 @@
 				<version>2.4.2</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
-					<minimizeJar>true</minimizeJar>
+					<minimizeJar>false</minimizeJar>
 					<relocations>
 						<relocation>
 							<pattern>org.mcstats</pattern>
@@ -210,13 +210,6 @@
 			<artifactId>javax.mail</artifactId>
 			<version>1.5.4</version>
 			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>javax.mail-api</artifactId>
-			<version>1.5.4</version>
-			<scope>provided</scope>
 			<optional>true</optional>
 		</dependency>
 
