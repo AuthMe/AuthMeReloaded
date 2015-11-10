@@ -163,17 +163,6 @@ public class Utils {
         return false;
     }
 
-    // TODO: remove if not needed
-    public static void hasPermOnJoin(Player player) {
-        if (plugin.permission == null)
-            return;
-        for (String permission : Settings.getJoinPermissions) {
-            if (plugin.permission.playerHas(player, permission)) {
-                plugin.permission.playerAddTransient(player, permission);
-            }
-        }
-    }
-
     // TODO: Move to a Manager
     public static boolean checkAuth(Player player) {
         if (player == null || Utils.isUnrestricted(player)) {

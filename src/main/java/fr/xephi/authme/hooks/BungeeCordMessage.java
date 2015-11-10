@@ -1,4 +1,4 @@
-package fr.xephi.authme.plugin.manager;
+package fr.xephi.authme.hooks;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
