@@ -74,7 +74,7 @@ public class AuthMe extends JavaPlugin {
     /** Defines the current AuthMeReloaded version code. */
     private static final int PLUGIN_VERSION_CODE = 100; // Increase this number by one when an update is released
 
-    private static AuthMe authme;
+    private static AuthMe plugin;
     private static Server server;
     private Logger authmeLogger;
 
@@ -122,7 +122,7 @@ public class AuthMe extends JavaPlugin {
 	}
 
 	public static AuthMe getInstance() {
-        return authme;
+        return plugin;
     }
 
     public Settings getSettings() {
@@ -142,7 +142,7 @@ public class AuthMe extends JavaPlugin {
         // Set the Instance
         server = getServer();
         authmeLogger = Logger.getLogger("AuthMe");
-        authme = this;
+        plugin = this;
 
         // Set up and initialize the command handler
         this.commandHandler = new CommandHandler(false);
