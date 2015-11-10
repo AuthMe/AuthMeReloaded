@@ -56,7 +56,7 @@
 	</properties>
 
 	<build>
-		<finalName>${project.name}</finalName>
+		<finalName>AuthMe-${project.version}</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>
