@@ -94,6 +94,11 @@
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					<minimizeJar>false</minimizeJar>
 					<!-- TODO: simplify these relocations if possible -->
+					<artifactSet>
+						<excludes>
+							<exclude>com.sun:*</exclude>
+						</excludes>
+					</artifactSet>
 					<relocations>
 						<relocation>
 							<pattern>org.mcstats</pattern>
@@ -120,12 +125,12 @@
 							<shadedPattern>fr.xephi.authme.libs.mail.activation</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>com.sun.activation</pattern>
-							<shadedPattern>fr.xephi.authme.libs.mail.activation</shadedPattern>
-						</relocation>
-						<relocation>
 							<pattern>com.sun.mail</pattern>
 							<shadedPattern>fr.xephi.authme.libs.mail</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>com.sun.activation</pattern>
+							<shadedPattern>fr.xephi.authme.libs.mail.activation</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.maxmind.geoip</pattern>
@@ -235,7 +240,14 @@
 		<!-- Java Email Implementation -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
+			<artifactId>mailapi</artifactId>
+			<version>1.5.4</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>smtp</artifactId>
 			<version>1.5.4</version>
 			<scope>compile</scope>
 			<optional>true</optional>
