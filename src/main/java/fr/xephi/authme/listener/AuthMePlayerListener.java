@@ -227,6 +227,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
+        @SuppressWarnings("deprecation")
         final Player player = plugin.getServer().getPlayer(name);
         if (player == null)
             return;

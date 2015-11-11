@@ -1,24 +1,12 @@
 package fr.xephi.authme;
 
 import java.io.File;
-import java.io.UnsupportedEncodingException;
-import java.util.Date;
-import java.util.Properties;
 
-import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
-import javax.mail.BodyPart;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 
+import org.apache.commons.mail.HtmlEmail;
 import org.bukkit.Bukkit;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -46,7 +34,7 @@ public class SendMailSSL {
         }
 
         final String sender = sendername;
-        final String port = String.valueOf(Settings.getMailPort);
+        final int port = Settings.getMailPort;
         final String acc = Settings.getmailAccount;
         final String subject = Settings.getMailSubject;
         final String smtp = Settings.getmailSMTP;
@@ -58,27 +46,18 @@ public class SendMailSSL {
             @Override
             public void run() {
                 try {
-                    Properties props = new Properties();
-                    props.put("mail.smtp.host", smtp);
-                    props.put("mail.smtp.auth", "true");
-                    props.put("mail.smtp.port", port);
-                    props.put("mail.smtp.starttls.enable", true);
-                    Session session = Session.getInstance(props, null);
-
-                    Message message = new MimeMessage(session);
-                    try {
-                        message.setFrom(new InternetAddress(acc, sender));
-                    } catch (UnsupportedEncodingException uee) {
-                        message.setFrom(new InternetAddress(acc));
-                    }
-                    message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(mail));
-                    message.setSubject(subject);
-                    message.setSentDate(new Date());
-                    BodyPart messageBodyPart = new MimeBodyPart();
-                    messageBodyPart.setContent(mailText, "text/html");
-                    Multipart multipart = new MimeMultipart();
-                    multipart.addBodyPart(messageBodyPart);
-
+                    Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                    HtmlEmail email = new HtmlEmail();
+                    email.setSmtpPort(port);
+                    email.setHostName(smtp);
+                    email.addTo(mail);
+                    email.setFrom(acc, sender);
+                    email.setSubject(subject);
+                    email.setAuthentication(acc, password);
+                    email.setStartTLSEnabled(true);
+                    email.setStartTLSRequired(true);
+                    email.setSSLCheckServerIdentity(true);
+                    String content = mailText;
                     // Generate an image ?
                     File file = null;
                     if (Settings.generateImage) {
@@ -86,33 +65,25 @@ public class SendMailSSL {
                             ImageGenerator gen = new ImageGenerator(newPass);
                             file = new File(plugin.getDataFolder() + File.separator + auth.getNickname() + "_new_pass.jpg");
                             ImageIO.write(gen.generateImage(), "jpg", file);
-                            messageBodyPart = new MimeBodyPart();
                             DataSource source = new FileDataSource(file);
-                            messageBodyPart.setDataHandler(new DataHandler(source));
-                            messageBodyPart.setFileName(auth.getNickname() + "_new_pass.jpg");
-                            multipart.addBodyPart(messageBodyPart);
+                            String tag = email.embed(source, auth.getNickname() + "_new_pass.jpg");
+                            content = content.replace("<image>", "<img src=\"cid:" + tag + "\">");
                         } catch (Exception e) {
                             ConsoleLogger.showError("Unable to send new password as image! Using normal text! Dest: " + mail);
                         }
                     }
-
-                    Transport transport = session.getTransport("smtp");
-                    message.setContent(multipart);
-
+                    email.setHtmlMsg(content);
+                    email.setTextMsg(content);
                     try {
-                        transport.connect(smtp, acc, password);
+                        email.send();
                     } catch (Exception e) {
-                        ConsoleLogger.showError("Can't connect to your SMTP server! Aborting! Can't send recovery email to " + mail);
-                        if (file != null)
-                            file.delete();
-                        return;
+                        e.printStackTrace();
+                        ConsoleLogger.showError("Fail to send a mail to " + mail);
                     }
-                    transport.sendMessage(message, message.getAllRecipients());
-
                     if (file != null)
                         file.delete();
 
-                } catch(Exception e) {
+                } catch (Exception e) {
                     // Print the stack trace
                     e.printStackTrace();
                     ConsoleLogger.showError("Some error occurred while trying to send a email to " + mail);
