@@ -73,6 +73,7 @@ public class SendMailSSL {
                         }
                     }
                     email.setHtmlMsg(content);
+                    email.setTextMsg(content);
                     try {
                         email.send();
                     } catch (Exception e) {
