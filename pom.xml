@@ -51,12 +51,13 @@
         
 		<!-- Change Compiler Version (JDK) HERE! -->
 		<javaVersion>1.7</javaVersion>
+		
 		<!-- Change Bukkit Version HERE! -->
 		<bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
 	</properties>
 
 	<build>
-		<finalName>${project.name}</finalName>
+		<finalName>AuthMe-${project.version}</finalName>
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>
@@ -92,6 +93,12 @@
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					<minimizeJar>false</minimizeJar>
+					<!-- TODO: simplify these relocations if possible -->
+					<artifactSet>
+						<excludes>
+							<exclude>com.sun:*</exclude>
+						</excludes>
+					</artifactSet>
 					<relocations>
 						<relocation>
 							<pattern>org.mcstats</pattern>
@@ -100,6 +107,22 @@
 						<relocation>
 							<pattern>com.google.gson</pattern>
 							<shadedPattern>fr.xephi.authme.libs.gson</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>com.zaxxer.hikari</pattern>
+							<shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.slf4j</pattern>
+							<shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>com.maxmind.geoip</pattern>
+							<shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>net.ricecode.similarity</pattern>
+							<shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
 						</relocation>
 					</relocations>
 				</configuration>
@@ -201,7 +224,14 @@
 		<!-- Java Email Implementation -->
 		<dependency>
 			<groupId>com.sun.mail</groupId>
-			<artifactId>javax.mail</artifactId>
+			<artifactId>mailapi</artifactId>
+			<version>1.5.4</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.mail</groupId>
+			<artifactId>smtp</artifactId>
 			<version>1.5.4</version>
 			<scope>compile</scope>
 			<optional>true</optional>
@@ -213,6 +243,7 @@
 			<scope>compile</scope>
 			<optional>true</optional>
 		</dependency>
+
 		<!-- GSON (required to provide 1.7.10 and below compatibility) -->
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
