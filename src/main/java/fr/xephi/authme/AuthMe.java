@@ -72,7 +72,9 @@ public class AuthMe extends JavaPlugin {
     /** Defines the current AuthMeReloaded version name. */
     private static final String PLUGIN_VERSION_NAME = "5.1-SNAPSHOT";
     /** Defines the current AuthMeReloaded version code. */
-    private static final int PLUGIN_VERSION_CODE = 100; // Increase this number by one when an update is released
+    private static final int PLUGIN_VERSION_CODE = 100; // Increase this number
+                                                        // by one when an update
+                                                        // is released
 
     private static AuthMe plugin;
     private static Server server;
@@ -114,14 +116,14 @@ public class AuthMe extends JavaPlugin {
     private boolean canConnect = true;
 
     public boolean canConnect() {
-		return canConnect;
-	}
+        return canConnect;
+    }
 
-	public void setCanConnect(boolean canConnect) {
-		this.canConnect = canConnect;
-	}
+    public void setCanConnect(boolean canConnect) {
+        this.canConnect = canConnect;
+    }
 
-	public static AuthMe getInstance() {
+    public static AuthMe getInstance() {
         return plugin;
     }
 
@@ -186,18 +188,20 @@ public class AuthMe extends JavaPlugin {
             Graph databaseBackend = metrics.createGraph("Database backend");
 
             // Custom graphs
-            if(Settings.messageFile.exists()) {
+            if (Settings.messageFile.exists()) {
                 messagesLanguage.addPlotter(new Metrics.Plotter(Settings.messagesLanguage) {
+
                     @Override
                     public int getValue() {
-                            return 1;
+                        return 1;
                     }
                 });
             }
             databaseBackend.addPlotter(new Metrics.Plotter(Settings.getDataSource.toString()) {
+
                 @Override
                 public int getValue() {
-                        return 1;
+                    return 1;
                 }
             });
 
@@ -335,17 +339,19 @@ public class AuthMe extends JavaPlugin {
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
 
-        // TODO: This is moved to CommandManager.registerCommands() handled by AuthMe.onCommand() -- timvisee
+        // TODO: This is moved to CommandManager.registerCommands() handled by
+        // AuthMe.onCommand() -- timvisee
         // Register commands
-        //getCommand("authme").setExecutor(new AdminCommand(this));
-        //getCommand("register").setExecutor(new RegisterCommand(this));
-        //getCommand("login").setExecutor(new LoginCommand(this));
-        //getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
-        //getCommand("logout").setExecutor(new LogoutCommand(this));
-        //getCommand("unregister").setExecutor(new UnregisterCommand(this));
-        //getCommand("email").setExecutor(new EmailCommand(this));
-        //getCommand("captcha").setExecutor(new CaptchaCommand(this));
-        //getCommand("converter").setExecutor(new ConverterCommand(this));
+        // getCommand("authme").setExecutor(new AdminCommand(this));
+        // getCommand("register").setExecutor(new RegisterCommand(this));
+        // getCommand("login").setExecutor(new LoginCommand(this));
+        // getCommand("changepassword").setExecutor(new
+        // ChangePasswordCommand(this));
+        // getCommand("logout").setExecutor(new LogoutCommand(this));
+        // getCommand("unregister").setExecutor(new UnregisterCommand(this));
+        // getCommand("email").setExecutor(new EmailCommand(this));
+        // getCommand("captcha").setExecutor(new CaptchaCommand(this));
+        // getCommand("converter").setExecutor(new ConverterCommand(this));
 
         // Purge on start if enabled
         autoPurge();
@@ -419,7 +425,8 @@ public class AuthMe extends JavaPlugin {
 
     // Initialize and setup the database
     public void setupDatabase() throws Exception {
-        if (database != null) database.close();
+        if (database != null)
+            database.close();
         // Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
         boolean isSQLite = false;
         switch (Settings.getDataSource) {
@@ -830,18 +837,23 @@ public class AuthMe extends JavaPlugin {
     /**
      * Handle Bukkit commands.
      *
-     * @param sender The command sender (Bukkit).
-     * @param cmd The command (Bukkit).
-     * @param commandLabel The command label (Bukkit).
-     * @param args The command arguments (Bukkit).
+     * @param sender
+     *            The command sender (Bukkit).
+     * @param cmd
+     *            The command (Bukkit).
+     * @param commandLabel
+     *            The command label (Bukkit).
+     * @param args
+     *            The command arguments (Bukkit).
      *
      * @return True if the command was executed, false otherwise.
      */
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
+    public boolean onCommand(CommandSender sender, Command cmd,
+            String commandLabel, String[] args) {
         // Get the command handler, and make sure it's valid
         CommandHandler commandHandler = this.getCommandHandler();
-        if(commandHandler == null)
+        if (commandHandler == null)
             return false;
 
         // Handle the command, return the result
@@ -851,7 +863,8 @@ public class AuthMe extends JavaPlugin {
     /**
      * Get the current installed AuthMeReloaded version name.
      *
-     * @return The version name of the currently installed AuthMeReloaded instance.
+     * @return The version name of the currently installed AuthMeReloaded
+     *         instance.
      */
     public static String getVersionName() {
         return PLUGIN_VERSION_NAME;
@@ -860,7 +873,8 @@ public class AuthMe extends JavaPlugin {
     /**
      * Get the current installed AuthMeReloaded version code.
      *
-     * @return The version code of the currently installed AuthMeReloaded instance.
+     * @return The version code of the currently installed AuthMeReloaded
+     *         instance.
      */
     public static int getVersionCode() {
         return PLUGIN_VERSION_CODE;
