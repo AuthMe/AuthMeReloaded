@@ -53,11 +53,11 @@ public class SendMailSSL {
                     email.addTo(mail);
                     email.setFrom(acc, sender);
                     email.setSubject(subject);
-                    email.setHtmlMsg(mailText);
                     email.setAuthentication(acc, password);
                     email.setStartTLSEnabled(true);
                     email.setStartTLSRequired(true);
                     email.setSSLCheckServerIdentity(true);
+                    String content = mailText;
                     // Generate an image ?
                     File file = null;
                     if (Settings.generateImage) {
@@ -66,11 +66,13 @@ public class SendMailSSL {
                             file = new File(plugin.getDataFolder() + File.separator + auth.getNickname() + "_new_pass.jpg");
                             ImageIO.write(gen.generateImage(), "jpg", file);
                             DataSource source = new FileDataSource(file);
-                            email.embed(source, auth.getNickname() + "_new_pass.jpg");
+                            String tag = email.embed(source, auth.getNickname() + "_new_pass.jpg");
+                            content = content.replace("<image>", "<img src=\"cid:" + tag + "\">");
                         } catch (Exception e) {
                             ConsoleLogger.showError("Unable to send new password as image! Using normal text! Dest: " + mail);
                         }
                     }
+                    email.setHtmlMsg(content);
                     try {
                         email.send();
                     } catch (Exception e) {
