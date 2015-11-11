@@ -93,12 +93,6 @@
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					<minimizeJar>false</minimizeJar>
-					<!-- TODO: simplify these relocations if possible -->
-					<artifactSet>
-						<excludes>
-							<exclude>com.sun:*</exclude>
-						</excludes>
-					</artifactSet>
 					<relocations>
 						<relocation>
 							<pattern>org.mcstats</pattern>
