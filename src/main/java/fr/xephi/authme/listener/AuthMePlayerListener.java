@@ -130,31 +130,27 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0)
+        int radius = Settings.getMovementRadius;
+        boolean allowMove = Settings.isMovementAllowed;
+        if (allowMove && radius <= 0)
             return;
 
         Player player = event.getPlayer();
         if (Utils.checkAuth(player))
             return;
 
-        if (!Settings.isMovementAllowed) {
+        if (!allowMove) {
             if (event.getFrom().distance(event.getTo()) > 0) {
-                if (Settings.isRemoveSpeedEnabled) {
-                    player.setWalkSpeed(0.0f);
-                    player.setFlySpeed(0.0f);
-                }
                 event.setTo(event.getFrom());
                 return;
             }
         }
 
-        if (Settings.getMovementRadius <= 0) {
+        if (radius <= 0) {
             return;
         }
 
-        int radius = Settings.getMovementRadius;
         Location spawn = plugin.getSpawnLocation(player);
-
         if (spawn != null && spawn.getWorld() != null) {
             if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
                 event.getPlayer().teleport(spawn);
