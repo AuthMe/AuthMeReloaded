@@ -1,26 +1,6 @@
 package fr.xephi.authme.util;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.zip.GZIPInputStream;
-
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
 import com.maxmind.geoip.LookupService;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -28,6 +8,21 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+
+import java.io.*;
+import java.lang.reflect.Method;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.zip.GZIPInputStream;
 
 public class Utils {
 
@@ -52,38 +47,46 @@ public class Utils {
         if (lookupService != null) {
             return true;
         }
-        ConsoleLogger.info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com");
-        File file = new File(Settings.PLUGIN_FOLDER, "GeoIP.dat");
-        try {
-            if (file.exists()) {
-                if (lookupService == null) {
-                    lookupService = new LookupService(file);
+        final File data = new File(Settings.PLUGIN_FOLDER, "GeoIP.dat");
+        if (data.exists()) {
+            if (lookupService == null) {
+                try {
+                    lookupService = new LookupService(data);
+                    ConsoleLogger.info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com");
                     return true;
+                } catch (IOException e) {
+                    return false;
                 }
             }
-            String url = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
-            URL downloadUrl = new URL(url);
-            URLConnection conn = downloadUrl.openConnection();
-            conn.setConnectTimeout(10000);
-            conn.connect();
-            InputStream input = conn.getInputStream();
-            if (conn.getURL().toString().endsWith(".gz")) {
-                input = new GZIPInputStream(input);
-            }
-            OutputStream output = new FileOutputStream(file);
-            byte[] buffer = new byte[2048];
-            int length = input.read(buffer);
-            while (length >= 0) {
-                output.write(buffer, 0, length);
-                length = input.read(buffer);
-            }
-            output.close();
-            input.close();
-        } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
-            return false;
         }
-        return checkGeoIP();
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    String url = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
+                    URL downloadUrl = new URL(url);
+                    URLConnection conn = downloadUrl.openConnection();
+                    conn.setConnectTimeout(10000);
+                    conn.connect();
+                    InputStream input = conn.getInputStream();
+                    if (conn.getURL().toString().endsWith(".gz")) {
+                        input = new GZIPInputStream(input);
+                    }
+                    OutputStream output = new FileOutputStream(data);
+                    byte[] buffer = new byte[2048];
+                    int length = input.read(buffer);
+                    while (length >= 0) {
+                        output.write(buffer, 0, length);
+                        length = input.read(buffer);
+                    }
+                    output.close();
+                    input.close();
+                } catch (IOException e) {
+                    ConsoleLogger.writeStackTrace(e);
+                }
+            }
+        });
+        return false;
     }
 
     public static String getCountryCode(String ip) {
