@@ -56,7 +56,7 @@ public class AsyncronousQuit {
 
         if (LimboCache.getInstance().hasLimboPlayer(name)) {
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-            if (limbo.getGroup() != null && !limbo.getGroup().equals(""))
+            if (limbo.getGroup() != null && !limbo.getGroup().isEmpty())
                 Utils.addNormal(player, limbo.getGroup());
             needToChange = true;
             isOp = limbo.getOperator();
