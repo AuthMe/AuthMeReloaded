@@ -4,7 +4,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerCache {
 
-    private volatile static PlayerCache singleton = null;
+    private volatile static PlayerCache singleton;
     private ConcurrentHashMap<String, PlayerAuth> cache;
 
     private PlayerCache() {
