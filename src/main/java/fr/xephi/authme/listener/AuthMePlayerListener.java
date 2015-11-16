@@ -201,20 +201,22 @@ public class AuthMePlayerListener implements Listener {
             return;
 
         final Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
+        final String name = player.getName().toLowerCase();
+        final String joinMsg = event.getJoinMessage();
+        final boolean delay = Settings.delayJoinLeaveMessages && joinMsg != null;
 
         // Remove the join message while the player isn't logging in
         if (Settings.delayJoinLeaveMessages && event.getJoinMessage() != null) {
-            joinMessage.put(name, event.getJoinMessage());
             event.setJoinMessage(null);
         }
 
         // Shedule login task so works after the prelogin
         // (Fix found by Koolaid5000)
         Bukkit.getScheduler().runTask(plugin, new Runnable() {
-
             @Override
             public void run() {
+                if (delay)
+                 joinMessage.put(name, joinMsg);
                 plugin.management.performJoin(player);
             }
         });
