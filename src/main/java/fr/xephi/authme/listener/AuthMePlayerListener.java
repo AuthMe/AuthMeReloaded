@@ -252,18 +252,20 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
-        if (player == null)
+        if (player == null) {
             return;
-        final String name = player.getName().toLowerCase();
-        boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
+        }
 
+        final String name = player.getName().toLowerCase();
         if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
             return;
         }
 
-        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED)
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
             return;
+        }
 
+        boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
         if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !plugin.authmePermissible(player, "authme.bypassantibot")) {
             String code = Utils.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || Settings.countriesBlacklist.contains(code))) {
