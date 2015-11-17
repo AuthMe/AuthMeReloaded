@@ -225,10 +225,10 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
-        @SuppressWarnings("deprecation")
-        final Player player = plugin.getServer().getPlayer(name);
-        if (player == null)
+        final Player player = Utils.getPlayer(name);
+        if (player == null) {
             return;
+        }
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player

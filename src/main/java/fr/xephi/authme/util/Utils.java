@@ -273,6 +273,12 @@ public class Utils {
         return Collections.emptyList();
     }
 
+    @SuppressWarnings("deprecation")
+    public static Player getPlayer(String name) {
+        name = name.toLowerCase();
+        return plugin.getServer().getPlayer(name);
+    }
+
     public static boolean isNPC(final Entity player) {
         try {
             if (player.hasMetadata("NPC")) {
