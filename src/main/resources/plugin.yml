@@ -4,7 +4,7 @@ website: ${project.url}
 description: ${project.description}
 main: ${mainClass}
 version: ${project.version}
-softdepend: [Vault, Multiverse-Core, Essentials, EssentialsSpawn, ProtocolLib]
+softdepend: [Vault, PermissionsBukkit, Permissions, PermissionsEX, EssentialsGroupManager, Multiverse-Core, Essentials, EssentialsSpawn, ProtocolLib]
 commands:
     register:
         description: Register an account
