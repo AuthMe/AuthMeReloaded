@@ -3,6 +3,7 @@ package fr.xephi.authme.command;
 import java.util.ArrayList;
 import java.util.List;
 
+import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -124,14 +125,14 @@ public class CommandPermissions {
         // Get the player instance
         Player player = (Player) sender;
 
-//        // Get the permissions manager, and make sure it's instance is valid
-//        PermissionsManager permissionsManager = Core.getPermissionsManager();
-//        if(permissionsManager == null)
-//            return false;
+        // Get the permissions manager, and make sure it's instance is valid
+        PermissionsManager permissionsManager = AuthMe.getInstance().getPermissionsManager();
+        if(permissionsManager == null)
+            return false;
 
         // Check whether the player has permission, return the result
         for(String node : this.permissionNodes)
-            if(!AuthMe.getInstance().authmePermissible(player, node))
+            if(!permissionsManager.hasPermission(player, node, defaultPermission))
                 return false;
         return true;
     }
