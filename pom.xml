@@ -180,6 +180,12 @@
 			<id>xephi-repo</id>
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
+
+		<!-- PermissionsEx Repo -->
+		<repository>
+			<id>pex-repo</id>
+			<url>http://pex-repo.aoeu.xyz/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -326,6 +332,14 @@
 			<systemPath>${basedir}/lib/EssentialsGroupManager-2.13.1.jar</systemPath>
 		</dependency>
 
+		<!-- bPermissions plugin -->
+		<dependency>
+			<groupId>de.bananaco</groupId>
+			<artifactId>bpermissions</artifactId>
+			<version>1.12-DEV</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/bPermissions-2.12-DEV.jar</systemPath>
+		</dependency>
 
 		<!-- zPermissions plugin -->
 		<dependency>
