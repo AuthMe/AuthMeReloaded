@@ -47,7 +47,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>fr.xephi.authme.AuthMe</mainClass>
 		<buildNumber>CustomBuild</buildNumber>
-        <pluginAuthors>[Xephi, sgdc3, DNx5, timvisee, games647]</pluginAuthors>
+        <pluginAuthors>[Xephi, sgdc3, DNx5, timvisee, games647, ljacqu]</pluginAuthors>
         
 		<!-- Change Compiler Version (JDK) HERE! -->
 		<javaVersion>1.7</javaVersion>
@@ -58,14 +58,28 @@
 
 	<build>
 		<finalName>AuthMe-${project.version}</finalName>
+		<sourceDirectory>src/main/java</sourceDirectory>
+		<testSourceDirectory>test/main/java</testSourceDirectory>
+        
 		<resources>
 			<resource>
 				<targetPath>.</targetPath>
 				<filtering>true</filtering>
 				<directory>src/main/resources/</directory>
 				<includes>
+					<include>plugin.yml</include>
+				</includes>
+			</resource>
+			<resource>
+				<targetPath>.</targetPath>
+				<filtering>false</filtering>
+				<directory>src/main/resources/</directory>
+				<includes>
 					<include>*.yml</include>
 				</includes>
+				<excludes>
+					<exclude>plugin.yml</exclude>
+				</excludes>
 			</resource>
 			<resource>
 				<targetPath>./messages/</targetPath>
@@ -76,8 +90,7 @@
 				</includes>
 			</resource>
 		</resources>
-		<sourceDirectory>src/main/java</sourceDirectory>
-		<testSourceDirectory>test/main/java</testSourceDirectory>
+        
 		<plugins>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -88,6 +101,8 @@
 					<target>${javaVersion}</target>
 				</configuration>
 			</plugin>
+            
+            <!-- TODO: we need also to relocate the other libs -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
@@ -591,24 +606,27 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- Unit testing -->
+		<!-- jUnit Testing Library -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 			<version>4.12</version>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>java-hamcrest</artifactId>
 			<scope>test</scope>
 			<version>2.0.0.0</version>
+			<optional>true</optional>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-core</artifactId>
 			<scope>test</scope>
 			<version>2.0.5-beta</version>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- String comparison library. Used for dynamic help system. -->
