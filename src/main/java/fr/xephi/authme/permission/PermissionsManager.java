@@ -251,15 +251,16 @@ public class PermissionsManager {
      * @param event Event instance.
      */
     public void onPluginEnable(PluginEnableEvent event) {
-        Plugin p = event.getPlugin();
-        String pn = p.getName();
+        // Get the plugin and it's name
+        Plugin plugin = event.getPlugin();
+        String pluginName = plugin.getName();
 
         // Check if any known permissions system is enabling
-        if(pn.equals("PermissionsEx") || pn.equals("PermissionsBukkit") ||
-                pn.equals("bPermissions") || pn.equals("GroupManager") ||
-                pn.equals("zPermissions") || pn.equals("Vault") ||
-                pn.equals("Permissions")) {
-            this.log.info(pn + " plugin enabled, updating hooks!");
+        if(pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
+                pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
+                pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
+                pluginName.equals("Permissions")) {
+            this.log.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
             setup();
         }
     }
