@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import fr.xephi.authme.listener.*;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -47,13 +48,6 @@ import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.EssSpawn;
-import fr.xephi.authme.listener.AuthMeBlockListener;
-import fr.xephi.authme.listener.AuthMeEntityListener;
-import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
-import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.listener.AuthMePlayerListener16;
-import fr.xephi.authme.listener.AuthMePlayerListener18;
-import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Messages;
@@ -335,6 +329,7 @@ public class AuthMe extends JavaPlugin {
             pm.registerEvents(new AuthMePlayerListener18(this), this);
         } catch (ClassNotFoundException ignore) {
         }
+        pm.registerEvents(new AuthMePluginListener(this), this);
         pm.registerEvents(new AuthMeBlockListener(this), this);
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
