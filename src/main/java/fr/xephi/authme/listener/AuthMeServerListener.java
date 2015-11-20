@@ -62,7 +62,7 @@ public class AuthMeServerListener implements Listener {
             ConsoleLogger.info("CombatTagPlus has been disabled, unhook!");
         }
         if (pluginName.equalsIgnoreCase("Vault")) {
-            plugin.permission = null;
+            plugin.vaultGroupManagement = null;
             ConsoleLogger.showError("Vault has been disabled, unhook permissions!");
         }
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {

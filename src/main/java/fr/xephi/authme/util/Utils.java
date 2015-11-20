@@ -106,32 +106,32 @@ public class Utils {
     public static void setGroup(Player player, GroupType group) {
         if (!Settings.isPermissionCheckEnabled)
             return;
-        if (plugin.permission == null)
+        if (plugin.vaultGroupManagement == null)
             return;
         String currentGroup;
         try {
-            currentGroup = plugin.permission.getPrimaryGroup(player);
+            currentGroup = plugin.vaultGroupManagement.getPrimaryGroup(player);
         } catch (UnsupportedOperationException e) {
-            ConsoleLogger.showError("Your permission plugin (" + plugin.permission.getName() + ") doesn't support the Group system... unhook!");
-            plugin.permission = null;
+            ConsoleLogger.showError("Your permission plugin (" + plugin.vaultGroupManagement.getName() + ") doesn't support the Group system... unhook!");
+            plugin.vaultGroupManagement = null;
             return;
         }
         switch (group) {
             case UNREGISTERED: {
-                plugin.permission.playerRemoveGroup(player, currentGroup);
-                plugin.permission.playerAddGroup(player, Settings.unRegisteredGroup);
+                plugin.vaultGroupManagement.playerRemoveGroup(player, currentGroup);
+                plugin.vaultGroupManagement.playerAddGroup(player, Settings.unRegisteredGroup);
                 break;
             }
             case REGISTERED: {
-                plugin.permission.playerRemoveGroup(player, currentGroup);
-                plugin.permission.playerAddGroup(player, Settings.getRegisteredGroup);
+                plugin.vaultGroupManagement.playerRemoveGroup(player, currentGroup);
+                plugin.vaultGroupManagement.playerAddGroup(player, Settings.getRegisteredGroup);
                 break;
             }
             case NOTLOGGEDIN: {
                 if (!useGroupSystem())
                     break;
-                plugin.permission.playerRemoveGroup(player, currentGroup);
-                plugin.permission.playerAddGroup(player, Settings.getUnloggedinGroup);
+                plugin.vaultGroupManagement.playerRemoveGroup(player, currentGroup);
+                plugin.vaultGroupManagement.playerAddGroup(player, Settings.getUnloggedinGroup);
                 break;
             }
             case LOGGEDIN: {
@@ -141,8 +141,8 @@ public class Utils {
                 if (limbo == null)
                     break;
                 String realGroup = limbo.getGroup();
-                plugin.permission.playerRemoveGroup(player, currentGroup);
-                plugin.permission.playerAddGroup(player, realGroup);
+                plugin.vaultGroupManagement.playerRemoveGroup(player, currentGroup);
+                plugin.vaultGroupManagement.playerAddGroup(player, realGroup);
                 break;
             }
         }
@@ -152,15 +152,15 @@ public class Utils {
         if (!useGroupSystem()) {
             return false;
         }
-        if (plugin.permission == null)
+        if (plugin.vaultGroupManagement == null)
             return false;
         try {
-            if (plugin.permission.playerRemoveGroup(player, Settings.getUnloggedinGroup) && plugin.permission.playerAddGroup(player, group)) {
+            if (plugin.vaultGroupManagement.playerRemoveGroup(player, Settings.getUnloggedinGroup) && plugin.vaultGroupManagement.playerAddGroup(player, group)) {
                 return true;
             }
         } catch (UnsupportedOperationException e) {
-            ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
-            plugin.permission = null;
+            ConsoleLogger.showError("Your permission system (" + plugin.vaultGroupManagement.getName() + ") do not support Group system with that config... unhook!");
+            plugin.vaultGroupManagement = null;
             return false;
         }
         return false;

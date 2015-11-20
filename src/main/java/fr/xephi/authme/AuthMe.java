@@ -93,7 +93,7 @@ public class AuthMe extends JavaPlugin {
     public boolean delayedAntiBot = true;
 
     // Hooks TODO: move into modules
-    public Permission permission;
+    public Permission vaultGroupManagement;
     public Essentials ess;
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
@@ -488,13 +488,13 @@ public class AuthMe extends JavaPlugin {
         if (server.getPluginManager().isPluginEnabled("Vault")) {
             RegisteredServiceProvider<Permission> permissionProvider = server.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
             if (permissionProvider != null) {
-                permission = permissionProvider.getProvider();
-                ConsoleLogger.info("Vault detected, hooking with the " + permission.getName() + " permissions system...");
+                vaultGroupManagement = permissionProvider.getProvider();
+                ConsoleLogger.info("Vault detected, hooking with the " + vaultGroupManagement.getName() + " group management system...");
             } else {
-                ConsoleLogger.showError("Vault detected, but I can't find any permissions plugin to hook with!");
+                ConsoleLogger.showError("Vault detected, but I can't find any group management plugin to hook with!");
             }
         } else {
-            permission = null;
+            vaultGroupManagement = null;
         }
     }
 
@@ -594,7 +594,6 @@ public class AuthMe extends JavaPlugin {
      * @return
      */
     public boolean authmePermissible(CommandSender sender, String perm) {
-        // New code:
         // Handle players with the permissions manager
         if(sender instanceof Player) {
             // Get the player instance
@@ -602,13 +601,6 @@ public class AuthMe extends JavaPlugin {
 
             // Check whether the player has permission, return the result
             return getPermissionsManager().hasPermission(player, perm);
-        }
-
-        // Legacy code:
-        if (sender.hasPermission(perm)) {
-            return true;
-        } else if (permission != null) {
-            return permission.has(sender, perm);
         }
         return false;
     }
@@ -682,7 +674,7 @@ public class AuthMe extends JavaPlugin {
                                                 // names... (Actually it purges
                                                 // only names!)
         if (Settings.purgePermissions)
-            dataManager.purgePermissions(cleared, permission);
+            dataManager.purgePermissions(cleared, vaultGroupManagement);
     }
 
     // Return the spawn location of a player

@@ -60,12 +60,12 @@ public class LimboCache {
 
             operator = player.isOp();
             flying = player.isFlying();
-            if (plugin.permission != null) {
+            if (plugin.vaultGroupManagement != null) {
                 try {
-                    playerGroup = plugin.permission.getPrimaryGroup(player);
+                    playerGroup = plugin.vaultGroupManagement.getPrimaryGroup(player);
                 } catch (UnsupportedOperationException e) {
-                    ConsoleLogger.showError("Your permission system (" + plugin.permission.getName() + ") do not support Group system with that config... unhook!");
-                    plugin.permission = null;
+                    ConsoleLogger.showError("Your permission system (" + plugin.vaultGroupManagement.getName() + ") do not support Group system with that config... unhook!");
+                    plugin.vaultGroupManagement = null;
                 }
             }
         }
