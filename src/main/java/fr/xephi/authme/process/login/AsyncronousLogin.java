@@ -96,7 +96,7 @@ public class AsyncronousLogin {
             }
             return null;
         }
-        if (Settings.getMaxLoginPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
+        if (Settings.getMaxLoginPerIp > 0 && !plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
             if (plugin.isLoggedIp(name, getIP())) {
                 m.send(player, "logged_in");
                 return null;
@@ -236,7 +236,7 @@ public class AsyncronousLogin {
          * uuidaccounts + "."; } }
          */
         for (Player player : Utils.getOnlinePlayers()) {
-            if (plugin.authmePermissible(player, "authme.seeOtherAccounts")) {
+            if (plugin.getPermissionsManager().hasPermission(player, "authme.seeOtherAccounts")) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
                 player.sendMessage(message.toString());
                 // player.sendMessage(uuidaccounts.replace("%size%",

@@ -62,7 +62,7 @@ public class AsyncRegister {
             m.send(player, "user_regged");
             return false;
         } else if (Settings.getmaxRegPerIp > 0) {
-            if (!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByIp(getIp()).size() >= Settings.getmaxRegPerIp && !getIp().equalsIgnoreCase("127.0.0.1") && !getIp().equalsIgnoreCase("localhost")) {
+            if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && database.getAllAuthsByIp(getIp()).size() >= Settings.getmaxRegPerIp && !getIp().equalsIgnoreCase("127.0.0.1") && !getIp().equalsIgnoreCase("localhost")) {
                 m.send(player, "max_reg");
                 return false;
             }
@@ -76,7 +76,7 @@ public class AsyncRegister {
                 return;
             if (!email.isEmpty() && !email.equals("")) {
                 if (Settings.getmaxRegPerEmail > 0) {
-                    if (!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
+                    if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
                         m.send(player, "max_reg");
                         return;
                     }
@@ -94,7 +94,7 @@ public class AsyncRegister {
 
     protected void emailRegister() throws Exception {
         if (Settings.getmaxRegPerEmail > 0) {
-            if (!plugin.authmePermissible(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
+            if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
                 m.send(player, "max_reg");
                 return;
             }

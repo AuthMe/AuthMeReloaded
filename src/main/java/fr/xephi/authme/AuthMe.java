@@ -642,7 +642,7 @@ public class AuthMe extends JavaPlugin {
     public Player generateKickPlayer(Collection<? extends Player> collection) {
         Player player = null;
         for (Player p : collection) {
-            if (!(authmePermissible(p, "authme.vip"))) {
+            if (!getPermissionsManager().hasPermission(p, "authme.vip")) {
                 player = p;
                 break;
             }

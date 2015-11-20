@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.PatternSyntaxException;
 
+import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -165,7 +166,7 @@ public class AuthMePlayerListener implements Listener {
     private void checkAntiBotMod(final Player player) {
         if (plugin.delayedAntiBot || plugin.antibotMod)
             return;
-        if (plugin.authmePermissible(player, "authme.bypassantibot"))
+        if (plugin.getPermissionsManager().hasPermission(player, "authme.bypassantibot"))
             return;
         if (antibot.size() > Settings.antiBotSensibility) {
             plugin.switchAntiBotMod(true);
@@ -265,8 +266,11 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
+        // Get the permissions manager
+        PermissionsManager permsMan = plugin.getPermissionsManager();
+
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
-        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
             String code = Utils.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || Settings.countriesBlacklist.contains(code))) {
                 event.setKickMessage(m.send("country_banned")[0]);
@@ -274,7 +278,7 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
         }
-        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !plugin.authmePermissible(player, "authme.bypassantibot")) {
+        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
             String code = Utils.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || !Settings.countries.contains(code))) {
                 event.setKickMessage(m.send("country_banned")[0]);
@@ -343,7 +347,7 @@ public class AuthMePlayerListener implements Listener {
         }
         if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL)
             return;
-        if (!plugin.authmePermissible(player, "authme.vip")) {
+        if (!permsMan.hasPermission(player, "authme.vip")) {
             event.setKickMessage(m.send("kick_fullserver")[0]);
             event.setResult(PlayerLoginEvent.Result.KICK_FULL);
             return;
@@ -510,7 +514,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player == null)
             return;
-        if (plugin.authmePermissible(player, "authme.bypassforcesurvival"))
+        if (plugin.getPermissionsManager().hasPermission(player, "authme.bypassforcesurvival"))
             return;
         if (Utils.checkAuth(player))
             return;

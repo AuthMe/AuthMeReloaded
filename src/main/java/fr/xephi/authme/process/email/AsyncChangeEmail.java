@@ -38,7 +38,7 @@ public class AsyncChangeEmail {
             String playerName = player.getName().toLowerCase();
 
             if (Settings.getmaxRegPerEmail > 0) {
-                if (!plugin.authmePermissible(player, "authme.allow2accounts") && plugin.database.getAllAuthsByEmail(newEmail).size() >= Settings.getmaxRegPerEmail) {
+                if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && plugin.database.getAllAuthsByEmail(newEmail).size() >= Settings.getmaxRegPerEmail) {
                     m.send(player, "max_reg");
                     return;
                 }
