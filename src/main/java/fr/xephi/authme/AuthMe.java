@@ -12,6 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import fr.xephi.authme.listener.*;
+import fr.xephi.authme.permission.PermissionsManager;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -76,6 +77,7 @@ public class AuthMe extends JavaPlugin {
 
     // TODO: Move this to a better place! -- timvisee
     private CommandHandler commandHandler = null;
+    private PermissionsManager permsMan = null;
 
     public Management management;
     public NewAPI api;
@@ -139,6 +141,9 @@ public class AuthMe extends JavaPlugin {
         server = getServer();
         authmeLogger = Logger.getLogger("AuthMe");
         plugin = this;
+
+        // Set up the permissions manager
+        setupPermissionsManager();
 
         // Set up and initialize the command handler
         this.commandHandler = new CommandHandler(false);
@@ -447,6 +452,23 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, next time server starts up, it will be changed to SQLite... Conversion will be started Asynchronously, it will not drop down your performance !");
             ConsoleLogger.showError("If you want to keep FlatFile, set file again into config at backend, but this message and this change will appear again at the next restart");
         }
+    }
+
+    /**
+     * Set up the permissions manager.
+     */
+    public void setupPermissionsManager() {
+        this.permsMan = new PermissionsManager(Bukkit.getServer(), this, this.authmeLogger);
+        this.permsMan.setup();
+    }
+
+    /**
+     * Get the permissions manager instance.
+     *
+     * @return Permissions Manager instance.
+     */
+    public PermissionsManager getPermissionsManager() {
+        return this.permsMan;
     }
 
     // Set the console filter to remove the passwords
