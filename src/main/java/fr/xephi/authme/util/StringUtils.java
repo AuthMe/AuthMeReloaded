@@ -25,4 +25,16 @@ public class StringUtils {
         // Determine the difference value, return the result
         return Math.abs(service.score(first, second) - 1.0);
     }
+    
+    public static boolean containsAny(String str, String... pieces) {
+    	if (str == null) {
+    		return false;
+    	}
+    	for (String piece : pieces) {
+    		if (str.contains(piece)) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 }
