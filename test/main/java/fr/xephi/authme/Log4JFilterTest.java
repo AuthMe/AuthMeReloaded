@@ -53,6 +53,20 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
+	public void shouldNotFilterNonCommandLogEvent() {
+		// given
+		Message message = mockMessage(OTHER_COMMAND);
+		LogEvent event = Mockito.mock(LogEvent.class);
+		when(event.getMessage()).thenReturn(message);
+		
+		// when
+		Result result = log4JFilter.filter(event);
+		
+		// then
+		assertThat(result, equalTo(Result.NEUTRAL));
+	}
+	
+	@Test
 	public void shouldNotFilterLogEventWithNullMessage() {
 		// given
 		Message message = mockMessage(null);
@@ -97,6 +111,15 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
+	public void shouldNotFilterNonCommandStringMessage() {
+		// given / when
+		Result result = log4JFilter.filter(null, null, null, OTHER_COMMAND, new Object[0]);
+		
+		// then
+		assertThat(result, equalTo(Result.NEUTRAL));
+	}
+	
+	@Test
 	public void shouldReturnNeutralForNullMessage() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, null, new Object[0]);
@@ -120,7 +143,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldNotFilterNullObjectParam() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, null, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Object) null, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
@@ -130,6 +153,15 @@ public class Log4JFilterTest {
 	public void shouldNotFilterIrrelevantMessage() {
 		// given / when
 		Result result = log4JFilter.filter(null, null, null, OTHER_COMMAND, new Exception());
+		
+		// then
+		assertThat(result, equalTo(Result.NEUTRAL));
+	}
+	
+	@Test
+	public void shouldNotFilterNonSensitiveCommand() {
+		// given / when
+		Result result = log4JFilter.filter(null, null, null, NORMAL_COMMAND, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
@@ -163,9 +195,21 @@ public class Log4JFilterTest {
 	}
 	
 	@Test
+	public void shouldNotFilterNonCommandMessage() {
+		// given
+		Message message = mockMessage(OTHER_COMMAND);
+		
+		// when
+		Result result = log4JFilter.filter(null, null, null, message, new Exception());
+		
+		// then
+		assertThat(result, equalTo(Result.NEUTRAL));
+	}
+	
+	@Test
 	public void shouldNotFilterNullMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, null, new Exception());
+		Result result = log4JFilter.filter(null, null, null, (Message) null, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
