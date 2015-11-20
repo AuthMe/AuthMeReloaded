@@ -26,6 +26,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
+/**
+ * PermissionsManager.
+ *
+ * A permissions manager, to manage and use various permissions systems.
+ * This manager supports dynamic plugin hooking and various other features.
+ *
+ * Written by Tim Visée.
+ *
+ * @author Tim Visée, http://timvisee.com
+ * @version 0.2.1
+ */
 public class PermissionsManager {
 
     /**
