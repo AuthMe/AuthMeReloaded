@@ -317,6 +317,34 @@
 			</exclusions>
 		</dependency>
 
+		<!-- GroupManager plugin -->
+		<dependency>
+			<groupId>org.anjocaido</groupId>
+			<artifactId>groupmanager</artifactId>
+			<version>2.13.1</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/EssentialsGroupManager-2.13.1.jar</systemPath>
+		</dependency>
+
+
+		<!-- zPermissions plugin -->
+		<dependency>
+			<groupId>org.tyrannyofheaven.bukkit</groupId>
+			<artifactId>zPermissions</artifactId>
+			<version>1.3-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/zPermissions-1.3beta1.jar</systemPath>
+		</dependency>
+
+		<!-- Permissions plugin (obsolete) -->
+		<dependency>
+			<groupId>com.nijiko</groupId>
+			<artifactId>permissions</artifactId>
+			<version>3.1.6</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/Permission-3.1.6.jar</systemPath>
+		</dependency>
+
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
 		<dependency>
 			<groupId>net.milkbowl.vault</groupId>
