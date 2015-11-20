@@ -567,7 +567,7 @@ public class AuthMe extends JavaPlugin {
     /**
      * Check if a player/command sender have a permission
      *
-     * @deprecated Use the permissions manager instead! See: getPermissionsManager()
+     * @deprecated Deprecated since v5.1. Use the permissions manager instead! See: getPermissionsManager()
      *
      * @param player
      * @param perm
@@ -585,7 +585,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * @deprecated Use the permissions manager instead! See: getPermissionsManager()
+     * @deprecated Deprecated since v5.1. Use the permissions manager instead! See: getPermissionsManager()
      *
      * @param sender
      * @param perm
