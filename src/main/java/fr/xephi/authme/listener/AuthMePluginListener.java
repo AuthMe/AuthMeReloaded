@@ -34,7 +34,7 @@ public class AuthMePluginListener implements Listener {
     @EventHandler
     public void onPluginEnable(PluginEnableEvent event) {
         // Call the onPluginEnable method in the permissions manager
-        Core.getPermissionsManager().onPluginEnable(event);
+        this.instance.getPermissionsManager().onPluginEnable(event);
     }
 
     /**
@@ -51,16 +51,11 @@ public class AuthMePluginListener implements Listener {
         if(plugin == null)
             return;
 
-        // Make sure it's not Dungeon Maze itself
-        if(plugin.equals(DungeonMaze.instance))
+        // Make sure it's not this plugin itself
+        if(plugin.equals(this.instance))
             return;
 
         // Call the onPluginDisable method in the permissions manager
-        Core.getPermissionsManager().onPluginDisable(event);
-
-        // Check if this plugin is hooked in to Dungeon Maze
-        if(Core.getApiController().isHooked(plugin))
-            // Unhook the plugin from Dungeon Maze and unregister it's API sessions
-            Core.getApiController().unhookPlugin(plugin);
+        this.instance.getPermissionsManager().onPluginDisable(event);
     }
 }
