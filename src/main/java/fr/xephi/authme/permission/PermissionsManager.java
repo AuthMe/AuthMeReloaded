@@ -361,6 +361,7 @@ public class PermissionsManager {
 
             case Z_PERMISSIONS:
                 // zPermissions
+                @SuppressWarnings("deprecation")
                 Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(player.getWorld().getName(), null, player.getName());
                 if(perms.containsKey(permsNode))
                     return perms.get(permsNode);
@@ -385,7 +386,7 @@ public class PermissionsManager {
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public List<String> getGroups(Player player) {
         if(!isEnabled())
             // No permissions system is used, return an empty list

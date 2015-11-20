@@ -59,7 +59,7 @@
 	<build>
 		<finalName>AuthMe-${project.version}</finalName>
 		<sourceDirectory>src/main/java</sourceDirectory>
-		<testSourceDirectory>test/main/java</testSourceDirectory>
+		<testSourceDirectory>src/test/java</testSourceDirectory>
         
 		<resources>
 			<resource>
