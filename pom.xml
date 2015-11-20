@@ -180,6 +180,12 @@
 			<id>xephi-repo</id>
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
+
+		<!-- PermissionsEx Repo -->
+		<repository>
+			<id>pex-repo</id>
+			<url>http://pex-repo.aoeu.xyz/</url>
+		</repository>
 	</repositories>
 
 	<dependencies>
@@ -315,6 +321,68 @@
 					<groupId>com.comphenix.executors</groupId>
 				</exclusion>
 			</exclusions>
+		</dependency>
+
+		<!-- PermissionsEx plugin -->
+		<dependency>
+			<groupId>ru.tehkode</groupId>
+			<artifactId>PermissionsEx</artifactId>
+			<version>1.23.1</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.gravitydevelopment.updater</groupId>
+					<artifactId>updater</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-dbcp</artifactId>
+					<groupId>commons-dbcp</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>AccountsClient</artifactId>
+					<groupId>com.mojang</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
+		<!-- GroupManager plugin -->
+		<dependency>
+			<groupId>org.anjocaido</groupId>
+			<artifactId>groupmanager</artifactId>
+			<version>2.13.1</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/EssentialsGroupManager-2.13.1.jar</systemPath>
+		</dependency>
+
+		<!-- bPermissions plugin -->
+		<dependency>
+			<groupId>de.bananaco</groupId>
+			<artifactId>bpermissions</artifactId>
+			<version>1.12-DEV</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/bPermissions-2.12-DEV.jar</systemPath>
+		</dependency>
+
+		<!-- zPermissions plugin -->
+		<dependency>
+			<groupId>org.tyrannyofheaven.bukkit</groupId>
+			<artifactId>zPermissions</artifactId>
+			<version>1.3-SNAPSHOT</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/zPermissions-1.3beta1.jar</systemPath>
+		</dependency>
+
+		<!-- Permissions plugin (obsolete) -->
+		<dependency>
+			<groupId>com.nijiko</groupId>
+			<artifactId>permissions</artifactId>
+			<version>3.1.6</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/Permission-3.1.6.jar</systemPath>
 		</dependency>
 
 		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->

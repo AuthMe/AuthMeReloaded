@@ -225,7 +225,7 @@ public class Utils {
      * Used for force player GameMode
      */
     public static void forceGM(Player player) {
-        if (!plugin.authmePermissible(player, "authme.bypassforcesurvival"))
+        if (!plugin.getPermissionsManager().hasPermission(player, "authme.bypassforcesurvival"))
             player.setGameMode(GameMode.SURVIVAL);
     }
 

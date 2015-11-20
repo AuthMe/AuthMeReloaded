@@ -91,7 +91,7 @@ public class AsyncronousJoin {
             });
             return;
         }
-        if (Settings.getMaxJoinPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
+        if (Settings.getMaxJoinPerIp > 0 && !plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
             if (plugin.hasJoinedIp(player.getName(), ip)) {
                 sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 

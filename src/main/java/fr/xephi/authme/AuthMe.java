@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
+import fr.xephi.authme.listener.*;
+import fr.xephi.authme.permission.PermissionsManager;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -47,13 +49,6 @@ import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.EssSpawn;
-import fr.xephi.authme.listener.AuthMeBlockListener;
-import fr.xephi.authme.listener.AuthMeEntityListener;
-import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
-import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.listener.AuthMePlayerListener16;
-import fr.xephi.authme.listener.AuthMePlayerListener18;
-import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Messages;
@@ -82,6 +77,7 @@ public class AuthMe extends JavaPlugin {
 
     // TODO: Move this to a better place! -- timvisee
     private CommandHandler commandHandler = null;
+    private PermissionsManager permsMan = null;
 
     public Management management;
     public NewAPI api;
@@ -145,6 +141,9 @@ public class AuthMe extends JavaPlugin {
         server = getServer();
         authmeLogger = Logger.getLogger("AuthMe");
         plugin = this;
+
+        // Set up the permissions manager
+        setupPermissionsManager();
 
         // Set up and initialize the command handler
         this.commandHandler = new CommandHandler(false);
@@ -335,23 +334,10 @@ public class AuthMe extends JavaPlugin {
             pm.registerEvents(new AuthMePlayerListener18(this), this);
         } catch (ClassNotFoundException ignore) {
         }
+        pm.registerEvents(new AuthMePluginListener(this), this);
         pm.registerEvents(new AuthMeBlockListener(this), this);
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);
-
-        // TODO: This is moved to CommandManager.registerCommands() handled by
-        // AuthMe.onCommand() -- timvisee
-        // Register commands
-        // getCommand("authme").setExecutor(new AdminCommand(this));
-        // getCommand("register").setExecutor(new RegisterCommand(this));
-        // getCommand("login").setExecutor(new LoginCommand(this));
-        // getCommand("changepassword").setExecutor(new
-        // ChangePasswordCommand(this));
-        // getCommand("logout").setExecutor(new LogoutCommand(this));
-        // getCommand("unregister").setExecutor(new UnregisterCommand(this));
-        // getCommand("email").setExecutor(new EmailCommand(this));
-        // getCommand("captcha").setExecutor(new CaptchaCommand(this));
-        // getCommand("converter").setExecutor(new ConverterCommand(this));
 
         // Purge on start if enabled
         autoPurge();
@@ -468,6 +454,23 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
+    /**
+     * Set up the permissions manager.
+     */
+    public void setupPermissionsManager() {
+        this.permsMan = new PermissionsManager(Bukkit.getServer(), this, this.authmeLogger);
+        this.permsMan.setup();
+    }
+
+    /**
+     * Get the permissions manager instance.
+     *
+     * @return Permissions Manager instance.
+     */
+    public PermissionsManager getPermissionsManager() {
+        return this.permsMan;
+    }
+
     // Set the console filter to remove the passwords
     private void setLog4JFilter() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -561,17 +564,47 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    // Check if a player/command sender have a permission
+    /**
+     * Check if a player/command sender have a permission
+     *
+     * @deprecated Deprecated since v5.1. Use the permissions manager instead! See: getPermissionsManager()
+     *
+     * @param player
+     * @param perm
+     * @return
+     */
     public boolean authmePermissible(Player player, String perm) {
-        if (player.hasPermission(perm)) {
+        // New code:
+        return getPermissionsManager().hasPermission(player, perm);
+
+        // Legacy code:
+        /*if (player.hasPermission(perm)) {
             return true;
         } else if (permission != null) {
             return permission.playerHas(player, perm);
         }
-        return false;
+        return false;*/
     }
 
+    /**
+     * @deprecated Deprecated since v5.1. Use the permissions manager instead! See: getPermissionsManager()
+     *
+     * @param sender
+     * @param perm
+     * @return
+     */
     public boolean authmePermissible(CommandSender sender, String perm) {
+        // New code:
+        // Handle players with the permissions manager
+        if(sender instanceof Player) {
+            // Get the player instance
+            Player player = (Player) sender;
+
+            // Check whether the player has permission, return the result
+            return getPermissionsManager().hasPermission(player, perm);
+        }
+
+        // Legacy code:
         if (sender.hasPermission(perm)) {
             return true;
         } else if (permission != null) {
@@ -612,7 +645,7 @@ public class AuthMe extends JavaPlugin {
     public Player generateKickPlayer(Collection<? extends Player> collection) {
         Player player = null;
         for (Player p : collection) {
-            if (!(authmePermissible(p, "authme.vip"))) {
+            if (!getPermissionsManager().hasPermission(p, "authme.vip")) {
                 player = p;
                 break;
             }

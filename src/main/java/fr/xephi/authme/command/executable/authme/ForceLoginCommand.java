@@ -37,7 +37,7 @@ public class ForceLoginCommand extends ExecutableCommand {
                 sender.sendMessage("Player needs to be online!");
                 return true;
             }
-            if (!plugin.authmePermissible(player, "authme.canbeforced")) {
+            if (!plugin.getPermissionsManager().hasPermission(player, "authme.canbeforced")) {
                 sender.sendMessage("You cannot force login for the player " + playerName + "!");
                 return true;
             }
