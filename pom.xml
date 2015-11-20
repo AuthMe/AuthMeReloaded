@@ -323,6 +323,32 @@
 			</exclusions>
 		</dependency>
 
+		<!-- PermissionsEx plugin -->
+		<dependency>
+			<groupId>ru.tehkode</groupId>
+			<artifactId>PermissionsEx</artifactId>
+			<version>1.23.1</version>
+			<scope>provided</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bukkit</groupId>
+					<artifactId>bukkit</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>net.gravitydevelopment.updater</groupId>
+					<artifactId>updater</artifactId>
+				</exclusion>
+				<exclusion>
+					<artifactId>commons-dbcp</artifactId>
+					<groupId>commons-dbcp</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>AccountsClient</artifactId>
+					<groupId>com.mojang</groupId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+
 		<!-- GroupManager plugin -->
 		<dependency>
 			<groupId>org.anjocaido</groupId>
