@@ -574,8 +574,10 @@ public class AuthMe extends JavaPlugin {
      * @return
      */
     public boolean authmePermissible(Player player, String perm) {
+        // New code:
         return getPermissionsManager().hasPermission(player, perm);
 
+        // Legacy code:
         /*if (player.hasPermission(perm)) {
             return true;
         } else if (permission != null) {
@@ -592,6 +594,7 @@ public class AuthMe extends JavaPlugin {
      * @return
      */
     public boolean authmePermissible(CommandSender sender, String perm) {
+        // New code:
         // Handle players with the permissions manager
         if(sender instanceof Player) {
             // Get the player instance
@@ -601,7 +604,7 @@ public class AuthMe extends JavaPlugin {
             return getPermissionsManager().hasPermission(player, perm);
         }
 
-        // Legacy system:
+        // Legacy code:
         if (sender.hasPermission(perm)) {
             return true;
         } else if (permission != null) {
