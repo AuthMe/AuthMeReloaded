@@ -566,15 +566,27 @@ public class AuthMe extends JavaPlugin {
 
     // Check if a player/command sender have a permission
     public boolean authmePermissible(Player player, String perm) {
-        if (player.hasPermission(perm)) {
+        return getPermissionsManager().hasPermission(player, perm);
+
+        /*if (player.hasPermission(perm)) {
             return true;
         } else if (permission != null) {
             return permission.playerHas(player, perm);
         }
-        return false;
+        return false;*/
     }
 
     public boolean authmePermissible(CommandSender sender, String perm) {
+        // Handle players with the permissions manager
+        if(sender instanceof Player) {
+            // Get the player instance
+            Player player = (Player) sender;
+
+            // Check whether the player has permission, return the result
+            return getPermissionsManager().hasPermission(player, perm);
+        }
+
+        // Legacy system:
         if (sender.hasPermission(perm)) {
             return true;
         } else if (permission != null) {
