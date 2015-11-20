@@ -12,7 +12,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.backup.DataFileCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.events.ResetInventoryEvent;
-import fr.xephi.authme.events.StoreInventoryEvent;
 import fr.xephi.authme.settings.Settings;
 
 public class LimboCache {
@@ -37,13 +36,6 @@ public class LimboCache {
         boolean flying = false;
 
         if (playerData.doesCacheExist(player)) {
-            final StoreInventoryEvent event = new StoreInventoryEvent(player, playerData);
-            Bukkit.getServer().getPluginManager().callEvent(event);
-            if (!event.isCancelled() && event.getInventory() != null && event.getArmor() != null) {
-                player.getInventory().setContents(event.getInventory());
-                player.getInventory().setArmorContents(event.getArmor());
-            }
-
             DataFileCache cache = playerData.readCache(player);
             if (cache != null) {
                 playerGroup = cache.getGroup();
@@ -51,13 +43,6 @@ public class LimboCache {
                 flying = cache.isFlying();
             }
         } else {
-            StoreInventoryEvent event = new StoreInventoryEvent(player);
-            Bukkit.getServer().getPluginManager().callEvent(event);
-            if (!event.isCancelled() && event.getInventory() != null && event.getArmor() != null) {
-                player.getInventory().setContents(event.getInventory());
-                player.getInventory().setArmorContents(event.getArmor());
-            }
-
             operator = player.isOp();
             flying = player.isFlying();
             if (plugin.vaultGroupManagement != null) {
