@@ -564,7 +564,15 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    // Check if a player/command sender have a permission
+    /**
+     * Check if a player/command sender have a permission
+     *
+     * @deprecated Use the permissions manager instead! See: getPermissionsManager()
+     *
+     * @param player
+     * @param perm
+     * @return
+     */
     public boolean authmePermissible(Player player, String perm) {
         return getPermissionsManager().hasPermission(player, perm);
 
@@ -576,6 +584,13 @@ public class AuthMe extends JavaPlugin {
         return false;*/
     }
 
+    /**
+     * @deprecated Use the permissions manager instead! See: getPermissionsManager()
+     *
+     * @param sender
+     * @param perm
+     * @return
+     */
     public boolean authmePermissible(CommandSender sender, String perm) {
         // Handle players with the permissions manager
         if(sender instanceof Player) {
