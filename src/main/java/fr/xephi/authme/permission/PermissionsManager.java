@@ -443,6 +443,63 @@ public class PermissionsManager {
     }
 
     /**
+     * Add the permission group of a player, if supported.
+     *
+     * @param player The player
+     * @param groupName The name of the group.
+     *
+     * @return True if succeed, false otherwise.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean addGroup(Player player, String groupName) {
+        if(!isEnabled())
+            // No permissions system is used, return false
+            return false;
+
+        // Set the group the proper way
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+                // Permissions Ex
+                PermissionUser user = PermissionsEx.getUser(player);
+                user.addGroup(groupName);
+                return true;
+
+            case PERMISSIONS_BUKKIT:
+                // Permissions Bukkit
+                // Permissions Bukkit doesn't support groups, return false
+                return false;
+
+            case B_PERMISSIONS:
+                // bPermissions
+                ApiLayer.addGroup(player.getWorld().getName(), CalculableType.USER, player.getName(), groupName);
+                return true;
+
+            case ESSENTIALS_GROUP_MANAGER:
+                // Essentials Group Manager
+                // Add the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "manuadd " + player.getName() + " " + groupName);
+
+            case Z_PERMISSIONS:
+                // zPermissions
+                // Add the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " addgroup " + groupName);
+
+            case VAULT:
+                // Vault
+                vaultPerms.playerAddGroup(player, groupName);
+                return true;
+
+            case NONE:
+                // Not hooked into any permissions system, return false
+                return false;
+
+            default:
+                // Something went wrong, return false
+                return false;
+        }
+    }
+
+    /**
      * Set the permission group of a player, if supported.
      *
      * @param player The player
