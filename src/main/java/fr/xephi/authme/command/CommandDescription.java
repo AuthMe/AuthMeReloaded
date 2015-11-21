@@ -681,6 +681,7 @@ public class CommandDescription {
      *
      * @param maximumArguments True if there is an argument maximum, based on the number of registered arguments.
      */
+    // TODO ljacqu 20151121: Rename the setter
     public void setMaximumArguments(boolean maximumArguments) {
         this.noArgumentMaximum = !maximumArguments;
     }

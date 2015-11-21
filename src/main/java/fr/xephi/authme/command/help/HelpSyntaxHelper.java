@@ -9,7 +9,11 @@ import fr.xephi.authme.util.ListUtils;
 
 /**
  */
-public class HelpSyntaxHelper {
+public final class HelpSyntaxHelper {
+
+    private HelpSyntaxHelper() {
+        // Helper class
+    }
 
     /**
      * Get the proper syntax for a command.
@@ -19,8 +23,8 @@ public class HelpSyntaxHelper {
      * @param alternativeLabel The alternative label to use for this command syntax.
      * @param highlight True to highlight the important parts of this command.
      *
-    
-     * @return The command with proper syntax. */
+     * @return The command with proper syntax.
+     */
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     public static String getCommandSyntax(CommandDescription commandDescription, CommandParts commandReference, String alternativeLabel, boolean highlight) {
         // Create a string builder to build the command
@@ -35,9 +39,9 @@ public class HelpSyntaxHelper {
         String commandLabel = helpCommandReference.get(helpCommandReference.getCount() - 1);
 
         // Check whether the alternative label should be used
-        if(alternativeLabel != null)
-            if(alternativeLabel.trim().length() > 0)
-                commandLabel = alternativeLabel;
+        if (alternativeLabel != null && alternativeLabel.trim().length() > 0) {
+            commandLabel = alternativeLabel;
+        }
 
         // Show the important bit of the command, highlight this part if required
         sb.append(ListUtils.implode(parentCommand, (highlight ? ChatColor.YELLOW + "" + ChatColor.BOLD : "") + commandLabel, " "));

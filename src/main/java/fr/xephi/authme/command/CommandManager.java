@@ -54,6 +54,7 @@ public class CommandManager {
     /**
      * Register all commands.
      */
+    // TODO ljacqu 20151121: Create a builder class for CommandDescription
     @SuppressWarnings({ "serial" })
     public void registerCommands() {
         // Register the base AuthMe Reloaded command

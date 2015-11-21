@@ -38,25 +38,6 @@ public class ListUtils {
     }
 
     /**
-     * Implode two lists of elements into a single string, with a specified separator.
-     *
-     * @param elements The first list of elements to implode.
-     * @param otherElements The second list of elements to implode.
-     * @param separator The separator to use.
-     *
-    
-     * @return The result string. */
-    public static String implode(List<String> elements, List<String> otherElements, String separator) {
-        // Combine the lists
-        List<String> combined = new ArrayList<>();
-        combined.addAll(elements);
-        combined.addAll(otherElements);
-
-        // Implode and return the result
-        return implode(combined, separator);
-    }
-
-    /**
      * Implode two elements into a single string, with a specified separator.
      *
      * @param element The first element to implode.
