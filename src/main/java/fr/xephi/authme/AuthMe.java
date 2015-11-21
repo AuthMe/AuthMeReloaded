@@ -694,7 +694,7 @@ public class AuthMe extends JavaPlugin {
         if (Settings.purgeAntiXray)
             dataManager.purgeAntiXray(cleared);
         if (Settings.purgePermissions)
-            dataManager.purgePermissions(cleared, vaultGroupManagement);
+            dataManager.purgePermissions(cleared);
     }
 
     // Return the spawn location of a player
