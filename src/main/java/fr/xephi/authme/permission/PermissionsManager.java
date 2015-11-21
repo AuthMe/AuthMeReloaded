@@ -526,6 +526,64 @@ public class PermissionsManager {
     }
 
     /**
+     * Remove the permission group of a player, if supported.
+     *
+     * @param player The player
+     * @param groupName The name of the group.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean removeGroup(Player player, String groupName) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        // Set the group the proper way
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+                // Permissions Ex
+                PermissionUser user = PermissionsEx.getUser(player);
+                user.removeGroup(groupName);
+                return true;
+
+            case PERMISSIONS_BUKKIT:
+                // Permissions Bukkit
+                // Remove the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player removegroup " + player.getName() + " " + groupName);
+
+            case B_PERMISSIONS:
+                // bPermissions
+                ApiLayer.removeGroup(player.getWorld().getName(), CalculableType.USER, player.getName(), groupName);
+                return true;
+
+            case ESSENTIALS_GROUP_MANAGER:
+                // Essentials Group Manager
+                // Remove the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "manudelsub " + player.getName() + " " + groupName);
+
+            case Z_PERMISSIONS:
+                // zPermissions
+                // Remove the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " removegroup " + groupName);
+
+            case VAULT:
+                // Vault
+                vaultPerms.playerRemoveGroup(player, groupName);
+                return true;
+
+            case NONE:
+                // Not hooked into any permissions system, return false
+                return false;
+
+            default:
+                // Something went wrong, return false
+                return false;
+        }
+    }
+
+    /**
      * Set the permission group of a player, if supported.
      *
      * @param player The player
