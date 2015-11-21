@@ -466,8 +466,8 @@ public class PermissionsManager {
 
             case PERMISSIONS_BUKKIT:
                 // Permissions Bukkit
-                // Permissions Bukkit doesn't support groups, return false
-                return false;
+                // Add the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player addgroup " + player.getName() + " " + groupName);
 
             case B_PERMISSIONS:
                 // bPermissions
