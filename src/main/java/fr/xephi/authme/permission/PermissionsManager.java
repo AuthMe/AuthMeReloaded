@@ -478,7 +478,7 @@ public class PermissionsManager {
             case ESSENTIALS_GROUP_MANAGER:
                 // Essentials Group Manager
                 // Add the group to the user using a command
-                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "manuadd " + player.getName() + " " + groupName);
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "manuaddsub " + player.getName() + " " + groupName);
 
             case Z_PERMISSIONS:
                 // zPermissions
