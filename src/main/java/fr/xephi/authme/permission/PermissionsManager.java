@@ -711,6 +711,28 @@ public class PermissionsManager {
         return result;
     }
 
+    /**
+     * Remove all groups of the specified player, if supported.
+     * Systems like Essentials GroupManager don't allow all groups to be removed from a player, thus the user will stay
+     * in it's primary group. All the subgroups are removed just fine.
+     *
+     * @param player The player to remove all groups from.
+     *
+     * @return True if succeed, false otherwise.
+     * False will also be returned if this feature isn't supported for the used permissions system.
+     */
+    public boolean removeAllGroups(Player player) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        // Get a list of current groups
+        List<String> groupNames = getGroups(player);
+
+        // Remove each group
+        return removeGroups(player, groupNames);
+    }
+
     public enum PermissionsSystemType {
         NONE("None"),
         PERMISSIONS_EX("PermissionsEx"),
