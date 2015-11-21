@@ -494,6 +494,59 @@ public class PermissionsManager {
     }
 
     /**
+     * Get the primary group of a player, if available.
+     *
+     * @param player The player.
+     *
+     * @return The name of the primary permission group. Or null.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public String getPrimaryGroup(Player player) {
+        // If no permissions system is used, return an empty list
+        if(!isEnabled())
+            return null;
+
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+            case PERMISSIONS_BUKKIT:
+            case B_PERMISSIONS:
+            case PERMISSIONS: // FIXME: Is this correct for PERMISSIONS?
+                // Get the groups of the player
+                List<String> groups = getGroups(player);
+
+                // Make sure there is any group available, or return null
+                if(groups.size() == 0)
+                    return null;
+
+                // Return the first group
+                return groups.get(0);
+
+            case ESSENTIALS_GROUP_MANAGER:
+                // Essentials Group Manager
+                final AnjoPermissionsHandler handler = groupManagerPerms.getWorldsHolder().getWorldPermissions(player);
+                if(handler == null)
+                    return null;
+                return handler.getGroup(player.getName());
+
+            case Z_PERMISSIONS:
+                //zPermissions
+                return zPermissionsService.getPlayerPrimaryGroup(player.getName());
+
+            case VAULT:
+                // Vault
+                return vaultPerms.getPrimaryGroup(player);
+
+            case NONE:
+                // Not hooked into any permissions system, return null
+                return null;
+
+            default:
+                // Something went wrong, return null to prevent problems
+                return null;
+        }
+    }
+
+    /**
      * Check whether the player is in the specified group.
      *
      * @param player The player.
