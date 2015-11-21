@@ -70,9 +70,8 @@ public class AuthMe extends JavaPlugin {
     /** Defines the current AuthMeReloaded version name. */
     private static final String PLUGIN_VERSION_NAME = "5.1-SNAPSHOT";
     /** Defines the current AuthMeReloaded version code. */
-    private static final int PLUGIN_VERSION_CODE = 100; // Increase this number
-                                                        // by one when an update
-                                                        // is released
+    // Increase this number by one when an update is released
+    private static final int PLUGIN_VERSION_CODE = 100;
 
     private static AuthMe plugin;
     private static Server server;
@@ -96,7 +95,6 @@ public class AuthMe extends JavaPlugin {
     public boolean delayedAntiBot = true;
 
     // Hooks TODO: move into modules
-    public Permission vaultGroupManagement; // TODO: Remove this instance, and replace every usage with permissions manager!
     public Essentials ess;
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
@@ -277,9 +275,6 @@ public class AuthMe extends JavaPlugin {
         if (!Settings.getmailAccount.isEmpty() && !Settings.getmailPassword.isEmpty()) {
             mail = new SendMailSSL(this);
         }
-
-        // Find Permissions
-        checkVault();
 
         // Check Combat Tag Plus Version
         checkCombatTagPlus();
@@ -525,21 +520,6 @@ public class AuthMe extends JavaPlugin {
         });
     }
 
-    // Check the presence of the Vault plugin and a permissions provider
-    public void checkVault() {
-        if (server.getPluginManager().isPluginEnabled("Vault")) {
-            RegisteredServiceProvider<Permission> permissionProvider = server.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-            if (permissionProvider != null) {
-                vaultGroupManagement = permissionProvider.getProvider();
-                ConsoleLogger.info("Vault detected, hooking with the " + vaultGroupManagement.getName() + " group management system...");
-            } else {
-                ConsoleLogger.showError("Vault detected, but I can't find any group management plugin to hook with!");
-            }
-        } else {
-            vaultGroupManagement = null;
-        }
-    }
-
     // Get the Multiverse plugin
     public void checkMultiverse() {
         if (Settings.multiverse && server.getPluginManager().isPluginEnabled("Multiverse-Core")) {
@@ -706,17 +686,13 @@ public class AuthMe extends JavaPlugin {
         }
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
         if (Settings.purgeEssentialsFile && this.ess != null)
-            dataManager.purgeEssentials(cleared); // name to UUID convertion
-                                                  // needed with latest versions
+            dataManager.purgeEssentials(cleared);
         if (Settings.purgePlayerDat)
-            dataManager.purgeDat(cleared); // name to UUID convertion needed
-                                           // with latest versions of MC
+            dataManager.purgeDat(cleared);
         if (Settings.purgeLimitedCreative)
             dataManager.purgeLimitedCreative(cleared);
         if (Settings.purgeAntiXray)
-            dataManager.purgeAntiXray(cleared); // IDK if it uses UUID or
-                                                // names... (Actually it purges
-                                                // only names!)
+            dataManager.purgeAntiXray(cleared);
         if (Settings.purgePermissions)
             dataManager.purgePermissions(cleared, vaultGroupManagement);
     }

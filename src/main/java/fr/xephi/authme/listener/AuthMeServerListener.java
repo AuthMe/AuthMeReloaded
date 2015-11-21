@@ -90,10 +90,6 @@ public class AuthMeServerListener implements Listener {
             plugin.combatTagPlus = null;
             ConsoleLogger.info("CombatTagPlus has been disabled, unhook!");
         }
-        if (pluginName.equalsIgnoreCase("Vault")) {
-            plugin.vaultGroupManagement = null;
-            ConsoleLogger.showError("Vault has been disabled, unhook permissions!");
-        }
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
             plugin.inventoryProtector = null;
             ConsoleLogger.showError("ProtocolLib has been disabled, unhook packet inventory protection!");
@@ -116,8 +112,6 @@ public class AuthMeServerListener implements Listener {
             plugin.checkMultiverse();
         if (pluginName.equalsIgnoreCase("CombatTagPlus"))
             plugin.checkCombatTagPlus();
-        if (pluginName.equalsIgnoreCase("Vault"))
-            plugin.checkVault();
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
             plugin.checkProtocolLib();
         }

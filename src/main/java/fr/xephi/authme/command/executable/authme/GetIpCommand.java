@@ -22,6 +22,7 @@ public class GetIpCommand extends ExecutableCommand {
         if(commandArguments.getCount() >= 1)
             playerName = commandArguments.get(0);
 
+        @SuppressWarnings("deprecation")
         Player player = Bukkit.getPlayer(playerName);
         if (player == null) {
             sender.sendMessage("This player is not actually online");

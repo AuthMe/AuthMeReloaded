@@ -24,6 +24,7 @@ public class ForceLoginCommand extends ExecutableCommand {
 
         // Command logic
         try {
+            @SuppressWarnings("deprecation")
             Player player = Bukkit.getPlayer(playerName);
             if (player == null || !player.isOnline()) {
                 sender.sendMessage("Player needs to be online!");

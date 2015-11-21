@@ -560,7 +560,6 @@ public class PermissionsManager {
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
-    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public boolean addGroup(Player player, String groupName) {
         // If no permissions system is used, return false
         if(!isEnabled())
@@ -623,7 +622,6 @@ public class PermissionsManager {
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
-    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public boolean addGroups(Player player, List<String> groupNames) {
         // If no permissions system is used, return false
         if(!isEnabled())
@@ -648,7 +646,6 @@ public class PermissionsManager {
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
-    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public boolean removeGroup(Player player, String groupName) {
         // If no permissions system is used, return false
         if(!isEnabled())
@@ -711,7 +708,6 @@ public class PermissionsManager {
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
-    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public boolean removeGroups(Player player, List<String> groupNames) {
         // If no permissions system is used, return false
         if(!isEnabled())
@@ -737,7 +733,6 @@ public class PermissionsManager {
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
-    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public boolean setGroup(Player player, String groupName) {
         // If no permissions system is used, return false
         if(!isEnabled())
@@ -808,7 +803,6 @@ public class PermissionsManager {
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
-    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public boolean setGroups(Player player, List<String> groupNames) {
         // If no permissions system is used or if there's no group supplied, return false
         if(!isEnabled() || groupNames.size() <= 0)
