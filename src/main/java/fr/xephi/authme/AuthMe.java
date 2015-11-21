@@ -1028,4 +1028,9 @@ public class AuthMe extends JavaPlugin {
     public static int getVersionCode() {
         return PLUGIN_VERSION_CODE;
     }
+
+    /** Returns the management instance. */
+    public Management getManagement() {
+        return management;
+    }
 }

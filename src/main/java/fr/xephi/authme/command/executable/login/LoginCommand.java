@@ -24,7 +24,7 @@ public class LoginCommand extends ExecutableCommand {
         final String playerPass = commandArguments.get(0);
 
         // Log the player in
-        plugin.management.performLogin(player, playerPass, false);
+        plugin.getManagement().performLogin(player, playerPass, false);
         return true;
     }
 }
