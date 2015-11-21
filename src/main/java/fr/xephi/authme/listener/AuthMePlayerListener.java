@@ -162,8 +162,11 @@ public class AuthMePlayerListener implements Listener {
      *
      * @param event PlayerMoveEvent
      */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
+        if (event.isCancelled())
+            return;
+
         int radius = Settings.getMovementRadius;
         boolean allowMove = Settings.isMovementAllowed;
         if (Settings.noTeleport) {
@@ -187,12 +190,12 @@ public class AuthMePlayerListener implements Listener {
 
         Location spawn = plugin.getSpawnLocation(player);
         if (spawn != null && spawn.getWorld() != null) {
-            if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
-                event.getPlayer().teleport(spawn);
+            if (!player.getWorld().equals(spawn.getWorld())) {
+                player.teleport(spawn);
                 return;
             }
             if ((spawn.distance(player.getLocation()) > radius)) {
-                event.getPlayer().teleport(spawn);
+                player.teleport(spawn);
             }
         }
     }
