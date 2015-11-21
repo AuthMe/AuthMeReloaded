@@ -1,5 +1,6 @@
 package fr.xephi.authme.permission;
 
+import com.nijiko.permissions.Group;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import de.bananaco.bpermissions.api.ApiLayer;
@@ -466,6 +467,18 @@ public class PermissionsManager {
                 // Vault
                 return Arrays.asList(vaultPerms.getPlayerGroups(player));
 
+            case PERMISSIONS:
+                // Permissions
+                // Create a list to put the groups in
+                List<String> groups = new ArrayList<>();
+
+                // Get the groups and add each to the list
+                for(Group group : this.defaultPerms.getGroups(player.getName()))
+                    groups.add(group.getName());
+
+                // Return the groups
+                return groups;
+
             case NONE:
                 // Not hooked into any permissions system, return an empty list
                 return new ArrayList<>();
@@ -519,6 +532,10 @@ public class PermissionsManager {
             case VAULT:
                 // Vault
                 return vaultPerms.playerInGroup(player, groupName);
+
+            case PERMISSIONS:
+                // Permissions
+                return this.defaultPerms.inGroup(player.getWorld().getName(), player.getName(), groupName);
 
             case NONE:
                 // Not hooked into any permissions system, return an empty list
@@ -577,6 +594,11 @@ public class PermissionsManager {
                 // Vault
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
+
+            case PERMISSIONS:
+                // Permissions
+                // FIXME: Add this method!
+                //return this.defaultPerms.group
 
             case NONE:
                 // Not hooked into any permissions system, return false
@@ -660,6 +682,11 @@ public class PermissionsManager {
                 // Vault
                 vaultPerms.playerRemoveGroup(player, groupName);
                 return true;
+
+            case PERMISSIONS:
+                // Permissions
+                // FIXME: Add this method!
+                //return this.defaultPerms.group
 
             case NONE:
                 // Not hooked into any permissions system, return false
@@ -751,6 +778,11 @@ public class PermissionsManager {
                 removeAllGroups(player);
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
+
+            case PERMISSIONS:
+                // Permissions
+                // FIXME: Add this method!
+                //return this.defaultPerms.group
 
             case NONE:
                 // Not hooked into any permissions system, return false
