@@ -501,7 +501,7 @@ public class PermissionsManager {
     }
 
     /**
-     * Add the permission group of a player, if supported.
+     * Add the permission groups of a player, if supported.
      *
      * @param player The player
      * @param groupNames The name of the groups to add.
@@ -581,6 +581,31 @@ public class PermissionsManager {
                 // Something went wrong, return false
                 return false;
         }
+    }
+
+    /**
+     * Remove the permission groups of a player, if supported.
+     *
+     * @param player The player
+     * @param groupNames The name of the groups to add.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean removeGroups(Player player, List<String> groupNames) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        // Add each group to the user
+        boolean result = true;
+        for(String groupName : groupNames)
+            if(!removeGroup(player, groupName))
+                result = false;
+
+        // Return the result
+        return result;
     }
 
     /**
