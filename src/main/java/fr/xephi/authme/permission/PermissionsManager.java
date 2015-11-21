@@ -390,6 +390,40 @@ public class PermissionsManager {
     }
 
     /**
+     * Check whether the current permissions system has group support.
+     * If no permissions system is hooked, false will be returned.
+     *
+     * @return True if the current permissions system supports groups, false otherwise.
+     */
+    public boolean hasGroupSupport() {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+            case PERMISSIONS_BUKKIT:
+            case B_PERMISSIONS:
+            case ESSENTIALS_GROUP_MANAGER:
+            case Z_PERMISSIONS:
+            case PERMISSIONS:
+                return true;
+
+            case VAULT:
+                // Vault
+                return vaultPerms.hasGroupSupport();
+
+            case NONE:
+                // Not hooked into any permissions system, return false
+                return false;
+
+            default:
+                // Something went wrong, return false to prevent problems
+                return false;
+        }
+    }
+
+    /**
      * Get the permission groups of a player, if available.
      *
      * @param player The player.
