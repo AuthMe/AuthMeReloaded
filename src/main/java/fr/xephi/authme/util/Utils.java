@@ -121,11 +121,15 @@ public class Utils {
     }
 
     /**
-     * Method setGroup.
-     * @param player Player
-     * @param group GroupType
+     * Set the group of a player, by it's AuthMe group type.
+     *
+     * @param player The player.
+     * @param group The group type.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if groups aren't supported with the current permissions system.
      */
-    public static void setGroup(Player player, GroupType group) {
+    public static boolean setGroup(Player player, GroupType group) {
         if(!Settings.isPermissionCheckEnabled)
             return;
 
@@ -143,34 +147,33 @@ public class Utils {
             case UNREGISTERED:
                 // Remove the other group type groups, set the current group
                 permsMan.removeGroups(player, Arrays.asList(Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
-                permsMan.addGroup(player, Settings.unRegisteredGroup);
-                break;
+                return permsMan.addGroup(player, Settings.unRegisteredGroup);
 
             case REGISTERED:
                 // Remove the other group type groups, set the current group
                 permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getUnloggedinGroup));
-                permsMan.addGroup(player, Settings.getRegisteredGroup);
-                break;
+                return permsMan.addGroup(player, Settings.getRegisteredGroup);
 
             case NOTLOGGEDIN:
                 // Remove the other group type groups, set the current group
                 permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup));
-                permsMan.addGroup(player, Settings.getUnloggedinGroup);
-                break;
+                return permsMan.addGroup(player, Settings.getUnloggedinGroup);
 
             case LOGGEDIN:
                 // Get the limbo player data
                 LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
                 if(limbo == null)
-                    break;
+                    return false;
 
                 // Get the players group
                 String realGroup = limbo.getGroup();
 
                 // Remove the other group types groups, set the real group
                 permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
-                permsMan.addGroup(player, realGroup);
-                break;
+                return permsMan.addGroup(player, realGroup);
+
+            default:
+                return false;
         }
     }
 
