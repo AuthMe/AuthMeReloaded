@@ -407,12 +407,16 @@ public class PermissionsManager {
             case B_PERMISSIONS:
             case ESSENTIALS_GROUP_MANAGER:
             case Z_PERMISSIONS:
-            case PERMISSIONS:
                 return true;
 
             case VAULT:
                 // Vault
                 return vaultPerms.hasGroupSupport();
+
+            case PERMISSIONS:
+                // Legacy permissions
+                // FIXME: Supported by plugin, but addGroup and removeGroup haven't been implemented correctly yet!
+                return false;
 
             case NONE:
                 // Not hooked into any permissions system, return false
