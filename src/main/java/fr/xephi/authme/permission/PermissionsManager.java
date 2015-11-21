@@ -410,7 +410,7 @@ public class PermissionsManager {
 
             case PERMISSIONS_BUKKIT:
                 // Permissions Bukkit
-                // Permissions Bukkit doesn't support group, return an empty list
+                // FIXME: Add support for this!
                 return new ArrayList<>();
 
             case B_PERMISSIONS:
