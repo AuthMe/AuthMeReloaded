@@ -61,14 +61,17 @@ public class PermissionsManager {
      * Essentials group manager instance.
      */
     private GroupManager groupManagerPerms;
+
     /**
      * Permissions manager instance for the legacy permissions system.
      */
     private PermissionHandler defaultPerms;
+
     /**
      * zPermissions service instance.
      */
     private ZPermissionsService zPermissionsService;
+
     /**
      * Vault instance.
      */
@@ -79,7 +82,7 @@ public class PermissionsManager {
      *
      * @param server Server instance
      * @param plugin Plugin instance
-     * @param log    Logger
+     * @param log Logger
      */
     public PermissionsManager(Server server, Plugin plugin, Logger log) {
         this.server = server;
@@ -90,8 +93,8 @@ public class PermissionsManager {
     /**
      * Check if the permissions manager is currently hooked into any of the supported permissions systems.
      *
-  d.
- * @return False if there isn't any permissions system used.     */
+     * @return False if there isn't any permissions system used.
+     */
     public boolean isEnabled() {
         return !permsType.equals(PermissionsSystemType.NONE);
     }
@@ -99,8 +102,8 @@ public class PermissionsManager {
     /**
      * Return the permissions system where the permissions manager is currently hooked into.
      *
-  e.
- * @return Permissions system type.     */
+     * @return Permissions system type.
+     */
     public PermissionsSystemType getUsedPermissionsSystemType() {
         return this.permsType;
     }
@@ -108,8 +111,8 @@ public class PermissionsManager {
     /**
      * Setup and hook into the permissions systems.
      *
-  m.
- * @return The detected permissions system.     */
+     * @return The detected permissions system.
+     */
     public PermissionsSystemType setup() {
         // Define the plugin manager
         final PluginManager pm = this.server.getPluginManager();
@@ -245,8 +248,8 @@ public class PermissionsManager {
     /**
      * Reload the permissions manager, and re-hook all permission plugins.
      *
-  e.
- * @return True on success, false on failure.     */
+     * @return True on success, false on failure.
+     */
     public boolean reload() {
         // Unhook all permission plugins
         unhook();
@@ -299,8 +302,8 @@ public class PermissionsManager {
     /**
      * Get the logger instance.
      *
-  e.
- * @return Logger instance.     */
+     * @return Logger instance.
+     */
     public Logger getLogger() {
         return this.log;
     }
@@ -317,11 +320,11 @@ public class PermissionsManager {
     /**
      * Check if the player has permission. If no permissions system is used, the player has to be OP.
      *
-     * @param player    The player.
+     * @param player The player.
      * @param permsNode Permissions node.
      *
-  n.
- * @return True if the player has permission.     */
+     * @return True if the player has permission.
+     */
     public boolean hasPermission(Player player, String permsNode) {
         return hasPermission(player, permsNode, player.isOp());
     }
@@ -329,12 +332,12 @@ public class PermissionsManager {
     /**
      * Check if a player has permission.
      *
-     * @param player    The player.
+     * @param player The player.
      * @param permsNode The permission node.
-     * @param def       Default returned if no permissions system is used.
+     * @param def Default returned if no permissions system is used.
      *
-  n.
- * @return True if the player has permission.     */
+     * @return True if the player has permission.
+     */
     public boolean hasPermission(Player player, String permsNode, boolean def) {
         if(!isEnabled())
             // No permissions system is used, return default
@@ -386,12 +389,14 @@ public class PermissionsManager {
         }
     }
 
-  /**
+    /**
      * Method getGroups.
-     * @param player Player
-  g>
-   * @return List<String>   */
-      @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+     *
+     * @param player Player.
+     *
+     * @return Groups.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public List<String> getGroups(Player player) {
         if(!isEnabled())
             // No permissions system is used, return an empty list
@@ -437,9 +442,7 @@ public class PermissionsManager {
         }
     }
 
-  /**
-     */
-      public enum PermissionsSystemType {
+    public enum PermissionsSystemType {
         NONE("None"),
         PERMISSIONS_EX("PermissionsEx"),
         PERMISSIONS_BUKKIT("Permissions Bukkit"),
@@ -451,19 +454,21 @@ public class PermissionsManager {
 
         public String name;
 
-      /**
+        /**
          * Constructor for PermissionsSystemType.
+         *
          * @param name String
          */
-          PermissionsSystemType(String name) {
+        PermissionsSystemType(String name) {
             this.name = name;
         }
 
-      /**
+        /**
          * Method getName.
-      ng
-       * @return String   */
-          public String getName() {
+         *
+         * @return String
+         */
+        public String getName() {
             return this.name;
         }
     }
