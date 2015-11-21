@@ -443,6 +443,62 @@ public class PermissionsManager {
     }
 
     /**
+     * Check whether the player is in the specified group.
+     *
+     * @param player The player.
+     * @param groupName The group name.
+     *
+     * @return True if the player is in the specified group, false otherwise.
+     * False is also returned if groups aren't supported by the used permissions system.
+     */
+    public boolean inGroup(Player player, String groupName) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+                // Permissions Ex
+                PermissionUser user = PermissionsEx.getUser(player);
+                return user.inGroup(groupName);
+
+            case PERMISSIONS_BUKKIT:
+            case Z_PERMISSIONS:
+                // Get the current list of groups
+                List<String> groupNames = getGroups(player);
+
+                // Check whether the list contains the group name, return the result
+                for(String entry : groupNames)
+                    if(entry.equals(groupName))
+                        return true;
+                return false;
+
+            case B_PERMISSIONS:
+                // bPermissions
+                return ApiLayer.hasGroup(player.getWorld().getName(), CalculableType.USER, player.getName(), groupName);
+
+            case ESSENTIALS_GROUP_MANAGER:
+                // Essentials Group Manager
+                final AnjoPermissionsHandler handler = groupManagerPerms.getWorldsHolder().getWorldPermissions(player);
+                if(handler == null)
+                    return false;
+                return handler.inGroup(player.getName(), groupName);
+
+            case VAULT:
+                // Vault
+                return vaultPerms.playerInGroup(player, groupName);
+
+            case NONE:
+                // Not hooked into any permissions system, return an empty list
+                return false;
+
+            default:
+                // Something went wrong, return an empty list to prevent problems
+                return false;
+        }
+    }
+
+    /**
      * Add the permission group of a player, if supported.
      *
      * @param player The player
