@@ -16,6 +16,8 @@ import org.bukkit.command.CommandSender;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class FlatToSqlite implements Converter {
 
     public CommandSender sender;
@@ -32,10 +34,18 @@ public class FlatToSqlite implements Converter {
     private String database;
     private String columnID;
     private Connection con;
+    /**
+     * Constructor for FlatToSqlite.
+     * @param sender CommandSender
+     */
     public FlatToSqlite(CommandSender sender) {
         this.sender = sender;
     }
 
+    /**
+     * Method close.
+     * @param o AutoCloseable
+     */
     private static void close(AutoCloseable o) {
         if (o != null) {
             try {
@@ -46,6 +56,10 @@ public class FlatToSqlite implements Converter {
         }
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         database = Settings.getMySQLDatabase;
@@ -105,11 +119,20 @@ public class FlatToSqlite implements Converter {
         }
     }
 
+    /**
+     * Method connect.
+     * @throws ClassNotFoundException
+     * @throws SQLException
+     */
     private synchronized void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
     }
 
+    /**
+     * Method setup.
+     * @throws SQLException
+     */
     private synchronized void setup() throws SQLException {
         Statement st = null;
         ResultSet rs = null;
@@ -153,6 +176,11 @@ public class FlatToSqlite implements Converter {
         }
     }
 
+    /**
+     * Method saveAuth.
+     * @param s String
+     * @return boolean
+     */
     private synchronized boolean saveAuth(String s) {
         PreparedStatement pst = null;
         try {

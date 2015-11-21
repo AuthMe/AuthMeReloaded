@@ -3,6 +3,8 @@ package fr.xephi.authme.cache.auth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class PlayerAuth {
 
     private String nickname;
@@ -18,38 +20,132 @@ public class PlayerAuth {
     private String email;
     private String realName;
 
+    /**
+     * Constructor for PlayerAuth.
+     * @param nickname String
+     * @param ip String
+     * @param lastLogin long
+     * @param realName String
+     */
     public PlayerAuth(String nickname, String ip, long lastLogin, String realName) {
         this(nickname, "", "", -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
     }
 
+    /**
+     * Constructor for PlayerAuth.
+     * @param nickname String
+     * @param x double
+     * @param y double
+     * @param z double
+     * @param world String
+     * @param realName String
+     */
     public PlayerAuth(String nickname, double x, double y, double z, String world, String realName) {
         this(nickname, "", "", -1, "127.0.0.1", System.currentTimeMillis(), x, y, z, world, "your@email.com", realName);
     }
 
+    /**
+     * Constructor for PlayerAuth.
+     * @param nickname String
+     * @param hash String
+     * @param ip String
+     * @param lastLogin long
+     * @param realName String
+     */
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String realName) {
         this(nickname, hash, "", -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
     }
 
+    /**
+     * Constructor for PlayerAuth.
+     * @param nickname String
+     * @param hash String
+     * @param ip String
+     * @param lastLogin long
+     * @param email String
+     * @param realName String
+     */
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String email, String realName) {
         this(nickname, hash, "", -1, ip, lastLogin, 0, 0, 0, "world", email, realName);
     }
 
+    /**
+     * Constructor for PlayerAuth.
+     * @param nickname String
+     * @param hash String
+     * @param salt String
+     * @param ip String
+     * @param lastLogin long
+     * @param realName String
+     */
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, String realName) {
         this(nickname, hash, salt, -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
     }
 
+    /**
+     * Constructor for PlayerAuth.
+     * @param nickname String
+     * @param hash String
+     * @param ip String
+     * @param lastLogin long
+     * @param x double
+     * @param y double
+     * @param z double
+     * @param world String
+     * @param email String
+     * @param realName String
+     */
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
         this(nickname, hash, "", -1, ip, lastLogin, x, y, z, world, email, realName);
     }
 
+    /**
+     * Constructor for PlayerAuth.
+     * @param nickname String
+     * @param hash String
+     * @param salt String
+     * @param ip String
+     * @param lastLogin long
+     * @param x double
+     * @param y double
+     * @param z double
+     * @param world String
+     * @param email String
+     * @param realName String
+     */
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
         this(nickname, hash, salt, -1, ip, lastLogin, x, y, z, world, email, realName);
     }
 
+    /**
+     * Constructor for PlayerAuth.
+     * @param nickname String
+     * @param hash String
+     * @param salt String
+     * @param groupId int
+     * @param ip String
+     * @param lastLogin long
+     * @param realName String
+     */
     public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, String realName) {
         this(nickname, hash, salt, groupId, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
     }
 
+    /**
+     * Constructor for PlayerAuth.
+     * @param nickname String
+     * @param hash String
+     * @param salt String
+     * @param groupId int
+     * @param ip String
+     * @param lastLogin long
+     * @param x double
+     * @param y double
+     * @param z double
+     * @param world String
+     * @param email String
+     * @param realName String
+     */
     public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
         this.nickname = nickname;
         this.hash = hash;
@@ -65,6 +161,10 @@ public class PlayerAuth {
         this.realName = realName;
     }
 
+    /**
+     * Method set.
+     * @param auth PlayerAuth
+     */
     public void set(PlayerAuth auth) {
         this.setEmail(auth.getEmail());
         this.setHash(auth.getHash());
@@ -79,94 +179,186 @@ public class PlayerAuth {
         this.setRealName(auth.getRealName());
     }
 
+    /**
+     * Method setName.
+     * @param nickname String
+     */
     public void setName(String nickname) {
         this.nickname = nickname;
     }
 
+    /**
+     * Method getNickname.
+     * @return String
+     */
     public String getNickname() {
         return nickname;
     }
 
+    /**
+     * Method getRealName.
+     * @return String
+     */
     public String getRealName() {
         return realName;
     }
 
+    /**
+     * Method setRealName.
+     * @param realName String
+     */
     public void setRealName(String realName) {
         this.realName = realName;
     }
 
+    /**
+     * Method getGroupId.
+     * @return int
+     */
     public int getGroupId() {
         return groupId;
     }
 
+    /**
+     * Method setQuitLocX.
+     * @param d double
+     */
     public void setQuitLocX(double d) {
         this.x = d;
     }
 
+    /**
+     * Method getQuitLocX.
+     * @return double
+     */
     public double getQuitLocX() {
         return x;
     }
 
+    /**
+     * Method setQuitLocY.
+     * @param d double
+     */
     public void setQuitLocY(double d) {
         this.y = d;
     }
 
+    /**
+     * Method getQuitLocY.
+     * @return double
+     */
     public double getQuitLocY() {
         return y;
     }
 
+    /**
+     * Method setQuitLocZ.
+     * @param d double
+     */
     public void setQuitLocZ(double d) {
         this.z = d;
     }
 
+    /**
+     * Method getQuitLocZ.
+     * @return double
+     */
     public double getQuitLocZ() {
         return z;
     }
 
+    /**
+     * Method setWorld.
+     * @param world String
+     */
     public void setWorld(String world) {
         this.world = world;
     }
 
+    /**
+     * Method getWorld.
+     * @return String
+     */
     public String getWorld() {
         return world;
     }
 
+    /**
+     * Method setIp.
+     * @param ip String
+     */
     public void setIp(String ip) {
         this.ip = ip;
     }
 
+    /**
+     * Method getIp.
+     * @return String
+     */
     public String getIp() {
         return ip;
     }
 
+    /**
+     * Method setLastLogin.
+     * @param lastLogin long
+     */
     public void setLastLogin(long lastLogin) {
         this.lastLogin = lastLogin;
     }
 
+    /**
+     * Method getLastLogin.
+     * @return long
+     */
     public long getLastLogin() {
         return lastLogin;
     }
 
+    /**
+     * Method setEmail.
+     * @param email String
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * Method getEmail.
+     * @return String
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * Method setSalt.
+     * @param salt String
+     */
     public void setSalt(String salt) {
         this.salt = salt;
     }
 
+    /**
+     * Method getSalt.
+     * @return String
+     */
     public String getSalt() {
         return this.salt;
     }
 
+    /**
+     * Method setHash.
+     * @param hash String
+     */
     public void setHash(String hash) {
         this.hash = hash;
     }
 
+    /**
+     * Method getHash.
+     * @return String
+     */
     public String getHash() {
         if (Settings.getPasswordHash == HashAlgorithm.MD5VB) {
             if (salt != null && !salt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
@@ -176,6 +368,11 @@ public class PlayerAuth {
         return hash;
     }
 
+    /**
+     * Method equals.
+     * @param obj Object
+     * @return boolean
+     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerAuth)) {
@@ -185,6 +382,10 @@ public class PlayerAuth {
         return other.getIp().equals(this.ip) && other.getNickname().equals(this.nickname);
     }
 
+    /**
+     * Method hashCode.
+     * @return int
+     */
     @Override
     public int hashCode() {
         int hashCode = 7;
@@ -193,6 +394,10 @@ public class PlayerAuth {
         return hashCode;
     }
 
+    /**
+     * Method toString.
+     * @return String
+     */
     @Override
     public String toString() {
         return ("Player : " + nickname + " | " + realName

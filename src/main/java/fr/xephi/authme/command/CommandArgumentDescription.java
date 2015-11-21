@@ -1,5 +1,7 @@
 package fr.xephi.authme.command;
 
+/**
+ */
 public class CommandArgumentDescription {
 
     // TODO: Allow argument to consist of infinite parts. <label ...>
@@ -37,8 +39,8 @@ public class CommandArgumentDescription {
     /**
      * Get the argument label.
      *
-     * @return Argument label.
-     */
+    
+     * @return Argument label. */
     public String getLabel() {
         return this.label;
     }
@@ -55,8 +57,8 @@ public class CommandArgumentDescription {
     /**
      * Get the argument description.
      *
-     * @return Argument description.
-     */
+    
+     * @return Argument description. */
     public String getDescription() {
         return description;
     }
@@ -73,8 +75,8 @@ public class CommandArgumentDescription {
     /**
      * Check whether the argument is optional.
      *
-     * @return True if the argument is optional, false otherwise.
-     */
+    
+     * @return True if the argument is optional, false otherwise. */
     public boolean isOptional() {
         return optional;
     }

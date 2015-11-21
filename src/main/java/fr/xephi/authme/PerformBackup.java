@@ -14,6 +14,7 @@ import fr.xephi.authme.settings.Settings;
 /**
  *
  * @author stefano
+ * @version $Revision: 1.0 $
  */
 public class PerformBackup {
 
@@ -26,10 +27,18 @@ public class PerformBackup {
     private String path = AuthMe.getInstance().getDataFolder() + File.separator + "backups" + File.separator + "backup" + dateString;
     private AuthMe instance;
 
+    /**
+     * Constructor for PerformBackup.
+     * @param instance AuthMe
+     */
     public PerformBackup(AuthMe instance) {
         this.setInstance(instance);
     }
 
+    /**
+     * Method doBackup.
+     * @return boolean
+     */
     public boolean doBackup() {
 
         switch (Settings.getDataSource) {
@@ -44,6 +53,10 @@ public class PerformBackup {
         return false;
     }
 
+    /**
+     * Method MySqlBackup.
+     * @return boolean
+     */
     private boolean MySqlBackup() {
         File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
@@ -83,6 +96,11 @@ public class PerformBackup {
         return false;
     }
 
+    /**
+     * Method FileBackup.
+     * @param backend String
+     * @return boolean
+     */
     private boolean FileBackup(String backend) {
         File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
@@ -103,6 +121,11 @@ public class PerformBackup {
      * Check if we are under Windows and correct location of mysqldump.exe
      * otherwise return error.
      */
+    /**
+     * Method checkWindows.
+     * @param windowsPath String
+     * @return boolean
+     */
     private boolean checkWindows(String windowsPath) {
         String isWin = System.getProperty("os.name").toLowerCase();
         if (isWin.indexOf("win") >= 0) {
@@ -118,6 +141,12 @@ public class PerformBackup {
     /*
      * Copyr src bytefile into dst file
      */
+    /**
+     * Method copy.
+     * @param src File
+     * @param dst File
+     * @throws IOException
+     */
     void copy(File src, File dst) throws IOException {
         InputStream in = new FileInputStream(src);
         OutputStream out = new FileOutputStream(dst);
@@ -132,10 +161,18 @@ public class PerformBackup {
         out.close();
     }
 
+    /**
+     * Method setInstance.
+     * @param instance AuthMe
+     */
     public void setInstance(AuthMe instance) {
         this.instance = instance;
     }
 
+    /**
+     * Method getInstance.
+     * @return AuthMe
+     */
     public AuthMe getInstance() {
         return instance;
     }

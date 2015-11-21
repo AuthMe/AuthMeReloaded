@@ -17,6 +17,8 @@ import fr.xephi.authme.converter.vAuthConverter;
 import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.settings.Messages;
 
+/**
+ */
 public class ConverterCommand extends ExecutableCommand {
 
     /**
@@ -26,8 +28,8 @@ public class ConverterCommand extends ExecutableCommand {
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
-     * @return True if the command was executed successfully, false otherwise.
-     */
+    
+     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance
@@ -85,6 +87,8 @@ public class ConverterCommand extends ExecutableCommand {
         return true;
     }
 
+    /**
+     */
     public enum ConvertType {
         ftsql("flattosql"),
         ftsqlite("flattosqlite"),
@@ -97,14 +101,27 @@ public class ConverterCommand extends ExecutableCommand {
 
         String name;
 
+        /**
+         * Constructor for ConvertType.
+         * @param name String
+         */
         ConvertType(String name) {
             this.name = name;
         }
 
+        /**
+         * Method getName.
+         * @return String
+         */
         String getName() {
             return this.name;
         }
 
+        /**
+         * Method fromName.
+         * @param name String
+         * @return ConvertType
+         */
         public static ConvertType fromName(String name) {
             for (ConvertType type : ConvertType.values()) {
                 if (type.getName().equalsIgnoreCase(name))

@@ -21,6 +21,8 @@ import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 
+/**
+ */
 public class AsyncronousUnregister {
 
     protected Player player;
@@ -31,6 +33,13 @@ public class AsyncronousUnregister {
 	protected boolean force;
 	private JsonCache playerCache;
 
+    /**
+     * Constructor for AsyncronousUnregister.
+     * @param player Player
+     * @param password String
+     * @param force boolean
+     * @param plugin AuthMe
+     */
     public AsyncronousUnregister(Player player, String password,
             boolean force, AuthMe plugin) {
         this.player = player;
@@ -41,6 +50,10 @@ public class AsyncronousUnregister {
         this.playerCache = new JsonCache();
     }
 
+    /**
+     * Method getIp.
+     * @return String
+     */
     protected String getIp() {
         return plugin.getIP(player);
     }

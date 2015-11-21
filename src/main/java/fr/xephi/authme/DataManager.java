@@ -15,10 +15,16 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import net.milkbowl.vault.permission.Permission;
 
+/**
+ */
 public class DataManager {
 
     public AuthMe plugin;
 
+    /**
+     * Constructor for DataManager.
+     * @param plugin AuthMe
+     */
     public DataManager(AuthMe plugin) {
         this.plugin = plugin;
     }
@@ -26,6 +32,11 @@ public class DataManager {
     public void run() {
     }
 
+    /**
+     * Method getOfflinePlayer.
+     * @param name String
+     * @return OfflinePlayer
+     */
     public synchronized OfflinePlayer getOfflinePlayer(final String name) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<OfflinePlayer> result = executor.submit(new Callable<OfflinePlayer>() {
@@ -52,6 +63,10 @@ public class DataManager {
         }
     }
 
+    /**
+     * Method purgeAntiXray.
+     * @param cleared List<String>
+     */
     public synchronized void purgeAntiXray(List<String> cleared) {
         int i = 0;
         for (String name : cleared) {
@@ -71,6 +86,10 @@ public class DataManager {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " AntiXRayData Files");
     }
 
+    /**
+     * Method purgeLimitedCreative.
+     * @param cleared List<String>
+     */
     public synchronized void purgeLimitedCreative(List<String> cleared) {
         int i = 0;
         for (String name : cleared) {
@@ -100,6 +119,10 @@ public class DataManager {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " LimitedCreative Survival, Creative and Adventure files");
     }
 
+    /**
+     * Method purgeDat.
+     * @param cleared List<String>
+     */
     public synchronized void purgeDat(List<String> cleared) {
         int i = 0;
         for (String name : cleared) {
@@ -126,6 +149,10 @@ public class DataManager {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " .dat Files");
     }
 
+    /**
+     * Method purgeEssentials.
+     * @param cleared List<String>
+     */
     @SuppressWarnings("deprecation")
     public void purgeEssentials(List<String> cleared) {
         int i = 0;
@@ -145,6 +172,11 @@ public class DataManager {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
     }
 
+    /**
+     * Method purgePermissions.
+     * @param cleared List<String>
+     * @param permission Permission
+     */
     public synchronized void purgePermissions(List<String> cleared,
             Permission permission) {
         int i = 0;
@@ -161,6 +193,12 @@ public class DataManager {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " Permissions");
     }
 
+    /**
+     * Method isOnline.
+     * @param player Player
+     * @param name String
+     * @return boolean
+     */
     public boolean isOnline(Player player, final String name) {
         if (player.isOnline())
             return true;
@@ -185,6 +223,11 @@ public class DataManager {
         }
     }
 
+    /**
+     * Method getOnlinePlayerLower.
+     * @param name String
+     * @return Player
+     */
     public Player getOnlinePlayerLower(String name) {
         name = name.toLowerCase();
         for (Player player : Utils.getOnlinePlayers()) {

@@ -6,6 +6,8 @@ import java.util.List;
 import fr.xephi.authme.util.ListUtils;
 import fr.xephi.authme.util.StringUtils;
 
+/**
+ */
 public class CommandParts {
 
     /** The list of parts for this command. */
@@ -57,8 +59,8 @@ public class CommandParts {
     /**
      * Get the command parts.
      *
-     * @return Command parts.
-     */
+    
+     * @return Command parts. */
     public List<String> getList() {
         return this.parts;
     }
@@ -68,8 +70,8 @@ public class CommandParts {
      *
      * @param part The part to add.
      *
-     * @return The result.
-     */
+    
+     * @return The result. */
     public boolean add(String part) {
         return this.parts.add(part);
     }
@@ -79,8 +81,8 @@ public class CommandParts {
      *
      * @param parts The parts to add.
      *
-     * @return The result.
-     */
+    
+     * @return The result. */
     public boolean add(List<String> parts) {
         return this.parts.addAll(parts);
     }
@@ -90,8 +92,8 @@ public class CommandParts {
      *
      * @param parts The parts to add.
      *
-     * @return The result.
-     */
+    
+     * @return The result. */
     public boolean add(String[] parts) {
         for(String entry : parts)
             add(entry);
@@ -101,8 +103,8 @@ public class CommandParts {
     /**
      * Get the number of parts.
      *
-     * @return Part count.
-     */
+    
+     * @return Part count. */
     public int getCount() {
         return this.parts.size();
     }
@@ -112,8 +114,8 @@ public class CommandParts {
      *
      * @param i Part index.
      *
-     * @return The part.
-     */
+    
+     * @return The part. */
     public String get(int i) {
         // Make sure the index is in-bound
         if(i < 0 || i >= getCount())
@@ -128,8 +130,8 @@ public class CommandParts {
      *
      * @param start The starting index.
      *
-     * @return The parts range. Arguments that were out of bound are not included.
-     */
+    
+     * @return The parts range. Arguments that were out of bound are not included. */
     public List<String> getRange(int start) {
         return getRange(start, getCount() - start);
     }
@@ -140,8 +142,8 @@ public class CommandParts {
      * @param start The starting index.
      * @param count The number of parts to get.
      *
-     * @return The parts range. Parts that were out of bound are not included.
-     */
+    
+     * @return The parts range. Parts that were out of bound are not included. */
     public List<String> getRange(int start, int count) {
         // Create a new list to put the range into
         List<String> elements = new ArrayList<>();
@@ -163,8 +165,8 @@ public class CommandParts {
      *
      * @param other The other reference.
      *
-     * @return The result from zero to above. A negative number will be returned on error.
-     */
+    
+     * @return The result from zero to above. A negative number will be returned on error. */
     public double getDifference(CommandParts other) {
         return getDifference(other, false);
     }
@@ -175,8 +177,8 @@ public class CommandParts {
      * @param other The other reference.
      * @param fullCompare True to compare the full references as far as the range reaches.
      *
-     * @return The result from zero to above. A negative number will be returned on error.
-     */
+    
+     * @return The result from zero to above. A negative number will be returned on error. */
     public double getDifference(CommandParts other, boolean fullCompare) {
         // Make sure the other reference is correct
         if(other == null)
@@ -194,8 +196,8 @@ public class CommandParts {
     /**
      * Convert the parts to a string.
      *
-     * @return The part as a string.
-     */
+    
+     * @return The part as a string. */
     @Override
     public String toString() {
         return ListUtils.implode(this.parts, " ");

@@ -2,6 +2,8 @@ package fr.xephi.authme.command;
 
 import org.bukkit.command.CommandSender;
 
+/**
+ */
 public abstract class ExecutableCommand {
 
     /**
@@ -11,7 +13,7 @@ public abstract class ExecutableCommand {
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
-     * @return True if the command was executed successfully, false otherwise.
-     */
+    
+     * @return True if the command was executed successfully, false otherwise. */
     public abstract boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments);
 }

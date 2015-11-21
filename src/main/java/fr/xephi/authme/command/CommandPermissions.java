@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 //import com.timvisee.dungeonmaze.permission.PermissionsManager;
 import fr.xephi.authme.AuthMe;
 
+/**
+ */
 public class CommandPermissions {
 
     /** Defines the permission nodes required to have permission to execute this command. */
@@ -49,8 +51,8 @@ public class CommandPermissions {
      *
      * @param permissionNode The permission node to add.
      *
-     * @return True on success, false on failure.
-     */
+    
+     * @return True on success, false on failure. */
     public boolean addPermissionNode(String permissionNode) {
         // Trim the permission node
         permissionNode = permissionNode.trim();
@@ -72,8 +74,8 @@ public class CommandPermissions {
      *
      * @param permissionNode The permission node to check for.
      *
-     * @return True if this permission node is required, false if not.
-     */
+    
+     * @return True if this permission node is required, false if not. */
     public boolean hasPermissionNode(String permissionNode) {
         return this.permissionNodes.contains(permissionNode);
     }
@@ -81,8 +83,8 @@ public class CommandPermissions {
     /**
      * Get the permission nodes required to execute this command.
      *
-     * @return The permission nodes required to execute this command.
-     */
+    
+     * @return The permission nodes required to execute this command. */
     public List<String> getPermissionNodes() {
         return this.permissionNodes;
     }
@@ -90,8 +92,8 @@ public class CommandPermissions {
     /**
      * Get the number of permission nodes set.
      *
-     * @return Permission node count.
-     */
+    
+     * @return Permission node count. */
     public int getPermissionNodeCount() {
         return this.permissionNodes.size();
     }
@@ -108,8 +110,9 @@ public class CommandPermissions {
     /**
      * Check whether this command requires any permission to be executed. This is based on the getPermission() method.
      *
-     * @return True if this command requires any permission to be executed by a player.
-     */
+    
+     * @param sender CommandSender
+     * @return True if this command requires any permission to be executed by a player. */
     public boolean hasPermission(CommandSender sender) {
         // Make sure any permission node is set
         if(getPermissionNodeCount() == 0)
@@ -140,8 +143,8 @@ public class CommandPermissions {
     /**
      * Get the default permission if the permission nodes couldn't be used.
      *
-     * @return The default permission.
-     */
+    
+     * @return The default permission. */
     public DefaultPermission getDefaultPermission() {
         return this.defaultPermission;
     }
@@ -160,8 +163,8 @@ public class CommandPermissions {
      *
      * @param sender The command sender to get the default permission for.
      *
-     * @return True if the command sender has permission by default, false otherwise.
-     */
+    
+     * @return True if the command sender has permission by default, false otherwise. */
     public boolean getDefaultPermissionCommandSender(CommandSender sender) {
         switch(getDefaultPermission()) {
         case ALLOWED:
@@ -176,6 +179,8 @@ public class CommandPermissions {
         }
     }
 
+    /**
+     */
     public enum DefaultPermission {
         NOT_ALLOWED,
         OP_ONLY,

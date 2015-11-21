@@ -8,6 +8,8 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class MessageTask implements Runnable {
 
     private AuthMe plugin;
@@ -15,6 +17,13 @@ public class MessageTask implements Runnable {
     private String[] msg;
     private int interval;
 
+    /**
+     * Constructor for MessageTask.
+     * @param plugin AuthMe
+     * @param name String
+     * @param strings String[]
+     * @param interval int
+     */
     public MessageTask(AuthMe plugin, String name, String[] strings,
                        int interval) {
         this.plugin = plugin;
@@ -23,6 +32,10 @@ public class MessageTask implements Runnable {
         this.interval = interval;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         if (PlayerCache.getInstance().isAuthenticated(name))

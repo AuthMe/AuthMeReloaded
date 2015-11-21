@@ -18,6 +18,8 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
 
+/**
+ */
 public final class Settings extends YamlConfiguration {
 
     private static AuthMe plugin;
@@ -104,12 +106,20 @@ public final class Settings extends YamlConfiguration {
 
     protected static YamlConfiguration configFile;
 
+    /**
+     * Constructor for Settings.
+     * @param pl AuthMe
+     */
     public Settings(AuthMe pl) {
         instance = this;
         plugin = pl;
         configFile = (YamlConfiguration) plugin.getConfig();
     }
 
+    /**
+     * Method reload.
+     * @throws Exception
+     */
     public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
         boolean exist = SETTINGS_FILE.exists();
@@ -502,11 +512,20 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
+    /**
+     * Method setValue.
+     * @param key String
+     * @param value Object
+     */
     public static void setValue(String key, Object value) {
         instance.set(key, value);
         save();
     }
 
+    /**
+     * Method getPasswordHash.
+     * @return HashAlgorithm
+     */
     private static HashAlgorithm getPasswordHash() {
         String key = "settings.security.passwordHash";
         try {
@@ -517,6 +536,10 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
+    /**
+     * Method getDataSource.
+     * @return DataSourceType
+     */
     private static DataSourceType getDataSource() {
         String key = "DataSource.backend";
         try {
@@ -531,6 +554,9 @@ public final class Settings extends YamlConfiguration {
      * Config option for setting and check restricted user by username;ip ,
      * return false if ip and name doesnt amtch with player that join the
      * server, so player has a restricted access
+     * @param name String
+     * @param ip String
+     * @return boolean
      */
     public static boolean getRestrictedIp(String name, String ip) {
 
@@ -554,8 +580,8 @@ public final class Settings extends YamlConfiguration {
     /**
      * Saves the configuration to disk
      *
-     * @return True if saved successfully
-     */
+    
+     * @return True if saved successfully */
     public static boolean save() {
         try {
             instance.save(SETTINGS_FILE);
@@ -570,8 +596,8 @@ public final class Settings extends YamlConfiguration {
      * <p>
      * If defaults and configuration are empty, saves blank file.
      *
-     * @return True if saved successfully
-     */
+    
+     * @return True if saved successfully */
     public final boolean saveDefaults() {
         options().copyDefaults(true);
         options().copyHeader(true);
@@ -581,6 +607,11 @@ public final class Settings extends YamlConfiguration {
         return success;
     }
 
+    /**
+     * Method checkLang.
+     * @param lang String
+     * @return String
+     */
     public static String checkLang(String lang) {
         if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
             ConsoleLogger.info("Set Language to: " + lang);
@@ -594,6 +625,10 @@ public final class Settings extends YamlConfiguration {
         return "en";
     }
 
+    /**
+     * Method switchAntiBotMod.
+     * @param mode boolean
+     */
     public static void switchAntiBotMod(boolean mode) {
         if (mode) {
             isKickNonRegisteredEnabled = true;
@@ -635,6 +670,11 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
+    /**
+     * Method isEmailCorrect.
+     * @param email String
+     * @return boolean
+     */
     public static boolean isEmailCorrect(String email) {
         if (!email.contains("@"))
             return false;

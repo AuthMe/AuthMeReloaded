@@ -10,6 +10,8 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class RegisterCommand extends ExecutableCommand {
 
     /**
@@ -19,8 +21,8 @@ public class RegisterCommand extends ExecutableCommand {
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
-     * @return True if the command was executed successfully, false otherwise.
-     */
+    
+     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance

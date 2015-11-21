@@ -21,6 +21,8 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 
+/**
+ */
 public class ProcessSyncronousPlayerLogin implements Runnable {
 
     private LimboPlayer limbo;
@@ -32,6 +34,12 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     private PluginManager pm;
     private JsonCache playerCache;
 
+    /**
+     * Constructor for ProcessSyncronousPlayerLogin.
+     * @param player Player
+     * @param plugin AuthMe
+     * @param data DataSource
+     */
     public ProcessSyncronousPlayerLogin(Player player, AuthMe plugin,
             DataSource data) {
         this.plugin = plugin;
@@ -44,6 +52,10 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         this.playerCache = new JsonCache();
     }
 
+    /**
+     * Method getLimbo.
+     * @return LimboPlayer
+     */
     public LimboPlayer getLimbo() {
         return limbo;
     }
@@ -103,6 +115,10 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         }
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         // Limbo contains the State of the Player before /login

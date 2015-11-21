@@ -12,6 +12,8 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 
+/**
+ */
 public class AsyncronousLogout {
 
     protected Player player;
@@ -21,6 +23,12 @@ public class AsyncronousLogout {
     protected boolean canLogout = true;
     private Messages m = Messages.getInstance();
 
+    /**
+     * Constructor for AsyncronousLogout.
+     * @param player Player
+     * @param plugin AuthMe
+     * @param database DataSource
+     */
     public AsyncronousLogout(Player player, AuthMe plugin,
             DataSource database) {
         this.player = player;

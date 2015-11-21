@@ -16,6 +16,8 @@ import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.util.StringUtils;
 
+/**
+ */
 public class HelpPrinter {
 
     /**

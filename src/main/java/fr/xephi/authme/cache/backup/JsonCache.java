@@ -22,6 +22,8 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class JsonCache {
 
     private final Gson gson;
@@ -39,6 +41,11 @@ public class JsonCache {
                 .create();
     }
 
+    /**
+     * Method createCache.
+     * @param player Player
+     * @param playerData DataFileCache
+     */
     public void createCache(Player player, DataFileCache playerData) {
         if (player == null) {
             return;
@@ -68,6 +75,11 @@ public class JsonCache {
         }
     }
 
+    /**
+     * Method readCache.
+     * @param player Player
+     * @return DataFileCache
+     */
     public DataFileCache readCache(Player player) {
         String path;
         try {
@@ -90,7 +102,16 @@ public class JsonCache {
         }
     }
 
+    /**
+     */
     private class PlayerDataSerializer implements JsonSerializer<DataFileCache> {
+        /**
+         * Method serialize.
+         * @param dataFileCache DataFileCache
+         * @param type Type
+         * @param jsonSerializationContext JsonSerializationContext
+         * @return JsonElement
+         */
         @Override
         public JsonElement serialize(DataFileCache dataFileCache, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
@@ -102,7 +123,18 @@ public class JsonCache {
         }
     }
 
+    /**
+     */
     private static class PlayerDataDeserializer implements JsonDeserializer<DataFileCache> {
+        /**
+         * Method deserialize.
+         * @param jsonElement JsonElement
+         * @param type Type
+         * @param jsonDeserializationContext JsonDeserializationContext
+         * @return DataFileCache
+         * @throws JsonParseException
+         * @see com.google.gson.JsonDeserializer#deserialize(JsonElement, Type, JsonDeserializationContext)
+         */
         @Override
         public DataFileCache deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -128,6 +160,10 @@ public class JsonCache {
         }
     }
 
+    /**
+     * Method removeCache.
+     * @param player Player
+     */
     public void removeCache(Player player) {
         String path;
         try {
@@ -144,6 +180,11 @@ public class JsonCache {
         }
     }
 
+    /**
+     * Method doesCacheExist.
+     * @param player Player
+     * @return boolean
+     */
     public boolean doesCacheExist(Player player) {
         String path;
         try {

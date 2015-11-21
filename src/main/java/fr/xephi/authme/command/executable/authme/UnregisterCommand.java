@@ -20,6 +20,8 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class UnregisterCommand extends ExecutableCommand {
 
     /**
@@ -28,8 +30,8 @@ public class UnregisterCommand extends ExecutableCommand {
      * @param sender           The command sender.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
-     * @return True if the command was executed successfully, false otherwise.
-     */
+    
+     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance

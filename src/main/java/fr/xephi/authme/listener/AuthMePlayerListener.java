@@ -51,6 +51,8 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class AuthMePlayerListener implements Listener {
 
     public AuthMe plugin;
@@ -61,10 +63,18 @@ public class AuthMePlayerListener implements Listener {
     public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
     private List<String> antibot = new ArrayList<>();
 
+    /**
+     * Constructor for AuthMePlayerListener.
+     * @param plugin AuthMe
+     */
     public AuthMePlayerListener(AuthMe plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * Method handleChat.
+     * @param event AsyncPlayerChatEvent
+     */
     private void handleChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
 
@@ -87,6 +97,10 @@ public class AuthMePlayerListener implements Listener {
 
     }
 
+    /**
+     * Method onPlayerCommandPreprocess.
+     * @param event PlayerCommandPreprocessEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmd = event.getMessage().split(" ")[0].toLowerCase();
@@ -99,36 +113,64 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerNormalChat.
+     * @param event AsyncPlayerChatEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
 
+    /**
+     * Method onPlayerHighChat.
+     * @param event AsyncPlayerChatEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
     public void onPlayerHighChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
 
+    /**
+     * Method onPlayerChat.
+     * @param event AsyncPlayerChatEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
 
+    /**
+     * Method onPlayerHighestChat.
+     * @param event AsyncPlayerChatEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
 
+    /**
+     * Method onPlayerEarlyChat.
+     * @param event AsyncPlayerChatEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerEarlyChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
 
+    /**
+     * Method onPlayerLowChat.
+     * @param event AsyncPlayerChatEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerLowChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
 
+    /**
+     * Method onPlayerMove.
+     * @param event PlayerMoveEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
         int radius = Settings.getMovementRadius;
@@ -163,6 +205,10 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
+    /**
+     * Method checkAntiBotMod.
+     * @param player Player
+     */
     private void checkAntiBotMod(final Player player) {
         if (plugin.delayedAntiBot || plugin.antibotMod)
             return;
@@ -196,6 +242,10 @@ public class AuthMePlayerListener implements Listener {
         }, 300);
     }
 
+    /**
+     * Method onPlayerJoin.
+     * @param event PlayerJoinEvent
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (event.getPlayer() == null)
@@ -223,6 +273,10 @@ public class AuthMePlayerListener implements Listener {
         });
     }
 
+    /**
+     * Method onPreLogin.
+     * @param event AsyncPlayerPreLoginEvent
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
@@ -250,6 +304,10 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
+    /**
+     * Method onPlayerLogin.
+     * @param event PlayerLoginEvent
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
@@ -369,6 +427,10 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
+    /**
+     * Method onPlayerQuit.
+     * @param event PlayerQuitEvent
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         if (event.getPlayer() == null) {
@@ -384,6 +446,10 @@ public class AuthMePlayerListener implements Listener {
         plugin.management.performQuit(player, false);
     }
 
+    /**
+     * Method onPlayerKick.
+     * @param event PlayerKickEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
         if (event.getPlayer() == null) {
@@ -399,6 +465,10 @@ public class AuthMePlayerListener implements Listener {
         plugin.management.performQuit(player, true);
     }
 
+    /**
+     * Method onPlayerPickupItem.
+     * @param event PlayerPickupItemEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if (Utils.checkAuth(event.getPlayer()))
@@ -406,6 +476,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerInteract.
+     * @param event PlayerInteractEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
@@ -414,6 +488,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerConsumeItem.
+     * @param event PlayerItemConsumeEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
         if (Utils.checkAuth(event.getPlayer()))
@@ -421,6 +499,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerInventoryOpen.
+     * @param event InventoryOpenEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
@@ -441,6 +523,10 @@ public class AuthMePlayerListener implements Listener {
         }, 1);
     }
 
+    /**
+     * Method onPlayerInventoryClick.
+     * @param event InventoryClickEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked() == null)
@@ -452,6 +538,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method playerHitPlayerEvent.
+     * @param event EntityDamageByEntityEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void playerHitPlayerEvent(EntityDamageByEntityEvent event) {
         Entity damager = event.getDamager();
@@ -464,6 +554,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerInteractEntity.
+     * @param event PlayerInteractEntityEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         Player player = event.getPlayer();
@@ -472,6 +566,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerDropItem.
+     * @param event PlayerDropItemEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
         if (Utils.checkAuth(event.getPlayer()))
@@ -479,6 +577,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerBedEnter.
+     * @param event PlayerBedEnterEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
         if (Utils.checkAuth(event.getPlayer()))
@@ -486,6 +588,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onSignChange.
+     * @param event SignChangeEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
         if (Utils.checkAuth(event.getPlayer()))
@@ -493,6 +599,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerRespawn.
+     * @param event PlayerRespawnEvent
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         Player player = event.getPlayer();
@@ -509,6 +619,10 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
+    /**
+     * Method onPlayerGameModeChange.
+     * @param event PlayerGameModeChangeEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
         Player player = event.getPlayer();
@@ -527,6 +641,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerShear.
+     * @param event PlayerShearEntityEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerShear(PlayerShearEntityEvent event) {
         Player player = event.getPlayer();
@@ -535,6 +653,10 @@ public class AuthMePlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onPlayerFish.
+     * @param event PlayerFishEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerFish(PlayerFishEvent event) {
         Player player = event.getPlayer();

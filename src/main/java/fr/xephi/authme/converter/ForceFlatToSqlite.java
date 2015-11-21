@@ -7,13 +7,24 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class ForceFlatToSqlite implements Converter {
 
     private DataSource data;
+    /**
+     * Constructor for ForceFlatToSqlite.
+     * @param data DataSource
+     * @param plugin AuthMe
+     */
     public ForceFlatToSqlite(DataSource data, AuthMe plugin) {
         this.data = data;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         DataSource sqlite = null;

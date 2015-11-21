@@ -22,12 +22,18 @@ import org.bukkit.projectiles.ProjectileSource;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class AuthMeEntityListener implements Listener {
 
     public AuthMe instance;
     private static Method getShooter;
     private static boolean shooterIsProjectileSource;
 
+    /**
+     * Constructor for AuthMeEntityListener.
+     * @param instance AuthMe
+     */
     public AuthMeEntityListener(AuthMe instance) {
         this.instance = instance;
         try {
@@ -37,6 +43,10 @@ public class AuthMeEntityListener implements Listener {
         }
     }
 
+    /**
+     * Method onEntityDamage.
+     * @param event EntityDamageEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
         Entity entity = event.getEntity();
@@ -53,6 +63,10 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onEntityTarget.
+     * @param event EntityTargetEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
         Entity entity = event.getTarget();
@@ -68,6 +82,10 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onDmg.
+     * @param event EntityDamageByEntityEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onDmg(EntityDamageByEntityEvent event) {
         Entity entity = event.getDamager();
@@ -83,6 +101,10 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onFoodLevelChange.
+     * @param event FoodLevelChangeEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
         Entity entity = event.getEntity();
@@ -97,6 +119,10 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method entityRegainHealthEvent.
+     * @param event EntityRegainHealthEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void entityRegainHealthEvent(EntityRegainHealthEvent event) {
         Entity entity = event.getEntity();
@@ -112,6 +138,10 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onEntityInteract.
+     * @param event EntityInteractEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
         Entity entity = event.getEntity();
@@ -126,6 +156,10 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onLowestEntityInteract.
+     * @param event EntityInteractEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onLowestEntityInteract(EntityInteractEvent event) {
         Entity entity = event.getEntity();
@@ -141,6 +175,10 @@ public class AuthMeEntityListener implements Listener {
     }
 
     // TODO: Need to check this, player can't throw snowball but the item is taken.
+    /**
+     * Method onProjectileLaunch.
+     * @param event ProjectileLaunchEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         Projectile projectile = event.getEntity();
@@ -173,6 +211,10 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onShoot.
+     * @param event EntityShootBowEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onShoot(EntityShootBowEvent event) {
         Entity entity = event.getEntity();

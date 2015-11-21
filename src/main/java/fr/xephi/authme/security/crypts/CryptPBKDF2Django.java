@@ -7,8 +7,19 @@ import javax.xml.bind.DatatypeConverter;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
 
+/**
+ */
 public class CryptPBKDF2Django implements EncryptionMethod {
 
+    /**
+     * Method getHash.
+     * @param password String
+     * @param salt String
+     * @param name String
+     * @return String
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
+     */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
@@ -19,6 +30,15 @@ public class CryptPBKDF2Django implements EncryptionMethod {
         return result + String.valueOf(DatatypeConverter.printBase64Binary(engine.deriveKey(password, 32)));
     }
 
+    /**
+     * Method comparePassword.
+     * @param hash String
+     * @param password String
+     * @param playerName String
+     * @return boolean
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
+     */
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {

@@ -28,6 +28,8 @@ import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 
+/**
+ */
 public class AsyncronousJoin {
 
     private final AuthMe plugin;
@@ -37,6 +39,12 @@ public class AsyncronousJoin {
     private final Messages m;
     private final BukkitScheduler sched;
 
+    /**
+     * Constructor for AsyncronousJoin.
+     * @param player Player
+     * @param plugin AuthMe
+     * @param database DataSource
+     */
     public AsyncronousJoin(Player player, AuthMe plugin, DataSource database) {
         this.player = player;
         this.plugin = plugin;
@@ -245,6 +253,10 @@ public class AsyncronousJoin {
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
     }
 
+    /**
+     * Method needFirstSpawn.
+     * @return boolean
+     */
     private boolean needFirstSpawn() {
         if (player.hasPlayedBefore())
             return false;
@@ -269,6 +281,11 @@ public class AsyncronousJoin {
         return true;
     }
 
+    /**
+     * Method placePlayerSafely.
+     * @param player Player
+     * @param spawnLoc Location
+     */
     private void placePlayerSafely(final Player player, final Location spawnLoc) {
         if (spawnLoc == null)
             return;

@@ -16,6 +16,8 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 
+/**
+ */
 public class ProcessSyncronousPlayerLogout implements Runnable {
 
     protected Player player;
@@ -23,12 +25,21 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
     protected String name;
     private Messages m = Messages.getInstance();
 
+    /**
+     * Constructor for ProcessSyncronousPlayerLogout.
+     * @param player Player
+     * @param plugin AuthMe
+     */
     public ProcessSyncronousPlayerLogout(Player player, AuthMe plugin) {
         this.player = player;
         this.plugin = plugin;
         this.name = player.getName().toLowerCase();
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         if (plugin.sessions.containsKey(name))

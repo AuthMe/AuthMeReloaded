@@ -12,6 +12,8 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class ChangePasswordTask implements Runnable {
 
     private final AuthMe plugin;
@@ -19,6 +21,13 @@ public class ChangePasswordTask implements Runnable {
     private final String oldPassword;
     private final String newPassword;
 
+    /**
+     * Constructor for ChangePasswordTask.
+     * @param plugin AuthMe
+     * @param player Player
+     * @param oldPassword String
+     * @param newPassword String
+     */
     public ChangePasswordTask(AuthMe plugin, Player player, String oldPassword, String newPassword) {
         this.plugin = plugin;
         this.player = player;
@@ -26,6 +35,10 @@ public class ChangePasswordTask implements Runnable {
         this.newPassword = newPassword;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         Messages m = Messages.getInstance();

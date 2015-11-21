@@ -10,6 +10,8 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 
+/**
+ */
 public class ResetNameCommand extends ExecutableCommand {
 
     /**
@@ -19,8 +21,8 @@ public class ResetNameCommand extends ExecutableCommand {
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
-     * @return True if the command was executed successfully, false otherwise.
-     */
+    
+     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance

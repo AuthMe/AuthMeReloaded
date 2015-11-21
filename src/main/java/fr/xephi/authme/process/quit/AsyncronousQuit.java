@@ -15,6 +15,8 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class AsyncronousQuit {
 
     protected AuthMe plugin;
@@ -26,6 +28,13 @@ public class AsyncronousQuit {
     private boolean needToChange = false;
     private boolean isKick = false;
 
+    /**
+     * Constructor for AsyncronousQuit.
+     * @param p Player
+     * @param plugin AuthMe
+     * @param database DataSource
+     * @param isKick boolean
+     */
     public AsyncronousQuit(Player p, AuthMe plugin, DataSource database,
             boolean isKick) {
         this.player = p;

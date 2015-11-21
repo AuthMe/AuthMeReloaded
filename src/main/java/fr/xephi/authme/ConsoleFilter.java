@@ -6,12 +6,19 @@ import java.util.logging.LogRecord;
 /**
  *
  * @author Xephi59
+ * @version $Revision: 1.0 $
  */
 public class ConsoleFilter implements Filter {
 
     public ConsoleFilter() {
     }
 
+    /**
+     * Method isLoggable.
+     * @param record LogRecord
+     * @return boolean
+     * @see java.util.logging.Filter#isLoggable(LogRecord)
+     */
     @Override
     public boolean isLoggable(LogRecord record) {
         try {

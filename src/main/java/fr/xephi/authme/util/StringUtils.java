@@ -4,6 +4,8 @@ import net.ricecode.similarity.LevenshteinDistanceStrategy;
 import net.ricecode.similarity.StringSimilarityService;
 import net.ricecode.similarity.StringSimilarityServiceImpl;
 
+/**
+ */
 public class StringUtils {
 
     /**
@@ -12,8 +14,8 @@ public class StringUtils {
      * @param first First string.
      * @param second Second string.
      *
-     * @return The difference value.
-     */
+    
+     * @return The difference value. */
     public static double getDifference(String first, String second) {
         // Make sure the strings are valid.
         if(first == null || second == null)
@@ -26,6 +28,12 @@ public class StringUtils {
         return Math.abs(service.score(first, second) - 1.0);
     }
     
+    /**
+     * Method containsAny.
+     * @param str String
+     * @param pieces String[]
+     * @return boolean
+     */
     public static boolean containsAny(String str, String... pieces) {
     	if (str == null) {
     		return false;

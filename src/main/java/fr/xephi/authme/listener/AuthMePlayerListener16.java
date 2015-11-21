@@ -9,14 +9,24 @@ import org.bukkit.event.player.PlayerEditBookEvent;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class AuthMePlayerListener16 implements Listener {
 
     public AuthMe plugin;
 
+    /**
+     * Constructor for AuthMePlayerListener16.
+     * @param plugin AuthMe
+     */
     public AuthMePlayerListener16(AuthMe plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * Method onPlayerEditBook.
+     * @param event PlayerEditBookEvent
+     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerEditBook(PlayerEditBookEvent event) {
         Player player = event.getPlayer();

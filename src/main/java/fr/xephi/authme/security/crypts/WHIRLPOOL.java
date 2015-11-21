@@ -64,6 +64,8 @@ package fr.xephi.authme.security.crypts;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
+/**
+ */
 public class WHIRLPOOL implements EncryptionMethod {
 
     /**
@@ -319,6 +321,7 @@ public class WHIRLPOOL implements EncryptionMethod {
      * Get the hash value from the hashing state.
      * 
      * This method uses the invariant: bufferBits < 512
+     * @param digest byte[]
      */
     public void NESSIEfinalize(byte[] digest) {
         // append a '1'-bit:
@@ -373,6 +376,11 @@ public class WHIRLPOOL implements EncryptionMethod {
         }
     }
 
+    /**
+     * Method display.
+     * @param array byte[]
+     * @return String
+     */
     protected static String display(byte[] array) {
         char[] val = new char[2 * array.length];
         String hex = "0123456789ABCDEF";
@@ -384,6 +392,15 @@ public class WHIRLPOOL implements EncryptionMethod {
         return String.valueOf(val);
     }
 
+    /**
+     * Method getHash.
+     * @param password String
+     * @param salt String
+     * @param name String
+     * @return String
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
+     */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
@@ -394,6 +411,15 @@ public class WHIRLPOOL implements EncryptionMethod {
         return display(digest);
     }
 
+    /**
+     * Method comparePassword.
+     * @param hash String
+     * @param password String
+     * @param playerName String
+     * @return boolean
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
+     */
     @Override
     public boolean comparePassword(String hash, String password,
             String playerName) throws NoSuchAlgorithmException {

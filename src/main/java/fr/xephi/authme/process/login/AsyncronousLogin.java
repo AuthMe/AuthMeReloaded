@@ -22,6 +22,8 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class AsyncronousLogin {
 
     protected Player player;
@@ -34,6 +36,14 @@ public class AsyncronousLogin {
     private static RandomString rdm = new RandomString(Settings.captchaLength);
     private Messages m = Messages.getInstance();
 
+    /**
+     * Constructor for AsyncronousLogin.
+     * @param player Player
+     * @param password String
+     * @param forceLogin boolean
+     * @param plugin AuthMe
+     * @param data DataSource
+     */
     public AsyncronousLogin(Player player, String password, boolean forceLogin,
                             AuthMe plugin, DataSource data) {
         this.player = player;
@@ -45,10 +55,18 @@ public class AsyncronousLogin {
         this.database = data;
     }
 
+    /**
+     * Method getIP.
+     * @return String
+     */
     protected String getIP() {
         return plugin.getIP(player);
     }
 
+    /**
+     * Method needsCaptcha.
+     * @return boolean
+     */
     protected boolean needsCaptcha() {
         if (Settings.useCaptcha) {
             if (!plugin.captcha.containsKey(name)) {
@@ -75,6 +93,7 @@ public class AsyncronousLogin {
     /**
      * Checks the precondition for authentication (like user known) and returns
      * the playerAuth-State
+     * @return PlayerAuth
      */
     protected PlayerAuth preAuth() {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
@@ -200,6 +219,11 @@ public class AsyncronousLogin {
         }
     }
 
+    /**
+     * Method displayOtherAccounts.
+     * @param auth PlayerAuth
+     * @param p Player
+     */
     public void displayOtherAccounts(PlayerAuth auth, Player p) {
         if (!Settings.displayOtherAccounts) {
             return;

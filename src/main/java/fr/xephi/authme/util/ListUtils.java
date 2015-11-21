@@ -3,6 +3,8 @@ package fr.xephi.authme.util;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ */
 public class ListUtils {
 
     /**
@@ -11,8 +13,8 @@ public class ListUtils {
      * @param elements The elements to implode.
      * @param separator The separator to use.
      *
-     * @return The result string.
-     */
+    
+     * @return The result string. */
     public static String implode(List<String> elements, String separator) {
         // Create a string builder
         StringBuilder sb = new StringBuilder();
@@ -42,8 +44,8 @@ public class ListUtils {
      * @param otherElements The second list of elements to implode.
      * @param separator The separator to use.
      *
-     * @return The result string.
-     */
+    
+     * @return The result string. */
     public static String implode(List<String> elements, List<String> otherElements, String separator) {
         // Combine the lists
         List<String> combined = new ArrayList<>();
@@ -61,8 +63,8 @@ public class ListUtils {
      * @param otherElement The second element to implode.
      * @param separator The separator to use.
      *
-     * @return The result string.
-     */
+    
+     * @return The result string. */
     public static String implode(String element, String otherElement, String separator) {
         // Combine the lists
         List<String> combined = new ArrayList<>();

@@ -9,15 +9,25 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class AuthMeBlockListener implements Listener {
 
     public AuthMe instance;
 
+    /**
+     * Constructor for AuthMeBlockListener.
+     * @param instance AuthMe
+     */
     public AuthMeBlockListener(AuthMe instance) {
 
         this.instance = instance;
     }
 
+    /**
+     * Method onBlockPlace.
+     * @param event BlockPlaceEvent
+     */
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (Utils.checkAuth(event.getPlayer()))
@@ -25,6 +35,10 @@ public class AuthMeBlockListener implements Listener {
         event.setCancelled(true);
     }
 
+    /**
+     * Method onBlockBreak.
+     * @param event BlockBreakEvent
+     */
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();

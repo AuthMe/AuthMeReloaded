@@ -8,6 +8,8 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.FoundCommandResult;
 
+/**
+ */
 public class HelpProvider {
 
     /**

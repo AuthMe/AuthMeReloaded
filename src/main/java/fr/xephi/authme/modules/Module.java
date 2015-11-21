@@ -1,7 +1,11 @@
 package fr.xephi.authme.modules;
 
+/**
+ */
 public abstract class Module {
 
+    /**
+     */
     enum ModuleType {
         MANAGER,
         MYSQL,
@@ -12,8 +16,16 @@ public abstract class Module {
         CUSTOM
     }
 
+    /**
+     * Method getName.
+     * @return String
+     */
     public abstract String getName();
 
+    /**
+     * Method getType.
+     * @return ModuleType
+     */
     public abstract ModuleType getType();
 
     public void load() {

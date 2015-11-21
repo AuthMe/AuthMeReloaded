@@ -6,14 +6,34 @@ import java.security.NoSuchAlgorithmException;
 
 import fr.xephi.authme.AuthMe;
 
+/**
+ */
 public class IPB3 implements EncryptionMethod {
 
+    /**
+     * Method getHash.
+     * @param password String
+     * @param salt String
+     * @param name String
+     * @return String
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
+     */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
         return getMD5(getMD5(salt) + getMD5(password));
     }
 
+    /**
+     * Method comparePassword.
+     * @param hash String
+     * @param password String
+     * @param playerName String
+     * @return boolean
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
+     */
     @Override
     public boolean comparePassword(String hash, String password,
             String playerName) throws NoSuchAlgorithmException {
@@ -21,6 +41,12 @@ public class IPB3 implements EncryptionMethod {
         return hash.equals(getHash(password, salt, playerName));
     }
 
+    /**
+     * Method getMD5.
+     * @param message String
+     * @return String
+     * @throws NoSuchAlgorithmException
+     */
     private static String getMD5(String message)
             throws NoSuchAlgorithmException {
         MessageDigest md5 = MessageDigest.getInstance("MD5");

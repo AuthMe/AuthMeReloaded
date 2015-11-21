@@ -13,10 +13,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 
+/**
+ */
 public class CustomConfiguration extends YamlConfiguration {
 
     private File configFile;
 
+    /**
+     * Constructor for CustomConfiguration.
+     * @param file File
+     */
     public CustomConfiguration(File file) {
         this.configFile = file;
         load();
@@ -35,6 +41,10 @@ public class CustomConfiguration extends YamlConfiguration {
         }
     }
 
+    /**
+     * Method reLoad.
+     * @return boolean
+     */
     public boolean reLoad() {
         boolean out = true;
         if (!configFile.exists()) {
@@ -53,10 +63,19 @@ public class CustomConfiguration extends YamlConfiguration {
         }
     }
 
+    /**
+     * Method getConfigFile.
+     * @return File
+     */
     public File getConfigFile() {
         return configFile;
     }
 
+    /**
+     * Method loadResource.
+     * @param file File
+     * @return boolean
+     */
     public boolean loadResource(File file) {
         if (!file.exists()) {
             try {

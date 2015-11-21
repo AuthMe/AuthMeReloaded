@@ -6,11 +6,18 @@ import org.bukkit.command.CommandSender;
 
 import fr.xephi.authme.ConsoleLogger;
 
+/**
+ */
 public class Messages extends CustomConfiguration {
 
     private static Messages singleton = null;
     private String lang = "en";
 
+    /**
+     * Constructor for Messages.
+     * @param file File
+     * @param lang String
+     */
     public Messages(File file, String lang) {
         super(file);
         load();
@@ -18,6 +25,11 @@ public class Messages extends CustomConfiguration {
         this.lang = lang;
     }
 
+    /**
+     * Method send.
+     * @param sender CommandSender
+     * @param msg String
+     */
     public void send(CommandSender sender, String msg) {
         if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang))
             singleton.reloadMessages();
@@ -31,6 +43,11 @@ public class Messages extends CustomConfiguration {
         }
     }
 
+    /**
+     * Method send.
+     * @param msg String
+     * @return String[]
+     */
     public String[] send(String msg) {
         if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang)) {
             singleton.reloadMessages();
@@ -54,6 +71,10 @@ public class Messages extends CustomConfiguration {
         return loc;
     }
 
+    /**
+     * Method getInstance.
+     * @return Messages
+     */
     public static Messages getInstance() {
         if (singleton == null) {
             singleton = new Messages(Settings.messageFile, Settings.messagesLanguage);

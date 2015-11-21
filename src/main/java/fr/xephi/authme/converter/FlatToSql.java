@@ -13,6 +13,7 @@ import fr.xephi.authme.settings.Settings;
 
 /**
  * @author Xephi59
+ * @version $Revision: 1.0 $
  */
 public class FlatToSql implements Converter {
 
@@ -44,6 +45,10 @@ public class FlatToSql implements Converter {
         columnID = Settings.getMySQLColumnId;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         try {

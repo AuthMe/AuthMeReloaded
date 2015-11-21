@@ -65,6 +65,11 @@ public class MacBasedPRF implements PRF {
         }
     }
 
+    /**
+     * Constructor for MacBasedPRF.
+     * @param macAlgorithm String
+     * @param provider String
+     */
     public MacBasedPRF(String macAlgorithm, String provider) {
         this.macAlgorithm = macAlgorithm;
         try {
@@ -75,15 +80,31 @@ public class MacBasedPRF implements PRF {
         }
     }
 
+    /**
+     * Method doFinal.
+     * @param M byte[]
+     * @return byte[]
+     * @see fr.xephi.authme.security.pbkdf2.PRF#doFinal(byte[])
+     */
     public byte[] doFinal(byte[] M) {
         byte[] r = mac.doFinal(M);
         return r;
     }
 
+    /**
+     * Method getHLen.
+     * @return int
+     * @see fr.xephi.authme.security.pbkdf2.PRF#getHLen()
+     */
     public int getHLen() {
         return hLen;
     }
 
+    /**
+     * Method init.
+     * @param P byte[]
+     * @see fr.xephi.authme.security.pbkdf2.PRF#init(byte[])
+     */
     public void init(byte[] P) {
         try {
             mac.init(new SecretKeySpec(P, macAlgorithm));

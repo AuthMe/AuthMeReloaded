@@ -19,6 +19,8 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class ProcessSyncronousPasswordRegister implements Runnable {
 
     protected Player player;
@@ -26,6 +28,11 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
     private AuthMe plugin;
     private Messages m = Messages.getInstance();
 
+    /**
+     * Constructor for ProcessSyncronousPasswordRegister.
+     * @param player Player
+     * @param plugin AuthMe
+     */
     public ProcessSyncronousPasswordRegister(Player player, AuthMe plugin) {
         this.player = player;
         this.name = player.getName().toLowerCase();
@@ -44,6 +51,10 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         }
     }
 
+    /**
+     * Method forceLogin.
+     * @param player Player
+     */
     protected void forceLogin(Player player) {
         Utils.teleportToSpawn(player);
         if (LimboCache.getInstance().hasLimboPlayer(name))
@@ -63,6 +74,10 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         }
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);

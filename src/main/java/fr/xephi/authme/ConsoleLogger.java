@@ -13,11 +13,17 @@ import com.google.common.base.Throwables;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class ConsoleLogger {
 
     private static final Logger log = AuthMe.getInstance().getLogger();
     private static final DateFormat df = new SimpleDateFormat("[MM-dd HH:mm:ss]");
 
+    /**
+     * Method info.
+     * @param message String
+     */
     public static void info(String message) {
         log.info("[AuthMe] " + message);
         if (Settings.useLogging) {
@@ -29,6 +35,10 @@ public class ConsoleLogger {
         }
     }
 
+    /**
+     * Method showError.
+     * @param message String
+     */
     public static void showError(String message) {
         log.warning("[AuthMe] " + message);
         if (Settings.useLogging) {
@@ -40,6 +50,10 @@ public class ConsoleLogger {
         }
     }
 
+    /**
+     * Method writeLog.
+     * @param message String
+     */
     public static void writeLog(String message) {
         try {
             Files.write(Settings.LOG_FILE.toPath(), (message + NewAPI.newline).getBytes(),
@@ -49,6 +63,10 @@ public class ConsoleLogger {
         }
     }
 
+    /**
+     * Method writeStackTrace.
+     * @param ex Exception
+     */
     public static void writeStackTrace(Exception ex) {
         if (Settings.useLogging) {
             String dateTime;

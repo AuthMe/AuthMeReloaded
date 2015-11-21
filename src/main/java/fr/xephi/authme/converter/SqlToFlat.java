@@ -11,18 +11,29 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.settings.Messages;
 
+/**
+ */
 public class SqlToFlat implements Converter {
 
     public AuthMe plugin;
     public DataSource database;
     public CommandSender sender;
 
+    /**
+     * Constructor for SqlToFlat.
+     * @param plugin AuthMe
+     * @param sender CommandSender
+     */
     public SqlToFlat(AuthMe plugin, CommandSender sender) {
         this.plugin = plugin;
         this.database = plugin.database;
         this.sender = sender;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         try {

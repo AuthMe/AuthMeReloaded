@@ -9,6 +9,8 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 
+/**
+ */
 public class VersionCommand extends ExecutableCommand {
 
     /**
@@ -18,8 +20,8 @@ public class VersionCommand extends ExecutableCommand {
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
-     * @return True if the command was executed successfully, false otherwise.
-     */
+    
+     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Show some version info
@@ -71,8 +73,8 @@ public class VersionCommand extends ExecutableCommand {
      *
      * @param minecraftName The Minecraft player name.
      *
-     * @return True if the player is online, false otherwise.
-     */
+    
+     * @return True if the player is online, false otherwise. */
     private boolean isPlayerOnline(String minecraftName) {
         for(Player player : Bukkit.getOnlinePlayers())
             if(player.getName().equalsIgnoreCase(minecraftName))

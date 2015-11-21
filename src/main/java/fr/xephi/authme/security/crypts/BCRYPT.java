@@ -92,9 +92,9 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param d   the byte array to encode
      * @param len the number of bytes to encode
-     * @return base64-encoded string
-     * @throws IllegalArgumentException if the length is invalid
-     */
+    
+    
+     * @return base64-encoded string * @throws IllegalArgumentException if the length is invalid */
     private static String encode_base64(byte d[], int len)
             throws IllegalArgumentException {
         int off = 0;
@@ -133,8 +133,8 @@ public class BCRYPT implements EncryptionMethod {
      * range-checking againt conversion table
      *
      * @param x the base64-encoded value
-     * @return the decoded value of x
-     */
+    
+     * @return the decoded value of x */
     private static byte char64(char x) {
         if ((int) x > index_64.length)
             return -1;
@@ -148,9 +148,9 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param s       the string to decode
      * @param maxolen the maximum number of bytes to decode
-     * @return an array containing the decoded bytes
-     * @throws IllegalArgumentException if maxolen is invalid
-     */
+    
+    
+     * @return an array containing the decoded bytes * @throws IllegalArgumentException if maxolen is invalid */
     private static byte[] decode_base64(String s, int maxolen)
             throws IllegalArgumentException {
         StringBuffer rs = new StringBuffer();
@@ -227,8 +227,8 @@ public class BCRYPT implements EncryptionMethod {
      * @param data the string to extract the data from
      * @param offp a "pointer" (as a one-entry array) to the current offset into
      *             data
-     * @return the next word of material from data
-     */
+    
+     * @return the next word of material from data */
     private static int streamtoword(byte data[], int offp[]) {
         int i;
         int word = 0;
@@ -319,8 +319,8 @@ public class BCRYPT implements EncryptionMethod {
      * @param salt       the binary salt to hash with the password
      * @param log_rounds the binary logarithm of the number of rounds of hashing to
      *                   apply
-     * @return an array containing the binary hashed password
-     */
+    
+     * @return an array containing the binary hashed password */
     private byte[] crypt_raw(byte password[], byte salt[], int log_rounds) {
         int rounds, i, j;
         int cdata[] = bf_crypt_ciphertext.clone();
@@ -360,8 +360,8 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param password the password to hash
      * @param salt     the salt to hash with (perhaps generated using BCrypt.gensalt)
-     * @return the hashed password
-     */
+    
+     * @return the hashed password */
     public static String hashpw(String password, String salt) {
         BCRYPT B;
         String real_salt;
@@ -417,8 +417,8 @@ public class BCRYPT implements EncryptionMethod {
      * @param log_rounds the log2 of the number of rounds of hashing to apply - the
      *                   work factor therefore increases as 2**log_rounds.
      * @param random     an instance of SecureRandom to use
-     * @return an encoded salt value
-     */
+    
+     * @return an encoded salt value */
     public static String gensalt(int log_rounds, SecureRandom random) {
         StringBuffer rs = new StringBuffer();
         byte rnd[] = new byte[BCRYPT_SALT_LEN];
@@ -439,8 +439,8 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param log_rounds the log2 of the number of rounds of hashing to apply - the
      *                   work factor therefore increases as 2**log_rounds.
-     * @return an encoded salt value
-     */
+    
+     * @return an encoded salt value */
     public static String gensalt(int log_rounds) {
         return gensalt(log_rounds, new SecureRandom());
     }
@@ -449,8 +449,8 @@ public class BCRYPT implements EncryptionMethod {
      * Generate a salt for use with the BCrypt.hashpw() method, selecting a
      * reasonable default for the number of hashing rounds to apply
      *
-     * @return an encoded salt value
-     */
+    
+     * @return an encoded salt value */
     public static String gensalt() {
         return gensalt(GENSALT_DEFAULT_LOG2_ROUNDS);
     }
@@ -460,8 +460,8 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param plaintext the plaintext password to verify
      * @param hashed    the previously-hashed password
-     * @return true if the passwords match, false otherwise
-     */
+    
+     * @return true if the passwords match, false otherwise */
     public static boolean checkpw(String plaintext, String hashed) {
         return (hashed.compareTo(hashpw(plaintext, hashed)) == 0);
     }
@@ -473,7 +473,8 @@ public class BCRYPT implements EncryptionMethod {
      * @param text   plaintext or hashed text
      * @param hashed the previously-hashed password
      * @param rounds number of rounds to hash the password
-     * @return
+    
+     * @return boolean
      */
     public static boolean checkpw(String text, String hashed, int rounds) {
         boolean matched = false;
@@ -493,18 +494,42 @@ public class BCRYPT implements EncryptionMethod {
         return matched;
     }
 
+    /**
+     * Method getHash.
+     * @param password String
+     * @param salt String
+     * @param name String
+     * @return String
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
+     */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
         return hashpw(password, salt);
     }
 
+    /**
+     * Method comparePassword.
+     * @param hash String
+     * @param password String
+     * @param playerName String
+     * @return boolean
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
+     */
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
         return checkpw(password, hash);
     }
 
+    /**
+     * Method getDoubleHash.
+     * @param text String
+     * @param salt String
+     * @return String
+     */
     public static String getDoubleHash(String text, String salt) {
         String hash = hashpw(text, salt);
         return hashpw(text, hash);

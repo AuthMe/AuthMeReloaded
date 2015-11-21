@@ -10,6 +10,8 @@ import org.bukkit.command.CommandSender;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
 
+/**
+ */
 public class CommandHandler {
 
     /** The command manager instance. */
@@ -29,9 +31,9 @@ public class CommandHandler {
     /**
      * Initialize the command handler.
      *
+    
      * @return True if succeed, false on failure. True will also be returned if the command handler was already
-     * initialized.
-     */
+     * initialized. */
     public boolean init() {
         // Make sure the handler isn't initialized already
         if(isInit())
@@ -48,8 +50,8 @@ public class CommandHandler {
     /**
      * Check whether the command handler is initialized.
      *
-     * @return True if the command handler is initialized.
-     */
+    
+     * @return True if the command handler is initialized. */
     public boolean isInit() {
         return this.commandManager != null;
     }
@@ -57,9 +59,9 @@ public class CommandHandler {
     /**
      * Destroy the command handler.
      *
+    
      * @return True if the command handler was destroyed successfully, false otherwise. True will also be returned if
-     * the command handler wasn't initialized.
-     */
+     * the command handler wasn't initialized. */
     public boolean destroy() {
         // Make sure the command handler is initialized
         if(!isInit())
@@ -73,8 +75,8 @@ public class CommandHandler {
     /**
      * Get the command manager.
      *
-     * @return Command manager instance.
-     */
+    
+     * @return Command manager instance. */
     public CommandManager getCommandManager() {
         return this.commandManager;
     }
@@ -87,8 +89,8 @@ public class CommandHandler {
      * @param bukkitCommandLabel The command label (Bukkit).
      * @param bukkitArgs The command arguments (Bukkit).
      *
-     * @return True if the command was executed, false otherwise.
-     */
+    
+     * @return True if the command was executed, false otherwise. */
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command bukkitCommand, String bukkitCommandLabel, String[] bukkitArgs) {
         // Process the arguments
         List<String> args = processArguments(bukkitArgs);
@@ -180,8 +182,8 @@ public class CommandHandler {
      *
      * @param args The command arguments to process.
      *
-     * @return The processed command arguments.
-     */
+    
+     * @return The processed command arguments. */
     private List<String> processArguments(String[] args) {
         // Convert the array into a list of arguments
         List<String> arguments = new ArrayList<>(Arrays.asList(args));

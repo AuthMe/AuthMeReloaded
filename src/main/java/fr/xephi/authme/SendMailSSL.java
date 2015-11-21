@@ -15,15 +15,25 @@ import fr.xephi.authme.settings.Settings;
 /**
  *
  * @author Xephi59
+ * @version $Revision: 1.0 $
  */
 public class SendMailSSL {
 
     public AuthMe plugin;
 
+    /**
+     * Constructor for SendMailSSL.
+     * @param plugin AuthMe
+     */
     public SendMailSSL(AuthMe plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * Method main.
+     * @param auth PlayerAuth
+     * @param newPass String
+     */
     public void main(final PlayerAuth auth, final String newPass) {
         String sendername;
 

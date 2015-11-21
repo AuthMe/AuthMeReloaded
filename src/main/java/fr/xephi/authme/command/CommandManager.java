@@ -32,6 +32,8 @@ import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 
+/**
+ */
 public class CommandManager {
 
     /** The list of commandDescriptions. */
@@ -571,8 +573,8 @@ public class CommandManager {
     /**
      * Get the list of command descriptions
      *
-     * @return List of command descriptions.
-     */
+    
+     * @return List of command descriptions. */
     public List<CommandDescription> getCommandDescriptions() {
         return this.commandDescriptions;
     }
@@ -580,8 +582,8 @@ public class CommandManager {
     /**
      * Get the number of command description count.
      *
-     * @return Command description count.
-     */
+    
+     * @return Command description count. */
     public int getCommandDescriptionCount() {
         return this.getCommandDescriptions().size();
     }
@@ -592,8 +594,8 @@ public class CommandManager {
      * @param queryReference
      *            The query reference to find a command for.
      *
-     * @return The command found, or null.
-     */
+    
+     * @return The command found, or null. */
     public FoundCommandResult findCommand(CommandParts queryReference) {
         // Make sure the command reference is valid
         if (queryReference.getCount() <= 0)

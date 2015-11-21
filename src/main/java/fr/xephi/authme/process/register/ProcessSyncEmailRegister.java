@@ -14,6 +14,8 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class ProcessSyncEmailRegister implements Runnable {
 
     protected Player player;
@@ -21,12 +23,21 @@ public class ProcessSyncEmailRegister implements Runnable {
     private AuthMe plugin;
     private Messages m = Messages.getInstance();
 
+    /**
+     * Constructor for ProcessSyncEmailRegister.
+     * @param player Player
+     * @param plugin AuthMe
+     */
     public ProcessSyncEmailRegister(Player player, AuthMe plugin) {
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.plugin = plugin;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);

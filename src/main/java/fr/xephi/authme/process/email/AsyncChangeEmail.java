@@ -11,6 +11,8 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class AsyncChangeEmail {
 
     private final Player player;
@@ -20,6 +22,14 @@ public class AsyncChangeEmail {
     private final String newEmailVerify;
     private final Messages m;
 
+    /**
+     * Constructor for AsyncChangeEmail.
+     * @param player Player
+     * @param plugin AuthMe
+     * @param oldEmail String
+     * @param newEmail String
+     * @param newEmailVerify String
+     */
     public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail, String newEmailVerify) {
         this.player = player;
         this.plugin = plugin;
@@ -29,6 +39,13 @@ public class AsyncChangeEmail {
         this.m = Messages.getInstance();
     }
 
+    /**
+     * Constructor for AsyncChangeEmail.
+     * @param player Player
+     * @param plugin AuthMe
+     * @param oldEmail String
+     * @param newEmail String
+     */
     public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail) {
         this(player, plugin, oldEmail, newEmail, newEmail);
     }

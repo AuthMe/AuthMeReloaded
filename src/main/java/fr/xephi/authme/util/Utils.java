@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.zip.GZIPInputStream;
 
+/**
+ */
 public class Utils {
 
     public static AuthMe plugin;
@@ -43,6 +45,10 @@ public class Utils {
     }
 
     // Check and Download GeoIP data if not exist
+    /**
+     * Method checkGeoIP.
+     * @return boolean
+     */
     public static boolean checkGeoIP() {
         if (lookupService != null) {
             return true;
@@ -89,6 +95,11 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Method getCountryCode.
+     * @param ip String
+     * @return String
+     */
     public static String getCountryCode(String ip) {
         if (checkGeoIP()) {
             return lookupService.getCountry(ip).getCode();
@@ -96,6 +107,11 @@ public class Utils {
         return "--";
     }
 
+    /**
+     * Method getCountryName.
+     * @param ip String
+     * @return String
+     */
     public static String getCountryName(String ip) {
         if (checkGeoIP()) {
             return lookupService.getCountry(ip).getName();
@@ -103,6 +119,11 @@ public class Utils {
         return "N/A";
     }
 
+    /**
+     * Method setGroup.
+     * @param player Player
+     * @param group GroupType
+     */
     public static void setGroup(Player player, GroupType group) {
         if (!Settings.isPermissionCheckEnabled)
             return;
@@ -148,6 +169,12 @@ public class Utils {
         }
     }
 
+    /**
+     * Method addNormal.
+     * @param player Player
+     * @param group String
+     * @return boolean
+     */
     public static boolean addNormal(Player player, String group) {
         if (!useGroupSystem()) {
             return false;
@@ -167,6 +194,11 @@ public class Utils {
     }
 
     // TODO: Move to a Manager
+    /**
+     * Method checkAuth.
+     * @param player Player
+     * @return boolean
+     */
     public static boolean checkAuth(Player player) {
         if (player == null || Utils.isUnrestricted(player)) {
             return true;
@@ -186,15 +218,32 @@ public class Utils {
         return false;
     }
 
+    /**
+     * Method isUnrestricted.
+     * @param player Player
+     * @return boolean
+     */
     public static boolean isUnrestricted(Player player) {
         return Settings.isAllowRestrictedIp && !Settings.getUnrestrictedName.isEmpty()
                 && (Settings.getUnrestrictedName.contains(player.getName()));
     }
 
+    /**
+     * Method useGroupSystem.
+     * @return boolean
+     */
     private static boolean useGroupSystem() {
         return Settings.isPermissionCheckEnabled && !Settings.getUnloggedinGroup.isEmpty();
     }
 
+    /**
+     * Method packCoords.
+     * @param x double
+     * @param y double
+     * @param z double
+     * @param w String
+     * @param pl Player
+     */
     public static void packCoords(double x, double y, double z, String w,
                                   final Player pl) {
         World theWorld;
@@ -224,11 +273,17 @@ public class Utils {
     /*
      * Used for force player GameMode
      */
+    /**
+     * Method forceGM.
+     * @param player Player
+     */
     public static void forceGM(Player player) {
         if (!plugin.getPermissionsManager().hasPermission(player, "authme.bypassforcesurvival"))
             player.setGameMode(GameMode.SURVIVAL);
     }
 
+    /**
+     */
     public enum GroupType {
         UNREGISTERED,
         REGISTERED,
@@ -236,6 +291,10 @@ public class Utils {
         LOGGEDIN
     }
 
+    /**
+     * Method purgeDirectory.
+     * @param file File
+     */
     public static void purgeDirectory(File file) {
         if (!file.isDirectory()) {
             return;
@@ -254,6 +313,10 @@ public class Utils {
         }
     }
 
+    /**
+     * Method getOnlinePlayers.
+     * @return Collection<? extends Player>
+     */
     @SuppressWarnings("unchecked")
     public static Collection<? extends Player> getOnlinePlayers() {
         if (getOnlinePlayersIsCollection) {
@@ -273,12 +336,22 @@ public class Utils {
         return Collections.emptyList();
     }
 
+    /**
+     * Method getPlayer.
+     * @param name String
+     * @return Player
+     */
     @SuppressWarnings("deprecation")
     public static Player getPlayer(String name) {
         name = name.toLowerCase();
         return plugin.getServer().getPlayer(name);
     }
 
+    /**
+     * Method isNPC.
+     * @param player Entity
+     * @return boolean
+     */
     public static boolean isNPC(final Entity player) {
         try {
             if (player.hasMetadata("NPC")) {
@@ -294,6 +367,10 @@ public class Utils {
         }
     }
 
+    /**
+     * Method teleportToSpawn.
+     * @param player Player
+     */
     public static void teleportToSpawn(Player player) {
         if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
             Location spawn = plugin.getSpawnLocation(player);

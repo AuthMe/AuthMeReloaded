@@ -14,6 +14,8 @@ import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.events.ResetInventoryEvent;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class LimboCache {
 
     private volatile static LimboCache singleton;
@@ -21,12 +23,20 @@ public class LimboCache {
     private JsonCache playerData;
     public AuthMe plugin;
 
+    /**
+     * Constructor for LimboCache.
+     * @param plugin AuthMe
+     */
     private LimboCache(AuthMe plugin) {
         this.plugin = plugin;
         this.cache = new ConcurrentHashMap<>();
         this.playerData = new JsonCache();
     }
 
+    /**
+     * Method addLimboPlayer.
+     * @param player Player
+     */
     public void addLimboPlayer(Player player) {
         String name = player.getName().toLowerCase();
         Location loc = player.getLocation();
@@ -75,22 +85,45 @@ public class LimboCache {
         cache.put(name, new LimboPlayer(name, loc, gameMode, operator, playerGroup, flying));
     }
 
+    /**
+     * Method addLimboPlayer.
+     * @param player Player
+     * @param group String
+     */
     public void addLimboPlayer(Player player, String group) {
         cache.put(player.getName().toLowerCase(), new LimboPlayer(player.getName().toLowerCase(), group));
     }
 
+    /**
+     * Method deleteLimboPlayer.
+     * @param name String
+     */
     public void deleteLimboPlayer(String name) {
         cache.remove(name);
     }
 
+    /**
+     * Method getLimboPlayer.
+     * @param name String
+     * @return LimboPlayer
+     */
     public LimboPlayer getLimboPlayer(String name) {
         return cache.get(name);
     }
 
+    /**
+     * Method hasLimboPlayer.
+     * @param name String
+     * @return boolean
+     */
     public boolean hasLimboPlayer(String name) {
         return cache.containsKey(name);
     }
 
+    /**
+     * Method getInstance.
+     * @return LimboCache
+     */
     public static LimboCache getInstance() {
         if (singleton == null) {
             singleton = new LimboCache(AuthMe.getInstance());
@@ -98,6 +131,10 @@ public class LimboCache {
         return singleton;
     }
 
+    /**
+     * Method updateLimboPlayer.
+     * @param player Player
+     */
     public void updateLimboPlayer(Player player) {
         if (this.hasLimboPlayer(player.getName().toLowerCase())) {
             this.deleteLimboPlayer(player.getName().toLowerCase());

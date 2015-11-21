@@ -13,15 +13,25 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 
+/**
+ */
 public class AuthMeServerListener implements Listener {
 
     public AuthMe plugin;
     private Messages m = Messages.getInstance();
 
+    /**
+     * Constructor for AuthMeServerListener.
+     * @param plugin AuthMe
+     */
     public AuthMeServerListener(AuthMe plugin) {
         this.plugin = plugin;
     }
 
+    /**
+     * Method onServerPing.
+     * @param event ServerListPingEvent
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
         if (!Settings.enableProtection)
@@ -39,6 +49,10 @@ public class AuthMeServerListener implements Listener {
         }
     }
 
+    /**
+     * Method onPluginDisable.
+     * @param event PluginDisableEvent
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginDisable(PluginDisableEvent event) {
         String pluginName = event.getPlugin().getName();
@@ -71,6 +85,10 @@ public class AuthMeServerListener implements Listener {
         }
     }
 
+    /**
+     * Method onPluginEnable.
+     * @param event PluginEnableEvent
+     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
         String pluginName = event.getPlugin().getName();

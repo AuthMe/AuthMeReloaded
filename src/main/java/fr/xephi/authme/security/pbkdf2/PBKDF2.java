@@ -39,8 +39,8 @@ public interface PBKDF2 {
      * 
      * @param inputPassword
      *            Candidate password to compute the derived key for.
-     * @return internal byte array
-     */
+    
+     * @return internal byte array */
     public abstract byte[] deriveKey(String inputPassword);
 
     /**
@@ -50,8 +50,8 @@ public interface PBKDF2 {
      *            Candidate password to compute the derived key for.
      * @param dkLen
      *            Specify desired key length
-     * @return internal byte array
-     */
+    
+     * @return internal byte array */
     public abstract byte[] deriveKey(String inputPassword, int dkLen);
 
     /**
@@ -61,16 +61,16 @@ public interface PBKDF2 {
      * 
      * @param inputPassword
      *            Candidate password to compute the derived key for.
+    
      * @return <code>true</code> password match; <code>false</code> incorrect
-     *         password
-     */
+     *         password */
     public abstract boolean verifyKey(String inputPassword);
 
     /**
      * Allow reading of configured parameters.
      * 
-     * @return Currently set parameters.
-     */
+    
+     * @return Currently set parameters. */
     public abstract PBKDF2Parameters getParameters();
 
     /**
@@ -83,8 +83,8 @@ public interface PBKDF2 {
     /**
      * Get currently set Pseudo Random Function.
      * 
-     * @return Currently set Pseudo Random Function
-     */
+    
+     * @return Currently set Pseudo Random Function */
     public abstract PRF getPseudoRandomFunction();
 
     /**

@@ -39,9 +39,9 @@ public class BinTools {
      * 
      * @param b
      *            Input bytes. May be <code>null</code>.
+    
      * @return Hexadecimal representation of b. Uppercase A-F, two characters
-     *         per byte. Empty string on <code>null</code> input.
-     */
+     *         per byte. Empty string on <code>null</code> input. */
     public static String bin2hex(final byte[] b) {
         if (b == null) {
             return "";
@@ -61,10 +61,10 @@ public class BinTools {
      * @param s
      *            String containing hexadecimal digits. May be <code>null</code>
      *            . On odd length leading zero will be assumed.
-     * @return Array on bytes, non-<code>null</code>.
-     * @throws IllegalArgumentException
-     *             when string contains non-hex character
-     */
+    
+    
+     * @return Array on bytes, non-<code>null</code>. * @throws IllegalArgumentException
+     *             when string contains non-hex character */
     public static byte[] hex2bin(final String s) {
         String m = s;
         if (s == null) {
@@ -88,10 +88,10 @@ public class BinTools {
      * 
      * @param c
      *            0-9, a-f, A-F allowd.
-     * @return 0-15
-     * @throws IllegalArgumentException
-     *             on non-hex character
-     */
+    
+    
+     * @return 0-15 * @throws IllegalArgumentException
+     *             on non-hex character */
     public static int hex2bin(char c) {
         if (c >= '0' && c <= '9') {
             return (c - '0');
@@ -105,6 +105,10 @@ public class BinTools {
         throw new IllegalArgumentException("Input string may only contain hex digits, but found '" + c + "'");
     }
 
+    /**
+     * Method main.
+     * @param args String[]
+     */
     public static void main(String[] args) {
         byte b[] = new byte[256];
         byte bb = 0;

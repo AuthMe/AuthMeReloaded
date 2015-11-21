@@ -20,6 +20,7 @@ import fr.xephi.authme.settings.Settings;
 
 /**
  * @author Xephi59
+ * @version $Revision: 1.0 $
  */
 public class RakamakConverter implements Converter {
 
@@ -27,16 +28,29 @@ public class RakamakConverter implements Converter {
     public DataSource database;
     public CommandSender sender;
 
+    /**
+     * Constructor for RakamakConverter.
+     * @param instance AuthMe
+     * @param sender CommandSender
+     */
     public RakamakConverter(AuthMe instance, CommandSender sender) {
         this.instance = instance;
         this.database = instance.database;
         this.sender = sender;
     }
 
+    /**
+     * Method getInstance.
+     * @return RakamakConverter
+     */
     public RakamakConverter getInstance() {
         return this;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         HashAlgorithm hash = Settings.getPasswordHash;

@@ -6,6 +6,8 @@ import org.bukkit.entity.Player;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class ProcessSyncronousPlayerQuit implements Runnable {
 
     protected AuthMe plugin;
@@ -14,6 +16,14 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
     protected boolean isFlying;
     protected boolean needToChange;
 
+    /**
+     * Constructor for ProcessSyncronousPlayerQuit.
+     * @param plugin AuthMe
+     * @param player Player
+     * @param isOp boolean
+     * @param isFlying boolean
+     * @param needToChange boolean
+     */
     public ProcessSyncronousPlayerQuit(AuthMe plugin, Player player
             , boolean isOp, boolean isFlying
             , boolean needToChange) {
@@ -24,6 +34,10 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
         this.needToChange = needToChange;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
 

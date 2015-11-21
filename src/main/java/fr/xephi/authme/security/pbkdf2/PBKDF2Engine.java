@@ -112,10 +112,23 @@ public class PBKDF2Engine implements PBKDF2 {
         this.prf = prf;
     }
 
+    /**
+     * Method deriveKey.
+     * @param inputPassword String
+     * @return byte[]
+     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String)
+     */
     public byte[] deriveKey(String inputPassword) {
         return deriveKey(inputPassword, 0);
     }
 
+    /**
+     * Method deriveKey.
+     * @param inputPassword String
+     * @param dkLen int
+     * @return byte[]
+     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String, int)
+     */
     public byte[] deriveKey(String inputPassword, int dkLen) {
         byte[] r = null;
         byte P[] = null;
@@ -140,6 +153,12 @@ public class PBKDF2Engine implements PBKDF2 {
         return r;
     }
 
+    /**
+     * Method verifyKey.
+     * @param inputPassword String
+     * @return boolean
+     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#verifyKey(String)
+     */
     public boolean verifyKey(String inputPassword) {
         byte[] referenceKey = getParameters().getDerivedKey();
         if (referenceKey == null || referenceKey.length == 0) {
@@ -172,6 +191,11 @@ public class PBKDF2Engine implements PBKDF2 {
         prf.init(P);
     }
 
+    /**
+     * Method getPseudoRandomFunction.
+     * @return PRF
+     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#getPseudoRandomFunction()
+     */
     public PRF getPseudoRandomFunction() {
         return prf;
     }
@@ -179,7 +203,7 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Core Password Based Key Derivation Function 2.
      * 
-     * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2</a>
+    
      * @param prf
      *            Pseudo Random Function (i.e. HmacSHA1)
      * @param S
@@ -188,8 +212,8 @@ public class PBKDF2Engine implements PBKDF2 {
      *            Iteration count (see RFC 2898 4.2)
      * @param dkLen
      *            desired length of derived key.
-     * @return internal byte array
-     */
+    
+     * @return internal byte array * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2</a> */
     protected byte[] PBKDF2(PRF prf, byte[] S, int c, int dkLen) {
         if (S == null) {
             S = new byte[0];
@@ -215,12 +239,12 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Integer division with ceiling function.
      * 
-     * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
-     *      2.</a>
+    
      * @param a
      * @param b
-     * @return ceil(a/b)
-     */
+    
+     * @return ceil(a/b) * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
+     *      2.</a> */
     protected int ceil(int a, int b) {
         int m = 0;
         if (a % b > 0) {
@@ -232,8 +256,7 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Function F.
      * 
-     * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
-     *      3.</a>
+    
      * @param dest
      *            Destination byte buffer
      * @param offset
@@ -245,7 +268,8 @@ public class PBKDF2Engine implements PBKDF2 {
      * @param c
      *            Iteration count
      * @param blockIndex
-     */
+     * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
+     *      3.</a> */
     protected void _F(byte[] dest, int offset, PRF prf, byte[] S, int c,
             int blockIndex) {
         int hLen = prf.getHLen();
@@ -279,12 +303,12 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Four-octet encoding of the integer i, most significant octet first.
      * 
-     * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
-     *      3.</a>
+    
      * @param dest
      * @param offset
      * @param i
-     */
+     * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
+     *      3.</a> */
     protected void INT(byte[] dest, int offset, int i) {
         dest[offset + 0] = (byte) (i / (256 * 256 * 256));
         dest[offset + 1] = (byte) (i / (256 * 256));
@@ -292,14 +316,29 @@ public class PBKDF2Engine implements PBKDF2 {
         dest[offset + 3] = (byte) (i);
     }
 
+    /**
+     * Method getParameters.
+     * @return PBKDF2Parameters
+     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#getParameters()
+     */
     public PBKDF2Parameters getParameters() {
         return parameters;
     }
 
+    /**
+     * Method setParameters.
+     * @param parameters PBKDF2Parameters
+     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setParameters(PBKDF2Parameters)
+     */
     public void setParameters(PBKDF2Parameters parameters) {
         this.parameters = parameters;
     }
 
+    /**
+     * Method setPseudoRandomFunction.
+     * @param prf PRF
+     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setPseudoRandomFunction(PRF)
+     */
     public void setPseudoRandomFunction(PRF prf) {
         this.prf = prf;
     }
@@ -316,9 +355,9 @@ public class PBKDF2Engine implements PBKDF2 {
      * 
      * @param args
      *            Supply the password as argument.
-     * @throws IOException
-     * @throws NoSuchAlgorithmException
-     */
+    
+    
+     * @throws IOException * @throws NoSuchAlgorithmException */
     public static void main(String[] args)
             throws IOException, NoSuchAlgorithmException {
         String password = "password";

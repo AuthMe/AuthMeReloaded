@@ -2,6 +2,8 @@ package fr.xephi.authme.command;
 
 import org.bukkit.command.CommandSender;
 
+/**
+ */
 public class FoundCommandResult {
 
     /** The command description instance. */
@@ -31,8 +33,8 @@ public class FoundCommandResult {
     /**
      * Check whether the command was suitable.
      *
-     * @return True if the command was suitable, false otherwise.
-     */
+    
+     * @return True if the command was suitable, false otherwise. */
     public boolean hasProperArguments() {
         // Make sure the command description is set
         if(this.commandDescription == null)
@@ -45,8 +47,8 @@ public class FoundCommandResult {
     /**
      * Get the command description.
      *
-     * @return Command description.
-     */
+    
+     * @return Command description. */
     public CommandDescription getCommandDescription() {
         return this.commandDescription;
     }
@@ -64,8 +66,8 @@ public class FoundCommandResult {
     /**
      * Check whether the command is executable.
      *
-     * @return True if the command is executable, false otherwise.
-     */
+    
+     * @return True if the command is executable, false otherwise. */
     public boolean isExecutable() {
         // Make sure the command description is valid
         if(this.commandDescription == null)
@@ -80,8 +82,8 @@ public class FoundCommandResult {
      *
      * @param sender The command sender that executed the command.
      *
-     * @return True on success, false on failure.
-     */
+    
+     * @return True on success, false on failure. */
     public boolean executeCommand(CommandSender sender) {
         // Make sure the command description is valid
         if(this.commandDescription == null)
@@ -96,8 +98,8 @@ public class FoundCommandResult {
      *
      * @param sender The command sender.
      *
-     * @return True if the command sender has permission, false otherwise.
-     */
+    
+     * @return True if the command sender has permission, false otherwise. */
     public boolean hasPermission(CommandSender sender) {
         // Make sure the command description is valid
         if(this.commandDescription == null)
@@ -110,8 +112,8 @@ public class FoundCommandResult {
     /**
      * Get the command reference.
      *
-     * @return The command reference.
-     */
+    
+     * @return The command reference. */
     public CommandParts getCommandReference() {
         return this.commandReference;
     }
@@ -119,8 +121,8 @@ public class FoundCommandResult {
     /**
      * Get the command arguments.
      *
-     * @return The command arguments.
-     */
+    
+     * @return The command arguments. */
     public CommandParts getCommandArguments() {
         return this.commandArguments;
     }
@@ -128,8 +130,8 @@ public class FoundCommandResult {
     /**
      * Get the original query reference.
      *
-     * @return Original query reference.
-     */
+    
+     * @return Original query reference. */
     public CommandParts getQueryReference() {
         return this.queryReference;
     }
@@ -137,8 +139,8 @@ public class FoundCommandResult {
     /**
      * Get the difference value between the original query and the result reference.
      *
-     * @return The difference value.
-     */
+    
+     * @return The difference value. */
     public double getDifference() {
         // Get the difference through the command found
         if(this.commandDescription != null)

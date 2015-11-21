@@ -6,11 +6,19 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
+/**
+ */
 public class WORDPRESS implements EncryptionMethod {
 
     private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private SecureRandom randomGen = new SecureRandom();
 
+    /**
+     * Method encode64.
+     * @param src byte[]
+     * @param count int
+     * @return String
+     */
     private String encode64(byte[] src, int count) {
         int i, value;
         StringBuilder output = new StringBuilder();
@@ -45,6 +53,12 @@ public class WORDPRESS implements EncryptionMethod {
         return output.toString();
     }
 
+    /**
+     * Method crypt.
+     * @param password String
+     * @param setting String
+     * @return String
+     */
     private String crypt(String password, String setting) {
         String output = "*0";
         if (((setting.length() < 2) ? setting : setting.substring(0, 2)).equalsIgnoreCase(output)) {
@@ -83,6 +97,11 @@ public class WORDPRESS implements EncryptionMethod {
         return output;
     }
 
+    /**
+     * Method gensaltPrivate.
+     * @param input byte[]
+     * @return String
+     */
     private String gensaltPrivate(byte[] input) {
         String output = "$P$";
         int iterationCountLog2 = 8;
@@ -91,6 +110,11 @@ public class WORDPRESS implements EncryptionMethod {
         return output;
     }
 
+    /**
+     * Method stringToUtf8.
+     * @param string String
+     * @return byte[]
+     */
     private byte[] stringToUtf8(String string) {
         try {
             return string.getBytes("UTF-8");
@@ -99,6 +123,15 @@ public class WORDPRESS implements EncryptionMethod {
         }
     }
 
+    /**
+     * Method getHash.
+     * @param password String
+     * @param salt String
+     * @param name String
+     * @return String
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
+     */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
@@ -107,6 +140,15 @@ public class WORDPRESS implements EncryptionMethod {
         return crypt(password, gensaltPrivate(stringToUtf8(new String(random))));
     }
 
+    /**
+     * Method comparePassword.
+     * @param hash String
+     * @param password String
+     * @param playerName String
+     * @return boolean
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
+     */
     @Override
     public boolean comparePassword(String hash, String password,
             String playerName) throws NoSuchAlgorithmException {

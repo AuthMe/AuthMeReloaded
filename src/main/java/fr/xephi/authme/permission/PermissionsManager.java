@@ -90,8 +90,8 @@ public class PermissionsManager {
     /**
      * Check if the permissions manager is currently hooked into any of the supported permissions systems.
      *
-     * @return False if there isn't any permissions system used.
-     */
+  d.
+   * @return False if there isn't any permissions system used.   */
     public boolean isEnabled() {
         return !permsType.equals(PermissionsSystemType.NONE);
     }
@@ -99,8 +99,8 @@ public class PermissionsManager {
     /**
      * Return the permissions system where the permissions manager is currently hooked into.
      *
-     * @return Permissions system type.
-     */
+  e.
+   * @return Permissions system type.   */
     public PermissionsSystemType getUsedPermissionsSystemType() {
         return this.permsType;
     }
@@ -108,8 +108,8 @@ public class PermissionsManager {
     /**
      * Setup and hook into the permissions systems.
      *
-     * @return The detected permissions system.
-     */
+  m.
+   * @return The detected permissions system.   */
     public PermissionsSystemType setup() {
         // Define the plugin manager
         final PluginManager pm = this.server.getPluginManager();
@@ -245,8 +245,8 @@ public class PermissionsManager {
     /**
      * Reload the permissions manager, and re-hook all permission plugins.
      *
-     * @return True on success, false on failure.
-     */
+  e.
+   * @return True on success, false on failure.   */
     public boolean reload() {
         // Unhook all permission plugins
         unhook();
@@ -299,8 +299,8 @@ public class PermissionsManager {
     /**
      * Get the logger instance.
      *
-     * @return Logger instance.
-     */
+  e.
+   * @return Logger instance.   */
     public Logger getLogger() {
         return this.log;
     }
@@ -320,8 +320,8 @@ public class PermissionsManager {
      * @param player    The player.
      * @param permsNode Permissions node.
      *
-     * @return True if the player has permission.
-     */
+  n.
+   * @return True if the player has permission.   */
     public boolean hasPermission(Player player, String permsNode) {
         return hasPermission(player, permsNode, player.isOp());
     }
@@ -333,8 +333,8 @@ public class PermissionsManager {
      * @param permsNode The permission node.
      * @param def       Default returned if no permissions system is used.
      *
-     * @return True if the player has permission.
-     */
+  n.
+   * @return True if the player has permission.   */
     public boolean hasPermission(Player player, String permsNode, boolean def) {
         if(!isEnabled())
             // No permissions system is used, return default
@@ -386,7 +386,12 @@ public class PermissionsManager {
         }
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+  /**
+     * Method getGroups.
+     * @param player Player
+     * @return List<String>
+     */
+      @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public List<String> getGroups(Player player) {
         if(!isEnabled())
             // No permissions system is used, return an empty list
@@ -432,7 +437,9 @@ public class PermissionsManager {
         }
     }
 
-    public enum PermissionsSystemType {
+  /**
+     */
+      public enum PermissionsSystemType {
         NONE("None"),
         PERMISSIONS_EX("PermissionsEx"),
         PERMISSIONS_BUKKIT("Permissions Bukkit"),
@@ -444,11 +451,19 @@ public class PermissionsManager {
 
         public String name;
 
-        PermissionsSystemType(String name) {
+      /**
+         * Constructor for PermissionsSystemType.
+         * @param name String
+         */
+          PermissionsSystemType(String name) {
             this.name = name;
         }
 
-        public String getName() {
+      /**
+         * Method getName.
+         * @return String
+         */
+          public String getName() {
             return this.name;
         }
     }

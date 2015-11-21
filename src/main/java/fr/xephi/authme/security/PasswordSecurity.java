@@ -15,11 +15,19 @@ import fr.xephi.authme.security.crypts.BCRYPT;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class PasswordSecurity {
 
     private static SecureRandom rnd = new SecureRandom();
     public static HashMap<String, String> userSalt = new HashMap<>();
 
+    /**
+     * Method createSalt.
+     * @param length int
+     * @return String
+     * @throws NoSuchAlgorithmException
+     */
     public static String createSalt(int length)
             throws NoSuchAlgorithmException {
         byte[] msg = new byte[40];
@@ -30,6 +38,14 @@ public class PasswordSecurity {
         return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest)).substring(0, length);
     }
 
+    /**
+     * Method getHash.
+     * @param alg HashAlgorithm
+     * @param password String
+     * @param playerName String
+     * @return String
+     * @throws NoSuchAlgorithmException
+     */
     public static String getHash(HashAlgorithm alg, String password,
                                  String playerName) throws NoSuchAlgorithmException {
         EncryptionMethod method;
@@ -125,6 +141,14 @@ public class PasswordSecurity {
         return method.getHash(password, salt, playerName);
     }
 
+    /**
+     * Method comparePasswordWithHash.
+     * @param password String
+     * @param hash String
+     * @param playerName String
+     * @return boolean
+     * @throws NoSuchAlgorithmException
+     */
     public static boolean comparePasswordWithHash(String password, String hash,
                                                   String playerName) throws NoSuchAlgorithmException {
         HashAlgorithm algo = Settings.getPasswordHash;
@@ -155,6 +179,14 @@ public class PasswordSecurity {
         return false;
     }
 
+    /**
+     * Method compareWithAllEncryptionMethod.
+     * @param password String
+     * @param hash String
+     * @param playerName String
+     * @return boolean
+     * @throws NoSuchAlgorithmException
+     */
     private static boolean compareWithAllEncryptionMethod(String password,
                                                           String hash, String playerName) throws NoSuchAlgorithmException {
         for (HashAlgorithm algo : HashAlgorithm.values()) {

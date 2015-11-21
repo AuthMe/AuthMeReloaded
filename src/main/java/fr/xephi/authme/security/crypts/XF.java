@@ -9,14 +9,34 @@ import java.util.regex.Pattern;
 
 import fr.xephi.authme.AuthMe;
 
+/**
+ */
 public class XF implements EncryptionMethod {
 
+    /**
+     * Method getHash.
+     * @param password String
+     * @param salt String
+     * @param name String
+     * @return String
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
+     */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
         return getSHA256(getSHA256(password) + regmatch("\"salt\";.:..:\"(.*)\";.:.:\"hashFunc\"", salt));
     }
 
+    /**
+     * Method comparePassword.
+     * @param hash String
+     * @param password String
+     * @param playerName String
+     * @return boolean
+     * @throws NoSuchAlgorithmException
+     * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
+     */
     @Override
     public boolean comparePassword(String hash, String password,
             String playerName) throws NoSuchAlgorithmException {
@@ -24,6 +44,12 @@ public class XF implements EncryptionMethod {
         return hash.equals(regmatch("\"hash\";.:..:\"(.*)\";.:.:\"salt\"", salt));
     }
 
+    /**
+     * Method getSHA256.
+     * @param password String
+     * @return String
+     * @throws NoSuchAlgorithmException
+     */
     public String getSHA256(String password) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(password.getBytes());
@@ -43,6 +69,12 @@ public class XF implements EncryptionMethod {
         return hexString.toString();
     }
 
+    /**
+     * Method regmatch.
+     * @param pattern String
+     * @param line String
+     * @return String
+     */
     public String regmatch(String pattern, String line) {
         List<String> allMatches = new ArrayList<>();
         Matcher m = Pattern.compile(pattern).matcher(line);

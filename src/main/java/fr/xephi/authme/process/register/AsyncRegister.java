@@ -14,6 +14,8 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class AsyncRegister {
 
     protected Player player;
@@ -24,6 +26,14 @@ public class AsyncRegister {
     private DataSource database;
     private Messages m = Messages.getInstance();
 
+    /**
+     * Constructor for AsyncRegister.
+     * @param player Player
+     * @param password String
+     * @param email String
+     * @param plugin AuthMe
+     * @param data DataSource
+     */
     public AsyncRegister(Player player, String password, String email,
                          AuthMe plugin, DataSource data) {
         this.player = player;
@@ -34,10 +44,19 @@ public class AsyncRegister {
         this.database = data;
     }
 
+    /**
+     * Method getIp.
+     * @return String
+     */
     protected String getIp() {
         return plugin.getIP(player);
     }
 
+    /**
+     * Method preRegisterCheck.
+     * @return boolean
+     * @throws Exception
+     */
     protected boolean preRegisterCheck() throws Exception {
         String lowpass = password.toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name)) {
@@ -92,6 +111,10 @@ public class AsyncRegister {
         }
     }
 
+    /**
+     * Method emailRegister.
+     * @throws Exception
+     */
     protected void emailRegister() throws Exception {
         if (Settings.getmaxRegPerEmail > 0) {
             if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {

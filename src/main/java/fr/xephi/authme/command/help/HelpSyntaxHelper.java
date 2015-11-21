@@ -7,6 +7,8 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.util.ListUtils;
 
+/**
+ */
 public class HelpSyntaxHelper {
 
     /**
@@ -17,8 +19,8 @@ public class HelpSyntaxHelper {
      * @param alternativeLabel The alternative label to use for this command syntax.
      * @param highlight True to highlight the important parts of this command.
      *
-     * @return The command with proper syntax.
-     */
+    
+     * @return The command with proper syntax. */
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     public static String getCommandSyntax(CommandDescription commandDescription, CommandParts commandReference, String alternativeLabel, boolean highlight) {
         // Create a string builder to build the command

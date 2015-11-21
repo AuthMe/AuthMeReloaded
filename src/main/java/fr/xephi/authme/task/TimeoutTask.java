@@ -7,6 +7,8 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Messages;
 
+/**
+ */
 public class TimeoutTask implements Runnable {
 
     private AuthMe plugin;
@@ -14,16 +16,30 @@ public class TimeoutTask implements Runnable {
     private Messages m = Messages.getInstance();
     private Player player;
 
+    /**
+     * Constructor for TimeoutTask.
+     * @param plugin AuthMe
+     * @param name String
+     * @param player Player
+     */
     public TimeoutTask(AuthMe plugin, String name, Player player) {
         this.plugin = plugin;
         this.name = name;
         this.player = player;
     }
 
+    /**
+     * Method getName.
+     * @return String
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         if (PlayerCache.getInstance().isAuthenticated(name))

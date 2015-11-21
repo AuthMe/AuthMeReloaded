@@ -36,6 +36,8 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Settings;
 
+/**
+ */
 public class AuthMeInventoryPacketAdapter extends PacketAdapter {
 
     private static final int PLAYER_INVENTORY = 0;
@@ -44,10 +46,19 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
     private static final int PLAYER_CRAFTING_SIZE = 5;
     private static final int HOTBAR_SIZE = 9;
 
+    /**
+     * Constructor for AuthMeInventoryPacketAdapter.
+     * @param plugin AuthMe
+     */
     public AuthMeInventoryPacketAdapter(AuthMe plugin) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
     }
 
+    /**
+     * Method onPacketSending.
+     * @param packetEvent PacketEvent
+     * @see com.comphenix.protocol.events.PacketListener#onPacketSending(PacketEvent)
+     */
     @Override
     public void onPacketSending(PacketEvent packetEvent) {
         Player player = packetEvent.getPlayer();
@@ -64,6 +75,10 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
     }
 
+    /**
+     * Method sendInventoryPacket.
+     * @param player Player
+     */
     public void sendInventoryPacket(Player player) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         PacketContainer inventoryPacket = protocolManager.createPacket(PacketType.Play.Server.WINDOW_ITEMS);

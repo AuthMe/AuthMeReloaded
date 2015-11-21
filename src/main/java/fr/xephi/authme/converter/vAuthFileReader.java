@@ -14,18 +14,29 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 
+/**
+ */
 public class vAuthFileReader {
 
     public AuthMe plugin;
     public DataSource database;
     public CommandSender sender;
 
+    /**
+     * Constructor for vAuthFileReader.
+     * @param plugin AuthMe
+     * @param sender CommandSender
+     */
     public vAuthFileReader(AuthMe plugin, CommandSender sender) {
         this.plugin = plugin;
         this.database = plugin.database;
         this.sender = sender;
     }
 
+    /**
+     * Method convert.
+     * @throws IOException
+     */
     public void convert() throws IOException {
         final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
         Scanner scanner;
@@ -57,12 +68,22 @@ public class vAuthFileReader {
 
     }
 
+    /**
+     * Method isUUIDinstance.
+     * @param s String
+     * @return boolean
+     */
     private boolean isUUIDinstance(String s) {
         if (String.valueOf(s.charAt(8)).equalsIgnoreCase("-"))
             return true;
         return true;
     }
 
+    /**
+     * Method getName.
+     * @param uuid UUID
+     * @return String
+     */
     private String getName(UUID uuid) {
         try {
             for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {

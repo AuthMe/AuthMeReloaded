@@ -4,16 +4,27 @@ import org.bukkit.command.CommandSender;
 
 import fr.xephi.authme.AuthMe;
 
+/**
+ */
 public class xAuthConverter implements Converter {
 
     public AuthMe plugin;
     public CommandSender sender;
 
+    /**
+     * Constructor for xAuthConverter.
+     * @param plugin AuthMe
+     * @param sender CommandSender
+     */
     public xAuthConverter(AuthMe plugin, CommandSender sender) {
         this.plugin = plugin;
         this.sender = sender;
     }
 
+    /**
+     * Method run.
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         try {
