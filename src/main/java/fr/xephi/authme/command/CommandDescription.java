@@ -97,26 +97,12 @@ public class CommandDescription {
     }
 
     /**
-     * Get the first relative command label.
-     *
-    
-     * @return First relative command label. */
-    public String getLabel() {
-        // Ensure there's any item in the command list
-        if(this.labels.size() == 0)
-            return "";
-
-        // Return the first command on the list
-        return this.labels.get(0);
-    }
-
-    /**
      * Get the label most similar to the reference. The first label will be returned if no reference was supplied.
      *
      * @param reference The command reference.
      *
-    
-     * @return The most similar label, or the first label. An empty label will be returned if no label was set. */
+     * @return The most similar label, or the first label. An empty label will be returned if no label was set.
+     */
     public String getLabel(CommandParts reference) {
         // Ensure there's any item in the command list
         if(this.labels.size() == 0)
@@ -147,8 +133,8 @@ public class CommandDescription {
     /**
      * Get all relative command labels.
      *
-    
-     * @return All relative labels labels. */
+     * @return All relative labels labels.
+     */
     public List<String> getLabels() {
         return this.labels;
     }
@@ -160,11 +146,11 @@ public class CommandDescription {
      */
     public void setLabels(List<String> labels) {
         // Check whether the command label list should be cleared
-        if(labels == null)
+        if (labels == null) {
             this.labels.clear();
-
-        else
+        } else {
             this.labels = labels;
+        }
     }
 
     /**
@@ -307,8 +293,9 @@ public class CommandDescription {
 
     /**
      * Get the absolute command label, without a slash.
-    
-     * @return String */
+     *
+     * @return the absolute label
+     */
     public String getAbsoluteLabel() {
         return getAbsoluteLabel(false);
     }
@@ -316,9 +303,9 @@ public class CommandDescription {
     /**
      * Get the absolute command label.
      *
-    
      * @param includeSlash boolean
-     * @return Absolute command label. */
+     * @return Absolute command label.
+     */
     public String getAbsoluteLabel(boolean includeSlash) {
         return getAbsoluteLabel(includeSlash, null);
     }
@@ -326,10 +313,10 @@ public class CommandDescription {
     /**
      * Get the absolute command label.
      *
-    
      * @param includeSlash boolean
      * @param reference CommandParts
-     * @return Absolute command label. */
+     * @return Absolute command label.
+     */
     public String getAbsoluteLabel(boolean includeSlash, CommandParts reference) {
         // Get the command reference, and make sure it is valid
         CommandParts out = getCommandReference(reference);
@@ -345,8 +332,8 @@ public class CommandDescription {
      *
      * @param reference The reference to use as template, which is used to choose the most similar reference.
      *
-    
-     * @return Command reference. */
+     * @return Command reference.
+     */
     public CommandParts getCommandReference(CommandParts reference) {
         // Build the reference
         List<String> referenceList = new ArrayList<>();
@@ -367,8 +354,8 @@ public class CommandDescription {
      *
      * @param other The other command reference.
      *
-    
-     * @return The command difference. Zero if there's no difference. A negative number on error. */
+     * @return The command difference. Zero if there's no difference. A negative number on error.
+     */
     public double getCommandDifference(CommandParts other) {
         return getCommandDifference(other, false);
     }
@@ -379,8 +366,8 @@ public class CommandDescription {
      * @param other The other command reference.
      * @param fullCompare True to fully compare both command references.
      *
-    
-     * @return The command difference. Zero if there's no difference. A negative number on error. */
+     * @return The command difference. Zero if there's no difference. A negative number on error.
+     */
     public double getCommandDifference(CommandParts other, boolean fullCompare) {
         // Make sure the reference is valid
         if(other == null)
@@ -396,8 +383,8 @@ public class CommandDescription {
     /**
      * Get the executable command.
      *
-    
-     * @return The executable command. */
+     * @return The executable command.
+     */
     public ExecutableCommand getExecutableCommand() {
         return this.executableCommand;
     }
@@ -414,8 +401,8 @@ public class CommandDescription {
     /**
      * Check whether this command is executable, based on the assigned executable command.
      *
-    
-     * @return True if this command is executable. */
+     * @return True if this command is executable.
+     */
     public boolean isExecutable() {
         return this.executableCommand != null;
     }
@@ -427,8 +414,8 @@ public class CommandDescription {
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
-    
-     * @return True on success, false on failure. */
+     * @return True on success, false on failure.
+     */
     public boolean execute(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Make sure the command is executable
         if(!isExecutable())
@@ -592,8 +579,8 @@ public class CommandDescription {
     /**
      * Get all command arguments.
      *
-    
-     * @return Command arguments. */
+     * @return Command arguments.
+     */
     public List<CommandArgumentDescription> getArguments() {
         return this.arguments;
     }
@@ -605,11 +592,11 @@ public class CommandDescription {
      */
     public void setArguments(List<CommandArgumentDescription> arguments) {
         // Convert null into an empty argument list
-        if(arguments == null)
+        if (arguments == null) {
             this.arguments.clear();
-
-        else
+        } else {
             this.arguments = arguments;
+        }
     }
 
     /**
@@ -617,22 +604,17 @@ public class CommandDescription {
      *
      * @param argument The argument to check for.
      *
-    
-     * @return True if this argument already exists, false otherwise. */
+     * @return True if this argument already exists, false otherwise.
+     */
     public boolean hasArgument(CommandArgumentDescription argument) {
-        // Make sure the argument is valid
-        if(argument == null)
-            return false;
-
-        // Check whether the argument exists, return the result
-        return this.arguments.contains(argument);
+        return argument != null && arguments.contains(argument);
     }
 
     /**
      * Check whether this command has any arguments.
      *
-    
-     * @return True if this command has any arguments. */
+     * @return True if this command has any arguments.
+     */
     public boolean hasArguments() {
         return (this.arguments.size() != 0);
     }
@@ -640,8 +622,8 @@ public class CommandDescription {
     /**
      * The minimum number of arguments required for this command.
      *
-    
-     * @return The minimum number of required arguments. */
+     * @return The minimum number of required arguments.
+     */
     public int getMinimumArguments() {
         // Get the number of required and optional arguments
         int requiredArguments = 0;
@@ -838,23 +820,26 @@ public class CommandDescription {
      *
      * @param commandReference The command reference.
      *
-    
-     * @return The difference in argument count between the reference and the actual command. */
+     * @return The difference in argument count between the reference and the actual command.
+     */
     public int getSuitableArgumentsDifference(CommandParts commandReference) {
         // Make sure the command reference is valid
-        if(commandReference.getCount() <= 0)
+        if (commandReference.getCount() <= 0) {
             return -1;
+        }
 
         // Get the remaining command reference element count
         int remainingElementCount = commandReference.getCount() - getParentCount() - 1;
 
-        // Check if there are too less arguments
-        if(getMinimumArguments() > remainingElementCount)
+        // Check if there are too few arguments
+        if (getMinimumArguments() > remainingElementCount) {
             return Math.abs(getMinimumArguments() - remainingElementCount);
+        }
 
         // Check if there are too many arguments
-        if(getMaximumArguments() < remainingElementCount && getMaximumArguments() >= 0)
+        if (getMaximumArguments() < remainingElementCount && getMaximumArguments() >= 0) {
             return Math.abs(remainingElementCount - getMaximumArguments());
+        }
 
         // The arguments seem to be EQUALS, return the result
         return 0;
@@ -863,8 +848,8 @@ public class CommandDescription {
     /**
      * Get the command permissions.
      *
-    
-     * @return The command permissions. */
+     * @return The command permissions.
+     */
     public CommandPermissions getCommandPermissions() {
         return this.permissions;
     }
@@ -894,30 +879,29 @@ public class CommandDescription {
      * @param commandLabel The first command label.
      * @param otherCommandLabel The other command label.
      *
-    
-     * @return True if the labels are equal to each other. */
+     * @return True if the labels are equal to each other.
+     */
     private static boolean commandLabelEquals(String commandLabel, String otherCommandLabel) {
-        // Trim the command labels from unwanted whitespaces
         commandLabel = commandLabel.trim();
         otherCommandLabel = otherCommandLabel.trim();
-
-        // Check whether the the two command labels are equal (case insensitive)
-        return (commandLabel.equalsIgnoreCase(otherCommandLabel));
+        return commandLabel.equalsIgnoreCase(otherCommandLabel);
     }
 
     /**
      * Check whether the command description has been set up properly.
      *
-    
-     * @return True if the command description is valid, false otherwise. */
+     * @return True if the command description is valid, false otherwise.
+     */
     public boolean isValid() {
         // Make sure any command label is set
-        if(getLabels().size() == 0)
+        if (getLabels().size() == 0) {
             return false;
+        }
 
         // Make sure the permissions are set up properly
-        if(this.permissions == null)
+        if (this.permissions == null) {
             return false;
+        }
 
         // Everything seems to be correct, return the result
         return true;
