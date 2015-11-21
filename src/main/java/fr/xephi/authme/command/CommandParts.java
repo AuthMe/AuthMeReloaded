@@ -3,7 +3,6 @@ package fr.xephi.authme.command;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.xephi.authme.util.ListUtils;
 import fr.xephi.authme.util.StringUtils;
 
 /**
@@ -165,8 +164,8 @@ public class CommandParts {
      *
      * @param other The other reference.
      *
-    
-     * @return The result from zero to above. A negative number will be returned on error. */
+     * @return The result from zero to above. A negative number will be returned on error.
+     */
     public double getDifference(CommandParts other) {
         return getDifference(other, false);
     }
@@ -177,8 +176,8 @@ public class CommandParts {
      * @param other The other reference.
      * @param fullCompare True to compare the full references as far as the range reaches.
      *
-    
-     * @return The result from zero to above. A negative number will be returned on error. */
+     * @return The result from zero to above. A negative number will be returned on error.
+     */
     public double getDifference(CommandParts other, boolean fullCompare) {
         // Make sure the other reference is correct
         if(other == null)
@@ -196,10 +195,10 @@ public class CommandParts {
     /**
      * Convert the parts to a string.
      *
-    
-     * @return The part as a string. */
+     * @return The part as a string.
+     */
     @Override
     public String toString() {
-        return ListUtils.implode(this.parts, " ");
+        return StringUtils.join(" ", this.parts);
     }
 }
