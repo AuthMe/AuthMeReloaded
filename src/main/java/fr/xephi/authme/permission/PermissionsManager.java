@@ -339,8 +339,8 @@ public class PermissionsManager {
      * @return True if the player has permission.
      */
     public boolean hasPermission(Player player, String permsNode, boolean def) {
+        // If no permissions system is used, return the default value
         if(!isEnabled())
-            // No permissions system is used, return default
             return def;
 
         switch(this.permsType) {
@@ -394,12 +394,12 @@ public class PermissionsManager {
      *
      * @param player The player.
      *
-     * @return Permission groups.
+     * @return Permission groups, or an empty list if this feature is not supported.
      */
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public List<String> getGroups(Player player) {
+        // If no permissions system is used, return an empty list
         if(!isEnabled())
-            // No permissions system is used, return an empty list
             return new ArrayList<>();
 
         switch(this.permsType) {
@@ -449,11 +449,12 @@ public class PermissionsManager {
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public boolean addGroup(Player player, String groupName) {
+        // If no permissions system is used, return false
         if(!isEnabled())
-            // No permissions system is used, return false
             return false;
 
         // Set the group the proper way
@@ -500,17 +501,43 @@ public class PermissionsManager {
     }
 
     /**
+     * Add the permission group of a player, if supported.
+     *
+     * @param player The player
+     * @param groupNames The name of the groups to add.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean addGroups(Player player, List<String> groupNames) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        // Add each group to the user
+        boolean result = true;
+        for(String groupName : groupNames)
+            if(!addGroup(player, groupName))
+                result = false;
+
+        // Return the result
+        return result;
+    }
+
+    /**
      * Set the permission group of a player, if supported.
      *
      * @param player The player
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public boolean setGroup(Player player, String groupName) {
+        // If no permissions system is used, return false
         if(!isEnabled())
-            // No permissions system is used, return false
             return false;
 
         // Create a list of group names
