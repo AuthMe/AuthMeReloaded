@@ -7,6 +7,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -172,13 +173,28 @@ public class DataManager {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
     }
 
+    // TODO: What is this method for? Is it correct?
     /**
-     * Method purgePermissions.
-     * @param cleared List<String>
-     * @param permission Permission
+     * @param cleared Cleared players.
      */
-    public synchronized void purgePermissions(List<String> cleared, Permission permission) {
+    public synchronized void purgePermissions(List<String> cleared) {
+        // Get the permissions manager, and make sure it's valid
+        PermissionsManager permsMan = this.plugin.getPermissionsManager();
+        if(permsMan == null)
+            ConsoleLogger.showError("Unable to access permissions manager instance!");
+        assert permsMan != null;
+
         int i = 0;
+        for (String name : cleared) {
+            try {
+                permsMan.removeAllGroups(this.getOnlinePlayerLower(name.toLowerCase()));
+                i++;
+            } catch(Exception e) {
+            }
+        }
+        ConsoleLogger.info("AutoPurgeDatabase : Removed " + i + " permissions");
+
+        /*int i = 0;
         for (String name : cleared) {
             try {
                 OfflinePlayer p = this.getOfflinePlayer(name);
@@ -189,7 +205,7 @@ public class DataManager {
             } catch (Exception e) {
             }
         }
-        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " Permissions");
+        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " Permissions");*/
     }
 
     /**
