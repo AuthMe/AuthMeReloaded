@@ -22,7 +22,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 import org.mcstats.Metrics;
@@ -932,5 +931,15 @@ public class AuthMe extends JavaPlugin {
     /** Returns the management instance. */
     public Management getManagement() {
         return management;
+    }
+
+    /**
+     * Returns the server instance running this plugin. Use this method in favor of
+     * {@link AuthMe#getServer()} for testability purposes.
+     *
+     * @return the server instance
+     */
+    public Server getGameServer() {
+        return super.getServer();
     }
 }
