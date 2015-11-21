@@ -638,8 +638,8 @@ public class PermissionsManager {
 
             case PERMISSIONS_BUKKIT:
                 // Permissions Bukkit
-                // Permissions Bukkit doesn't support groups, return false
-                return false;
+                // Set the user's group using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player setgroup " + player.getName() + " " + groupName);
 
             case B_PERMISSIONS:
                 // bPermissions
@@ -648,11 +648,8 @@ public class PermissionsManager {
 
             case ESSENTIALS_GROUP_MANAGER:
                 // Essentials Group Manager
-                /*final AnjoPermissionsHandler handler = groupManagerPerms.getWorldsHolder().getWorldPermissions(player);
-                if(handler == null)
-                    return false;*/
-                // Add the user to the group
-                // TODO: Clear the current list of groups?
+                // Clear the list of groups, add the player to the specified group afterwards using a command
+                removeAllGroups(player);
                 return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "manuadd " + player.getName() + " " + groupName);
 
             case Z_PERMISSIONS:
@@ -662,7 +659,8 @@ public class PermissionsManager {
 
             case VAULT:
                 // Vault
-                // TODO: Clear the current list of groups?
+                // Remove all current groups, add the player to the specified group afterwards
+                removeAllGroups(player);
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
 
