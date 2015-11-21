@@ -364,7 +364,6 @@ public class AuthMe extends JavaPlugin {
             pm.registerEvents(new AuthMePlayerListener18(this), this);
         } catch (ClassNotFoundException ignore) {
         }
-        pm.registerEvents(new AuthMePluginListener(this), this);
         pm.registerEvents(new AuthMeBlockListener(this), this);
         pm.registerEvents(new AuthMeEntityListener(this), this);
         pm.registerEvents(new AuthMeServerListener(this), this);

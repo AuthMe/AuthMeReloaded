@@ -12,6 +12,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.plugin.Plugin;
 
 /**
  */
@@ -55,7 +56,21 @@ public class AuthMeServerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginDisable(PluginDisableEvent event) {
-        String pluginName = event.getPlugin().getName();
+        // Get the plugin instance
+        Plugin pluginInstance = event.getPlugin();
+
+        // Make sure the plugin instance isn't null
+        if(pluginInstance == null)
+            return;
+
+        // Make sure it's not this plugin itself
+        if(pluginInstance.equals(this.plugin))
+            return;
+
+        // Call the onPluginDisable method in the permissions manager
+        this.plugin.getPermissionsManager().onPluginDisable(event);
+
+        String pluginName = pluginInstance.getName();
         if (pluginName.equalsIgnoreCase("Essentials")) {
             plugin.ess = null;
             ConsoleLogger.info("Essentials has been disabled, unhook!");
@@ -91,6 +106,9 @@ public class AuthMeServerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
+        // Call the onPluginEnable method in the permissions manager
+        this.plugin.getPermissionsManager().onPluginEnable(event);
+
         String pluginName = event.getPlugin().getName();
         if (pluginName.equalsIgnoreCase("Essentials") || pluginName.equalsIgnoreCase("EssentialsSpawn"))
             plugin.checkEssentials();
