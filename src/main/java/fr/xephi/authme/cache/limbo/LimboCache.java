@@ -2,6 +2,7 @@ package fr.xephi.authme.cache.limbo;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -13,6 +14,7 @@ import fr.xephi.authme.cache.backup.DataFileCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.events.ResetInventoryEvent;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.permissions.Permission;
 
 /**
  */
@@ -34,8 +36,9 @@ public class LimboCache {
     }
 
     /**
-     * Method addLimboPlayer.
-     * @param player Player
+     * Add a limbo player.
+     *
+     * @param player Player instance to add.
      */
     public void addLimboPlayer(Player player) {
         String name = player.getName().toLowerCase();
@@ -44,6 +47,12 @@ public class LimboCache {
         boolean operator = false;
         String playerGroup = "";
         boolean flying = false;
+
+        // Get the permissions manager, and make sure it's valid
+        PermissionsManager permsMan = this.plugin.getPermissionsManager();
+        if(permsMan == null)
+            ConsoleLogger.showError("Unable to access permissions manager!");
+        assert permsMan != null;
 
         if (playerData.doesCacheExist(player)) {
             DataFileCache cache = playerData.readCache(player);
@@ -55,14 +64,10 @@ public class LimboCache {
         } else {
             operator = player.isOp();
             flying = player.isFlying();
-            if (plugin.vaultGroupManagement != null) {
-                try {
-                    playerGroup = plugin.vaultGroupManagement.getPrimaryGroup(player);
-                } catch (UnsupportedOperationException e) {
-                    ConsoleLogger.showError("Your permission system (" + plugin.vaultGroupManagement.getName() + ") do not support Group system with that config... unhook!");
-                    plugin.vaultGroupManagement = null;
-                }
-            }
+
+            // Check whether groups are supported
+            if(permsMan.hasGroupSupport())
+                playerGroup = permsMan.getPrimaryGroup(player);
         }
 
         if (Settings.isForceSurvivalModeEnabled) {
