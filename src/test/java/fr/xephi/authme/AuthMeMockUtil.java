@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.settings.Messages;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
@@ -14,17 +15,35 @@ public final class AuthMeMockUtil {
     }
 
     /**
-     * Set the AuthMe plugin instance to a mock object. Use {@link AuthMe#getInstance()} to retrieve the mock.
+     * Sets the AuthMe plugin instance to a mock object. Use {@link AuthMe#getInstance()} to retrieve the mock.
      */
-    public static void initialize() {
+    public static void mockAuthMeInstance() {
         AuthMe mock = Mockito.mock(AuthMe.class);
+        mockSingletonForClass(AuthMe.class, "plugin", mock);
+    }
 
+    /**
+     * Creates a mock Messages object for the instance returned from {@link Messages#getInstance()}.
+     */
+    public static void mockMessagesInstance() {
+        Messages mock = Mockito.mock(Messages.class);
+        mockSingletonForClass(Messages.class, "singleton", mock);
+    }
+
+    /**
+     * Sets a field of a class to the given mock.
+     *
+     * @param clazz the class to modify
+     * @param fieldName the field name
+     * @param mock the mock to set for the given field
+     */
+    private static void mockSingletonForClass(Class<?> clazz, String fieldName, Object mock) {
         try {
-            Field instance = AuthMe.class.getDeclaredField("plugin");
+            Field instance = clazz.getDeclaredField(fieldName);
             instance.setAccessible(true);
             instance.set(null, mock);
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException("Could not initialize AuthMe mock", e);
+            throw new RuntimeException("Could not set mock instance for class " + clazz.getName(), e);
         }
     }
 }

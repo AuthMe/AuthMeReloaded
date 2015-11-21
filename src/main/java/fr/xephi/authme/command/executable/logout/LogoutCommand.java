@@ -23,7 +23,7 @@ public class LogoutCommand extends ExecutableCommand {
         final Player player = (Player) sender;
 
         // Logout the player
-        plugin.management.performLogout(player);
+        plugin.getManagement().performLogout(player);
         return true;
     }
 }

@@ -1,4 +1,4 @@
-package fr.xephi.authme.command.executable.login;
+package fr.xephi.authme.command.executable.logout;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.AuthMeMockUtil;
@@ -13,16 +13,13 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
 /**
- * Test for {@link LoginCommand}.
+ * Test for {@link LogoutCommand}.
  */
-public class LoginCommandTest {
+public class LogoutCommandTest {
 
     private static Management managementMock;
 
@@ -40,40 +37,26 @@ public class LoginCommandTest {
     public void shouldStopIfSenderIsNotAPlayer() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
-        LoginCommand command = new LoginCommand();
+        LogoutCommand command = new LogoutCommand();
 
         // when
         command.executeCommand(sender, new CommandParts(), new CommandParts());
 
         // then
-        Mockito.verify(managementMock, never()).performLogin(any(Player.class), anyString(), anyBoolean());
+        Mockito.verify(managementMock, never()).performLogout(any(Player.class));
     }
 
     @Test
     public void shouldCallManagementForPlayerCaller() {
         // given
         Player sender = mock(Player.class);
-        LoginCommand command = new LoginCommand();
+        LogoutCommand command = new LogoutCommand();
 
         // when
         command.executeCommand(sender, new CommandParts(), new CommandParts("password"));
 
         // then
-        Mockito.verify(managementMock).performLogin(eq(sender), eq("password"), eq(false));
+        Mockito.verify(managementMock).performLogout(sender);
     }
 
-    @Test
-    public void shouldHandleMissingPassword() {
-        // given
-        Player sender = mock(Player.class);
-        LoginCommand command = new LoginCommand();
-
-        // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts());
-
-        // then
-        // TODO ljacqu 20151121: May make sense to handle null password in LoginCommand instead of forwarding the call
-        String password = null;
-        Mockito.verify(managementMock).performLogin(eq(sender), eq(password), eq(false));
-    }
 }

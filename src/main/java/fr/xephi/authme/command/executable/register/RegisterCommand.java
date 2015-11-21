@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.register;
 
+import fr.xephi.authme.process.Management;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,7 +32,7 @@ public class RegisterCommand extends ExecutableCommand {
             return true;
         }
 
-        final AuthMe plugin = AuthMe.getInstance();
+        final Management management = AuthMe.getInstance().getManagement();
         if (Settings.emailRegistration && !Settings.getmailAccount.isEmpty()) {
             if (Settings.doubleEmailCheck) {
                 if (commandArguments.getCount() < 2 || !commandArguments.get(0).equals(commandArguments.get(1))) {
@@ -46,7 +47,7 @@ public class RegisterCommand extends ExecutableCommand {
             }
             RandomString rand = new RandomString(Settings.getRecoveryPassLength);
             final String thePass = rand.nextString();
-            plugin.management.performRegister(player, thePass, email);
+            management.performRegister(player, thePass, email);
             return true;
         }
         if (commandArguments.getCount() > 1 && Settings.getEnablePasswordVerifier)
@@ -54,7 +55,7 @@ public class RegisterCommand extends ExecutableCommand {
                 m.send(player, "password_error");
                 return true;
             }
-        plugin.management.performRegister(player, commandArguments.get(0), "");
+        management.performRegister(player, commandArguments.get(0), "");
         return true;
     }
 }
