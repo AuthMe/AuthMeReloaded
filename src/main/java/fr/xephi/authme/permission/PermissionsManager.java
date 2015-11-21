@@ -480,9 +480,7 @@ public class PermissionsManager {
             case ESSENTIALS_GROUP_MANAGER:
                 // Essentials Group Manager
                 final AnjoPermissionsHandler handler = groupManagerPerms.getWorldsHolder().getWorldPermissions(player);
-                if(handler == null)
-                    return false;
-                return handler.inGroup(player.getName(), groupName);
+                return handler != null && handler.inGroup(player.getName(), groupName);
 
             case VAULT:
                 // Vault
