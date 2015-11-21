@@ -390,11 +390,11 @@ public class PermissionsManager {
     }
 
     /**
-     * Method getGroups.
+     * Get the permission groups of a player, if available.
      *
-     * @param player Player.
+     * @param player The player.
      *
-     * @return Groups.
+     * @return Permission groups.
      */
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public List<String> getGroups(Player player) {
@@ -439,6 +439,71 @@ public class PermissionsManager {
             default:
                 // Something went wrong, return an empty list to prevent problems
                 return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Set the permission group of a player, if supported.
+     *
+     * @param player The player
+     * @param groupName The name of the group.
+     *
+     * @return True if succeed, false otherwise.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean setGroup(Player player, String groupName) {
+        if(!isEnabled())
+            // No permissions system is used, return false
+            return false;
+
+        // Create a list of group names
+        List<String> groupNames = new ArrayList<>();
+        groupNames.add(groupName);
+
+        // Set the group the proper way
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+                // Permissions Ex
+                PermissionUser user = PermissionsEx.getUser(player);
+                user.setParentsIdentifier(groupNames);
+                return true;
+
+            case PERMISSIONS_BUKKIT:
+                // Permissions Bukkit
+                // Permissions Bukkit doesn't support groups, return false
+                return false;
+
+            case B_PERMISSIONS:
+                // bPermissions
+                ApiLayer.setGroup(player.getWorld().getName(), CalculableType.USER, player.getName(), groupName);
+                return true;
+
+            case ESSENTIALS_GROUP_MANAGER:
+                // Essentials Group Manager
+                final AnjoPermissionsHandler handler = groupManagerPerms.getWorldsHolder().getWorldPermissions(player);
+                if(handler == null)
+                    return false;
+                // TODO: Write proper code here!
+                //return Arrays.asList(handler.getGroups(player.getName()));
+
+            case Z_PERMISSIONS:
+                //zPermissions
+                // TODO: Write proper code here!
+                //return new ArrayList(zPermissionsService.getPlayerGroups(player.getName()));
+
+            case VAULT:
+                // Vault
+                // TODO: Clear the current list of groups?
+                vaultPerms.playerAddGroup(player, groupName);
+                return true;
+
+            case NONE:
+                // Not hooked into any permissions system, return false
+                return false;
+
+            default:
+                // Something went wrong, return false
+                return false;
         }
     }
 
