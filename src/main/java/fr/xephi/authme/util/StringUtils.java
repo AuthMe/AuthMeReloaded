@@ -49,4 +49,39 @@ public class StringUtils {
     	return false;
     }
 
+    /**
+     * Null-safe method for checking whether a string is empty. Note that the string
+     * is trimmed, so this method also considers a string with whitespace as empty.
+     *
+     * @param str the string to verify
+     *
+     * @return true if the string is empty, false otherwise
+     */
+    public static boolean isEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+
+    /**
+     * Joins a list of elements into a single string with the specified delimiter.
+     *
+     * @param delimiter the delimiter to use
+     * @param elements the elements to join
+     *
+     * @return a new String that is composed of the elements separated by the delimiter
+     */
+    public static String join(String delimiter, Iterable<String> elements) {
+        StringBuilder sb = new StringBuilder();
+        for (String element : elements) {
+            if (!isEmpty(element)) {
+                // Add the separator if it isn't the first element
+                if (sb.length() > 0) {
+                    sb.append(delimiter);
+                }
+                sb.append(element);
+            }
+        }
+
+        return sb.toString();
+    }
+
 }
