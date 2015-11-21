@@ -96,7 +96,7 @@ public class AuthMe extends JavaPlugin {
     public boolean delayedAntiBot = true;
 
     // Hooks TODO: move into modules
-    public Permission vaultGroupManagement;
+    public Permission vaultGroupManagement; // TODO: Remove this instance, and replace every usage with permissions manager!
     public Essentials ess;
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
