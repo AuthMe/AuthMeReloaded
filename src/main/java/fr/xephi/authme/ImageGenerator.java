@@ -21,8 +21,8 @@ public class ImageGenerator {
 
     /**
      * Method generateImage.
-     * @return BufferedImage
-     */
+    
+     * @return BufferedImage */
     public BufferedImage generateImage() {
         BufferedImage image = new BufferedImage(200, 60, BufferedImage.TYPE_BYTE_INDEXED);
         Graphics2D graphics = image.createGraphics();

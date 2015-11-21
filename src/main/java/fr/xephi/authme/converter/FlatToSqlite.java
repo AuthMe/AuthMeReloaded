@@ -121,9 +121,9 @@ public class FlatToSqlite implements Converter {
 
     /**
      * Method connect.
-     * @throws ClassNotFoundException
-     * @throws SQLException
-     */
+    
+    
+     * @throws ClassNotFoundException * @throws SQLException */
     private synchronized void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
@@ -131,8 +131,8 @@ public class FlatToSqlite implements Converter {
 
     /**
      * Method setup.
-     * @throws SQLException
-     */
+    
+     * @throws SQLException */
     private synchronized void setup() throws SQLException {
         Statement st = null;
         ResultSet rs = null;
@@ -179,8 +179,8 @@ public class FlatToSqlite implements Converter {
     /**
      * Method saveAuth.
      * @param s String
-     * @return boolean
-     */
+    
+     * @return boolean */
     private synchronized boolean saveAuth(String s) {
         PreparedStatement pst = null;
         try {

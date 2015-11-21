@@ -58,8 +58,8 @@ public class NewAPI {
 
     /**
      * Method getPlugin.
-     * @return AuthMe
-     */
+    
+     * @return AuthMe */
     public AuthMe getPlugin() {
         return plugin;
     }
@@ -94,8 +94,8 @@ public class NewAPI {
     /**
      * Method getLastLocation.
      * @param player Player
-     * @return Location
-     */
+    
+     * @return Location */
     public Location getLastLocation(Player player) {
         try {
             PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());

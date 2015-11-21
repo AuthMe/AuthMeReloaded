@@ -18,14 +18,14 @@ public abstract class Module {
 
     /**
      * Method getName.
-     * @return String
-     */
+    
+     * @return String */
     public abstract String getName();
 
     /**
      * Method getType.
-     * @return ModuleType
-     */
+    
+     * @return ModuleType */
     public abstract ModuleType getType();
 
     public void load() {

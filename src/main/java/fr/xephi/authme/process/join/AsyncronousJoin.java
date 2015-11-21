@@ -255,8 +255,8 @@ public class AsyncronousJoin {
 
     /**
      * Method needFirstSpawn.
-     * @return boolean
-     */
+    
+     * @return boolean */
     private boolean needFirstSpawn() {
         if (player.hasPlayedBefore())
             return false;

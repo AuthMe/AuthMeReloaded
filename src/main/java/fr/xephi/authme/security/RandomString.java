@@ -36,8 +36,8 @@ public class RandomString {
 
     /**
      * Method nextString.
-     * @return String
-     */
+    
+     * @return String */
     public String nextString() {
         for (int idx = 0; idx < buf.length; ++idx)
             buf[idx] = chars[random.nextInt(chars.length)];

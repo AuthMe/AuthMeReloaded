@@ -54,8 +54,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
     /**
      * Method getLimbo.
-     * @return LimboPlayer
-     */
+    
+     * @return LimboPlayer */
     public LimboPlayer getLimbo() {
         return limbo;
     }

@@ -45,8 +45,8 @@ public class Spawn extends CustomConfiguration {
 
     /**
      * Method getInstance.
-     * @return Spawn
-     */
+    
+     * @return Spawn */
     public static Spawn getInstance() {
         if (spawn == null) {
             spawn = new Spawn();
@@ -57,8 +57,8 @@ public class Spawn extends CustomConfiguration {
     /**
      * Method setSpawn.
      * @param location Location
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean setSpawn(Location location) {
         try {
             set("spawn.world", location.getWorld().getName());
@@ -77,8 +77,8 @@ public class Spawn extends CustomConfiguration {
     /**
      * Method setFirstSpawn.
      * @param location Location
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean setFirstSpawn(Location location) {
         try {
             set("firstspawn.world", location.getWorld().getName());
@@ -96,8 +96,8 @@ public class Spawn extends CustomConfiguration {
 
     /**
      * Method getLocation.
-     * @return Location
-     */
+    
+     * @return Location */
     @Deprecated
     public Location getLocation() {
         return getSpawn();
@@ -105,8 +105,8 @@ public class Spawn extends CustomConfiguration {
 
     /**
      * Method getSpawn.
-     * @return Location
-     */
+    
+     * @return Location */
     public Location getSpawn() {
         try {
             if (this.getString("spawn.world").isEmpty() || this.getString("spawn.world").equals(""))
@@ -120,8 +120,8 @@ public class Spawn extends CustomConfiguration {
 
     /**
      * Method getFirstSpawn.
-     * @return Location
-     */
+    
+     * @return Location */
     public Location getFirstSpawn() {
         try {
             if (this.getString("firstspawn.world").isEmpty() || this.getString("firstspawn.world").equals(""))

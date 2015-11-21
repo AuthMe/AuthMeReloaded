@@ -46,8 +46,8 @@ public class Messages extends CustomConfiguration {
     /**
      * Method send.
      * @param msg String
-     * @return String[]
-     */
+    
+     * @return String[] */
     public String[] send(String msg) {
         if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang)) {
             singleton.reloadMessages();
@@ -73,8 +73,8 @@ public class Messages extends CustomConfiguration {
 
     /**
      * Method getInstance.
-     * @return Messages
-     */
+    
+     * @return Messages */
     public static Messages getInstance() {
         if (singleton == null) {
             singleton = new Messages(Settings.messageFile, Settings.messagesLanguage);

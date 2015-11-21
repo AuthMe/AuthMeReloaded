@@ -41,8 +41,8 @@ public class RakamakConverter implements Converter {
 
     /**
      * Method getInstance.
-     * @return RakamakConverter
-     */
+    
+     * @return RakamakConverter */
     public RakamakConverter getInstance() {
         return this;
     }

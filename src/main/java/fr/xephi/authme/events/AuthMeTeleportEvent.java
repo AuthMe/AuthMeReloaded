@@ -29,8 +29,8 @@ public class AuthMeTeleportEvent extends CustomEvent {
 
     /**
      * Method getPlayer.
-     * @return Player
-     */
+    
+     * @return Player */
     public Player getPlayer() {
         return player;
     }
@@ -45,16 +45,16 @@ public class AuthMeTeleportEvent extends CustomEvent {
 
     /**
      * Method getTo.
-     * @return Location
-     */
+    
+     * @return Location */
     public Location getTo() {
         return to;
     }
 
     /**
      * Method getFrom.
-     * @return Location
-     */
+    
+     * @return Location */
     public Location getFrom() {
         return from;
     }

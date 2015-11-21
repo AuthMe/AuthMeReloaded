@@ -189,16 +189,16 @@ public class PlayerAuth {
 
     /**
      * Method getNickname.
-     * @return String
-     */
+    
+     * @return String */
     public String getNickname() {
         return nickname;
     }
 
     /**
      * Method getRealName.
-     * @return String
-     */
+    
+     * @return String */
     public String getRealName() {
         return realName;
     }
@@ -213,8 +213,8 @@ public class PlayerAuth {
 
     /**
      * Method getGroupId.
-     * @return int
-     */
+    
+     * @return int */
     public int getGroupId() {
         return groupId;
     }
@@ -229,8 +229,8 @@ public class PlayerAuth {
 
     /**
      * Method getQuitLocX.
-     * @return double
-     */
+    
+     * @return double */
     public double getQuitLocX() {
         return x;
     }
@@ -245,8 +245,8 @@ public class PlayerAuth {
 
     /**
      * Method getQuitLocY.
-     * @return double
-     */
+    
+     * @return double */
     public double getQuitLocY() {
         return y;
     }
@@ -261,8 +261,8 @@ public class PlayerAuth {
 
     /**
      * Method getQuitLocZ.
-     * @return double
-     */
+    
+     * @return double */
     public double getQuitLocZ() {
         return z;
     }
@@ -277,8 +277,8 @@ public class PlayerAuth {
 
     /**
      * Method getWorld.
-     * @return String
-     */
+    
+     * @return String */
     public String getWorld() {
         return world;
     }
@@ -293,8 +293,8 @@ public class PlayerAuth {
 
     /**
      * Method getIp.
-     * @return String
-     */
+    
+     * @return String */
     public String getIp() {
         return ip;
     }
@@ -309,8 +309,8 @@ public class PlayerAuth {
 
     /**
      * Method getLastLogin.
-     * @return long
-     */
+    
+     * @return long */
     public long getLastLogin() {
         return lastLogin;
     }
@@ -325,8 +325,8 @@ public class PlayerAuth {
 
     /**
      * Method getEmail.
-     * @return String
-     */
+    
+     * @return String */
     public String getEmail() {
         return email;
     }
@@ -341,8 +341,8 @@ public class PlayerAuth {
 
     /**
      * Method getSalt.
-     * @return String
-     */
+    
+     * @return String */
     public String getSalt() {
         return this.salt;
     }
@@ -357,8 +357,8 @@ public class PlayerAuth {
 
     /**
      * Method getHash.
-     * @return String
-     */
+    
+     * @return String */
     public String getHash() {
         if (Settings.getPasswordHash == HashAlgorithm.MD5VB) {
             if (salt != null && !salt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
@@ -371,8 +371,8 @@ public class PlayerAuth {
     /**
      * Method equals.
      * @param obj Object
-     * @return boolean
-     */
+    
+     * @return boolean */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerAuth)) {
@@ -384,8 +384,8 @@ public class PlayerAuth {
 
     /**
      * Method hashCode.
-     * @return int
-     */
+    
+     * @return int */
     @Override
     public int hashCode() {
         int hashCode = 7;
@@ -396,8 +396,8 @@ public class PlayerAuth {
 
     /**
      * Method toString.
-     * @return String
-     */
+    
+     * @return String */
     @Override
     public String toString() {
         return ("Player : " + nickname + " | " + realName

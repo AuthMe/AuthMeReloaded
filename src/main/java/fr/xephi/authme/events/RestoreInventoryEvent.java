@@ -32,8 +32,8 @@ public class RestoreInventoryEvent extends CustomEvent {
 
     /**
      * Method getPlayer.
-     * @return Player
-     */
+    
+     * @return Player */
     public Player getPlayer() {
         return this.player;
     }

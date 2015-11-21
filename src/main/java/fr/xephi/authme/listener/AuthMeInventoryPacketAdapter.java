@@ -57,8 +57,8 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
     /**
      * Method onPacketSending.
      * @param packetEvent PacketEvent
-     * @see com.comphenix.protocol.events.PacketListener#onPacketSending(PacketEvent)
-     */
+    
+     * @see com.comphenix.protocol.events.PacketListener#onPacketSending(PacketEvent) */
     @Override
     public void onPacketSending(PacketEvent packetEvent) {
         Player player = packetEvent.getPlayer();

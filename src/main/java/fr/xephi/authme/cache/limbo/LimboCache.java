@@ -105,8 +105,8 @@ public class LimboCache {
     /**
      * Method getLimboPlayer.
      * @param name String
-     * @return LimboPlayer
-     */
+    
+     * @return LimboPlayer */
     public LimboPlayer getLimboPlayer(String name) {
         return cache.get(name);
     }
@@ -114,16 +114,16 @@ public class LimboCache {
     /**
      * Method hasLimboPlayer.
      * @param name String
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean hasLimboPlayer(String name) {
         return cache.containsKey(name);
     }
 
     /**
      * Method getInstance.
-     * @return LimboCache
-     */
+    
+     * @return LimboCache */
     public static LimboCache getInstance() {
         if (singleton == null) {
             singleton = new LimboCache(AuthMe.getInstance());

@@ -28,16 +28,16 @@ public class AuthMeAsyncPreLoginEvent extends Event {
 
     /**
      * Method getPlayer.
-     * @return Player
-     */
+    
+     * @return Player */
     public Player getPlayer() {
         return player;
     }
 
     /**
      * Method canLogin.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean canLogin() {
         return canLogin;
     }
@@ -52,8 +52,8 @@ public class AuthMeAsyncPreLoginEvent extends Event {
 
     /**
      * Method getHandlers.
-     * @return HandlerList
-     */
+    
+     * @return HandlerList */
     @Override
     public HandlerList getHandlers() {
         return handlers;

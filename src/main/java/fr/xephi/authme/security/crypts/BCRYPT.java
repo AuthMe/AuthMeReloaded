@@ -94,7 +94,8 @@ public class BCRYPT implements EncryptionMethod {
      * @param len the number of bytes to encode
     
     
-     * @return base64-encoded string * @throws IllegalArgumentException if the length is invalid */
+     * @return base64-encoded string * @throws IllegalArgumentException if the length is invalid * @throws IllegalArgumentException
+     */
     private static String encode_base64(byte d[], int len)
             throws IllegalArgumentException {
         int off = 0;
@@ -150,7 +151,8 @@ public class BCRYPT implements EncryptionMethod {
      * @param maxolen the maximum number of bytes to decode
     
     
-     * @return an array containing the decoded bytes * @throws IllegalArgumentException if maxolen is invalid */
+     * @return an array containing the decoded bytes * @throws IllegalArgumentException if maxolen is invalid * @throws IllegalArgumentException
+     */
     private static byte[] decode_base64(String s, int maxolen)
             throws IllegalArgumentException {
         StringBuffer rs = new StringBuffer();
@@ -474,8 +476,8 @@ public class BCRYPT implements EncryptionMethod {
      * @param hashed the previously-hashed password
      * @param rounds number of rounds to hash the password
     
-     * @return boolean
-     */
+    
+     * @return boolean */
     public static boolean checkpw(String text, String hashed, int rounds) {
         boolean matched = false;
 
@@ -499,10 +501,10 @@ public class BCRYPT implements EncryptionMethod {
      * @param password String
      * @param salt String
      * @param name String
-     * @return String
-     * @throws NoSuchAlgorithmException
-     * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
+    
+    
+    
+     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String) */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
@@ -514,10 +516,10 @@ public class BCRYPT implements EncryptionMethod {
      * @param hash String
      * @param password String
      * @param playerName String
-     * @return boolean
-     * @throws NoSuchAlgorithmException
-     * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
+    
+    
+    
+     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String) */
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
@@ -528,8 +530,8 @@ public class BCRYPT implements EncryptionMethod {
      * Method getDoubleHash.
      * @param text String
      * @param salt String
-     * @return String
-     */
+    
+     * @return String */
     public static String getDoubleHash(String text, String salt) {
         String hash = hashpw(text, salt);
         return hashpw(text, hash);

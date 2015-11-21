@@ -37,8 +37,8 @@ public class PerformBackup {
 
     /**
      * Method doBackup.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean doBackup() {
 
         switch (Settings.getDataSource) {
@@ -55,8 +55,8 @@ public class PerformBackup {
 
     /**
      * Method MySqlBackup.
-     * @return boolean
-     */
+    
+     * @return boolean */
     private boolean MySqlBackup() {
         File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
@@ -99,8 +99,8 @@ public class PerformBackup {
     /**
      * Method FileBackup.
      * @param backend String
-     * @return boolean
-     */
+    
+     * @return boolean */
     private boolean FileBackup(String backend) {
         File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
@@ -124,8 +124,8 @@ public class PerformBackup {
     /**
      * Method checkWindows.
      * @param windowsPath String
-     * @return boolean
-     */
+    
+     * @return boolean */
     private boolean checkWindows(String windowsPath) {
         String isWin = System.getProperty("os.name").toLowerCase();
         if (isWin.indexOf("win") >= 0) {
@@ -145,8 +145,8 @@ public class PerformBackup {
      * Method copy.
      * @param src File
      * @param dst File
-     * @throws IOException
-     */
+    
+     * @throws IOException */
     void copy(File src, File dst) throws IOException {
         InputStream in = new FileInputStream(src);
         OutputStream out = new FileOutputStream(dst);
@@ -171,8 +171,8 @@ public class PerformBackup {
 
     /**
      * Method getInstance.
-     * @return AuthMe
-     */
+    
+     * @return AuthMe */
     public AuthMe getInstance() {
         return instance;
     }

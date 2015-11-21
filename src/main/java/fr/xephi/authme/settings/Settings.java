@@ -118,8 +118,8 @@ public final class Settings extends YamlConfiguration {
 
     /**
      * Method reload.
-     * @throws Exception
-     */
+    
+     * @throws Exception */
     public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
         boolean exist = SETTINGS_FILE.exists();
@@ -524,8 +524,8 @@ public final class Settings extends YamlConfiguration {
 
     /**
      * Method getPasswordHash.
-     * @return HashAlgorithm
-     */
+    
+     * @return HashAlgorithm */
     private static HashAlgorithm getPasswordHash() {
         String key = "settings.security.passwordHash";
         try {
@@ -538,8 +538,8 @@ public final class Settings extends YamlConfiguration {
 
     /**
      * Method getDataSource.
-     * @return DataSourceType
-     */
+    
+     * @return DataSourceType */
     private static DataSourceType getDataSource() {
         String key = "DataSource.backend";
         try {
@@ -556,8 +556,8 @@ public final class Settings extends YamlConfiguration {
      * server, so player has a restricted access
      * @param name String
      * @param ip String
-     * @return boolean
-     */
+    
+     * @return boolean */
     public static boolean getRestrictedIp(String name, String ip) {
 
         Iterator<String> iter = getRestrictedIp.iterator();
@@ -610,8 +610,8 @@ public final class Settings extends YamlConfiguration {
     /**
      * Method checkLang.
      * @param lang String
-     * @return String
-     */
+    
+     * @return String */
     public static String checkLang(String lang) {
         if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
             ConsoleLogger.info("Set Language to: " + lang);
@@ -673,8 +673,8 @@ public final class Settings extends YamlConfiguration {
     /**
      * Method isEmailCorrect.
      * @param email String
-     * @return boolean
-     */
+    
+     * @return boolean */
     public static boolean isEmailCorrect(String email) {
         if (!email.contains("@"))
             return false;

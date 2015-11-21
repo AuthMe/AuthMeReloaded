@@ -41,8 +41,8 @@ public class PlayerCache {
     /**
      * Method isAuthenticated.
      * @param user String
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean isAuthenticated(String user) {
         return cache.containsKey(user.toLowerCase());
     }
@@ -50,16 +50,16 @@ public class PlayerCache {
     /**
      * Method getAuth.
      * @param user String
-     * @return PlayerAuth
-     */
+    
+     * @return PlayerAuth */
     public PlayerAuth getAuth(String user) {
         return cache.get(user.toLowerCase());
     }
 
     /**
      * Method getInstance.
-     * @return PlayerCache
-     */
+    
+     * @return PlayerCache */
     public static PlayerCache getInstance() {
         if (singleton == null) {
             singleton = new PlayerCache();
@@ -69,16 +69,16 @@ public class PlayerCache {
 
     /**
      * Method getLogged.
-     * @return int
-     */
+    
+     * @return int */
     public int getLogged() {
         return cache.size();
     }
 
     /**
      * Method getCache.
-     * @return ConcurrentHashMap<String,PlayerAuth>
-     */
+    
+     * @return ConcurrentHashMap<String,PlayerAuth> */
     public ConcurrentHashMap<String, PlayerAuth> getCache() {
         return this.cache;
     }

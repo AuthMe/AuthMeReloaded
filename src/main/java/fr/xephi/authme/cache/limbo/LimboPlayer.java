@@ -48,40 +48,40 @@ public class LimboPlayer {
 
     /**
      * Method getName.
-     * @return String
-     */
+    
+     * @return String */
     public String getName() {
         return name;
     }
 
     /**
      * Method getLoc.
-     * @return Location
-     */
+    
+     * @return Location */
     public Location getLoc() {
         return loc;
     }
 
     /**
      * Method getGameMode.
-     * @return GameMode
-     */
+    
+     * @return GameMode */
     public GameMode getGameMode() {
         return gameMode;
     }
 
     /**
      * Method getOperator.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean getOperator() {
         return operator;
     }
 
     /**
      * Method getGroup.
-     * @return String
-     */
+    
+     * @return String */
     public String getGroup() {
         return group;
     }
@@ -98,8 +98,8 @@ public class LimboPlayer {
 
     /**
      * Method getTimeoutTaskId.
-     * @return BukkitTask
-     */
+    
+     * @return BukkitTask */
     public BukkitTask getTimeoutTaskId() {
         return timeoutTaskId;
     }
@@ -116,16 +116,16 @@ public class LimboPlayer {
 
     /**
      * Method getMessageTaskId.
-     * @return BukkitTask
-     */
+    
+     * @return BukkitTask */
     public BukkitTask getMessageTaskId() {
         return messageTaskId;
     }
 
     /**
      * Method isFlying.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean isFlying() {
         return flying;
     }

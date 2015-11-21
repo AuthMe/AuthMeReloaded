@@ -35,8 +35,8 @@ public class vAuthFileReader {
 
     /**
      * Method convert.
-     * @throws IOException
-     */
+    
+     * @throws IOException */
     public void convert() throws IOException {
         final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
         Scanner scanner;
@@ -71,8 +71,8 @@ public class vAuthFileReader {
     /**
      * Method isUUIDinstance.
      * @param s String
-     * @return boolean
-     */
+    
+     * @return boolean */
     private boolean isUUIDinstance(String s) {
         if (String.valueOf(s.charAt(8)).equalsIgnoreCase("-"))
             return true;
@@ -82,8 +82,8 @@ public class vAuthFileReader {
     /**
      * Method getName.
      * @param uuid UUID
-     * @return String
-     */
+    
+     * @return String */
     private String getName(UUID uuid) {
         try {
             for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {

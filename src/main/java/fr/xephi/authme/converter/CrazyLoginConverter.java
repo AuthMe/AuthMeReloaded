@@ -36,8 +36,8 @@ public class CrazyLoginConverter implements Converter {
 
     /**
      * Method getInstance.
-     * @return CrazyLoginConverter
-     */
+    
+     * @return CrazyLoginConverter */
     public CrazyLoginConverter getInstance() {
         return this;
     }

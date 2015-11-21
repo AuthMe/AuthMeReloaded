@@ -30,8 +30,8 @@ public class TimeoutTask implements Runnable {
 
     /**
      * Method getName.
-     * @return String
-     */
+    
+     * @return String */
     public String getName() {
         return name;
     }

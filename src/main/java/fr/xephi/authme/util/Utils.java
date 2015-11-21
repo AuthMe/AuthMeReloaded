@@ -47,8 +47,8 @@ public class Utils {
     // Check and Download GeoIP data if not exist
     /**
      * Method checkGeoIP.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public static boolean checkGeoIP() {
         if (lookupService != null) {
             return true;
@@ -98,8 +98,8 @@ public class Utils {
     /**
      * Method getCountryCode.
      * @param ip String
-     * @return String
-     */
+    
+     * @return String */
     public static String getCountryCode(String ip) {
         if (checkGeoIP()) {
             return lookupService.getCountry(ip).getCode();
@@ -110,8 +110,8 @@ public class Utils {
     /**
      * Method getCountryName.
      * @param ip String
-     * @return String
-     */
+    
+     * @return String */
     public static String getCountryName(String ip) {
         if (checkGeoIP()) {
             return lookupService.getCountry(ip).getName();
@@ -173,8 +173,8 @@ public class Utils {
      * Method addNormal.
      * @param player Player
      * @param group String
-     * @return boolean
-     */
+    
+     * @return boolean */
     public static boolean addNormal(Player player, String group) {
         if (!useGroupSystem()) {
             return false;
@@ -197,8 +197,8 @@ public class Utils {
     /**
      * Method checkAuth.
      * @param player Player
-     * @return boolean
-     */
+    
+     * @return boolean */
     public static boolean checkAuth(Player player) {
         if (player == null || Utils.isUnrestricted(player)) {
             return true;
@@ -221,8 +221,8 @@ public class Utils {
     /**
      * Method isUnrestricted.
      * @param player Player
-     * @return boolean
-     */
+    
+     * @return boolean */
     public static boolean isUnrestricted(Player player) {
         return Settings.isAllowRestrictedIp && !Settings.getUnrestrictedName.isEmpty()
                 && (Settings.getUnrestrictedName.contains(player.getName()));
@@ -230,8 +230,8 @@ public class Utils {
 
     /**
      * Method useGroupSystem.
-     * @return boolean
-     */
+    
+     * @return boolean */
     private static boolean useGroupSystem() {
         return Settings.isPermissionCheckEnabled && !Settings.getUnloggedinGroup.isEmpty();
     }
@@ -315,8 +315,8 @@ public class Utils {
 
     /**
      * Method getOnlinePlayers.
-     * @return Collection<? extends Player>
-     */
+    
+     * @return Collection<? extends Player> */
     @SuppressWarnings("unchecked")
     public static Collection<? extends Player> getOnlinePlayers() {
         if (getOnlinePlayersIsCollection) {
@@ -339,8 +339,8 @@ public class Utils {
     /**
      * Method getPlayer.
      * @param name String
-     * @return Player
-     */
+    
+     * @return Player */
     @SuppressWarnings("deprecation")
     public static Player getPlayer(String name) {
         name = name.toLowerCase();
@@ -350,8 +350,8 @@ public class Utils {
     /**
      * Method isNPC.
      * @param player Entity
-     * @return boolean
-     */
+    
+     * @return boolean */
     public static boolean isNPC(final Entity player) {
         try {
             if (player.hasMetadata("NPC")) {

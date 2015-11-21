@@ -307,8 +307,8 @@ public class CommandDescription {
 
     /**
      * Get the absolute command label, without a slash.
-     * @return String
-     */
+    
+     * @return String */
     public String getAbsoluteLabel() {
         return getAbsoluteLabel(false);
     }

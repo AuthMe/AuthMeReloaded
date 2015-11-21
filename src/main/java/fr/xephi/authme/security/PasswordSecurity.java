@@ -25,9 +25,9 @@ public class PasswordSecurity {
     /**
      * Method createSalt.
      * @param length int
-     * @return String
-     * @throws NoSuchAlgorithmException
-     */
+    
+    
+     * @return String * @throws NoSuchAlgorithmException */
     public static String createSalt(int length)
             throws NoSuchAlgorithmException {
         byte[] msg = new byte[40];
@@ -43,9 +43,9 @@ public class PasswordSecurity {
      * @param alg HashAlgorithm
      * @param password String
      * @param playerName String
-     * @return String
-     * @throws NoSuchAlgorithmException
-     */
+    
+    
+     * @return String * @throws NoSuchAlgorithmException */
     public static String getHash(HashAlgorithm alg, String password,
                                  String playerName) throws NoSuchAlgorithmException {
         EncryptionMethod method;
@@ -146,9 +146,9 @@ public class PasswordSecurity {
      * @param password String
      * @param hash String
      * @param playerName String
-     * @return boolean
-     * @throws NoSuchAlgorithmException
-     */
+    
+    
+     * @return boolean * @throws NoSuchAlgorithmException */
     public static boolean comparePasswordWithHash(String password, String hash,
                                                   String playerName) throws NoSuchAlgorithmException {
         HashAlgorithm algo = Settings.getPasswordHash;
@@ -184,9 +184,9 @@ public class PasswordSecurity {
      * @param password String
      * @param hash String
      * @param playerName String
-     * @return boolean
-     * @throws NoSuchAlgorithmException
-     */
+    
+    
+     * @return boolean * @throws NoSuchAlgorithmException */
     private static boolean compareWithAllEncryptionMethod(String password,
                                                           String hash, String playerName) throws NoSuchAlgorithmException {
         for (HashAlgorithm algo : HashAlgorithm.values()) {

@@ -26,8 +26,8 @@ public class LogoutEvent extends Event {
 
     /**
      * Method getPlayer.
-     * @return Player
-     */
+    
+     * @return Player */
     public Player getPlayer() {
         return this.player;
     }
@@ -42,8 +42,8 @@ public class LogoutEvent extends Event {
 
     /**
      * Method getHandlers.
-     * @return HandlerList
-     */
+    
+     * @return HandlerList */
     @Override
     public HandlerList getHandlers() {
         return handlers;
@@ -51,8 +51,8 @@ public class LogoutEvent extends Event {
 
     /**
      * Method getHandlerList.
-     * @return HandlerList
-     */
+    
+     * @return HandlerList */
     public static HandlerList getHandlerList() {
         return handlers;
     }

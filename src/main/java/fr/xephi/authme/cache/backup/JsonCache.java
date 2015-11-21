@@ -78,8 +78,8 @@ public class JsonCache {
     /**
      * Method readCache.
      * @param player Player
-     * @return DataFileCache
-     */
+    
+     * @return DataFileCache */
     public DataFileCache readCache(Player player) {
         String path;
         try {
@@ -110,8 +110,8 @@ public class JsonCache {
          * @param dataFileCache DataFileCache
          * @param type Type
          * @param jsonSerializationContext JsonSerializationContext
-         * @return JsonElement
-         */
+        
+         * @return JsonElement */
         @Override
         public JsonElement serialize(DataFileCache dataFileCache, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
@@ -131,10 +131,10 @@ public class JsonCache {
          * @param jsonElement JsonElement
          * @param type Type
          * @param jsonDeserializationContext JsonDeserializationContext
-         * @return DataFileCache
-         * @throws JsonParseException
-         * @see com.google.gson.JsonDeserializer#deserialize(JsonElement, Type, JsonDeserializationContext)
-         */
+        
+        
+        
+         * @return DataFileCache * @throws JsonParseException * @see com.google.gson.JsonDeserializer#deserialize(JsonElement, Type, JsonDeserializationContext) */
         @Override
         public DataFileCache deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -183,8 +183,8 @@ public class JsonCache {
     /**
      * Method doesCacheExist.
      * @param player Player
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean doesCacheExist(Player player) {
         String path;
         try {

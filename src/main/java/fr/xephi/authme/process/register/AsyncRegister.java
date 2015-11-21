@@ -46,17 +46,17 @@ public class AsyncRegister {
 
     /**
      * Method getIp.
-     * @return String
-     */
+    
+     * @return String */
     protected String getIp() {
         return plugin.getIP(player);
     }
 
     /**
      * Method preRegisterCheck.
-     * @return boolean
-     * @throws Exception
-     */
+    
+    
+     * @return boolean * @throws Exception */
     protected boolean preRegisterCheck() throws Exception {
         String lowpass = password.toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name)) {
@@ -113,8 +113,8 @@ public class AsyncRegister {
 
     /**
      * Method emailRegister.
-     * @throws Exception
-     */
+    
+     * @throws Exception */
     protected void emailRegister() throws Exception {
         if (Settings.getmaxRegPerEmail > 0) {
             if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {

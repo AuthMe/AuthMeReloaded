@@ -35,8 +35,8 @@ public class OtherAccounts extends CustomConfiguration {
 
     /**
      * Method getInstance.
-     * @return OtherAccounts
-     */
+    
+     * @return OtherAccounts */
     public static OtherAccounts getInstance() {
         if (others == null) {
             others = new OtherAccounts();
@@ -83,8 +83,8 @@ public class OtherAccounts extends CustomConfiguration {
     /**
      * Method getAllPlayersByUUID.
      * @param uuid UUID
-     * @return List<String>
-     */
+    
+     * @return List<String> */
     public List<String> getAllPlayersByUUID(UUID uuid) {
         return this.getStringList(uuid.toString());
     }

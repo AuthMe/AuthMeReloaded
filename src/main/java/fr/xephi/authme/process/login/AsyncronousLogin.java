@@ -57,16 +57,16 @@ public class AsyncronousLogin {
 
     /**
      * Method getIP.
-     * @return String
-     */
+    
+     * @return String */
     protected String getIP() {
         return plugin.getIP(player);
     }
 
     /**
      * Method needsCaptcha.
-     * @return boolean
-     */
+    
+     * @return boolean */
     protected boolean needsCaptcha() {
         if (Settings.useCaptcha) {
             if (!plugin.captcha.containsKey(name)) {
@@ -93,8 +93,8 @@ public class AsyncronousLogin {
     /**
      * Checks the precondition for authentication (like user known) and returns
      * the playerAuth-State
-     * @return PlayerAuth
-     */
+    
+     * @return PlayerAuth */
     protected PlayerAuth preAuth() {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             m.send(player, "logged_in");

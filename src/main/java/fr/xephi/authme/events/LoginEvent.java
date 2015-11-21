@@ -30,8 +30,8 @@ public class LoginEvent extends Event {
 
     /**
      * Method getPlayer.
-     * @return Player
-     */
+    
+     * @return Player */
     public Player getPlayer() {
         return this.player;
     }
@@ -55,16 +55,16 @@ public class LoginEvent extends Event {
 
     /**
      * Method isLogin.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean isLogin() {
         return isLogin;
     }
 
     /**
      * Method getHandlers.
-     * @return HandlerList
-     */
+    
+     * @return HandlerList */
     @Override
     public HandlerList getHandlers() {
         return handlers;
@@ -72,8 +72,8 @@ public class LoginEvent extends Event {
 
     /**
      * Method getHandlerList.
-     * @return HandlerList
-     */
+    
+     * @return HandlerList */
     public static HandlerList getHandlerList() {
         return handlers;
     }

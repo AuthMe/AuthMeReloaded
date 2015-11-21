@@ -34,24 +34,24 @@ public class ProtectInventoryEvent extends CustomEvent {
 
     /**
      * Method getStoredInventory.
-     * @return ItemStack[]
-     */
+    
+     * @return ItemStack[] */
     public ItemStack[] getStoredInventory() {
         return this.storedinventory;
     }
 
     /**
      * Method getStoredArmor.
-     * @return ItemStack[]
-     */
+    
+     * @return ItemStack[] */
     public ItemStack[] getStoredArmor() {
         return this.storedarmor;
     }
 
     /**
      * Method getPlayer.
-     * @return Player
-     */
+    
+     * @return Player */
     public Player getPlayer() {
         return this.player;
     }
@@ -66,8 +66,8 @@ public class ProtectInventoryEvent extends CustomEvent {
 
     /**
      * Method getEmptyInventory.
-     * @return ItemStack[]
-     */
+    
+     * @return ItemStack[] */
     public ItemStack[] getEmptyInventory() {
         return this.emptyInventory;
     }
@@ -82,8 +82,8 @@ public class ProtectInventoryEvent extends CustomEvent {
 
     /**
      * Method getEmptyArmor.
-     * @return ItemStack[]
-     */
+    
+     * @return ItemStack[] */
     public ItemStack[] getEmptyArmor() {
         return this.emptyArmor;
     }

@@ -19,108 +19,108 @@ public interface DataSource {
     /**
      * Method isAuthAvailable.
      * @param user String
-     * @return boolean
-     */
+    
+     * @return boolean */
     boolean isAuthAvailable(String user);
 
     /**
      * Method getAuth.
      * @param user String
-     * @return PlayerAuth
-     */
+    
+     * @return PlayerAuth */
     PlayerAuth getAuth(String user);
 
     /**
      * Method saveAuth.
      * @param auth PlayerAuth
-     * @return boolean
-     */
+    
+     * @return boolean */
     boolean saveAuth(PlayerAuth auth);
 
     /**
      * Method updateSession.
      * @param auth PlayerAuth
-     * @return boolean
-     */
+    
+     * @return boolean */
     boolean updateSession(PlayerAuth auth);
 
     /**
      * Method updatePassword.
      * @param auth PlayerAuth
-     * @return boolean
-     */
+    
+     * @return boolean */
     boolean updatePassword(PlayerAuth auth);
 
     /**
      * Method purgeDatabase.
      * @param until long
-     * @return int
-     */
+    
+     * @return int */
     int purgeDatabase(long until);
 
     /**
      * Method autoPurgeDatabase.
      * @param until long
-     * @return List<String>
-     */
+    
+     * @return List<String> */
     List<String> autoPurgeDatabase(long until);
 
     /**
      * Method removeAuth.
      * @param user String
-     * @return boolean
-     */
+    
+     * @return boolean */
     boolean removeAuth(String user);
 
     /**
      * Method updateQuitLoc.
      * @param auth PlayerAuth
-     * @return boolean
-     */
+    
+     * @return boolean */
     boolean updateQuitLoc(PlayerAuth auth);
 
     /**
      * Method getIps.
      * @param ip String
-     * @return int
-     */
+    
+     * @return int */
     int getIps(String ip);
 
     /**
      * Method getAllAuthsByName.
      * @param auth PlayerAuth
-     * @return List<String>
-     */
+    
+     * @return List<String> */
     List<String> getAllAuthsByName(PlayerAuth auth);
 
     /**
      * Method getAllAuthsByIp.
      * @param ip String
-     * @return List<String>
-     * @throws Exception
-     */
+    
+    
+     * @return List<String> * @throws Exception */
     List<String> getAllAuthsByIp(String ip) throws Exception;
 
     /**
      * Method getAllAuthsByEmail.
      * @param email String
-     * @return List<String>
-     * @throws Exception
-     */
+    
+    
+     * @return List<String> * @throws Exception */
     List<String> getAllAuthsByEmail(String email) throws Exception;
 
     /**
      * Method updateEmail.
      * @param auth PlayerAuth
-     * @return boolean
-     */
+    
+     * @return boolean */
     boolean updateEmail(PlayerAuth auth);
 
     /**
      * Method updateSalt.
      * @param auth PlayerAuth
-     * @return boolean
-     */
+    
+     * @return boolean */
     boolean updateSalt(PlayerAuth auth);
 
     void close();
@@ -135,15 +135,15 @@ public interface DataSource {
 
     /**
      * Method getType.
-     * @return DataSourceType
-     */
+    
+     * @return DataSourceType */
     DataSourceType getType();
 
     /**
      * Method isLogged.
      * @param user String
-     * @return boolean
-     */
+    
+     * @return boolean */
     boolean isLogged(String user);
 
     /**
@@ -162,8 +162,8 @@ public interface DataSource {
 
     /**
      * Method getAccountsRegistered.
-     * @return int
-     */
+    
+     * @return int */
     int getAccountsRegistered();
 
     /**
@@ -175,14 +175,14 @@ public interface DataSource {
 
     /**
      * Method getAllAuths.
-     * @return List<PlayerAuth>
-     */
+    
+     * @return List<PlayerAuth> */
     List<PlayerAuth> getAllAuths();
 
     /**
      * Method getLoggedPlayers.
-     * @return List<PlayerAuth>
-     */
+    
+     * @return List<PlayerAuth> */
     List<PlayerAuth> getLoggedPlayers();
 
 }

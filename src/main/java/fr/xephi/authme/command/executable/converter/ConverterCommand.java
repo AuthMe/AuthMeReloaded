@@ -111,8 +111,8 @@ public class ConverterCommand extends ExecutableCommand {
 
         /**
          * Method getName.
-         * @return String
-         */
+        
+         * @return String */
         String getName() {
             return this.name;
         }
@@ -120,8 +120,8 @@ public class ConverterCommand extends ExecutableCommand {
         /**
          * Method fromName.
          * @param name String
-         * @return ConvertType
-         */
+        
+         * @return ConvertType */
         public static ConvertType fromName(String name) {
             for (ConvertType type : ConvertType.values()) {
                 if (type.getName().equalsIgnoreCase(name))

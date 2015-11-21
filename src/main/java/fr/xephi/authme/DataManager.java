@@ -35,8 +35,8 @@ public class DataManager {
     /**
      * Method getOfflinePlayer.
      * @param name String
-     * @return OfflinePlayer
-     */
+    
+     * @return OfflinePlayer */
     public synchronized OfflinePlayer getOfflinePlayer(final String name) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<OfflinePlayer> result = executor.submit(new Callable<OfflinePlayer>() {
@@ -197,8 +197,8 @@ public class DataManager {
      * Method isOnline.
      * @param player Player
      * @param name String
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean isOnline(Player player, final String name) {
         if (player.isOnline())
             return true;
@@ -226,8 +226,8 @@ public class DataManager {
     /**
      * Method getOnlinePlayerLower.
      * @param name String
-     * @return Player
-     */
+    
+     * @return Player */
     public Player getOnlinePlayerLower(String name) {
         name = name.toLowerCase();
         for (Player player : Utils.getOnlinePlayers()) {

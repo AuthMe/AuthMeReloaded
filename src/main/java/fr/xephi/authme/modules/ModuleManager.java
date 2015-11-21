@@ -31,8 +31,8 @@ public class ModuleManager {
     /**
      * Method isModuleEnabled.
      * @param name String
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean isModuleEnabled(String name) {
         for (Module m : modules) {
             if (m.getName().equalsIgnoreCase(name))
@@ -44,8 +44,8 @@ public class ModuleManager {
     /**
      * Method isModuleEnabled.
      * @param type Module.ModuleType
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean isModuleEnabled(Module.ModuleType type) {
         for (Module m : modules) {
             if (m.getType() == type)
@@ -57,8 +57,8 @@ public class ModuleManager {
     /**
      * Method getModule.
      * @param name String
-     * @return Module
-     */
+    
+     * @return Module */
     public Module getModule(String name) {
         for (Module m : modules) {
             if (m.getName().equalsIgnoreCase(name))
@@ -70,8 +70,8 @@ public class ModuleManager {
     /**
      * Method getModule.
      * @param type Module.ModuleType
-     * @return Module
-     */
+    
+     * @return Module */
     public Module getModule(Module.ModuleType type) {
         for (Module m : modules) {
             if (m.getType() == type)
@@ -82,8 +82,8 @@ public class ModuleManager {
 
     /**
      * Method loadModules.
-     * @return int
-     */
+    
+     * @return int */
     public int loadModules() {
         File dir = Settings.MODULE_FOLDER;
         int count = 0;

@@ -20,16 +20,16 @@ public class RoyalAuthYamlReader extends CustomConfiguration {
 
     /**
      * Method getLastLogin.
-     * @return long
-     */
+    
+     * @return long */
     public long getLastLogin() {
         return getLong("timestamps.quit");
     }
 
     /**
      * Method getHash.
-     * @return String
-     */
+    
+     * @return String */
     public String getHash() {
         return getString("login.password");
     }

@@ -47,8 +47,8 @@ public enum HashAlgorithm {
 
     /**
      * Method getclasse.
-     * @return Class<?>
-     */
+    
+     * @return Class<?> */
     public Class<?> getclasse() {
         return classe;
     }

@@ -32,8 +32,8 @@ public class StringUtils {
      * Method containsAny.
      * @param str String
      * @param pieces String[]
-     * @return boolean
-     */
+    
+     * @return boolean */
     public static boolean containsAny(String str, String... pieces) {
     	if (str == null) {
     		return false;

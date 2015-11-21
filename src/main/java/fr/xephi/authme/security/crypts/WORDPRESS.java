@@ -17,8 +17,8 @@ public class WORDPRESS implements EncryptionMethod {
      * Method encode64.
      * @param src byte[]
      * @param count int
-     * @return String
-     */
+    
+     * @return String */
     private String encode64(byte[] src, int count) {
         int i, value;
         StringBuilder output = new StringBuilder();
@@ -57,8 +57,8 @@ public class WORDPRESS implements EncryptionMethod {
      * Method crypt.
      * @param password String
      * @param setting String
-     * @return String
-     */
+    
+     * @return String */
     private String crypt(String password, String setting) {
         String output = "*0";
         if (((setting.length() < 2) ? setting : setting.substring(0, 2)).equalsIgnoreCase(output)) {
@@ -100,8 +100,8 @@ public class WORDPRESS implements EncryptionMethod {
     /**
      * Method gensaltPrivate.
      * @param input byte[]
-     * @return String
-     */
+    
+     * @return String */
     private String gensaltPrivate(byte[] input) {
         String output = "$P$";
         int iterationCountLog2 = 8;
@@ -113,8 +113,8 @@ public class WORDPRESS implements EncryptionMethod {
     /**
      * Method stringToUtf8.
      * @param string String
-     * @return byte[]
-     */
+    
+     * @return byte[] */
     private byte[] stringToUtf8(String string) {
         try {
             return string.getBytes("UTF-8");
@@ -128,10 +128,10 @@ public class WORDPRESS implements EncryptionMethod {
      * @param password String
      * @param salt String
      * @param name String
-     * @return String
-     * @throws NoSuchAlgorithmException
-     * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
+    
+    
+    
+     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String) */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
@@ -145,10 +145,10 @@ public class WORDPRESS implements EncryptionMethod {
      * @param hash String
      * @param password String
      * @param playerName String
-     * @return boolean
-     * @throws NoSuchAlgorithmException
-     * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
+    
+    
+    
+     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String) */
     @Override
     public boolean comparePassword(String hash, String password,
             String playerName) throws NoSuchAlgorithmException {

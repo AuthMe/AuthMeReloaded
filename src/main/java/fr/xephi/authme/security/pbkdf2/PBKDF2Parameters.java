@@ -111,8 +111,8 @@ public class PBKDF2Parameters {
 
     /**
      * Method getIterationCount.
-     * @return int
-     */
+    
+     * @return int */
     public int getIterationCount() {
         return iterationCount;
     }
@@ -127,8 +127,8 @@ public class PBKDF2Parameters {
 
     /**
      * Method getSalt.
-     * @return byte[]
-     */
+    
+     * @return byte[] */
     public byte[] getSalt() {
         return salt;
     }
@@ -143,8 +143,8 @@ public class PBKDF2Parameters {
 
     /**
      * Method getDerivedKey.
-     * @return byte[]
-     */
+    
+     * @return byte[] */
     public byte[] getDerivedKey() {
         return derivedKey;
     }
@@ -159,8 +159,8 @@ public class PBKDF2Parameters {
 
     /**
      * Method getHashAlgorithm.
-     * @return String
-     */
+    
+     * @return String */
     public String getHashAlgorithm() {
         return hashAlgorithm;
     }
@@ -175,8 +175,8 @@ public class PBKDF2Parameters {
 
     /**
      * Method getHashCharset.
-     * @return String
-     */
+    
+     * @return String */
     public String getHashCharset() {
         return hashCharset;
     }

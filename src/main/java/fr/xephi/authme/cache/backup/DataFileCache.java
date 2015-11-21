@@ -22,24 +22,24 @@ public class DataFileCache {
 
     /**
      * Method getGroup.
-     * @return String
-     */
+    
+     * @return String */
     public String getGroup() {
         return group;
     }
 
     /**
      * Method getOperator.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean getOperator() {
         return operator;
     }
 
     /**
      * Method isFlying.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean isFlying() {
         return flying;
     }

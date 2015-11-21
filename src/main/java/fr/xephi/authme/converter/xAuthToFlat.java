@@ -38,8 +38,8 @@ public class xAuthToFlat {
 
     /**
      * Method convert.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean convert() {
         if (instance.getServer().getPluginManager().getPlugin("xAuth") == null) {
             sender.sendMessage("[AuthMe] xAuth plugin not found");
@@ -73,8 +73,8 @@ public class xAuthToFlat {
     /**
      * Method getIdPlayer.
      * @param id int
-     * @return String
-     */
+    
+     * @return String */
     public String getIdPlayer(int id) {
         String realPass = "";
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
@@ -99,8 +99,8 @@ public class xAuthToFlat {
 
     /**
      * Method getXAuthPlayers.
-     * @return List<Integer>
-     */
+    
+     * @return List<Integer> */
     public List<Integer> getXAuthPlayers() {
         List<Integer> xP = new ArrayList<>();
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
@@ -125,8 +125,8 @@ public class xAuthToFlat {
     /**
      * Method getPassword.
      * @param accountId int
-     * @return String
-     */
+    
+     * @return String */
     public String getPassword(int accountId) {
         String realPass = "";
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();

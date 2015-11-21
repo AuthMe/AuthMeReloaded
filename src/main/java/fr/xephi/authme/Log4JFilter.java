@@ -27,9 +27,9 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
     /**
      * Method filter.
      * @param record LogEvent
-     * @return Result
-     * @see org.apache.logging.log4j.core.Filter#filter(LogEvent)
-     */
+    
+    
+     * @return Result * @see org.apache.logging.log4j.core.Filter#filter(LogEvent) */
     @Override
     public Result filter(LogEvent record) {
     	if (record == null) {
@@ -45,9 +45,9 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
      * @param arg2 Marker
      * @param message String
      * @param arg4 Object[]
-     * @return Result
-     * @see org.apache.logging.log4j.core.Filter#filter(Logger, Level, Marker, String, Object[])
-     */
+    
+    
+     * @return Result * @see org.apache.logging.log4j.core.Filter#filter(Logger, Level, Marker, String, Object[]) */
     @Override
     public Result filter(Logger arg0, Level arg1, Marker arg2, String message,
             Object... arg4) {
@@ -61,9 +61,9 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
      * @param arg2 Marker
      * @param message Object
      * @param arg4 Throwable
-     * @return Result
-     * @see org.apache.logging.log4j.core.Filter#filter(Logger, Level, Marker, Object, Throwable)
-     */
+    
+    
+     * @return Result * @see org.apache.logging.log4j.core.Filter#filter(Logger, Level, Marker, Object, Throwable) */
     @Override
     public Result filter(Logger arg0, Level arg1, Marker arg2, Object message,
             Throwable arg4) {
@@ -80,9 +80,9 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
      * @param arg2 Marker
      * @param message Message
      * @param arg4 Throwable
-     * @return Result
-     * @see org.apache.logging.log4j.core.Filter#filter(Logger, Level, Marker, Message, Throwable)
-     */
+    
+    
+     * @return Result * @see org.apache.logging.log4j.core.Filter#filter(Logger, Level, Marker, Message, Throwable) */
     @Override
     public Result filter(Logger arg0, Level arg1, Marker arg2, Message message,
             Throwable arg4) {
@@ -91,9 +91,9 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
 
     /**
      * Method getOnMatch.
-     * @return Result
-     * @see org.apache.logging.log4j.core.Filter#getOnMatch()
-     */
+    
+    
+     * @return Result * @see org.apache.logging.log4j.core.Filter#getOnMatch() */
     @Override
     public Result getOnMatch() {
         return Result.NEUTRAL;
@@ -101,9 +101,9 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
 
     /**
      * Method getOnMismatch.
-     * @return Result
-     * @see org.apache.logging.log4j.core.Filter#getOnMismatch()
-     */
+    
+    
+     * @return Result * @see org.apache.logging.log4j.core.Filter#getOnMismatch() */
     @Override
     public Result getOnMismatch() {
         return Result.NEUTRAL;

@@ -35,8 +35,8 @@ public class PasswordEncryptionEvent extends Event {
 
     /**
      * Method getHandlers.
-     * @return HandlerList
-     */
+    
+     * @return HandlerList */
     @Override
     public HandlerList getHandlers() {
         return handlers;
@@ -52,24 +52,24 @@ public class PasswordEncryptionEvent extends Event {
 
     /**
      * Method getMethod.
-     * @return EncryptionMethod
-     */
+    
+     * @return EncryptionMethod */
     public EncryptionMethod getMethod() {
         return method;
     }
 
     /**
      * Method getPlayerName.
-     * @return String
-     */
+    
+     * @return String */
     public String getPlayerName() {
         return playerName;
     }
 
     /**
      * Method getHandlerList.
-     * @return HandlerList
-     */
+    
+     * @return HandlerList */
     public static HandlerList getHandlerList() {
         return handlers;
     }

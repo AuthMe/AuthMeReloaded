@@ -28,25 +28,25 @@ public class CustomEvent extends Event implements Cancellable {
 
     /**
      * Method getHandlers.
-     * @return HandlerList
-     */
+    
+     * @return HandlerList */
     public HandlerList getHandlers() {
         return handlers;
     }
 
     /**
      * Method getHandlerList.
-     * @return HandlerList
-     */
+    
+     * @return HandlerList */
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
     /**
      * Method isCancelled.
-     * @return boolean
-     * @see org.bukkit.event.Cancellable#isCancelled()
-     */
+    
+    
+     * @return boolean * @see org.bukkit.event.Cancellable#isCancelled() */
     public boolean isCancelled() {
         return this.isCancelled;
     }
@@ -54,8 +54,8 @@ public class CustomEvent extends Event implements Cancellable {
     /**
      * Method setCancelled.
      * @param cancelled boolean
-     * @see org.bukkit.event.Cancellable#setCancelled(boolean)
-     */
+    
+     * @see org.bukkit.event.Cancellable#setCancelled(boolean) */
     public void setCancelled(boolean cancelled) {
         this.isCancelled = cancelled;
     }

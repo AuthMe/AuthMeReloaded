@@ -115,9 +115,9 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Method deriveKey.
      * @param inputPassword String
-     * @return byte[]
-     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String)
-     */
+    
+    
+     * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String) */
     public byte[] deriveKey(String inputPassword) {
         return deriveKey(inputPassword, 0);
     }
@@ -126,9 +126,9 @@ public class PBKDF2Engine implements PBKDF2 {
      * Method deriveKey.
      * @param inputPassword String
      * @param dkLen int
-     * @return byte[]
-     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String, int)
-     */
+    
+    
+     * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String, int) */
     public byte[] deriveKey(String inputPassword, int dkLen) {
         byte[] r = null;
         byte P[] = null;
@@ -156,9 +156,9 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Method verifyKey.
      * @param inputPassword String
-     * @return boolean
-     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#verifyKey(String)
-     */
+    
+    
+     * @return boolean * @see fr.xephi.authme.security.pbkdf2.PBKDF2#verifyKey(String) */
     public boolean verifyKey(String inputPassword) {
         byte[] referenceKey = getParameters().getDerivedKey();
         if (referenceKey == null || referenceKey.length == 0) {
@@ -193,9 +193,9 @@ public class PBKDF2Engine implements PBKDF2 {
 
     /**
      * Method getPseudoRandomFunction.
-     * @return PRF
-     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#getPseudoRandomFunction()
-     */
+    
+    
+     * @return PRF * @see fr.xephi.authme.security.pbkdf2.PBKDF2#getPseudoRandomFunction() */
     public PRF getPseudoRandomFunction() {
         return prf;
     }
@@ -318,9 +318,9 @@ public class PBKDF2Engine implements PBKDF2 {
 
     /**
      * Method getParameters.
-     * @return PBKDF2Parameters
-     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#getParameters()
-     */
+    
+    
+     * @return PBKDF2Parameters * @see fr.xephi.authme.security.pbkdf2.PBKDF2#getParameters() */
     public PBKDF2Parameters getParameters() {
         return parameters;
     }
@@ -328,8 +328,8 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Method setParameters.
      * @param parameters PBKDF2Parameters
-     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setParameters(PBKDF2Parameters)
-     */
+    
+     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setParameters(PBKDF2Parameters) */
     public void setParameters(PBKDF2Parameters parameters) {
         this.parameters = parameters;
     }
@@ -337,8 +337,8 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Method setPseudoRandomFunction.
      * @param prf PRF
-     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setPseudoRandomFunction(PRF)
-     */
+    
+     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setPseudoRandomFunction(PRF) */
     public void setPseudoRandomFunction(PRF prf) {
         this.prf = prf;
     }
@@ -357,7 +357,8 @@ public class PBKDF2Engine implements PBKDF2 {
      *            Supply the password as argument.
     
     
-     * @throws IOException * @throws NoSuchAlgorithmException */
+     * @throws IOException * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
+     */
     public static void main(String[] args)
             throws IOException, NoSuchAlgorithmException {
         String password = "password";

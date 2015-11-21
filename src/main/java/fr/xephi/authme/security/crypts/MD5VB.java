@@ -13,10 +13,10 @@ public class MD5VB implements EncryptionMethod {
      * @param password String
      * @param salt String
      * @param name String
-     * @return String
-     * @throws NoSuchAlgorithmException
-     * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
+    
+    
+    
+     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String) */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
@@ -28,10 +28,10 @@ public class MD5VB implements EncryptionMethod {
      * @param hash String
      * @param password String
      * @param playerName String
-     * @return boolean
-     * @throws NoSuchAlgorithmException
-     * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
+    
+    
+    
+     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String) */
     @Override
     public boolean comparePassword(String hash, String password,
             String playerName) throws NoSuchAlgorithmException {
@@ -42,9 +42,9 @@ public class MD5VB implements EncryptionMethod {
     /**
      * Method getMD5.
      * @param message String
-     * @return String
-     * @throws NoSuchAlgorithmException
-     */
+    
+    
+     * @return String * @throws NoSuchAlgorithmException */
     private static String getMD5(String message)
             throws NoSuchAlgorithmException {
         MessageDigest md5 = MessageDigest.getInstance("MD5");

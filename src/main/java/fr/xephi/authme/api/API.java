@@ -50,8 +50,8 @@ public class API {
 
     /**
      * Method getPlugin.
-     * @return AuthMe
-     */
+    
+     * @return AuthMe */
     @Deprecated
     public AuthMe getPlugin() {
         return instance;
@@ -100,8 +100,8 @@ public class API {
     /**
      * Method getLastLocation.
      * @param player Player
-     * @return Location
-     */
+    
+     * @return Location */
     @Deprecated
     public static Location getLastLocation(Player player) {
         try {

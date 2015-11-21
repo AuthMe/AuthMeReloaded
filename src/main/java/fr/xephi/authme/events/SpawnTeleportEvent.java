@@ -34,8 +34,8 @@ public class SpawnTeleportEvent extends CustomEvent {
 
     /**
      * Method getPlayer.
-     * @return Player
-     */
+    
+     * @return Player */
     public Player getPlayer() {
         return player;
     }
@@ -50,24 +50,24 @@ public class SpawnTeleportEvent extends CustomEvent {
 
     /**
      * Method getTo.
-     * @return Location
-     */
+    
+     * @return Location */
     public Location getTo() {
         return to;
     }
 
     /**
      * Method getFrom.
-     * @return Location
-     */
+    
+     * @return Location */
     public Location getFrom() {
         return from;
     }
 
     /**
      * Method isAuthenticated.
-     * @return boolean
-     */
+    
+     * @return boolean */
     public boolean isAuthenticated() {
         return isAuthenticated;
     }
