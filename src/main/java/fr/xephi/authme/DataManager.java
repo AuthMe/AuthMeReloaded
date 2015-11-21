@@ -177,8 +177,7 @@ public class DataManager {
      * @param cleared List<String>
      * @param permission Permission
      */
-    public synchronized void purgePermissions(List<String> cleared,
-            Permission permission) {
+    public synchronized void purgePermissions(List<String> cleared, Permission permission) {
         int i = 0;
         for (String name : cleared) {
             try {

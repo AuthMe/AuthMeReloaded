@@ -545,14 +545,14 @@ public final class Settings extends YamlConfiguration {
         try {
             return DataSource.DataSourceType.valueOf(configFile.getString(key, "sqlite").toUpperCase());
         } catch (IllegalArgumentException ex) {
-            ConsoleLogger.showError("Unknown database backend; defaulting to sqlite database");
+            ConsoleLogger.showError("Unknown database backend; defaulting to SQLite database");
             return DataSource.DataSourceType.SQLITE;
         }
     }
 
     /**
      * Config option for setting and check restricted user by username;ip ,
-     * return false if ip and name doesnt amtch with player that join the
+     * return false if ip and name doesn't match with player that join the
      * server, so player has a restricted access
      * @param name String
      * @param ip String
@@ -560,21 +560,21 @@ public final class Settings extends YamlConfiguration {
      * @return boolean */
     public static boolean getRestrictedIp(String name, String ip) {
 
-        Iterator<String> iter = getRestrictedIp.iterator();
-        boolean trueonce = false;
-        boolean namefound = false;
-        while (iter.hasNext()) {
-            String[] args = iter.next().split(";");
-            String testname = args[0];
-            String testip = args[1];
-            if (testname.equalsIgnoreCase(name)) {
-                namefound = true;
-                if (testip.equalsIgnoreCase(ip)) {
-                    trueonce = true;
+        Iterator<String> iterator = getRestrictedIp.iterator();
+        boolean trueOnce = false;
+        boolean nameFound = false;
+        while(iterator.hasNext()) {
+            String[] args = iterator.next().split(";");
+            String testName = args[0];
+            String testIp = args[1];
+            if (testName.equalsIgnoreCase(name)) {
+                nameFound = true;
+                if (testIp.equalsIgnoreCase(ip)) {
+                    trueOnce = true;
                 }
             }
         }
-        return !namefound || trueonce;
+        return !nameFound || trueOnce;
     }
 
     /**
@@ -651,7 +651,7 @@ public final class Settings extends YamlConfiguration {
                 BufferedWriter w = new BufferedWriter(fw);
                 w.write("Welcome {PLAYER} on {SERVER} server");
                 w.newLine();
-                w.write("This server use AuthMe protection!");
+                w.write("This server uses " + AuthMe.PLUGIN_NAME + " protection!");
                 w.close();
             } catch (IOException e) {
                 e.printStackTrace();
