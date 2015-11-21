@@ -15,21 +15,8 @@ import fr.xephi.authme.task.ChangePasswordTask;
  */
 public class ChangePasswordCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-    
-     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
         final Messages m = Messages.getInstance();
 
         // Get the passwords
@@ -71,6 +58,7 @@ public class ChangePasswordCommand extends ExecutableCommand {
         }
 
         // Set the password
+        final AuthMe plugin = AuthMe.getInstance();
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new ChangePasswordTask(plugin, player, playerPass, playerPassVerify));
         return true;
     }

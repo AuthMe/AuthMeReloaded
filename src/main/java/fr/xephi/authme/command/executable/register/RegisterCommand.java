@@ -14,21 +14,8 @@ import fr.xephi.authme.settings.Settings;
  */
 public class RegisterCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-    
-     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
         final Messages m = Messages.getInstance();
 
         // Make sure the sender is a player
@@ -44,6 +31,7 @@ public class RegisterCommand extends ExecutableCommand {
             return true;
         }
 
+        final AuthMe plugin = AuthMe.getInstance();
         if (Settings.emailRegistration && !Settings.getmailAccount.isEmpty()) {
             if (Settings.doubleEmailCheck) {
                 if (commandArguments.getCount() < 2 || !commandArguments.get(0).equals(commandArguments.get(1))) {

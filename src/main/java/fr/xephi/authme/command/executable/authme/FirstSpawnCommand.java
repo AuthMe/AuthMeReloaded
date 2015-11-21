@@ -12,15 +12,6 @@ import fr.xephi.authme.settings.Spawn;
  */
 public class FirstSpawnCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-    
-     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Make sure the command executor is a player
@@ -33,6 +24,7 @@ public class FirstSpawnCommand extends ExecutableCommand {
                 sender.sendMessage("[AuthMe] Please use that command in game");
             }
         } catch (NullPointerException ex) {
+            // TODO ljacqu 20151119: Catching NullPointerException is never a good idea. Find what can cause one instead
             ConsoleLogger.showError(ex.getMessage());
         }
         return true;
