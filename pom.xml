@@ -606,7 +606,7 @@
 			<optional>true</optional>
 		</dependency>
 
-		<!-- jUnit Testing Library -->
+		<!-- Unit Testing Libraries -->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
