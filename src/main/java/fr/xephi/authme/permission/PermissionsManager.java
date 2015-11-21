@@ -415,7 +415,7 @@ public class PermissionsManager {
 
             case B_PERMISSIONS:
                 // bPermissions
-                return Arrays.asList(ApiLayer.getGroups(player.getName(), CalculableType.USER, player.getName()));
+                return Arrays.asList(ApiLayer.getGroups(player.getWorld().getName(), CalculableType.USER, player.getName()));
 
             case ESSENTIALS_GROUP_MANAGER:
                 // Essentials Group Manager
