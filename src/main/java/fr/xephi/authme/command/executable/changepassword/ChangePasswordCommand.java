@@ -17,16 +17,16 @@ public class ChangePasswordCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+        // Make sure the current command executor is a player
+        if (!(sender instanceof Player)) {
+            return true;
+        }
+
         final Messages m = Messages.getInstance();
 
         // Get the passwords
         String playerPass = commandArguments.get(0);
         String playerPassVerify = commandArguments.get(1);
-
-        // Make sure the current command executor is a player
-        if(!(sender instanceof Player)) {
-            return true;
-        }
 
         // Get the player instance and make sure it's authenticated
         Player player = (Player) sender;
@@ -37,6 +37,7 @@ public class ChangePasswordCommand extends ExecutableCommand {
         }
 
         // Make sure the password is allowed
+        // TODO ljacqu 20151121: The password confirmation appears to be never verified
         String playerPassLowerCase = playerPass.toLowerCase();
         if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where") || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify") || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select") || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null") || !playerPassLowerCase.matches(Settings.getPassRegex)) {
             m.send(player, "password_error");
@@ -50,11 +51,9 @@ public class ChangePasswordCommand extends ExecutableCommand {
             m.send(player, "pass_len");
             return true;
         }
-        if (!Settings.unsafePasswords.isEmpty()) {
-            if (Settings.unsafePasswords.contains(playerPassLowerCase)) {
-                m.send(player, "password_error_unsafe");
-                return true;
-            }
+        if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(playerPassLowerCase)) {
+            m.send(player, "password_error_unsafe");
+            return true;
         }
 
         // Set the password

@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Messages;
 import org.mockito.Mockito;
 
@@ -28,6 +29,14 @@ public final class AuthMeMockUtil {
     public static void mockMessagesInstance() {
         Messages mock = Mockito.mock(Messages.class);
         mockSingletonForClass(Messages.class, "singleton", mock);
+    }
+
+    /**
+     * Creates a mock singleton for the player cache, retrievable from {@link PlayerCache#getInstance()}.
+     */
+    public static void mockPlayerCacheInstance() {
+        PlayerCache mock = Mockito.mock(PlayerCache.class);
+        mockSingletonForClass(PlayerCache.class, "singleton", mock);
     }
 
     /**
