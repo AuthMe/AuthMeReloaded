@@ -14,19 +14,19 @@ public class AddEmailCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Get the parameter values
-        String playerMail = commandArguments.get(0);
-        String playerMailVerify = commandArguments.get(1);
-
         // Make sure the current command executor is a player
         if (!(sender instanceof Player)) {
             return true;
         }
 
+        // Get the parameter values
+        String playerMail = commandArguments.get(0);
+        String playerMailVerify = commandArguments.get(1);
+
         // Get the player and perform email addition
         final AuthMe plugin = AuthMe.getInstance();
         final Player player = (Player) sender;
-        plugin.management.performAddEmail(player, playerMail, playerMailVerify);
+        plugin.getManagement().performAddEmail(player, playerMail, playerMailVerify);
         return true;
     }
 }

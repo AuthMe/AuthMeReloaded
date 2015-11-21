@@ -13,19 +13,19 @@ public class ChangeEmailCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Get the parameter values
-        String playerMailOld = commandArguments.get(0);
-        String playerMailNew = commandArguments.get(1);
-
         // Make sure the current command executor is a player
         if (!(sender instanceof Player)) {
             return true;
         }
 
+        // Get the parameter values
+        String playerMailOld = commandArguments.get(0);
+        String playerMailNew = commandArguments.get(1);
+
         // Get the player instance and execute action
         final AuthMe plugin = AuthMe.getInstance();
         final Player player = (Player) sender;
-        plugin.management.performChangeEmail(player, playerMailOld, playerMailNew);
+        plugin.getManagement().performChangeEmail(player, playerMailOld, playerMailNew);
         return true;
     }
 }

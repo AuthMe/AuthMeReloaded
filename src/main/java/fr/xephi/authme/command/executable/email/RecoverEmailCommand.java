@@ -22,13 +22,13 @@ public class RecoverEmailCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Get the parameter values
-        String playerMail = commandArguments.get(0);
-
         // Make sure the current command executor is a player
-        if(!(sender instanceof Player)) {
+        if (!(sender instanceof Player)) {
             return true;
         }
+
+        // Get the parameter values
+        String playerMail = commandArguments.get(0);
 
         // Get the player instance and name
         final Player player = (Player) sender;
