@@ -122,7 +122,7 @@ public class PHPBB implements EncryptionMethod {
         for (byte b : bytes) {
             String x = Integer.toHexString(b & 0xff);
             if (x.length() < 2)
-                r.append("0");
+                r.append('0');
             r.append(x);
         }
         return r.toString();

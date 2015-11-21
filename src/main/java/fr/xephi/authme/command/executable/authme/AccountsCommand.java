@@ -71,7 +71,7 @@ public class AccountsCommand extends ExecutableCommand {
                         if (i != accountList.size()) {
                             message.append(", ");
                         } else {
-                            message.append(".");
+                            message.append('.');
                         }
                     }
                     sender.sendMessage("[AuthMe] " + playerQueryFinal + " has " + String.valueOf(accountList.size()) + " accounts");
@@ -109,7 +109,7 @@ public class AccountsCommand extends ExecutableCommand {
                         if (i != accountList.size()) {
                             message.append(", ");
                         } else {
-                            message.append(".");
+                            message.append('.');
                         }
                     }
                     sender.sendMessage("[AuthMe] " + playerQueryFinal + " has " + String.valueOf(accountList.size()) + " accounts");

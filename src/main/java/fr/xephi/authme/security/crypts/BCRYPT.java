@@ -247,8 +247,8 @@ public class BCRYPT implements EncryptionMethod {
      * Initialise the Blowfish key schedule
      */
     private void init_key() {
-        P = (int[]) P_orig.clone();
-        S = (int[]) S_orig.clone();
+        P = P_orig.clone();
+        S = S_orig.clone();
     }
 
     /**
@@ -323,7 +323,7 @@ public class BCRYPT implements EncryptionMethod {
      */
     private byte[] crypt_raw(byte password[], byte salt[], int log_rounds) {
         int rounds, i, j;
-        int cdata[] = (int[]) bf_crypt_ciphertext.clone();
+        int cdata[] = bf_crypt_ciphertext.clone();
         int clen = cdata.length;
         byte ret[];
 
@@ -401,11 +401,11 @@ public class BCRYPT implements EncryptionMethod {
         rs.append("$2");
         if (minor >= 'a')
             rs.append(minor);
-        rs.append("$");
+        rs.append('$');
         if (rounds < 10)
-            rs.append("0");
+            rs.append('0');
         rs.append(Integer.toString(rounds));
-        rs.append("$");
+        rs.append('$');
         rs.append(encode_base64(saltb, saltb.length));
         rs.append(encode_base64(hashed, bf_crypt_ciphertext.length * 4 - 1));
         return rs.toString();
@@ -427,9 +427,9 @@ public class BCRYPT implements EncryptionMethod {
 
         rs.append("$2a$");
         if (log_rounds < 10)
-            rs.append("0");
+            rs.append('0');
         rs.append(Integer.toString(log_rounds));
-        rs.append("$");
+        rs.append('$');
         rs.append(encode_base64(rnd, rnd.length));
         return rs.toString();
     }

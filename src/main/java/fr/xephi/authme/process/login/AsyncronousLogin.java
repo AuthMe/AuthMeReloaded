@@ -226,7 +226,7 @@ public class AsyncronousLogin {
             if (i != auths.size()) {
                 message.append(", ");
             } else {
-                message.append(".");
+                message.append('.');
             }
         }
         /*
