@@ -1,5 +1,6 @@
 package fr.xephi.authme.permission;
 
+import com.nijiko.permissions.Group;
 import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import de.bananaco.bpermissions.api.ApiLayer;
@@ -339,8 +340,8 @@ public class PermissionsManager {
      * @return True if the player has permission.
      */
     public boolean hasPermission(Player player, String permsNode, boolean def) {
+        // If no permissions system is used, return the default value
         if(!isEnabled())
-            // No permissions system is used, return default
             return def;
 
         switch(this.permsType) {
@@ -390,16 +391,54 @@ public class PermissionsManager {
     }
 
     /**
+     * Check whether the current permissions system has group support.
+     * If no permissions system is hooked, false will be returned.
+     *
+     * @return True if the current permissions system supports groups, false otherwise.
+     */
+    public boolean hasGroupSupport() {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+            case PERMISSIONS_BUKKIT:
+            case B_PERMISSIONS:
+            case ESSENTIALS_GROUP_MANAGER:
+            case Z_PERMISSIONS:
+                return true;
+
+            case VAULT:
+                // Vault
+                return vaultPerms.hasGroupSupport();
+
+            case PERMISSIONS:
+                // Legacy permissions
+                // FIXME: Supported by plugin, but addGroup and removeGroup haven't been implemented correctly yet!
+                return false;
+
+            case NONE:
+                // Not hooked into any permissions system, return false
+                return false;
+
+            default:
+                // Something went wrong, return false to prevent problems
+                return false;
+        }
+    }
+
+    /**
      * Get the permission groups of a player, if available.
      *
      * @param player The player.
      *
-     * @return Permission groups.
+     * @return Permission groups, or an empty list if this feature is not supported.
      */
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public List<String> getGroups(Player player) {
+        // If no permissions system is used, return an empty list
         if(!isEnabled())
-            // No permissions system is used, return an empty list
             return new ArrayList<>();
 
         switch(this.permsType) {
@@ -410,12 +449,12 @@ public class PermissionsManager {
 
             case PERMISSIONS_BUKKIT:
                 // Permissions Bukkit
-                // Permissions Bukkit doesn't support group, return an empty list
+                // FIXME: Add support for this!
                 return new ArrayList<>();
 
             case B_PERMISSIONS:
                 // bPermissions
-                return Arrays.asList(ApiLayer.getGroups(player.getName(), CalculableType.USER, player.getName()));
+                return Arrays.asList(ApiLayer.getGroups(player.getWorld().getName(), CalculableType.USER, player.getName()));
 
             case ESSENTIALS_GROUP_MANAGER:
                 // Essentials Group Manager
@@ -432,6 +471,18 @@ public class PermissionsManager {
                 // Vault
                 return Arrays.asList(vaultPerms.getPlayerGroups(player));
 
+            case PERMISSIONS:
+                // Permissions
+                // Create a list to put the groups in
+                List<String> groups = new ArrayList<>();
+
+                // Get the groups and add each to the list
+                for(Group group : this.defaultPerms.getGroups(player.getName()))
+                    groups.add(group.getName());
+
+                // Return the groups
+                return groups;
+
             case NONE:
                 // Not hooked into any permissions system, return an empty list
                 return new ArrayList<>();
@@ -443,17 +494,253 @@ public class PermissionsManager {
     }
 
     /**
-     * Set the permission group of a player, if supported.
+     * Check whether the player is in the specified group.
+     *
+     * @param player The player.
+     * @param groupName The group name.
+     *
+     * @return True if the player is in the specified group, false otherwise.
+     * False is also returned if groups aren't supported by the used permissions system.
+     */
+    public boolean inGroup(Player player, String groupName) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+                // Permissions Ex
+                PermissionUser user = PermissionsEx.getUser(player);
+                return user.inGroup(groupName);
+
+            case PERMISSIONS_BUKKIT:
+            case Z_PERMISSIONS:
+                // Get the current list of groups
+                List<String> groupNames = getGroups(player);
+
+                // Check whether the list contains the group name, return the result
+                for(String entry : groupNames)
+                    if(entry.equals(groupName))
+                        return true;
+                return false;
+
+            case B_PERMISSIONS:
+                // bPermissions
+                return ApiLayer.hasGroup(player.getWorld().getName(), CalculableType.USER, player.getName(), groupName);
+
+            case ESSENTIALS_GROUP_MANAGER:
+                // Essentials Group Manager
+                final AnjoPermissionsHandler handler = groupManagerPerms.getWorldsHolder().getWorldPermissions(player);
+                return handler != null && handler.inGroup(player.getName(), groupName);
+
+            case VAULT:
+                // Vault
+                return vaultPerms.playerInGroup(player, groupName);
+
+            case PERMISSIONS:
+                // Permissions
+                return this.defaultPerms.inGroup(player.getWorld().getName(), player.getName(), groupName);
+
+            case NONE:
+                // Not hooked into any permissions system, return an empty list
+                return false;
+
+            default:
+                // Something went wrong, return an empty list to prevent problems
+                return false;
+        }
+    }
+
+    /**
+     * Add the permission group of a player, if supported.
      *
      * @param player The player
      * @param groupName The name of the group.
      *
      * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean addGroup(Player player, String groupName) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        // Set the group the proper way
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+                // Permissions Ex
+                PermissionUser user = PermissionsEx.getUser(player);
+                user.addGroup(groupName);
+                return true;
+
+            case PERMISSIONS_BUKKIT:
+                // Permissions Bukkit
+                // Add the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player addgroup " + player.getName() + " " + groupName);
+
+            case B_PERMISSIONS:
+                // bPermissions
+                ApiLayer.addGroup(player.getWorld().getName(), CalculableType.USER, player.getName(), groupName);
+                return true;
+
+            case ESSENTIALS_GROUP_MANAGER:
+                // Essentials Group Manager
+                // Add the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "manuaddsub " + player.getName() + " " + groupName);
+
+            case Z_PERMISSIONS:
+                // zPermissions
+                // Add the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " addgroup " + groupName);
+
+            case VAULT:
+                // Vault
+                vaultPerms.playerAddGroup(player, groupName);
+                return true;
+
+            case PERMISSIONS:
+                // Permissions
+                // FIXME: Add this method!
+                //return this.defaultPerms.group
+
+            case NONE:
+                // Not hooked into any permissions system, return false
+                return false;
+
+            default:
+                // Something went wrong, return false
+                return false;
+        }
+    }
+
+    /**
+     * Add the permission groups of a player, if supported.
+     *
+     * @param player The player
+     * @param groupNames The name of the groups to add.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean addGroups(Player player, List<String> groupNames) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        // Add each group to the user
+        boolean result = true;
+        for(String groupName : groupNames)
+            if(!addGroup(player, groupName))
+                result = false;
+
+        // Return the result
+        return result;
+    }
+
+    /**
+     * Remove the permission group of a player, if supported.
+     *
+     * @param player The player
+     * @param groupName The name of the group.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean removeGroup(Player player, String groupName) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        // Set the group the proper way
+        switch(this.permsType) {
+            case PERMISSIONS_EX:
+                // Permissions Ex
+                PermissionUser user = PermissionsEx.getUser(player);
+                user.removeGroup(groupName);
+                return true;
+
+            case PERMISSIONS_BUKKIT:
+                // Permissions Bukkit
+                // Remove the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player removegroup " + player.getName() + " " + groupName);
+
+            case B_PERMISSIONS:
+                // bPermissions
+                ApiLayer.removeGroup(player.getWorld().getName(), CalculableType.USER, player.getName(), groupName);
+                return true;
+
+            case ESSENTIALS_GROUP_MANAGER:
+                // Essentials Group Manager
+                // Remove the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "manudelsub " + player.getName() + " " + groupName);
+
+            case Z_PERMISSIONS:
+                // zPermissions
+                // Remove the group to the user using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " removegroup " + groupName);
+
+            case VAULT:
+                // Vault
+                vaultPerms.playerRemoveGroup(player, groupName);
+                return true;
+
+            case PERMISSIONS:
+                // Permissions
+                // FIXME: Add this method!
+                //return this.defaultPerms.group
+
+            case NONE:
+                // Not hooked into any permissions system, return false
+                return false;
+
+            default:
+                // Something went wrong, return false
+                return false;
+        }
+    }
+
+    /**
+     * Remove the permission groups of a player, if supported.
+     *
+     * @param player The player
+     * @param groupNames The name of the groups to add.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean removeGroups(Player player, List<String> groupNames) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        // Add each group to the user
+        boolean result = true;
+        for(String groupName : groupNames)
+            if(!removeGroup(player, groupName))
+                result = false;
+
+        // Return the result
+        return result;
+    }
+
+    /**
+     * Set the permission group of a player, if supported.
+     * This clears the current groups of the player.
+     *
+     * @param player The player
+     * @param groupName The name of the group.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
      */
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
     public boolean setGroup(Player player, String groupName) {
+        // If no permissions system is used, return false
         if(!isEnabled())
-            // No permissions system is used, return false
             return false;
 
         // Create a list of group names
@@ -470,8 +757,8 @@ public class PermissionsManager {
 
             case PERMISSIONS_BUKKIT:
                 // Permissions Bukkit
-                // Permissions Bukkit doesn't support groups, return false
-                return false;
+                // Set the user's group using a command
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player setgroup " + player.getName() + " " + groupName);
 
             case B_PERMISSIONS:
                 // bPermissions
@@ -480,22 +767,26 @@ public class PermissionsManager {
 
             case ESSENTIALS_GROUP_MANAGER:
                 // Essentials Group Manager
-                final AnjoPermissionsHandler handler = groupManagerPerms.getWorldsHolder().getWorldPermissions(player);
-                if(handler == null)
-                    return false;
-                // TODO: Write proper code here!
-                //return Arrays.asList(handler.getGroups(player.getName()));
+                // Clear the list of groups, add the player to the specified group afterwards using a command
+                removeAllGroups(player);
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "manuadd " + player.getName() + " " + groupName);
 
             case Z_PERMISSIONS:
                 //zPermissions
-                // TODO: Write proper code here!
-                //return new ArrayList(zPermissionsService.getPlayerGroups(player.getName()));
+                // Set the players group through the plugin commands
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " setgroup " + groupName);
 
             case VAULT:
                 // Vault
-                // TODO: Clear the current list of groups?
+                // Remove all current groups, add the player to the specified group afterwards
+                removeAllGroups(player);
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
+
+            case PERMISSIONS:
+                // Permissions
+                // FIXME: Add this method!
+                //return this.defaultPerms.group
 
             case NONE:
                 // Not hooked into any permissions system, return false
@@ -505,6 +796,63 @@ public class PermissionsManager {
                 // Something went wrong, return false
                 return false;
         }
+    }
+
+    /**
+     * Set the permission groups of a player, if supported.
+     * This clears the current groups of the player.
+     *
+     * @param player The player
+     * @param groupNames The name of the groups to set.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean setGroups(Player player, List<String> groupNames) {
+        // If no permissions system is used or if there's no group supplied, return false
+        if(!isEnabled() || groupNames.size() <= 0)
+            return false;
+
+        // Set the main group
+        if(!setGroup(player, groupNames.get(0)))
+            return false;
+
+        // Add the rest of the groups
+        boolean result = true;
+        for(int i = 1; i < groupNames.size(); i++) {
+            // Get the group name
+            String groupName = groupNames.get(0);
+
+            // Add this group
+            if(!addGroup(player, groupName))
+                result = false;
+        }
+
+        // Return the result
+        return result;
+    }
+
+    /**
+     * Remove all groups of the specified player, if supported.
+     * Systems like Essentials GroupManager don't allow all groups to be removed from a player, thus the user will stay
+     * in it's primary group. All the subgroups are removed just fine.
+     *
+     * @param player The player to remove all groups from.
+     *
+     * @return True if succeed, false otherwise.
+     * False will also be returned if this feature isn't supported for the used permissions system.
+     */
+    public boolean removeAllGroups(Player player) {
+        // If no permissions system is used, return false
+        if(!isEnabled())
+            return false;
+
+        // Get a list of current groups
+        List<String> groupNames = getGroups(player);
+
+        // Remove each group
+        return removeGroups(player, groupNames);
     }
 
     public enum PermissionsSystemType {

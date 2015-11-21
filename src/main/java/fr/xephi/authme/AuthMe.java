@@ -60,6 +60,7 @@ import net.milkbowl.vault.permission.Permission;
 import net.minelink.ctplus.CombatTagPlus;
 
 /**
+ * The AuthMe main class.
  */
 public class AuthMe extends JavaPlugin {
 
@@ -506,8 +507,8 @@ public class AuthMe extends JavaPlugin {
     /**
      * Get the permissions manager instance.
      *
-    
-     * @return Permissions Manager instance. */
+     * @return Permissions Manager instance.
+     */
     public PermissionsManager getPermissionsManager() {
         return this.permsMan;
     }
@@ -649,10 +650,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Save Player Data
-    /**
-     * Method savePlayer.
-     * @param player Player
-     */
     public void savePlayer(Player player) {
         if ((Utils.isNPC(player)) || (Utils.isUnrestricted(player))) {
             return;
@@ -681,11 +678,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Select the player to kick when a vip player join the server when full
-    /**
-     * Method generateKickPlayer.
-     * @param collection Collection<? extends Player>
-    
-     * @return Player */
     public Player generateKickPlayer(Collection<? extends Player> collection) {
         Player player = null;
         for (Player p : collection) {
@@ -730,11 +722,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Return the spawn location of a player
-    /**
-     * Method getSpawnLocation.
-     * @param player Player
-    
-     * @return Location */
     public Location getSpawnLocation(Player player) {
         World world = player.getWorld();
         String[] spawnPriority = Settings.spawnPriority.split(",");
@@ -757,21 +744,11 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Return the default spawnpoint of a world
-    /**
-     * Method getDefaultSpawn.
-     * @param world World
-    
-     * @return Location */
     private Location getDefaultSpawn(World world) {
         return world.getSpawnLocation();
     }
 
     // Return the multiverse spawnpoint of a world
-    /**
-     * Method getMultiverseSpawn.
-     * @param world World
-    
-     * @return Location */
     private Location getMultiverseSpawn(World world) {
         if (multiverse != null && Settings.multiverse) {
             try {
@@ -784,10 +761,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Return the essentials spawnpoint
-    /**
-     * Method getEssentialsSpawn.
-    
-     * @return Location */
     private Location getEssentialsSpawn() {
         if (essentialsSpawn != null) {
             return essentialsSpawn;
@@ -796,11 +769,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Return the authme soawnpoint
-    /**
-     * Method getAuthMeSpawn.
-     * @param player Player
-    
-     * @return Location */
     private Location getAuthMeSpawn(Player player) {
         if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null)) {
             return Spawn.getInstance().getFirstSpawn();
@@ -811,19 +779,11 @@ public class AuthMe extends JavaPlugin {
         return player.getWorld().getSpawnLocation();
     }
 
-    /**
-     * Method switchAntiBotMod.
-     * @param mode boolean
-     */
     public void switchAntiBotMod(boolean mode) {
         this.antibotMod = mode;
         Settings.switchAntiBotMod(mode);
     }
 
-    /**
-     * Method getAntiBotModMode.
-    
-     * @return boolean */
     public boolean getAntiBotModMode() {
         return this.antibotMod;
     }
@@ -850,12 +810,7 @@ public class AuthMe extends JavaPlugin {
         }, 1, 1200 * Settings.delayRecall);
     }
 
-    /**
-     * Method replaceAllInfos.
-     * @param message String
-     * @param player Player
-    
-     * @return String */
+
     public String replaceAllInfos(String message, Player player) {
         int playersOnline = Utils.getOnlinePlayers().size();
         message = message.replace("&", "\u00a7");
@@ -871,11 +826,7 @@ public class AuthMe extends JavaPlugin {
         return message;
     }
 
-    /**
-     * Method getIP.
-     * @param player Player
-    
-     * @return String */
+
     public String getIP(Player player) {
         String name = player.getName().toLowerCase();
         String ip = player.getAddress().getAddress().getHostAddress();
@@ -889,12 +840,7 @@ public class AuthMe extends JavaPlugin {
         return ip;
     }
 
-    /**
-     * Method isLoggedIp.
-     * @param name String
-     * @param ip String
-    
-     * @return boolean */
+
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
         for (Player player : Utils.getOnlinePlayers()) {
@@ -904,12 +850,7 @@ public class AuthMe extends JavaPlugin {
         return count >= Settings.getMaxLoginPerIp;
     }
 
-    /**
-     * Method hasJoinedIp.
-     * @param name String
-     * @param ip String
-    
-     * @return boolean */
+
     public boolean hasJoinedIp(String name, String ip) {
         int count = 0;
         for (Player player : Utils.getOnlinePlayers()) {
@@ -919,21 +860,18 @@ public class AuthMe extends JavaPlugin {
         return count >= Settings.getMaxJoinPerIp;
     }
 
-    /**
-     * Method getModuleManager.
-    
-     * @return ModuleManager */
+
     public ModuleManager getModuleManager() {
         return moduleManager;
     }
 
     /**
-     * Get Player real IP through VeryGames method
+     * Gets a player's real IP through VeryGames method.
      *
-     * @param player
-     *            player
-    
-     * @return String */
+     * @param player the player to process
+     *
+     * @return the real IP of the player
+     */
     @Deprecated
     public String getVeryGamesIP(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();
@@ -952,31 +890,19 @@ public class AuthMe extends JavaPlugin {
         return realIP;
     }
 
-    /**
-     * Method getCountryCode.
-     * @param ip String
-    
-     * @return String */
+
     @Deprecated
     public String getCountryCode(String ip) {
         return Utils.getCountryCode(ip);
     }
 
-    /**
-     * Method getCountryName.
-     * @param ip String
-    
-     * @return String */
+
     @Deprecated
     public String getCountryName(String ip) {
         return Utils.getCountryName(ip);
     }
 
-    /**
-     * Get the command handler instance.
-     *
-    
-     * @return Command handler. */
+
     public CommandHandler getCommandHandler() {
         return this.commandHandler;
     }
@@ -993,9 +919,7 @@ public class AuthMe extends JavaPlugin {
      * @param args
      *            The command arguments (Bukkit).
      *
-    
-    
-     * @return True if the command was executed, false otherwise. * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command, String, String[]) * @see org.bukkit.command.CommandExecutor#onCommand(CommandSender, Command, String, String[])
+     * @return True if the command was executed, false otherwise. 
      */
     @Override
     public boolean onCommand(CommandSender sender, Command cmd,
@@ -1012,9 +936,9 @@ public class AuthMe extends JavaPlugin {
     /**
      * Get the current installed AuthMeReloaded version name.
      *
-    
      * @return The version name of the currently installed AuthMeReloaded
-     *         instance. */
+     *         instance.
+     */
     public static String getVersionName() {
         return PLUGIN_VERSION_NAME;
     }
@@ -1022,9 +946,9 @@ public class AuthMe extends JavaPlugin {
     /**
      * Get the current installed AuthMeReloaded version code.
      *
-    
      * @return The version code of the currently installed AuthMeReloaded
-     *         instance. */
+     *         instance.
+     */
     public static int getVersionCode() {
         return PLUGIN_VERSION_CODE;
     }

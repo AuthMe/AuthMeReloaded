@@ -7,6 +7,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -125,47 +126,51 @@ public class Utils {
      * @param group GroupType
      */
     public static void setGroup(Player player, GroupType group) {
-        if (!Settings.isPermissionCheckEnabled)
+        if(!Settings.isPermissionCheckEnabled)
             return;
-        if (plugin.vaultGroupManagement == null)
-            return;
-        String currentGroup;
-        try {
-            currentGroup = plugin.vaultGroupManagement.getPrimaryGroup(player);
-        } catch (UnsupportedOperationException e) {
-            ConsoleLogger.showError("Your permission plugin (" + plugin.vaultGroupManagement.getName() + ") doesn't support the Group system... unhook!");
-            plugin.vaultGroupManagement = null;
-            return;
-        }
-        switch (group) {
-            case UNREGISTERED: {
-                plugin.vaultGroupManagement.playerRemoveGroup(player, currentGroup);
-                plugin.vaultGroupManagement.playerAddGroup(player, Settings.unRegisteredGroup);
+
+        // Get the permissions manager, and make sure it's valid
+        PermissionsManager permsMan = plugin.getPermissionsManager();
+        if(permsMan == null)
+            ConsoleLogger.showError("Failed to access permissions manager instance, shutting down.");
+        assert permsMan != null;
+
+        // Make sure group support is available
+        if(!permsMan.hasGroupSupport())
+            ConsoleLogger.showError("The current permissions system doesn't have group support, unable to set group!");
+
+        switch(group) {
+            case UNREGISTERED:
+                // Remove the other group type groups, set the current group
+                permsMan.removeGroups(player, Arrays.asList(Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
+                permsMan.addGroup(player, Settings.unRegisteredGroup);
                 break;
-            }
-            case REGISTERED: {
-                plugin.vaultGroupManagement.playerRemoveGroup(player, currentGroup);
-                plugin.vaultGroupManagement.playerAddGroup(player, Settings.getRegisteredGroup);
+
+            case REGISTERED:
+                // Remove the other group type groups, set the current group
+                permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getUnloggedinGroup));
+                permsMan.addGroup(player, Settings.getRegisteredGroup);
                 break;
-            }
-            case NOTLOGGEDIN: {
-                if (!useGroupSystem())
-                    break;
-                plugin.vaultGroupManagement.playerRemoveGroup(player, currentGroup);
-                plugin.vaultGroupManagement.playerAddGroup(player, Settings.getUnloggedinGroup);
+
+            case NOTLOGGEDIN:
+                // Remove the other group type groups, set the current group
+                permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup));
+                permsMan.addGroup(player, Settings.getUnloggedinGroup);
                 break;
-            }
-            case LOGGEDIN: {
-                if (!useGroupSystem())
-                    break;
+
+            case LOGGEDIN:
+                // Get the limbo player data
                 LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                if (limbo == null)
+                if(limbo == null)
                     break;
+
+                // Get the players group
                 String realGroup = limbo.getGroup();
-                plugin.vaultGroupManagement.playerRemoveGroup(player, currentGroup);
-                plugin.vaultGroupManagement.playerAddGroup(player, realGroup);
+
+                // Remove the other group types groups, set the real group
+                permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
+                permsMan.addGroup(player, realGroup);
                 break;
-            }
         }
     }
 
