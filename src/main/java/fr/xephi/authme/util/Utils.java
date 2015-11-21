@@ -130,8 +130,9 @@ public class Utils {
      * False is also returned if groups aren't supported with the current permissions system.
      */
     public static boolean setGroup(Player player, GroupType group) {
+        // Check whether the permissions check is enabled
         if(!Settings.isPermissionCheckEnabled)
-            return;
+            return false;
 
         // Get the permissions manager, and make sure it's valid
         PermissionsManager permsMan = plugin.getPermissionsManager();
