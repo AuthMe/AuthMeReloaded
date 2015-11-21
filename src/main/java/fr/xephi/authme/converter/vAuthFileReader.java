@@ -47,7 +47,7 @@ public class vAuthFileReader {
                 String name = line.split(": ")[0];
                 String password = line.split(": ")[1];
                 PlayerAuth auth;
-                if (isUUIDinstance(password)) {
+                if (isUuidInstance(password)) {
                     String pname;
                     try {
                         pname = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
@@ -68,15 +68,8 @@ public class vAuthFileReader {
 
     }
 
-    /**
-     * Method isUUIDinstance.
-     * @param s String
-    
-     * @return boolean */
-    private boolean isUUIDinstance(String s) {
-        if (String.valueOf(s.charAt(8)).equalsIgnoreCase("-"))
-            return true;
-        return true;
+    private static boolean isUuidInstance(String s) {
+        return s.length() > 8 && s.charAt(8) == '-';
     }
 
     /**
