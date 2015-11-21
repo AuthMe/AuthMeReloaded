@@ -11,32 +11,19 @@ import fr.xephi.authme.command.ExecutableCommand;
  */
 public class LoginCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-    
-     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
         // Make sure the current command executor is a player
-        if(!(sender instanceof Player)) {
+        if (!(sender instanceof Player)) {
             return true;
         }
 
-        // Get the player instance
+        // Get the necessary objects
+        final AuthMe plugin = AuthMe.getInstance();
         final Player player = (Player) sender;
+        final String playerPass = commandArguments.get(0);
 
-        // Get the password
-        String playerPass = commandArguments.get(0);
-
-        // Login the player
+        // Log the player in
         plugin.management.performLogin(player, playerPass, false);
         return true;
     }

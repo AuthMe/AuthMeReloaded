@@ -20,23 +20,8 @@ import fr.xephi.authme.settings.Settings;
  */
 public class RecoverEmailCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-    
-     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        final Messages m = Messages.getInstance();
-
         // Get the parameter values
         String playerMail = commandArguments.get(0);
 
@@ -50,6 +35,9 @@ public class RecoverEmailCommand extends ExecutableCommand {
         final String playerName = player.getName();
 
         // Command logic
+        final AuthMe plugin = AuthMe.getInstance();
+        final Messages m = Messages.getInstance();
+
         if (plugin.mail == null) {
             m.send(player, "error");
             return true;

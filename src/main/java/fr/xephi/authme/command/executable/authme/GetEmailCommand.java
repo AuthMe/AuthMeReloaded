@@ -23,18 +23,14 @@ public class GetEmailCommand extends ExecutableCommand {
      * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        Messages m = Messages.getInstance();
-
         // Get the player name
         String playerName = sender.getName();
         if(commandArguments.getCount() >= 1)
             playerName = commandArguments.get(0);
 
         // Get the authenticated user
+        AuthMe plugin = AuthMe.getInstance();
+        Messages m = Messages.getInstance();
         PlayerAuth auth = plugin.database.getAuth(playerName.toLowerCase());
         if (auth == null) {
             m.send(sender, "unknown_user");

@@ -19,20 +19,8 @@ import fr.xephi.authme.settings.Settings;
  */
 public class ChangePasswordCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-    
-     * @return True if the command was executed successfully, false otherwise. */
     @Override
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
         // Messages instance
         final Messages m = Messages.getInstance();
 
@@ -62,6 +50,7 @@ public class ChangePasswordCommand extends ExecutableCommand {
         }
 
         // Set the password
+        final AuthMe plugin = AuthMe.getInstance();
         final String playerNameLowerCase = playerName.toLowerCase();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
