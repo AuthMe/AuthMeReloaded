@@ -480,16 +480,17 @@ public class PermissionsManager {
 
             case ESSENTIALS_GROUP_MANAGER:
                 // Essentials Group Manager
-                final AnjoPermissionsHandler handler = groupManagerPerms.getWorldsHolder().getWorldPermissions(player);
+                /*final AnjoPermissionsHandler handler = groupManagerPerms.getWorldsHolder().getWorldPermissions(player);
                 if(handler == null)
-                    return false;
-                // TODO: Write proper code here!
-                //return Arrays.asList(handler.getGroups(player.getName()));
+                    return false;*/
+                // Add the user to the group
+                // TODO: Clear the current list of groups?
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "manuadd " + player.getName() + " " + groupName);
 
             case Z_PERMISSIONS:
                 //zPermissions
-                // TODO: Write proper code here!
-                //return new ArrayList(zPermissionsService.getPlayerGroups(player.getName()));
+                // Set the players group through the plugin commands
+                return Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "permissions player " + player.getName() + " setgroup " + groupName);
 
             case VAULT:
                 // Vault
