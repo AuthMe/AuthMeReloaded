@@ -129,13 +129,15 @@ public class Utils {
         if(!Settings.isPermissionCheckEnabled)
             return;
 
-        // TODO: Make sure a groups system is used!
-
         // Get the permissions manager, and make sure it's valid
         PermissionsManager permsMan = plugin.getPermissionsManager();
         if(permsMan == null)
             ConsoleLogger.showError("Failed to access permissions manager instance, shutting down.");
         assert permsMan != null;
+
+        // Make sure group support is available
+        if(!permsMan.hasGroupSupport())
+            ConsoleLogger.showError("The current permissions system doesn't have group support, unable to set group!");
 
         switch(group) {
             case UNREGISTERED:
