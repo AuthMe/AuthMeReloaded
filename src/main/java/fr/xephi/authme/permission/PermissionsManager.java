@@ -610,6 +610,7 @@ public class PermissionsManager {
 
     /**
      * Set the permission group of a player, if supported.
+     * This clears the current groups of the player.
      *
      * @param player The player
      * @param groupName The name of the group.
@@ -673,6 +674,41 @@ public class PermissionsManager {
                 // Something went wrong, return false
                 return false;
         }
+    }
+
+    /**
+     * Set the permission groups of a player, if supported.
+     * This clears the current groups of the player.
+     *
+     * @param player The player
+     * @param groupNames The name of the groups to set.
+     *
+     * @return True if succeed, false otherwise.
+     * False is also returned if this feature isn't supported for the current permissions system.
+     */
+    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    public boolean setGroups(Player player, List<String> groupNames) {
+        // If no permissions system is used or if there's no group supplied, return false
+        if(!isEnabled() || groupNames.size() <= 0)
+            return false;
+
+        // Set the main group
+        if(!setGroup(player, groupNames.get(0)))
+            return false;
+
+        // Add the rest of the groups
+        boolean result = true;
+        for(int i = 1; i < groupNames.size(); i++) {
+            // Get the group name
+            String groupName = groupNames.get(0);
+
+            // Add this group
+            if(!addGroup(player, groupName))
+                result = false;
+        }
+
+        // Return the result
+        return result;
     }
 
     public enum PermissionsSystemType {
