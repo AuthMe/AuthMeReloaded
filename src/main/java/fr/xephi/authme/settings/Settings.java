@@ -651,7 +651,7 @@ public final class Settings extends YamlConfiguration {
                 BufferedWriter w = new BufferedWriter(fw);
                 w.write("Welcome {PLAYER} on {SERVER} server");
                 w.newLine();
-                w.write("This server use AuthMe protection!");
+                w.write("This server uses " + AuthMe.PLUGIN_NAME + " protection!");
                 w.close();
             } catch (IOException e) {
                 e.printStackTrace();
