@@ -178,27 +178,30 @@ public class Utils {
     }
 
     /**
-     * Method addNormal.
-     * @param player Player
-     * @param group String
-    
-     * @return boolean */
+     * TODO: This method requires better explanation.
+     *
+     * Set the normal group of a player.
+     *
+     * @param player The player.
+     * @param group The normal group.
+
+     * @return True on success, false on failure.
+     */
     public static boolean addNormal(Player player, String group) {
-        if (!useGroupSystem()) {
+        if(!Settings.isPermissionCheckEnabled)
             return false;
-        }
-        if (plugin.vaultGroupManagement == null)
-            return false;
-        try {
-            if (plugin.vaultGroupManagement.playerRemoveGroup(player, Settings.getUnloggedinGroup) && plugin.vaultGroupManagement.playerAddGroup(player, group)) {
-                return true;
-            }
-        } catch (UnsupportedOperationException e) {
-            ConsoleLogger.showError("Your permission system (" + plugin.vaultGroupManagement.getName() + ") do not support Group system with that config... unhook!");
-            plugin.vaultGroupManagement = null;
-            return false;
-        }
-        return false;
+
+        // Get the permissions manager, and make sure it's valid
+        PermissionsManager permsMan = plugin.getPermissionsManager();
+        if(permsMan == null)
+            ConsoleLogger.showError("Failed to access permissions manager instance, shutting down.");
+        assert permsMan != null;
+
+        // Remove old groups
+        permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
+
+        // Add the normal group, return the result
+        return permsMan.addGroup(player, group);
     }
 
     // TODO: Move to a Manager
