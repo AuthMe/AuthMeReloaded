@@ -73,12 +73,16 @@ public class VersionCommand extends ExecutableCommand {
      *
      * @param minecraftName The Minecraft player name.
      *
-    
-     * @return True if the player is online, false otherwise. */
+     * @return True if the player is online, false otherwise.
+     */
     private boolean isPlayerOnline(String minecraftName) {
-        for(Player player : Bukkit.getOnlinePlayers())
-            if(player.getName().equalsIgnoreCase(minecraftName))
+        // Note ljacqu 20151121: Generally you should use Utils#getOnlinePlayers to retrieve the list of online players.
+        // If it's only used in a for-each loop such as here, it's fine. For other purposes, go through the Utils class.
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(minecraftName)) {
                 return true;
+            }
+        }
         return false;
     }
 }
