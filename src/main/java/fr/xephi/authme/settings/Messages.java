@@ -15,8 +15,8 @@ public class Messages extends CustomConfiguration {
 
     /**
      * Constructor for Messages.
-     * @param file File
-     * @param lang String
+     * @param file the configuration file
+     * @param lang the code of the language to use
      */
     public Messages(File file, String lang) {
         super(file);
@@ -25,14 +25,10 @@ public class Messages extends CustomConfiguration {
         this.lang = lang;
     }
 
-    /**
-     * Method send.
-     * @param sender CommandSender
-     * @param msg String
-     */
     public void send(CommandSender sender, String msg) {
-        if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang))
+        if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang)) {
             singleton.reloadMessages();
+        }
         String loc = (String) singleton.get(msg);
         if (loc == null) {
             loc = "Error with Translation files, please contact the admin for verify or update translation";
@@ -43,11 +39,6 @@ public class Messages extends CustomConfiguration {
         }
     }
 
-    /**
-     * Method send.
-     * @param msg String
-    
-     * @return String[] */
     public String[] send(String msg) {
         if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.lang)) {
             singleton.reloadMessages();
@@ -71,10 +62,6 @@ public class Messages extends CustomConfiguration {
         return loc;
     }
 
-    /**
-     * Method getInstance.
-    
-     * @return Messages */
     public static Messages getInstance() {
         if (singleton == null) {
             singleton = new Messages(Settings.messageFile, Settings.messagesLanguage);
