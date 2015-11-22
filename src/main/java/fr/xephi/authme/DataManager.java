@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
-import net.milkbowl.vault.permission.Permission;
 
 /**
  */

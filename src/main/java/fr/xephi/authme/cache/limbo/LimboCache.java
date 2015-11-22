@@ -14,7 +14,6 @@ import fr.xephi.authme.cache.backup.DataFileCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.events.ResetInventoryEvent;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.permissions.Permission;
 
 /**
  */

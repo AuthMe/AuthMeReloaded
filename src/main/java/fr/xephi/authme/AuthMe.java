@@ -55,7 +55,6 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.util.Utils;
-import net.milkbowl.vault.permission.Permission;
 import net.minelink.ctplus.CombatTagPlus;
 
 /**

@@ -219,10 +219,6 @@ public final class Utils {
                 && (Settings.getUnrestrictedName.contains(player.getName()));
     }
 
-    private static boolean useGroupSystem() {
-        return Settings.isPermissionCheckEnabled && !Settings.getUnloggedinGroup.isEmpty();
-    }
-
     /**
      * Method packCoords.
      * @param x double

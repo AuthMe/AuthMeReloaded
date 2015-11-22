@@ -500,7 +500,7 @@ public class PermissionsManager {
      *
      * @return The name of the primary permission group. Or null.
      */
-    @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
+    @SuppressWarnings("deprecation")
     public String getPrimaryGroup(Player player) {
         // If no permissions system is used, return an empty list
         if(!isEnabled())
