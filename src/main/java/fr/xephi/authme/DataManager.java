@@ -18,7 +18,7 @@ import java.util.concurrent.Future;
  */
 public class DataManager {
 
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     /**
      * Constructor for DataManager.
@@ -29,13 +29,11 @@ public class DataManager {
         this.plugin = plugin;
     }
 
-    public void run() {
-    }
-
     /**
      * Method getOfflinePlayer.
      *
      * @param name String
+     *
      * @return OfflinePlayer
      */
     public synchronized OfflinePlayer getOfflinePlayer(final String name) {
@@ -50,7 +48,7 @@ public class DataManager {
                             result = op;
                             break;
                         }
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
                 return result;
             }
@@ -79,10 +77,11 @@ public class DataManager {
                 String playerName = player.getName();
                 File playerFile = new File("." + File.separator + "plugins" + File.separator + "AntiXRayData" + File.separator + "PlayerData" + File.separator + playerName);
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " AntiXRayData Files");
@@ -103,20 +102,23 @@ public class DataManager {
                 String playerName = player.getName();
                 File playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + ".yml");
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
                 playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + "_creative.yml");
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
                 playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + "_adventure.yml");
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " LimitedCreative Survival, Creative and Adventure files");
@@ -138,11 +140,13 @@ public class DataManager {
 
                 try {
                     File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 } catch (Exception ignore) {
                     File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getName() + ".dat");
                     if (playerFile.exists()) {
+                        //noinspection ResultOfMethodCallIgnored
                         playerFile.delete();
                         i++;
                     }
@@ -164,11 +168,13 @@ public class DataManager {
         for (String name : cleared) {
             try {
                 File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");
+                //noinspection ResultOfMethodCallIgnored
                 playerFile.delete();
                 i++;
             } catch (Exception e) {
                 File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + name + ".yml");
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
@@ -194,7 +200,7 @@ public class DataManager {
             try {
                 permsMan.removeAllGroups(this.getOnlinePlayerLower(name.toLowerCase()));
                 i++;
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Removed " + i + " permissions");
@@ -218,6 +224,7 @@ public class DataManager {
      *
      * @param player Player
      * @param name   String
+     *
      * @return boolean
      */
     public boolean isOnline(Player player, final String name) {
@@ -248,6 +255,7 @@ public class DataManager {
      * Method getOnlinePlayerLower.
      *
      * @param name String
+     *
      * @return Player
      */
     public Player getOnlinePlayerLower(String name) {

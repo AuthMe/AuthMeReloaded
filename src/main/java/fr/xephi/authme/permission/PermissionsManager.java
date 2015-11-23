@@ -29,10 +29,10 @@ import java.util.logging.Logger;
 
 /**
  * PermissionsManager.
- * <p>
+ * <p/>
  * A permissions manager, to manage and use various permissions systems.
  * This manager supports dynamic plugin hooking and various other features.
- * <p>
+ * <p/>
  * Written by Tim Visée.
  *
  * @author Tim Visée, http://timvisee.com
@@ -47,11 +47,11 @@ public class PermissionsManager {
     /**
      * Server instance.
      */
-    private Server server;
+    private final Server server;
     /**
      * Plugin instance.
      */
-    private Plugin plugin;
+    private final Plugin plugin;
     /**
      * Logger instance.
      */
@@ -267,9 +267,9 @@ public class PermissionsManager {
 
         // Check if any known permissions system is enabling
         if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
-                pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
-                pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
-                pluginName.equals("Permissions")) {
+            pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
+            pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
+            pluginName.equals("Permissions")) {
             this.log.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
             setup();
         }
@@ -287,9 +287,9 @@ public class PermissionsManager {
 
         // Is the WorldGuard plugin disabled
         if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
-                pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
-                pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
-                pluginName.equals("Permissions")) {
+            pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
+            pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
+            pluginName.equals("Permissions")) {
             this.log.info(pluginName + " plugin disabled, updating hooks!");
             setup();
         }
@@ -318,6 +318,7 @@ public class PermissionsManager {
      *
      * @param player    The player.
      * @param permsNode Permissions node.
+     *
      * @return True if the player has permission.
      */
     public boolean hasPermission(Player player, String permsNode) {
@@ -330,6 +331,7 @@ public class PermissionsManager {
      * @param player    The player.
      * @param permsNode The permission node.
      * @param def       Default returned if no permissions system is used.
+     *
      * @return True if the player has permission.
      */
     public boolean hasPermission(Player player, String permsNode, boolean def) {
@@ -425,6 +427,7 @@ public class PermissionsManager {
      * Get the permission groups of a player, if available.
      *
      * @param player The player.
+     *
      * @return Permission groups, or an empty list if this feature is not supported.
      */
     @SuppressWarnings({"unchecked", "rawtypes", "deprecation"})
@@ -489,6 +492,7 @@ public class PermissionsManager {
      * Get the primary group of a player, if available.
      *
      * @param player The player.
+     *
      * @return The name of the primary permission group. Or null.
      */
     @SuppressWarnings("deprecation")
@@ -542,6 +546,7 @@ public class PermissionsManager {
      *
      * @param player    The player.
      * @param groupName The group name.
+     *
      * @return True if the player is in the specified group, false otherwise.
      * False is also returned if groups aren't supported by the used permissions system.
      */
@@ -599,6 +604,7 @@ public class PermissionsManager {
      *
      * @param player    The player
      * @param groupName The name of the group.
+     *
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
@@ -660,6 +666,7 @@ public class PermissionsManager {
      *
      * @param player     The player
      * @param groupNames The name of the groups to add.
+     *
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
@@ -683,6 +690,7 @@ public class PermissionsManager {
      *
      * @param player    The player
      * @param groupName The name of the group.
+     *
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
@@ -744,6 +752,7 @@ public class PermissionsManager {
      *
      * @param player     The player
      * @param groupNames The name of the groups to add.
+     *
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
@@ -768,6 +777,7 @@ public class PermissionsManager {
      *
      * @param player    The player
      * @param groupName The name of the group.
+     *
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
@@ -837,6 +847,7 @@ public class PermissionsManager {
      *
      * @param player     The player
      * @param groupNames The name of the groups to set.
+     *
      * @return True if succeed, false otherwise.
      * False is also returned if this feature isn't supported for the current permissions system.
      */
@@ -870,6 +881,7 @@ public class PermissionsManager {
      * in it's primary group. All the subgroups are removed just fine.
      *
      * @param player The player to remove all groups from.
+     *
      * @return True if succeed, false otherwise.
      * False will also be returned if this feature isn't supported for the used permissions system.
      */
@@ -895,7 +907,7 @@ public class PermissionsManager {
         VAULT("Vault"),
         PERMISSIONS("Permissions");
 
-        public String name;
+        public final String name;
 
         /**
          * Constructor for PermissionsSystemType.

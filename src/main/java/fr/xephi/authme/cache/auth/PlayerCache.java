@@ -7,7 +7,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class PlayerCache {
 
     private volatile static PlayerCache singleton;
-    private ConcurrentHashMap<String, PlayerAuth> cache;
+    private final ConcurrentHashMap<String, PlayerAuth> cache;
 
     private PlayerCache() {
         cache = new ConcurrentHashMap<>();
@@ -57,6 +57,7 @@ public class PlayerCache {
      * Method isAuthenticated.
      *
      * @param user String
+     *
      * @return boolean
      */
     public boolean isAuthenticated(String user) {
@@ -67,6 +68,7 @@ public class PlayerCache {
      * Method getAuth.
      *
      * @param user String
+     *
      * @return PlayerAuth
      */
     public PlayerAuth getAuth(String user) {

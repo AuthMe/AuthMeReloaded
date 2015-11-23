@@ -11,7 +11,7 @@ import fr.xephi.authme.settings.Settings;
  */
 public class ForceFlatToSqlite implements Converter {
 
-    private DataSource data;
+    private final DataSource data;
 
     /**
      * Constructor for ForceFlatToSqlite.

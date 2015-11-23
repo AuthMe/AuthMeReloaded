@@ -12,9 +12,10 @@ import java.util.zip.GZIPInputStream;
 
 public class GeoLiteAPI {
 
-    private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry"
-            + "/GeoIP.dat.gz";
+    private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry" +
+        "/GeoIP.dat.gz";
     private static final Wrapper wrapper = new Wrapper(AuthMe.getInstance());
+    private static final AuthMe plugin = AuthMe.getInstance();
     private static LookupService lookupService;
 
     /**
@@ -30,9 +31,8 @@ public class GeoLiteAPI {
         if (data.exists()) {
             try {
                 lookupService = new LookupService(data);
-                // TODO ljacqu 20151123: Should this not be output over the ConsoleLogger service?
-                wrapper.getLogger().info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
-                        "available at http://www.maxmind.com");
+                plugin.getLogger().info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
+                    "available at http://www.maxmind.com");
                 return true;
             } catch (IOException e) {
                 // TODO ljacqu 20151123: Log the exception instead of just swallowing it
@@ -73,6 +73,7 @@ public class GeoLiteAPI {
      * Get the country code of the given IP address.
      *
      * @param ip Ip address
+     *
      * @return String
      */
     public static String getCountryCode(String ip) {
@@ -86,6 +87,7 @@ public class GeoLiteAPI {
      * Get the country name of the given IP address.
      *
      * @param ip Ip address
+     *
      * @return String
      */
     public static String getCountryName(String ip) {

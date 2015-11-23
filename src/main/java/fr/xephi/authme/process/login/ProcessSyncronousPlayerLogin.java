@@ -24,14 +24,14 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class ProcessSyncronousPlayerLogin implements Runnable {
 
-    private LimboPlayer limbo;
-    private Player player;
-    private String name;
-    private PlayerAuth auth;
-    private AuthMe plugin;
-    private DataSource database;
-    private PluginManager pm;
-    private JsonCache playerCache;
+    private final LimboPlayer limbo;
+    private final Player player;
+    private final String name;
+    private final PlayerAuth auth;
+    private final AuthMe plugin;
+    private final DataSource database;
+    private final PluginManager pm;
+    private final JsonCache playerCache;
 
     /**
      * Constructor for ProcessSyncronousPlayerLogin.
@@ -194,11 +194,11 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {
                 for (String s : Settings.welcomeMsg) {
-                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
+                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
                 for (String s : Settings.welcomeMsg) {
-                    player.sendMessage(plugin.replaceAllInfos(s, player));
+                    player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
 

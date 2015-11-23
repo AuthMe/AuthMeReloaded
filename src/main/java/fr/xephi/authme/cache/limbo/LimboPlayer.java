@@ -8,7 +8,7 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class LimboPlayer {
 
-    private String name;
+    private final String name;
     private Location loc = null;
     private BukkitTask timeoutTaskId = null;
     private BukkitTask messageTaskId = null;

@@ -20,9 +20,9 @@ import java.util.List;
  */
 public class xAuthToFlat {
 
-    public AuthMe instance;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe instance;
+    public final DataSource database;
+    public final CommandSender sender;
 
     /**
      * Constructor for xAuthToFlat.
@@ -64,7 +64,7 @@ public class xAuthToFlat {
                     database.saveAuth(auth);
                 }
             }
-            sender.sendMessage("[AuthMe] Successfull convert from xAuth database");
+            sender.sendMessage("[AuthMe] Successfully convert from xAuth database");
         } catch (Exception e) {
             sender.sendMessage("[AuthMe] An error has been thrown while import xAuth database, the import hadn't fail but can be not complete ");
         }
@@ -75,6 +75,7 @@ public class xAuthToFlat {
      * Method getIdPlayer.
      *
      * @param id int
+     *
      * @return String
      */
     public String getIdPlayer(int id) {
@@ -129,6 +130,7 @@ public class xAuthToFlat {
      * Method getPassword.
      *
      * @param accountId int
+     *
      * @return String
      */
     public String getPassword(int accountId) {

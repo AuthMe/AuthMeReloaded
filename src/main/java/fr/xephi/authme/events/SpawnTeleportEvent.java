@@ -11,10 +11,10 @@ import org.bukkit.entity.Player;
  */
 public class SpawnTeleportEvent extends CustomEvent {
 
-    private Player player;
+    private final Player player;
     private Location to;
-    private Location from;
-    private boolean isAuthenticated;
+    private final Location from;
+    private final boolean isAuthenticated;
 
     /**
      * Constructor for SpawnTeleportEvent.

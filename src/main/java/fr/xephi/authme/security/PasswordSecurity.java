@@ -18,17 +18,18 @@ import java.util.HashMap;
  */
 public class PasswordSecurity {
 
-    public static HashMap<String, String> userSalt = new HashMap<>();
-    private static SecureRandom rnd = new SecureRandom();
+    public static final HashMap<String, String> userSalt = new HashMap<>();
+    private static final SecureRandom rnd = new SecureRandom();
 
     /**
      * Method createSalt.
      *
      * @param length int
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     public static String createSalt(int length)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         byte[] msg = new byte[40];
         rnd.nextBytes(msg);
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");
@@ -43,6 +44,7 @@ public class PasswordSecurity {
      * @param alg        HashAlgorithm
      * @param password   String
      * @param playerName String
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     public static String getHash(HashAlgorithm alg, String password,
@@ -146,15 +148,16 @@ public class PasswordSecurity {
      * @param password   String
      * @param hash       String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException
      */
     public static boolean comparePasswordWithHash(String password, String hash,
                                                   String playerName) throws NoSuchAlgorithmException {
-        HashAlgorithm algo = Settings.getPasswordHash;
+        HashAlgorithm algorithm = Settings.getPasswordHash;
         EncryptionMethod method;
         try {
-            if (algo != HashAlgorithm.CUSTOM)
-                method = (EncryptionMethod) algo.getclasse().newInstance();
+            if (algorithm != HashAlgorithm.CUSTOM)
+                method = (EncryptionMethod) algorithm.getclasse().newInstance();
             else
                 method = null;
 
@@ -184,10 +187,11 @@ public class PasswordSecurity {
      * @param password   String
      * @param hash       String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException
      */
     private static boolean compareWithAllEncryptionMethod(String password,
-                                                          String hash, String playerName) throws NoSuchAlgorithmException {
+                                                          String hash, String playerName) {
         for (HashAlgorithm algo : HashAlgorithm.values()) {
             if (algo != HashAlgorithm.CUSTOM) {
                 try {

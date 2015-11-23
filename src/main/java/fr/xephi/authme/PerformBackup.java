@@ -14,13 +14,13 @@ import java.util.Date;
  */
 public class PerformBackup {
 
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
-    String dateString = format.format(new Date());
-    private String dbName = Settings.getMySQLDatabase;
-    private String dbUserName = Settings.getMySQLUsername;
-    private String dbPassword = Settings.getMySQLPassword;
-    private String tblname = Settings.getMySQLTablename;
-    private String path = AuthMe.getInstance().getDataFolder() + File.separator + "backups" + File.separator + "backup" + dateString;
+    final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
+    final String dateString = format.format(new Date());
+    private final String dbName = Settings.getMySQLDatabase;
+    private final String dbUserName = Settings.getMySQLUsername;
+    private final String dbPassword = Settings.getMySQLPassword;
+    private final String tblname = Settings.getMySQLTablename;
+    private final String path = AuthMe.getInstance().getDataFolder() + File.separator + "backups" + File.separator + "backup" + dateString;
     private AuthMe instance;
 
     /**
@@ -38,7 +38,7 @@ public class PerformBackup {
      * @param cause BackupCause The cause of the backup.
      */
     public void doBackup(BackupCause cause) {
-        if(!Settings.isBackupActivated) {
+        if (!Settings.isBackupActivated) {
             ConsoleLogger.showError("Can't perform a Backup: disabled in configuration. Cause of the Backup: " + cause.name());
         }
         // Check whether a backup should be made at the specified point in time
@@ -128,6 +128,7 @@ public class PerformBackup {
      * Method FileBackup.
      *
      * @param backend String
+     *
      * @return boolean
      */
     private boolean FileBackup(String backend) {
@@ -150,11 +151,12 @@ public class PerformBackup {
      * Method checkWindows.
      *
      * @param windowsPath String
+     *
      * @return boolean
      */
     private boolean checkWindows(String windowsPath) {
         String isWin = System.getProperty("os.name").toLowerCase();
-        if (isWin.indexOf("win") >= 0) {
+        if (isWin.contains("win")) {
             if (new File(windowsPath + "\\bin\\mysqldump.exe").exists()) {
                 return true;
             } else {
@@ -174,6 +176,7 @@ public class PerformBackup {
      *
      * @param src File
      * @param dst File
+     *
      * @throws IOException
      */
     void copy(File src, File dst) throws IOException {

@@ -14,10 +14,11 @@ public class IPB3 implements EncryptionMethod {
      * Method getMD5.
      *
      * @param message String
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     private static String getMD5(String message)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
         md5.reset();
         md5.update(message.getBytes());
@@ -31,11 +32,12 @@ public class IPB3 implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         return getMD5(getMD5(salt) + getMD5(password));
     }
 
@@ -45,6 +47,7 @@ public class IPB3 implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

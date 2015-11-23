@@ -17,6 +17,7 @@ public class SetSpawnCommand extends ExecutableCommand {
      * @param sender           The command sender.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
+     *
      * @return True if the command was executed successfully, false otherwise.
      */
     @Override

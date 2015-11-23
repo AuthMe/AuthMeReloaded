@@ -38,6 +38,7 @@ public class PBKDF2HexFormatter implements PBKDF2Formatter {
      *
      * @param p PBKDF2Parameters
      * @param s String
+     *
      * @return boolean * @see fr.xephi.authme.security.pbkdf2.PBKDF2Formatter#fromString(PBKDF2Parameters, String)
      */
     public boolean fromString(PBKDF2Parameters p, String s) {
@@ -46,7 +47,7 @@ public class PBKDF2HexFormatter implements PBKDF2Formatter {
         }
 
         String[] p123 = s.split(":");
-        if (p123 == null || p123.length != 3) {
+        if (p123.length != 3) {
             return true;
         }
 
@@ -64,6 +65,7 @@ public class PBKDF2HexFormatter implements PBKDF2Formatter {
      * Method toString.
      *
      * @param p PBKDF2Parameters
+     *
      * @return String * @see fr.xephi.authme.security.pbkdf2.PBKDF2Formatter#toString(PBKDF2Parameters)
      */
     public String toString(PBKDF2Parameters p) {

@@ -62,8 +62,8 @@ public final class ConsoleLogger {
         }
         try {
             Files.write(Settings.LOG_FILE.toPath(), (dateTime + ": " + message + StringUtils.newline).getBytes(),
-                    StandardOpenOption.APPEND,
-                    StandardOpenOption.CREATE);
+                StandardOpenOption.APPEND,
+                StandardOpenOption.CREATE);
         } catch (IOException ignored) {
         }
     }

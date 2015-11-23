@@ -25,7 +25,7 @@ public class FlatFile implements DataSource {
      * :LASTPOSZ:LASTPOSWORLD PLAYERNAME:HASHSUM:IP:LOGININMILLIESECONDS
      * PLAYERNAME:HASHSUM:IP PLAYERNAME:HASHSUM
      */
-    private File source;
+    private final File source;
 
     public FlatFile() {
         source = Settings.AUTH_FILE;
@@ -48,6 +48,7 @@ public class FlatFile implements DataSource {
      * Method isAuthAvailable.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
      */
     @Override
@@ -72,7 +73,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -83,6 +84,7 @@ public class FlatFile implements DataSource {
      * Method saveAuth.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
      */
     @Override
@@ -101,7 +103,7 @@ public class FlatFile implements DataSource {
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -112,6 +114,7 @@ public class FlatFile implements DataSource {
      * Method updatePassword.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
      */
     @Override
@@ -162,7 +165,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -177,6 +180,7 @@ public class FlatFile implements DataSource {
      * Method updateSession.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
      */
     @Override
@@ -227,7 +231,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -242,6 +246,7 @@ public class FlatFile implements DataSource {
      * Method updateQuitLoc.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
      */
     @Override
@@ -271,7 +276,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -286,6 +291,7 @@ public class FlatFile implements DataSource {
      * Method getIps.
      *
      * @param ip String
+     *
      * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
      */
     @Override
@@ -312,7 +318,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -322,6 +328,7 @@ public class FlatFile implements DataSource {
      * Method purgeDatabase.
      *
      * @param until long
+     *
      * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
      */
     @Override
@@ -357,13 +364,13 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -374,6 +381,7 @@ public class FlatFile implements DataSource {
      * Method autoPurgeDatabase.
      *
      * @param until long
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
      */
     @Override
@@ -409,13 +417,13 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -426,6 +434,7 @@ public class FlatFile implements DataSource {
      * Method removeAuth.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
      */
     @Override
@@ -459,13 +468,13 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -476,6 +485,7 @@ public class FlatFile implements DataSource {
      * Method getAuth.
      *
      * @param user String
+     *
      * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
      */
     @Override
@@ -513,7 +523,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -542,6 +552,7 @@ public class FlatFile implements DataSource {
      * Method updateEmail.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
      */
     @Override
@@ -571,7 +582,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -586,6 +597,7 @@ public class FlatFile implements DataSource {
      * Method updateSalt.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
      */
     @Override
@@ -597,6 +609,7 @@ public class FlatFile implements DataSource {
      * Method getAllAuthsByName.
      *
      * @param auth PlayerAuth
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
      */
     @Override
@@ -623,7 +636,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -633,6 +646,7 @@ public class FlatFile implements DataSource {
      * Method getAllAuthsByIp.
      *
      * @param ip String
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
      */
     @Override
@@ -659,7 +673,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -669,6 +683,7 @@ public class FlatFile implements DataSource {
      * Method getAllAuthsByEmail.
      *
      * @param email String
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
      */
     @Override
@@ -695,7 +710,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -705,6 +720,7 @@ public class FlatFile implements DataSource {
      * Method purgeBanned.
      *
      * @param banned List<String>
+     *
      * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
      */
     @Override
@@ -721,34 +737,31 @@ public class FlatFile implements DataSource {
                     if (banned.contains(args[0])) {
                         lines.add(line);
                     }
-                } catch (NullPointerException | ArrayIndexOutOfBoundsException exc) {
+                } catch (NullPointerException | ArrayIndexOutOfBoundsException ignored) {
                 }
             }
             bw = new BufferedWriter(new FileWriter(source));
             for (String l : lines) {
                 bw.write(l + "\n");
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
+
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
+
         } finally {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
-        return;
     }
 
     /**
@@ -765,6 +778,7 @@ public class FlatFile implements DataSource {
      * Method isLogged.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
      */
     @Override
@@ -776,6 +790,7 @@ public class FlatFile implements DataSource {
      * Method setLogged.
      *
      * @param user String
+     *
      * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
      */
     @Override
@@ -786,6 +801,7 @@ public class FlatFile implements DataSource {
      * Method setUnlogged.
      *
      * @param user String
+     *
      * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
      */
     @Override
@@ -822,7 +838,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -832,16 +848,17 @@ public class FlatFile implements DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
+     *
      * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
      */
     @Override
-    public void updateName(String oldone, String newone) {
-        PlayerAuth auth = this.getAuth(oldone);
-        auth.setName(newone);
+    public void updateName(String oldOne, String newOne) {
+        PlayerAuth auth = this.getAuth(oldOne);
+        auth.setName(newOne);
         this.saveAuth(auth);
-        this.removeAuth(oldone);
+        this.removeAuth(oldOne);
     }
 
     /**
@@ -889,7 +906,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }

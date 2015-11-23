@@ -9,11 +9,11 @@ import org.bukkit.entity.Player;
  */
 public class ProcessSyncronousPlayerQuit implements Runnable {
 
-    protected AuthMe plugin;
-    protected Player player;
-    protected boolean isOp;
-    protected boolean isFlying;
-    protected boolean needToChange;
+    protected final AuthMe plugin;
+    protected final Player player;
+    protected final boolean isOp;
+    protected final boolean isFlying;
+    protected final boolean needToChange;
 
     /**
      * Constructor for ProcessSyncronousPlayerQuit.
@@ -25,8 +25,8 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
      * @param needToChange boolean
      */
     public ProcessSyncronousPlayerQuit(AuthMe plugin, Player player
-            , boolean isOp, boolean isFlying
-            , boolean needToChange) {
+        , boolean isOp, boolean isFlying
+        , boolean needToChange) {
         this.plugin = plugin;
         this.player = player;
         this.isOp = isOp;
@@ -51,7 +51,7 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
         }
         try {
             player.getVehicle().eject();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 }

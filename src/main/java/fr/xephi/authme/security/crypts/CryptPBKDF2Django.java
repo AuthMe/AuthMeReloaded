@@ -16,11 +16,12 @@ public class CryptPBKDF2Django implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         String result = "pbkdf2_sha256$15000$" + salt + "$";
         PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), 15000);
         PBKDF2Engine engine = new PBKDF2Engine(params);
@@ -34,6 +35,7 @@ public class CryptPBKDF2Django implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

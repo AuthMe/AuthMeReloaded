@@ -29,7 +29,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
-public class AsyncronousJoin {
+public class AsynchronousJoin {
 
     private final AuthMe plugin;
     private final Player player;
@@ -39,13 +39,13 @@ public class AsyncronousJoin {
     private final BukkitScheduler sched;
 
     /**
-     * Constructor for AsyncronousJoin.
+     * Constructor for AsynchronousJoin.
      *
      * @param player   Player
      * @param plugin   AuthMe
      * @param database DataSource
      */
-    public AsyncronousJoin(Player player, AuthMe plugin, DataSource database) {
+    public AsynchronousJoin(Player player, AuthMe plugin, DataSource database) {
         this.player = player;
         this.plugin = plugin;
         this.sched = plugin.getServer().getScheduler();
@@ -248,7 +248,7 @@ public class AsyncronousJoin {
         }
 
         String[] msg = isAuthAvailable ? m.send("login_msg") :
-                m.send("reg_" + (Settings.emailRegistration ? "email_" : "") + "msg");
+            m.send("reg_" + (Settings.emailRegistration ? "email_" : "") + "msg");
         BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
     }
@@ -261,10 +261,10 @@ public class AsyncronousJoin {
     private boolean needFirstSpawn() {
         if (player.hasPlayedBefore())
             return false;
-        Location firstspawn = Spawn.getInstance().getFirstSpawn();
-        if (firstspawn == null || firstspawn.getWorld() == null)
+        Location firstSpawn = Spawn.getInstance().getFirstSpawn();
+        if (firstSpawn == null || firstSpawn.getWorld() == null)
             return false;
-        FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), firstspawn);
+        FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), firstSpawn);
         plugin.getServer().getPluginManager().callEvent(tpEvent);
         if (!tpEvent.isCancelled()) {
             if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {
@@ -306,7 +306,7 @@ public class AsyncronousJoin {
                 Material cur = player.getLocation().getBlock().getType();
                 Material top = player.getLocation().add(0D, 1D, 0D).getBlock().getType();
                 if (cur == Material.PORTAL || cur == Material.ENDER_PORTAL
-                        || top == Material.PORTAL || top == Material.ENDER_PORTAL) {
+                    || top == Material.PORTAL || top == Material.ENDER_PORTAL) {
                     m.send(player, "unsafe_spawn");
                     player.teleport(spawnLoc);
                 }

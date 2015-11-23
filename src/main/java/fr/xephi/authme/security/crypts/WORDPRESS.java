@@ -11,13 +11,14 @@ import java.util.Arrays;
 public class WORDPRESS implements EncryptionMethod {
 
     private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private SecureRandom randomGen = new SecureRandom();
+    private final SecureRandom randomGen = new SecureRandom();
 
     /**
      * Method encode64.
      *
      * @param src   byte[]
      * @param count int
+     *
      * @return String
      */
     private String encode64(byte[] src, int count) {
@@ -59,6 +60,7 @@ public class WORDPRESS implements EncryptionMethod {
      *
      * @param password String
      * @param setting  String
+     *
      * @return String
      */
     private String crypt(String password, String setting) {
@@ -103,6 +105,7 @@ public class WORDPRESS implements EncryptionMethod {
      * Method gensaltPrivate.
      *
      * @param input byte[]
+     *
      * @return String
      */
     private String gensaltPrivate(byte[] input) {
@@ -117,6 +120,7 @@ public class WORDPRESS implements EncryptionMethod {
      * Method stringToUtf8.
      *
      * @param string String
+     *
      * @return byte[]
      */
     private byte[] stringToUtf8(String string) {
@@ -133,11 +137,12 @@ public class WORDPRESS implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         byte random[] = new byte[6];
         this.randomGen.nextBytes(random);
         return crypt(password, gensaltPrivate(stringToUtf8(new String(random))));
@@ -149,6 +154,7 @@ public class WORDPRESS implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

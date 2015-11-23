@@ -38,6 +38,7 @@ public class BinTools {
      * Simple binary-to-hexadecimal conversion.
      *
      * @param b Input bytes. May be <code>null</code>.
+     *
      * @return Hexadecimal representation of b. Uppercase A-F, two characters
      * per byte. Empty string on <code>null</code> input.
      */
@@ -45,13 +46,13 @@ public class BinTools {
         if (b == null) {
             return "";
         }
-        StringBuffer sb = new StringBuffer(2 * b.length);
-        for (int i = 0; i < b.length; i++) {
-            int v = (256 + b[i]) % 256;
-            sb.append(hex.charAt((v / 16) & 15));
-            sb.append(hex.charAt((v % 16) & 15));
+        StringBuffer stringBuffer = new StringBuffer(2 * b.length);
+        for (byte aB : b) {
+            int v = (256 + aB) % 256;
+            stringBuffer.append(hex.charAt((v / 16) & 15));
+            stringBuffer.append(hex.charAt((v % 16) & 15));
         }
-        return sb.toString();
+        return stringBuffer.toString();
     }
 
     /**
@@ -59,6 +60,7 @@ public class BinTools {
      *
      * @param s String containing hexadecimal digits. May be <code>null</code>
      *          . On odd length leading zero will be assumed.
+     *
      * @return Array on bytes, non-<code>null</code>. * @throws IllegalArgumentException
      * when string contains non-hex character
      */
@@ -84,6 +86,7 @@ public class BinTools {
      * Convert hex digit to numerical value.
      *
      * @param c 0-9, a-f, A-F allowd.
+     *
      * @return 0-15 * @throws IllegalArgumentException
      * on non-hex character
      */

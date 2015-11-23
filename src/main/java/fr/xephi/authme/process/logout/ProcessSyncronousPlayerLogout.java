@@ -19,10 +19,10 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class ProcessSyncronousPlayerLogout implements Runnable {
 
-    protected Player player;
-    protected AuthMe plugin;
-    protected String name;
-    private Messages m = Messages.getInstance();
+    protected final Player player;
+    protected final AuthMe plugin;
+    protected final String name;
+    private final Messages m = Messages.getInstance();
 
     /**
      * Constructor for ProcessSyncronousPlayerLogout.

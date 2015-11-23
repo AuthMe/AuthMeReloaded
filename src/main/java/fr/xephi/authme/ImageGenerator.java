@@ -7,7 +7,7 @@ import java.awt.image.BufferedImage;
  */
 public class ImageGenerator {
 
-    private String pass;
+    private final String pass;
 
     /**
      * Constructor for ImageGenerator.

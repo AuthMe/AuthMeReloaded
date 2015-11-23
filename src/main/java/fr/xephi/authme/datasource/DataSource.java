@@ -12,6 +12,7 @@ public interface DataSource {
      * Method isAuthAvailable.
      *
      * @param user String
+     *
      * @return boolean
      */
     boolean isAuthAvailable(String user);
@@ -20,6 +21,7 @@ public interface DataSource {
      * Method getAuth.
      *
      * @param user String
+     *
      * @return PlayerAuth
      */
     PlayerAuth getAuth(String user);
@@ -28,6 +30,7 @@ public interface DataSource {
      * Method saveAuth.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean
      */
     boolean saveAuth(PlayerAuth auth);
@@ -36,6 +39,7 @@ public interface DataSource {
      * Method updateSession.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean
      */
     boolean updateSession(PlayerAuth auth);
@@ -44,6 +48,7 @@ public interface DataSource {
      * Method updatePassword.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean
      */
     boolean updatePassword(PlayerAuth auth);
@@ -52,6 +57,7 @@ public interface DataSource {
      * Method purgeDatabase.
      *
      * @param until long
+     *
      * @return int
      */
     int purgeDatabase(long until);
@@ -60,6 +66,7 @@ public interface DataSource {
      * Method autoPurgeDatabase.
      *
      * @param until long
+     *
      * @return List<String>
      */
     List<String> autoPurgeDatabase(long until);
@@ -68,6 +75,7 @@ public interface DataSource {
      * Method removeAuth.
      *
      * @param user String
+     *
      * @return boolean
      */
     boolean removeAuth(String user);
@@ -76,6 +84,7 @@ public interface DataSource {
      * Method updateQuitLoc.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean
      */
     boolean updateQuitLoc(PlayerAuth auth);
@@ -84,6 +93,7 @@ public interface DataSource {
      * Method getIps.
      *
      * @param ip String
+     *
      * @return int
      */
     int getIps(String ip);
@@ -92,6 +102,7 @@ public interface DataSource {
      * Method getAllAuthsByName.
      *
      * @param auth PlayerAuth
+     *
      * @return List<String>
      */
     List<String> getAllAuthsByName(PlayerAuth auth);
@@ -100,6 +111,7 @@ public interface DataSource {
      * Method getAllAuthsByIp.
      *
      * @param ip String
+     *
      * @return List<String> * @throws Exception
      */
     List<String> getAllAuthsByIp(String ip) throws Exception;
@@ -108,6 +120,7 @@ public interface DataSource {
      * Method getAllAuthsByEmail.
      *
      * @param email String
+     *
      * @return List<String> * @throws Exception
      */
     List<String> getAllAuthsByEmail(String email) throws Exception;
@@ -116,6 +129,7 @@ public interface DataSource {
      * Method updateEmail.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean
      */
     boolean updateEmail(PlayerAuth auth);
@@ -124,6 +138,7 @@ public interface DataSource {
      * Method updateSalt.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean
      */
     boolean updateSalt(PlayerAuth auth);
@@ -150,6 +165,7 @@ public interface DataSource {
      * Method isLogged.
      *
      * @param user String
+     *
      * @return boolean
      */
     boolean isLogged(String user);
@@ -180,10 +196,10 @@ public interface DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
      */
-    void updateName(String oldone, String newone);
+    void updateName(String oldOne, String newOne);
 
     /**
      * Method getAllAuths.
@@ -199,12 +215,9 @@ public interface DataSource {
      */
     List<PlayerAuth> getLoggedPlayers();
 
-    /**
-     */
     enum DataSourceType {
         MYSQL,
         FILE,
         SQLITE
     }
-
 }

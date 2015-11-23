@@ -32,11 +32,12 @@ public class CRAZYCRYPT1 implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         final String text = "ÜÄaeut//&/=I " + password + "7421€547" + name + "__+IÄIH§%NK " + password;
         try {
             final MessageDigest md = MessageDigest.getInstance("SHA-512");

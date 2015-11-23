@@ -19,7 +19,7 @@ import java.util.jar.JarFile;
  */
 public class ModuleManager {
 
-    private List<Module> modules = new ArrayList<>();
+    private final List<Module> modules = new ArrayList<>();
 
     /**
      * Constructor for ModuleManager.
@@ -33,6 +33,7 @@ public class ModuleManager {
      * Method isModuleEnabled.
      *
      * @param name String
+     *
      * @return boolean
      */
     public boolean isModuleEnabled(String name) {
@@ -47,6 +48,7 @@ public class ModuleManager {
      * Method isModuleEnabled.
      *
      * @param type Module.ModuleType
+     *
      * @return boolean
      */
     public boolean isModuleEnabled(Module.ModuleType type) {
@@ -61,6 +63,7 @@ public class ModuleManager {
      * Method getModule.
      *
      * @param name String
+     *
      * @return Module
      */
     public Module getModule(String name) {
@@ -75,6 +78,7 @@ public class ModuleManager {
      * Method getModule.
      *
      * @param type Module.ModuleType
+     *
      * @return Module
      */
     public Module getModule(Module.ModuleType type) {

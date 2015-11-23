@@ -13,15 +13,15 @@ public class FoundCommandResult {
     /**
      * The command reference.
      */
-    private CommandParts commandReference;
+    private final CommandParts commandReference;
     /**
      * The command arguments.
      */
-    private CommandParts commandArguments;
+    private final CommandParts commandArguments;
     /**
      * The original search query reference.
      */
-    private CommandParts queryReference;
+    private final CommandParts queryReference;
 
     /**
      * Constructor.
@@ -88,6 +88,7 @@ public class FoundCommandResult {
      * Execute the command.
      *
      * @param sender The command sender that executed the command.
+     *
      * @return True on success, false on failure.
      */
     public boolean executeCommand(CommandSender sender) {
@@ -103,6 +104,7 @@ public class FoundCommandResult {
      * Check whether a command sender has permission to execute the command.
      *
      * @param sender The command sender.
+     *
      * @return True if the command sender has permission, false otherwise.
      */
     public boolean hasPermission(CommandSender sender) {

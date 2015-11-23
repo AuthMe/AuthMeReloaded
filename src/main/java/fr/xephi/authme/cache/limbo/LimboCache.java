@@ -19,9 +19,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class LimboCache {
 
     private volatile static LimboCache singleton;
-    public ConcurrentHashMap<String, LimboPlayer> cache;
-    public AuthMe plugin;
-    private JsonCache playerData;
+    public final ConcurrentHashMap<String, LimboPlayer> cache;
+    public final AuthMe plugin;
+    private final JsonCache playerData;
 
     /**
      * Constructor for LimboCache.
@@ -124,6 +124,7 @@ public class LimboCache {
      * Method getLimboPlayer.
      *
      * @param name String
+     *
      * @return LimboPlayer
      */
     public LimboPlayer getLimboPlayer(String name) {
@@ -134,6 +135,7 @@ public class LimboCache {
      * Method hasLimboPlayer.
      *
      * @param name String
+     *
      * @return boolean
      */
     public boolean hasLimboPlayer(String name) {

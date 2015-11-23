@@ -12,23 +12,23 @@ import java.util.List;
  */
 public class SQLite implements DataSource {
 
-    private String database;
-    private String tableName;
-    private String columnName;
-    private String columnPassword;
-    private String columnIp;
-    private String columnLastLogin;
-    private String columnSalt;
-    private String columnGroup;
-    private String lastlocX;
-    private String lastlocY;
-    private String lastlocZ;
-    private String lastlocWorld;
-    private String columnEmail;
-    private String columnID;
+    private final String database;
+    private final String tableName;
+    private final String columnName;
+    private final String columnPassword;
+    private final String columnIp;
+    private final String columnLastLogin;
+    private final String columnSalt;
+    private final String columnGroup;
+    private final String lastlocX;
+    private final String lastlocY;
+    private final String lastlocZ;
+    private final String lastlocWorld;
+    private final String columnEmail;
+    private final String columnID;
     private Connection con;
-    private String columnLogged;
-    private String columnRealName;
+    private final String columnLogged;
+    private final String columnRealName;
 
     /**
      * Constructor for SQLite.
@@ -137,6 +137,7 @@ public class SQLite implements DataSource {
      * Method isAuthAvailable.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
      */
     @Override
@@ -161,6 +162,7 @@ public class SQLite implements DataSource {
      * Method getAuth.
      *
      * @param user String
+     *
      * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
      */
     @Override
@@ -197,6 +199,7 @@ public class SQLite implements DataSource {
      * Method saveAuth.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
      */
     @Override
@@ -234,6 +237,7 @@ public class SQLite implements DataSource {
      * Method updatePassword.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
      */
     @Override
@@ -257,6 +261,7 @@ public class SQLite implements DataSource {
      * Method updateSession.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
      */
     @Override
@@ -282,6 +287,7 @@ public class SQLite implements DataSource {
      * Method purgeDatabase.
      *
      * @param until long
+     *
      * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
      */
     @Override
@@ -304,6 +310,7 @@ public class SQLite implements DataSource {
      * Method autoPurgeDatabase.
      *
      * @param until long
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
      */
     @Override
@@ -332,6 +339,7 @@ public class SQLite implements DataSource {
      * Method removeAuth.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
      */
     @Override
@@ -354,6 +362,7 @@ public class SQLite implements DataSource {
      * Method updateQuitLoc.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
      */
     @Override
@@ -380,6 +389,7 @@ public class SQLite implements DataSource {
      * Method getIps.
      *
      * @param ip String
+     *
      * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
      */
     @Override
@@ -408,6 +418,7 @@ public class SQLite implements DataSource {
      * Method updateEmail.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
      */
     @Override
@@ -431,6 +442,7 @@ public class SQLite implements DataSource {
      * Method updateSalt.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
      */
     @Override
@@ -510,6 +522,7 @@ public class SQLite implements DataSource {
      * Method getAllAuthsByName.
      *
      * @param auth PlayerAuth
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
      */
     @Override
@@ -540,6 +553,7 @@ public class SQLite implements DataSource {
      * Method getAllAuthsByIp.
      *
      * @param ip String
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
      */
     @Override
@@ -570,6 +584,7 @@ public class SQLite implements DataSource {
      * Method getAllAuthsByEmail.
      *
      * @param email String
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
      */
     @Override
@@ -600,6 +615,7 @@ public class SQLite implements DataSource {
      * Method purgeBanned.
      *
      * @param banned List<String>
+     *
      * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
      */
     @Override
@@ -632,6 +648,7 @@ public class SQLite implements DataSource {
      * Method isLogged.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
      */
     @Override
@@ -658,6 +675,7 @@ public class SQLite implements DataSource {
      * Method setLogged.
      *
      * @param user String
+     *
      * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
      */
     @Override
@@ -679,6 +697,7 @@ public class SQLite implements DataSource {
      * Method setUnlogged.
      *
      * @param user String
+     *
      * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
      */
     @Override
@@ -745,17 +764,18 @@ public class SQLite implements DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
+     *
      * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
      */
     @Override
-    public void updateName(String oldone, String newone) {
+    public void updateName(String oldOne, String newOne) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE " + columnName + "=?;");
-            pst.setString(1, newone);
-            pst.setString(2, oldone);
+            pst.setString(1, newOne);
+            pst.setString(2, oldOne);
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());

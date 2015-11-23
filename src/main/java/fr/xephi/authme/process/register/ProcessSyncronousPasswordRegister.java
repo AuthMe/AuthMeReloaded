@@ -22,10 +22,10 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class ProcessSyncronousPasswordRegister implements Runnable {
 
-    protected Player player;
-    protected String name;
-    private AuthMe plugin;
-    private Messages m = Messages.getInstance();
+    protected final Player player;
+    protected final String name;
+    private final AuthMe plugin;
+    private final Messages m = Messages.getInstance();
 
     /**
      * Constructor for ProcessSyncronousPasswordRegister.
@@ -139,11 +139,11 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {
                 for (String s : Settings.welcomeMsg) {
-                    plugin.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
+                    plugin.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
                 for (String s : Settings.welcomeMsg) {
-                    player.sendMessage(plugin.replaceAllInfos(s, player));
+                    player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
 

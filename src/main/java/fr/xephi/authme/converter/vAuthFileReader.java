@@ -17,9 +17,9 @@ import java.util.UUID;
  */
 public class vAuthFileReader {
 
-    public AuthMe plugin;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe plugin;
+    public final DataSource database;
+    public final CommandSender sender;
 
     /**
      * Constructor for vAuthFileReader.
@@ -38,7 +38,7 @@ public class vAuthFileReader {
      *
      * @throws IOException
      */
-    public void convert() throws IOException {
+    public void convert() {
         final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
         Scanner scanner;
         try {
@@ -49,15 +49,15 @@ public class vAuthFileReader {
                 String password = line.split(": ")[1];
                 PlayerAuth auth;
                 if (isUUIDinstance(password)) {
-                    String pname;
+                    String playerName;
                     try {
-                        pname = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
+                        playerName = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
                     } catch (Exception | NoSuchMethodError e) {
-                        pname = getName(UUID.fromString(name));
+                        playerName = getName(UUID.fromString(name));
                     }
-                    if (pname == null)
+                    if (playerName == null)
                         continue;
-                    auth = new PlayerAuth(pname.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", pname);
+                    auth = new PlayerAuth(playerName.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", playerName);
                 } else {
                     auth = new PlayerAuth(name.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", name);
                 }
@@ -73,6 +73,7 @@ public class vAuthFileReader {
      * Method isUUIDinstance.
      *
      * @param s String
+     *
      * @return boolean
      */
     private boolean isUUIDinstance(String s) {
@@ -85,6 +86,7 @@ public class vAuthFileReader {
      * Method getName.
      *
      * @param uuid UUID
+     *
      * @return String
      */
     private String getName(UUID uuid) {

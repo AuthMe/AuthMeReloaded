@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerEditBookEvent;
  */
 public class AuthMePlayerListener16 implements Listener {
 
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     /**
      * Constructor for AuthMePlayerListener16.

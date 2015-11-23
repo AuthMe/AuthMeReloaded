@@ -12,7 +12,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
  */
 public class AuthMeBlockListener implements Listener {
 
-    public AuthMe instance;
+    public final AuthMe instance;
 
     /**
      * Constructor for AuthMeBlockListener.

@@ -23,19 +23,20 @@ public final class HelpSyntaxHelper {
      * @param commandReference   The reference of the command.
      * @param alternativeLabel   The alternative label to use for this command syntax.
      * @param highlight          True to highlight the important parts of this command.
+     *
      * @return The command with proper syntax.
      */
     public static String getCommandSyntax(CommandDescription commandDescription, CommandParts commandReference,
                                           String alternativeLabel, boolean highlight) {
         // Create a string builder with white color and prefixed slash
         StringBuilder sb = new StringBuilder()
-                .append(ChatColor.WHITE)
-                .append("/");
+            .append(ChatColor.WHITE)
+            .append("/");
 
         // Get the help command reference, and the command label
         CommandParts helpCommandReference = commandDescription.getCommandReference(commandReference);
         final String parentCommand = new CommandParts(
-                helpCommandReference.getRange(0, helpCommandReference.getCount() - 1)).toString();
+            helpCommandReference.getRange(0, helpCommandReference.getCount() - 1)).toString();
 
         // Check whether the alternative label should be used
         String commandLabel;
@@ -47,9 +48,9 @@ public final class HelpSyntaxHelper {
 
         // Show the important bit of the command, highlight this part if required
         sb.append(parentCommand)
-                .append(" ")
-                .append(highlight ? ChatColor.YELLOW.toString() + ChatColor.BOLD : "")
-                .append(commandLabel);
+            .append(" ")
+            .append(highlight ? ChatColor.YELLOW.toString() + ChatColor.BOLD : "")
+            .append(commandLabel);
 
         if (highlight) {
             sb.append(ChatColor.YELLOW);

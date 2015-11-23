@@ -55,6 +55,7 @@ public class CommandPermissions {
      * Add a permission node required to execute this command.
      *
      * @param permissionNode The permission node to add.
+     *
      * @return True on success, false on failure.
      */
     public boolean addPermissionNode(String permissionNode) {
@@ -77,6 +78,7 @@ public class CommandPermissions {
      * Check whether this command requires a specified permission node to execute.
      *
      * @param permissionNode The permission node to check for.
+     *
      * @return True if this permission node is required, false if not.
      */
     public boolean hasPermissionNode(String permissionNode) {
@@ -114,6 +116,7 @@ public class CommandPermissions {
      * Check whether this command requires any permission to be executed. This is based on the getPermission() method.
      *
      * @param sender CommandSender
+     *
      * @return True if this command requires any permission to be executed by a player.
      */
     public boolean hasPermission(CommandSender sender) {
@@ -165,6 +168,7 @@ public class CommandPermissions {
      * Get the default permission for a specified command sender.
      *
      * @param sender The command sender to get the default permission for.
+     *
      * @return True if the command sender has permission by default, false otherwise.
      */
     public boolean getDefaultPermissionCommandSender(CommandSender sender) {

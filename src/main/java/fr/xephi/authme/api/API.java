@@ -50,6 +50,7 @@ public class API {
 
     /**
      * @param player
+     *
      * @return true if player is authenticate
      */
     @Deprecated
@@ -59,6 +60,7 @@ public class API {
 
     /**
      * @param player
+     *
      * @return true if the player is unrestricted
      */
     @Deprecated
@@ -70,6 +72,7 @@ public class API {
      * Method getLastLocation.
      *
      * @param player Player
+     *
      * @return Location
      */
     @Deprecated
@@ -102,12 +105,13 @@ public class API {
         try {
             player.getInventory().setContents(content);
             player.getInventory().setArmorContents(armor);
-        } catch (NullPointerException npe) {
+        } catch (NullPointerException ignored) {
         }
     }
 
     /**
      * @param playerName
+     *
      * @return true if player is registered
      */
     @Deprecated
@@ -119,6 +123,7 @@ public class API {
     /**
      * @param playerName      String
      * @param passwordToCheck String
+     *
      * @return true if the password is correct , false else
      */
     @Deprecated
@@ -140,6 +145,7 @@ public class API {
      *
      * @param playerName String
      * @param password   String
+     *
      * @return true if the player is register correctly
      */
     @Deprecated
@@ -151,10 +157,7 @@ public class API {
                 return false;
             }
             PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com", playerName);
-            if (!instance.database.saveAuth(auth)) {
-                return false;
-            }
-            return true;
+            return instance.database.saveAuth(auth);
         } catch (NoSuchAlgorithmException ex) {
             return false;
         }
@@ -182,6 +185,7 @@ public class API {
 
     /**
      * @param player
+     *
      * @return true if player is a npc
      */
     @Deprecated
@@ -191,6 +195,7 @@ public class API {
 
     /**
      * @param player
+     *
      * @return true if player is a npc
      */
     @Deprecated

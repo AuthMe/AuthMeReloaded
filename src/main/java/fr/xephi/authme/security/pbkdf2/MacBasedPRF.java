@@ -46,7 +46,7 @@ public class MacBasedPRF implements PRF {
 
     protected int hLen;
 
-    protected String macAlgorithm;
+    protected final String macAlgorithm;
 
     /**
      * Create Mac-based Pseudo Random Function.
@@ -83,6 +83,7 @@ public class MacBasedPRF implements PRF {
      * Method doFinal.
      *
      * @param M byte[]
+     *
      * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PRF#doFinal(byte[])
      */
     public byte[] doFinal(byte[] M) {
@@ -103,6 +104,7 @@ public class MacBasedPRF implements PRF {
      * Method init.
      *
      * @param P byte[]
+     *
      * @see fr.xephi.authme.security.pbkdf2.PRF#init(byte[])
      */
     public void init(byte[] P) {

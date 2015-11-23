@@ -20,7 +20,7 @@ public class AuthMeEntityListener implements Listener {
 
     private static Method getShooter;
     private static boolean shooterIsProjectileSource;
-    public AuthMe instance;
+    public final AuthMe instance;
 
     /**
      * Constructor for AuthMeEntityListener.

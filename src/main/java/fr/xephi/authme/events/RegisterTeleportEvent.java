@@ -12,9 +12,9 @@ import org.bukkit.entity.Player;
  */
 public class RegisterTeleportEvent extends CustomEvent {
 
-    private Player player;
+    private final Player player;
     private Location to;
-    private Location from;
+    private final Location from;
 
     /**
      * Constructor for RegisterTeleportEvent.

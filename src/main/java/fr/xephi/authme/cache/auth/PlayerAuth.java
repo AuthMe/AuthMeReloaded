@@ -16,7 +16,7 @@ public class PlayerAuth {
     private double z;
     private String world;
     private String salt;
-    private int groupId;
+    private final int groupId;
     private String email;
     private String realName;
 
@@ -405,6 +405,7 @@ public class PlayerAuth {
      * Method equals.
      *
      * @param obj Object
+     *
      * @return boolean
      */
     @Override
@@ -437,12 +438,12 @@ public class PlayerAuth {
     @Override
     public String toString() {
         return ("Player : " + nickname + " | " + realName
-                + " ! IP : " + ip
-                + " ! LastLogin : " + lastLogin
-                + " ! LastPosition : " + x + "," + y + "," + z + "," + world
-                + " ! Email : " + email
-                + " ! Hash : " + hash
-                + " ! Salt : " + salt);
+            + " ! IP : " + ip
+            + " ! LastLogin : " + lastLogin
+            + " ! LastPosition : " + x + "," + y + "," + z + "," + world
+            + " ! Email : " + email
+            + " ! Hash : " + hash
+            + " ! Salt : " + salt);
     }
 
 }

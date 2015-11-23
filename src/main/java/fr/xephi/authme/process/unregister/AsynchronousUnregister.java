@@ -22,26 +22,26 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  */
-public class AsyncronousUnregister {
+public class AsynchronousUnregister {
 
-    protected Player player;
-    protected String name;
-    protected String password;
-    protected boolean force;
-    private AuthMe plugin;
-    private Messages m = Messages.getInstance();
-    private JsonCache playerCache;
+    protected final Player player;
+    protected final String name;
+    protected final String password;
+    protected final boolean force;
+    private final AuthMe plugin;
+    private final Messages m = Messages.getInstance();
+    private final JsonCache playerCache;
 
     /**
-     * Constructor for AsyncronousUnregister.
+     * Constructor for AsynchronousUnregister.
      *
      * @param player   Player
      * @param password String
      * @param force    boolean
      * @param plugin   AuthMe
      */
-    public AsyncronousUnregister(Player player, String password,
-                                 boolean force, AuthMe plugin) {
+    public AsynchronousUnregister(Player player, String password,
+                                  boolean force, AuthMe plugin) {
         this.player = player;
         this.password = password;
         this.force = force;
@@ -75,12 +75,12 @@ public class AsyncronousUnregister {
                     LimboCache.getInstance().addLimboPlayer(player);
                     int delay = Settings.getRegistrationTimeout * 20;
                     int interval = Settings.getWarnMessageInterval;
-                    BukkitScheduler sched = plugin.getServer().getScheduler();
+                    BukkitScheduler scheduler = plugin.getServer().getScheduler();
                     if (delay != 0) {
-                        BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), delay);
+                        BukkitTask id = scheduler.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), delay);
                         LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(scheduler.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
                     m.send(player, "unregistered");
                     ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                     return;

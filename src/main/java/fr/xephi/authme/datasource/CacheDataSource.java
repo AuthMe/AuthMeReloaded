@@ -53,6 +53,7 @@ public class CacheDataSource implements DataSource {
      * Method isAuthAvailable.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
      */
     @Override
@@ -64,6 +65,7 @@ public class CacheDataSource implements DataSource {
      * Method getAuth.
      *
      * @param user String
+     *
      * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
      */
     @Override
@@ -79,6 +81,7 @@ public class CacheDataSource implements DataSource {
      * Method saveAuth.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
      */
     @Override
@@ -99,6 +102,7 @@ public class CacheDataSource implements DataSource {
      * Method updatePassword.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
      */
     @Override
@@ -125,6 +129,7 @@ public class CacheDataSource implements DataSource {
      * Method updateSession.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
      */
     @Override
@@ -160,6 +165,7 @@ public class CacheDataSource implements DataSource {
      * Method updateQuitLoc.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
      */
     @Override
@@ -198,6 +204,7 @@ public class CacheDataSource implements DataSource {
      * Method getIps.
      *
      * @param ip String
+     *
      * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
      */
     @Override
@@ -215,6 +222,7 @@ public class CacheDataSource implements DataSource {
      * Method purgeDatabase.
      *
      * @param until long
+     *
      * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
      */
     @Override
@@ -234,6 +242,7 @@ public class CacheDataSource implements DataSource {
      * Method autoPurgeDatabase.
      *
      * @param until long
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
      */
     @Override
@@ -253,6 +262,7 @@ public class CacheDataSource implements DataSource {
      * Method removeAuth.
      *
      * @param username String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
      */
     @Override
@@ -309,6 +319,7 @@ public class CacheDataSource implements DataSource {
      * Method updateEmail.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
      */
     @Override
@@ -328,6 +339,7 @@ public class CacheDataSource implements DataSource {
      * Method updateSalt.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
      */
     @Override
@@ -355,6 +367,7 @@ public class CacheDataSource implements DataSource {
      * Method getAllAuthsByName.
      *
      * @param auth PlayerAuth
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
      */
     @Override
@@ -372,6 +385,7 @@ public class CacheDataSource implements DataSource {
      * Method getAllAuthsByIp.
      *
      * @param ip String
+     *
      * @return List<String> * @throws Exception * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
      */
     @Override
@@ -387,6 +401,7 @@ public class CacheDataSource implements DataSource {
      * Method getAllAuthsByEmail.
      *
      * @param email String
+     *
      * @return List<String> * @throws Exception * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
      */
     @Override
@@ -402,6 +417,7 @@ public class CacheDataSource implements DataSource {
      * Method purgeBanned.
      *
      * @param banned List<String>
+     *
      * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
      */
     @Override
@@ -433,6 +449,7 @@ public class CacheDataSource implements DataSource {
      * Method isLogged.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
      */
     @Override
@@ -445,6 +462,7 @@ public class CacheDataSource implements DataSource {
      * Method setLogged.
      *
      * @param user String
+     *
      * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
      */
     @Override
@@ -461,6 +479,7 @@ public class CacheDataSource implements DataSource {
      * Method setUnlogged.
      *
      * @param user String
+     *
      * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
      */
     @Override
@@ -501,20 +520,21 @@ public class CacheDataSource implements DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
+     *
      * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
      */
     @Override
-    public void updateName(final String oldone, final String newone) {
-        if (cache.containsKey(oldone)) {
-            cache.put(newone, cache.get(oldone));
-            cache.remove(oldone);
+    public void updateName(final String oldOne, final String newOne) {
+        if (cache.containsKey(oldOne)) {
+            cache.put(newOne, cache.get(oldOne));
+            cache.remove(oldOne);
         }
         exec.execute(new Runnable() {
             @Override
             public void run() {
-                source.updateName(oldone, newone);
+                source.updateName(oldOne, newOne);
             }
         });
     }

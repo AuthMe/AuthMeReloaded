@@ -16,7 +16,7 @@ import java.nio.file.StandardCopyOption;
  */
 public abstract class CustomConfiguration extends YamlConfiguration {
 
-    private File configFile;
+    private final File configFile;
 
     /**
      * Constructor for CustomConfiguration.

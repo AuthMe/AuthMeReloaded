@@ -19,11 +19,12 @@ public class XF implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         return getSHA256(getSHA256(password) + regmatch("\"salt\";.:..:\"(.*)\";.:.:\"hashFunc\"", salt));
     }
 
@@ -33,6 +34,7 @@ public class XF implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override
@@ -46,17 +48,18 @@ public class XF implements EncryptionMethod {
      * Method getSHA256.
      *
      * @param password String
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     public String getSHA256(String password) throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(password.getBytes());
         byte byteData[] = md.digest();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (byte element : byteData) {
             sb.append(Integer.toString((element & 0xff) + 0x100, 16).substring(1));
         }
-        StringBuffer hexString = new StringBuffer();
+        StringBuilder hexString = new StringBuilder();
         for (byte element : byteData) {
             String hex = Integer.toHexString(0xff & element);
             if (hex.length() == 1) {
@@ -72,6 +75,7 @@ public class XF implements EncryptionMethod {
      *
      * @param pattern String
      * @param line    String
+     *
      * @return String
      */
     public String regmatch(String pattern, String line) {

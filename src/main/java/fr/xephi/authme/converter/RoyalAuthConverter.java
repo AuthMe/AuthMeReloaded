@@ -12,8 +12,8 @@ import java.io.File;
  */
 public class RoyalAuthConverter implements Converter {
 
-    public AuthMe plugin;
-    private DataSource data;
+    public final AuthMe plugin;
+    private final DataSource data;
 
     /**
      * Constructor for RoyalAuthConverter.

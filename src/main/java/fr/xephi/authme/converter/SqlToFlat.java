@@ -14,9 +14,9 @@ import java.util.List;
  */
 public class SqlToFlat implements Converter {
 
-    public AuthMe plugin;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe plugin;
+    public final DataSource database;
+    public final CommandSender sender;
 
     /**
      * Constructor for SqlToFlat.

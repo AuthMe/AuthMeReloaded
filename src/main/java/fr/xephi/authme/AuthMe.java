@@ -88,10 +88,10 @@ public class AuthMe extends JavaPlugin {
     public AuthMeInventoryPacketAdapter inventoryProtector;
     // Random data maps and stuff
     // TODO: Create Manager for this
-    public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
     // AntiBot Status
     // TODO: Create Manager for this
     public boolean antiBotMod = false;
@@ -246,7 +246,7 @@ public class AuthMe extends JavaPlugin {
         // Check Essentials
         checkEssentials();
 
-        // Check if the protocollib is available. If so we could listen for
+        // Check if the ProtocolLib is available. If so we could listen for
         // inventory protection
         checkProtocolLib();
         // End of Hooks
@@ -277,8 +277,8 @@ public class AuthMe extends JavaPlugin {
         // Set up the management
         management = new Management(this);
 
-        // Set up the Bungeecord hook
-        setupBungeecordHook();
+        // Set up the BungeeCord hook
+        setupBungeeCordHook();
 
         // Reload support hook
         reloadSupportHook();
@@ -394,9 +394,9 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Set up the Bungecoord hook.
+     * Set up the BungeeCord hook.
      */
-    private void setupBungeecordHook() {
+    private void setupBungeeCordHook() {
         if (Settings.bungee) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
@@ -443,7 +443,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Set up the antibot delay.
+     * Set up the AntiBot delay.
      */
     private void setupAntiBotDelay() {
         if (Settings.enableAntiBot) {
@@ -652,7 +652,7 @@ public class AuthMe extends JavaPlugin {
             try {
                 ess = (Essentials) server.getPluginManager().getPlugin("Essentials");
                 ConsoleLogger.info("Hooked correctly with Essentials");
-            } catch (Exception | NoClassDefFoundError ingnored) {
+            } catch (Exception | NoClassDefFoundError ignored) {
                 ess = null;
             }
         } else {
@@ -677,7 +677,7 @@ public class AuthMe extends JavaPlugin {
             try {
                 combatTagPlus = (CombatTagPlus) server.getPluginManager().getPlugin("CombatTagPlus");
                 ConsoleLogger.info("Hooked correctly with CombatTagPlus");
-            } catch (Exception | NoClassDefFoundError ingnored) {
+            } catch (Exception | NoClassDefFoundError ignored) {
                 combatTagPlus = null;
             }
         } else {
@@ -788,12 +788,12 @@ public class AuthMe extends JavaPlugin {
         return spawnLoc;
     }
 
-    // Return the default spawnpoint of a world
+    // Return the default spawn point of a world
     private Location getDefaultSpawn(World world) {
         return world.getSpawnLocation();
     }
 
-    // Return the multiverse spawnpoint of a world
+    // Return the multiverse spawn point of a world
     private Location getMultiverseSpawn(World world) {
         if (multiverse != null && Settings.multiverse) {
             try {
@@ -805,7 +805,7 @@ public class AuthMe extends JavaPlugin {
         return null;
     }
 
-    // Return the essentials spawnpoint
+    // Return the essentials spawn point
     private Location getEssentialsSpawn() {
         if (essentialsSpawn != null) {
             return essentialsSpawn;
@@ -813,7 +813,7 @@ public class AuthMe extends JavaPlugin {
         return null;
     }
 
-    // Return the authme soawnpoint
+    // Return the AuthMe spawn point
     private Location getAuthMeSpawn(Player player) {
         if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null)) {
             return Spawn.getInstance().getFirstSpawn();
@@ -855,7 +855,7 @@ public class AuthMe extends JavaPlugin {
         }, 1, 1200 * Settings.delayRecall);
     }
 
-    public String replaceAllInfos(String message, Player player) {
+    public String replaceAllInfo(String message, Player player) {
         int playersOnline = Utils.getOnlinePlayers().size();
         message = message.replace("&", "\u00a7");
         message = message.replace("{PLAYER}", player.getName());
@@ -878,8 +878,8 @@ public class AuthMe extends JavaPlugin {
                 ip = realIp.get(name);
         }
         if (Settings.checkVeryGames)
-            if (getVeryGamesIP(player) != null)
-                ip = getVeryGamesIP(player);
+            if (getVeryGamesIp(player) != null)
+                ip = getVeryGamesIp(player);
         return ip;
     }
 
@@ -908,18 +908,19 @@ public class AuthMe extends JavaPlugin {
     /**
      * Gets a player's real IP through VeryGames method.
      *
-     * @param player the player to process
-     * @return the real IP of the player
+     * @param player The player to process.
+     *
+     * @return The real IP of the player.
      */
     @Deprecated
-    public String getVeryGamesIP(Player player) {
+    public String getVeryGamesIp(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();
         String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
         sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", "" + player.getAddress().getPort());
         try {
             URL url = new URL(sUrl);
-            URLConnection urlc = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
+            URLConnection urlCon = url.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));
             String inputLine = in.readLine();
             if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error") && !inputLine.contains("error")) {
                 realIP = inputLine;
@@ -940,6 +941,7 @@ public class AuthMe extends JavaPlugin {
      * @param cmd          The command (Bukkit).
      * @param commandLabel The command label (Bukkit).
      * @param args         The command arguments (Bukkit).
+     *
      * @return True if the command was executed, false otherwise.
      */
     @Override

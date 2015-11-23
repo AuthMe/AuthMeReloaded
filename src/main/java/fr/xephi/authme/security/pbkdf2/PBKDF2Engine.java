@@ -115,15 +115,16 @@ public class PBKDF2Engine implements PBKDF2 {
      * ISO-8559-1 encoding. Output result as
      * &quot;Salt:iteration-count:PBKDF2&quot; with binary data in hexadecimal
      * encoding.
-     * <p>
+     * <p/>
      * Example: Password &quot;password&quot; (without the quotes) leads to
      * 48290A0B96C426C3:1000:973899B1D4AFEB3ED371060D0797E0EE0142BD04
      *
      * @param args Supply the password as argument.
+     *
      * @throws IOException * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
      */
     public static void main(String[] args)
-            throws IOException, NoSuchAlgorithmException {
+        throws IOException, NoSuchAlgorithmException {
         String password = "password";
         String candidate = null;
         PBKDF2Formatter formatter = new PBKDF2HexFormatter();
@@ -162,6 +163,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * Method deriveKey.
      *
      * @param inputPassword String
+     *
      * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String)
      */
     public byte[] deriveKey(String inputPassword) {
@@ -173,6 +175,7 @@ public class PBKDF2Engine implements PBKDF2 {
      *
      * @param inputPassword String
      * @param dkLen         int
+     *
      * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String, int)
      */
     public byte[] deriveKey(String inputPassword, int dkLen) {
@@ -203,6 +206,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * Method verifyKey.
      *
      * @param inputPassword String
+     *
      * @return boolean * @see fr.xephi.authme.security.pbkdf2.PBKDF2#verifyKey(String)
      */
     public boolean verifyKey(String inputPassword) {
@@ -249,6 +253,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * Method setPseudoRandomFunction.
      *
      * @param prf PRF
+     *
      * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setPseudoRandomFunction(PRF)
      */
     public void setPseudoRandomFunction(PRF prf) {
@@ -262,6 +267,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * @param S     Salt as array of bytes. <code>null</code> means no salt.
      * @param c     Iteration count (see RFC 2898 4.2)
      * @param dkLen desired length of derived key.
+     *
      * @return internal byte array * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2</a>
      */
     protected byte[] PBKDF2(PRF prf, byte[] S, int c, int dkLen) {
@@ -291,6 +297,7 @@ public class PBKDF2Engine implements PBKDF2 {
      *
      * @param a
      * @param b
+     *
      * @return ceil(a/b) * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
      * 2.</a>
      */
@@ -311,6 +318,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * @param S          Salt as array of bytes
      * @param c          Iteration count
      * @param blockIndex
+     *
      * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
      * 3.</a>
      */
@@ -350,11 +358,12 @@ public class PBKDF2Engine implements PBKDF2 {
      * @param dest
      * @param offset
      * @param i
+     *
      * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
      * 3.</a>
      */
     protected void INT(byte[] dest, int offset, int i) {
-        dest[offset + 0] = (byte) (i / (256 * 256 * 256));
+        dest[offset] = (byte) (i / (256 * 256 * 256));
         dest[offset + 1] = (byte) (i / (256 * 256));
         dest[offset + 2] = (byte) (i / (256));
         dest[offset + 3] = (byte) (i);
@@ -373,6 +382,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * Method setParameters.
      *
      * @param parameters PBKDF2Parameters
+     *
      * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setParameters(PBKDF2Parameters)
      */
     public void setParameters(PBKDF2Parameters parameters) {

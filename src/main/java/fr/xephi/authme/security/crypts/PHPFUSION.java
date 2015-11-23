@@ -18,10 +18,11 @@ public class PHPFUSION implements EncryptionMethod {
      * Method getSHA1.
      *
      * @param message String
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     private static String getSHA1(String message)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");
         sha1.reset();
         sha1.update(message.getBytes());
@@ -35,11 +36,12 @@ public class PHPFUSION implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         String digest = null;
         String algo = "HmacSHA256";
         String keyString = getSHA1(salt);
@@ -48,9 +50,9 @@ public class PHPFUSION implements EncryptionMethod {
             Mac mac = Mac.getInstance(algo);
             mac.init(key);
             byte[] bytes = mac.doFinal(password.getBytes("ASCII"));
-            StringBuffer hash = new StringBuffer();
-            for (int i = 0; i < bytes.length; i++) {
-                String hex = Integer.toHexString(0xFF & bytes[i]);
+            StringBuilder hash = new StringBuilder();
+            for (byte aByte : bytes) {
+                String hex = Integer.toHexString(0xFF & aByte);
                 if (hex.length() == 1) {
                     hash.append('0');
                 }
@@ -70,6 +72,7 @@ public class PHPFUSION implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

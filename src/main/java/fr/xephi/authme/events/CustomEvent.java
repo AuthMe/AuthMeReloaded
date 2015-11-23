@@ -57,6 +57,7 @@ public class CustomEvent extends Event implements Cancellable {
      * Method setCancelled.
      *
      * @param cancelled boolean
+     *
      * @see org.bukkit.event.Cancellable#setCancelled(boolean)
      */
     public void setCancelled(boolean cancelled) {

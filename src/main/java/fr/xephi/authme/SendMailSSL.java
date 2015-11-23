@@ -16,7 +16,7 @@ import java.io.File;
  */
 public class SendMailSSL {
 
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     /**
      * Constructor for SendMailSSL.
@@ -34,15 +34,15 @@ public class SendMailSSL {
      * @param newPass String
      */
     public void main(final PlayerAuth auth, final String newPass) {
-        String sendername;
+        String senderName;
 
         if (Settings.getmailSenderName == null || Settings.getmailSenderName.isEmpty()) {
-            sendername = Settings.getmailAccount;
+            senderName = Settings.getmailAccount;
         } else {
-            sendername = Settings.getmailSenderName;
+            senderName = Settings.getmailSenderName;
         }
 
-        final String sender = sendername;
+        final String sender = senderName;
         final int port = Settings.getMailPort;
         final String acc = Settings.getmailAccount;
         final String subject = Settings.getMailSubject;
@@ -90,6 +90,7 @@ public class SendMailSSL {
                         ConsoleLogger.showError("Fail to send a mail to " + mail);
                     }
                     if (file != null)
+                        //noinspection ResultOfMethodCallIgnored
                         file.delete();
 
                 } catch (Exception e) {

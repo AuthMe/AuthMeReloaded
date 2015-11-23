@@ -37,12 +37,12 @@ import java.util.regex.PatternSyntaxException;
  */
 public class AuthMePlayerListener implements Listener {
 
-    public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
-    public AuthMe plugin;
-    private Messages m = Messages.getInstance();
-    private List<String> antibot = new ArrayList<>();
+    public static final ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
+    public final AuthMe plugin;
+    private final Messages m = Messages.getInstance();
+    private final List<String> antibot = new ArrayList<>();
 
     /**
      * Constructor for AuthMePlayerListener.

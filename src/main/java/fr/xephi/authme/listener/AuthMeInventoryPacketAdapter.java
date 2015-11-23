@@ -57,6 +57,7 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
      * Method onPacketSending.
      *
      * @param packetEvent PacketEvent
+     *
      * @see com.comphenix.protocol.events.PacketListener#onPacketSending(PacketEvent)
      */
     @Override
@@ -66,7 +67,7 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
 
         byte windowId = packet.getIntegers().read(0).byteValue();
         if (windowId == PLAYER_INVENTORY && Settings.protectInventoryBeforeLogInEnabled
-                && !PlayerCache.getInstance().isAuthenticated(player.getName())) {
+            && !PlayerCache.getInstance().isAuthenticated(player.getName())) {
             packetEvent.setCancelled(true);
         }
     }
@@ -108,9 +109,9 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
 
         //storedInventory and hotbar
         System.arraycopy(storedInventory, 0, completeInventory
-                , playerCrafting.length + armorContents.length, storedInventory.length);
+            , playerCrafting.length + armorContents.length, storedInventory.length);
         System.arraycopy(hotbar, 0, completeInventory
-                , playerCrafting.length + armorContents.length + storedInventory.length, hotbar.length);
+            , playerCrafting.length + armorContents.length + storedInventory.length, hotbar.length);
 
         inventoryPacket.getItemArrayModifier().write(0, completeInventory);
         try {
