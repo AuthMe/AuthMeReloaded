@@ -338,6 +338,7 @@ public final class Settings extends YamlConfiguration {
      *
      * @param name String
      * @param ip   String
+     *
      * @return boolean
      */
     public static boolean getRestrictedIp(String name, String ip) {
@@ -377,6 +378,7 @@ public final class Settings extends YamlConfiguration {
      * Method checkLang.
      *
      * @param lang String
+     *
      * @return String
      */
     public static String checkLang(String lang) {
@@ -442,6 +444,7 @@ public final class Settings extends YamlConfiguration {
      * Method isEmailCorrect.
      *
      * @param email String
+     *
      * @return boolean
      */
     public static boolean isEmailCorrect(String email) {

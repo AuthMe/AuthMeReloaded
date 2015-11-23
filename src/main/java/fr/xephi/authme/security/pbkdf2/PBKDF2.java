@@ -38,6 +38,7 @@ public interface PBKDF2 {
      * Desired key length defaults to Pseudo Random Function block size.
      *
      * @param inputPassword Candidate password to compute the derived key for.
+     *
      * @return internal byte array
      */
     public abstract byte[] deriveKey(String inputPassword);
@@ -47,6 +48,7 @@ public interface PBKDF2 {
      *
      * @param inputPassword Candidate password to compute the derived key for.
      * @param dkLen         Specify desired key length
+     *
      * @return internal byte array
      */
     public abstract byte[] deriveKey(String inputPassword, int dkLen);
@@ -57,6 +59,7 @@ public interface PBKDF2 {
      * PBKDF2Parameters.
      *
      * @param inputPassword Candidate password to compute the derived key for.
+     *
      * @return <code>true</code> password match; <code>false</code> incorrect
      * password
      */

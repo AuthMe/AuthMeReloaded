@@ -71,6 +71,7 @@ public class GeoLiteAPI {
      * Get the country code of the given IP address.
      *
      * @param ip Ip address
+     *
      * @return String
      */
     public static String getCountryCode(String ip) {
@@ -84,6 +85,7 @@ public class GeoLiteAPI {
      * Get the country name of the given IP address.
      *
      * @param ip Ip address
+     *
      * @return String
      */
     public static String getCountryName(String ip) {

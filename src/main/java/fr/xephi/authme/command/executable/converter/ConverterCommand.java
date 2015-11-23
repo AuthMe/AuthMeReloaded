@@ -18,6 +18,7 @@ public class ConverterCommand extends ExecutableCommand {
      * @param sender           The command sender.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
+     *
      * @return True if the command was executed successfully, false otherwise.
      */
     @Override
@@ -104,6 +105,7 @@ public class ConverterCommand extends ExecutableCommand {
          * Method fromName.
          *
          * @param name String
+         *
          * @return ConvertType
          */
         public static ConvertType fromName(String name) {

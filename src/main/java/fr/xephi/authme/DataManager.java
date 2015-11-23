@@ -36,6 +36,7 @@ public class DataManager {
      * Method getOfflinePlayer.
      *
      * @param name String
+     *
      * @return OfflinePlayer
      */
     public synchronized OfflinePlayer getOfflinePlayer(final String name) {
@@ -226,6 +227,7 @@ public class DataManager {
      *
      * @param player Player
      * @param name   String
+     *
      * @return boolean
      */
     public boolean isOnline(Player player, final String name) {
@@ -256,6 +258,7 @@ public class DataManager {
      * Method getOnlinePlayerLower.
      *
      * @param name String
+     *
      * @return Player
      */
     public Player getOnlinePlayerLower(String name) {

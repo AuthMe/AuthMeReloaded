@@ -92,6 +92,7 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param d   the byte array to encode
      * @param len the number of bytes to encode
+     *
      * @return base64-encoded string * @throws IllegalArgumentException if the length is invalid * @throws IllegalArgumentException
      */
     private static String encode_base64(byte d[], int len)
@@ -132,6 +133,7 @@ public class BCRYPT implements EncryptionMethod {
      * range-checking againt conversion table
      *
      * @param x the base64-encoded value
+     *
      * @return the decoded value of x
      */
     private static byte char64(char x) {
@@ -147,6 +149,7 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param s       the string to decode
      * @param maxolen the maximum number of bytes to decode
+     *
      * @return an array containing the decoded bytes * @throws IllegalArgumentException if maxolen is invalid * @throws IllegalArgumentException
      */
     private static byte[] decode_base64(String s, int maxolen)
@@ -196,6 +199,7 @@ public class BCRYPT implements EncryptionMethod {
      * @param data the string to extract the data from
      * @param offp a "pointer" (as a one-entry array) to the current offset into
      *             data
+     *
      * @return the next word of material from data
      */
     private static int streamtoword(byte data[], int offp[]) {
@@ -217,6 +221,7 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param password the password to hash
      * @param salt     the salt to hash with (perhaps generated using BCrypt.gensalt)
+     *
      * @return the hashed password
      */
     public static String hashpw(String password, String salt) {
@@ -274,6 +279,7 @@ public class BCRYPT implements EncryptionMethod {
      * @param log_rounds the log2 of the number of rounds of hashing to apply - the
      *                   work factor therefore increases as 2**log_rounds.
      * @param random     an instance of SecureRandom to use
+     *
      * @return an encoded salt value
      */
     public static String gensalt(int log_rounds, SecureRandom random) {
@@ -296,6 +302,7 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param log_rounds the log2 of the number of rounds of hashing to apply - the
      *                   work factor therefore increases as 2**log_rounds.
+     *
      * @return an encoded salt value
      */
     public static String gensalt(int log_rounds) {
@@ -317,6 +324,7 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param plaintext the plaintext password to verify
      * @param hashed    the previously-hashed password
+     *
      * @return true if the passwords match, false otherwise
      */
     public static boolean checkpw(String plaintext, String hashed) {
@@ -330,6 +338,7 @@ public class BCRYPT implements EncryptionMethod {
      * @param text   plaintext or hashed text
      * @param hashed the previously-hashed password
      * @param rounds number of rounds to hash the password
+     *
      * @return boolean
      */
     public static boolean checkpw(String text, String hashed, int rounds) {
@@ -355,6 +364,7 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param text String
      * @param salt String
+     *
      * @return String
      */
     public static String getDoubleHash(String text, String salt) {
@@ -467,6 +477,7 @@ public class BCRYPT implements EncryptionMethod {
      * @param salt       the binary salt to hash with the password
      * @param log_rounds the binary logarithm of the number of rounds of hashing to
      *                   apply
+     *
      * @return an array containing the binary hashed password
      */
     private byte[] crypt_raw(byte password[], byte salt[], int log_rounds) {
@@ -509,6 +520,7 @@ public class BCRYPT implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
@@ -523,6 +535,7 @@ public class BCRYPT implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

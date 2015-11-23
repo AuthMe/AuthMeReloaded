@@ -89,6 +89,7 @@ public class CommandHandler {
      * @param bukkitCommand      The command (Bukkit).
      * @param bukkitCommandLabel The command label (Bukkit).
      * @param bukkitArgs         The command arguments (Bukkit).
+     *
      * @return True if the command was executed, false otherwise.
      */
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command bukkitCommand, String bukkitCommandLabel, String[] bukkitArgs) {
@@ -181,6 +182,7 @@ public class CommandHandler {
      * Process the command arguments, and return them as an array list.
      *
      * @param args The command arguments to process.
+     *
      * @return The processed command arguments.
      */
     private List<String> processArguments(String[] args) {

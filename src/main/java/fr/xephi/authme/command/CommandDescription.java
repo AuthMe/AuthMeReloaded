@@ -117,6 +117,7 @@ public class CommandDescription {
      * Check whether a label is valid to use.
      *
      * @param label The label to test.
+     *
      * @return True if the label is valid to use, false otherwise.
      */
     public static boolean isValidLabel(String label) {
@@ -140,6 +141,7 @@ public class CommandDescription {
      *
      * @param commandLabel      The first command label.
      * @param otherCommandLabel The other command label.
+     *
      * @return True if the labels are equal to each other.
      */
     private static boolean commandLabelEquals(String commandLabel, String otherCommandLabel) {
@@ -178,6 +180,7 @@ public class CommandDescription {
      * Get the label most similar to the reference. The first label will be returned if no reference was supplied.
      *
      * @param reference The command reference.
+     *
      * @return The most similar label, or the first label. An empty label will be returned if no label was set.
      */
     public String getLabel(CommandParts reference) {
@@ -236,6 +239,7 @@ public class CommandDescription {
      * @param commandLabel Command label to set.
      * @param overwrite    True to replace all old command labels, false to append this command label to the currently
      *                     existing labels.
+     *
      * @return Trie if the command label is added, or if it was added already. False on failure.
      */
     public boolean setLabel(String commandLabel, boolean overwrite) {
@@ -252,6 +256,7 @@ public class CommandDescription {
      * Add a command label to the list.
      *
      * @param commandLabel Command label to add.
+     *
      * @return True if the label was added, or if it was added already. False on error.
      */
     public boolean addLabel(String commandLabel) {
@@ -271,6 +276,7 @@ public class CommandDescription {
      * Add a list of command labels.
      *
      * @param commandLabels List of command labels to add.
+     *
      * @return True if succeed, false on failure.
      */
     public boolean addLabels(List<String> commandLabels) {
@@ -285,6 +291,7 @@ public class CommandDescription {
      * Check whether this command description has a specific command.
      *
      * @param commandLabel Command to check for.
+     *
      * @return True if this command label equals to the param command.
      */
     public boolean hasLabel(String commandLabel) {
@@ -301,6 +308,7 @@ public class CommandDescription {
      * Check whether this command description has a list of labels
      *
      * @param commandLabels List of labels
+     *
      * @return True if all labels match, false otherwise
      */
     public boolean hasLabels(List<String> commandLabels) {
@@ -318,6 +326,7 @@ public class CommandDescription {
      * are suitable too.
      *
      * @param commandReference The command reference.
+     *
      * @return True if the command reference is suitable to this command label, false otherwise.
      */
     public boolean isSuitableLabel(CommandParts commandReference) {
@@ -345,6 +354,7 @@ public class CommandDescription {
      * Get the absolute command label.
      *
      * @param includeSlash boolean
+     *
      * @return Absolute command label.
      */
     public String getAbsoluteLabel(boolean includeSlash) {
@@ -356,6 +366,7 @@ public class CommandDescription {
      *
      * @param includeSlash boolean
      * @param reference    CommandParts
+     *
      * @return Absolute command label.
      */
     public String getAbsoluteLabel(boolean includeSlash, CommandParts reference) {
@@ -372,6 +383,7 @@ public class CommandDescription {
      * Get the command reference.
      *
      * @param reference The reference to use as template, which is used to choose the most similar reference.
+     *
      * @return Command reference.
      */
     public CommandParts getCommandReference(CommandParts reference) {
@@ -393,6 +405,7 @@ public class CommandDescription {
      * Get the difference between this command and another command reference.
      *
      * @param other The other command reference.
+     *
      * @return The command difference. Zero if there's no difference. A negative number on error.
      */
     public double getCommandDifference(CommandParts other) {
@@ -404,6 +417,7 @@ public class CommandDescription {
      *
      * @param other       The other command reference.
      * @param fullCompare True to fully compare both command references.
+     *
      * @return The command difference. Zero if there's no difference. A negative number on error.
      */
     public double getCommandDifference(CommandParts other, boolean fullCompare) {
@@ -451,6 +465,7 @@ public class CommandDescription {
      * @param sender           The command sender that triggered the execution of this command.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
+     *
      * @return True on success, false on failure.
      */
     public boolean execute(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
@@ -489,6 +504,7 @@ public class CommandDescription {
      * Set the parent command.
      *
      * @param parent Parent command.
+     *
      * @return True on success, false on failure.
      */
     public boolean setParent(CommandDescription parent) {
@@ -543,6 +559,7 @@ public class CommandDescription {
      * Add a child to the command description.
      *
      * @param commandDescription The child to add.
+     *
      * @return True on success, false on failure.
      */
     public boolean addChild(CommandDescription commandDescription) {
@@ -577,6 +594,7 @@ public class CommandDescription {
      * Check if this command description has a specific child.
      *
      * @param commandDescription The command description to check for.
+     *
      * @return True if this command description has the specific child, false otherwise.
      */
     public boolean isChild(CommandDescription commandDescription) {
@@ -594,6 +612,7 @@ public class CommandDescription {
      * Add an argument.
      *
      * @param argument The argument to add.
+     *
      * @return True if succeed, false if failed.
      */
     public boolean addArgument(CommandArgumentDescription argument) {
@@ -636,6 +655,7 @@ public class CommandDescription {
      * Check whether an argument exists.
      *
      * @param argument The argument to check for.
+     *
      * @return True if this argument already exists, false otherwise.
      */
     public boolean hasArgument(CommandArgumentDescription argument) {
@@ -771,6 +791,7 @@ public class CommandDescription {
      * Find the best suitable command for a query reference.
      *
      * @param queryReference The query reference to find a command for.
+     *
      * @return The command found, or null.
      */
     public FoundCommandResult findCommand(final CommandParts queryReference) {
@@ -832,6 +853,7 @@ public class CommandDescription {
      * Check whether there's any command description that matches the specified command reference.
      *
      * @param commandReference The command reference.
+     *
      * @return True if so, false otherwise.
      */
     public boolean hasSuitableCommand(CommandParts commandReference) {
@@ -842,6 +864,7 @@ public class CommandDescription {
      * Check if the remaining command reference elements are suitable with arguments of the current command description.
      *
      * @param commandReference The command reference.
+     *
      * @return True if the arguments are suitable, false otherwise.
      */
     public boolean hasSuitableArguments(CommandParts commandReference) {
@@ -853,6 +876,7 @@ public class CommandDescription {
      * and get the difference in argument count.
      *
      * @param commandReference The command reference.
+     *
      * @return The difference in argument count between the reference and the actual command.
      */
     public int getSuitableArgumentsDifference(CommandParts commandReference) {

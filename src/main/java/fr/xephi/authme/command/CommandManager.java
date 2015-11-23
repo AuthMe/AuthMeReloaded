@@ -575,6 +575,7 @@ public class CommandManager {
      * Find the best suitable command for the specified reference.
      *
      * @param queryReference The query reference to find a command for.
+     *
      * @return The command found, or null.
      */
     public FoundCommandResult findCommand(CommandParts queryReference) {

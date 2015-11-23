@@ -128,6 +128,7 @@ public class PerformBackup {
      * Method FileBackup.
      *
      * @param backend String
+     *
      * @return boolean
      */
     private boolean FileBackup(String backend) {
@@ -150,6 +151,7 @@ public class PerformBackup {
      * Method checkWindows.
      *
      * @param windowsPath String
+     *
      * @return boolean
      */
     private boolean checkWindows(String windowsPath) {
@@ -174,6 +176,7 @@ public class PerformBackup {
      *
      * @param src File
      * @param dst File
+     *
      * @throws IOException
      */
     void copy(File src, File dst) throws IOException {

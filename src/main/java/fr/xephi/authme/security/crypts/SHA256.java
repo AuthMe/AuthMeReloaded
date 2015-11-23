@@ -12,6 +12,7 @@ public class SHA256 implements EncryptionMethod {
      * Method getSHA256.
      *
      * @param message String
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     private static String getSHA256(String message)
@@ -29,6 +30,7 @@ public class SHA256 implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
@@ -43,6 +45,7 @@ public class SHA256 implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

@@ -58,6 +58,7 @@ public class Spawn extends CustomConfiguration {
      * Method setSpawn.
      *
      * @param location Location
+     *
      * @return boolean
      */
     public boolean setSpawn(Location location) {
@@ -79,6 +80,7 @@ public class Spawn extends CustomConfiguration {
      * Method setFirstSpawn.
      *
      * @param location Location
+     *
      * @return boolean
      */
     public boolean setFirstSpawn(Location location) {

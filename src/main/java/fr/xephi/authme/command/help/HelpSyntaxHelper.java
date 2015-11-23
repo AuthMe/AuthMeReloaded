@@ -23,6 +23,7 @@ public final class HelpSyntaxHelper {
      * @param commandReference   The reference of the command.
      * @param alternativeLabel   The alternative label to use for this command syntax.
      * @param highlight          True to highlight the important parts of this command.
+     *
      * @return The command with proper syntax.
      */
     public static String getCommandSyntax(CommandDescription commandDescription, CommandParts commandReference,

@@ -941,6 +941,7 @@ public class AuthMe extends JavaPlugin {
      * @param cmd          The command (Bukkit).
      * @param commandLabel The command label (Bukkit).
      * @param args         The command arguments (Bukkit).
+     *
      * @return True if the command was executed, false otherwise.
      */
     @Override

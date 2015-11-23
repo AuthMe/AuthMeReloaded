@@ -124,6 +124,7 @@ public class LimboCache {
      * Method getLimboPlayer.
      *
      * @param name String
+     *
      * @return LimboPlayer
      */
     public LimboPlayer getLimboPlayer(String name) {
@@ -134,6 +135,7 @@ public class LimboCache {
      * Method hasLimboPlayer.
      *
      * @param name String
+     *
      * @return boolean
      */
     public boolean hasLimboPlayer(String name) {

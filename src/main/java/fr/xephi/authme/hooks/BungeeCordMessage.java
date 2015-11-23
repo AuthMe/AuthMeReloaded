@@ -27,6 +27,7 @@ public class BungeeCordMessage implements PluginMessageListener {
      * @param channel String
      * @param player  Player
      * @param message byte[]
+     *
      * @see org.bukkit.plugin.messaging.PluginMessageListener#onPluginMessageReceived(String, Player, byte[])
      */
     @Override

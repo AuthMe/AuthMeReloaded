@@ -50,6 +50,7 @@ public class API {
 
     /**
      * @param player
+     *
      * @return true if player is authenticate
      */
     @Deprecated
@@ -59,6 +60,7 @@ public class API {
 
     /**
      * @param player
+     *
      * @return true if the player is unrestricted
      */
     @Deprecated
@@ -70,6 +72,7 @@ public class API {
      * Method getLastLocation.
      *
      * @param player Player
+     *
      * @return Location
      */
     @Deprecated
@@ -108,6 +111,7 @@ public class API {
 
     /**
      * @param playerName
+     *
      * @return true if player is registered
      */
     @Deprecated
@@ -119,6 +123,7 @@ public class API {
     /**
      * @param playerName      String
      * @param passwordToCheck String
+     *
      * @return true if the password is correct , false else
      */
     @Deprecated
@@ -140,6 +145,7 @@ public class API {
      *
      * @param playerName String
      * @param password   String
+     *
      * @return true if the player is register correctly
      */
     @Deprecated
@@ -182,6 +188,7 @@ public class API {
 
     /**
      * @param player
+     *
      * @return true if player is a npc
      */
     @Deprecated
@@ -191,6 +198,7 @@ public class API {
 
     /**
      * @param player
+     *
      * @return true if player is a npc
      */
     @Deprecated

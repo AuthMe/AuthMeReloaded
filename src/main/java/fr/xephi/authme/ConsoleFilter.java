@@ -18,6 +18,7 @@ public class ConsoleFilter implements Filter {
      * Method isLoggable.
      *
      * @param record LogRecord
+     *
      * @return boolean * @see java.util.logging.Filter#isLoggable(LogRecord)
      */
     @Override

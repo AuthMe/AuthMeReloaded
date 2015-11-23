@@ -29,6 +29,7 @@ public class DatabaseCalls implements DataSource {
      * Method isAuthAvailable.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
      */
     @Override
@@ -48,6 +49,7 @@ public class DatabaseCalls implements DataSource {
      * Method getAuth.
      *
      * @param user String
+     *
      * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
      */
     @Override
@@ -67,6 +69,7 @@ public class DatabaseCalls implements DataSource {
      * Method saveAuth.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
      */
     @Override
@@ -86,6 +89,7 @@ public class DatabaseCalls implements DataSource {
      * Method updateSession.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
      */
     @Override
@@ -105,6 +109,7 @@ public class DatabaseCalls implements DataSource {
      * Method updatePassword.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
      */
     @Override
@@ -124,6 +129,7 @@ public class DatabaseCalls implements DataSource {
      * Method purgeDatabase.
      *
      * @param until long
+     *
      * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
      */
     @Override
@@ -143,6 +149,7 @@ public class DatabaseCalls implements DataSource {
      * Method autoPurgeDatabase.
      *
      * @param until long
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
      */
     @Override
@@ -162,6 +169,7 @@ public class DatabaseCalls implements DataSource {
      * Method removeAuth.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
      */
     @Override
@@ -181,6 +189,7 @@ public class DatabaseCalls implements DataSource {
      * Method updateQuitLoc.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
      */
     @Override
@@ -200,6 +209,7 @@ public class DatabaseCalls implements DataSource {
      * Method getIps.
      *
      * @param ip String
+     *
      * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
      */
     @Override
@@ -220,6 +230,7 @@ public class DatabaseCalls implements DataSource {
      * Method getAllAuthsByName.
      *
      * @param auth PlayerAuth
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
      */
     @Override
@@ -239,6 +250,7 @@ public class DatabaseCalls implements DataSource {
      * Method getAllAuthsByIp.
      *
      * @param ip String
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
      */
     @Override
@@ -258,6 +270,7 @@ public class DatabaseCalls implements DataSource {
      * Method getAllAuthsByEmail.
      *
      * @param email String
+     *
      * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
      */
     @Override
@@ -277,6 +290,7 @@ public class DatabaseCalls implements DataSource {
      * Method updateEmail.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
      */
     @Override
@@ -296,6 +310,7 @@ public class DatabaseCalls implements DataSource {
      * Method updateSalt.
      *
      * @param auth PlayerAuth
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
      */
     @Override
@@ -336,6 +351,7 @@ public class DatabaseCalls implements DataSource {
      * Method purgeBanned.
      *
      * @param banned List<String>
+     *
      * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
      */
     @Override
@@ -361,6 +377,7 @@ public class DatabaseCalls implements DataSource {
      * Method isLogged.
      *
      * @param user String
+     *
      * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
      */
     @Override
@@ -380,6 +397,7 @@ public class DatabaseCalls implements DataSource {
      * Method setLogged.
      *
      * @param user String
+     *
      * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
      */
     @Override
@@ -395,6 +413,7 @@ public class DatabaseCalls implements DataSource {
      * Method setUnlogged.
      *
      * @param user String
+     *
      * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
      */
     @Override
@@ -443,6 +462,7 @@ public class DatabaseCalls implements DataSource {
      *
      * @param oldone String
      * @param newone String
+     *
      * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
      */
     @Override

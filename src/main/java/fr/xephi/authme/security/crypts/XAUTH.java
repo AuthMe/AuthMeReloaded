@@ -10,6 +10,7 @@ public class XAUTH implements EncryptionMethod {
      * Method getWhirlpool.
      *
      * @param message String
+     *
      * @return String
      */
     public static String getWhirlpool(String message) {
@@ -27,6 +28,7 @@ public class XAUTH implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
@@ -43,6 +45,7 @@ public class XAUTH implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

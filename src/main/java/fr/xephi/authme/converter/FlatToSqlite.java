@@ -179,6 +179,7 @@ public class FlatToSqlite implements Converter {
      * Method saveAuth.
      *
      * @param s String
+     *
      * @return boolean
      */
     private synchronized boolean saveAuth(String s) {

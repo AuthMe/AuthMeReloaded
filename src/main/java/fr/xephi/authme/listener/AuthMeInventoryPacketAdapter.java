@@ -57,6 +57,7 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
      * Method onPacketSending.
      *
      * @param packetEvent PacketEvent
+     *
      * @see com.comphenix.protocol.events.PacketListener#onPacketSending(PacketEvent)
      */
     @Override

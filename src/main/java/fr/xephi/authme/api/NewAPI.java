@@ -67,6 +67,7 @@ public class NewAPI {
 
     /**
      * @param player
+     *
      * @return true if player is authenticate
      */
     public boolean isAuthenticated(Player player) {
@@ -75,6 +76,7 @@ public class NewAPI {
 
     /**
      * @param player
+     *
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
@@ -83,6 +85,7 @@ public class NewAPI {
 
     /**
      * @param player
+     *
      * @return true if the player is unrestricted
      */
     public boolean isUnrestricted(Player player) {
@@ -93,6 +96,7 @@ public class NewAPI {
      * Method getLastLocation.
      *
      * @param player Player
+     *
      * @return Location
      */
     public Location getLastLocation(Player player) {
@@ -112,6 +116,7 @@ public class NewAPI {
 
     /**
      * @param playerName
+     *
      * @return true if player is registered
      */
     public boolean isRegistered(String playerName) {
@@ -122,6 +127,7 @@ public class NewAPI {
     /**
      * @param playerName      String
      * @param passwordToCheck String
+     *
      * @return true if the password is correct , false else
      */
     public boolean checkPassword(String playerName, String passwordToCheck) {
@@ -141,6 +147,7 @@ public class NewAPI {
      *
      * @param playerName String
      * @param password   String
+     *
      * @return true if the player is register correctly
      */
     public boolean registerPlayer(String playerName, String password) {

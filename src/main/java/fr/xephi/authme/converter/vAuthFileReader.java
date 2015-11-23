@@ -73,6 +73,7 @@ public class vAuthFileReader {
      * Method isUUIDinstance.
      *
      * @param s String
+     *
      * @return boolean
      */
     private boolean isUUIDinstance(String s) {
@@ -85,6 +86,7 @@ public class vAuthFileReader {
      * Method getName.
      *
      * @param uuid UUID
+     *
      * @return String
      */
     private String getName(UUID uuid) {

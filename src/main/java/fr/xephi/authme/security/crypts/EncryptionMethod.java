@@ -24,6 +24,7 @@ public interface EncryptionMethod {
      * @param salt     (can be an other data like playerName;salt , playerName,
      *                 etc... for customs methods)
      * @param name     String
+     *
      * @return Hashing password * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
      */
     String getHash(String password, String salt, String name)
@@ -33,6 +34,7 @@ public interface EncryptionMethod {
      * @param hash
      * @param password
      * @param playerName
+     *
      * @return true if password match, false else * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
      */
     boolean comparePassword(String hash, String password, String playerName)

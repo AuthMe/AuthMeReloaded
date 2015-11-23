@@ -46,6 +46,7 @@ public interface PRF {
      *
      * @param M Input data/message etc. Together with any data supplied during
      *          initilization.
+     *
      * @return Random bytes of hLen length.
      */
     public byte[] doFinal(byte[] M);

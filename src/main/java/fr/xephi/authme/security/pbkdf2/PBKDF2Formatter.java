@@ -37,6 +37,7 @@ public interface PBKDF2Formatter {
      * Convert parameters to String.
      *
      * @param p Parameters object to output.
+     *
      * @return String representation
      */
     public abstract String toString(PBKDF2Parameters p);
@@ -47,6 +48,7 @@ public interface PBKDF2Formatter {
      *
      * @param s String representation of parameters to decode.
      * @param p PBKDF2Parameters
+     *
      * @return <code>false</code> syntax OK, <code>true</code> some syntax
      * issue.
      */

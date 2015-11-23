@@ -21,6 +21,7 @@ public class PHPBB implements EncryptionMethod {
      * Method md5.
      *
      * @param data String
+     *
      * @return String
      */
     public static String md5(String data) {
@@ -38,6 +39,7 @@ public class PHPBB implements EncryptionMethod {
      * Method hexToInt.
      *
      * @param ch char
+     *
      * @return int
      */
     static int hexToInt(char ch) {
@@ -53,6 +55,7 @@ public class PHPBB implements EncryptionMethod {
      * Method bytes2hex.
      *
      * @param bytes byte[]
+     *
      * @return String
      */
     private static String bytes2hex(byte[] bytes) {
@@ -70,6 +73,7 @@ public class PHPBB implements EncryptionMethod {
      * Method pack.
      *
      * @param hex String
+     *
      * @return String
      */
     static String pack(String hex) {
@@ -88,6 +92,7 @@ public class PHPBB implements EncryptionMethod {
      *
      * @param password String
      * @param salt     String
+     *
      * @return String
      */
     public String phpbb_hash(String password, String salt) {
@@ -110,6 +115,7 @@ public class PHPBB implements EncryptionMethod {
      *
      * @param input  String
      * @param itoa64 String
+     *
      * @return String
      */
     private String _hash_gensalt_private(String input, String itoa64) {
@@ -122,6 +128,7 @@ public class PHPBB implements EncryptionMethod {
      * @param input                String
      * @param itoa64               String
      * @param iteration_count_log2 int
+     *
      * @return String
      */
     private String _hash_gensalt_private(String input, String itoa64,
@@ -140,6 +147,7 @@ public class PHPBB implements EncryptionMethod {
      *
      * @param input String
      * @param count int
+     *
      * @return String
      */
     private String _hash_encode64(String input, int count) {
@@ -168,6 +176,7 @@ public class PHPBB implements EncryptionMethod {
      *
      * @param password String
      * @param setting  String
+     *
      * @return String
      */
     String _hash_crypt_private(String password, String setting) {
@@ -196,6 +205,7 @@ public class PHPBB implements EncryptionMethod {
      *
      * @param password String
      * @param hash     String
+     *
      * @return boolean
      */
     public boolean phpbb_check_hash(String password, String hash) {
@@ -210,6 +220,7 @@ public class PHPBB implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
@@ -224,6 +235,7 @@ public class PHPBB implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

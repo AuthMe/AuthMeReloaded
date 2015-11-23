@@ -70,6 +70,7 @@ public class JsonCache {
      * Method readCache.
      *
      * @param player Player
+     *
      * @return DataFileCache
      */
     public DataFileCache readCache(Player player) {
@@ -119,6 +120,7 @@ public class JsonCache {
      * Method doesCacheExist.
      *
      * @param player Player
+     *
      * @return boolean
      */
     public boolean doesCacheExist(Player player) {
@@ -141,6 +143,7 @@ public class JsonCache {
          * @param jsonElement                JsonElement
          * @param type                       Type
          * @param jsonDeserializationContext JsonDeserializationContext
+         *
          * @return DataFileCache * @throws JsonParseException * @see com.google.gson.JsonDeserializer#deserialize(JsonElement, Type, JsonDeserializationContext)
          */
         @Override
@@ -177,6 +180,7 @@ public class JsonCache {
          * @param dataFileCache            DataFileCache
          * @param type                     Type
          * @param jsonSerializationContext JsonSerializationContext
+         *
          * @return JsonElement
          */
         @Override

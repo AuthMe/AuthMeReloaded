@@ -18,6 +18,7 @@ public class VersionCommand extends ExecutableCommand {
      * @param sender           The command sender.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
+     *
      * @return True if the command was executed successfully, false otherwise.
      */
     @Override
@@ -70,6 +71,7 @@ public class VersionCommand extends ExecutableCommand {
      * Check whether a player is online.
      *
      * @param minecraftName The Minecraft player name.
+     *
      * @return True if the player is online, false otherwise.
      */
     private boolean isPlayerOnline(String minecraftName) {

@@ -87,6 +87,7 @@ public class OtherAccounts extends CustomConfiguration {
      * Method getAllPlayersByUUID.
      *
      * @param uuid UUID
+     *
      * @return List<String>
      */
     public List<String> getAllPlayersByUUID(UUID uuid) {

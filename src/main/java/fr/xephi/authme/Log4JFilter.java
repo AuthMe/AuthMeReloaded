@@ -34,6 +34,7 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
      * data.
      *
      * @param message the Message object to verify
+     *
      * @return the Result value
      */
     private static Result validateMessage(Message message) {
@@ -48,6 +49,7 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
      * depending on whether the message contains sensitive AuthMe data.
      *
      * @param message the message to verify
+     *
      * @return the Result value
      */
     private static Result validateMessage(String message) {

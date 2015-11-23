@@ -75,6 +75,7 @@ public class xAuthToFlat {
      * Method getIdPlayer.
      *
      * @param id int
+     *
      * @return String
      */
     public String getIdPlayer(int id) {
@@ -129,6 +130,7 @@ public class xAuthToFlat {
      * Method getPassword.
      *
      * @param accountId int
+     *
      * @return String
      */
     public String getPassword(int accountId) {

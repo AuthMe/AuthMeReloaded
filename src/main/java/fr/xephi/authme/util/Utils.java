@@ -100,6 +100,7 @@ public final class Utils {
      *
      * @param player The player.
      * @param group  The group type.
+     *
      * @return True if succeed, false otherwise. False is also returned if groups aren't supported
      * with the current permissions system.
      */
@@ -159,6 +160,7 @@ public final class Utils {
      *
      * @param player The player.
      * @param group  The normal group.
+     *
      * @return True on success, false on failure.
      */
     public static boolean addNormal(Player player, String group) {
@@ -277,6 +279,7 @@ public final class Utils {
      * Bukkit#getOnlinePlayers()} directly.
      *
      * @return collection of online players
+     *
      * @see <a href="https://www.spigotmc.org/threads/solved-cant-use-new-getonlineplayers.33061/">SpigotMC
      * forum</a>
      * @see <a href="http://stackoverflow.com/questions/32130851/player-changed-from-array-to-collection">StackOverflow</a>

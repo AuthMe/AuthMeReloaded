@@ -71,6 +71,7 @@ public class CommandParts {
      * Add a part.
      *
      * @param part The part to add.
+     *
      * @return The result.
      */
     public boolean add(String part) {
@@ -81,6 +82,7 @@ public class CommandParts {
      * Add some parts.
      *
      * @param parts The parts to add.
+     *
      * @return The result.
      */
     public boolean add(List<String> parts) {
@@ -91,6 +93,7 @@ public class CommandParts {
      * Add some parts.
      *
      * @param parts The parts to add.
+     *
      * @return The result.
      */
     public boolean add(String[] parts) {
@@ -112,6 +115,7 @@ public class CommandParts {
      * Get a part by it's index.
      *
      * @param i Part index.
+     *
      * @return The part.
      */
     public String get(int i) {
@@ -127,6 +131,7 @@ public class CommandParts {
      * Get a range of the parts starting at the specified index up to the end of the range.
      *
      * @param start The starting index.
+     *
      * @return The parts range. Arguments that were out of bound are not included.
      */
     public List<String> getRange(int start) {
@@ -138,6 +143,7 @@ public class CommandParts {
      *
      * @param start The starting index.
      * @param count The number of parts to get.
+     *
      * @return The parts range. Parts that were out of bound are not included.
      */
     public List<String> getRange(int start, int count) {
@@ -160,6 +166,7 @@ public class CommandParts {
      * Get the difference value between two references. This won't do a full compare, just the last reference parts instead.
      *
      * @param other The other reference.
+     *
      * @return The result from zero to above. A negative number will be returned on error.
      */
     public double getDifference(CommandParts other) {
@@ -171,6 +178,7 @@ public class CommandParts {
      *
      * @param other       The other reference.
      * @param fullCompare True to compare the full references as far as the range reaches.
+     *
      * @return The result from zero to above. A negative number will be returned on error.
      */
     public double getDifference(CommandParts other, boolean fullCompare) {

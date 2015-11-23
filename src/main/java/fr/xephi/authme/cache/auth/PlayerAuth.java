@@ -405,6 +405,7 @@ public class PlayerAuth {
      * Method equals.
      *
      * @param obj Object
+     *
      * @return boolean
      */
     @Override

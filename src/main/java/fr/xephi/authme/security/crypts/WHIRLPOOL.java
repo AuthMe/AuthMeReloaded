@@ -168,6 +168,7 @@ public class WHIRLPOOL implements EncryptionMethod {
      * Method display.
      *
      * @param array byte[]
+     *
      * @return String
      */
     protected static String display(byte[] array) {
@@ -395,6 +396,7 @@ public class WHIRLPOOL implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
@@ -413,6 +415,7 @@ public class WHIRLPOOL implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

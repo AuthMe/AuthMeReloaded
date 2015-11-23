@@ -25,6 +25,7 @@ public class PasswordSecurity {
      * Method createSalt.
      *
      * @param length int
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     public static String createSalt(int length)
@@ -43,6 +44,7 @@ public class PasswordSecurity {
      * @param alg        HashAlgorithm
      * @param password   String
      * @param playerName String
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     public static String getHash(HashAlgorithm alg, String password,
@@ -146,6 +148,7 @@ public class PasswordSecurity {
      * @param password   String
      * @param hash       String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException
      */
     public static boolean comparePasswordWithHash(String password, String hash,
@@ -184,6 +187,7 @@ public class PasswordSecurity {
      * @param password   String
      * @param hash       String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException
      */
     private static boolean compareWithAllEncryptionMethod(String password,

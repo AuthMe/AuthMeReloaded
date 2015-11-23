@@ -19,6 +19,7 @@ public class StringUtils {
      *
      * @param first  First string
      * @param second Second string
+     *
      * @return The difference value
      */
     public static double getDifference(String first, String second) {
@@ -38,6 +39,7 @@ public class StringUtils {
      *
      * @param str    the string to analyze
      * @param pieces the items to check the string for
+     *
      * @return true if the string contains at least one of the items
      */
     public static boolean containsAny(String str, String... pieces) {
@@ -57,6 +59,7 @@ public class StringUtils {
      * is trimmed, so this method also considers a string with whitespace as empty.
      *
      * @param str the string to verify
+     *
      * @return true if the string is empty, false otherwise
      */
     public static boolean isEmpty(String str) {
@@ -68,6 +71,7 @@ public class StringUtils {
      *
      * @param delimiter the delimiter to use
      * @param elements  the elements to join
+     *
      * @return a new String that is composed of the elements separated by the delimiter
      */
     public static String join(String delimiter, Iterable<String> elements) {
@@ -89,6 +93,7 @@ public class StringUtils {
      * Get a full stack trace of an exception as a string.
      *
      * @param exception The exception.
+     *
      * @return Stack trace as a string.
      */
     public static String getStackTrace(Exception exception) {

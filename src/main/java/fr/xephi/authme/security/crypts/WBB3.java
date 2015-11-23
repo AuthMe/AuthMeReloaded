@@ -14,6 +14,7 @@ public class WBB3 implements EncryptionMethod {
      * Method getSHA1.
      *
      * @param message String
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     private static String getSHA1(String message)
@@ -31,6 +32,7 @@ public class WBB3 implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
@@ -45,6 +47,7 @@ public class WBB3 implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override

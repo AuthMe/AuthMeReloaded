@@ -57,6 +57,7 @@ public class PlayerCache {
      * Method isAuthenticated.
      *
      * @param user String
+     *
      * @return boolean
      */
     public boolean isAuthenticated(String user) {
@@ -67,6 +68,7 @@ public class PlayerCache {
      * Method getAuth.
      *
      * @param user String
+     *
      * @return PlayerAuth
      */
     public PlayerAuth getAuth(String user) {

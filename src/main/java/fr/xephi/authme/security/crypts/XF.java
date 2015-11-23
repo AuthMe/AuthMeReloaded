@@ -19,6 +19,7 @@ public class XF implements EncryptionMethod {
      * @param password String
      * @param salt     String
      * @param name     String
+     *
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
     @Override
@@ -33,6 +34,7 @@ public class XF implements EncryptionMethod {
      * @param hash       String
      * @param password   String
      * @param playerName String
+     *
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
      */
     @Override
@@ -46,6 +48,7 @@ public class XF implements EncryptionMethod {
      * Method getSHA256.
      *
      * @param password String
+     *
      * @return String * @throws NoSuchAlgorithmException
      */
     public String getSHA256(String password) throws NoSuchAlgorithmException {
@@ -72,6 +75,7 @@ public class XF implements EncryptionMethod {
      *
      * @param pattern String
      * @param line    String
+     *
      * @return String
      */
     public String regmatch(String pattern, String line) {
