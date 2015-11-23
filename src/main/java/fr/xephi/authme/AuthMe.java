@@ -788,12 +788,12 @@ public class AuthMe extends JavaPlugin {
         return spawnLoc;
     }
 
-    // Return the default spawnpoint of a world
+    // Return the default spawn point of a world
     private Location getDefaultSpawn(World world) {
         return world.getSpawnLocation();
     }
 
-    // Return the multiverse spawnpoint of a world
+    // Return the multiverse spawn point of a world
     private Location getMultiverseSpawn(World world) {
         if (multiverse != null && Settings.multiverse) {
             try {
@@ -805,7 +805,7 @@ public class AuthMe extends JavaPlugin {
         return null;
     }
 
-    // Return the essentials spawnpoint
+    // Return the essentials spawn point
     private Location getEssentialsSpawn() {
         if (essentialsSpawn != null) {
             return essentialsSpawn;
@@ -813,7 +813,7 @@ public class AuthMe extends JavaPlugin {
         return null;
     }
 
-    // Return the authme soawnpoint
+    // Return the AuthMe spawn point
     private Location getAuthMeSpawn(Player player) {
         if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null)) {
             return Spawn.getInstance().getFirstSpawn();
