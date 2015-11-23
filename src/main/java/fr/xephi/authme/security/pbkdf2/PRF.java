@@ -39,7 +39,7 @@ public interface PRF {
      * @param P The password supplied as array of bytes. It is the caller's
      *          task to convert String passwords to bytes as appropriate.
      */
-    public void init(byte[] P);
+    void init(byte[] P);
 
     /**
      * Pseudo Random Function
@@ -49,12 +49,12 @@ public interface PRF {
      *
      * @return Random bytes of hLen length.
      */
-    public byte[] doFinal(byte[] M);
+    byte[] doFinal(byte[] M);
 
     /**
      * Query block size of underlying algorithm/mechanism.
      *
      * @return block size
      */
-    public int getHLen();
+    int getHLen();
 }

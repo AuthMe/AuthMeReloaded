@@ -47,7 +47,7 @@ public class PBKDF2HexFormatter implements PBKDF2Formatter {
         }
 
         String[] p123 = s.split(":");
-        if (p123 == null || p123.length != 3) {
+        if (p123.length != 3) {
             return true;
         }
 

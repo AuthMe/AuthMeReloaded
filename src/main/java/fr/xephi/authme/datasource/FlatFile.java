@@ -744,9 +744,10 @@ public class FlatFile implements DataSource {
             for (String l : lines) {
                 bw.write(l + "\n");
             }
+
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
+
         } finally {
             if (br != null) {
                 try {
@@ -761,7 +762,6 @@ public class FlatFile implements DataSource {
                 }
             }
         }
-        return;
     }
 
     /**

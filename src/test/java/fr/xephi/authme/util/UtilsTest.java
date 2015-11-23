@@ -25,15 +25,12 @@ import static org.mockito.Mockito.when;
  */
 public class UtilsTest {
 
-    private AuthMe authMeMock;
-    private PermissionsManager permissionsManagerMock;
-
     @Before
     public void setUpMocks() {
         AuthMeMockUtil.mockAuthMeInstance();
-        authMeMock = AuthMe.getInstance();
+        AuthMe authMeMock = AuthMe.getInstance();
 
-        permissionsManagerMock = mock(PermissionsManager.class);
+        PermissionsManager permissionsManagerMock = mock(PermissionsManager.class);
         when(authMeMock.getPermissionsManager()).thenReturn(permissionsManagerMock);
 
         Server serverMock = mock(Server.class);

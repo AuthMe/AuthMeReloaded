@@ -268,6 +268,7 @@ public final class Utils {
             if (target.isDirectory()) {
                 purgeDirectory(target);
             }
+            //noinspection ResultOfMethodCallIgnored
             target.delete();
         }
     }

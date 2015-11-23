@@ -157,10 +157,7 @@ public class API {
                 return false;
             }
             PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com", playerName);
-            if (!instance.database.saveAuth(auth)) {
-                return false;
-            }
-            return true;
+            return instance.database.saveAuth(auth);
         } catch (NoSuchAlgorithmException ex) {
             return false;
         }

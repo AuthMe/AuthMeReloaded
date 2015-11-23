@@ -40,7 +40,7 @@ public interface PBKDF2Formatter {
      *
      * @return String representation
      */
-    public abstract String toString(PBKDF2Parameters p);
+    String toString(PBKDF2Parameters p);
 
     /**
      * Convert String to parameters. Depending on actual implementation, it may
@@ -52,5 +52,5 @@ public interface PBKDF2Formatter {
      * @return <code>false</code> syntax OK, <code>true</code> some syntax
      * issue.
      */
-    public abstract boolean fromString(PBKDF2Parameters p, String s);
+    boolean fromString(PBKDF2Parameters p, String s);
 }

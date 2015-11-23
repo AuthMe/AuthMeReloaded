@@ -4,6 +4,7 @@ import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 /**
  */
@@ -25,7 +26,7 @@ public class CryptPBKDF2 implements EncryptionMethod {
         PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), 10000);
         PBKDF2Engine engine = new PBKDF2Engine(params);
 
-        return result + String.valueOf(engine.deriveKey(password, 64));
+        return result + Arrays.toString(engine.deriveKey(password, 64));
     }
 
     /**
