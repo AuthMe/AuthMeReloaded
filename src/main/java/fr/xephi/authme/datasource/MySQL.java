@@ -105,7 +105,7 @@ public class MySQL implements DataSource {
      * @throws ClassNotFoundException * @throws IllegalArgumentException
      */
     private synchronized void setConnectionArguments()
-            throws ClassNotFoundException, IllegalArgumentException {
+        throws ClassNotFoundException, IllegalArgumentException {
         HikariConfig config = new HikariConfig();
         config.setPoolName("AuthMeMYSQLPool");
         config.setDriverClassName("com.mysql.jdbc.Driver");
@@ -129,7 +129,7 @@ public class MySQL implements DataSource {
      * @throws ClassNotFoundException * @throws IllegalArgumentException
      */
     private synchronized void reloadArguments()
-            throws ClassNotFoundException, IllegalArgumentException {
+        throws ClassNotFoundException, IllegalArgumentException {
         if (ds != null) {
             ds.close();
         }

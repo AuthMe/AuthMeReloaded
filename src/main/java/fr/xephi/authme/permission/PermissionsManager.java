@@ -29,10 +29,10 @@ import java.util.logging.Logger;
 
 /**
  * PermissionsManager.
- * <p>
+ * <p/>
  * A permissions manager, to manage and use various permissions systems.
  * This manager supports dynamic plugin hooking and various other features.
- * <p>
+ * <p/>
  * Written by Tim Visée.
  *
  * @author Tim Visée, http://timvisee.com
@@ -267,9 +267,9 @@ public class PermissionsManager {
 
         // Check if any known permissions system is enabling
         if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
-                pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
-                pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
-                pluginName.equals("Permissions")) {
+            pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
+            pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
+            pluginName.equals("Permissions")) {
             this.log.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
             setup();
         }
@@ -287,9 +287,9 @@ public class PermissionsManager {
 
         // Is the WorldGuard plugin disabled
         if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
-                pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
-                pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
-                pluginName.equals("Permissions")) {
+            pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
+            pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
+            pluginName.equals("Permissions")) {
             this.log.info(pluginName + " plugin disabled, updating hooks!");
             setup();
         }

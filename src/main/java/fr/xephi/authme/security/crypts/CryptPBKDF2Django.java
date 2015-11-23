@@ -20,7 +20,7 @@ public class CryptPBKDF2Django implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         String result = "pbkdf2_sha256$15000$" + salt + "$";
         PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), 15000);
         PBKDF2Engine engine = new PBKDF2Engine(params);

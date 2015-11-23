@@ -19,8 +19,8 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
      * List of commands (lower-case) to skip.
      */
     private static final String[] COMMANDS_TO_SKIP = {"/login ", "/l ", "/reg ", "/changepassword ",
-            "/unregister ", "/authme register ", "/authme changepassword ", "/authme reg ", "/authme cp ",
-            "/register "};
+        "/unregister ", "/authme register ", "/authme changepassword ", "/authme reg ", "/authme cp ",
+        "/register "};
 
     /**
      * Constructor.
@@ -57,7 +57,7 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
 
         String lowerMessage = message.toLowerCase();
         if (lowerMessage.contains("issued server command:")
-                && StringUtils.containsAny(lowerMessage, COMMANDS_TO_SKIP)) {
+            && StringUtils.containsAny(lowerMessage, COMMANDS_TO_SKIP)) {
             return Result.DENY;
         }
         return Result.NEUTRAL;

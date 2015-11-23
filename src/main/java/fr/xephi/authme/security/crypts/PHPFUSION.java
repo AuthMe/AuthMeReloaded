@@ -21,7 +21,7 @@ public class PHPFUSION implements EncryptionMethod {
      * @return String * @throws NoSuchAlgorithmException
      */
     private static String getSHA1(String message)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");
         sha1.reset();
         sha1.update(message.getBytes());
@@ -39,7 +39,7 @@ public class PHPFUSION implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         String digest = null;
         String algo = "HmacSHA256";
         String keyString = getSHA1(salt);

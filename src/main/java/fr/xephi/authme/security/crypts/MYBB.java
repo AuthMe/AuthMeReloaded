@@ -17,7 +17,7 @@ public class MYBB implements EncryptionMethod {
      * @return String * @throws NoSuchAlgorithmException
      */
     private static String getMD5(String message)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
         md5.reset();
         md5.update(message.getBytes());
@@ -35,7 +35,7 @@ public class MYBB implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         return getMD5(getMD5(salt) + getMD5(password));
     }
 

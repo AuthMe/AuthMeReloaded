@@ -17,7 +17,7 @@ public class ROYALAUTH implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         for (int i = 0; i < 25; i++)
             password = hash(password, salt);
         return password;
@@ -31,7 +31,7 @@ public class ROYALAUTH implements EncryptionMethod {
      * @return String * @throws NoSuchAlgorithmException
      */
     public String hash(String password, String salt)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         MessageDigest md = MessageDigest.getInstance("SHA-512");
         md.update(password.getBytes());
         byte byteData[] = md.digest();

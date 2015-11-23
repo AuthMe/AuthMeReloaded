@@ -58,7 +58,7 @@ public final class Utils {
                 try {
                     lookupService = new LookupService(data);
                     ConsoleLogger.info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
-                            "available at http://www.maxmind.com");
+                        "available at http://www.maxmind.com");
                     return true;
                 } catch (IOException e) {
                     return false;
@@ -154,7 +154,7 @@ public final class Utils {
 
     /**
      * TODO: This method requires better explanation.
-     * <p>
+     * <p/>
      * Set the normal group of a player.
      *
      * @param player The player.
@@ -200,7 +200,7 @@ public final class Utils {
 
     public static boolean isUnrestricted(Player player) {
         return Settings.isAllowRestrictedIp && !Settings.getUnrestrictedName.isEmpty()
-                && (Settings.getUnrestrictedName.contains(player.getName()));
+            && (Settings.getUnrestrictedName.contains(player.getName()));
     }
 
     /**
@@ -302,7 +302,7 @@ public final class Utils {
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             ConsoleLogger.showError("Could not retrieve list of online players: ["
-                    + e.getClass().getName() + "] " + e.getMessage());
+                + e.getClass().getName() + "] " + e.getMessage());
         }
         return Collections.emptyList();
     }
@@ -333,8 +333,8 @@ public final class Utils {
             if (player.hasMetadata("NPC")) {
                 return true;
             } else if (plugin.combatTagPlus != null
-                    && player instanceof Player
-                    && plugin.combatTagPlus.getNpcPlayerHelper().isNpc((Player) player)) {
+                && player instanceof Player
+                && plugin.combatTagPlus.getNpcPlayerHelper().isNpc((Player) player)) {
                 return true;
             }
             return false;

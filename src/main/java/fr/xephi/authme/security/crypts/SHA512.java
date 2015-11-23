@@ -15,7 +15,7 @@ public class SHA512 implements EncryptionMethod {
      * @return String * @throws NoSuchAlgorithmException
      */
     private static String getSHA512(String message)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         MessageDigest sha512 = MessageDigest.getInstance("SHA-512");
         sha512.reset();
         sha512.update(message.getBytes());
@@ -33,7 +33,7 @@ public class SHA512 implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         return getSHA512(password);
     }
 

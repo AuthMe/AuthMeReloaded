@@ -137,7 +137,7 @@ public class WORDPRESS implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         byte random[] = new byte[6];
         this.randomGen.nextBytes(random);
         return crypt(password, gensaltPrivate(stringToUtf8(new String(random))));

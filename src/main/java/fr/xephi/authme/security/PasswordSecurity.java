@@ -28,7 +28,7 @@ public class PasswordSecurity {
      * @return String * @throws NoSuchAlgorithmException
      */
     public static String createSalt(int length)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         byte[] msg = new byte[40];
         rnd.nextBytes(msg);
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");

@@ -248,7 +248,7 @@ public class AsyncronousJoin {
         }
 
         String[] msg = isAuthAvailable ? m.send("login_msg") :
-                m.send("reg_" + (Settings.emailRegistration ? "email_" : "") + "msg");
+            m.send("reg_" + (Settings.emailRegistration ? "email_" : "") + "msg");
         BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
     }
@@ -306,7 +306,7 @@ public class AsyncronousJoin {
                 Material cur = player.getLocation().getBlock().getType();
                 Material top = player.getLocation().add(0D, 1D, 0D).getBlock().getType();
                 if (cur == Material.PORTAL || cur == Material.ENDER_PORTAL
-                        || top == Material.PORTAL || top == Material.ENDER_PORTAL) {
+                    || top == Material.PORTAL || top == Material.ENDER_PORTAL) {
                     m.send(player, "unsafe_spawn");
                     player.teleport(spawnLoc);
                 }

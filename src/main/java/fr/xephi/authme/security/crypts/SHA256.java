@@ -15,7 +15,7 @@ public class SHA256 implements EncryptionMethod {
      * @return String * @throws NoSuchAlgorithmException
      */
     private static String getSHA256(String message)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         MessageDigest sha256 = MessageDigest.getInstance("SHA-256");
         sha256.reset();
         sha256.update(message.getBytes());
@@ -33,7 +33,7 @@ public class SHA256 implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         return "$SHA$" + salt + "$" + getSHA256(getSHA256(password) + salt);
     }
 

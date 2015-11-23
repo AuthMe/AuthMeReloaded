@@ -214,7 +214,7 @@ public class PHPBB implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         return phpbb_hash(password, salt);
     }
 

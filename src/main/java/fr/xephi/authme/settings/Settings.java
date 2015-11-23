@@ -48,46 +48,46 @@ public final class Settings extends YamlConfiguration {
     // Due to compatibility issues with plugins like FactionsChat
     public static Boolean isChatAllowed;
     public static boolean isPermissionCheckEnabled, isRegistrationEnabled,
-            isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
-            isSessionsEnabled, isAllowRestrictedIp,
-            isMovementAllowed, isKickNonRegisteredEnabled,
-            isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
-            isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
-            isResetInventoryIfCreative, isCachingEnabled,
-            isKickOnWrongPasswordEnabled, getEnablePasswordVerifier,
-            protectInventoryBeforeLogInEnabled, isBackupActivated,
-            isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
-            rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-            useCaptcha, emailRegistration, multiverse, bungee,
-            banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-            disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
-            purgePlayerDat, purgeEssentialsFile, supportOldPassword,
-            purgeLimitedCreative, purgeAntiXray, purgePermissions,
-            enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
-            broadcastWelcomeMessage, forceRegKick, forceRegLogin,
-            checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
-            customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
+        isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
+        isSessionsEnabled, isAllowRestrictedIp,
+        isMovementAllowed, isKickNonRegisteredEnabled,
+        isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
+        isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
+        isResetInventoryIfCreative, isCachingEnabled,
+        isKickOnWrongPasswordEnabled, getEnablePasswordVerifier,
+        protectInventoryBeforeLogInEnabled, isBackupActivated,
+        isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
+        rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
+        useCaptcha, emailRegistration, multiverse, bungee,
+        banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
+        disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
+        purgePlayerDat, purgeEssentialsFile, supportOldPassword,
+        purgeLimitedCreative, purgeAntiXray, purgePermissions,
+        enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
+        broadcastWelcomeMessage, forceRegKick, forceRegLogin,
+        checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
+        customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
-            getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
-            getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
-            getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
-            getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup,
-            backupWindowsPath, getRegisteredGroup,
-            messagesLanguage, getMySQLlastlocX, getMySQLlastlocY,
-            getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
-            getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName,
-            getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
-            getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
-            spawnPriority, crazyloginFileName, getPassRegex,
-            getMySQLColumnRealName;
+        getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
+        getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
+        getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
+        getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup,
+        backupWindowsPath, getRegisteredGroup,
+        messagesLanguage, getMySQLlastlocX, getMySQLlastlocY,
+        getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
+        getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName,
+        getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
+        getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
+        spawnPriority, crazyloginFileName, getPassRegex,
+        getMySQLColumnRealName;
     public static int getWarnMessageInterval, getSessionTimeout,
-            getRegistrationTimeout, getMaxNickLength, getMinNickLength,
-            getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
-            getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
-            getMailPort, maxLoginTry, captchaLength, saltLength,
-            getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
-            antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
-            getMaxJoinPerIp, getMySQLMaxConnections;
+        getRegistrationTimeout, getMaxNickLength, getMinNickLength,
+        getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
+        getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
+        getMailPort, maxLoginTry, captchaLength, saltLength,
+        getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
+        antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
+        getMaxJoinPerIp, getMySQLMaxConnections;
     protected static YamlConfiguration configFile;
     private static AuthMe plugin;
     private static Settings instance;
@@ -480,7 +480,7 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") ||
-                configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
+            configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
             set("settings.security.passwordHash", "XENFORO");
             changes = true;
         }
@@ -685,7 +685,7 @@ public final class Settings extends YamlConfiguration {
 
     /**
      * Saves current configuration (plus defaults) to disk.
-     * <p>
+     * <p/>
      * If defaults and configuration are empty, saves blank file.
      *
      * @return True if saved successfully

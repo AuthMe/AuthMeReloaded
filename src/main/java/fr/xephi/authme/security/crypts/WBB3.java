@@ -17,7 +17,7 @@ public class WBB3 implements EncryptionMethod {
      * @return String * @throws NoSuchAlgorithmException
      */
     private static String getSHA1(String message)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");
         sha1.reset();
         sha1.update(message.getBytes());
@@ -35,7 +35,7 @@ public class WBB3 implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         return getSHA1(salt.concat(getSHA1(salt.concat(getSHA1(password)))));
     }
 

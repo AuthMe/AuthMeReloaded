@@ -27,7 +27,7 @@ public interface EncryptionMethod {
      * @return Hashing password * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
      */
     String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException;
+        throws NoSuchAlgorithmException;
 
     /**
      * @param hash
@@ -36,6 +36,6 @@ public interface EncryptionMethod {
      * @return true if password match, false else * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
      */
     boolean comparePassword(String hash, String password, String playerName)
-            throws NoSuchAlgorithmException;
+        throws NoSuchAlgorithmException;
 
 }

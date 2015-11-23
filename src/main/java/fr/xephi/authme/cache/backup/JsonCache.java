@@ -25,10 +25,10 @@ public class JsonCache {
             ConsoleLogger.showError("Failed to create cache directory.");
         }
         gson = new GsonBuilder()
-                .registerTypeAdapter(DataFileCache.class, new PlayerDataSerializer())
-                .registerTypeAdapter(DataFileCache.class, new PlayerDataDeserializer())
-                .setPrettyPrinting()
-                .create();
+            .registerTypeAdapter(DataFileCache.class, new PlayerDataSerializer())
+            .registerTypeAdapter(DataFileCache.class, new PlayerDataDeserializer())
+            .setPrettyPrinting()
+            .create();
     }
 
     /**

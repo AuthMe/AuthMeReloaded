@@ -25,8 +25,8 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
      * @param needToChange boolean
      */
     public ProcessSyncronousPlayerQuit(AuthMe plugin, Player player
-            , boolean isOp, boolean isFlying
-            , boolean needToChange) {
+        , boolean isOp, boolean isFlying
+        , boolean needToChange) {
         this.plugin = plugin;
         this.player = player;
         this.isOp = isOp;

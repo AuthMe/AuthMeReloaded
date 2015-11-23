@@ -31,7 +31,7 @@ public class XAUTH implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         String hash = getWhirlpool(salt + password).toLowerCase();
         int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
         return hash.substring(0, saltPos) + salt + hash.substring(saltPos);

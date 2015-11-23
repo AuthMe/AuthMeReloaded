@@ -133,7 +133,7 @@ public class CommandHandler {
 
             // Show the suggested command
             sender.sendMessage(ChatColor.DARK_RED + "Unknown command, assuming " + ChatColor.GOLD + "/" + suggestedCommandParts +
-                    ChatColor.DARK_RED + "!");
+                ChatColor.DARK_RED + "!");
         }
 
         // Make sure the command is executable

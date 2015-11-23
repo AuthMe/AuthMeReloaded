@@ -437,12 +437,12 @@ public class PlayerAuth {
     @Override
     public String toString() {
         return ("Player : " + nickname + " | " + realName
-                + " ! IP : " + ip
-                + " ! LastLogin : " + lastLogin
-                + " ! LastPosition : " + x + "," + y + "," + z + "," + world
-                + " ! Email : " + email
-                + " ! Hash : " + hash
-                + " ! Salt : " + salt);
+            + " ! IP : " + ip
+            + " ! LastLogin : " + lastLogin
+            + " ! LastPosition : " + x + "," + y + "," + z + "," + world
+            + " ! Email : " + email
+            + " ! Hash : " + hash
+            + " ! Salt : " + salt);
     }
 
 }

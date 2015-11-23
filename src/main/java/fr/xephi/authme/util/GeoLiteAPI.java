@@ -13,7 +13,7 @@ import java.util.zip.GZIPInputStream;
 public class GeoLiteAPI {
 
     private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry" +
-            "/GeoIP.dat.gz";
+        "/GeoIP.dat.gz";
     private static final AuthMe plugin = AuthMe.getInstance();
     private static LookupService lookupService;
 
@@ -31,7 +31,7 @@ public class GeoLiteAPI {
             try {
                 lookupService = new LookupService(data);
                 plugin.getLogger().info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
-                        "available at http://www.maxmind.com");
+                    "available at http://www.maxmind.com");
                 return true;
             } catch (IOException e) {
                 return false;

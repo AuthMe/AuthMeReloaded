@@ -115,7 +115,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * ISO-8559-1 encoding. Output result as
      * &quot;Salt:iteration-count:PBKDF2&quot; with binary data in hexadecimal
      * encoding.
-     * <p>
+     * <p/>
      * Example: Password &quot;password&quot; (without the quotes) leads to
      * 48290A0B96C426C3:1000:973899B1D4AFEB3ED371060D0797E0EE0142BD04
      *
@@ -123,7 +123,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * @throws IOException * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
      */
     public static void main(String[] args)
-            throws IOException, NoSuchAlgorithmException {
+        throws IOException, NoSuchAlgorithmException {
         String password = "password";
         String candidate = null;
         PBKDF2Formatter formatter = new PBKDF2HexFormatter();

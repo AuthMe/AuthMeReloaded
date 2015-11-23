@@ -781,10 +781,10 @@ public class CommandDescription {
         // Check whether this description is for the last element in the command reference, if so return the current command
         if (queryReference.getCount() <= getParentCount() + 1)
             return new FoundCommandResult(
-                    this,
-                    getCommandReference(queryReference),
-                    new CommandParts(),
-                    queryReference);
+                this,
+                getCommandReference(queryReference),
+                new CommandParts(),
+                queryReference);
 
         // Get the new command reference and arguments
         CommandParts newReference = new CommandParts(queryReference.getRange(0, getParentCount() + 1));
@@ -798,8 +798,8 @@ public class CommandDescription {
                 @Override
                 public int compare(CommandDescription o1, CommandDescription o2) {
                     return Double.compare(
-                            o1.getCommandDifference(queryReference),
-                            o2.getCommandDifference(queryReference));
+                        o1.getCommandDifference(queryReference),
+                        o2.getCommandDifference(queryReference));
                 }
             });
 

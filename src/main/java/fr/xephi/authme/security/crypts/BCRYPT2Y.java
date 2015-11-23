@@ -16,7 +16,7 @@ public class BCRYPT2Y implements EncryptionMethod {
      */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         if (salt.length() == 22)
             salt = "$2y$10$" + salt;
         return (BCRYPT.hashpw(password, salt));

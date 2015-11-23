@@ -2,15 +2,15 @@ package fr.xephi.authme.security.crypts;
 
 /**
  * The Whirlpool hashing function.
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * <b>References</b>
- * <p>
- * <p>
+ * <p/>
+ * <p/>
  * The Whirlpool algorithm was developed by <a
  * href="mailto:pbarreto@scopus.com.br">Paulo S. L. M. Barreto</a> and <a
  * href="mailto:vincent.rijmen@cryptomathic.com">Vincent Rijmen</a>.
- * <p>
+ * <p/>
  * See P.S.L.M. Barreto, V. Rijmen, ``The Whirlpool hashing function,'' First
  * NESSIE workshop, 2000 (tweaked version, 2003),
  * <https://www.cosic.esat.kuleuven
@@ -19,33 +19,33 @@ package fr.xephi.authme.security.crypts;
  * @author Paulo S.L.M. Barreto
  * @author Vincent Rijmen.
  * @version 3.0 (2003.03.12)
- * <p>
+ * <p/>
  * ====================================================================
  * =========
- * <p>
+ * <p/>
  * Differences from version 2.1:
- * <p>
+ * <p/>
  * - Suboptimal diffusion matrix replaced by cir(1, 1, 4, 1, 8, 5, 2,
  * 9).
- * <p>
+ * <p/>
  * ====================================================================
  * =========
- * <p>
+ * <p/>
  * Differences from version 2.0:
- * <p>
+ * <p/>
  * - Generation of ISO/IEC 10118-3 test vectors. - Bug fix: nonzero
  * carry was ignored when tallying the data length (this bug apparently
  * only manifested itself when feeding data in pieces rather than in a
  * single chunk at once).
- * <p>
+ * <p/>
  * Differences from version 1.0:
- * <p>
+ * <p/>
  * - Original S-box replaced by the tweaked, hardware-efficient
  * version.
- * <p>
+ * <p/>
  * ====================================================================
  * =========
- * <p>
+ * <p/>
  * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
  * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
  * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -401,7 +401,7 @@ public class WHIRLPOOL implements EncryptionMethod {
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String) */
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         byte[] digest = new byte[DIGESTBYTES];
         NESSIEinit();
         NESSIEadd(password);
