@@ -97,7 +97,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldFilterSensitiveStringMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, SENSITIVE_COMMAND, new Object[0]);
+		Result result = log4JFilter.filter(null, null, null, SENSITIVE_COMMAND);
 		
 		// then
 		assertThat(result, equalTo(Result.DENY));
@@ -106,7 +106,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldNotFilterNormalStringMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, NORMAL_COMMAND, new Object[0]);
+		Result result = log4JFilter.filter(null, null, null, NORMAL_COMMAND);
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
@@ -115,7 +115,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldNotFilterNonCommandStringMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, OTHER_COMMAND, new Object[0]);
+		Result result = log4JFilter.filter(null, null, null, OTHER_COMMAND);
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
@@ -124,7 +124,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldReturnNeutralForNullMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, null, new Object[0]);
+		Result result = log4JFilter.filter(null, null, null, null);
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
@@ -211,7 +211,7 @@ public class Log4JFilterTest {
 	@Test
 	public void shouldNotFilterNullMessage() {
 		// given / when
-		Result result = log4JFilter.filter(null, null, null, (Message) null, new Exception());
+		Result result = log4JFilter.filter(null, null, null, null, new Exception());
 		
 		// then
 		assertThat(result, equalTo(Result.NEUTRAL));
