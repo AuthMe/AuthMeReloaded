@@ -166,9 +166,10 @@ public class WHIRLPOOL implements EncryptionMethod {
 
     /**
      * Method display.
+     *
      * @param array byte[]
-
-     * @return String */
+     * @return String
+     */
     protected static String display(byte[] array) {
         char[] val = new char[2 * array.length];
         String hex = "0123456789ABCDEF";
@@ -247,12 +248,10 @@ public class WHIRLPOOL implements EncryptionMethod {
     /**
      * Delivers input data to the hashing algorithm.
      *
-     * @param source
-     *            plaintext data to hash.
-     * @param sourceBits
-     *            how many bits of plaintext to process.
-     *
-     *            This method maintains the invariant: bufferBits < 512
+     * @param source     plaintext data to hash.
+     * @param sourceBits how many bits of plaintext to process.
+     *                   <p/>
+     *                   This method maintains the invariant: bufferBits < 512
      */
     public void NESSIEadd(byte[] source, long sourceBits) {
         /*
@@ -333,8 +332,9 @@ public class WHIRLPOOL implements EncryptionMethod {
 
     /**
      * Get the hash value from the hashing state.
-     *
+     * <p/>
      * This method uses the invariant: bufferBits < 512
+     *
      * @param digest byte[]
      */
     public void NESSIEfinalize(byte[] digest) {
@@ -375,10 +375,9 @@ public class WHIRLPOOL implements EncryptionMethod {
     /**
      * Delivers string input data to the hashing algorithm.
      *
-     * @param source
-     *            plaintext data to hash (ASCII text string).
-     *
-     *            This method maintains the invariant: bufferBits < 512
+     * @param source plaintext data to hash (ASCII text string).
+     *               <p/>
+     *               This method maintains the invariant: bufferBits < 512
      */
     public void NESSIEadd(String source) {
         if (source.length() > 0) {
@@ -392,13 +391,12 @@ public class WHIRLPOOL implements EncryptionMethod {
 
     /**
      * Method getHash.
+     *
      * @param password String
-     * @param salt String
-     * @param name String
-
-
-
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String) */
+     * @param salt     String
+     * @param name     String
+     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
+     */
     @Override
     public String getHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
@@ -411,13 +409,12 @@ public class WHIRLPOOL implements EncryptionMethod {
 
     /**
      * Method comparePassword.
-     * @param hash String
-     * @param password String
+     *
+     * @param hash       String
+     * @param password   String
      * @param playerName String
-
-
-
-     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String) */
+     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
+     */
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
