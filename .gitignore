@@ -19,9 +19,10 @@ hs_err_pid*
 *.iml
 
 ## Directory-based project format:
-.idea/
+.idea/*
 # Include the project's code style settings file
 !.idea/codeStyleSettings.xml
+
 # if you remove the above rule, at least ignore the following:
 
 # User-specific stuff:
