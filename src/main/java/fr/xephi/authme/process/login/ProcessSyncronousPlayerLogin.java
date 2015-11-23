@@ -24,14 +24,14 @@ import org.bukkit.potion.PotionEffectType;
  */
 public class ProcessSyncronousPlayerLogin implements Runnable {
 
-    private LimboPlayer limbo;
-    private Player player;
-    private String name;
-    private PlayerAuth auth;
-    private AuthMe plugin;
-    private DataSource database;
-    private PluginManager pm;
-    private JsonCache playerCache;
+    private final LimboPlayer limbo;
+    private final Player player;
+    private final String name;
+    private final PlayerAuth auth;
+    private final AuthMe plugin;
+    private final DataSource database;
+    private final PluginManager pm;
+    private final JsonCache playerCache;
 
     /**
      * Constructor for ProcessSyncronousPlayerLogin.

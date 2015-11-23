@@ -10,10 +10,10 @@ import org.bukkit.entity.Player;
  */
 public class TimeoutTask implements Runnable {
 
-    private AuthMe plugin;
-    private String name;
-    private Messages m = Messages.getInstance();
-    private Player player;
+    private final AuthMe plugin;
+    private final String name;
+    private final Messages m = Messages.getInstance();
+    private final Player player;
 
     /**
      * Constructor for TimeoutTask.

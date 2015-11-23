@@ -20,9 +20,9 @@ import java.util.List;
  */
 public class xAuthToFlat {
 
-    public AuthMe instance;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe instance;
+    public final DataSource database;
+    public final CommandSender sender;
 
     /**
      * Constructor for xAuthToFlat.

@@ -19,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
 public class NewAPI {
 
     public static NewAPI singleton;
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     /**
      * Constructor for NewAPI.

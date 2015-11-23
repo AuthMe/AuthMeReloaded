@@ -18,9 +18,9 @@ import java.io.IOException;
  */
 public class CrazyLoginConverter implements Converter {
 
-    public AuthMe instance;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe instance;
+    public final DataSource database;
+    public final CommandSender sender;
 
     /**
      * Constructor for CrazyLoginConverter.

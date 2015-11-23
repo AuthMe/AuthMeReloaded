@@ -16,7 +16,7 @@ public class PlayerAuth {
     private double z;
     private String world;
     private String salt;
-    private int groupId;
+    private final int groupId;
     private String email;
     private String realName;
 

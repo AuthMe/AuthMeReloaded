@@ -12,7 +12,7 @@ import org.bukkit.event.player.PlayerInteractAtEntityEvent;
  */
 public class AuthMePlayerListener18 implements Listener {
 
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     /**
      * Constructor for AuthMePlayerListener18.

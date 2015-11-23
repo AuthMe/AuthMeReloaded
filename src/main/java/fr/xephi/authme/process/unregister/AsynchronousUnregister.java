@@ -24,13 +24,13 @@ import java.security.NoSuchAlgorithmException;
  */
 public class AsynchronousUnregister {
 
-    protected Player player;
-    protected String name;
-    protected String password;
-    protected boolean force;
-    private AuthMe plugin;
-    private Messages m = Messages.getInstance();
-    private JsonCache playerCache;
+    protected final Player player;
+    protected final String name;
+    protected final String password;
+    protected final boolean force;
+    private final AuthMe plugin;
+    private final Messages m = Messages.getInstance();
+    private final JsonCache playerCache;
 
     /**
      * Constructor for AsynchronousUnregister.

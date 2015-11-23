@@ -9,11 +9,11 @@ import org.bukkit.entity.Player;
  */
 public class ProcessSyncronousPlayerQuit implements Runnable {
 
-    protected AuthMe plugin;
-    protected Player player;
-    protected boolean isOp;
-    protected boolean isFlying;
-    protected boolean needToChange;
+    protected final AuthMe plugin;
+    protected final Player player;
+    protected final boolean isOp;
+    protected final boolean isFlying;
+    protected final boolean needToChange;
 
     /**
      * Constructor for ProcessSyncronousPlayerQuit.

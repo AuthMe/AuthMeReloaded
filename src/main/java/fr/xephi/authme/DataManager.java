@@ -18,7 +18,7 @@ import java.util.concurrent.Future;
  */
 public class DataManager {
 
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     /**
      * Constructor for DataManager.
@@ -27,9 +27,6 @@ public class DataManager {
      */
     public DataManager(AuthMe plugin) {
         this.plugin = plugin;
-    }
-
-    public void run() {
     }
 
     /**

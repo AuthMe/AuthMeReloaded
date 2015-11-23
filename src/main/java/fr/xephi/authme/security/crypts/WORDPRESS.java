@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class WORDPRESS implements EncryptionMethod {
 
     private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private SecureRandom randomGen = new SecureRandom();
+    private final SecureRandom randomGen = new SecureRandom();
 
     /**
      * Method encode64.

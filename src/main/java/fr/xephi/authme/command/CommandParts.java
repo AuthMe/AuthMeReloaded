@@ -12,7 +12,7 @@ public class CommandParts {
     /**
      * The list of parts for this command.
      */
-    private List<String> parts = new ArrayList<>();
+    private final List<String> parts = new ArrayList<>();
 
     /**
      * Constructor.

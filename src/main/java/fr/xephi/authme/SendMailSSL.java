@@ -16,7 +16,7 @@ import java.io.File;
  */
 public class SendMailSSL {
 
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     /**
      * Constructor for SendMailSSL.

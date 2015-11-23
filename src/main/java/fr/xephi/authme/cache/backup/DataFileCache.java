@@ -4,9 +4,9 @@ package fr.xephi.authme.cache.backup;
  */
 public class DataFileCache {
 
-    private String group;
-    private boolean operator;
-    private boolean flying;
+    private final String group;
+    private final boolean operator;
+    private final boolean flying;
 
     /**
      * Constructor for DataFileCache.

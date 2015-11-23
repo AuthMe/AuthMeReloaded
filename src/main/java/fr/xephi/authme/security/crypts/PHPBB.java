@@ -15,7 +15,7 @@ import java.security.NoSuchAlgorithmException;
  */
 public class PHPBB implements EncryptionMethod {
 
-    private String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     /**
      * Method md5.

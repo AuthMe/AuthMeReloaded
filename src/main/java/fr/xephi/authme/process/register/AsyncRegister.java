@@ -17,13 +17,13 @@ import java.util.Date;
  */
 public class AsyncRegister {
 
-    protected Player player;
-    protected String name;
-    protected String password;
+    protected final Player player;
+    protected final String name;
+    protected final String password;
     protected String email = "";
-    private AuthMe plugin;
-    private DataSource database;
-    private Messages m = Messages.getInstance();
+    private final AuthMe plugin;
+    private final DataSource database;
+    private final Messages m = Messages.getInstance();
 
     /**
      * Constructor for AsyncRegister.

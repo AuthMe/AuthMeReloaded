@@ -12,23 +12,23 @@ import java.util.List;
  */
 public class SQLite implements DataSource {
 
-    private String database;
-    private String tableName;
-    private String columnName;
-    private String columnPassword;
-    private String columnIp;
-    private String columnLastLogin;
-    private String columnSalt;
-    private String columnGroup;
-    private String lastlocX;
-    private String lastlocY;
-    private String lastlocZ;
-    private String lastlocWorld;
-    private String columnEmail;
-    private String columnID;
+    private final String database;
+    private final String tableName;
+    private final String columnName;
+    private final String columnPassword;
+    private final String columnIp;
+    private final String columnLastLogin;
+    private final String columnSalt;
+    private final String columnGroup;
+    private final String lastlocX;
+    private final String lastlocY;
+    private final String lastlocZ;
+    private final String lastlocWorld;
+    private final String columnEmail;
+    private final String columnID;
     private Connection con;
-    private String columnLogged;
-    private String columnRealName;
+    private final String columnLogged;
+    private final String columnRealName;
 
     /**
      * Constructor for SQLite.

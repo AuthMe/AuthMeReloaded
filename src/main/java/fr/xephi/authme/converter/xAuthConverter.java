@@ -7,8 +7,8 @@ import org.bukkit.command.CommandSender;
  */
 public class xAuthConverter implements Converter {
 
-    public AuthMe plugin;
-    public CommandSender sender;
+    public final AuthMe plugin;
+    public final CommandSender sender;
 
     /**
      * Constructor for xAuthConverter.

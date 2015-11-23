@@ -90,7 +90,7 @@ public class ConverterCommand extends ExecutableCommand {
         vauth("vauth"),
         sqltoflat("sqltoflat");
 
-        String name;
+        final String name;
 
         /**
          * Constructor for ConvertType.

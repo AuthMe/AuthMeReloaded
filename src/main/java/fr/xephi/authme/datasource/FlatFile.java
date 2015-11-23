@@ -25,7 +25,7 @@ public class FlatFile implements DataSource {
      * :LASTPOSZ:LASTPOSWORLD PLAYERNAME:HASHSUM:IP:LOGININMILLIESECONDS
      * PLAYERNAME:HASHSUM:IP PLAYERNAME:HASHSUM
      */
-    private File source;
+    private final File source;
 
     public FlatFile() {
         source = Settings.AUTH_FILE;

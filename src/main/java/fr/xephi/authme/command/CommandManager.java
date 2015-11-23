@@ -20,7 +20,7 @@ public class CommandManager {
     /**
      * The list of commandDescriptions.
      */
-    private List<CommandDescription> commandDescriptions = new ArrayList<>();
+    private final List<CommandDescription> commandDescriptions = new ArrayList<>();
 
     /**
      * Constructor.

@@ -13,15 +13,15 @@ public class FoundCommandResult {
     /**
      * The command reference.
      */
-    private CommandParts commandReference;
+    private final CommandParts commandReference;
     /**
      * The command arguments.
      */
-    private CommandParts commandArguments;
+    private final CommandParts commandArguments;
     /**
      * The original search query reference.
      */
-    private CommandParts queryReference;
+    private final CommandParts queryReference;
 
     /**
      * Constructor.

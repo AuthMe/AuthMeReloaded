@@ -14,7 +14,7 @@ import java.sql.*;
  */
 public class FlatToSqlite implements Converter {
 
-    public CommandSender sender;
+    public final CommandSender sender;
     private String tableName;
     private String columnName;
     private String columnPassword;

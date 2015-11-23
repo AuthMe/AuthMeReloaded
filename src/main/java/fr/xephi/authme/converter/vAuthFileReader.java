@@ -17,9 +17,9 @@ import java.util.UUID;
  */
 public class vAuthFileReader {
 
-    public AuthMe plugin;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe plugin;
+    public final DataSource database;
+    public final CommandSender sender;
 
     /**
      * Constructor for vAuthFileReader.
@@ -38,7 +38,7 @@ public class vAuthFileReader {
      *
      * @throws IOException
      */
-    public void convert() throws IOException {
+    public void convert() {
         final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
         Scanner scanner;
         try {

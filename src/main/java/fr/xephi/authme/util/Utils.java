@@ -31,7 +31,7 @@ import java.util.zip.GZIPInputStream;
  */
 public final class Utils {
 
-    public static AuthMe plugin;
+    public static final AuthMe plugin;
 
     private static boolean getOnlinePlayersIsCollection = false;
     private static Method getOnlinePlayers;

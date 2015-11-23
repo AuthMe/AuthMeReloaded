@@ -18,8 +18,8 @@ import java.util.HashMap;
  */
 public class PasswordSecurity {
 
-    public static HashMap<String, String> userSalt = new HashMap<>();
-    private static SecureRandom rnd = new SecureRandom();
+    public static final HashMap<String, String> userSalt = new HashMap<>();
+    private static final SecureRandom rnd = new SecureRandom();
 
     /**
      * Method createSalt.
@@ -191,7 +191,7 @@ public class PasswordSecurity {
      * @return boolean * @throws NoSuchAlgorithmException
      */
     private static boolean compareWithAllEncryptionMethod(String password,
-                                                          String hash, String playerName) throws NoSuchAlgorithmException {
+                                                          String hash, String playerName) {
         for (HashAlgorithm algo : HashAlgorithm.values()) {
             if (algo != HashAlgorithm.CUSTOM) {
                 try {

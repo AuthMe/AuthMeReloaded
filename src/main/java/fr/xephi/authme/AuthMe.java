@@ -88,10 +88,10 @@ public class AuthMe extends JavaPlugin {
     public AuthMeInventoryPacketAdapter inventoryProtector;
     // Random data maps and stuff
     // TODO: Create Manager for this
-    public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
     // AntiBot Status
     // TODO: Create Manager for this
     public boolean antiBotMod = false;

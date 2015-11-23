@@ -25,15 +25,15 @@ import java.util.List;
  */
 public class AsynchronousLogin {
 
-    private static RandomString rdm = new RandomString(Settings.captchaLength);
-    protected Player player;
-    protected String name;
-    protected String realName;
-    protected String password;
-    protected boolean forceLogin;
-    private AuthMe plugin;
-    private DataSource database;
-    private Messages m = Messages.getInstance();
+    private static final RandomString rdm = new RandomString(Settings.captchaLength);
+    protected final Player player;
+    protected final String name;
+    protected final String realName;
+    protected final String password;
+    protected final boolean forceLogin;
+    private final AuthMe plugin;
+    private final DataSource database;
+    private final Messages m = Messages.getInstance();
 
     /**
      * Constructor for AsynchronousLogin.

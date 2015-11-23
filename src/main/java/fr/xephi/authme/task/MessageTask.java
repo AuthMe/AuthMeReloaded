@@ -11,10 +11,10 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class MessageTask implements Runnable {
 
-    private AuthMe plugin;
-    private String name;
-    private String[] msg;
-    private int interval;
+    private final AuthMe plugin;
+    private final String name;
+    private final String[] msg;
+    private final int interval;
 
     /**
      * Constructor for MessageTask.

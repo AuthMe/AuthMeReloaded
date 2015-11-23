@@ -35,7 +35,7 @@ public enum HashAlgorithm {
     SALTEDSHA512(fr.xephi.authme.security.crypts.SALTEDSHA512.class),
     CUSTOM(Null.class);
 
-    Class<?> classe;
+    final Class<?> classe;
 
     /**
      * Constructor for HashAlgorithm.

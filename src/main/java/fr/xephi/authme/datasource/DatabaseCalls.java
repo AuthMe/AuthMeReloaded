@@ -13,7 +13,7 @@ import java.util.concurrent.Executors;
 public class DatabaseCalls implements DataSource {
 
     private final ExecutorService exec;
-    private DataSource database;
+    private final DataSource database;
 
     /**
      * Constructor for DatabaseCalls.

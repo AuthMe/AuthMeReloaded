@@ -14,13 +14,13 @@ import java.util.Date;
  */
 public class PerformBackup {
 
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
-    String dateString = format.format(new Date());
-    private String dbName = Settings.getMySQLDatabase;
-    private String dbUserName = Settings.getMySQLUsername;
-    private String dbPassword = Settings.getMySQLPassword;
-    private String tblname = Settings.getMySQLTablename;
-    private String path = AuthMe.getInstance().getDataFolder() + File.separator + "backups" + File.separator + "backup" + dateString;
+    final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
+    final String dateString = format.format(new Date());
+    private final String dbName = Settings.getMySQLDatabase;
+    private final String dbUserName = Settings.getMySQLUsername;
+    private final String dbPassword = Settings.getMySQLPassword;
+    private final String tblname = Settings.getMySQLTablename;
+    private final String path = AuthMe.getInstance().getDataFolder() + File.separator + "backups" + File.separator + "backup" + dateString;
     private AuthMe instance;
 
     /**

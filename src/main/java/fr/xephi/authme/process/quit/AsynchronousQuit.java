@@ -18,10 +18,10 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class AsynchronousQuit {
 
-    protected AuthMe plugin;
-    protected DataSource database;
-    protected Player player;
-    private String name;
+    protected final AuthMe plugin;
+    protected final DataSource database;
+    protected final Player player;
+    private final String name;
     private boolean isOp = false;
     private boolean isFlying = false;
     private boolean needToChange = false;

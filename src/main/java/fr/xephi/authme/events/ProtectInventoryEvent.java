@@ -12,11 +12,11 @@ import org.bukkit.inventory.ItemStack;
  */
 public class ProtectInventoryEvent extends CustomEvent {
 
-    private ItemStack[] storedinventory;
-    private ItemStack[] storedarmor;
+    private final ItemStack[] storedinventory;
+    private final ItemStack[] storedarmor;
     private ItemStack[] emptyInventory = null;
     private ItemStack[] emptyArmor = null;
-    private Player player;
+    private final Player player;
 
     /**
      * Constructor for ProtectInventoryEvent.

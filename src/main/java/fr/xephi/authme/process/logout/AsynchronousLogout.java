@@ -15,12 +15,12 @@ import org.bukkit.scheduler.BukkitScheduler;
  */
 public class AsynchronousLogout {
 
-    protected Player player;
-    protected String name;
-    protected AuthMe plugin;
-    protected DataSource database;
+    protected final Player player;
+    protected final String name;
+    protected final AuthMe plugin;
+    protected final DataSource database;
     protected boolean canLogout = true;
-    private Messages m = Messages.getInstance();
+    private final Messages m = Messages.getInstance();
 
     /**
      * Constructor for AsynchronousLogout.

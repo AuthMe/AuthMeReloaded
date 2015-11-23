@@ -19,7 +19,7 @@ import java.util.jar.JarFile;
  */
 public class ModuleManager {
 
-    private List<Module> modules = new ArrayList<>();
+    private final List<Module> modules = new ArrayList<>();
 
     /**
      * Constructor for ModuleManager.

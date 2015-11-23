@@ -46,7 +46,7 @@ public class MacBasedPRF implements PRF {
 
     protected int hLen;
 
-    protected String macAlgorithm;
+    protected final String macAlgorithm;
 
     /**
      * Create Mac-based Pseudo Random Function.

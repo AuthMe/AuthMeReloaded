@@ -47,11 +47,11 @@ public class PermissionsManager {
     /**
      * Server instance.
      */
-    private Server server;
+    private final Server server;
     /**
      * Plugin instance.
      */
-    private Plugin plugin;
+    private final Plugin plugin;
     /**
      * Logger instance.
      */
@@ -907,7 +907,7 @@ public class PermissionsManager {
         VAULT("Vault"),
         PERMISSIONS("Permissions");
 
-        public String name;
+        public final String name;
 
         /**
          * Constructor for PermissionsSystemType.

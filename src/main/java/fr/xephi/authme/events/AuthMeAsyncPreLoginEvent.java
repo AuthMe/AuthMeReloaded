@@ -13,7 +13,7 @@ import org.bukkit.event.HandlerList;
 public class AuthMeAsyncPreLoginEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
-    private Player player;
+    private final Player player;
     private boolean canLogin = true;
 
     /**

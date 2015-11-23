@@ -17,10 +17,10 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class ProcessSyncEmailRegister implements Runnable {
 
-    protected Player player;
-    protected String name;
-    private AuthMe plugin;
-    private Messages m = Messages.getInstance();
+    protected final Player player;
+    protected final String name;
+    private final AuthMe plugin;
+    private final Messages m = Messages.getInstance();
 
     /**
      * Constructor for ProcessSyncEmailRegister.

@@ -9,9 +9,9 @@ import org.bukkit.command.CommandSender;
  */
 public class vAuthConverter implements Converter {
 
-    public AuthMe plugin;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe plugin;
+    public final DataSource database;
+    public final CommandSender sender;
 
     /**
      * Constructor for vAuthConverter.
