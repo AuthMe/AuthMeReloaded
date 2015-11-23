@@ -31,7 +31,8 @@ import java.util.zip.GZIPInputStream;
  */
 public final class Utils {
 
-    public static AuthMe plugin;
+    private static AuthMe plugin;
+    private static Wrapper wrapper;
 
     private static boolean getOnlinePlayersIsCollection = false;
     private static Method getOnlinePlayers;
@@ -39,6 +40,7 @@ public final class Utils {
 
     static {
         plugin = AuthMe.getInstance();
+        wrapper = new Wrapper(plugin);
         checkGeoIP();
         initializeOnlinePlayersIsCollectionField();
     }
@@ -65,7 +67,7 @@ public final class Utils {
                 }
             }
         }
-        plugin.getGameServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        wrapper.getServer().getScheduler().runTaskAsynchronously(wrapper.getAuthMe(), new Runnable() {
             @Override
             public void run() {
                 try {
@@ -190,6 +192,7 @@ public final class Utils {
         }
 
         if (!Settings.isForcedRegistrationEnabled) {
+            // TODO ljacqu 20151123: Use a setter to retrieve things from AuthMe
             if (!plugin.database.isAuthAvailable(name)) {
                 return true;
             }
@@ -225,12 +228,12 @@ public final class Utils {
         final World world = theWorld;
         final Location loc = new Location(world, x, y, z);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(wrapper.getAuthMe(), new Runnable() {
 
             @Override
             public void run() {
                 AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, loc);
-                plugin.getServer().getPluginManager().callEvent(tpEvent);
+                wrapper.getServer().getPluginManager().callEvent(tpEvent);
                 if (!tpEvent.isCancelled()) {
                     pl.teleport(tpEvent.getTo());
                 }
@@ -325,7 +328,7 @@ public final class Utils {
     @SuppressWarnings("deprecation")
     public static Player getPlayer(String name) {
         name = name.toLowerCase();
-        return plugin.getServer().getPlayer(name);
+        return wrapper.getServer().getPlayer(name);
     }
 
     public static boolean isNPC(final Entity player) {
@@ -333,6 +336,7 @@ public final class Utils {
             if (player.hasMetadata("NPC")) {
                 return true;
             } else if (plugin.combatTagPlus != null
+                // TODO ljacqu 20151123: Use a getter for combatTagPlus in AuthMe instead of using direct field access
                     && player instanceof Player
                     && plugin.combatTagPlus.getNpcPlayerHelper().isNpc((Player) player)) {
                 return true;
@@ -347,7 +351,7 @@ public final class Utils {
         if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
             Location spawn = plugin.getSpawnLocation(player);
             AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawn);
-            plugin.getServer().getPluginManager().callEvent(tpEvent);
+            wrapper.getServer().getPluginManager().callEvent(tpEvent);
             if (!tpEvent.isCancelled()) {
                 player.teleport(tpEvent.getTo());
             }

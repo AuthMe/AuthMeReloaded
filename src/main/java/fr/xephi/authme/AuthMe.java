@@ -462,7 +462,7 @@ public class AuthMe extends JavaPlugin {
     private void setupConsoleFilter() {
         if (Settings.removePassword) {
             ConsoleFilter filter = new ConsoleFilter();
-            ConsoleLogger.getLogger().setFilter(filter);
+            getLogger().setFilter(filter);
             Bukkit.getLogger().setFilter(filter);
             Logger.getLogger("Minecraft").setFilter(filter);
             // Set Log4J Filter
@@ -955,20 +955,10 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Returns the management instance.
+     * Return the management instance.
      */
     public Management getManagement() {
         return management;
-    }
-
-    /**
-     * Returns the server instance running this plugin. Use this method in favor of {@link
-     * AuthMe#getServer()} for testability purposes.
-     *
-     * @return the server instance
-     */
-    public Server getGameServer() {
-        return super.getServer();
     }
 
 }

@@ -1,6 +1,7 @@
 package fr.xephi.authme;
 
 import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.util.Wrapper;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
@@ -15,15 +16,18 @@ public final class AuthMeMockUtil {
     }
 
     /**
-     * Sets the AuthMe plugin instance to a mock object. Use {@link AuthMe#getInstance()} to retrieve the mock.
+     * Set the AuthMe plugin instance to a mock object. Use {@link AuthMe#getInstance()} to retrieve the mock.
+     *
+     * @return The generated mock for the AuthMe instance
      */
-    public static void mockAuthMeInstance() {
+    public static AuthMe mockAuthMeInstance() {
         AuthMe mock = Mockito.mock(AuthMe.class);
         mockSingletonForClass(AuthMe.class, "plugin", mock);
+        return mock;
     }
 
     /**
-     * Creates a mock Messages object for the instance returned from {@link Messages#getInstance()}.
+     * Create a mock Messages object for the instance returned from {@link Messages#getInstance()}.
      */
     public static void mockMessagesInstance() {
         Messages mock = Mockito.mock(Messages.class);
@@ -31,11 +35,39 @@ public final class AuthMeMockUtil {
     }
 
     /**
-     * Sets a field of a class to the given mock.
+     * Set the given class' {@link Wrapper} field to a mock implementation.
      *
-     * @param clazz the class to modify
-     * @param fieldName the field name
-     * @param mock the mock to set for the given field
+     * @param clazz The class to modify
+     * @param fieldName The name of the field containing the Wrapper in the class
+     *
+     * @return The generated Wrapper mock
+     * @see WrapperMock
+     */
+    public static Wrapper insertMockWrapperInstance(Class<?> clazz, String fieldName) {
+        Wrapper wrapperMock = new WrapperMock();
+        mockSingletonForClass(clazz, fieldName, wrapperMock);
+        return wrapperMock;
+    }
+
+    public static Wrapper insertMockWrapperInstance(Class<?> clazz, String fieldName, AuthMe authMe) {
+        Wrapper wrapperMock = new WrapperMock(authMe);
+        mockSingletonForClass(clazz, fieldName, wrapperMock);
+        return wrapperMock;
+    }
+
+    // TODO ljacqu 20151123: Find the use cases for the WrapperMock and remove any of these
+    // methods that will end up unused
+    public static Wrapper insertMockWrapperInstance(Class<?> clazz, String fieldName, WrapperMock wrapperMock) {
+        mockSingletonForClass(clazz, fieldName, wrapperMock);
+        return wrapperMock;
+    }
+
+    /**
+     * Set a field of a class to the given mock.
+     *
+     * @param clazz The class to modify
+     * @param fieldName The field name
+     * @param mock The mock to set for the given field
      */
     private static void mockSingletonForClass(Class<?> clazz, String fieldName, Object mock) {
         try {

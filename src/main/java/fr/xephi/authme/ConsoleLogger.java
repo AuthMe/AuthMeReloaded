@@ -3,6 +3,7 @@ package fr.xephi.authme;
 import com.google.common.base.Throwables;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Wrapper;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,23 +11,17 @@ import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.logging.Logger;
 
 /**
  * The plugin's static logger.
  */
-public class ConsoleLogger {
+public final class ConsoleLogger {
 
-    private static final Logger log = AuthMe.getInstance().getLogger();
+    private static Wrapper wrapper = new Wrapper(AuthMe.getInstance());
     private static final DateFormat df = new SimpleDateFormat("[MM-dd HH:mm:ss]");
 
-    /**
-     * Returns the plugin's logger.
-     *
-     * @return Logger
-     */
-    public static Logger getLogger() {
-        return log;
+    private ConsoleLogger() {
+        // Service class
     }
 
     /**
@@ -35,7 +30,7 @@ public class ConsoleLogger {
      * @param message String
      */
     public static void info(String message) {
-        log.info(message);
+        wrapper.getLogger().info(message);
         if (!Settings.useLogging) {
             return;
         }
@@ -48,7 +43,7 @@ public class ConsoleLogger {
      * @param message String
      */
     public static void showError(String message) {
-        log.warning(message);
+        wrapper.getLogger().warning(message);
         if (!Settings.useLogging) {
             return;
         }

@@ -12,15 +12,15 @@ import java.util.zip.GZIPInputStream;
 
 public class GeoLiteAPI {
 
-    private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry" +
-            "/GeoIP.dat.gz";
-    private static final AuthMe plugin = AuthMe.getInstance();
+    private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry"
+            + "/GeoIP.dat.gz";
+    private static final Wrapper wrapper = new Wrapper(AuthMe.getInstance());
     private static LookupService lookupService;
 
     /**
      * Download (if absent) the GeoIpLite data file and then try to load it.
      *
-     * @return Boolean True if the data is available, false if not.
+     * @return True if the data is available, false otherwise.
      */
     public static boolean isDataAvailable() {
         if (lookupService != null) {
@@ -30,15 +30,17 @@ public class GeoLiteAPI {
         if (data.exists()) {
             try {
                 lookupService = new LookupService(data);
-                plugin.getLogger().info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
+                // TODO ljacqu 20151123: Should this not be output over the ConsoleLogger service?
+                wrapper.getLogger().info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
                         "available at http://www.maxmind.com");
                 return true;
             } catch (IOException e) {
+                // TODO ljacqu 20151123: Log the exception instead of just swallowing it
                 return false;
             }
         }
         // Ok, let's try to download the data file!
-        plugin.getGameServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        wrapper.getServer().getScheduler().runTaskAsynchronously(wrapper.getAuthMe(), new Runnable() {
             @Override
             public void run() {
                 try {
