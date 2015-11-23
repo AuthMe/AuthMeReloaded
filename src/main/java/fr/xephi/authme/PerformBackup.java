@@ -154,7 +154,7 @@ public class PerformBackup {
      */
     private boolean checkWindows(String windowsPath) {
         String isWin = System.getProperty("os.name").toLowerCase();
-        if (isWin.indexOf("win") >= 0) {
+        if (isWin.contains("win")) {
             if (new File(windowsPath + "\\bin\\mysqldump.exe").exists()) {
                 return true;
             } else {

@@ -878,8 +878,8 @@ public class AuthMe extends JavaPlugin {
                 ip = realIp.get(name);
         }
         if (Settings.checkVeryGames)
-            if (getVeryGamesIP(player) != null)
-                ip = getVeryGamesIP(player);
+            if (getVeryGamesIp(player) != null)
+                ip = getVeryGamesIp(player);
         return ip;
     }
 
@@ -908,11 +908,12 @@ public class AuthMe extends JavaPlugin {
     /**
      * Gets a player's real IP through VeryGames method.
      *
-     * @param player the player to process
-     * @return the real IP of the player
+     * @param player The player to process.
+     *
+     * @return The real IP of the player.
      */
     @Deprecated
-    public String getVeryGamesIP(Player player) {
+    public String getVeryGamesIp(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();
         String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
         sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", "" + player.getAddress().getPort());
