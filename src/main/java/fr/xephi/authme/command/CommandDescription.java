@@ -586,7 +586,7 @@ public class CommandDescription {
      *
      * @return True if this command has any child labels.
      */
-    public boolean hasChilds() {
+    public boolean hasChildren() {
         return (this.children.size() != 0);
     }
 

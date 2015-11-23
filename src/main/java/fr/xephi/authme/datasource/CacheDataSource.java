@@ -520,21 +520,21 @@ public class CacheDataSource implements DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
      *
      * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
      */
     @Override
-    public void updateName(final String oldone, final String newone) {
-        if (cache.containsKey(oldone)) {
-            cache.put(newone, cache.get(oldone));
-            cache.remove(oldone);
+    public void updateName(final String oldOne, final String newOne) {
+        if (cache.containsKey(oldOne)) {
+            cache.put(newOne, cache.get(oldOne));
+            cache.remove(oldOne);
         }
         exec.execute(new Runnable() {
             @Override
             public void run() {
-                source.updateName(oldone, newone);
+                source.updateName(oldOne, newOne);
             }
         });
     }

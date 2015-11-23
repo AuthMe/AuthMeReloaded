@@ -194,11 +194,11 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {
                 for (String s : Settings.welcomeMsg) {
-                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
+                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
                 for (String s : Settings.welcomeMsg) {
-                    player.sendMessage(plugin.replaceAllInfos(s, player));
+                    player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
 

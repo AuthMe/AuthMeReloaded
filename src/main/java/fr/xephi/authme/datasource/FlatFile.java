@@ -851,17 +851,17 @@ public class FlatFile implements DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
      *
      * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
      */
     @Override
-    public void updateName(String oldone, String newone) {
-        PlayerAuth auth = this.getAuth(oldone);
-        auth.setName(newone);
+    public void updateName(String oldOne, String newOne) {
+        PlayerAuth auth = this.getAuth(oldOne);
+        auth.setName(newOne);
         this.saveAuth(auth);
-        this.removeAuth(oldone);
+        this.removeAuth(oldOne);
     }
 
     /**

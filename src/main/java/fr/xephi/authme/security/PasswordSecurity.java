@@ -153,11 +153,11 @@ public class PasswordSecurity {
      */
     public static boolean comparePasswordWithHash(String password, String hash,
                                                   String playerName) throws NoSuchAlgorithmException {
-        HashAlgorithm algo = Settings.getPasswordHash;
+        HashAlgorithm algorithm = Settings.getPasswordHash;
         EncryptionMethod method;
         try {
-            if (algo != HashAlgorithm.CUSTOM)
-                method = (EncryptionMethod) algo.getclasse().newInstance();
+            if (algorithm != HashAlgorithm.CUSTOM)
+                method = (EncryptionMethod) algorithm.getclasse().newInstance();
             else
                 method = null;
 

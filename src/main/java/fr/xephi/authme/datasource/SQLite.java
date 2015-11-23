@@ -764,18 +764,18 @@ public class SQLite implements DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
      *
      * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
      */
     @Override
-    public void updateName(String oldone, String newone) {
+    public void updateName(String oldOne, String newOne) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE " + columnName + "=?;");
-            pst.setString(1, newone);
-            pst.setString(2, oldone);
+            pst.setString(1, newOne);
+            pst.setString(2, oldOne);
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());

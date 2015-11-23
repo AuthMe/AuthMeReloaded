@@ -13,7 +13,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  */
-public class AsyncronousLogout {
+public class AsynchronousLogout {
 
     protected Player player;
     protected String name;
@@ -23,14 +23,14 @@ public class AsyncronousLogout {
     private Messages m = Messages.getInstance();
 
     /**
-     * Constructor for AsyncronousLogout.
+     * Constructor for AsynchronousLogout.
      *
      * @param player   Player
      * @param plugin   AuthMe
      * @param database DataSource
      */
-    public AsyncronousLogout(Player player, AuthMe plugin,
-                             DataSource database) {
+    public AsynchronousLogout(Player player, AuthMe plugin,
+                              DataSource database) {
         this.player = player;
         this.plugin = plugin;
         this.database = database;
@@ -49,7 +49,7 @@ public class AsyncronousLogout {
         if (!canLogout)
             return;
         final Player p = player;
-        BukkitScheduler sched = p.getServer().getScheduler();
+        BukkitScheduler scheduler = p.getServer().getScheduler();
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
         database.updateSession(auth);
         auth.setQuitLocX(p.getLocation().getX());
@@ -60,7 +60,7 @@ public class AsyncronousLogout {
 
         PlayerCache.getInstance().removePlayer(name);
         database.setUnlogged(name);
-        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+        scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
                 Utils.teleportToSpawn(p);
@@ -71,6 +71,6 @@ public class AsyncronousLogout {
         LimboCache.getInstance().addLimboPlayer(player);
         Utils.setGroup(player, GroupType.NOTLOGGEDIN);
 
-        sched.scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerLogout(p, plugin));
+        scheduler.scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerLogout(p, plugin));
     }
 }

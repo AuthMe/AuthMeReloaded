@@ -23,7 +23,7 @@ import java.util.List;
 
 /**
  */
-public class AsyncronousLogin {
+public class AsynchronousLogin {
 
     private static RandomString rdm = new RandomString(Settings.captchaLength);
     protected Player player;
@@ -36,7 +36,7 @@ public class AsyncronousLogin {
     private Messages m = Messages.getInstance();
 
     /**
-     * Constructor for AsyncronousLogin.
+     * Constructor for AsynchronousLogin.
      *
      * @param player     Player
      * @param password   String
@@ -44,8 +44,8 @@ public class AsyncronousLogin {
      * @param plugin     AuthMe
      * @param data       DataSource
      */
-    public AsyncronousLogin(Player player, String password, boolean forceLogin,
-                            AuthMe plugin, DataSource data) {
+    public AsynchronousLogin(Player player, String password, boolean forceLogin,
+                             AuthMe plugin, DataSource data) {
         this.player = player;
         this.password = password;
         name = player.getName().toLowerCase();

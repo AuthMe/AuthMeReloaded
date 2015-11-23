@@ -59,17 +59,17 @@ public class AsyncRegister {
      * @return boolean * @throws Exception
      */
     protected boolean preRegisterCheck() throws Exception {
-        String lowpass = password.toLowerCase();
+        String passLow = password.toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             m.send(player, "logged_in");
             return false;
         } else if (!Settings.isRegistrationEnabled) {
             m.send(player, "reg_disabled");
             return false;
-        } else if (lowpass.contains("delete") || lowpass.contains("where") || lowpass.contains("insert") || lowpass.contains("modify") || lowpass.contains("from") || lowpass.contains("select") || lowpass.contains(";") || lowpass.contains("null") || !lowpass.matches(Settings.getPassRegex)) {
+        } else if (passLow.contains("delete") || passLow.contains("where") || passLow.contains("insert") || passLow.contains("modify") || passLow.contains("from") || passLow.contains("select") || passLow.contains(";") || passLow.contains("null") || !passLow.matches(Settings.getPassRegex)) {
             m.send(player, "password_error");
             return false;
-        } else if (lowpass.equalsIgnoreCase(player.getName())) {
+        } else if (passLow.equalsIgnoreCase(player.getName())) {
             m.send(player, "password_error_nick");
             return false;
         } else if (password.length() < Settings.getPasswordMinLen || password.length() > Settings.passwordMaxLength) {
@@ -125,8 +125,8 @@ public class AsyncRegister {
             }
         }
         PlayerAuth auth;
-        final String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
-        auth = new PlayerAuth(name, hashnew, getIp(), 0, (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email, player.getName());
+        final String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
+        auth = new PlayerAuth(name, hashNew, getIp(), 0, (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email, player.getName());
         if (PasswordSecurity.userSalt.containsKey(name)) {
             auth.setSalt(PasswordSecurity.userSalt.get(name));
         }
@@ -134,8 +134,8 @@ public class AsyncRegister {
         database.updateEmail(auth);
         database.updateSession(auth);
         plugin.mail.main(auth, password);
-        ProcessSyncEmailRegister syncronous = new ProcessSyncEmailRegister(player, plugin);
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, syncronous);
+        ProcessSyncEmailRegister sync = new ProcessSyncEmailRegister(player, plugin);
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, sync);
 
     }
 
@@ -163,7 +163,7 @@ public class AsyncRegister {
             database.setLogged(name);
         }
         plugin.otherAccounts.addPlayer(player.getUniqueId());
-        ProcessSyncronousPasswordRegister syncronous = new ProcessSyncronousPasswordRegister(player, plugin);
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, syncronous);
+        ProcessSyncronousPasswordRegister sync = new ProcessSyncronousPasswordRegister(player, plugin);
+        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, sync);
     }
 }

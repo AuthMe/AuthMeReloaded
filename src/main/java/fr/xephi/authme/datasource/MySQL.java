@@ -1149,21 +1149,21 @@ public class MySQL implements DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
      *
      * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
      */
     @Override
-    public void updateName(String oldone, String newone) {
+    public void updateName(String oldOne, String newOne) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
             if ((con = getConnection()) == null)
                 return;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE LOWER(" + columnName + ")=?;");
-            pst.setString(1, newone);
-            pst.setString(2, oldone);
+            pst.setString(1, newOne);
+            pst.setString(2, oldOne);
             pst.executeUpdate();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());

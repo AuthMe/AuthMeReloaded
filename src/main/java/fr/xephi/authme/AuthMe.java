@@ -246,7 +246,7 @@ public class AuthMe extends JavaPlugin {
         // Check Essentials
         checkEssentials();
 
-        // Check if the protocollib is available. If so we could listen for
+        // Check if the ProtocolLib is available. If so we could listen for
         // inventory protection
         checkProtocolLib();
         // End of Hooks
@@ -277,8 +277,8 @@ public class AuthMe extends JavaPlugin {
         // Set up the management
         management = new Management(this);
 
-        // Set up the Bungeecord hook
-        setupBungeecordHook();
+        // Set up the BungeeCord hook
+        setupBungeeCordHook();
 
         // Reload support hook
         reloadSupportHook();
@@ -394,9 +394,9 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Set up the Bungecoord hook.
+     * Set up the BungeeCord hook.
      */
-    private void setupBungeecordHook() {
+    private void setupBungeeCordHook() {
         if (Settings.bungee) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
@@ -443,7 +443,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Set up the antibot delay.
+     * Set up the AntiBot delay.
      */
     private void setupAntiBotDelay() {
         if (Settings.enableAntiBot) {
@@ -652,7 +652,7 @@ public class AuthMe extends JavaPlugin {
             try {
                 ess = (Essentials) server.getPluginManager().getPlugin("Essentials");
                 ConsoleLogger.info("Hooked correctly with Essentials");
-            } catch (Exception | NoClassDefFoundError ingnored) {
+            } catch (Exception | NoClassDefFoundError ignored) {
                 ess = null;
             }
         } else {
@@ -677,7 +677,7 @@ public class AuthMe extends JavaPlugin {
             try {
                 combatTagPlus = (CombatTagPlus) server.getPluginManager().getPlugin("CombatTagPlus");
                 ConsoleLogger.info("Hooked correctly with CombatTagPlus");
-            } catch (Exception | NoClassDefFoundError ingnored) {
+            } catch (Exception | NoClassDefFoundError ignored) {
                 combatTagPlus = null;
             }
         } else {
@@ -855,7 +855,7 @@ public class AuthMe extends JavaPlugin {
         }, 1, 1200 * Settings.delayRecall);
     }
 
-    public String replaceAllInfos(String message, Player player) {
+    public String replaceAllInfo(String message, Player player) {
         int playersOnline = Utils.getOnlinePlayers().size();
         message = message.replace("&", "\u00a7");
         message = message.replace("{PLAYER}", player.getName());
@@ -919,8 +919,8 @@ public class AuthMe extends JavaPlugin {
         sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", "" + player.getAddress().getPort());
         try {
             URL url = new URL(sUrl);
-            URLConnection urlc = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
+            URLConnection urlCon = url.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));
             String inputLine = in.readLine();
             if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error") && !inputLine.contains("error")) {
                 realIP = inputLine;

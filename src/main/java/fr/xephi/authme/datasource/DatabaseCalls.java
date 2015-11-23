@@ -460,16 +460,16 @@ public class DatabaseCalls implements DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
      *
      * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
      */
     @Override
-    public synchronized void updateName(final String oldone, final String newone) {
+    public synchronized void updateName(final String oldOne, final String newOne) {
         exec.execute(new Runnable() {
             public synchronized void run() {
-                database.updateName(oldone, newone);
+                database.updateName(oldOne, newOne);
             }
         });
     }

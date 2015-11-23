@@ -45,7 +45,7 @@ public class UtilsTest {
                 .thenReturn(mock(BukkitTask.class));
     }
 
-    // TODO ljacques 20151122: The tests for Utils.forceGM somehow can't be set up with the mocks correctly
+    // TODO ljacqu 20151122: The tests for Utils.forceGM somehow can't be set up with the mocks correctly
     /*@Test
     public void shouldForceSurvivalGameMode() {
         // given

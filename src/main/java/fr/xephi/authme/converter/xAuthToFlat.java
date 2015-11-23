@@ -64,7 +64,7 @@ public class xAuthToFlat {
                     database.saveAuth(auth);
                 }
             }
-            sender.sendMessage("[AuthMe] Successfull convert from xAuth database");
+            sender.sendMessage("[AuthMe] Successfully convert from xAuth database");
         } catch (Exception e) {
             sender.sendMessage("[AuthMe] An error has been thrown while import xAuth database, the import hadn't fail but can be not complete ");
         }

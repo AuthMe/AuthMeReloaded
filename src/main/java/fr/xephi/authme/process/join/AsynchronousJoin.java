@@ -29,7 +29,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
-public class AsyncronousJoin {
+public class AsynchronousJoin {
 
     private final AuthMe plugin;
     private final Player player;
@@ -39,13 +39,13 @@ public class AsyncronousJoin {
     private final BukkitScheduler sched;
 
     /**
-     * Constructor for AsyncronousJoin.
+     * Constructor for AsynchronousJoin.
      *
      * @param player   Player
      * @param plugin   AuthMe
      * @param database DataSource
      */
-    public AsyncronousJoin(Player player, AuthMe plugin, DataSource database) {
+    public AsynchronousJoin(Player player, AuthMe plugin, DataSource database) {
         this.player = player;
         this.plugin = plugin;
         this.sched = plugin.getServer().getScheduler();
@@ -261,10 +261,10 @@ public class AsyncronousJoin {
     private boolean needFirstSpawn() {
         if (player.hasPlayedBefore())
             return false;
-        Location firstspawn = Spawn.getInstance().getFirstSpawn();
-        if (firstspawn == null || firstspawn.getWorld() == null)
+        Location firstSpawn = Spawn.getInstance().getFirstSpawn();
+        if (firstSpawn == null || firstSpawn.getWorld() == null)
             return false;
-        FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), firstspawn);
+        FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), firstSpawn);
         plugin.getServer().getPluginManager().callEvent(tpEvent);
         if (!tpEvent.isCancelled()) {
             if (player.isOnline() && tpEvent.getTo() != null && tpEvent.getTo().getWorld() != null) {

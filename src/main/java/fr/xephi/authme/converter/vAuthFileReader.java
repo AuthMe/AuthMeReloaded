@@ -49,15 +49,15 @@ public class vAuthFileReader {
                 String password = line.split(": ")[1];
                 PlayerAuth auth;
                 if (isUUIDinstance(password)) {
-                    String pname;
+                    String playerName;
                     try {
-                        pname = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
+                        playerName = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
                     } catch (Exception | NoSuchMethodError e) {
-                        pname = getName(UUID.fromString(name));
+                        playerName = getName(UUID.fromString(name));
                     }
-                    if (pname == null)
+                    if (playerName == null)
                         continue;
-                    auth = new PlayerAuth(pname.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", pname);
+                    auth = new PlayerAuth(playerName.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", playerName);
                 } else {
                     auth = new PlayerAuth(name.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", name);
                 }

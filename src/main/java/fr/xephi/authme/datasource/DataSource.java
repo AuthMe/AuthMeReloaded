@@ -196,10 +196,10 @@ public interface DataSource {
     /**
      * Method updateName.
      *
-     * @param oldone String
-     * @param newone String
+     * @param oldOne String
+     * @param newOne String
      */
-    void updateName(String oldone, String newone);
+    void updateName(String oldOne, String newOne);
 
     /**
      * Method getAllAuths.
@@ -215,12 +215,9 @@ public interface DataSource {
      */
     List<PlayerAuth> getLoggedPlayers();
 
-    /**
-     */
     enum DataSourceType {
         MYSQL,
         FILE,
         SQLITE
     }
-
 }

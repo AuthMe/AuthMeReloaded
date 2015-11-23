@@ -16,7 +16,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
-public class AsyncronousQuit {
+public class AsynchronousQuit {
 
     protected AuthMe plugin;
     protected DataSource database;
@@ -28,15 +28,15 @@ public class AsyncronousQuit {
     private boolean isKick = false;
 
     /**
-     * Constructor for AsyncronousQuit.
+     * Constructor for AsynchronousQuit.
      *
      * @param p        Player
      * @param plugin   AuthMe
      * @param database DataSource
      * @param isKick   boolean
      */
-    public AsyncronousQuit(Player p, AuthMe plugin, DataSource database,
-                           boolean isKick) {
+    public AsynchronousQuit(Player p, AuthMe plugin, DataSource database,
+                            boolean isKick) {
         this.player = p;
         this.plugin = plugin;
         this.database = database;

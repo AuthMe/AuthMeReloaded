@@ -33,10 +33,10 @@ public class NewAPI {
     /**
      * Constructor for NewAPI.
      *
-     * @param serv Server
+     * @param server Server
      */
-    public NewAPI(Server serv) {
-        this.plugin = (AuthMe) serv.getPluginManager().getPlugin("AuthMe");
+    public NewAPI(Server server) {
+        this.plugin = (AuthMe) server.getPluginManager().getPlugin("AuthMe");
     }
 
     /**
