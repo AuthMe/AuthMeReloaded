@@ -55,11 +55,11 @@ public class XF implements EncryptionMethod {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(password.getBytes());
         byte byteData[] = md.digest();
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (byte element : byteData) {
             sb.append(Integer.toString((element & 0xff) + 0x100, 16).substring(1));
         }
-        StringBuffer hexString = new StringBuffer();
+        StringBuilder hexString = new StringBuilder();
         for (byte element : byteData) {
             String hex = Integer.toHexString(0xff & element);
             if (hex.length() == 1) {

@@ -46,13 +46,13 @@ public class BinTools {
         if (b == null) {
             return "";
         }
-        StringBuffer sb = new StringBuffer(2 * b.length);
-        for (int i = 0; i < b.length; i++) {
-            int v = (256 + b[i]) % 256;
-            sb.append(hex.charAt((v / 16) & 15));
-            sb.append(hex.charAt((v % 16) & 15));
+        StringBuffer stringBuffer = new StringBuffer(2 * b.length);
+        for (byte aB : b) {
+            int v = (256 + aB) % 256;
+            stringBuffer.append(hex.charAt((v / 16) & 15));
+            stringBuffer.append(hex.charAt((v % 16) & 15));
         }
-        return sb.toString();
+        return stringBuffer.toString();
     }
 
     /**

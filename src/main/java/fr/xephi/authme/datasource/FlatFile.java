@@ -73,7 +73,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -103,7 +103,7 @@ public class FlatFile implements DataSource {
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -165,7 +165,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -231,7 +231,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -276,7 +276,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -318,7 +318,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -364,13 +364,13 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -417,13 +417,13 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -468,13 +468,13 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -523,7 +523,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -582,7 +582,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -636,7 +636,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -673,7 +673,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -710,7 +710,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -737,16 +737,13 @@ public class FlatFile implements DataSource {
                     if (banned.contains(args[0])) {
                         lines.add(line);
                     }
-                } catch (NullPointerException | ArrayIndexOutOfBoundsException exc) {
+                } catch (NullPointerException | ArrayIndexOutOfBoundsException ignored) {
                 }
             }
             bw = new BufferedWriter(new FileWriter(source));
             for (String l : lines) {
                 bw.write(l + "\n");
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return;
@@ -754,13 +751,13 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
             if (bw != null) {
                 try {
                     bw.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -841,7 +838,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }
@@ -909,7 +906,7 @@ public class FlatFile implements DataSource {
             if (br != null) {
                 try {
                     br.close();
-                } catch (IOException ex) {
+                } catch (IOException ignored) {
                 }
             }
         }

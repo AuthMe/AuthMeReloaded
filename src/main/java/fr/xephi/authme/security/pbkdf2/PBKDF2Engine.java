@@ -363,7 +363,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * 3.</a>
      */
     protected void INT(byte[] dest, int offset, int i) {
-        dest[offset + 0] = (byte) (i / (256 * 256 * 256));
+        dest[offset] = (byte) (i / (256 * 256 * 256));
         dest[offset + 1] = (byte) (i / (256 * 256));
         dest[offset + 2] = (byte) (i / (256));
         dest[offset + 3] = (byte) (i);

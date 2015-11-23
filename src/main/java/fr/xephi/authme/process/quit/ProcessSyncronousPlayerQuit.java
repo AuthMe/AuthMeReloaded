@@ -51,7 +51,7 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
         }
         try {
             player.getVehicle().eject();
-        } catch (Exception e) {
+        } catch (Exception ignored) {
         }
     }
 }

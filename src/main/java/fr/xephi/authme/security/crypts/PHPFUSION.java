@@ -50,9 +50,9 @@ public class PHPFUSION implements EncryptionMethod {
             Mac mac = Mac.getInstance(algo);
             mac.init(key);
             byte[] bytes = mac.doFinal(password.getBytes("ASCII"));
-            StringBuffer hash = new StringBuffer();
-            for (int i = 0; i < bytes.length; i++) {
-                String hex = Integer.toHexString(0xFF & bytes[i]);
+            StringBuilder hash = new StringBuilder();
+            for (byte aByte : bytes) {
+                String hex = Integer.toHexString(0xFF & aByte);
                 if (hex.length() == 1) {
                     hash.append('0');
                 }

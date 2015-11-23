@@ -105,7 +105,7 @@ public class API {
         try {
             player.getInventory().setContents(content);
             player.getInventory().setArmorContents(armor);
-        } catch (NullPointerException npe) {
+        } catch (NullPointerException ignored) {
         }
     }
 
