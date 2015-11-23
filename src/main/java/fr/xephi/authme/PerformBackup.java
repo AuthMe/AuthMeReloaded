@@ -33,9 +33,14 @@ public class PerformBackup {
     }
 
     /**
+     * Perform a backup with the given reason.
      *
+     * @param cause BackupCause The cause of the backup.
      */
     public void doBackup(BackupCause cause) {
+        if(!Settings.isBackupActivated) {
+            ConsoleLogger.showError("Can't perform a Backup: disabled in configuration. Cause of the Backup: " + cause.name());
+        }
         // Check whether a backup should be made at the specified point in time
         switch (cause) {
             case START:
@@ -50,9 +55,9 @@ public class PerformBackup {
 
         // Do backup and check return value!
         if (doBackup()) {
-            ConsoleLogger.info("A backup has been performed successfully");
+            ConsoleLogger.info("A backup has been performed successfully. Cause of the Backup: " + cause.name());
         } else {
-            ConsoleLogger.showError("Error while performing a backup!");
+            ConsoleLogger.showError("Error while performing a backup! Cause of the Backup: " + cause.name());
         }
     }
 
