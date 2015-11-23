@@ -25,18 +25,6 @@ public class CaptchaCommand extends ExecutableCommand {
      */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        final Messages m = Messages.getInstance();
-
-        // Random string instance, for captcha generation (I think) -- timvisee
-        RandomString randStr = new RandomString(Settings.captchaLength);
-
-        // Get the parameter values
-        String captcha = commandArguments.get(0);
-
         // Make sure the current command executor is a player
         if (!(sender instanceof Player)) {
             return true;
@@ -45,6 +33,12 @@ public class CaptchaCommand extends ExecutableCommand {
         // Get the player instance and name
         final Player player = (Player) sender;
         final String playerNameLowerCase = player.getName().toLowerCase();
+
+        // Get the parameter values
+        String captcha = commandArguments.get(0);
+
+        // Messages instance
+        final Messages m = Messages.getInstance();
 
         // Command logic
         if (PlayerCache.getInstance().isAuthenticated(playerNameLowerCase)) {
@@ -57,6 +51,9 @@ public class CaptchaCommand extends ExecutableCommand {
             return true;
         }
 
+        // AuthMe plugin instance
+        final AuthMe plugin = AuthMe.getInstance();
+
         if (!plugin.cap.containsKey(playerNameLowerCase)) {
             m.send(player, "usage_log");
             return true;
@@ -64,18 +61,16 @@ public class CaptchaCommand extends ExecutableCommand {
 
         if (Settings.useCaptcha && !captcha.equals(plugin.cap.get(playerNameLowerCase))) {
             plugin.cap.remove(playerNameLowerCase);
-            plugin.cap.put(playerNameLowerCase, randStr.nextString());
+            String randStr = new RandomString(Settings.captchaLength).nextString();
+            plugin.cap.put(playerNameLowerCase, randStr);
             for (String s : m.send("wrong_captcha")) {
                 player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(playerNameLowerCase)));
             }
             return true;
         }
 
-        try {
-            plugin.captcha.remove(playerNameLowerCase);
-            plugin.cap.remove(playerNameLowerCase);
-        } catch (NullPointerException ignored) {
-        }
+        plugin.captcha.remove(playerNameLowerCase);
+        plugin.cap.remove(playerNameLowerCase);
 
         // Show a status message
         m.send(player, "valid_captcha");

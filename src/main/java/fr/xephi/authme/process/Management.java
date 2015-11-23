@@ -19,7 +19,6 @@ import org.bukkit.scheduler.BukkitScheduler;
  */
 public class Management {
 
-    public static RandomString rdm = new RandomString(Settings.captchaLength);
     private final AuthMe plugin;
     private final BukkitScheduler sched;
 
