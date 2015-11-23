@@ -123,3 +123,6 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 .nb-gradle/
+
+# Don't exclude the .gitignore itself
+!.gitignore
