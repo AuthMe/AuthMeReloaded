@@ -1,18 +1,17 @@
 package fr.xephi.authme.converter;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Scanner;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Scanner;
+import java.util.UUID;
 
 /**
  */
@@ -24,6 +23,7 @@ public class vAuthFileReader {
 
     /**
      * Constructor for vAuthFileReader.
+     *
      * @param plugin AuthMe
      * @param sender CommandSender
      */
@@ -35,8 +35,9 @@ public class vAuthFileReader {
 
     /**
      * Method convert.
-    
-     * @throws IOException */
+     *
+     * @throws IOException
+     */
     public void convert() throws IOException {
         final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
         Scanner scanner;
@@ -70,9 +71,10 @@ public class vAuthFileReader {
 
     /**
      * Method isUUIDinstance.
+     *
      * @param s String
-    
-     * @return boolean */
+     * @return boolean
+     */
     private boolean isUUIDinstance(String s) {
         if (String.valueOf(s.charAt(8)).equalsIgnoreCase("-"))
             return true;
@@ -81,9 +83,10 @@ public class vAuthFileReader {
 
     /**
      * Method getName.
+     *
      * @param uuid UUID
-    
-     * @return String */
+     * @return String
+     */
     private String getName(UUID uuid) {
         try {
             for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {

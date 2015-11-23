@@ -1,15 +1,5 @@
 package fr.xephi.authme.process.join;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -27,6 +17,15 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
@@ -41,8 +40,9 @@ public class AsyncronousJoin {
 
     /**
      * Constructor for AsyncronousJoin.
-     * @param player Player
-     * @param plugin AuthMe
+     *
+     * @param player   Player
+     * @param plugin   AuthMe
      * @param database DataSource
      */
     public AsyncronousJoin(Player player, AuthMe plugin, DataSource database) {
@@ -68,7 +68,7 @@ public class AsyncronousJoin {
         }
 
         if (!plugin.canConnect()) {
-        	final GameMode gM = AuthMePlayerListener.gameMode.get(name);
+            final GameMode gM = AuthMePlayerListener.gameMode.get(name);
             sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                 @Override
@@ -248,15 +248,16 @@ public class AsyncronousJoin {
         }
 
         String[] msg = isAuthAvailable ? m.send("login_msg") :
-                m.send("reg_" + (Settings.emailRegistration? "email_" : "") + "msg");
+                m.send("reg_" + (Settings.emailRegistration ? "email_" : "") + "msg");
         BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
     }
 
     /**
      * Method needFirstSpawn.
-    
-     * @return boolean */
+     *
+     * @return boolean
+     */
     private boolean needFirstSpawn() {
         if (player.hasPlayedBefore())
             return false;
@@ -283,7 +284,8 @@ public class AsyncronousJoin {
 
     /**
      * Method placePlayerSafely.
-     * @param player Player
+     *
+     * @param player   Player
      * @param spawnLoc Location
      */
     private void placePlayerSafely(final Player player, final Location spawnLoc) {

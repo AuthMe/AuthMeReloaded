@@ -1,13 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -19,6 +11,13 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
@@ -30,8 +29,8 @@ public class UnregisterCommand extends ExecutableCommand {
      * @param sender           The command sender.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
-    
-     * @return True if the command was executed successfully, false otherwise. */
+     * @return True if the command was executed successfully, false otherwise.
+     */
     @Override
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance

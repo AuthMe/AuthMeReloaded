@@ -1,10 +1,9 @@
 package fr.xephi.authme.settings;
 
-import java.io.File;
-
+import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.command.CommandSender;
 
-import fr.xephi.authme.ConsoleLogger;
+import java.io.File;
 
 /**
  */
@@ -15,6 +14,7 @@ public class Messages extends CustomConfiguration {
 
     /**
      * Constructor for Messages.
+     *
      * @param file the configuration file
      * @param lang the code of the language to use
      */
@@ -23,6 +23,13 @@ public class Messages extends CustomConfiguration {
         load();
         singleton = this;
         this.lang = lang;
+    }
+
+    public static Messages getInstance() {
+        if (singleton == null) {
+            singleton = new Messages(Settings.messageFile, Settings.messagesLanguage);
+        }
+        return singleton;
     }
 
     public void send(CommandSender sender, String msg) {
@@ -60,13 +67,6 @@ public class Messages extends CustomConfiguration {
             loc[0] = "Error with " + msg + " translation; Please contact the admin for verify or update translation files";
         }
         return loc;
-    }
-
-    public static Messages getInstance() {
-        if (singleton == null) {
-            singleton = new Messages(Settings.messageFile, Settings.messagesLanguage);
-        }
-        return singleton;
     }
 
     public void reloadMessages() {

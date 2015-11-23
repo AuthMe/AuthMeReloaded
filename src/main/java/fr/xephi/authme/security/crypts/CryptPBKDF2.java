@@ -1,9 +1,9 @@
 package fr.xephi.authme.security.crypts;
 
-import java.security.NoSuchAlgorithmException;
-
 import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
+
+import java.security.NoSuchAlgorithmException;
 
 /**
  */
@@ -11,13 +11,12 @@ public class CryptPBKDF2 implements EncryptionMethod {
 
     /**
      * Method getHash.
+     *
      * @param password String
-     * @param salt String
-     * @param name String
-    
-    
-    
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String) */
+     * @param salt     String
+     * @param name     String
+     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
+     */
     @Override
     public String getHash(String password, String salt, String name)
             throws NoSuchAlgorithmException {
@@ -30,16 +29,15 @@ public class CryptPBKDF2 implements EncryptionMethod {
 
     /**
      * Method comparePassword.
-     * @param hash String
-     * @param password String
+     *
+     * @param hash       String
+     * @param password   String
      * @param playerName String
-    
-    
-    
-     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String) */
+     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
+     */
     @Override
     public boolean comparePassword(String hash, String password,
-            String playerName) throws NoSuchAlgorithmException {
+                                   String playerName) throws NoSuchAlgorithmException {
         String[] line = hash.split("\\$");
         String salt = line[2];
         String derivedKey = line[3];

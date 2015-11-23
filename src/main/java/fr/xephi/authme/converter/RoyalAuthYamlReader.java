@@ -1,8 +1,8 @@
 package fr.xephi.authme.converter;
 
-import java.io.File;
-
 import fr.xephi.authme.settings.CustomConfiguration;
+
+import java.io.File;
 
 /**
  */
@@ -10,6 +10,7 @@ public class RoyalAuthYamlReader extends CustomConfiguration {
 
     /**
      * Constructor for RoyalAuthYamlReader.
+     *
      * @param file File
      */
     public RoyalAuthYamlReader(File file) {
@@ -20,16 +21,18 @@ public class RoyalAuthYamlReader extends CustomConfiguration {
 
     /**
      * Method getLastLogin.
-    
-     * @return long */
+     *
+     * @return long
+     */
     public long getLastLogin() {
         return getLong("timestamps.quit");
     }
 
     /**
      * Method getHash.
-    
-     * @return String */
+     *
+     * @return String
+     */
     public String getHash() {
         return getString("login.password");
     }

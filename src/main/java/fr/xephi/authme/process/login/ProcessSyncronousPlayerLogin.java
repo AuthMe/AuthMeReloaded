@@ -1,11 +1,5 @@
 package fr.xephi.authme.process.login;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.potion.PotionEffectType;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -20,6 +14,11 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  */
@@ -36,12 +35,13 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
     /**
      * Constructor for ProcessSyncronousPlayerLogin.
+     *
      * @param player Player
      * @param plugin AuthMe
-     * @param data DataSource
+     * @param data   DataSource
      */
     public ProcessSyncronousPlayerLogin(Player player, AuthMe plugin,
-            DataSource data) {
+                                        DataSource data) {
         this.plugin = plugin;
         this.database = data;
         this.pm = plugin.getServer().getPluginManager();
@@ -54,8 +54,9 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
     /**
      * Method getLimbo.
-    
-     * @return LimboPlayer */
+     *
+     * @return LimboPlayer
+     */
     public LimboPlayer getLimbo() {
         return limbo;
     }
@@ -65,7 +66,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     }
 
     protected void restoreFlyghtState() {
-        if(Settings.isForceSurvivalModeEnabled) {
+        if (Settings.isForceSurvivalModeEnabled) {
             player.setAllowFlight(false);
             player.setFlying(false);
             return;
@@ -117,6 +118,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override
@@ -135,8 +137,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
                     } else {
                         teleportBackFromSpawn();
                     }
-                } else
-                    if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                } else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
                     teleportToSpawn();
                 } else if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
                     packQuitLocation();
@@ -150,10 +151,10 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             } else {
                 player.setGameMode(limbo.getGameMode());
             }
-            
+
             restoreFlyghtState();
 
-            if (Settings.protectInventoryBeforeLogInEnabled  && plugin.inventoryProtector != null) {
+            if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
                 restoreInventory();
             }
 
@@ -167,7 +168,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         // We can now display the join message (if delayed)
         String jm = AuthMePlayerListener.joinMessage.get(name);
         if (jm != null) {
-            if(!jm.isEmpty()) {
+            if (!jm.isEmpty()) {
                 for (Player p : Utils.getOnlinePlayers()) {
                     if (p.isOnline())
                         p.sendMessage(jm);

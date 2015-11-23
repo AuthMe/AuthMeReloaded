@@ -1,9 +1,5 @@
 package fr.xephi.authme.process.register;
 
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -13,6 +9,9 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
@@ -25,6 +24,7 @@ public class ProcessSyncEmailRegister implements Runnable {
 
     /**
      * Constructor for ProcessSyncEmailRegister.
+     *
      * @param player Player
      * @param plugin AuthMe
      */
@@ -36,6 +36,7 @@ public class ProcessSyncEmailRegister implements Runnable {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override
@@ -54,7 +55,7 @@ public class ProcessSyncEmailRegister implements Runnable {
             BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
             limbo.setTimeoutTaskId(id);
         }
-        if (limbo != null){
+        if (limbo != null) {
             limbo.getMessageTaskId().cancel();
             BukkitTask nwMsg = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
             limbo.setMessageTaskId(nwMsg);

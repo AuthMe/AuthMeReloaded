@@ -1,10 +1,9 @@
 package fr.xephi.authme.process.quit;
 
-import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
 
 /**
  */
@@ -18,10 +17,11 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
 
     /**
      * Constructor for ProcessSyncronousPlayerQuit.
-     * @param plugin AuthMe
-     * @param player Player
-     * @param isOp boolean
-     * @param isFlying boolean
+     *
+     * @param plugin       AuthMe
+     * @param player       Player
+     * @param isOp         boolean
+     * @param isFlying     boolean
      * @param needToChange boolean
      */
     public ProcessSyncronousPlayerQuit(AuthMe plugin, Player player
@@ -36,6 +36,7 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override

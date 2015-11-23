@@ -1,15 +1,14 @@
 package fr.xephi.authme.converter;
 
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.settings.Messages;
+import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 /**
  */
@@ -21,6 +20,7 @@ public class SqlToFlat implements Converter {
 
     /**
      * Constructor for SqlToFlat.
+     *
      * @param plugin AuthMe
      * @param sender CommandSender
      */
@@ -32,6 +32,7 @@ public class SqlToFlat implements Converter {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override

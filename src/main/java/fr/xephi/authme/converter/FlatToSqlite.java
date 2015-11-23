@@ -1,20 +1,14 @@
 package fr.xephi.authme.converter;
 
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.settings.Settings;
+import org.bukkit.command.CommandSender;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-
-import org.bukkit.command.CommandSender;
-
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Settings;
+import java.sql.*;
 
 /**
  */
@@ -34,8 +28,10 @@ public class FlatToSqlite implements Converter {
     private String database;
     private String columnID;
     private Connection con;
+
     /**
      * Constructor for FlatToSqlite.
+     *
      * @param sender CommandSender
      */
     public FlatToSqlite(CommandSender sender) {
@@ -44,6 +40,7 @@ public class FlatToSqlite implements Converter {
 
     /**
      * Method close.
+     *
      * @param o AutoCloseable
      */
     private static void close(AutoCloseable o) {
@@ -58,6 +55,7 @@ public class FlatToSqlite implements Converter {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override
@@ -121,9 +119,9 @@ public class FlatToSqlite implements Converter {
 
     /**
      * Method connect.
-    
-    
-     * @throws ClassNotFoundException * @throws SQLException */
+     *
+     * @throws ClassNotFoundException * @throws SQLException
+     */
     private synchronized void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
@@ -131,8 +129,9 @@ public class FlatToSqlite implements Converter {
 
     /**
      * Method setup.
-    
-     * @throws SQLException */
+     *
+     * @throws SQLException
+     */
     private synchronized void setup() throws SQLException {
         Statement st = null;
         ResultSet rs = null;
@@ -178,9 +177,10 @@ public class FlatToSqlite implements Converter {
 
     /**
      * Method saveAuth.
+     *
      * @param s String
-    
-     * @return boolean */
+     * @return boolean
+     */
     private synchronized boolean saveAuth(String s) {
         PreparedStatement pst = null;
         try {

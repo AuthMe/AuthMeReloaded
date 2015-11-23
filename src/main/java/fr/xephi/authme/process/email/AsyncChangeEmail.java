@@ -1,15 +1,14 @@
 package fr.xephi.authme.process.email;
 
-import java.util.Arrays;
-
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.entity.Player;
+
+import java.util.Arrays;
 
 /**
  */
@@ -24,10 +23,11 @@ public class AsyncChangeEmail {
 
     /**
      * Constructor for AsyncChangeEmail.
-     * @param player Player
-     * @param plugin AuthMe
-     * @param oldEmail String
-     * @param newEmail String
+     *
+     * @param player         Player
+     * @param plugin         AuthMe
+     * @param oldEmail       String
+     * @param newEmail       String
      * @param newEmailVerify String
      */
     public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail, String newEmailVerify) {
@@ -41,8 +41,9 @@ public class AsyncChangeEmail {
 
     /**
      * Constructor for AsyncChangeEmail.
-     * @param player Player
-     * @param plugin AuthMe
+     *
+     * @param player   Player
+     * @param plugin   AuthMe
      * @param oldEmail String
      * @param newEmail String
      */

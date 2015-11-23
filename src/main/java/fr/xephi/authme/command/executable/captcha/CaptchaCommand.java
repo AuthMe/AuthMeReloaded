@@ -1,8 +1,5 @@
 package fr.xephi.authme.command.executable.captcha;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandParts;
@@ -10,6 +7,8 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  */
@@ -18,12 +17,11 @@ public class CaptchaCommand extends ExecutableCommand {
     /**
      * Execute the command.
      *
-     * @param sender The command sender.
+     * @param sender           The command sender.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
-     *
-    
-     * @return True if the command was executed successfully, false otherwise. */
+     * @return True if the command was executed successfully, false otherwise.
+     */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance
@@ -39,7 +37,7 @@ public class CaptchaCommand extends ExecutableCommand {
         String captcha = commandArguments.get(0);
 
         // Make sure the current command executor is a player
-        if(!(sender instanceof Player)) {
+        if (!(sender instanceof Player)) {
             return true;
         }
 
@@ -75,7 +73,8 @@ public class CaptchaCommand extends ExecutableCommand {
         try {
             plugin.captcha.remove(playerNameLowerCase);
             plugin.cap.remove(playerNameLowerCase);
-        } catch (NullPointerException ignored) { }
+        } catch (NullPointerException ignored) {
+        }
 
         // Show a status message
         m.send(player, "valid_captcha");

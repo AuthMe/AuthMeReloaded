@@ -1,19 +1,16 @@
 package fr.xephi.authme;
 
-import java.io.File;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.settings.Settings;
+import org.apache.commons.mail.HtmlEmail;
+import org.bukkit.Bukkit;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
-
-import org.apache.commons.mail.HtmlEmail;
-import org.bukkit.Bukkit;
-
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.settings.Settings;
+import java.io.File;
 
 /**
- *
  * @author Xephi59
  * @version $Revision: 1.0 $
  */
@@ -23,6 +20,7 @@ public class SendMailSSL {
 
     /**
      * Constructor for SendMailSSL.
+     *
      * @param plugin AuthMe
      */
     public SendMailSSL(AuthMe plugin) {
@@ -31,7 +29,8 @@ public class SendMailSSL {
 
     /**
      * Method main.
-     * @param auth PlayerAuth
+     *
+     * @param auth    PlayerAuth
      * @param newPass String
      */
     public void main(final PlayerAuth auth, final String newPass) {

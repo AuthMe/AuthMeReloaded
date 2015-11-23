@@ -1,10 +1,9 @@
 package fr.xephi.authme.command.executable;
 
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.help.HelpProvider;
+import org.bukkit.command.CommandSender;
 
 /**
  */

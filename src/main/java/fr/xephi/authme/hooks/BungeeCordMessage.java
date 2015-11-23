@@ -1,12 +1,10 @@
 package fr.xephi.authme.hooks;
 
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
-
 import fr.xephi.authme.AuthMe;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.messaging.PluginMessageListener;
 
 /**
  */
@@ -16,6 +14,7 @@ public class BungeeCordMessage implements PluginMessageListener {
 
     /**
      * Constructor for BungeeCordMessage.
+     *
      * @param plugin AuthMe
      */
     public BungeeCordMessage(AuthMe plugin) {
@@ -24,11 +23,12 @@ public class BungeeCordMessage implements PluginMessageListener {
 
     /**
      * Method onPluginMessageReceived.
+     *
      * @param channel String
-     * @param player Player
+     * @param player  Player
      * @param message byte[]
-    
-     * @see org.bukkit.plugin.messaging.PluginMessageListener#onPluginMessageReceived(String, Player, byte[]) */
+     * @see org.bukkit.plugin.messaging.PluginMessageListener#onPluginMessageReceived(String, Player, byte[])
+     */
     @Override
     public void onPluginMessageReceived(String channel, Player player,
                                         byte[] message) {

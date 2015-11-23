@@ -95,45 +95,30 @@ public final class Utils {
         return false;
     }
 
-    public static String getCountryCode(String ip) {
-        if (checkGeoIP()) {
-            return lookupService.getCountry(ip).getCode();
-        }
-        return "--";
-    }
-
-    public static String getCountryName(String ip) {
-        if (checkGeoIP()) {
-            return lookupService.getCountry(ip).getName();
-        }
-        return "N/A";
-    }
-
     /**
      * Set the group of a player, by its AuthMe group type.
      *
      * @param player The player.
-     * @param group The group type.
-     *
-     * @return True if succeed, false otherwise.
-     * False is also returned if groups aren't supported with the current permissions system.
+     * @param group  The group type.
+     * @return True if succeed, false otherwise. False is also returned if groups aren't supported
+     * with the current permissions system.
      */
     public static boolean setGroup(Player player, GroupType group) {
         // Check whether the permissions check is enabled
-        if(!Settings.isPermissionCheckEnabled)
+        if (!Settings.isPermissionCheckEnabled)
             return false;
 
         // Get the permissions manager, and make sure it's valid
         PermissionsManager permsMan = plugin.getPermissionsManager();
-        if(permsMan == null)
+        if (permsMan == null)
             ConsoleLogger.showError("Failed to access permissions manager instance, shutting down.");
         assert permsMan != null;
 
         // Make sure group support is available
-        if(!permsMan.hasGroupSupport())
+        if (!permsMan.hasGroupSupport())
             ConsoleLogger.showError("The current permissions system doesn't have group support, unable to set group!");
 
-        switch(group) {
+        switch (group) {
             case UNREGISTERED:
                 // Remove the other group type groups, set the current group
                 permsMan.removeGroups(player, Arrays.asList(Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
@@ -152,7 +137,7 @@ public final class Utils {
             case LOGGEDIN:
                 // Get the limbo player data
                 LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                if(limbo == null)
+                if (limbo == null)
                     return false;
 
                 // Get the players group
@@ -169,21 +154,20 @@ public final class Utils {
 
     /**
      * TODO: This method requires better explanation.
-     *
+     * <p>
      * Set the normal group of a player.
      *
      * @param player The player.
-     * @param group The normal group.
-
+     * @param group  The normal group.
      * @return True on success, false on failure.
      */
     public static boolean addNormal(Player player, String group) {
-        if(!Settings.isPermissionCheckEnabled)
+        if (!Settings.isPermissionCheckEnabled)
             return false;
 
         // Get the permissions manager, and make sure it's valid
         PermissionsManager permsMan = plugin.getPermissionsManager();
-        if(permsMan == null)
+        if (permsMan == null)
             ConsoleLogger.showError("Failed to access permissions manager instance, shutting down.");
         assert permsMan != null;
 
@@ -221,10 +205,11 @@ public final class Utils {
 
     /**
      * Method packCoords.
-     * @param x double
-     * @param y double
-     * @param z double
-     * @param w String
+     *
+     * @param x  double
+     * @param y  double
+     * @param z  double
+     * @param w  String
      * @param pl Player
      */
     public static void packCoords(double x, double y, double z, String w,
@@ -265,40 +250,35 @@ public final class Utils {
     }
 
     /**
+     * Delete a given directory and all his content.
+     *
+     * @param directory File
      */
-    public enum GroupType {
-        UNREGISTERED,
-        REGISTERED,
-        NOTLOGGEDIN,
-        LOGGEDIN
-    }
-
-    public static void purgeDirectory(File file) {
-        if (!file.isDirectory()) {
+    public static void purgeDirectory(File directory) {
+        if (!directory.isDirectory()) {
             return;
         }
-        File[] files = file.listFiles();
+        File[] files = directory.listFiles();
         if (files == null) {
             return;
         }
         for (File target : files) {
             if (target.isDirectory()) {
                 purgeDirectory(target);
-                target.delete();
-            } else {
-                target.delete();
             }
+            target.delete();
         }
     }
 
     /**
-     * Safe way to retrieve the list of online players from the server. Depending on the implementation
-     * of the server, either an array of {@link Player} instances is being returned, or a Collection.
-     * Always use this wrapper to retrieve online players instead of {@link Bukkit#getOnlinePlayers()} directly.
+     * Safe way to retrieve the list of online players from the server. Depending on the
+     * implementation of the server, either an array of {@link Player} instances is being returned,
+     * or a Collection. Always use this wrapper to retrieve online players instead of {@link
+     * Bukkit#getOnlinePlayers()} directly.
      *
      * @return collection of online players
-     *
-     * @see <a href="https://www.spigotmc.org/threads/solved-cant-use-new-getonlineplayers.33061/">SpigotMC forum</a>
+     * @see <a href="https://www.spigotmc.org/threads/solved-cant-use-new-getonlineplayers.33061/">SpigotMC
+     * forum</a>
      * @see <a href="http://stackoverflow.com/questions/32130851/player-changed-from-array-to-collection">StackOverflow</a>
      */
     @SuppressWarnings("unchecked")
@@ -309,7 +289,7 @@ public final class Utils {
         try {
             // The lookup of a method via Reflections is rather expensive, so we keep a reference to it
             if (getOnlinePlayers == null) {
-                getOnlinePlayers = Bukkit.class.getMethod("getOnlinePlayers");
+                getOnlinePlayers = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
             }
             Object obj = getOnlinePlayers.invoke(null);
             if (obj instanceof Collection<?>) {
@@ -328,8 +308,8 @@ public final class Utils {
     }
 
     /**
-     * Method run when the Utils class is loaded to verify whether or not the Bukkit
-     * implementation returns the online players as a Collection.
+     * Method run when the Utils class is loaded to verify whether or not the Bukkit implementation
+     * returns the online players as a Collection.
      *
      * @see Utils#getOnlinePlayers()
      */
@@ -372,5 +352,14 @@ public final class Utils {
                 player.teleport(tpEvent.getTo());
             }
         }
+    }
+
+    /**
+     */
+    public enum GroupType {
+        UNREGISTERED,
+        REGISTERED,
+        NOTLOGGEDIN,
+        LOGGEDIN
     }
 }

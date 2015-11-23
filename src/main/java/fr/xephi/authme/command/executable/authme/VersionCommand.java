@@ -1,13 +1,12 @@
 package fr.xephi.authme.command.executable.authme;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.ExecutableCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
-import fr.xephi.authme.command.ExecutableCommand;
 
 /**
  */
@@ -19,14 +18,13 @@ public class VersionCommand extends ExecutableCommand {
      * @param sender           The command sender.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
-     *
-    
-     * @return True if the command was executed successfully, false otherwise. */
+     * @return True if the command was executed successfully, false otherwise.
+     */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Show some version info
-        sender.sendMessage(ChatColor.GOLD + "==========[ " + AuthMe.PLUGIN_NAME.toUpperCase() + " ABOUT ]==========");
-        sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.PLUGIN_NAME + " v" + AuthMe.getVersionName() + ChatColor.GRAY + " (code: " + AuthMe.getVersionCode() + ")");
+        sender.sendMessage(ChatColor.GOLD + "==========[ " + AuthMe.getPluginName().toUpperCase() + " ABOUT ]==========");
+        sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.getPluginName() + " v" + AuthMe.getVersionName() + ChatColor.GRAY + " (code: " + AuthMe.getVersionCode() + ")");
         sender.sendMessage(ChatColor.GOLD + "Developers:");
         printDeveloper(sender, "Xephi", "xephi59", "Lead Developer");
         printDeveloper(sender, "DNx5", "DNx5", "Developer");
@@ -42,10 +40,10 @@ public class VersionCommand extends ExecutableCommand {
     /**
      * Print a developer with proper styling.
      *
-     * @param sender The command sender.
-     * @param name The display name of the developer.
+     * @param sender        The command sender.
+     * @param name          The display name of the developer.
      * @param minecraftName The Minecraft username of the developer, if available.
-     * @param function The function of the developer.
+     * @param function      The function of the developer.
      */
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     private void printDeveloper(CommandSender sender, String name, String minecraftName, String function) {
@@ -55,13 +53,13 @@ public class VersionCommand extends ExecutableCommand {
         msg.append(name);
 
         // Append the Minecraft name, if available
-        if(minecraftName.length() != 0)
+        if (minecraftName.length() != 0)
             msg.append(ChatColor.GRAY + " // " + ChatColor.WHITE + minecraftName);
         msg.append(ChatColor.GRAY + "" + ChatColor.ITALIC + " (" + function + ")");
 
         // Show the online status
-        if(minecraftName.length() != 0)
-            if(isPlayerOnline(minecraftName))
+        if (minecraftName.length() != 0)
+            if (isPlayerOnline(minecraftName))
                 msg.append(ChatColor.GREEN + "" + ChatColor.ITALIC + " (In-Game)");
 
         // Print the message
@@ -72,7 +70,6 @@ public class VersionCommand extends ExecutableCommand {
      * Check whether a player is online.
      *
      * @param minecraftName The Minecraft player name.
-     *
      * @return True if the player is online, false otherwise.
      */
     private boolean isPlayerOnline(String minecraftName) {

@@ -7,9 +7,13 @@ import java.text.DecimalFormat;
 @SuppressWarnings("UnusedDeclaration")
 public class Profiler {
 
-    /** Defines the past time in milliseconds. */
+    /**
+     * Defines the past time in milliseconds.
+     */
     private long time = 0;
-    /** Defines the time in milliseconds the profiler last started at. */
+    /**
+     * Defines the time in milliseconds the profiler last started at.
+     */
     private long start = -1;
 
     /**
@@ -26,19 +30,19 @@ public class Profiler {
      */
     public Profiler(boolean start) {
         // Should the timer be started
-        if(start)
+        if (start)
             start();
     }
 
     /**
      * Start the profiler.
      *
-    
      * @return True if the profiler was started, false otherwise possibly due to an error.
-     * True will also be returned if the profiler was started already. */
+     * True will also be returned if the profiler was started already.
+     */
     public boolean start() {
         // Make sure the timer isn't started already
-        if(isActive())
+        if (isActive())
             return true;
 
         // Set the start time
@@ -49,11 +53,11 @@ public class Profiler {
     /**
      * This will start the profiler if it's not active, or will stop the profiler if it's currently active.
      *
-    
-     * @return True if the profiler has been started, false if the profiler has been stopped. */
+     * @return True if the profiler has been started, false if the profiler has been stopped.
+     */
     public boolean pause() {
         // Toggle the profiler state
-        if(isStarted())
+        if (isStarted())
             stop();
         else
             start();
@@ -65,12 +69,12 @@ public class Profiler {
     /**
      * Stop the profiler if it's active.
      *
-    
      * @return True will be returned if the profiler was stopped while it was active. False will be returned if the
-     * profiler was stopped already. */
+     * profiler was stopped already.
+     */
     public boolean stop() {
         // Make sure the profiler is active
-        if(!isActive())
+        if (!isActive())
             return false;
 
         // Stop the profiler, calculate the passed time
@@ -82,8 +86,8 @@ public class Profiler {
     /**
      * Check whether the profiler has been started. The profiler doesn't need to be active right now.
      *
-    
-     * @return True if the profiler was started, false otherwise. */
+     * @return True if the profiler was started, false otherwise.
+     */
     public boolean isStarted() {
         return isActive() || this.time > 0;
     }
@@ -91,8 +95,8 @@ public class Profiler {
     /**
      * Check whether the profiler is currently active.
      *
-    
-     * @return True if the profiler is active, false otherwise. */
+     * @return True if the profiler is active, false otherwise.
+     */
     public boolean isActive() {
         return this.start >= 0;
     }
@@ -100,11 +104,11 @@ public class Profiler {
     /**
      * Get the passed time in milliseconds.
      *
-    
-     * @return The passed time in milliseconds. */
+     * @return The passed time in milliseconds.
+     */
     public long getTime() {
         // Check whether the profiler is currently active
-        if(isActive())
+        if (isActive())
             return this.time + (System.currentTimeMillis() - this.start);
         return this.time;
     }
@@ -112,18 +116,18 @@ public class Profiler {
     /**
      * Get the passed time in a formatted string.
      *
-    
-     * @return The passed time in a formatted string. */
+     * @return The passed time in a formatted string.
+     */
     public String getTimeFormatted() {
         // Get the passed time
         long time = getTime();
 
         // Return the time if it's less than one millisecond
-        if(time <= 0)
+        if (time <= 0)
             return "<1 ms";
 
         // Return the time in milliseconds
-        if(time < 1000)
+        if (time < 1000)
             return time + " ms";
 
         // Convert the time into seconds with a single decimal

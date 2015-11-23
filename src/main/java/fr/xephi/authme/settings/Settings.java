@@ -1,32 +1,20 @@
 package fr.xephi.authme.settings;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  */
 public final class Settings extends YamlConfiguration {
-
-    private static AuthMe plugin;
-    private static Settings instance;
-
-    // This is not an option!
-    public static boolean antiBotInAction = false;
 
     public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
@@ -34,7 +22,8 @@ public final class Settings extends YamlConfiguration {
     public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
     public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
     public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
-
+    // This is not an option!
+    public static boolean antiBotInAction = false;
     public static File messageFile;
     public static List<String> allowCommands;
     public static List<String> getJoinPermissions;
@@ -56,10 +45,8 @@ public final class Settings extends YamlConfiguration {
     public static HashAlgorithm getPasswordHash;
     public static boolean useLogging = false;
     public static int purgeDelay = 60;
-
     // Due to compatibility issues with plugins like FactionsChat
     public static Boolean isChatAllowed;
-
     public static boolean isPermissionCheckEnabled, isRegistrationEnabled,
             isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
             isSessionsEnabled, isAllowRestrictedIp,
@@ -80,7 +67,6 @@ public final class Settings extends YamlConfiguration {
             broadcastWelcomeMessage, forceRegKick, forceRegLogin,
             checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
             customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
-
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
             getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
             getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
@@ -94,7 +80,6 @@ public final class Settings extends YamlConfiguration {
             getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
             spawnPriority, crazyloginFileName, getPassRegex,
             getMySQLColumnRealName;
-
     public static int getWarnMessageInterval, getSessionTimeout,
             getRegistrationTimeout, getMaxNickLength, getMinNickLength,
             getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
@@ -103,11 +88,13 @@ public final class Settings extends YamlConfiguration {
             getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
             antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
             getMaxJoinPerIp, getMySQLMaxConnections;
-
     protected static YamlConfiguration configFile;
+    private static AuthMe plugin;
+    private static Settings instance;
 
     /**
      * Constructor for Settings.
+     *
      * @param pl AuthMe
      */
     public Settings(AuthMe pl) {
@@ -118,8 +105,9 @@ public final class Settings extends YamlConfiguration {
 
     /**
      * Method reload.
-    
-     * @throws Exception */
+     *
+     * @throws Exception
+     */
     public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
         boolean exist = SETTINGS_FILE.exists();
@@ -300,6 +288,189 @@ public final class Settings extends YamlConfiguration {
         // Load the welcome message
         getWelcomeMessage();
 
+    }
+
+    /**
+     * Method setValue.
+     *
+     * @param key   String
+     * @param value Object
+     */
+    public static void setValue(String key, Object value) {
+        instance.set(key, value);
+        save();
+    }
+
+    /**
+     * Method getPasswordHash.
+     *
+     * @return HashAlgorithm
+     */
+    private static HashAlgorithm getPasswordHash() {
+        String key = "settings.security.passwordHash";
+        try {
+            return HashAlgorithm.valueOf(configFile.getString(key, "SHA256").toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            ConsoleLogger.showError("Unknown Hash Algorithm; defaulting to SHA256");
+            return HashAlgorithm.SHA256;
+        }
+    }
+
+    /**
+     * Method getDataSource.
+     *
+     * @return DataSourceType
+     */
+    private static DataSourceType getDataSource() {
+        String key = "DataSource.backend";
+        try {
+            return DataSource.DataSourceType.valueOf(configFile.getString(key, "sqlite").toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            ConsoleLogger.showError("Unknown database backend; defaulting to SQLite database");
+            return DataSource.DataSourceType.SQLITE;
+        }
+    }
+
+    /**
+     * Config option for setting and check restricted user by username;ip ,
+     * return false if ip and name doesn't match with player that join the
+     * server, so player has a restricted access
+     *
+     * @param name String
+     * @param ip   String
+     * @return boolean
+     */
+    public static boolean getRestrictedIp(String name, String ip) {
+
+        Iterator<String> iterator = getRestrictedIp.iterator();
+        boolean trueOnce = false;
+        boolean nameFound = false;
+        while (iterator.hasNext()) {
+            String[] args = iterator.next().split(";");
+            String testName = args[0];
+            String testIp = args[1];
+            if (testName.equalsIgnoreCase(name)) {
+                nameFound = true;
+                if (testIp.equalsIgnoreCase(ip)) {
+                    trueOnce = true;
+                }
+            }
+        }
+        return !nameFound || trueOnce;
+    }
+
+    /**
+     * Saves the configuration to disk
+     *
+     * @return True if saved successfully
+     */
+    public static boolean save() {
+        try {
+            instance.save(SETTINGS_FILE);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    /**
+     * Method checkLang.
+     *
+     * @param lang String
+     * @return String
+     */
+    public static String checkLang(String lang) {
+        if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
+            ConsoleLogger.info("Set Language to: " + lang);
+            return lang;
+        }
+        if (AuthMe.class.getResourceAsStream("/messages/messages_" + lang + ".yml") != null) {
+            ConsoleLogger.info("Set Language to: " + lang);
+            return lang;
+        }
+        ConsoleLogger.info("Language file not found for " + lang + ", set to default language: en !");
+        return "en";
+    }
+
+    /**
+     * Method switchAntiBotMod.
+     *
+     * @param mode boolean
+     */
+    public static void switchAntiBotMod(boolean mode) {
+        if (mode) {
+            isKickNonRegisteredEnabled = true;
+            antiBotInAction = true;
+        } else {
+            isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
+            antiBotInAction = false;
+        }
+    }
+
+    private static void getWelcomeMessage() {
+        AuthMe plugin = AuthMe.getInstance();
+        welcomeMsg = new ArrayList<>();
+        if (!useWelcomeMessage) {
+            return;
+        }
+        if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt").exists())) {
+            try {
+                FileWriter fw = new FileWriter(plugin.getDataFolder() + File.separator + "welcome.txt", true);
+                BufferedWriter w = new BufferedWriter(fw);
+                w.write("Welcome {PLAYER} on {SERVER} server");
+                w.newLine();
+                w.write("This server uses " + AuthMe.getPluginName() + " protection!");
+                w.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
+            BufferedReader br = new BufferedReader(fr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                welcomeMsg.add(line);
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Method isEmailCorrect.
+     *
+     * @param email String
+     * @return boolean
+     */
+    public static boolean isEmailCorrect(String email) {
+        if (!email.contains("@"))
+            return false;
+        if (email.equalsIgnoreCase("your@email.com"))
+            return false;
+        String emailDomain = email.split("@")[1];
+        boolean correct = true;
+        if (emailWhitelist != null && !emailWhitelist.isEmpty()) {
+            for (String domain : emailWhitelist) {
+                if (!domain.equalsIgnoreCase(emailDomain)) {
+                    correct = false;
+                } else {
+                    correct = true;
+                    break;
+                }
+            }
+            return correct;
+        }
+        if (emailBlacklist != null && !emailBlacklist.isEmpty()) {
+            for (String domain : emailBlacklist) {
+                if (domain.equalsIgnoreCase(emailDomain)) {
+                    correct = false;
+                    break;
+                }
+            }
+        }
+        return correct;
     }
 
     public void mergeConfig() {
@@ -513,91 +684,12 @@ public final class Settings extends YamlConfiguration {
     }
 
     /**
-     * Method setValue.
-     * @param key String
-     * @param value Object
-     */
-    public static void setValue(String key, Object value) {
-        instance.set(key, value);
-        save();
-    }
-
-    /**
-     * Method getPasswordHash.
-    
-     * @return HashAlgorithm */
-    private static HashAlgorithm getPasswordHash() {
-        String key = "settings.security.passwordHash";
-        try {
-            return HashAlgorithm.valueOf(configFile.getString(key, "SHA256").toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            ConsoleLogger.showError("Unknown Hash Algorithm; defaulting to SHA256");
-            return HashAlgorithm.SHA256;
-        }
-    }
-
-    /**
-     * Method getDataSource.
-    
-     * @return DataSourceType */
-    private static DataSourceType getDataSource() {
-        String key = "DataSource.backend";
-        try {
-            return DataSource.DataSourceType.valueOf(configFile.getString(key, "sqlite").toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            ConsoleLogger.showError("Unknown database backend; defaulting to SQLite database");
-            return DataSource.DataSourceType.SQLITE;
-        }
-    }
-
-    /**
-     * Config option for setting and check restricted user by username;ip ,
-     * return false if ip and name doesn't match with player that join the
-     * server, so player has a restricted access
-     * @param name String
-     * @param ip String
-    
-     * @return boolean */
-    public static boolean getRestrictedIp(String name, String ip) {
-
-        Iterator<String> iterator = getRestrictedIp.iterator();
-        boolean trueOnce = false;
-        boolean nameFound = false;
-        while(iterator.hasNext()) {
-            String[] args = iterator.next().split(";");
-            String testName = args[0];
-            String testIp = args[1];
-            if (testName.equalsIgnoreCase(name)) {
-                nameFound = true;
-                if (testIp.equalsIgnoreCase(ip)) {
-                    trueOnce = true;
-                }
-            }
-        }
-        return !nameFound || trueOnce;
-    }
-
-    /**
-     * Saves the configuration to disk
-     *
-    
-     * @return True if saved successfully */
-    public static boolean save() {
-        try {
-            instance.save(SETTINGS_FILE);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
-    /**
      * Saves current configuration (plus defaults) to disk.
      * <p>
      * If defaults and configuration are empty, saves blank file.
      *
-    
-     * @return True if saved successfully */
+     * @return True if saved successfully
+     */
     public final boolean saveDefaults() {
         options().copyDefaults(true);
         options().copyHeader(true);
@@ -605,102 +697,5 @@ public final class Settings extends YamlConfiguration {
         options().copyDefaults(false);
         options().copyHeader(false);
         return success;
-    }
-
-    /**
-     * Method checkLang.
-     * @param lang String
-    
-     * @return String */
-    public static String checkLang(String lang) {
-        if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
-            ConsoleLogger.info("Set Language to: " + lang);
-            return lang;
-        }
-        if (AuthMe.class.getResourceAsStream("/messages/messages_" + lang + ".yml") != null) {
-            ConsoleLogger.info("Set Language to: " + lang);
-            return lang;
-        }
-        ConsoleLogger.info("Language file not found for " + lang + ", set to default language: en !");
-        return "en";
-    }
-
-    /**
-     * Method switchAntiBotMod.
-     * @param mode boolean
-     */
-    public static void switchAntiBotMod(boolean mode) {
-        if (mode) {
-            isKickNonRegisteredEnabled = true;
-            antiBotInAction = true;
-        } else {
-            isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
-            antiBotInAction = false;
-        }
-    }
-
-    private static void getWelcomeMessage() {
-        AuthMe plugin = AuthMe.getInstance();
-        welcomeMsg = new ArrayList<>();
-        if (!useWelcomeMessage) {
-            return;
-        }
-        if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt").exists())) {
-            try {
-                FileWriter fw = new FileWriter(plugin.getDataFolder() + File.separator + "welcome.txt", true);
-                BufferedWriter w = new BufferedWriter(fw);
-                w.write("Welcome {PLAYER} on {SERVER} server");
-                w.newLine();
-                w.write("This server uses " + AuthMe.PLUGIN_NAME + " protection!");
-                w.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
-            BufferedReader br = new BufferedReader(fr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                welcomeMsg.add(line);
-            }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Method isEmailCorrect.
-     * @param email String
-    
-     * @return boolean */
-    public static boolean isEmailCorrect(String email) {
-        if (!email.contains("@"))
-            return false;
-        if (email.equalsIgnoreCase("your@email.com"))
-            return false;
-        String emailDomain = email.split("@")[1];
-        boolean correct = true;
-        if (emailWhitelist != null && !emailWhitelist.isEmpty()) {
-            for (String domain : emailWhitelist) {
-                if (!domain.equalsIgnoreCase(emailDomain)) {
-                    correct = false;
-                } else {
-                    correct = true;
-                    break;
-                }
-            }
-            return correct;
-        }
-        if (emailBlacklist != null && !emailBlacklist.isEmpty()) {
-            for (String domain : emailBlacklist) {
-                if (domain.equalsIgnoreCase(emailDomain)) {
-                    correct = false;
-                    break;
-                }
-            }
-        }
-        return correct;
     }
 }

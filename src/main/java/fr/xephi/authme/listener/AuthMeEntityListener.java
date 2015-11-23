@@ -1,7 +1,7 @@
 package fr.xephi.authme.listener;
 
-import java.lang.reflect.Method;
-
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -9,29 +9,22 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
-import org.bukkit.event.entity.EntityShootBowEvent;
-import org.bukkit.event.entity.EntityTargetEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.projectiles.ProjectileSource;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.util.Utils;
+import java.lang.reflect.Method;
 
 /**
  */
 public class AuthMeEntityListener implements Listener {
 
-    public AuthMe instance;
     private static Method getShooter;
     private static boolean shooterIsProjectileSource;
+    public AuthMe instance;
 
     /**
      * Constructor for AuthMeEntityListener.
+     *
      * @param instance AuthMe
      */
     public AuthMeEntityListener(AuthMe instance) {
@@ -45,6 +38,7 @@ public class AuthMeEntityListener implements Listener {
 
     /**
      * Method onEntityDamage.
+     *
      * @param event EntityDamageEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -65,6 +59,7 @@ public class AuthMeEntityListener implements Listener {
 
     /**
      * Method onEntityTarget.
+     *
      * @param event EntityTargetEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -84,6 +79,7 @@ public class AuthMeEntityListener implements Listener {
 
     /**
      * Method onDmg.
+     *
      * @param event EntityDamageByEntityEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -103,6 +99,7 @@ public class AuthMeEntityListener implements Listener {
 
     /**
      * Method onFoodLevelChange.
+     *
      * @param event FoodLevelChangeEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -121,6 +118,7 @@ public class AuthMeEntityListener implements Listener {
 
     /**
      * Method entityRegainHealthEvent.
+     *
      * @param event EntityRegainHealthEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -140,6 +138,7 @@ public class AuthMeEntityListener implements Listener {
 
     /**
      * Method onEntityInteract.
+     *
      * @param event EntityInteractEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -158,6 +157,7 @@ public class AuthMeEntityListener implements Listener {
 
     /**
      * Method onLowestEntityInteract.
+     *
      * @param event EntityInteractEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -175,8 +175,10 @@ public class AuthMeEntityListener implements Listener {
     }
 
     // TODO: Need to check this, player can't throw snowball but the item is taken.
+
     /**
      * Method onProjectileLaunch.
+     *
      * @param event ProjectileLaunchEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -213,6 +215,7 @@ public class AuthMeEntityListener implements Listener {
 
     /**
      * Method onShoot.
+     *
      * @param event EntityShootBowEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)

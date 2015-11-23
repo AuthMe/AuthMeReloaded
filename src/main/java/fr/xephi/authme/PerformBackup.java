@@ -1,34 +1,31 @@
 package fr.xephi.authme;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import fr.xephi.authme.settings.Settings;
+
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import fr.xephi.authme.settings.Settings;
-
 /**
+ * The backup management class
  *
  * @author stefano
  * @version $Revision: 1.0 $
  */
 public class PerformBackup {
 
+    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
+    String dateString = format.format(new Date());
     private String dbName = Settings.getMySQLDatabase;
     private String dbUserName = Settings.getMySQLUsername;
     private String dbPassword = Settings.getMySQLPassword;
     private String tblname = Settings.getMySQLTablename;
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
-    String dateString = format.format(new Date());
     private String path = AuthMe.getInstance().getDataFolder() + File.separator + "backups" + File.separator + "backup" + dateString;
     private AuthMe instance;
 
     /**
      * Constructor for PerformBackup.
+     *
      * @param instance AuthMe
      */
     public PerformBackup(AuthMe instance) {
@@ -36,9 +33,34 @@ public class PerformBackup {
     }
 
     /**
+     *
+     */
+    public void doBackup(BackupCause cause) {
+        // Check whether a backup should be made at the specified point in time
+        switch (cause) {
+            case START:
+                if (!Settings.isBackupOnStart)
+                    return;
+            case STOP:
+                if (!Settings.isBackupOnStop)
+                    return;
+            case COMMAND:
+            case OTHER:
+        }
+
+        // Do backup and check return value!
+        if (doBackup()) {
+            ConsoleLogger.info("A backup has been performed successfully");
+        } else {
+            ConsoleLogger.showError("Error while performing a backup!");
+        }
+    }
+
+    /**
      * Method doBackup.
-    
-     * @return boolean */
+     *
+     * @return boolean
+     */
     public boolean doBackup() {
 
         switch (Settings.getDataSource) {
@@ -55,8 +77,9 @@ public class PerformBackup {
 
     /**
      * Method MySqlBackup.
-    
-     * @return boolean */
+     *
+     * @return boolean
+     */
     private boolean MySqlBackup() {
         File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
@@ -98,9 +121,10 @@ public class PerformBackup {
 
     /**
      * Method FileBackup.
+     *
      * @param backend String
-    
-     * @return boolean */
+     * @return boolean
+     */
     private boolean FileBackup(String backend) {
         File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
@@ -117,15 +141,12 @@ public class PerformBackup {
         return false;
     }
 
-    /*
-     * Check if we are under Windows and correct location of mysqldump.exe
-     * otherwise return error.
-     */
     /**
      * Method checkWindows.
+     *
      * @param windowsPath String
-    
-     * @return boolean */
+     * @return boolean
+     */
     private boolean checkWindows(String windowsPath) {
         String isWin = System.getProperty("os.name").toLowerCase();
         if (isWin.indexOf("win") >= 0) {
@@ -139,14 +160,17 @@ public class PerformBackup {
     }
 
     /*
-     * Copyr src bytefile into dst file
+     * Check if we are under Windows and correct location of mysqldump.exe
+     * otherwise return error.
      */
+
     /**
      * Method copy.
+     *
      * @param src File
      * @param dst File
-    
-     * @throws IOException */
+     * @throws IOException
+     */
     void copy(File src, File dst) throws IOException {
         InputStream in = new FileInputStream(src);
         OutputStream out = new FileOutputStream(dst);
@@ -161,8 +185,22 @@ public class PerformBackup {
         out.close();
     }
 
+    /*
+     * Copyr src bytefile into dst file
+     */
+
+    /**
+     * Method getInstance.
+     *
+     * @return AuthMe
+     */
+    public AuthMe getInstance() {
+        return instance;
+    }
+
     /**
      * Method setInstance.
+     *
      * @param instance AuthMe
      */
     public void setInstance(AuthMe instance) {
@@ -170,11 +208,13 @@ public class PerformBackup {
     }
 
     /**
-     * Method getInstance.
-    
-     * @return AuthMe */
-    public AuthMe getInstance() {
-        return instance;
+     * Possible backup causes.
+     */
+    public enum BackupCause {
+        START,
+        STOP,
+        COMMAND,
+        OTHER,
     }
 
 }

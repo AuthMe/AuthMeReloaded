@@ -1,14 +1,13 @@
 package fr.xephi.authme.command.executable.authme;
 
-import java.util.Date;
-
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Messages;
+import org.bukkit.command.CommandSender;
+
+import java.util.Date;
 
 /**
  */
@@ -18,7 +17,7 @@ public class LastLoginCommand extends ExecutableCommand {
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Get the player
         String playerName = sender.getName();
-        if(commandArguments.getCount() >= 1)
+        if (commandArguments.getCount() >= 1)
             playerName = commandArguments.get(0);
 
         // Validate the player

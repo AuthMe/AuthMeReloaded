@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
- * 
  * Called if a player is teleported to the authme first spawn
  *
  * @author Xephi59
@@ -18,9 +17,10 @@ public class FirstSpawnTeleportEvent extends CustomEvent {
 
     /**
      * Constructor for FirstSpawnTeleportEvent.
+     *
      * @param player Player
-     * @param from Location
-     * @param to Location
+     * @param from   Location
+     * @param to     Location
      */
     public FirstSpawnTeleportEvent(Player player, Location from, Location to) {
         super(true);
@@ -31,14 +31,25 @@ public class FirstSpawnTeleportEvent extends CustomEvent {
 
     /**
      * Method getPlayer.
-    
-     * @return Player */
+     *
+     * @return Player
+     */
     public Player getPlayer() {
         return player;
     }
 
     /**
+     * Method getTo.
+     *
+     * @return Location
+     */
+    public Location getTo() {
+        return to;
+    }
+
+    /**
      * Method setTo.
+     *
      * @param to Location
      */
     public void setTo(Location to) {
@@ -46,17 +57,10 @@ public class FirstSpawnTeleportEvent extends CustomEvent {
     }
 
     /**
-     * Method getTo.
-    
-     * @return Location */
-    public Location getTo() {
-        return to;
-    }
-
-    /**
      * Method getFrom.
-    
-     * @return Location */
+     *
+     * @return Location
+     */
     public Location getFrom() {
         return from;
     }

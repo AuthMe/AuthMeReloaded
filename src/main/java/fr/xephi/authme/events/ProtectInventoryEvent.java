@@ -4,7 +4,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 /**
- *
  * This event is call just after store inventory into cache and will empty the
  * player inventory.
  *
@@ -21,6 +20,7 @@ public class ProtectInventoryEvent extends CustomEvent {
 
     /**
      * Constructor for ProtectInventoryEvent.
+     *
      * @param player Player
      */
     public ProtectInventoryEvent(Player player) {
@@ -34,30 +34,34 @@ public class ProtectInventoryEvent extends CustomEvent {
 
     /**
      * Method getStoredInventory.
-    
-     * @return ItemStack[] */
+     *
+     * @return ItemStack[]
+     */
     public ItemStack[] getStoredInventory() {
         return this.storedinventory;
     }
 
     /**
      * Method getStoredArmor.
-    
-     * @return ItemStack[] */
+     *
+     * @return ItemStack[]
+     */
     public ItemStack[] getStoredArmor() {
         return this.storedarmor;
     }
 
     /**
      * Method getPlayer.
-    
-     * @return Player */
+     *
+     * @return Player
+     */
     public Player getPlayer() {
         return this.player;
     }
 
     /**
      * Method setNewInventory.
+     *
      * @param emptyInventory ItemStack[]
      */
     public void setNewInventory(ItemStack[] emptyInventory) {
@@ -66,14 +70,16 @@ public class ProtectInventoryEvent extends CustomEvent {
 
     /**
      * Method getEmptyInventory.
-    
-     * @return ItemStack[] */
+     *
+     * @return ItemStack[]
+     */
     public ItemStack[] getEmptyInventory() {
         return this.emptyInventory;
     }
 
     /**
      * Method setNewArmor.
+     *
      * @param emptyArmor ItemStack[]
      */
     public void setNewArmor(ItemStack[] emptyArmor) {
@@ -82,8 +88,9 @@ public class ProtectInventoryEvent extends CustomEvent {
 
     /**
      * Method getEmptyArmor.
-    
-     * @return ItemStack[] */
+     *
+     * @return ItemStack[]
+     */
     public ItemStack[] getEmptyArmor() {
         return this.emptyArmor;
     }

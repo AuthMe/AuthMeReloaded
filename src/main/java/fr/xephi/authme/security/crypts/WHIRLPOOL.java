@@ -2,63 +2,61 @@ package fr.xephi.authme.security.crypts;
 
 /**
  * The Whirlpool hashing function.
- *
- * <P>
+ * <p>
+ * <p>
  * <b>References</b>
- *
- * <P>
+ * <p>
+ * <p>
  * The Whirlpool algorithm was developed by <a
  * href="mailto:pbarreto@scopus.com.br">Paulo S. L. M. Barreto</a> and <a
  * href="mailto:vincent.rijmen@cryptomathic.com">Vincent Rijmen</a>.
- *
+ * <p>
  * See P.S.L.M. Barreto, V. Rijmen, ``The Whirlpool hashing function,'' First
  * NESSIE workshop, 2000 (tweaked version, 2003),
  * <https://www.cosic.esat.kuleuven
  * .ac.be/nessie/workshop/submissions/whirlpool.zip>
- * 
+ *
  * @author Paulo S.L.M. Barreto
  * @author Vincent Rijmen.
- *
  * @version 3.0 (2003.03.12)
- *
- *          ====================================================================
- *          =========
- *
- *          Differences from version 2.1:
- *
- *          - Suboptimal diffusion matrix replaced by cir(1, 1, 4, 1, 8, 5, 2,
- *          9).
- *
- *          ====================================================================
- *          =========
- *
- *          Differences from version 2.0:
- *
- *          - Generation of ISO/IEC 10118-3 test vectors. - Bug fix: nonzero
- *          carry was ignored when tallying the data length (this bug apparently
- *          only manifested itself when feeding data in pieces rather than in a
- *          single chunk at once).
- *
- *          Differences from version 1.0:
- *
- *          - Original S-box replaced by the tweaked, hardware-efficient
- *          version.
- *
- *          ====================================================================
- *          =========
- *
- *          THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
- *          OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- *          WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- *          ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
- *          LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *          CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *          SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- *          BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
- *          LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
- *          NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- *          SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
+ * <p>
+ * ====================================================================
+ * =========
+ * <p>
+ * Differences from version 2.1:
+ * <p>
+ * - Suboptimal diffusion matrix replaced by cir(1, 1, 4, 1, 8, 5, 2,
+ * 9).
+ * <p>
+ * ====================================================================
+ * =========
+ * <p>
+ * Differences from version 2.0:
+ * <p>
+ * - Generation of ISO/IEC 10118-3 test vectors. - Bug fix: nonzero
+ * carry was ignored when tallying the data length (this bug apparently
+ * only manifested itself when feeding data in pieces rather than in a
+ * single chunk at once).
+ * <p>
+ * Differences from version 1.0:
+ * <p>
+ * - Original S-box replaced by the tweaked, hardware-efficient
+ * version.
+ * <p>
+ * ====================================================================
+ * =========
+ * <p>
+ * THIS SOFTWARE IS PROVIDED BY THE AUTHORS ''AS IS'' AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+ * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 import java.security.NoSuchAlgorithmException;
@@ -167,6 +165,22 @@ public class WHIRLPOOL implements EncryptionMethod {
     }
 
     /**
+     * Method display.
+     * @param array byte[]
+
+     * @return String */
+    protected static String display(byte[] array) {
+        char[] val = new char[2 * array.length];
+        String hex = "0123456789ABCDEF";
+        for (int i = 0; i < array.length; i++) {
+            int b = array[i] & 0xff;
+            val[2 * i] = hex.charAt(b >>> 4);
+            val[2 * i + 1] = hex.charAt(b & 15);
+        }
+        return String.valueOf(val);
+    }
+
+    /**
      * The core Whirlpool transform.
      */
     protected void processBuffer() {
@@ -232,12 +246,12 @@ public class WHIRLPOOL implements EncryptionMethod {
 
     /**
      * Delivers input data to the hashing algorithm.
-     * 
+     *
      * @param source
      *            plaintext data to hash.
      * @param sourceBits
      *            how many bits of plaintext to process.
-     * 
+     *
      *            This method maintains the invariant: bufferBits < 512
      */
     public void NESSIEadd(byte[] source, long sourceBits) {
@@ -249,9 +263,9 @@ public class WHIRLPOOL implements EncryptionMethod {
          * +-------+-------+-------+-------+-------+------- | bufferPos
          */
         int sourcePos = 0; // index of leftmost source byte containing data (1
-                           // to 8 bits).
+        // to 8 bits).
         int sourceGap = (8 - ((int) sourceBits & 7)) & 7; // space on
-                                                          // source[sourcePos].
+        // source[sourcePos].
         int bufferRem = bufferBits & 7; // occupied bits on buffer[bufferPos].
         int b;
         // tally the length of the added data:
@@ -264,7 +278,7 @@ public class WHIRLPOOL implements EncryptionMethod {
         }
         // process data in chunks of 8 bits:
         while (sourceBits > 8) { // at least source[sourcePos] and
-                                 // source[sourcePos+1] contain data.
+            // source[sourcePos+1] contain data.
             // take a byte from the source:
             b = ((source[sourcePos] << sourceGap) & 0xff) | ((source[sourcePos + 1] & 0xff) >>> (8 - sourceGap));
             if (b < 0 || b >= 256) {
@@ -289,7 +303,7 @@ public class WHIRLPOOL implements EncryptionMethod {
         // furthermore, all data (if any is left) is in source[sourcePos].
         if (sourceBits > 0) {
             b = (source[sourcePos] << sourceGap) & 0xff; // bits are
-                                                         // left-justified on b.
+            // left-justified on b.
             // process the remaining bits:
             buffer[bufferPos] |= b >>> bufferRem;
         } else {
@@ -319,7 +333,7 @@ public class WHIRLPOOL implements EncryptionMethod {
 
     /**
      * Get the hash value from the hashing state.
-     * 
+     *
      * This method uses the invariant: bufferBits < 512
      * @param digest byte[]
      */
@@ -360,10 +374,10 @@ public class WHIRLPOOL implements EncryptionMethod {
 
     /**
      * Delivers string input data to the hashing algorithm.
-     * 
+     *
      * @param source
      *            plaintext data to hash (ASCII text string).
-     * 
+     *
      *            This method maintains the invariant: bufferBits < 512
      */
     public void NESSIEadd(String source) {
@@ -377,29 +391,13 @@ public class WHIRLPOOL implements EncryptionMethod {
     }
 
     /**
-     * Method display.
-     * @param array byte[]
-    
-     * @return String */
-    protected static String display(byte[] array) {
-        char[] val = new char[2 * array.length];
-        String hex = "0123456789ABCDEF";
-        for (int i = 0; i < array.length; i++) {
-            int b = array[i] & 0xff;
-            val[2 * i] = hex.charAt(b >>> 4);
-            val[2 * i + 1] = hex.charAt(b & 15);
-        }
-        return String.valueOf(val);
-    }
-
-    /**
      * Method getHash.
      * @param password String
      * @param salt String
      * @param name String
-    
-    
-    
+
+
+
      * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String) */
     @Override
     public String getHash(String password, String salt, String name)
@@ -416,13 +414,13 @@ public class WHIRLPOOL implements EncryptionMethod {
      * @param hash String
      * @param password String
      * @param playerName String
-    
-    
-    
+
+
+
      * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String) */
     @Override
     public boolean comparePassword(String hash, String password,
-            String playerName) throws NoSuchAlgorithmException {
+                                   String playerName) throws NoSuchAlgorithmException {
         return hash.equals(getHash(password, "", ""));
     }
 }

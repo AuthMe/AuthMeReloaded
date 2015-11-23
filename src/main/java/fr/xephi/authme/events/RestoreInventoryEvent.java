@@ -14,6 +14,7 @@ public class RestoreInventoryEvent extends CustomEvent {
 
     /**
      * Constructor for RestoreInventoryEvent.
+     *
      * @param player Player
      */
     public RestoreInventoryEvent(Player player) {
@@ -22,8 +23,9 @@ public class RestoreInventoryEvent extends CustomEvent {
 
     /**
      * Constructor for RestoreInventoryEvent.
+     *
      * @param player Player
-     * @param async boolean
+     * @param async  boolean
      */
     public RestoreInventoryEvent(Player player, boolean async) {
         super(async);
@@ -32,14 +34,16 @@ public class RestoreInventoryEvent extends CustomEvent {
 
     /**
      * Method getPlayer.
-    
-     * @return Player */
+     *
+     * @return Player
+     */
     public Player getPlayer() {
         return this.player;
     }
 
     /**
      * Method setPlayer.
+     *
      * @param player Player
      */
     public void setPlayer(Player player) {

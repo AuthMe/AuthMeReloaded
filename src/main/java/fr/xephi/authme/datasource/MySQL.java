@@ -1,23 +1,17 @@
 package fr.xephi.authme.datasource;
 
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.PoolInitializationException;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  */
@@ -49,10 +43,9 @@ public class MySQL implements DataSource {
 
     /**
      * Constructor for MySQL.
-    
-    
-    
-     * @throws ClassNotFoundException * @throws SQLException * @throws PoolInitializationException */
+     *
+     * @throws ClassNotFoundException * @throws SQLException * @throws PoolInitializationException
+     */
     public MySQL() throws ClassNotFoundException, SQLException, PoolInitializationException {
         this.host = Settings.getMySQLHost;
         this.port = Settings.getMySQLPort;
@@ -108,9 +101,9 @@ public class MySQL implements DataSource {
 
     /**
      * Method setConnectionArguments.
-    
-    
-     * @throws ClassNotFoundException * @throws IllegalArgumentException */
+     *
+     * @throws ClassNotFoundException * @throws IllegalArgumentException
+     */
     private synchronized void setConnectionArguments()
             throws ClassNotFoundException, IllegalArgumentException {
         HikariConfig config = new HikariConfig();
@@ -132,9 +125,9 @@ public class MySQL implements DataSource {
 
     /**
      * Method reloadArguments.
-    
-    
-     * @throws ClassNotFoundException * @throws IllegalArgumentException */
+     *
+     * @throws ClassNotFoundException * @throws IllegalArgumentException
+     */
     private synchronized void reloadArguments()
             throws ClassNotFoundException, IllegalArgumentException {
         if (ds != null) {
@@ -146,17 +139,18 @@ public class MySQL implements DataSource {
 
     /**
      * Method getConnection.
-    
-    
-     * @return Connection * @throws SQLException */
+     *
+     * @return Connection * @throws SQLException
+     */
     private synchronized Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
 
     /**
      * Method setupConnection.
-    
-     * @throws SQLException */
+     *
+     * @throws SQLException
+     */
     private synchronized void setupConnection() throws SQLException {
         Connection con = null;
         Statement st = null;
@@ -222,10 +216,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method isAuthAvailable.
+     *
      * @param user String
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
+     */
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         Connection con = null;
@@ -250,10 +244,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method getAuth.
+     *
      * @param user String
-    
-    
-     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String) */
+     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
+     */
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         Connection con = null;
@@ -309,10 +303,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method saveAuth.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
+     */
     @Override
     public synchronized boolean saveAuth(PlayerAuth auth) {
         Connection con = null;
@@ -522,10 +516,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method updatePassword.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
+     */
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
         Connection con = null;
@@ -573,10 +567,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method updateSession.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateSession(PlayerAuth auth) {
         Connection con = null;
@@ -602,10 +596,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method purgeDatabase.
+     *
      * @param until long
-    
-    
-     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long) */
+     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
+     */
     @Override
     public synchronized int purgeDatabase(long until) {
         Connection con = null;
@@ -627,10 +621,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method autoPurgeDatabase.
+     *
      * @param until long
-    
-    
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long) */
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
+     */
     @Override
     public synchronized List<String> autoPurgeDatabase(long until) {
         Connection con = null;
@@ -663,10 +657,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method removeAuth.
+     *
      * @param user String
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
+     */
     @Override
     public synchronized boolean removeAuth(String user) {
         Connection con = null;
@@ -706,10 +700,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method updateQuitLoc.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateQuitLoc(PlayerAuth auth) {
         Connection con = null;
@@ -736,10 +730,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method getIps.
+     *
      * @param ip String
-    
-    
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String) */
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
+     */
     @Override
     public synchronized int getIps(String ip) {
         Connection con = null;
@@ -768,10 +762,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method updateEmail.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateEmail(PlayerAuth auth) {
         Connection con = null;
@@ -796,10 +790,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method updateSalt.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateSalt(PlayerAuth auth) {
         if (columnSalt.isEmpty()) {
@@ -826,6 +820,7 @@ public class MySQL implements DataSource {
 
     /**
      * Method reload.
+     *
      * @see fr.xephi.authme.datasource.DataSource#reload()
      */
     @Override
@@ -845,6 +840,7 @@ public class MySQL implements DataSource {
 
     /**
      * Method close.
+     *
      * @see fr.xephi.authme.datasource.DataSource#close()
      */
     @Override
@@ -855,6 +851,7 @@ public class MySQL implements DataSource {
 
     /**
      * Method close.
+     *
      * @param o AutoCloseable
      */
     private void close(AutoCloseable o) {
@@ -870,10 +867,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method getAllAuthsByName.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth) */
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
+     */
     @Override
     public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
         Connection con = null;
@@ -902,10 +899,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method getAllAuthsByIp.
+     *
      * @param ip String
-    
-    
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String) */
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
+     */
     @Override
     public synchronized List<String> getAllAuthsByIp(String ip) {
         Connection con = null;
@@ -934,11 +931,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method getAllAuthsByEmail.
+     *
      * @param email String
-    
-    
-    
-     * @return List<String> * @throws SQLException * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String) */
+     * @return List<String> * @throws SQLException * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
+     */
     @Override
     public synchronized List<String> getAllAuthsByEmail(String email) throws SQLException {
         final Connection con = getConnection();
@@ -963,9 +959,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method purgeBanned.
+     *
      * @param banned List<String>
-    
-     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>) */
+     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
+     */
     @Override
     public synchronized void purgeBanned(List<String> banned) {
         Connection con = null;
@@ -988,9 +985,9 @@ public class MySQL implements DataSource {
 
     /**
      * Method getType.
-    
-    
-     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType() */
+     *
+     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType()
+     */
     @Override
     public DataSourceType getType() {
         return DataSourceType.MYSQL;
@@ -998,10 +995,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method isLogged.
+     *
      * @param user String
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
+     */
     @Override
     public boolean isLogged(String user) {
         Connection con = null;
@@ -1028,9 +1025,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method setLogged.
+     *
      * @param user String
-    
-     * @see fr.xephi.authme.datasource.DataSource#setLogged(String) */
+     * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
+     */
     @Override
     public void setLogged(String user) {
         Connection con = null;
@@ -1052,9 +1050,10 @@ public class MySQL implements DataSource {
 
     /**
      * Method setUnlogged.
+     *
      * @param user String
-    
-     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String) */
+     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
+     */
     @Override
     public void setUnlogged(String user) {
         Connection con = null;
@@ -1077,6 +1076,7 @@ public class MySQL implements DataSource {
 
     /**
      * Method purgeLogged.
+     *
      * @see fr.xephi.authme.datasource.DataSource#purgeLogged()
      */
     @Override
@@ -1100,9 +1100,9 @@ public class MySQL implements DataSource {
 
     /**
      * Method getAccountsRegistered.
-    
-    
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered() */
+     *
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
+     */
     @Override
     public int getAccountsRegistered() {
         int result = 0;
@@ -1129,10 +1129,11 @@ public class MySQL implements DataSource {
 
     /**
      * Method updateName.
+     *
      * @param oldone String
      * @param newone String
-    
-     * @see fr.xephi.authme.datasource.DataSource#updateName(String, String) */
+     * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
+     */
     @Override
     public void updateName(String oldone, String newone) {
         Connection con = null;
@@ -1154,9 +1155,9 @@ public class MySQL implements DataSource {
 
     /**
      * Method getAllAuths.
-    
-    
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths() */
+     *
+     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
+     */
     @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
@@ -1210,9 +1211,9 @@ public class MySQL implements DataSource {
 
     /**
      * Method getLoggedPlayers.
-    
-    
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers() */
+     *
+     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
+     */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         List<PlayerAuth> auths = new ArrayList<>();

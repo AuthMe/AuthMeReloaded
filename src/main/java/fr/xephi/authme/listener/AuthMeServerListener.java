@@ -1,17 +1,16 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.GeoLiteAPI;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListPingEvent;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.plugin.Plugin;
 
 /**
@@ -23,6 +22,7 @@ public class AuthMeServerListener implements Listener {
 
     /**
      * Constructor for AuthMeServerListener.
+     *
      * @param plugin AuthMe
      */
     public AuthMeServerListener(AuthMe plugin) {
@@ -31,6 +31,7 @@ public class AuthMeServerListener implements Listener {
 
     /**
      * Method onServerPing.
+     *
      * @param event ServerListPingEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -40,10 +41,10 @@ public class AuthMeServerListener implements Listener {
         if (Settings.countries.isEmpty())
             return;
         if (!Settings.countriesBlacklist.isEmpty()) {
-            if (Settings.countriesBlacklist.contains(Utils.getCountryCode(event.getAddress().getHostAddress())))
+            if (Settings.countriesBlacklist.contains(GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress())))
                 event.setMotd(m.send("country_banned")[0]);
         }
-        if (Settings.countries.contains(Utils.getCountryCode(event.getAddress().getHostAddress()))) {
+        if (Settings.countries.contains(GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress()))) {
             event.setMotd(plugin.getServer().getMotd());
         } else {
             event.setMotd(m.send("country_banned")[0]);
@@ -52,6 +53,7 @@ public class AuthMeServerListener implements Listener {
 
     /**
      * Method onPluginDisable.
+     *
      * @param event PluginDisableEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -60,11 +62,11 @@ public class AuthMeServerListener implements Listener {
         Plugin pluginInstance = event.getPlugin();
 
         // Make sure the plugin instance isn't null
-        if(pluginInstance == null)
+        if (pluginInstance == null)
             return;
 
         // Make sure it's not this plugin itself
-        if(pluginInstance.equals(this.plugin))
+        if (pluginInstance.equals(this.plugin))
             return;
 
         // Call the onPluginDisable method in the permissions manager
@@ -98,6 +100,7 @@ public class AuthMeServerListener implements Listener {
 
     /**
      * Method onPluginEnable.
+     *
      * @param event PluginEnableEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)

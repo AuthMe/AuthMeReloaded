@@ -1,10 +1,5 @@
 package fr.xephi.authme.process.register;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -13,6 +8,10 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.entity.Player;
+
+import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 
 /**
  */
@@ -28,11 +27,12 @@ public class AsyncRegister {
 
     /**
      * Constructor for AsyncRegister.
-     * @param player Player
+     *
+     * @param player   Player
      * @param password String
-     * @param email String
-     * @param plugin AuthMe
-     * @param data DataSource
+     * @param email    String
+     * @param plugin   AuthMe
+     * @param data     DataSource
      */
     public AsyncRegister(Player player, String password, String email,
                          AuthMe plugin, DataSource data) {
@@ -46,17 +46,18 @@ public class AsyncRegister {
 
     /**
      * Method getIp.
-    
-     * @return String */
+     *
+     * @return String
+     */
     protected String getIp() {
         return plugin.getIP(player);
     }
 
     /**
      * Method preRegisterCheck.
-    
-    
-     * @return boolean * @throws Exception */
+     *
+     * @return boolean * @throws Exception
+     */
     protected boolean preRegisterCheck() throws Exception {
         String lowpass = password.toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name)) {
@@ -113,8 +114,9 @@ public class AsyncRegister {
 
     /**
      * Method emailRegister.
-    
-     * @throws Exception */
+     *
+     * @throws Exception
+     */
     protected void emailRegister() throws Exception {
         if (Settings.getmaxRegPerEmail > 0) {
             if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {

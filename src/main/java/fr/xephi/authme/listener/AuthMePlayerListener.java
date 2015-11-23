@@ -1,12 +1,18 @@
 package fr.xephi.authme.listener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.PatternSyntaxException;
-
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.GeoLiteAPI;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -19,52 +25,28 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.*;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Utils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.PatternSyntaxException;
 
 /**
  */
 public class AuthMePlayerListener implements Listener {
 
-    public AuthMe plugin;
-    private Messages m = Messages.getInstance();
-
     public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
+    public AuthMe plugin;
+    private Messages m = Messages.getInstance();
     private List<String> antibot = new ArrayList<>();
 
     /**
      * Constructor for AuthMePlayerListener.
+     *
      * @param plugin AuthMe
      */
     public AuthMePlayerListener(AuthMe plugin) {
@@ -73,6 +55,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method handleChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     private void handleChat(AsyncPlayerChatEvent event) {
@@ -99,6 +82,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerCommandPreprocess.
+     *
      * @param event PlayerCommandPreprocessEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -115,6 +99,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerNormalChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -124,6 +109,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerHighChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
@@ -133,6 +119,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -142,6 +129,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerHighestChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -151,6 +139,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerEarlyChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -160,6 +149,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerLowChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -169,6 +159,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerMove.
+     *
      * @param event PlayerMoveEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -207,10 +198,11 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method checkAntiBotMod.
+     *
      * @param player Player
      */
     private void checkAntiBotMod(final Player player) {
-        if (plugin.delayedAntiBot || plugin.antibotMod)
+        if (plugin.delayedAntiBot || plugin.antiBotMod)
             return;
         if (plugin.getPermissionsManager().hasPermission(player, "authme.bypassantibot"))
             return;
@@ -222,7 +214,7 @@ public class AuthMePlayerListener implements Listener {
 
                 @Override
                 public void run() {
-                    if (plugin.antibotMod) {
+                    if (plugin.antiBotMod) {
                         plugin.switchAntiBotMod(false);
                         antibot.clear();
                         for (String s : m.send("antibot_auto_disabled"))
@@ -244,6 +236,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerJoin.
+     *
      * @param event PlayerJoinEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -267,7 +260,7 @@ public class AuthMePlayerListener implements Listener {
             @Override
             public void run() {
                 if (delay)
-                 joinMessage.put(name, joinMsg);
+                    joinMessage.put(name, joinMsg);
                 plugin.management.performJoin(player);
             }
         });
@@ -275,6 +268,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPreLogin.
+     *
      * @param event AsyncPlayerPreLoginEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -306,6 +300,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerLogin.
+     *
      * @param event PlayerLoginEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -329,7 +324,7 @@ public class AuthMePlayerListener implements Listener {
 
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
         if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
-            String code = Utils.getCountryCode(event.getAddress().getHostAddress());
+            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || Settings.countriesBlacklist.contains(code))) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
@@ -337,7 +332,7 @@ public class AuthMePlayerListener implements Listener {
             }
         }
         if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
-            String code = Utils.getCountryCode(event.getAddress().getHostAddress());
+            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if (((code == null) || !Settings.countries.contains(code))) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
@@ -429,6 +424,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerQuit.
+     *
      * @param event PlayerQuitEvent
      */
     @EventHandler(priority = EventPriority.MONITOR)
@@ -448,6 +444,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerKick.
+     *
      * @param event PlayerKickEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -467,6 +464,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerPickupItem.
+     *
      * @param event PlayerPickupItemEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -478,6 +476,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerInteract.
+     *
      * @param event PlayerInteractEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -490,6 +489,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerConsumeItem.
+     *
      * @param event PlayerItemConsumeEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -501,6 +501,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerInventoryOpen.
+     *
      * @param event InventoryOpenEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -525,6 +526,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerInventoryClick.
+     *
      * @param event InventoryClickEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -540,6 +542,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method playerHitPlayerEvent.
+     *
      * @param event EntityDamageByEntityEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -556,6 +559,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerInteractEntity.
+     *
      * @param event PlayerInteractEntityEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -568,6 +572,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerDropItem.
+     *
      * @param event PlayerDropItemEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -579,6 +584,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerBedEnter.
+     *
      * @param event PlayerBedEnterEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -590,6 +596,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onSignChange.
+     *
      * @param event SignChangeEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -601,6 +608,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerRespawn.
+     *
      * @param event PlayerRespawnEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -621,6 +629,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerGameModeChange.
+     *
      * @param event PlayerGameModeChangeEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -643,6 +652,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerShear.
+     *
      * @param event PlayerShearEntityEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -655,6 +665,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerFish.
+     *
      * @param event PlayerFishEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)

@@ -4,6 +4,7 @@ import java.util.logging.Filter;
 import java.util.logging.LogRecord;
 
 /**
+ * Console filter Class
  *
  * @author Xephi59
  * @version $Revision: 1.0 $
@@ -15,10 +16,10 @@ public class ConsoleFilter implements Filter {
 
     /**
      * Method isLoggable.
+     *
      * @param record LogRecord
-    
-    
-     * @return boolean * @see java.util.logging.Filter#isLoggable(LogRecord) */
+     * @return boolean * @see java.util.logging.Filter#isLoggable(LogRecord)
+     */
     @Override
     public boolean isLoggable(LogRecord record) {
         try {

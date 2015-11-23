@@ -1,13 +1,5 @@
 package fr.xephi.authme.process.unregister;
 
-import java.security.NoSuchAlgorithmException;
-
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -20,6 +12,13 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.security.NoSuchAlgorithmException;
 
 /**
  */
@@ -27,21 +26,22 @@ public class AsyncronousUnregister {
 
     protected Player player;
     protected String name;
+    protected String password;
+    protected boolean force;
     private AuthMe plugin;
     private Messages m = Messages.getInstance();
-	protected String password;
-	protected boolean force;
-	private JsonCache playerCache;
+    private JsonCache playerCache;
 
     /**
      * Constructor for AsyncronousUnregister.
-     * @param player Player
+     *
+     * @param player   Player
      * @param password String
-     * @param force boolean
-     * @param plugin AuthMe
+     * @param force    boolean
+     * @param plugin   AuthMe
      */
     public AsyncronousUnregister(Player player, String password,
-            boolean force, AuthMe plugin) {
+                                 boolean force, AuthMe plugin) {
         this.player = player;
         this.password = password;
         this.force = force;
@@ -52,8 +52,9 @@ public class AsyncronousUnregister {
 
     /**
      * Method getIp.
-    
-     * @return String */
+     *
+     * @return String
+     */
     protected String getIp() {
         return plugin.getIP(player);
     }

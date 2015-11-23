@@ -6,22 +6,30 @@ import org.bukkit.command.CommandSender;
  */
 public class FoundCommandResult {
 
-    /** The command description instance. */
+    /**
+     * The command description instance.
+     */
     private CommandDescription commandDescription;
-    /** The command reference. */
+    /**
+     * The command reference.
+     */
     private CommandParts commandReference;
-    /** The command arguments. */
+    /**
+     * The command arguments.
+     */
     private CommandParts commandArguments;
-    /** The original search query reference. */
+    /**
+     * The original search query reference.
+     */
     private CommandParts queryReference;
 
     /**
      * Constructor.
      *
      * @param commandDescription The command description.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     * @param queryReference The original query reference.
+     * @param commandReference   The command reference.
+     * @param commandArguments   The command arguments.
+     * @param queryReference     The original query reference.
      */
     public FoundCommandResult(CommandDescription commandDescription, CommandParts commandReference, CommandParts commandArguments, CommandParts queryReference) {
         this.commandDescription = commandDescription;
@@ -33,11 +41,11 @@ public class FoundCommandResult {
     /**
      * Check whether the command was suitable.
      *
-    
-     * @return True if the command was suitable, false otherwise. */
+     * @return True if the command was suitable, false otherwise.
+     */
     public boolean hasProperArguments() {
         // Make sure the command description is set
-        if(this.commandDescription == null)
+        if (this.commandDescription == null)
             return false;
 
         // Get and return the result
@@ -47,8 +55,8 @@ public class FoundCommandResult {
     /**
      * Get the command description.
      *
-    
-     * @return Command description. */
+     * @return Command description.
+     */
     public CommandDescription getCommandDescription() {
         return this.commandDescription;
     }
@@ -57,7 +65,6 @@ public class FoundCommandResult {
      * Set the command description.
      *
      * @param commandDescription The command description.
-     *
      */
     public void setCommandDescription(CommandDescription commandDescription) {
         this.commandDescription = commandDescription;
@@ -66,11 +73,11 @@ public class FoundCommandResult {
     /**
      * Check whether the command is executable.
      *
-    
-     * @return True if the command is executable, false otherwise. */
+     * @return True if the command is executable, false otherwise.
+     */
     public boolean isExecutable() {
         // Make sure the command description is valid
-        if(this.commandDescription == null)
+        if (this.commandDescription == null)
             return false;
 
         // Check whether the command is executable, return the result
@@ -81,12 +88,11 @@ public class FoundCommandResult {
      * Execute the command.
      *
      * @param sender The command sender that executed the command.
-     *
-    
-     * @return True on success, false on failure. */
+     * @return True on success, false on failure.
+     */
     public boolean executeCommand(CommandSender sender) {
         // Make sure the command description is valid
-        if(this.commandDescription == null)
+        if (this.commandDescription == null)
             return false;
 
         // Execute the command
@@ -97,12 +103,11 @@ public class FoundCommandResult {
      * Check whether a command sender has permission to execute the command.
      *
      * @param sender The command sender.
-     *
-    
-     * @return True if the command sender has permission, false otherwise. */
+     * @return True if the command sender has permission, false otherwise.
+     */
     public boolean hasPermission(CommandSender sender) {
         // Make sure the command description is valid
-        if(this.commandDescription == null)
+        if (this.commandDescription == null)
             return false;
 
         // Get and return the permission
@@ -112,8 +117,8 @@ public class FoundCommandResult {
     /**
      * Get the command reference.
      *
-    
-     * @return The command reference. */
+     * @return The command reference.
+     */
     public CommandParts getCommandReference() {
         return this.commandReference;
     }
@@ -121,8 +126,8 @@ public class FoundCommandResult {
     /**
      * Get the command arguments.
      *
-    
-     * @return The command arguments. */
+     * @return The command arguments.
+     */
     public CommandParts getCommandArguments() {
         return this.commandArguments;
     }
@@ -130,8 +135,8 @@ public class FoundCommandResult {
     /**
      * Get the original query reference.
      *
-    
-     * @return Original query reference. */
+     * @return Original query reference.
+     */
     public CommandParts getQueryReference() {
         return this.queryReference;
     }
@@ -139,11 +144,11 @@ public class FoundCommandResult {
     /**
      * Get the difference value between the original query and the result reference.
      *
-    
-     * @return The difference value. */
+     * @return The difference value.
+     */
     public double getDifference() {
         // Get the difference through the command found
-        if(this.commandDescription != null)
+        if (this.commandDescription != null)
             return this.commandDescription.getCommandDifference(this.queryReference);
 
         // Get the difference from the query reference

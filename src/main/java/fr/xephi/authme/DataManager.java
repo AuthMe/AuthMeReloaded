@@ -1,19 +1,18 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-
-import fr.xephi.authme.permission.PermissionsManager;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Utils;
 
 /**
  */
@@ -23,6 +22,7 @@ public class DataManager {
 
     /**
      * Constructor for DataManager.
+     *
      * @param plugin AuthMe
      */
     public DataManager(AuthMe plugin) {
@@ -34,9 +34,10 @@ public class DataManager {
 
     /**
      * Method getOfflinePlayer.
+     *
      * @param name String
-    
-     * @return OfflinePlayer */
+     * @return OfflinePlayer
+     */
     public synchronized OfflinePlayer getOfflinePlayer(final String name) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<OfflinePlayer> result = executor.submit(new Callable<OfflinePlayer>() {
@@ -65,6 +66,7 @@ public class DataManager {
 
     /**
      * Method purgeAntiXray.
+     *
      * @param cleared List<String>
      */
     public synchronized void purgeAntiXray(List<String> cleared) {
@@ -88,6 +90,7 @@ public class DataManager {
 
     /**
      * Method purgeLimitedCreative.
+     *
      * @param cleared List<String>
      */
     public synchronized void purgeLimitedCreative(List<String> cleared) {
@@ -121,6 +124,7 @@ public class DataManager {
 
     /**
      * Method purgeDat.
+     *
      * @param cleared List<String>
      */
     public synchronized void purgeDat(List<String> cleared) {
@@ -136,7 +140,7 @@ public class DataManager {
                     File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
                     playerFile.delete();
                     i++;
-                } catch(Exception ignore) {
+                } catch (Exception ignore) {
                     File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getName() + ".dat");
                     if (playerFile.exists()) {
                         playerFile.delete();
@@ -151,6 +155,7 @@ public class DataManager {
 
     /**
      * Method purgeEssentials.
+     *
      * @param cleared List<String>
      */
     @SuppressWarnings("deprecation")
@@ -158,7 +163,7 @@ public class DataManager {
         int i = 0;
         for (String name : cleared) {
             try {
-                File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");                    
+                File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");
                 playerFile.delete();
                 i++;
             } catch (Exception e) {
@@ -173,13 +178,14 @@ public class DataManager {
     }
 
     // TODO: What is this method for? Is it correct?
+
     /**
      * @param cleared Cleared players.
      */
     public synchronized void purgePermissions(List<String> cleared) {
         // Get the permissions manager, and make sure it's valid
         PermissionsManager permsMan = this.plugin.getPermissionsManager();
-        if(permsMan == null)
+        if (permsMan == null)
             ConsoleLogger.showError("Unable to access permissions manager instance!");
         assert permsMan != null;
 
@@ -188,7 +194,7 @@ public class DataManager {
             try {
                 permsMan.removeAllGroups(this.getOnlinePlayerLower(name.toLowerCase()));
                 i++;
-            } catch(Exception e) {
+            } catch (Exception e) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Removed " + i + " permissions");
@@ -209,10 +215,11 @@ public class DataManager {
 
     /**
      * Method isOnline.
+     *
      * @param player Player
-     * @param name String
-    
-     * @return boolean */
+     * @param name   String
+     * @return boolean
+     */
     public boolean isOnline(Player player, final String name) {
         if (player.isOnline())
             return true;
@@ -239,9 +246,10 @@ public class DataManager {
 
     /**
      * Method getOnlinePlayerLower.
+     *
      * @param name String
-    
-     * @return Player */
+     * @return Player
+     */
     public Player getOnlinePlayerLower(String name) {
         name = name.toLowerCase();
         for (Player player : Utils.getOnlinePlayers()) {

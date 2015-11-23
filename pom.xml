@@ -46,7 +46,7 @@
         <!-- Project Properties -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <mainClass>fr.xephi.authme.AuthMe</mainClass>
-		<buildNumber>CustomBuild</buildNumber>
+		<buildNumber>100</buildNumber>
         <pluginAuthors>[Xephi, sgdc3, DNx5, timvisee, games647, ljacqu]</pluginAuthors>
         
 		<!-- Change Compiler Version (JDK) HERE! -->

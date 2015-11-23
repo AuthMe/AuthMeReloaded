@@ -1,13 +1,12 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.util.Utils;
 
 /**
  */
@@ -17,6 +16,7 @@ public class AuthMePlayerListener18 implements Listener {
 
     /**
      * Constructor for AuthMePlayerListener18.
+     *
      * @param plugin AuthMe
      */
     public AuthMePlayerListener18(AuthMe plugin) {
@@ -25,6 +25,7 @@ public class AuthMePlayerListener18 implements Listener {
 
     /**
      * Method onPlayerInteractAtEntity.
+     *
      * @param event PlayerInteractAtEntityEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)

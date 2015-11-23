@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
- * 
  * Called if a player is teleported to a specific spawn
  *
  * @author Xephi59
@@ -19,13 +18,14 @@ public class SpawnTeleportEvent extends CustomEvent {
 
     /**
      * Constructor for SpawnTeleportEvent.
-     * @param player Player
-     * @param from Location
-     * @param to Location
+     *
+     * @param player          Player
+     * @param from            Location
+     * @param to              Location
      * @param isAuthenticated boolean
      */
     public SpawnTeleportEvent(Player player, Location from, Location to,
-            boolean isAuthenticated) {
+                              boolean isAuthenticated) {
         this.player = player;
         this.from = from;
         this.to = to;
@@ -34,14 +34,25 @@ public class SpawnTeleportEvent extends CustomEvent {
 
     /**
      * Method getPlayer.
-    
-     * @return Player */
+     *
+     * @return Player
+     */
     public Player getPlayer() {
         return player;
     }
 
     /**
+     * Method getTo.
+     *
+     * @return Location
+     */
+    public Location getTo() {
+        return to;
+    }
+
+    /**
      * Method setTo.
+     *
      * @param to Location
      */
     public void setTo(Location to) {
@@ -49,25 +60,19 @@ public class SpawnTeleportEvent extends CustomEvent {
     }
 
     /**
-     * Method getTo.
-    
-     * @return Location */
-    public Location getTo() {
-        return to;
-    }
-
-    /**
      * Method getFrom.
-    
-     * @return Location */
+     *
+     * @return Location
+     */
     public Location getFrom() {
         return from;
     }
 
     /**
      * Method isAuthenticated.
-    
-     * @return boolean */
+     *
+     * @return boolean
+     */
     public boolean isAuthenticated() {
         return isAuthenticated;
     }

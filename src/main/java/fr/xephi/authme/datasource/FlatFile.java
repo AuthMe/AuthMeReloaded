@@ -1,20 +1,14 @@
 package fr.xephi.authme.datasource;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Settings;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  */
@@ -52,10 +46,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method isAuthAvailable.
+     *
      * @param user String
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
+     */
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         BufferedReader br = null;
@@ -87,10 +81,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method saveAuth.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
+     */
     @Override
     public synchronized boolean saveAuth(PlayerAuth auth) {
         if (isAuthAvailable(auth.getNickname())) {
@@ -116,10 +110,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method updatePassword.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
+     */
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
         if (!isAuthAvailable(auth.getNickname())) {
@@ -181,10 +175,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method updateSession.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
+     */
     @Override
     public boolean updateSession(PlayerAuth auth) {
         if (!isAuthAvailable(auth.getNickname())) {
@@ -246,10 +240,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method updateQuitLoc.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
+     */
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
         if (!isAuthAvailable(auth.getNickname())) {
@@ -290,10 +284,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method getIps.
+     *
      * @param ip String
-    
-    
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String) */
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
+     */
     @Override
     public int getIps(String ip) {
         BufferedReader br = null;
@@ -326,10 +320,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method purgeDatabase.
+     *
      * @param until long
-    
-    
-     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long) */
+     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
+     */
     @Override
     public int purgeDatabase(long until) {
         BufferedReader br = null;
@@ -378,10 +372,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method autoPurgeDatabase.
+     *
      * @param until long
-    
-    
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long) */
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
+     */
     @Override
     public List<String> autoPurgeDatabase(long until) {
         BufferedReader br = null;
@@ -430,10 +424,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method removeAuth.
+     *
      * @param user String
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
+     */
     @Override
     public synchronized boolean removeAuth(String user) {
         if (!isAuthAvailable(user)) {
@@ -480,10 +474,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method getAuth.
+     *
      * @param user String
-    
-    
-     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String) */
+     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
+     */
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         BufferedReader br = null;
@@ -528,6 +522,7 @@ public class FlatFile implements DataSource {
 
     /**
      * Method close.
+     *
      * @see fr.xephi.authme.datasource.DataSource#close()
      */
     @Override
@@ -536,6 +531,7 @@ public class FlatFile implements DataSource {
 
     /**
      * Method reload.
+     *
      * @see fr.xephi.authme.datasource.DataSource#reload()
      */
     @Override
@@ -544,10 +540,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method updateEmail.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
+     */
     @Override
     public boolean updateEmail(PlayerAuth auth) {
         if (!isAuthAvailable(auth.getNickname())) {
@@ -588,10 +584,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method updateSalt.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
+     */
     @Override
     public boolean updateSalt(PlayerAuth auth) {
         return false;
@@ -599,10 +595,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method getAllAuthsByName.
+     *
      * @param auth PlayerAuth
-    
-    
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth) */
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
+     */
     @Override
     public List<String> getAllAuthsByName(PlayerAuth auth) {
         BufferedReader br = null;
@@ -635,10 +631,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method getAllAuthsByIp.
+     *
      * @param ip String
-    
-    
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String) */
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
+     */
     @Override
     public List<String> getAllAuthsByIp(String ip) {
         BufferedReader br = null;
@@ -671,10 +667,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method getAllAuthsByEmail.
+     *
      * @param email String
-    
-    
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String) */
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
+     */
     @Override
     public List<String> getAllAuthsByEmail(String email) {
         BufferedReader br = null;
@@ -707,9 +703,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method purgeBanned.
+     *
      * @param banned List<String>
-    
-     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>) */
+     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
+     */
     @Override
     public void purgeBanned(List<String> banned) {
         BufferedReader br = null;
@@ -756,9 +753,9 @@ public class FlatFile implements DataSource {
 
     /**
      * Method getType.
-    
-    
-     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType() */
+     *
+     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType()
+     */
     @Override
     public DataSourceType getType() {
         return DataSourceType.FILE;
@@ -766,10 +763,10 @@ public class FlatFile implements DataSource {
 
     /**
      * Method isLogged.
+     *
      * @param user String
-    
-    
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String) */
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
+     */
     @Override
     public boolean isLogged(String user) {
         return PlayerCache.getInstance().isAuthenticated(user);
@@ -777,24 +774,27 @@ public class FlatFile implements DataSource {
 
     /**
      * Method setLogged.
+     *
      * @param user String
-    
-     * @see fr.xephi.authme.datasource.DataSource#setLogged(String) */
+     * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
+     */
     @Override
     public void setLogged(String user) {
     }
 
     /**
      * Method setUnlogged.
+     *
      * @param user String
-    
-     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String) */
+     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
+     */
     @Override
     public void setUnlogged(String user) {
     }
 
     /**
      * Method purgeLogged.
+     *
      * @see fr.xephi.authme.datasource.DataSource#purgeLogged()
      */
     @Override
@@ -803,9 +803,9 @@ public class FlatFile implements DataSource {
 
     /**
      * Method getAccountsRegistered.
-    
-    
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered() */
+     *
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
+     */
     @Override
     public int getAccountsRegistered() {
         BufferedReader br = null;
@@ -831,10 +831,11 @@ public class FlatFile implements DataSource {
 
     /**
      * Method updateName.
+     *
      * @param oldone String
      * @param newone String
-    
-     * @see fr.xephi.authme.datasource.DataSource#updateName(String, String) */
+     * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
+     */
     @Override
     public void updateName(String oldone, String newone) {
         PlayerAuth auth = this.getAuth(oldone);
@@ -845,9 +846,9 @@ public class FlatFile implements DataSource {
 
     /**
      * Method getAllAuths.
-    
-    
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths() */
+     *
+     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
+     */
     @Override
     public List<PlayerAuth> getAllAuths() {
         BufferedReader br = null;
@@ -897,9 +898,9 @@ public class FlatFile implements DataSource {
 
     /**
      * Method getLoggedPlayers.
-    
-    
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers() */
+     *
+     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
+     */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         return new ArrayList<>();

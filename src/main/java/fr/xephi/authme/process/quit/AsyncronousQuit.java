@@ -1,10 +1,5 @@
 package fr.xephi.authme.process.quit;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -14,6 +9,10 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
@@ -30,13 +29,14 @@ public class AsyncronousQuit {
 
     /**
      * Constructor for AsyncronousQuit.
-     * @param p Player
-     * @param plugin AuthMe
+     *
+     * @param p        Player
+     * @param plugin   AuthMe
      * @param database DataSource
-     * @param isKick boolean
+     * @param isKick   boolean
      */
     public AsyncronousQuit(Player p, AuthMe plugin, DataSource database,
-            boolean isKick) {
+                           boolean isKick) {
         this.player = p;
         this.plugin = plugin;
         this.database = database;

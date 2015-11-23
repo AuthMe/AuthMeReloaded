@@ -6,17 +6,23 @@ public class CommandArgumentDescription {
 
     // TODO: Allow argument to consist of infinite parts. <label ...>
 
-    /** Argument label. */
+    /**
+     * Argument label.
+     */
     private String label;
-    /** Argument description. */
+    /**
+     * Argument description.
+     */
     private String description;
-    /** Defines whether the argument is optional. */
+    /**
+     * Defines whether the argument is optional.
+     */
     private boolean optional = false;
 
     /**
      * Constructor.
      *
-     * @param label The argument label.
+     * @param label       The argument label.
      * @param description The argument description.
      */
     public CommandArgumentDescription(String label, String description) {
@@ -26,9 +32,9 @@ public class CommandArgumentDescription {
     /**
      * Constructor.
      *
-     * @param label The argument label.
+     * @param label       The argument label.
      * @param description The argument description.
-     * @param optional True if the argument is optional, false otherwise.
+     * @param optional    True if the argument is optional, false otherwise.
      */
     public CommandArgumentDescription(String label, String description, boolean optional) {
         setLabel(label);

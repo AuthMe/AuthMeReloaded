@@ -1,13 +1,12 @@
 package fr.xephi.authme.converter;
 
-import java.io.File;
-
-import org.bukkit.OfflinePlayer;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import org.bukkit.OfflinePlayer;
+
+import java.io.File;
 
 /**
  */
@@ -18,6 +17,7 @@ public class RoyalAuthConverter implements Converter {
 
     /**
      * Constructor for RoyalAuthConverter.
+     *
      * @param plugin AuthMe
      */
     public RoyalAuthConverter(AuthMe plugin) {
@@ -27,6 +27,7 @@ public class RoyalAuthConverter implements Converter {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override

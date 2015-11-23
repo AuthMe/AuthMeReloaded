@@ -4,7 +4,6 @@ import java.util.Calendar;
 import java.util.Random;
 
 /**
- *
  * @author Xephi59
  * @version $Revision: 1.0 $
  */
@@ -25,6 +24,7 @@ public class RandomString {
 
     /**
      * Constructor for RandomString.
+     *
      * @param length int
      */
     public RandomString(int length) {
@@ -36,8 +36,9 @@ public class RandomString {
 
     /**
      * Method nextString.
-    
-     * @return String */
+     *
+     * @return String
+     */
     public String nextString() {
         for (int idx = 0; idx < buf.length; ++idx)
             buf[idx] = chars[random.nextInt(chars.length)];

@@ -1,17 +1,16 @@
 package fr.xephi.authme.converter;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.command.CommandSender;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * @author Xephi59
@@ -25,8 +24,9 @@ public class CrazyLoginConverter implements Converter {
 
     /**
      * Constructor for CrazyLoginConverter.
+     *
      * @param instance AuthMe
-     * @param sender CommandSender
+     * @param sender   CommandSender
      */
     public CrazyLoginConverter(AuthMe instance, CommandSender sender) {
         this.instance = instance;
@@ -36,14 +36,16 @@ public class CrazyLoginConverter implements Converter {
 
     /**
      * Method getInstance.
-    
-     * @return CrazyLoginConverter */
+     *
+     * @return CrazyLoginConverter
+     */
     public CrazyLoginConverter getInstance() {
         return this;
     }
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override

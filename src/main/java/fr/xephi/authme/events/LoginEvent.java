@@ -5,7 +5,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- *
  * This event is called when a player login or register through AuthMe. The
  * boolean 'isLogin' will be false if, and only if, login/register failed.
  *
@@ -14,13 +13,14 @@ import org.bukkit.event.HandlerList;
  */
 public class LoginEvent extends Event {
 
+    private static final HandlerList handlers = new HandlerList();
     private Player player;
     private boolean isLogin;
-    private static final HandlerList handlers = new HandlerList();
 
     /**
      * Constructor for LoginEvent.
-     * @param player Player
+     *
+     * @param player  Player
      * @param isLogin boolean
      */
     public LoginEvent(Player player, boolean isLogin) {
@@ -29,15 +29,26 @@ public class LoginEvent extends Event {
     }
 
     /**
+     * Method getHandlerList.
+     *
+     * @return HandlerList
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    /**
      * Method getPlayer.
-    
-     * @return Player */
+     *
+     * @return Player
+     */
     public Player getPlayer() {
         return this.player;
     }
 
     /**
      * Method setPlayer.
+     *
      * @param player Player
      */
     public void setPlayer(Player player) {
@@ -45,7 +56,17 @@ public class LoginEvent extends Event {
     }
 
     /**
+     * Method isLogin.
+     *
+     * @return boolean
+     */
+    public boolean isLogin() {
+        return isLogin;
+    }
+
+    /**
      * Method setLogin.
+     *
      * @param isLogin boolean
      */
     @Deprecated
@@ -54,27 +75,12 @@ public class LoginEvent extends Event {
     }
 
     /**
-     * Method isLogin.
-    
-     * @return boolean */
-    public boolean isLogin() {
-        return isLogin;
-    }
-
-    /**
      * Method getHandlers.
-    
-     * @return HandlerList */
+     *
+     * @return HandlerList
+     */
     @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    /**
-     * Method getHandlerList.
-    
-     * @return HandlerList */
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 
