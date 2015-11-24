@@ -98,18 +98,15 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
     protected void restoreInventory() {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
+        pm.callEvent(event);
+        if (!event.isCancelled() && plugin.inventoryProtector != null) {
             plugin.inventoryProtector.sendInventoryPacket(player);
         }
     }
 
     protected void forceCommands() {
         for (String command : Settings.forceCommands) {
-            try {
-                player.performCommand(command.replace("%p", player.getName()));
-            } catch (Exception ignored) {
-            }
+            player.performCommand(command.replace("%p", player.getName()));
         }
         for (String command : Settings.forceCommandsAsConsole) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
@@ -154,7 +151,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
             restoreFlyghtState();
 
-            if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
+            if (Settings.protectInventoryBeforeLogInEnabled) {
                 restoreInventory();
             }
 

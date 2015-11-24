@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import com.maxmind.geoip.LookupService;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -13,18 +12,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
-import java.io.*;
+import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.zip.GZIPInputStream;
 
 /**
  * Utility class for various operations used in the codebase.
@@ -36,65 +31,14 @@ public final class Utils {
 
     private static boolean getOnlinePlayersIsCollection = false;
     private static Method getOnlinePlayers;
-    private static LookupService lookupService;
 
     static {
         plugin = AuthMe.getInstance();
-        wrapper = new Wrapper(plugin);
-        checkGeoIP();
         initializeOnlinePlayersIsCollectionField();
     }
 
     private Utils() {
         // Utility class
-    }
-
-    // Check and Download GeoIP data if it doesn't exist
-    public static boolean checkGeoIP() {
-        if (lookupService != null) {
-            return true;
-        }
-        final File data = new File(Settings.PLUGIN_FOLDER, "GeoIP.dat");
-        if (data.exists()) {
-            if (lookupService == null) {
-                try {
-                    lookupService = new LookupService(data);
-                    ConsoleLogger.info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
-                        "available at http://www.maxmind.com");
-                    return true;
-                } catch (IOException e) {
-                    return false;
-                }
-            }
-        }
-        wrapper.getServer().getScheduler().runTaskAsynchronously(wrapper.getAuthMe(), new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    String url = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
-                    URL downloadUrl = new URL(url);
-                    URLConnection conn = downloadUrl.openConnection();
-                    conn.setConnectTimeout(10000);
-                    conn.connect();
-                    InputStream input = conn.getInputStream();
-                    if (conn.getURL().toString().endsWith(".gz")) {
-                        input = new GZIPInputStream(input);
-                    }
-                    OutputStream output = new FileOutputStream(data);
-                    byte[] buffer = new byte[2048];
-                    int length = input.read(buffer);
-                    while (length >= 0) {
-                        output.write(buffer, 0, length);
-                        length = input.read(buffer);
-                    }
-                    output.close();
-                    input.close();
-                } catch (IOException e) {
-                    ConsoleLogger.writeStackTrace(e);
-                }
-            }
-        });
-        return false;
     }
 
     /**
@@ -157,7 +101,7 @@ public final class Utils {
 
     /**
      * TODO: This method requires better explanation.
-     * <p/>
+     * <p>
      * Set the normal group of a player.
      *
      * @param player The player.
@@ -176,7 +120,8 @@ public final class Utils {
         assert permsMan != null;
 
         // Remove old groups
-        permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
+        permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup,
+            Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
 
         // Add the normal group, return the result
         return permsMan.addGroup(player, group);
@@ -188,14 +133,13 @@ public final class Utils {
             return true;
         }
 
-        String name = player.getName().toLowerCase();
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return true;
         }
 
         if (!Settings.isForcedRegistrationEnabled) {
             // TODO ljacqu 20151123: Use a setter to retrieve things from AuthMe
-            if (!plugin.database.isAuthAvailable(name)) {
+            if (!plugin.database.isAuthAvailable(player.getName())) {
                 return true;
             }
         }
@@ -334,20 +278,8 @@ public final class Utils {
         return wrapper.getServer().getPlayer(name);
     }
 
-    public static boolean isNPC(final Entity player) {
-        try {
-            if (player.hasMetadata("NPC")) {
-                return true;
-            } else if (plugin.combatTagPlus != null
-                // TODO ljacqu 20151123: Use a getter for combatTagPlus in AuthMe instead of using direct field access
-                && player instanceof Player
-                && plugin.combatTagPlus.getNpcPlayerHelper().isNpc((Player) player)) {
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            return false;
-        }
+    public static boolean isNPC(Player player) {
+        return player.hasMetadata("NPC") || plugin.combatTagPlus != null && plugin.combatTagPlus.getNpcPlayerHelper().isNpc(player);
     }
 
     public static void teleportToSpawn(Player player) {

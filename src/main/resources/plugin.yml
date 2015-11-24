@@ -1,4 +1,4 @@
-name: AuthMe
+name: ${pluginName}
 authors: ${pluginAuthors}
 website: ${project.url}
 description: ${project.description}

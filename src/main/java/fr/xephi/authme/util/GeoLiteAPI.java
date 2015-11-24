@@ -4,6 +4,7 @@ import com.maxmind.geoip.LookupService;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.Bukkit;
 
 import java.io.*;
 import java.net.URL;
@@ -12,6 +13,8 @@ import java.util.zip.GZIPInputStream;
 
 public class GeoLiteAPI {
 
+    private static final String LICENSE = "[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
+        "available at http://www.maxmind.com";
     private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry" +
         "/GeoIP.dat.gz";
     private static final Wrapper wrapper = new Wrapper(AuthMe.getInstance());
@@ -31,8 +34,7 @@ public class GeoLiteAPI {
         if (data.exists()) {
             try {
                 lookupService = new LookupService(data);
-                plugin.getLogger().info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
-                    "available at http://www.maxmind.com");
+                plugin.getLogger().info(LICENSE);
                 return true;
             } catch (IOException e) {
                 // TODO ljacqu 20151123: Log the exception instead of just swallowing it
@@ -40,7 +42,7 @@ public class GeoLiteAPI {
             }
         }
         // Ok, let's try to download the data file!
-        wrapper.getServer().getScheduler().runTaskAsynchronously(wrapper.getAuthMe(), new Runnable() {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 try {

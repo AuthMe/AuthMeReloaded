@@ -43,14 +43,18 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
      */
     @Override
     public void run() {
-        if (plugin.sessions.containsKey(name))
+        if (plugin.sessions.containsKey(name)) {
             plugin.sessions.get(name).cancel();
-        plugin.sessions.remove(name);
-        int delay = Settings.getRegistrationTimeout * 20;
+            plugin.sessions.remove(name);
+        }
+        if (Settings.protectInventoryBeforeLogInEnabled) {
+            plugin.inventoryProtector.sendBlankInventoryPacket(player);
+        }
+        int timeOut = Settings.getRegistrationTimeout * 20;
         int interval = Settings.getWarnMessageInterval;
         BukkitScheduler sched = player.getServer().getScheduler();
-        if (delay != 0) {
-            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), delay);
+        if (timeOut != 0) {
+            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
         BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));

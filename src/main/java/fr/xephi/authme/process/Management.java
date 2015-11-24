@@ -8,8 +8,6 @@ import fr.xephi.authme.process.logout.AsynchronousLogout;
 import fr.xephi.authme.process.quit.AsynchronousQuit;
 import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.process.unregister.AsynchronousUnregister;
-import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -19,7 +17,6 @@ import org.bukkit.scheduler.BukkitScheduler;
  */
 public class Management {
 
-    public static RandomString rdm = new RandomString(Settings.captchaLength);
     private final AuthMe plugin;
     private final BukkitScheduler sched;
 

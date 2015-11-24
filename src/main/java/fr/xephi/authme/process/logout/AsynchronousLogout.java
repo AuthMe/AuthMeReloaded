@@ -46,8 +46,9 @@ public class AsynchronousLogout {
 
     public void process() {
         preLogout();
-        if (!canLogout)
+        if (!canLogout) {
             return;
+        }
         final Player p = player;
         BukkitScheduler scheduler = p.getServer().getScheduler();
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
@@ -66,11 +67,11 @@ public class AsynchronousLogout {
                 Utils.teleportToSpawn(p);
             }
         });
-        if (LimboCache.getInstance().hasLimboPlayer(name))
+        if (LimboCache.getInstance().hasLimboPlayer(name)) {
             LimboCache.getInstance().deleteLimboPlayer(name);
+        }
         LimboCache.getInstance().addLimboPlayer(player);
         Utils.setGroup(player, GroupType.NOTLOGGEDIN);
-
         scheduler.scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerLogout(p, plugin));
     }
 }

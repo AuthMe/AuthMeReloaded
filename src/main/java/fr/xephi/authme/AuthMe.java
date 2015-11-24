@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import fr.xephi.authme.api.API;
@@ -68,7 +69,6 @@ public class AuthMe extends JavaPlugin {
      * Defines the current AuthMeReloaded version code.
      */
     // TODO: Increase this number by one when an update is release
-    // TODO: Increase the count via maven
     private static final int PLUGIN_VERSION_CODE = 100;
 
     private static AuthMe plugin;
@@ -81,30 +81,30 @@ public class AuthMe extends JavaPlugin {
     public DataSource database;
     public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
-    // Hooks TODO: move into modules
+
+    // Hooks TODO: Move into modules
     public Essentials ess;
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
     public AuthMeInventoryPacketAdapter inventoryProtector;
-    // Random data maps and stuff
-    // TODO: Create Manager for this
+
+    // Data maps and stuff
+    // TODO: Move into a manager
     public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
-    // AntiBot Status
-    // TODO: Create Manager for this
-    public boolean antiBotMod = false;
-    public boolean delayedAntiBot = true;
+
+    // If cache is enabled, prevent any connection before the players data caching is completed.
+    // TODO: Move somewhere
+    private boolean canConnect = true;
+
     private CommandHandler commandHandler = null;
     private PermissionsManager permsMan = null;
     private Settings settings;
     private Messages messages;
     private JsonCache playerBackup;
     private ModuleManager moduleManager;
-    // If cache is enabled, prevent any connection before the players data caching is completed.
-    // TODO: Move somewhere
-    private boolean canConnect = true;
 
     /**
      * Returns the plugin's instance.
@@ -228,7 +228,7 @@ public class AuthMe extends JavaPlugin {
         setupConsoleFilter();
 
         // AntiBot delay
-        setupAntiBotDelay();
+        AntiBot.setupAntiBotService();
 
         // Download and load GeoIp.dat file if absent
         GeoLiteAPI.isDataAvailable();
@@ -440,20 +440,6 @@ public class AuthMe extends JavaPlugin {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Set up the AntiBot delay.
-     */
-    private void setupAntiBotDelay() {
-        if (Settings.enableAntiBot) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    delayedAntiBot = false;
-                }
-            }, 2400);
-        }
     }
 
     /**
@@ -687,13 +673,24 @@ public class AuthMe extends JavaPlugin {
 
     // Check the presence of the ProtocolLib plugin
     public void checkProtocolLib() {
-        if (Settings.protectInventoryBeforeLogInEnabled) {
-            if (server.getPluginManager().isPluginEnabled("ProtocolLib")) {
-                inventoryProtector = new AuthMeInventoryPacketAdapter(this);
-                inventoryProtector.register();
-            } else {
+        if (!server.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            if (Settings.protectInventoryBeforeLogInEnabled) {
                 ConsoleLogger.showError("WARNING!!! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
+                getSettings().set("settings.restrictions.ProtectInventoryBeforeLogIn", false);
+            }
+            return;
+        }
+
+        if (Settings.protectInventoryBeforeLogInEnabled) {
+            if (inventoryProtector == null) {
+                inventoryProtector = new AuthMeInventoryPacketAdapter(this);
+                inventoryProtector.register();
+            }
+        } else {
+            if (inventoryProtector != null) {
+                ProtocolLibrary.getProtocolManager().removePacketListener(inventoryProtector);
+                inventoryProtector = null;
             }
         }
     }
@@ -822,15 +819,6 @@ public class AuthMe extends JavaPlugin {
             return Spawn.getInstance().getSpawn();
         }
         return player.getWorld().getSpawnLocation();
-    }
-
-    public void switchAntiBotMod(boolean mode) {
-        this.antiBotMod = mode;
-        Settings.switchAntiBotMod(mode);
-    }
-
-    public boolean getAntiBotModMode() {
-        return this.antiBotMod;
     }
 
     private void recallEmail() {
