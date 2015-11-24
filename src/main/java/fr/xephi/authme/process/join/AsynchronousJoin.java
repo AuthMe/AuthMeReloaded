@@ -10,6 +10,7 @@ import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
@@ -38,13 +39,6 @@ public class AsynchronousJoin {
     private final Messages m;
     private final BukkitScheduler sched;
 
-    /**
-     * Constructor for AsynchronousJoin.
-     *
-     * @param player   Player
-     * @param plugin   AuthMe
-     * @param database DataSource
-     */
     public AsynchronousJoin(Player player, AuthMe plugin, DataSource database) {
         this.player = player;
         this.plugin = plugin;
@@ -239,25 +233,26 @@ public class AsynchronousJoin {
             database.setUnlogged(name);
             PlayerCache.getInstance().removePlayer(name);
             if (auth != null && auth.getIp().equals(ip)) {
-                m.send(player, "valid_session");
+                m.send(player, MessageKey.SESSION_RECONNECTION);
                 plugin.management.performLogin(player, "dontneed", true);
                 return;
             } else if (Settings.sessionExpireOnIpChange) {
-                m.send(player, "invalid_session");
+                m.send(player, MessageKey.SESSION_EXPIRED);
             }
         }
 
-        String[] msg = isAuthAvailable ? m.send("login_msg") :
-            m.send("reg_" + (Settings.emailRegistration ? "email_" : "") + "msg");
+        String[] msg;
+        if (isAuthAvailable) {
+            msg = m.retrieve(MessageKey.LOGIN_MESSAGE);
+        } else {
+            msg = Settings.emailRegistration
+                ? m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE)
+                : m.retrieve(MessageKey.REGISTER_MESSAGE);
+        }
         BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
     }
 
-    /**
-     * Method needFirstSpawn.
-     *
-     * @return boolean
-     */
     private boolean needFirstSpawn() {
         if (player.hasPlayedBefore())
             return false;
@@ -282,12 +277,6 @@ public class AsynchronousJoin {
         return true;
     }
 
-    /**
-     * Method placePlayerSafely.
-     *
-     * @param player   Player
-     * @param spawnLoc Location
-     */
     private void placePlayerSafely(final Player player, final Location spawnLoc) {
         if (spawnLoc == null)
             return;
@@ -307,7 +296,7 @@ public class AsynchronousJoin {
                 Material top = player.getLocation().add(0D, 1D, 0D).getBlock().getType();
                 if (cur == Material.PORTAL || cur == Material.ENDER_PORTAL
                     || top == Material.PORTAL || top == Material.ENDER_PORTAL) {
-                    m.send(player, "unsafe_spawn");
+                    m.send(player, MessageKey.UNSAFE_QUIT_LOCATION);
                     player.teleport(spawnLoc);
                 }
             }

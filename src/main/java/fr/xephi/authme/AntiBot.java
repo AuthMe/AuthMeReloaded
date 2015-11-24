@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
@@ -47,7 +48,7 @@ public class AntiBot {
 
     public static void activateAntiBot() {
         antiBotStatus = AntiBotStatus.ACTIVE;
-        for (String s : messages.send("antibot_auto_enabled")) {
+        for (String s : messages.retrieve(MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE)) {
             Bukkit.broadcastMessage(s);
         }
 
@@ -57,18 +58,14 @@ public class AntiBot {
                 if (antiBotStatus == AntiBotStatus.ACTIVE) {
                     antiBotStatus = AntiBotStatus.LISTENING;
                     antibotPlayers.clear();
-                    for (String s : messages.send("antibot_auto_disabled"))
+                    for (String s : messages.retrieve(MessageKey.ANTIBOT_AUTO_DISABLED_MESSAGE)) {
                         Bukkit.broadcastMessage(s.replace("%m", "" + Settings.antiBotDuration));
+                    }
                 }
             }
         }, Settings.antiBotDuration * 1200);
     }
 
-    /**
-     * Method checkAntiBotMod.
-     *
-     * @param player Player
-     */
     public static void checkAntiBot(final Player player) {
         if (antiBotStatus == AntiBotStatus.ACTIVE || antiBotStatus == AntiBotStatus.DISABLED) {
             return;

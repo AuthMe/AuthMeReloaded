@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
@@ -21,15 +22,6 @@ public class AsyncChangeEmail {
     private final String newEmailVerify;
     private final Messages m;
 
-    /**
-     * Constructor for AsyncChangeEmail.
-     *
-     * @param player         Player
-     * @param plugin         AuthMe
-     * @param oldEmail       String
-     * @param newEmail       String
-     * @param newEmailVerify String
-     */
     public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail, String newEmailVerify) {
         this.player = player;
         this.plugin = plugin;
@@ -39,14 +31,6 @@ public class AsyncChangeEmail {
         this.m = Messages.getInstance();
     }
 
-    /**
-     * Constructor for AsyncChangeEmail.
-     *
-     * @param player   Player
-     * @param plugin   AuthMe
-     * @param oldEmail String
-     * @param newEmail String
-     */
     public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail) {
         this(player, plugin, oldEmail, newEmail, newEmail);
     }
@@ -56,7 +40,9 @@ public class AsyncChangeEmail {
             String playerName = player.getName().toLowerCase();
 
             if (Settings.getmaxRegPerEmail > 0) {
-                if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && plugin.database.getAllAuthsByEmail(newEmail).size() >= Settings.getmaxRegPerEmail) {
+                if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts")
+                    && plugin.database.getAllAuthsByEmail(newEmail).size() >= Settings.getmaxRegPerEmail) {
+                    // TODO ljacqu 20151124: max_reg is not in enum
                     m.send(player, "max_reg");
                     return;
                 }
@@ -64,53 +50,54 @@ public class AsyncChangeEmail {
 
             if (PlayerCache.getInstance().isAuthenticated(playerName)) {
                 if (!newEmail.equals(newEmailVerify)) {
-                    m.send(player, "email_confirm");
+                    m.send(player, MessageKey.CONFIRM_EMAIL_MESSAGE);
                     return;
                 }
                 PlayerAuth auth = PlayerCache.getInstance().getAuth(playerName);
                 if (oldEmail != null) {
                     if (auth.getEmail() == null || auth.getEmail().equals("your@email.com") || auth.getEmail().isEmpty()) {
-                        m.send(player, "usage_email_add");
+                        m.send(player, MessageKey.USAGE_ADD_EMAIL);
                         return;
                     }
                     if (!oldEmail.equals(auth.getEmail())) {
-                        m.send(player, "old_email_invalid");
+                        m.send(player, MessageKey.INVALID_OLD_EMAIL);
                         return;
                     }
                 }
                 if (!Settings.isEmailCorrect(newEmail)) {
-                    m.send(player, "new_email_invalid");
+                    m.send(player, MessageKey.INVALID_NEW_EMAIL);
                     return;
                 }
                 String old = auth.getEmail();
                 auth.setEmail(newEmail);
                 if (!plugin.database.updateEmail(auth)) {
-                    m.send(player, "error");
+                    m.send(player, MessageKey.ERROR);
                     auth.setEmail(old);
                     return;
                 }
                 PlayerCache.getInstance().updatePlayer(auth);
                 if (oldEmail == null) {
-                    m.send(player, "email_added");
+                    m.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
                     player.sendMessage(auth.getEmail());
                     return;
                 }
-                m.send(player, "email_changed");
+                m.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
+                // TODO ljacqu 20151124: Did I really miss "email_defined" or is it not present in the 'en' messages?
                 player.sendMessage(Arrays.toString(m.send("email_defined")) + auth.getEmail());
             } else {
                 if (plugin.database.isAuthAvailable(playerName)) {
-                    m.send(player, "login_msg");
+                    m.send(player, MessageKey.LOGIN_MESSAGE);
                 } else {
                     if (Settings.emailRegistration)
-                        m.send(player, "reg_email_msg");
+                        m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
                     else
-                        m.send(player, "reg_msg");
+                        m.send(player, MessageKey.REGISTER_MESSAGE);
                 }
             }
         } catch (Exception e) {
             ConsoleLogger.showError(e.getMessage());
             ConsoleLogger.writeStackTrace(e);
-            m.send(player, "error");
+            m.send(player, MessageKey.ERROR);
         }
     }
 }
