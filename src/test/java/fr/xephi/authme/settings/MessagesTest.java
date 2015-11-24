@@ -3,8 +3,10 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.AuthMeMockUtil;
 import fr.xephi.authme.ConsoleLogger;
+import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.io.File;
 import java.net.URL;
@@ -13,6 +15,7 @@ import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link Messages}.
@@ -48,7 +51,7 @@ public class MessagesTest {
         MessageKey key = MessageKey.UNKNOWN_USER;
 
         // when
-        String[] send = messages.send(key);
+        String[] send = messages.retrieve(key);
 
         // then
         String[] lines = new String[]{"This test message", "includes", "some new lines"};
@@ -61,7 +64,7 @@ public class MessagesTest {
         MessageKey key = MessageKey.UNSAFE_QUIT_LOCATION;
 
         // when
-        String[] message = messages.send(key);
+        String[] message = messages.retrieve(key);
 
         // then
         assertThat(message, arrayWithSize(1));
@@ -74,7 +77,7 @@ public class MessagesTest {
         MessageKey key = MessageKey.NOT_LOGGED_IN;
 
         // when
-        String[] message = messages.send(key);
+        String[] message = messages.retrieve(key);
 
         // then
         assertThat(message, arrayWithSize(1));
@@ -88,10 +91,39 @@ public class MessagesTest {
         MessageKey key = MessageKey.UNREGISTERED_SUCCESS;
 
         // when
-        String[] message = messages.send(key);
+        String[] message = messages.retrieve(key);
 
         // then
         assertThat(message, arrayWithSize(1));
         assertThat(message[0], startsWith("Error getting message with key '"));
+    }
+
+    @Test
+    public void shouldSendMessageToPlayer() {
+        // given
+        MessageKey key = MessageKey.UNSAFE_QUIT_LOCATION;
+        Player player = Mockito.mock(Player.class);
+
+        // when
+        messages.send(player, key);
+
+        // then
+        verify(player).sendMessage("§cHere we have§bdefined some colors §dand some other §lthings");
+    }
+
+    @Test
+    public void shouldSendMultiLineMessageToPlayer() {
+        // given
+        MessageKey key = MessageKey.UNKNOWN_USER;
+        Player player = Mockito.mock(Player.class);
+
+        // when
+        messages.send(player, key);
+
+        // then
+        String[] lines = new String[]{"This test message", "includes", "some new lines"};
+        for (String line : lines) {
+            verify(player).sendMessage(line);
+        }
     }
 }
