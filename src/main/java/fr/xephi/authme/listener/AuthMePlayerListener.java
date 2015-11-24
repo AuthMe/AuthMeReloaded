@@ -168,10 +168,6 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (Settings.noTeleport) {
-            return;
-        }
-
         if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0) {
             return;
         }
@@ -192,6 +188,10 @@ public class AuthMePlayerListener implements Listener {
                 event.setTo(event.getFrom());
                 return;
             }
+        }
+
+        if (Settings.noTeleport) {
+            return;
         }
 
         Location spawn = plugin.getSpawnLocation(player);
