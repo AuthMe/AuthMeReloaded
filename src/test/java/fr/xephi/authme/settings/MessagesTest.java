@@ -9,7 +9,10 @@ import org.junit.Test;
 import java.io.File;
 import java.net.URL;
 
-import static java.util.Arrays.asList;
+import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.startsWith;
+import static org.junit.Assert.assertThat;
 
 /**
  * Test for {@link Messages}.
@@ -19,6 +22,11 @@ public class MessagesTest {
     private static final String YML_TEST_FILE = "messages_test.yml";
     private Messages messages;
 
+    /**
+     * Loads the messages in the file {@code messages_test.yml} in the test resources folder.
+     * The file does not contain all messages defined in {@link MessageKey} and its contents
+     * reflect various test cases -- not what the keys stand for.
+     */
     @Before
     public void setUpMessages() {
         AuthMe authMe = AuthMeMockUtil.mockAuthMeInstance();
@@ -35,10 +43,55 @@ public class MessagesTest {
     }
 
     @Test
-    public void shouldLoadMessages() {
+    public void shouldLoadMessageAndSplitAtNewLines() {
         // given
+        MessageKey key = MessageKey.UNKNOWN_USER;
+
         // when
-        String[] send = messages.send(MessageKey.CAPTCHA_WRONG_ERROR.getKey());
-        System.out.println(asList(send));
+        String[] send = messages.send(key);
+
+        // then
+        String[] lines = new String[]{"This test message", "includes", "some new lines"};
+        assertThat(send, equalTo(lines));
+    }
+
+    @Test
+    public void shouldFormatColorCodes() {
+        // given
+        MessageKey key = MessageKey.UNSAFE_QUIT_LOCATION;
+
+        // when
+        String[] message = messages.send(key);
+
+        // then
+        assertThat(message, arrayWithSize(1));
+        assertThat(message[0], equalTo("§cHere we have§bdefined some colors §dand some other §lthings"));
+    }
+
+    @Test
+    public void shouldRetainApostrophes() {
+        // given
+        MessageKey key = MessageKey.NOT_LOGGED_IN;
+
+        // when
+        String[] message = messages.send(key);
+
+        // then
+        assertThat(message, arrayWithSize(1));
+        assertThat(message[0], equalTo("Apostrophes ' should be loaded correctly, don't you think?"));
+    }
+
+    @Test
+    public void shouldReturnErrorForUnknownCode() {
+        // given
+        // The following is a key that is not defined in the test file
+        MessageKey key = MessageKey.UNREGISTERED_SUCCESS;
+
+        // when
+        String[] message = messages.send(key);
+
+        // then
+        assertThat(message, arrayWithSize(1));
+        assertThat(message[0], startsWith("Error getting message with key '"));
     }
 }
