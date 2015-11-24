@@ -1,6 +1,5 @@
 package fr.xephi.authme.util;
 
-import com.maxmind.geoip.LookupService;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -31,7 +30,6 @@ public final class Utils {
 
     private static boolean getOnlinePlayersIsCollection = false;
     private static Method getOnlinePlayers;
-    private static LookupService lookupService;
 
     static {
         plugin = AuthMe.getInstance();
