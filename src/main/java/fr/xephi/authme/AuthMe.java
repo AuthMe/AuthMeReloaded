@@ -692,16 +692,21 @@ public class AuthMe extends JavaPlugin {
             if (Settings.protectInventoryBeforeLogInEnabled) {
                 ConsoleLogger.showError("WARNING!!! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
+                getSettings().set("settings.restrictions.ProtectInventoryBeforeLogIn", false);
             }
             return;
         }
 
         if (Settings.protectInventoryBeforeLogInEnabled) {
-            inventoryProtector = new AuthMeInventoryPacketAdapter(this);
-            inventoryProtector.register();
-        } else if (inventoryProtector != null) {
-            ProtocolLibrary.getProtocolManager().removePacketListener(inventoryProtector);
-            inventoryProtector = null;
+            if (inventoryProtector == null) {
+                inventoryProtector = new AuthMeInventoryPacketAdapter(this);
+                inventoryProtector.register();
+            }
+        } else {
+            if (inventoryProtector != null) {
+                ProtocolLibrary.getProtocolManager().removePacketListener(inventoryProtector);
+                inventoryProtector = null;
+            }
         }
     }
 

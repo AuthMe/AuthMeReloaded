@@ -621,10 +621,6 @@ public final class Settings extends YamlConfiguration {
             set("Email.emailBlacklisted", new ArrayList<String>());
             changes = true;
         }
-        if (contains("Performances.useMultiThreading")) {
-            set("Performances.useMultiThreading", null);
-            changes = true;
-        }
         if (contains("Performances")) {
             set("Performances", null);
             changes = true;
