@@ -24,7 +24,6 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
 import net.minelink.ctplus.CombatTagPlus;
@@ -70,7 +69,6 @@ public class AuthMe extends JavaPlugin {
      * Defines the current AuthMeReloaded version code.
      */
     // TODO: Increase this number by one when an update is release
-    // TODO: Increase the count via maven
     private static final int PLUGIN_VERSION_CODE = 100;
 
     private static AuthMe plugin;
