@@ -4,7 +4,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
-import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.security.HashAlgorithm;
 import org.bukkit.configuration.file.YamlConfiguration;
 

@@ -33,14 +33,14 @@ public class SwitchAntiBotCommand extends ExecutableCommand {
 
         // Enable the mod
         if (newState.equalsIgnoreCase("ON")) {
-            AntiBot.switchAntiBotStatus(true);
+            AntiBot.overrideAntiBotStatus(true);
             sender.sendMessage("[AuthMe] AntiBot Manual Ovverride: enabled!");
             return true;
         }
 
         // Disable the mod
         if (newState.equalsIgnoreCase("OFF")) {
-            AntiBot.switchAntiBotStatus(false);
+            AntiBot.overrideAntiBotStatus(false);
             sender.sendMessage("[AuthMe] AntiBotMod Manual Ovverride: disabled!");
             return true;
         }
