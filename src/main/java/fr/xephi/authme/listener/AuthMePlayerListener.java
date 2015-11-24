@@ -220,7 +220,7 @@ public class AuthMePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getPlayer() == null) {
+        if (event.getPlayer() == null || Utils.isNPC(event.getPlayer())) {
             return;
         }
 
@@ -256,7 +256,7 @@ public class AuthMePlayerListener implements Listener {
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
         final Player player = Utils.getPlayer(name);
-        if (player == null) {
+        if (player == null || Utils.isNPC(player)) {
             return;
         }
 

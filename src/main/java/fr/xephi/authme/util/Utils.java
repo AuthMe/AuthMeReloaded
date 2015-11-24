@@ -128,7 +128,7 @@ public final class Utils {
 
     // TODO: Move to a Manager
     public static boolean checkAuth(Player player) {
-        if (player == null || Utils.isUnrestricted(player)) {
+        if (player == null || Utils.isUnrestricted(player) || Utils.isNPC(player)) {
             return true;
         }
 
