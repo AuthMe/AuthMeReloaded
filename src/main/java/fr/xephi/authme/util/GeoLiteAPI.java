@@ -4,6 +4,7 @@ import com.maxmind.geoip.LookupService;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.Bukkit;
 
 import java.io.*;
 import java.net.URL;
@@ -12,10 +13,12 @@ import java.util.zip.GZIPInputStream;
 
 public class GeoLiteAPI {
 
-    private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry" +
+    public static final String LICENSE = "[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
+        "available at http://www.maxmind.com";
+    public static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry" +
         "/GeoIP.dat.gz";
-    private static final AuthMe plugin = AuthMe.getInstance();
     private static LookupService lookupService;
+    private static final AuthMe plugin = AuthMe.getInstance();
 
     /**
      * Download (if absent) the GeoIpLite data file and then try to load it.
@@ -30,15 +33,14 @@ public class GeoLiteAPI {
         if (data.exists()) {
             try {
                 lookupService = new LookupService(data);
-                plugin.getLogger().info("[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
-                    "available at http://www.maxmind.com");
+                plugin.getLogger().info(LICENSE);
                 return true;
             } catch (IOException e) {
                 return false;
             }
         }
         // Ok, let's try to download the data file!
-        plugin.getGameServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 try {
