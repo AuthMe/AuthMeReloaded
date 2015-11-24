@@ -34,6 +34,7 @@ public final class Utils {
 
     static {
         plugin = AuthMe.getInstance();
+        wrapper = new Wrapper(plugin);
         initializeOnlinePlayersIsCollectionField();
     }
 

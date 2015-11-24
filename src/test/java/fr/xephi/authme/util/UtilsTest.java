@@ -44,10 +44,14 @@ public class UtilsTest {
 
         BukkitScheduler schedulerMock = mock(BukkitScheduler.class);
         when(serverMock.getScheduler()).thenReturn(schedulerMock);
+
+
         when(schedulerMock.runTaskAsynchronously(any(Plugin.class), any(Runnable.class)))
             .thenReturn(mock(BukkitTask.class));
 
+        System.out.println("Initialized scheduler mock for server mock");
         AuthMeMockUtil.insertMockWrapperInstance(Utils.class, "wrapper", (WrapperMock) wrapperMock);
+        System.out.println("Iniadfk");
 
         permissionsManagerMock = mock(PermissionsManager.class);
         when(authMeMock.getPermissionsManager()).thenReturn(permissionsManagerMock);
