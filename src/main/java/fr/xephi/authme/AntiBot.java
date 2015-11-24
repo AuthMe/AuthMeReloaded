@@ -25,7 +25,7 @@ public class AntiBot {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                antiBotStatus = AntiBotStatus.ENABLED;
+                antiBotStatus = AntiBotStatus.LISTENING;
             }
         }, 2400);
     }
@@ -35,9 +35,9 @@ public class AntiBot {
             return;
         }
         if (activated) {
-            antiBotStatus = AntiBotStatus.INACTION;
+            antiBotStatus = AntiBotStatus.ACTIVE;
         } else {
-            antiBotStatus = AntiBotStatus.ENABLED;
+            antiBotStatus = AntiBotStatus.LISTENING;
         }
     }
 
@@ -46,7 +46,7 @@ public class AntiBot {
     }
 
     public static void activateAntiBot() {
-        antiBotStatus = AntiBotStatus.INACTION;
+        antiBotStatus = AntiBotStatus.ACTIVE;
         for (String s : messages.send("antibot_auto_enabled")) {
             Bukkit.broadcastMessage(s);
         }
@@ -54,8 +54,8 @@ public class AntiBot {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                if (antiBotStatus == AntiBotStatus.INACTION) {
-                    antiBotStatus = AntiBotStatus.ENABLED;
+                if (antiBotStatus == AntiBotStatus.ACTIVE) {
+                    antiBotStatus = AntiBotStatus.LISTENING;
                     antibotPlayers.clear();
                     for (String s : messages.send("antibot_auto_disabled"))
                         Bukkit.broadcastMessage(s.replace("%m", "" + Settings.antiBotDuration));
@@ -70,7 +70,7 @@ public class AntiBot {
      * @param player Player
      */
     public static void checkAntiBot(final Player player) {
-        if (antiBotStatus == AntiBotStatus.INACTION || antiBotStatus == AntiBotStatus.DISABLED) {
+        if (antiBotStatus == AntiBotStatus.ACTIVE || antiBotStatus == AntiBotStatus.DISABLED) {
             return;
         }
         if (plugin.getPermissionsManager().hasPermission(player, "authme.bypassantibot")) {
@@ -91,9 +91,9 @@ public class AntiBot {
     }
 
     public enum AntiBotStatus {
-        ENABLED,
+        LISTENING,
         DISABLED,
-        INACTION
+        ACTIVE
     }
 
 }
