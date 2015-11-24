@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
+import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.security.HashAlgorithm;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -187,7 +188,10 @@ public final class Settings extends YamlConfiguration {
         getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
         getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
+
         protectInventoryBeforeLogInEnabled = configFile.getBoolean("settings.restrictions.ProtectInventoryBeforeLogIn", true);
+        plugin.checkProtocolLib();
+
         passwordMaxLength = configFile.getInt("settings.security.passwordMaxLength", 20);
         isBackupActivated = configFile.getBoolean("BackupSystem.ActivateBackup", false);
         isBackupOnStart = configFile.getBoolean("BackupSystem.OnServerStart", false);
@@ -195,6 +199,7 @@ public final class Settings extends YamlConfiguration {
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
+
         allowCommands = new ArrayList<>();
         allowCommands.addAll(Arrays.asList("/login", "/l", "/register", "/reg", "/email", "/captcha"));
         for (String cmd : configFile.getStringList("settings.restrictions.allowCommands")) {
@@ -203,6 +208,7 @@ public final class Settings extends YamlConfiguration {
                 allowCommands.add(cmd);
             }
         }
+
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);

@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import com.comphenix.protocol.ProtocolLibrary;
 import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import fr.xephi.authme.api.API;
@@ -687,14 +688,20 @@ public class AuthMe extends JavaPlugin {
 
     // Check the presence of the ProtocolLib plugin
     public void checkProtocolLib() {
-        if (Settings.protectInventoryBeforeLogInEnabled) {
-            if (server.getPluginManager().isPluginEnabled("ProtocolLib")) {
-                inventoryProtector = new AuthMeInventoryPacketAdapter(this);
-                inventoryProtector.register();
-            } else {
+        if (!server.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            if (Settings.protectInventoryBeforeLogInEnabled) {
                 ConsoleLogger.showError("WARNING!!! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
             }
+            return;
+        }
+
+        if (Settings.protectInventoryBeforeLogInEnabled) {
+            inventoryProtector = new AuthMeInventoryPacketAdapter(this);
+            inventoryProtector.register();
+        } else if (inventoryProtector != null) {
+            ProtocolLibrary.getProtocolManager().removePacketListener(inventoryProtector);
+            inventoryProtector = null;
         }
     }
 
