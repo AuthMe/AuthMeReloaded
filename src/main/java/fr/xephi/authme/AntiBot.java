@@ -16,7 +16,7 @@ public class AntiBot {
     private static final AuthMe plugin = AuthMe.getInstance();
     private static final Messages messages = plugin.getMessages();
     private static final List<String> antibotPlayers = new ArrayList<>();
-    private static AntiBotStatus antiBotStatus = AntiBotStatus.DISARMED;
+    private static AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
     public static void setupAntiBotService() {
         if (!Settings.enableAntiBot) {
@@ -25,19 +25,19 @@ public class AntiBot {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                antiBotStatus = AntiBotStatus.ARMED;
+                antiBotStatus = AntiBotStatus.ENABLED;
             }
         }, 2400);
     }
 
     public static void overrideAntiBotStatus(boolean activated) {
-        if (antiBotStatus == AntiBotStatus.DISARMED || antiBotStatus == AntiBotStatus.DELAYED) {
+        if (antiBotStatus == AntiBotStatus.DISABLED) {
             return;
         }
         if (activated) {
-            antiBotStatus = AntiBotStatus.ACTIVATED;
+            antiBotStatus = AntiBotStatus.INACTION;
         } else {
-            antiBotStatus = AntiBotStatus.ARMED;
+            antiBotStatus = AntiBotStatus.ENABLED;
         }
     }
 
@@ -46,7 +46,7 @@ public class AntiBot {
     }
 
     public static void activateAntiBot() {
-        antiBotStatus = AntiBotStatus.ACTIVATED;
+        antiBotStatus = AntiBotStatus.INACTION;
         for (String s : messages.send("antibot_auto_enabled")) {
             Bukkit.broadcastMessage(s);
         }
@@ -54,8 +54,8 @@ public class AntiBot {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                if (antiBotStatus == AntiBotStatus.ACTIVATED) {
-                    antiBotStatus = AntiBotStatus.ARMED;
+                if (antiBotStatus == AntiBotStatus.INACTION) {
+                    antiBotStatus = AntiBotStatus.ENABLED;
                     antibotPlayers.clear();
                     for (String s : messages.send("antibot_auto_disabled"))
                         Bukkit.broadcastMessage(s.replace("%m", "" + Settings.antiBotDuration));
@@ -70,7 +70,7 @@ public class AntiBot {
      * @param player Player
      */
     public static void checkAntiBot(final Player player) {
-        if (antiBotStatus == AntiBotStatus.ACTIVATED || antiBotStatus == AntiBotStatus.DISARMED) {
+        if (antiBotStatus == AntiBotStatus.INACTION || antiBotStatus == AntiBotStatus.DISABLED) {
             return;
         }
         if (plugin.getPermissionsManager().hasPermission(player, "authme.bypassantibot")) {
@@ -91,10 +91,9 @@ public class AntiBot {
     }
 
     public enum AntiBotStatus {
-        ARMED,
-        DISARMED,
-        DELAYED,
-        ACTIVATED
+        ENABLED,
+        DISABLED,
+        INACTION
     }
 
 }

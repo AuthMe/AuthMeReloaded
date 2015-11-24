@@ -183,10 +183,12 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (!Settings.isMovementAllowed) {
-            if (event.getFrom().distance(event.getTo()) > 0) {
-                event.setTo(event.getFrom());
-                return;
+            event.setTo(event.getFrom());
+            if(Settings.isRemoveSpeedEnabled) {
+                player.setFlySpeed(0.0f);
+                player.setWalkSpeed(0.0f);
             }
+            return;
         }
 
         if (Settings.noTeleport) {
