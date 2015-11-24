@@ -2,7 +2,6 @@ package fr.xephi.authme.process.register;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -10,17 +9,15 @@ import org.bukkit.scheduler.BukkitTask;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.events.LoginEvent;
-import fr.xephi.authme.events.RegisterTeleportEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.Utils;
 
 public class ProcessSyncronousPasswordRegister implements Runnable {
 
@@ -39,7 +36,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         for (String command : Settings.forceRegisterCommands) {
             try {
                 player.performCommand(command.replace("%p", player.getName()));
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         for (String command : Settings.forceRegisterCommandsAsConsole) {
@@ -48,17 +45,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
     }
 
     protected void forceLogin(Player player) {
-        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-            Location spawnLoc = plugin.getSpawnLocation(player);
-            AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawnLoc);
-            plugin.getServer().getPluginManager().callEvent(tpEvent);
-            if (!tpEvent.isCancelled()) {
-                if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                    tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                }
-                player.teleport(tpEvent.getTo());
-            }
-        }
+        Utils.teleportToSpawn(player);
         if (LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().deleteLimboPlayer(name);
         LimboCache.getInstance().addLimboPlayer(player);
@@ -71,10 +58,8 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         }
         BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
-        try {
-            if (player.isInsideVehicle())
-                player.getVehicle().eject();
-        } catch (NullPointerException npe) {
+        if (player.isInsideVehicle() && player.getVehicle() != null) {
+            player.getVehicle().eject();
         }
     }
 
@@ -83,32 +68,23 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (limbo != null) {
             player.setGameMode(limbo.getGameMode());
-            if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-                Location loca = plugin.getSpawnLocation(player);
-                RegisterTeleportEvent tpEvent = new RegisterTeleportEvent(player, loca);
-                plugin.getServer().getPluginManager().callEvent(tpEvent);
-                if (!tpEvent.isCancelled()) {
-                    if (!tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).isLoaded()) {
-                        tpEvent.getTo().getWorld().getChunkAt(tpEvent.getTo()).load();
-                    }
-                    player.teleport(tpEvent.getTo());
-                }
-            }
-            if (Settings.protectInventoryBeforeLogInEnabled && limbo.getInventory() != null && limbo.getArmour() != null) {
-                RestoreInventoryEvent event = new RestoreInventoryEvent(player, limbo.getInventory(), limbo.getArmour());
+            Utils.teleportToSpawn(player);
+
+            if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
+                RestoreInventoryEvent event = new RestoreInventoryEvent(player);
                 Bukkit.getPluginManager().callEvent(event);
-                if (!event.isCancelled() && event.getArmor() != null && event.getInventory() != null) {
-                    player.getInventory().setContents(event.getInventory());
-                    player.getInventory().setArmorContents(event.getArmor());
+                if (!event.isCancelled()) {
+                    plugin.inventoryProtector.sendInventoryPacket(player);
                 }
             }
+
             limbo.getTimeoutTaskId().cancel();
             limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
         }
 
         if (!Settings.getRegisteredGroup.isEmpty()) {
-            Utils.getInstance().setGroup(player, Utils.groupType.REGISTERED);
+            Utils.setGroup(player, Utils.GroupType.REGISTERED);
         }
         m.send(player, "registered");
         if (!Settings.getmailAccount.isEmpty())
@@ -119,8 +95,12 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         }
         if (Settings.applyBlindEffect)
             player.removePotionEffect(PotionEffectType.BLINDNESS);
-        // The Loginevent now fires (as intended) after everything is processed
-        Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
+        if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
+            player.setWalkSpeed(0.2f);
+            player.setFlySpeed(0.1f);
+        }
+        // The LoginEvent now fires (as intended) after everything is processed
+        plugin.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
         player.saveData();
 
         if (!Settings.noConsoleSpam)
@@ -132,7 +112,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
             return;
         }
 
-        // Request Login after Registation
+        // Request Login after Registration
         if (Settings.forceRegLogin) {
             forceLogin(player);
             return;
@@ -142,7 +122,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {
                 for (String s : Settings.welcomeMsg) {
-                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
+                    plugin.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
                 }
             } else {
                 for (String s : Settings.welcomeMsg) {
@@ -152,6 +132,5 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 
         // Register is now finish , we can force all commands
         forceCommands();
-
     }
 }

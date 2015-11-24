@@ -6,6 +6,7 @@ import org.bukkit.scheduler.BukkitTask;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.util.Utils;
 
 public class MessageTask implements Runnable {
 
@@ -15,7 +16,7 @@ public class MessageTask implements Runnable {
     private int interval;
 
     public MessageTask(AuthMe plugin, String name, String[] strings,
-            int interval) {
+                       int interval) {
         this.plugin = plugin;
         this.name = name;
         this.msg = strings;
@@ -27,7 +28,7 @@ public class MessageTask implements Runnable {
         if (PlayerCache.getInstance().isAuthenticated(name))
             return;
 
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
                 for (String ms : msg) {
                     player.sendMessage(ms);

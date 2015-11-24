@@ -1,20 +1,27 @@
-<hr>
-<p align="center"><img src="http://i61.tinypic.com/fnfchs.png"></p>
+<p align="center"><img src="http://i61.tinypic.com/291dm49.png"></p>
 <p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
 <hr>
+
+####Development history:
+[![Guava AuthMe History Video](http://img.youtube.com/vi/hJRzNfYyd9k/hqdefault.jpg)](https://www.youtube.com/watch?v=hJRzNfYyd9k)
+
 #####Development tools:
+
+- DEVELOPMENT TEAM REPO (<strong>please send PRs here!</strong>): <a href="https://github.com/AuthMe-Team/AuthMeReloaded">Github Development Page</a>
 
 - Developers ChatRoom: [![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-- Build status (Travis): [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded)
+- Build status: [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/55bab9e8653762002000190a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55bab9e8653762002000190a)
 
-- Build status (CircleCI): [CircleCI project Page](https://circleci.com/gh/xephi/AuthMeReloaded)
+- Build status (CircleCI): [![Circle CI](https://circleci.com/gh/Xephi/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/Xephi/AuthMeReloaded)
 
-- Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr">Xephi's Jenkins</a>
+- Issue Tracking : [![Stories in Ready](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=ready&title=Ready)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in Bugs](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=bugs&title=Bugs)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in In%20Progress](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=in%20progress&title=In%20Progress)](https://waffle.io/Xephi/AuthMeReloaded)
+
+- Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr/job/AuthMeReloaded">Xephi's Jenkins</a>
 
 - JavaDocs: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
 
-- Maven Repo: <a href="http://xephi.fr:8080/plugin/repository/everything/">AuthMe Repo</a>
+- Maven Repo: <a href="http://ci.xephi.fr/plugin/repository/everything/">AuthMe Repo</a>
 
 #####Statistics:
 
@@ -39,7 +46,9 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 #####Running Requirements:
 >- Java 1.7 (should work also with Java 1.8)
->- Spigot or CraftBukkit
+>- Spigot or CraftBukkit (1.7.10 or 1.8.X)
+>- Vault
+>- Protocollib
 
 <hr>
 ###Plugin Description:
@@ -60,7 +69,7 @@ typing commands or use the inventory. It can also kick players with uncommon lon
   <li>Username spoofing protection.</li>
   <li>Countries Whitelist/Blacklist! <a href="http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/">(countries codes)</a></li>
   <li><strong>Built-in AntiBot System!</strong></li>
-  <li><del>Passpartu Feature: Admin can login with all account more info <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">here</a></del> <strong>(Deprecated)</strong></li>
+  <li><strong>ForceLogin Feature: Admins can login with all account via console command!</strong></li>
   <li><strong>Avoid the "Logged in from another location" message!</strong></li>
   <li>Session Login!</li>
   <li>Editable translations and messages!</li>
@@ -124,7 +133,11 @@ typing commands or use the inventory. It can also kick players with uncommon lon
 EUR: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=QLMM9SNCX825Y"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a>
 USD: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=PWQMYCP2SAH6L"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a></p>
 
+#####Sponsor
+GameHosting.it is leader in Italy as Game Server Provider. With its own DataCenter offers Anti-DDoS solutions at affordable prices. Game Server of Minecraft based on Multicraft are equipped with the latest technology in hardware.
+[![GameHosting](http://www.gamehosting.it/images/bn3.png)](http://www.gamehosting.it)
+
 #####Credits
-<p>Team members: Xephi(Main Developer, Author), Maxetto(Contributor) and sgdc3(Contributor)
+<p>Team members: look at the <a href="https://github.com/AuthMe-Team/AuthMeReloaded/blob/master/team.txt">team.txt file</a>
 <p>Credit for old version of the plugin to: d4rkwarriors, fabe1337 , Whoami2 and pomo4ka</p>
 <p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>

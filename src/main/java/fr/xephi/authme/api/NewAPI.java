@@ -6,17 +6,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 
 public class NewAPI {
 
@@ -34,9 +31,7 @@ public class NewAPI {
 
     /**
      * Hook into AuthMe
-     * 
-     * @return
-     * 
+     *
      * @return AuthMe plugin
      */
     public static NewAPI getInstance() {
@@ -56,7 +51,7 @@ public class NewAPI {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is authenticate
      */
@@ -65,23 +60,21 @@ public class NewAPI {
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is a npc
      */
     public boolean isNPC(Player player) {
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return true;
-        return CombatTagComunicator.isNPC(player);
+        return Utils.isNPC(player);
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if the player is unrestricted
      */
     public boolean isUnrestricted(Player player) {
-        return Utils.getInstance().isUnrestricted(player);
+        return Utils.isUnrestricted(player);
     }
 
     public Location getLastLocation(Player player) {
@@ -89,8 +82,7 @@ public class NewAPI {
             PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
 
             if (auth != null) {
-                Location loc = new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
-                return loc;
+                return new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
             } else {
                 return null;
             }
@@ -100,18 +92,8 @@ public class NewAPI {
         }
     }
 
-    public void setPlayerInventory(Player player, ItemStack[] content,
-            ItemStack[] armor) {
-        try {
-            player.getInventory().setContents(content);
-            player.getInventory().setArmorContents(armor);
-        } catch (Exception npe) {
-            ConsoleLogger.showError("Some error appear while trying to set inventory for " + player.getName());
-        }
-    }
-
     /**
-     * 
+     *
      * @param playerName
      * @return true if player is registered
      */
@@ -139,7 +121,7 @@ public class NewAPI {
 
     /**
      * Register a player
-     * 
+     *
      * @param String
      *            playerName, String password
      * @return true if the player is register correctly
@@ -151,11 +133,8 @@ public class NewAPI {
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com");
-            if (!plugin.database.saveAuth(auth)) {
-                return false;
-            }
-            return true;
+            PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com", playerName);
+            return plugin.database.saveAuth(auth);
         } catch (NoSuchAlgorithmException ex) {
             return false;
         }
@@ -163,7 +142,7 @@ public class NewAPI {
 
     /**
      * Force a player to login
-     * 
+     *
      * @param Player
      *            player
      */
@@ -171,4 +150,38 @@ public class NewAPI {
         plugin.management.performLogin(player, "dontneed", true);
     }
 
+    /**
+     * Force a player to logout
+     *
+     * @param Player
+     * 			player
+     */
+    public void forceLogout(Player player)
+    {
+    	plugin.management.performLogout(player);
+    }
+
+    /**
+     * Force a player to register
+     *
+     * @param Player
+     * 			player
+     * @param String
+     * 			password
+     */
+    public void forceRegister(Player player, String password)
+    {
+    	plugin.management.performRegister(player, password, null);
+    }
+
+    /**
+     * Force a player to unregister
+     *
+     * @param Player
+     * 			player
+     */
+    public void forceUnregister(Player player)
+    {
+    	plugin.management.performUnregister(player, "", true);
+    }
 }

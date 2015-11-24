@@ -9,12 +9,13 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.pool.PoolInitializationException;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
@@ -40,10 +41,11 @@ public class MySQL implements DataSource {
     private String columnID;
     private String columnLogged;
     private List<String> columnOthers;
-    private MiniConnectionPoolManager conPool;
+    private HikariDataSource ds;
     private String columnRealName;
+    private int maxConnections;
 
-    public MySQL() {
+    public MySQL() throws ClassNotFoundException, SQLException, PoolInitializationException {
         this.host = Settings.getMySQLHost;
         this.port = Settings.getMySQLPort;
         this.username = Settings.getMySQLUsername;
@@ -65,59 +67,76 @@ public class MySQL implements DataSource {
         this.columnID = Settings.getMySQLColumnId;
         this.columnLogged = Settings.getMySQLColumnLogged;
         this.columnRealName = Settings.getMySQLColumnRealName;
+        this.maxConnections = Settings.getMySQLMaxConnections;
+
+        // Set the connection arguments (and check if connection is ok)
         try {
-            this.connect();
-            this.setup();
-        } catch (ClassNotFoundException e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
+            this.setConnectionArguments();
+        } catch (RuntimeException e) {
+            if (e instanceof IllegalArgumentException) {
+                ConsoleLogger.showError("Invalid database arguments! Please check your configuration!");
+                ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
+                throw new IllegalArgumentException(e);
             }
-            if (!Settings.isStopEnabled)
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
+            if (e instanceof PoolInitializationException) {
+                ConsoleLogger.showError("Can't initialize database connection! Please check your configuration!");
+                ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
+                throw new PoolInitializationException(e);
+            }
+            ConsoleLogger.showError("Can't use the Hikari Connection Pool! Please, report this error to the developer! SHUTDOWN...");
+            throw e;
+        }
+
+        // Initialize the database
+        try {
+            this.setupConnection();
         } catch (SQLException e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
-        } catch (TimeoutException e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use MySQL... Please input correct MySQL informations ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
+            this.close();
+            ConsoleLogger.showError("Can't initialize the MySQL database... Please check your database settings in the config.yml file! SHUTDOWN...");
+            ConsoleLogger.showError("If this error persists, please report it to the developer! SHUTDOWN...");
+            throw e;
         }
     }
 
-    private synchronized void connect() throws ClassNotFoundException,
-            SQLException, TimeoutException, NumberFormatException {
-        Class.forName("com.mysql.jdbc.Driver");
-        ConsoleLogger.info("MySQL driver loaded");
-        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
-        dataSource.setDatabaseName(database);
-        dataSource.setServerName(host);
-        dataSource.setPort(Integer.parseInt(port));
-        dataSource.setUser(username);
-        dataSource.setPassword(password);
-        conPool = new MiniConnectionPoolManager(dataSource, 10);
-        ConsoleLogger.info("Connection pool ready");
+    private synchronized void setConnectionArguments()
+            throws ClassNotFoundException, IllegalArgumentException {
+        HikariConfig config = new HikariConfig();
+        config.setPoolName("AuthMeMYSQLPool");
+        config.setDriverClassName("com.mysql.jdbc.Driver");
+        config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+        config.setUsername(this.username);
+        config.setPassword(this.password);
+        config.addDataSourceProperty("cachePrepStmts", "false");
+        config.addDataSourceProperty("autoReconnect", false);
+        config.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
+        config.setMaxLifetime(180000); // 3 Min
+        config.setIdleTimeout(60000); // 1 Min
+        config.setMinimumIdle(2);
+        config.setMaximumPoolSize(maxConnections);
+        ds = new HikariDataSource(config);
+        ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
-    private synchronized void setup() throws SQLException {
+    private synchronized void reloadArguments()
+            throws ClassNotFoundException, IllegalArgumentException {
+        if (ds != null) {
+            ds.close();
+        }
+        setConnectionArguments();
+        ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
+    }
+
+    private synchronized Connection getConnection() throws SQLException {
+        return ds.getConnection();
+    }
+
+    private synchronized void setupConnection() throws SQLException {
         Connection con = null;
         Statement st = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return;
             st = con.createStatement();
             st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1'," + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "'," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + columnLogged + " SMALLINT NOT NULL DEFAULT '0'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
             rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
@@ -162,13 +181,16 @@ public class MySQL implements DataSource {
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnRealName);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnRealName + " VARCHAR(255) DEFAULT 'Player' AFTER " + columnLogged + ";");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnRealName + " VARCHAR(255) NOT NULL DEFAULT 'Player' AFTER " + columnLogged + ";");
             }
+            if (Settings.isMySQLWebsite)
+                st.execute("SET GLOBAL query_cache_size = 0; SET GLOBAL query_cache_type = 0;");
         } finally {
             close(rs);
             close(st);
             close(con);
         }
+        ConsoleLogger.info("MySQL Setup finished");
     }
 
     @Override
@@ -177,15 +199,13 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return true;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
             return rs.next();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -195,16 +215,16 @@ public class MySQL implements DataSource {
         }
     }
 
-    @SuppressWarnings("resource")
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
         PlayerAuth pAuth = null;
-        int id = -1;
+        int id;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return null;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
@@ -216,13 +236,15 @@ public class MySQL implements DataSource {
                     if (!columnSalt.isEmpty()) {
                         if (!columnGroup.isEmpty())
                             pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                        else pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                        else
+                            pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     } else {
                         pAuth = new PlayerAuth(rs.getString(columnName).toLowerCase(), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     }
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                     rs.close();
+                    pst.close();
                     pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
                     rs = pst.executeQuery();
@@ -235,10 +257,7 @@ public class MySQL implements DataSource {
             } else {
                 return null;
             }
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return null;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return null;
         } finally {
@@ -253,8 +272,10 @@ public class MySQL implements DataSource {
     public synchronized boolean saveAuth(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
+        ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return false;
             if ((columnSalt == null || columnSalt.isEmpty()) || (auth.getSalt() == null || auth.getSalt().isEmpty())) {
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnRealName + ") VALUES (?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
@@ -285,13 +306,11 @@ public class MySQL implements DataSource {
                 }
             }
             if (Settings.getPasswordHash == HashAlgorithm.PHPBB) {
-                int id;
-                ResultSet rs = null;
                 PreparedStatement pst2 = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst2.setString(1, auth.getNickname());
                 rs = pst2.executeQuery();
                 if (rs.next()) {
-                    id = rs.getInt(columnID);
+                    int id = rs.getInt(columnID);
                     // Insert player in phpbb_user_group
                     pst = con.prepareStatement("INSERT INTO " + Settings.getPhpbbPrefix + "user_group (group_id, user_id, group_leader, user_pending) VALUES (?,?,?,?);");
                     pst.setInt(1, Settings.getPhpbbGroup);
@@ -331,16 +350,15 @@ public class MySQL implements DataSource {
                     pst.executeUpdate();
                     pst.close();
                 }
+                rs.close();
                 pst2.close();
             }
             if (Settings.getPasswordHash == HashAlgorithm.WORDPRESS) {
-                int id;
-                ResultSet rs = null;
                 pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
-                    id = rs.getInt(columnID);
+                    int id = rs.getInt(columnID);
                     // First Name
                     pst = con.prepareStatement("INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);");
                     pst.setInt(1, id);
@@ -426,15 +444,14 @@ public class MySQL implements DataSource {
                     pst.executeUpdate();
                     pst.close();
                 }
+                rs.close();
             }
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                int id;
-                ResultSet rs = null;
                 pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
-                    id = rs.getInt(columnID);
+                    int id = rs.getInt(columnID);
                     // Insert password in the correct table
                     pst = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
                     pst.setInt(1, id);
@@ -445,16 +462,13 @@ public class MySQL implements DataSource {
                     pst.setBlob(3, blob);
                     pst.executeUpdate();
                 }
-                if (rs != null && !rs.isClosed())
-                    rs.close();
+                rs.close();
             }
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
+            close(rs);
             close(pst);
             close(con);
         }
@@ -465,21 +479,21 @@ public class MySQL implements DataSource {
     public synchronized boolean updatePassword(PlayerAuth auth) {
         Connection con = null;
         PreparedStatement pst = null;
+        ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return false;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
             pst.close();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                int id;
-                ResultSet rs = null;
                 pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
-                    id = rs.getInt(columnID);
+                    int id = rs.getInt(columnID);
                     // Insert password in the correct table
                     pst = con.prepareStatement("UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;");
                     byte[] bytes = auth.getHash().getBytes();
@@ -493,16 +507,13 @@ public class MySQL implements DataSource {
                     pst.setInt(2, id);
                     pst.executeUpdate();
                 }
-                if (rs != null && !rs.isClosed())
-                    rs.close();
+                rs.close();
             }
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
+            close(rs);
             close(pst);
             close(con);
         }
@@ -514,16 +525,15 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=? WHERE LOWER(" + columnName + ")=?;");
+            if ((con = getConnection()) == null)
+                return false;
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=?, " + columnRealName + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
-            pst.setString(3, auth.getNickname());
+            pst.setString(3, auth.getRealName());
+            pst.setString(4, auth.getNickname());
             pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -538,14 +548,12 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return 0;
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             return pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return 0;
         } finally {
@@ -559,9 +567,10 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return list;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
             rs = pst.executeQuery();
@@ -573,12 +582,9 @@ public class MySQL implements DataSource {
             pst.setLong(1, until);
             pst.executeUpdate();
             return list;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -591,10 +597,11 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return false;
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 int id;
-                ResultSet rs = null;
+                ResultSet rs;
                 pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, user);
                 rs = pst.executeQuery();
@@ -612,10 +619,7 @@ public class MySQL implements DataSource {
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, user);
             pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -630,7 +634,8 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return false;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + " =?, " + lastlocY + "=?, " + lastlocZ + "=?, " + lastlocWorld + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
@@ -638,10 +643,7 @@ public class MySQL implements DataSource {
             pst.setString(4, auth.getWorld());
             pst.setString(5, auth.getNickname());
             pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -658,7 +660,8 @@ public class MySQL implements DataSource {
         ResultSet rs = null;
         int countIp = 0;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return 0;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
@@ -666,10 +669,7 @@ public class MySQL implements DataSource {
                 countIp++;
             }
             return countIp;
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return 0;
         } finally {
@@ -684,16 +684,15 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return false;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnEmail + " =? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
             return false;
         } finally {
             close(pst);
@@ -710,15 +709,13 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return false;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + " =? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -729,22 +726,13 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized void close() {
-        try {
-            conPool.dispose();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-        }
-    }
-
-    @Override
     public void reload() {
         try {
-            reconnect(true);
+            reloadArguments();
         } catch (Exception e) {
             ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
             if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
             }
             if (!Settings.isStopEnabled)
@@ -752,32 +740,19 @@ public class MySQL implements DataSource {
         }
     }
 
-    private void close(Statement st) {
-        if (st != null) {
-            try {
-                st.close();
-            } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-            }
-        }
+    @Override
+    public synchronized void close() {
+        if (ds != null && !ds.isClosed())
+            ds.close();
     }
 
-    private void close(ResultSet rs) {
-        if (rs != null) {
+    private void close(AutoCloseable o) {
+        if (o != null) {
             try {
-                rs.close();
-            } catch (SQLException ex) {
+                o.close();
+            } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
-            }
-        }
-    }
-
-    private void close(Connection con) {
-        if (con != null) {
-            try {
-                con.close();
-            } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
+                ConsoleLogger.writeStackTrace(ex);
             }
         }
     }
@@ -787,9 +762,10 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return countIp;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, auth.getIp());
             rs = pst.executeQuery();
@@ -797,12 +773,9 @@ public class MySQL implements DataSource {
                 countIp.add(rs.getString(columnName));
             }
             return countIp;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -815,9 +788,10 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return countIp;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
@@ -825,12 +799,9 @@ public class MySQL implements DataSource {
                 countIp.add(rs.getString(columnName));
             }
             return countIp;
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -839,13 +810,13 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByEmail(String email) {
-        Connection con = null;
+    public synchronized List<String> getAllAuthsByEmail(String email) throws SQLException {
+        final Connection con = getConnection();
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countEmail = new ArrayList<String>();
+        List<String> countEmail = new ArrayList<>();
+
         try {
-            con = makeSureConnectionIsReady();
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
             pst.setString(1, email);
             rs = pst.executeQuery();
@@ -853,12 +824,6 @@ public class MySQL implements DataSource {
                 countEmail.add(rs.getString(columnName));
             }
             return countEmail;
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
         } finally {
             close(rs);
             close(pst);
@@ -871,73 +836,19 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
+            if ((con = getConnection()) == null)
+                return;
             for (String name : banned) {
-                con = makeSureConnectionIsReady();
                 pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
                 pst.setString(1, name);
                 pst.executeUpdate();
             }
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
         } finally {
             close(pst);
             close(con);
         }
-    }
-
-    private synchronized Connection makeSureConnectionIsReady() {
-        Connection con = null;
-        try {
-            con = conPool.getValidConnection();
-        } catch (Exception te) {
-            try {
-                con = null;
-                reconnect(false);
-            } catch (Exception e) {
-                ConsoleLogger.showError(e.getMessage());
-                if (Settings.isStopEnabled) {
-                    ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
-                    AuthMe.getInstance().getServer().shutdown();
-                }
-                if (!Settings.isStopEnabled)
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-        } catch (AssertionError ae) {
-            // Make sure assertionerror is caused by the connectionpoolmanager,
-            // else re-throw it
-            if (!ae.getMessage().equalsIgnoreCase("AuthMeDatabaseError"))
-                throw new AssertionError(ae.getMessage());
-            try {
-                con = null;
-                reconnect(false);
-            } catch (Exception e) {
-                ConsoleLogger.showError(e.getMessage());
-                if (Settings.isStopEnabled) {
-                    ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL informations ! SHUTDOWN...");
-                    AuthMe.getInstance().getServer().shutdown();
-                }
-                if (!Settings.isStopEnabled)
-                    AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            }
-        }
-        if (con == null)
-            con = conPool.getValidConnection();
-        return con;
-    }
-
-    private synchronized void reconnect(boolean reload)
-            throws ClassNotFoundException, SQLException, TimeoutException {
-        conPool.dispose();
-        Class.forName("com.mysql.jdbc.Driver");
-        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();
-        dataSource.setDatabaseName(database);
-        dataSource.setServerName(host);
-        dataSource.setPort(Integer.parseInt(port));
-        dataSource.setUser(username);
-        dataSource.setPassword(password);
-        conPool = new MiniConnectionPoolManager(dataSource, 10);
-        if (!reload)
-            ConsoleLogger.info("ConnectionPool was unavailable... Reconnected!");
     }
 
     @Override
@@ -951,16 +862,14 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return false;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next())
                 return (rs.getInt(columnLogged) == 1);
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
@@ -976,22 +885,18 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setInt(1, 1);
             pst.setString(2, user);
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
             close(con);
         }
-        return;
     }
 
     @Override
@@ -1000,22 +905,18 @@ public class MySQL implements DataSource {
         PreparedStatement pst = null;
         if (user != null)
             try {
-                con = makeSureConnectionIsReady();
+                if ((con = getConnection()) == null)
+                    return;
                 pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
                 pst.setInt(1, 0);
                 pst.setString(2, user);
                 pst.executeUpdate();
-            } catch (SQLException ex) {
+            } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                return;
-            } catch (TimeoutException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-                return;
             } finally {
                 close(pst);
                 close(con);
             }
-        return;
     }
 
     @Override
@@ -1023,22 +924,18 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnLogged + "=?;");
             pst.setInt(1, 0);
             pst.setInt(2, 1);
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
             close(con);
         }
-        return;
     }
 
     @Override
@@ -1046,18 +943,16 @@ public class MySQL implements DataSource {
         int result = 0;
         Connection con = null;
         PreparedStatement pst = null;
-        ResultSet rs = null;
+        ResultSet rs;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return result;
             pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
             rs = pst.executeQuery();
             if (rs != null && rs.next()) {
                 result = rs.getInt(1);
             }
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return result;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return result;
         } finally {
@@ -1072,36 +967,33 @@ public class MySQL implements DataSource {
         Connection con = null;
         PreparedStatement pst = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE LOWER(" + columnName + ")=?;");
             pst.setString(1, newone);
             pst.setString(2, oldone);
             pst.executeUpdate();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
             close(con);
         }
-        return;
     }
 
     @Override
     public List<PlayerAuth> getAllAuths() {
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        List<PlayerAuth> auths = new ArrayList<>();
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return auths;
             pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth = null;
+                PlayerAuth pAuth;
                 int id = rs.getInt(columnID);
                 if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
                     pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
@@ -1109,13 +1001,14 @@ public class MySQL implements DataSource {
                     if (!columnSalt.isEmpty()) {
                         if (!columnGroup.isEmpty())
                             pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                        else pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                        else
+                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     } else {
                         pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     }
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                    ResultSet rsid = null;
+                    ResultSet rsid;
                     pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
                     rsid = pst.executeQuery();
@@ -1124,16 +1017,11 @@ public class MySQL implements DataSource {
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
                         pAuth.setHash(new String(bytes));
                     }
-                    if (rsid != null)
-                        rsid.close();
+                    rsid.close();
                 }
-                if (pAuth != null)
-                    auths.add(pAuth);
+                auths.add(pAuth);
             }
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
         } finally {
@@ -1146,16 +1034,17 @@ public class MySQL implements DataSource {
 
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        List<PlayerAuth> auths = new ArrayList<>();
         Connection con = null;
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            con = makeSureConnectionIsReady();
+            if ((con = getConnection()) == null)
+                return auths;
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth = null;
+                PlayerAuth pAuth;
                 int id = rs.getInt(columnID);
                 if (rs.getString(columnIp).isEmpty() && rs.getString(columnIp) != null) {
                     pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
@@ -1163,13 +1052,14 @@ public class MySQL implements DataSource {
                     if (!columnSalt.isEmpty()) {
                         if (!columnGroup.isEmpty())
                             pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                        else pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                        else
+                            pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     } else {
                         pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     }
                 }
                 if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                    ResultSet rsid = null;
+                    ResultSet rsid;
                     pst = con.prepareStatement("SELECT * FROM xf_user_authenticate WHERE " + columnID + "=?;");
                     pst.setInt(1, id);
                     rsid = pst.executeQuery();
@@ -1178,16 +1068,11 @@ public class MySQL implements DataSource {
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
                         pAuth.setHash(new String(bytes));
                     }
-                    if (rsid != null)
-                        rsid.close();
+                    rsid.close();
                 }
-                if (pAuth != null)
-                    auths.add(pAuth);
+                auths.add(pAuth);
             }
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
-        } catch (TimeoutException ex) {
+        } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
         } finally {

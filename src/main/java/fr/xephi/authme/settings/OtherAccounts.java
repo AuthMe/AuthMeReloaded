@@ -44,8 +44,8 @@ public class OtherAccounts extends CustomConfiguration {
                 this.getStringList(uuid.toString()).add(player.getName());
                 save();
             }
-        } catch (NoSuchMethodError e) {
-        } catch (Exception e) {
+        } catch (NoSuchMethodError | Exception e) {
+            //ignore
         }
     }
 
@@ -58,10 +58,9 @@ public class OtherAccounts extends CustomConfiguration {
                 this.getStringList(uuid.toString()).remove(player.getName());
                 save();
             }
-        } catch (NoSuchMethodError e) {
-        } catch (Exception e) {
+        } catch (NoSuchMethodError | Exception e) {
+            //ignore
         }
-
     }
 
     public List<String> getAllPlayersByUUID(UUID uuid) {

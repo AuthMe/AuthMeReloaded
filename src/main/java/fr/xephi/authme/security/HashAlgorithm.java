@@ -25,9 +25,12 @@ public enum HashAlgorithm {
     SHA512(fr.xephi.authme.security.crypts.SHA512.class),
     DOUBLEMD5(fr.xephi.authme.security.crypts.DOUBLEMD5.class),
     PBKDF2(fr.xephi.authme.security.crypts.CryptPBKDF2.class),
+    PBKDF2DJANGO(fr.xephi.authme.security.crypts.CryptPBKDF2Django.class),
     WORDPRESS(fr.xephi.authme.security.crypts.WORDPRESS.class),
     ROYALAUTH(fr.xephi.authme.security.crypts.ROYALAUTH.class),
     CRAZYCRYPT1(fr.xephi.authme.security.crypts.CRAZYCRYPT1.class),
+    BCRYPT2Y(fr.xephi.authme.security.crypts.BCRYPT2Y.class),
+    SALTEDSHA512(fr.xephi.authme.security.crypts.SALTEDSHA512.class),
     CUSTOM(Null.class);
 
     Class<?> classe;

@@ -9,27 +9,28 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 
 public class API {
 
     public static final String newline = System.getProperty("line.separator");
     public static AuthMe instance;
 
+    @Deprecated
     public API(AuthMe instance) {
         API.instance = instance;
     }
 
     /**
      * Hook into AuthMe
-     * 
+     *
      * @return AuthMe instance
      */
+    @Deprecated
     public static AuthMe hookAuthMe() {
         if (instance != null)
             return instance;
@@ -41,51 +42,52 @@ public class API {
         return instance;
     }
 
+    @Deprecated
     public AuthMe getPlugin() {
         return instance;
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is authenticate
      */
+    @Deprecated
     public static boolean isAuthenticated(Player player) {
         return PlayerCache.getInstance().isAuthenticated(player.getName());
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is a npc
      */
     @Deprecated
     public boolean isaNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player))
-            return true;
-        return CombatTagComunicator.isNPC(player);
+        return Utils.isNPC(player);
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if player is a npc
      */
+    @Deprecated
     public boolean isNPC(Player player) {
-        if (instance.getCitizensCommunicator().isNPC(player))
-            return true;
-        return CombatTagComunicator.isNPC(player);
+        return Utils.isNPC(player);
     }
 
     /**
-     * 
+     *
      * @param player
      * @return true if the player is unrestricted
      */
+    @Deprecated
     public static boolean isUnrestricted(Player player) {
-        return Utils.getInstance().isUnrestricted(player);
+        return Utils.isUnrestricted(player);
     }
 
+    @Deprecated
     public static Location getLastLocation(Player player) {
         try {
             PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
@@ -102,6 +104,7 @@ public class API {
         }
     }
 
+    @Deprecated
     public static void setPlayerInventory(Player player, ItemStack[] content,
             ItemStack[] armor) {
         try {
@@ -112,10 +115,11 @@ public class API {
     }
 
     /**
-     * 
+     *
      * @param playerName
      * @return true if player is registered
      */
+    @Deprecated
     public static boolean isRegistered(String playerName) {
         String player = playerName.toLowerCase();
         return instance.database.isAuthAvailable(player);
@@ -126,6 +130,7 @@ public class API {
      *            playerName, String passwordToCheck
      * @return true if the password is correct , false else
      */
+    @Deprecated
     public static boolean checkPassword(String playerName,
             String passwordToCheck) {
         if (!isRegistered(playerName))
@@ -141,11 +146,12 @@ public class API {
 
     /**
      * Register a player
-     * 
+     *
      * @param String
      *            playerName, String password
      * @return true if the player is register correctly
      */
+    @Deprecated
     public static boolean registerPlayer(String playerName, String password) {
         try {
             String name = playerName.toLowerCase();
@@ -153,7 +159,7 @@ public class API {
             if (isRegistered(name)) {
                 return false;
             }
-            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com");
+            PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com", playerName);
             if (!instance.database.saveAuth(auth)) {
                 return false;
             }
@@ -165,10 +171,11 @@ public class API {
 
     /**
      * Force a player to login
-     * 
+     *
      * @param Player
      *            player
      */
+    @Deprecated
     public static void forceLogin(Player player) {
         instance.management.performLogin(player, "dontneed", true);
     }

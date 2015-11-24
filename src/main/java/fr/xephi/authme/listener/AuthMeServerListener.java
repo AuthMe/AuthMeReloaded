@@ -11,6 +11,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 
 public class AuthMeServerListener implements Listener {
 
@@ -28,10 +29,10 @@ public class AuthMeServerListener implements Listener {
         if (Settings.countries.isEmpty())
             return;
         if (!Settings.countriesBlacklist.isEmpty()) {
-            if (Settings.countriesBlacklist.contains(plugin.getCountryCode(event.getAddress().getHostAddress())))
+            if (Settings.countriesBlacklist.contains(Utils.getCountryCode(event.getAddress().getHostAddress())))
                 event.setMotd(m.send("country_banned")[0]);
         }
-        if (Settings.countries.contains(plugin.getCountryCode(event.getAddress().getHostAddress()))) {
+        if (Settings.countries.contains(Utils.getCountryCode(event.getAddress().getHostAddress()))) {
             event.setMotd(plugin.getServer().getMotd());
         } else {
             event.setMotd(m.send("country_banned")[0]);
@@ -56,21 +57,17 @@ public class AuthMeServerListener implements Listener {
             ConsoleLogger.info("Multiverse-Core has been disabled, unhook!");
             return;
         }
-        if (pluginName.equalsIgnoreCase("ChestShop")) {
-            plugin.ChestShop = 0;
-            ConsoleLogger.info("ChestShop has been disabled, unhook!");
-        }
-        if (pluginName.equalsIgnoreCase("CombatTag")) {
-            plugin.CombatTag = false;
-            ConsoleLogger.info("CombatTag has been disabled, unhook!");
-        }
-        if (pluginName.equalsIgnoreCase("Citizens")) {
-            plugin.isCitizensActive = false;
-            ConsoleLogger.info("Citizens has been disabled, unhook!");
+        if (pluginName.equalsIgnoreCase("CombatTagPlus")) {
+            plugin.combatTagPlus = null;
+            ConsoleLogger.info("CombatTagPlus has been disabled, unhook!");
         }
         if (pluginName.equalsIgnoreCase("Vault")) {
             plugin.permission = null;
             ConsoleLogger.showError("Vault has been disabled, unhook permissions!");
+        }
+        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+            plugin.inventoryProtector = null;
+            ConsoleLogger.showError("ProtocolLib has been disabled, unhook packet inventory protection!");
         }
     }
 
@@ -81,13 +78,12 @@ public class AuthMeServerListener implements Listener {
             plugin.checkEssentials();
         if (pluginName.equalsIgnoreCase("Multiverse-Core"))
             plugin.checkMultiverse();
-        if (pluginName.equalsIgnoreCase("ChestShop"))
-            plugin.checkChestShop();
-        if (pluginName.equalsIgnoreCase("CombatTag"))
-            plugin.combatTag();
-        if (pluginName.equalsIgnoreCase("Citizens"))
-            plugin.citizensVersion();
+        if (pluginName.equalsIgnoreCase("CombatTagPlus"))
+            plugin.checkCombatTagPlus();
         if (pluginName.equalsIgnoreCase("Vault"))
             plugin.checkVault();
+        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+            plugin.checkProtocolLib();
+        }
     }
 }

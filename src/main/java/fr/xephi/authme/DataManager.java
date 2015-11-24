@@ -12,6 +12,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 import net.milkbowl.vault.permission.Permission;
 
 public class DataManager {
@@ -46,6 +47,8 @@ public class DataManager {
             return result.get();
         } catch (Exception e) {
             return (null);
+        } finally {
+            executor.shutdown();
         }
     }
 
@@ -102,30 +105,41 @@ public class DataManager {
         for (String name : cleared) {
             try {
                 org.bukkit.OfflinePlayer player = getOfflinePlayer(name);
-                if (player == null)
+                if (player == null) {
                     continue;
-                String playerName = player.getName();
-                File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + playerName + ".dat");
-                if (playerFile.exists()) {
+                }
+
+                try {
+                    File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
                     playerFile.delete();
                     i++;
+                } catch(Exception ignore) {
+                    File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getName() + ".dat");
+                    if (playerFile.exists()) {
+                        playerFile.delete();
+                        i++;
+                    }
                 }
-            } catch (Exception e) {
+            } catch (Exception ignore) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " .dat Files");
     }
 
+    @SuppressWarnings("deprecation")
     public void purgeEssentials(List<String> cleared) {
         int i = 0;
         for (String name : cleared) {
             try {
+                File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");                    
+                playerFile.delete();
+                i++;
+            } catch (Exception e) {
                 File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + name + ".yml");
                 if (playerFile.exists()) {
                     playerFile.delete();
                     i++;
                 }
-            } catch (Exception e) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
@@ -145,5 +159,38 @@ public class DataManager {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " Permissions");
+    }
+
+    public boolean isOnline(Player player, final String name) {
+        if (player.isOnline())
+            return true;
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        Future<Boolean> result = executor.submit(new Callable<Boolean>() {
+
+            @Override
+            public synchronized Boolean call() throws Exception {
+                for (OfflinePlayer op : Utils.getOnlinePlayers())
+                    if (op.getName().equalsIgnoreCase(name)) {
+                        return true;
+                    }
+                return false;
+            }
+        });
+        try {
+            return result.get();
+        } catch (Exception e) {
+            return false;
+        } finally {
+            executor.shutdown();
+        }
+    }
+
+    public Player getOnlinePlayerLower(String name) {
+        name = name.toLowerCase();
+        for (Player player : Utils.getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name))
+                return player;
+        }
+        return null;
     }
 }

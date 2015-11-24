@@ -1,21 +1,16 @@
 package fr.xephi.authme.process.logout;
 
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.Utils.groupType;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.DataFileCache;
-import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.Utils.GroupType;
 
 public class AsyncronousLogout {
 
@@ -25,8 +20,6 @@ public class AsyncronousLogout {
     protected DataSource database;
     protected boolean canLogout = true;
     private Messages m = Messages.getInstance();
-    private Utils utils = Utils.getInstance();
-    private FileCache playerBackup;
 
     public AsyncronousLogout(Player player, AuthMe plugin,
             DataSource database) {
@@ -34,7 +27,6 @@ public class AsyncronousLogout {
         this.plugin = plugin;
         this.database = database;
         this.name = player.getName().toLowerCase();
-        this.playerBackup = new FileCache(plugin);
     }
 
     private void preLogout() {
@@ -60,34 +52,17 @@ public class AsyncronousLogout {
 
         PlayerCache.getInstance().removePlayer(name);
         database.setUnlogged(name);
-        if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
-            Location spawnLoc = plugin.getSpawnLocation(p);
-            final AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(p, spawnLoc);
-            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    plugin.getServer().getPluginManager().callEvent(tpEvent);
-                    if (!tpEvent.isCancelled()) {
-                        if (tpEvent.getTo() != null)
-                            p.teleport(tpEvent.getTo());
-                    }
-                }
-            });
-        }
-
+        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                Utils.teleportToSpawn(p);
+            }
+        });
         if (LimboCache.getInstance().hasLimboPlayer(name))
             LimboCache.getInstance().deleteLimboPlayer(name);
         LimboCache.getInstance().addLimboPlayer(player);
-        utils.setGroup(player, groupType.NOTLOGGEDIN);
-        if (Settings.protectInventoryBeforeLogInEnabled) {
-            player.getInventory().clear();
-            // create cache file for handling lost of inventories on unlogged in
-            // status
-            DataFileCache playerData = new DataFileCache(LimboCache.getInstance().getLimboPlayer(name).getInventory(), LimboCache.getInstance().getLimboPlayer(name).getArmour());
-            if (playerData != null)
-                playerBackup.createCache(player, playerData, LimboCache.getInstance().getLimboPlayer(name).getGroup(), LimboCache.getInstance().getLimboPlayer(name).getOperator(), LimboCache.getInstance().getLimboPlayer(name).isFlying());
-        }
+        Utils.setGroup(player, GroupType.NOTLOGGEDIN);
+
         sched.scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerLogout(p, plugin));
     }
 }

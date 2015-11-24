@@ -20,10 +20,10 @@ public class FlatFile implements DataSource {
 
     /*
      * file layout:
-     * 
+     *
      * PLAYERNAME:HASHSUM:IP:LOGININMILLIESECONDS:LASTPOSX:LASTPOSY:LASTPOSZ:
      * LASTPOSWORLD:EMAIL
-     * 
+     *
      * Old but compatible:
      * PLAYERNAME:HASHSUM:IP:LOGININMILLIESECONDS:LASTPOSX:LASTPOSY
      * :LASTPOSZ:LASTPOSWORLD PLAYERNAME:HASHSUM:IP:LOGININMILLIESECONDS
@@ -32,7 +32,7 @@ public class FlatFile implements DataSource {
     private File source;
 
     public FlatFile() {
-        source = new File(Settings.AUTH_FILE);
+        source = Settings.AUTH_FILE;
         try {
             source.createNewFile();
         } catch (IOException e) {
@@ -41,9 +41,10 @@ public class FlatFile implements DataSource {
                 ConsoleLogger.showError("Can't use FLAT FILE... SHUTDOWN...");
                 AuthMe.getInstance().getServer().shutdown();
             }
-            if (!Settings.isStopEnabled)
+            if (!Settings.isStopEnabled) {
                 AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
+            }
+            e.printStackTrace();
         }
     }
 
@@ -108,7 +109,7 @@ public class FlatFile implements DataSource {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equals(auth.getNickname())) {
@@ -167,7 +168,7 @@ public class FlatFile implements DataSource {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equalsIgnoreCase(auth.getNickname())) {
@@ -226,7 +227,7 @@ public class FlatFile implements DataSource {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equalsIgnoreCase(auth.getNickname())) {
@@ -289,7 +290,7 @@ public class FlatFile implements DataSource {
     public int purgeDatabase(long until) {
         BufferedReader br = null;
         BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<String>();
+        ArrayList<String> lines = new ArrayList<>();
         int cleared = 0;
         try {
             br = new BufferedReader(new FileReader(source));
@@ -335,8 +336,8 @@ public class FlatFile implements DataSource {
     public List<String> autoPurgeDatabase(long until) {
         BufferedReader br = null;
         BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<String>();
-        List<String> cleared = new ArrayList<String>();
+        ArrayList<String> lines = new ArrayList<>();
+        List<String> cleared = new ArrayList<>();
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -384,7 +385,7 @@ public class FlatFile implements DataSource {
         }
         BufferedReader br = null;
         BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<String>();
+        ArrayList<String> lines = new ArrayList<>();
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -517,7 +518,7 @@ public class FlatFile implements DataSource {
     @Override
     public List<String> getAllAuthsByName(PlayerAuth auth) {
         BufferedReader br = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -530,10 +531,10 @@ public class FlatFile implements DataSource {
             return countIp;
         } catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             if (br != null) {
                 try {
@@ -547,7 +548,7 @@ public class FlatFile implements DataSource {
     @Override
     public List<String> getAllAuthsByIp(String ip) {
         BufferedReader br = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -560,10 +561,10 @@ public class FlatFile implements DataSource {
             return countIp;
         } catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             if (br != null) {
                 try {
@@ -577,7 +578,7 @@ public class FlatFile implements DataSource {
     @Override
     public List<String> getAllAuthsByEmail(String email) {
         BufferedReader br = null;
-        List<String> countEmail = new ArrayList<String>();
+        List<String> countEmail = new ArrayList<>();
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -590,10 +591,10 @@ public class FlatFile implements DataSource {
             return countEmail;
         } catch (FileNotFoundException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             if (br != null) {
                 try {
@@ -608,7 +609,7 @@ public class FlatFile implements DataSource {
     public void purgeBanned(List<String> banned) {
         BufferedReader br = null;
         BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<String>();
+        ArrayList<String> lines = new ArrayList<>();
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -618,8 +619,7 @@ public class FlatFile implements DataSource {
                     if (banned.contains(args[0])) {
                         lines.add(line);
                     }
-                } catch (NullPointerException npe) {
-                } catch (ArrayIndexOutOfBoundsException aioobe) {
+                } catch (NullPointerException | ArrayIndexOutOfBoundsException exc) {
                 }
             }
             bw = new BufferedWriter(new FileWriter(source));
@@ -705,7 +705,7 @@ public class FlatFile implements DataSource {
     @Override
     public List<PlayerAuth> getAllAuths() {
         BufferedReader br = null;
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        List<PlayerAuth> auths = new ArrayList<>();
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -714,16 +714,22 @@ public class FlatFile implements DataSource {
                 switch (args.length) {
                     case 2:
                         auths.add(new PlayerAuth(args[0], args[1], "192.168.0.1", 0, "your@email.com", args[0]));
+                        break;
                     case 3:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], 0, "your@email.com", args[0]));
+                        break;
                     case 4:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), "your@email.com", args[0]));
+                        break;
                     case 7:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "unavailableworld", "your@email.com", args[0]));
+                        break;
                     case 8:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]));
+                        break;
                     case 9:
                         auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]));
+                        break;
                 }
             }
         } catch (FileNotFoundException ex) {
@@ -745,6 +751,6 @@ public class FlatFile implements DataSource {
 
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
-        return new ArrayList<PlayerAuth>();
+        return new ArrayList<>();
     }
 }

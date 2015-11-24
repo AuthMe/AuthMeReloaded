@@ -9,10 +9,8 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
 import fr.xephi.authme.settings.Settings;
 
 public class SQLite implements DataSource {
@@ -35,7 +33,7 @@ public class SQLite implements DataSource {
     private String columnLogged;
     private String columnRealName;
 
-    public SQLite() {
+    public SQLite() throws ClassNotFoundException, SQLException {
         this.database = Settings.getMySQLDatabase;
         this.tableName = Settings.getMySQLTablename;
         this.columnName = Settings.getMySQLColumnName;
@@ -56,29 +54,13 @@ public class SQLite implements DataSource {
         try {
             this.connect();
             this.setup();
-        } catch (ClassNotFoundException e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use SQLITE... ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
-        } catch (SQLException e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use SQLITE... ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
+        } catch (ClassNotFoundException | SQLException cnf) {
+            ConsoleLogger.showError("Can't use SQLITE... !");
+            throw cnf;
         }
     }
 
-    private synchronized void connect()
-            throws ClassNotFoundException, SQLException {
+    private synchronized void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
@@ -130,7 +112,7 @@ public class SQLite implements DataSource {
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnRealName);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnRealName + " VARCHAR(255) DEFAULT 'Player';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnRealName + " VARCHAR(255) NOT NULL DEFAULT 'Player';");
             }
         } finally {
             close(rs);
@@ -274,7 +256,7 @@ public class SQLite implements DataSource {
     public List<String> autoPurgeDatabase(long until) {
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         try {
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
@@ -285,7 +267,7 @@ public class SQLite implements DataSource {
             return list;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -424,7 +406,7 @@ public class SQLite implements DataSource {
     public List<String> getAllAuthsByName(PlayerAuth auth) {
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, auth.getIp());
@@ -435,12 +417,9 @@ public class SQLite implements DataSource {
             return countIp;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } catch (NullPointerException npe) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -451,7 +430,7 @@ public class SQLite implements DataSource {
     public List<String> getAllAuthsByIp(String ip) {
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
@@ -462,12 +441,9 @@ public class SQLite implements DataSource {
             return countIp;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } catch (NullPointerException npe) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -478,7 +454,7 @@ public class SQLite implements DataSource {
     public List<String> getAllAuthsByEmail(String email) {
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countEmail = new ArrayList<String>();
+        List<String> countEmail = new ArrayList<>();
         try {
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
             pst.setString(1, email);
@@ -489,12 +465,9 @@ public class SQLite implements DataSource {
             return countEmail;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } catch (NullPointerException npe) {
-            return new ArrayList<String>();
+            return new ArrayList<>();
         } finally {
             close(rs);
             close(pst);
@@ -535,9 +508,6 @@ public class SQLite implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } finally {
             close(rs);
             close(pst);
@@ -555,14 +525,9 @@ public class SQLite implements DataSource {
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
         }
-        return;
     }
 
     @Override
@@ -576,14 +541,9 @@ public class SQLite implements DataSource {
                 pst.executeUpdate();
             } catch (SQLException ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                return;
-            } catch (TimeoutException ex) {
-                ConsoleLogger.showError(ex.getMessage());
-                return;
             } finally {
                 close(pst);
             }
-        return;
     }
 
     @Override
@@ -596,21 +556,16 @@ public class SQLite implements DataSource {
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
         }
-        return;
     }
 
     @Override
     public int getAccountsRegistered() {
         int result = 0;
         PreparedStatement pst = null;
-        ResultSet rs = null;
+        ResultSet rs;
         try {
             pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
             rs = pst.executeQuery();
@@ -618,9 +573,6 @@ public class SQLite implements DataSource {
                 result = rs.getInt(1);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return result;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return result;
         } finally {
@@ -639,26 +591,21 @@ public class SQLite implements DataSource {
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
         } finally {
             close(pst);
         }
-        return;
     }
 
     @Override
     public List<PlayerAuth> getAllAuths() {
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        List<PlayerAuth> auths = new ArrayList<>();
         PreparedStatement pst = null;
-        ResultSet rs = null;
+        ResultSet rs;
         try {
             pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth = null;
+                PlayerAuth pAuth;
                 if (rs.getString(columnIp).isEmpty()) {
                     pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "127.0.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                 } else {
@@ -668,13 +615,9 @@ public class SQLite implements DataSource {
                         pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     }
                 }
-                if (pAuth != null)
-                    auths.add(pAuth);
+                auths.add(pAuth);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
         } finally {
@@ -685,14 +628,14 @@ public class SQLite implements DataSource {
 
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
+        List<PlayerAuth> auths = new ArrayList<>();
         PreparedStatement pst = null;
-        ResultSet rs = null;
+        ResultSet rs;
         try {
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth = null;
+                PlayerAuth pAuth;
                 if (rs.getString(columnIp).isEmpty()) {
                     pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "127.0.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                 } else {
@@ -702,13 +645,9 @@ public class SQLite implements DataSource {
                         pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
                     }
                 }
-                if (pAuth != null)
-                    auths.add(pAuth);
+                auths.add(pAuth);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
-        } catch (TimeoutException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return auths;
         } finally {

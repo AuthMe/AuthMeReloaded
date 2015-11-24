@@ -6,34 +6,32 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.backup.FileCache;
+import fr.xephi.authme.cache.backup.DataFileCache;
+import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.events.ResetInventoryEvent;
 import fr.xephi.authme.events.StoreInventoryEvent;
 import fr.xephi.authme.settings.Settings;
 
 public class LimboCache {
 
-    private volatile static LimboCache singleton = null;
+    private volatile static LimboCache singleton;
     public ConcurrentHashMap<String, LimboPlayer> cache;
-    private FileCache playerData;
+    private JsonCache playerData;
     public AuthMe plugin;
 
     private LimboCache(AuthMe plugin) {
         this.plugin = plugin;
-        this.cache = new ConcurrentHashMap<String, LimboPlayer>();
-        this.playerData = new FileCache(plugin);
+        this.cache = new ConcurrentHashMap<>();
+        this.playerData = new JsonCache();
     }
 
     public void addLimboPlayer(Player player) {
         String name = player.getName().toLowerCase();
         Location loc = player.getLocation();
         GameMode gameMode = player.getGameMode();
-        ItemStack[] arm;
-        ItemStack[] inv;
         boolean operator = false;
         String playerGroup = "";
         boolean flying = false;
@@ -42,35 +40,26 @@ public class LimboCache {
             final StoreInventoryEvent event = new StoreInventoryEvent(player, playerData);
             Bukkit.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled() && event.getInventory() != null && event.getArmor() != null) {
-                inv = event.getInventory();
-                arm = event.getArmor();
-            } else {
-                inv = null;
-                arm = null;
+                player.getInventory().setContents(event.getInventory());
+                player.getInventory().setArmorContents(event.getArmor());
             }
-            try {
-                playerGroup = playerData.readCache(player).getGroup();
-                operator = playerData.readCache(player).getOperator();
-                flying = playerData.readCache(player).isFlying();
-            } catch (Exception e) {
-                ConsoleLogger.showError("Some error on reading cache of " + name);
+
+            DataFileCache cache = playerData.readCache(player);
+            if (cache != null) {
+                playerGroup = cache.getGroup();
+                operator = cache.getOperator();
+                flying = cache.isFlying();
             }
         } else {
             StoreInventoryEvent event = new StoreInventoryEvent(player);
             Bukkit.getServer().getPluginManager().callEvent(event);
             if (!event.isCancelled() && event.getInventory() != null && event.getArmor() != null) {
-                inv = event.getInventory();
-                arm = event.getArmor();
-            } else {
-                inv = null;
-                arm = null;
+                player.getInventory().setContents(event.getInventory());
+                player.getInventory().setArmorContents(event.getArmor());
             }
-            if (player.isOp())
-                operator = true;
-            else operator = false;
-            if (player.isFlying())
-                flying = true;
-            else flying = false;
+
+            operator = player.isOp();
+            flying = player.isFlying();
             if (plugin.permission != null) {
                 try {
                     playerGroup = plugin.permission.getPrimaryGroup(player);
@@ -82,7 +71,7 @@ public class LimboCache {
         }
 
         if (Settings.isForceSurvivalModeEnabled) {
-            if (Settings.isResetInventoryIfCreative && player.getGameMode() == GameMode.CREATIVE) {
+            if (Settings.isResetInventoryIfCreative && gameMode == GameMode.CREATIVE) {
                 ResetInventoryEvent event = new ResetInventoryEvent(player);
                 Bukkit.getServer().getPluginManager().callEvent(event);
                 if (!event.isCancelled()) {
@@ -98,7 +87,7 @@ public class LimboCache {
         if (player.isDead()) {
             loc = plugin.getSpawnLocation(player);
         }
-        cache.put(name, new LimboPlayer(name, loc, inv, arm, gameMode, operator, playerGroup, flying));
+        cache.put(name, new LimboPlayer(name, loc, gameMode, operator, playerGroup, flying));
     }
 
     public void addLimboPlayer(Player player, String group) {
@@ -128,7 +117,7 @@ public class LimboCache {
         if (this.hasLimboPlayer(player.getName().toLowerCase())) {
             this.deleteLimboPlayer(player.getName().toLowerCase());
         }
-        this.addLimboPlayer(player);
+        addLimboPlayer(player);
     }
 
 }

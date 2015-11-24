@@ -13,6 +13,14 @@ public class CustomEvent extends Event implements Cancellable {
     private boolean isCancelled;
     private static final HandlerList handlers = new HandlerList();
 
+    public CustomEvent() {
+        super(false);
+    }
+
+    public CustomEvent(boolean b) {
+        super(b);
+    }
+
     public HandlerList getHandlers() {
         return handlers;
     }

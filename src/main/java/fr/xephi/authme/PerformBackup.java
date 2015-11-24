@@ -30,18 +30,15 @@ public class PerformBackup {
         this.setInstance(instance);
     }
 
-    public boolean DoBackup() {
+    public boolean doBackup() {
 
         switch (Settings.getDataSource) {
             case FILE:
                 return FileBackup("auths.db");
-
             case MYSQL:
                 return MySqlBackup();
-
             case SQLITE:
                 return FileBackup(Settings.getMySQLDatabase + ".db");
-
         }
 
         return false;

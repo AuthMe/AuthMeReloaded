@@ -13,12 +13,14 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.util.Utils;
 
 public class AsyncronousLogin {
 
@@ -33,7 +35,7 @@ public class AsyncronousLogin {
     private Messages m = Messages.getInstance();
 
     public AsyncronousLogin(Player player, String password, boolean forceLogin,
-            AuthMe plugin, DataSource data) {
+                            AuthMe plugin, DataSource data) {
         this.player = player;
         this.password = password;
         name = player.getName().toLowerCase();
@@ -62,13 +64,9 @@ public class AsyncronousLogin {
                     player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
                 }
                 return true;
-            } else
-                if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
-                try {
-                    plugin.captcha.remove(name);
-                    plugin.cap.remove(name);
-                } catch (NullPointerException npe) {
-                }
+            } else if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
+                plugin.captcha.remove(name);
+                plugin.cap.remove(name);
             }
         }
         return false;
@@ -113,6 +111,10 @@ public class AsyncronousLogin {
             m.send(player, "vb_nonActiv");
             return null;
         }
+        AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
+        Bukkit.getServer().getPluginManager().callEvent(event);
+        if (!event.canLogin())
+            return null;
         return pAuth;
     }
 
@@ -192,7 +194,6 @@ public class AsyncronousLogin {
                 });
             } else {
                 m.send(player, "wrong_pwd");
-                return;
             }
         } else {
             ConsoleLogger.showError("Player " + name + " wasn't online during login process, aborted... ");
@@ -215,17 +216,17 @@ public class AsyncronousLogin {
         if (auths.size() == 1) {
             return;
         }
-        String message = "[AuthMe] ";
+        StringBuilder message = new StringBuilder("[AuthMe] ");
         // String uuidaccounts =
         // "[AuthMe] PlayerNames has %size% links to this UUID : ";
         int i = 0;
         for (String account : auths) {
             i++;
-            message = message + account;
+            message.append(account);
             if (i != auths.size()) {
-                message = message + ", ";
+                message.append(", ");
             } else {
-                message = message + ".";
+                message.append(".");
             }
         }
         /*
@@ -234,10 +235,10 @@ public class AsyncronousLogin {
          * uuidaccounts = uuidaccounts + ", "; } else { uuidaccounts =
          * uuidaccounts + "."; } }
          */
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getOnlinePlayers()) {
             if (plugin.authmePermissible(player, "authme.seeOtherAccounts")) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
-                player.sendMessage(message);
+                player.sendMessage(message.toString());
                 // player.sendMessage(uuidaccounts.replace("%size%",
                 // ""+uuidlist.size()));
             }

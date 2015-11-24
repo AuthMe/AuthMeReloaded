@@ -1,0 +1,23 @@
+AuthMe-Team:
+
+Active staff:
+Xephi (Xephi59) - Leader, Main developer
+DNx5 - Developer
+games647 - Developer
+TimVisee - Developer
+Gabriele C. (sgdc3) - Project Manager, Contributor
+
+Staff to contact:
+CryLegend - Contributor, AuthMeBridge Developer (Needs activation)
+
+External Contributors:
+Gnat008 - Contributor
+
+Inactive staff:
+Maxetto - Ticket Manager, Italian Translator, Basic Developer, Contributor (Inactive)
+darkwarriors (d4rkwarriors) - Original AuthMeReloaded Author (Inactive)
+
+Translators:
+irobin591 - DE Translator
+WaterCXubic - ZHHK Translator
+Bodyash - Russian/Ukrainian translator

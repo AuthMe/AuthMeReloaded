@@ -10,29 +10,24 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
- *
  * @author stefano
  */
 public class PHPBB implements EncryptionMethod {
 
-    private static final int PHP_VERSION = 4;
     private String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     public String phpbb_hash(String password, String salt) {
         String random_state = salt;
-        String random = "";
+        StringBuilder random = new StringBuilder();
         int count = 6;
-        if (random.length() < count) {
-            random = "";
-            for (int i = 0; i < count; i += 16) {
-                random_state = md5(salt + random_state);
-                random += pack(md5(random_state));
-            }
-            random = random.substring(0, count);
+        for (int i = 0; i < count; i += 16) {
+            random_state = md5(salt + random_state);
+            random.append(pack(md5(random_state)));
         }
-        String hash = _hash_crypt_private(password, _hash_gensalt_private(random, itoa64));
-        if (hash.length() == 34)
+        String hash = _hash_crypt_private(password, _hash_gensalt_private(random.substring(0, count), itoa64));
+        if (hash.length() == 34) {
             return hash;
+        }
         return md5(password);
     }
 
@@ -40,14 +35,13 @@ public class PHPBB implements EncryptionMethod {
         return _hash_gensalt_private(input, itoa64, 6);
     }
 
-    @SuppressWarnings("unused")
     private String _hash_gensalt_private(String input, String itoa64,
-            int iteration_count_log2) {
+                                         int iteration_count_log2) {
         if (iteration_count_log2 < 4 || iteration_count_log2 > 31) {
             iteration_count_log2 = 8;
         }
         String output = "$H$";
-        output += itoa64.charAt(Math.min(iteration_count_log2 + ((PHP_VERSION >= 5) ? 5 : 3), 30));
+        output += itoa64.charAt(Math.min(iteration_count_log2 + 3, 30)); // PHP_VERSION >= 5 ? 5 : 3
         output += _hash_encode64(input, 6);
         return output;
     }
@@ -56,24 +50,24 @@ public class PHPBB implements EncryptionMethod {
      * Encode hash
      */
     private String _hash_encode64(String input, int count) {
-        String output = "";
+        StringBuilder output = new StringBuilder();
         int i = 0;
         do {
             int value = input.charAt(i++);
-            output += itoa64.charAt(value & 0x3f);
+            output.append(itoa64.charAt(value & 0x3f));
             if (i < count)
                 value |= input.charAt(i) << 8;
-            output += itoa64.charAt((value >> 6) & 0x3f);
+            output.append(itoa64.charAt((value >> 6) & 0x3f));
             if (i++ >= count)
                 break;
             if (i < count)
                 value |= input.charAt(i) << 16;
-            output += itoa64.charAt((value >> 12) & 0x3f);
+            output.append(itoa64.charAt((value >> 12) & 0x3f));
             if (i++ >= count)
                 break;
-            output += itoa64.charAt((value >> 18) & 0x3f);
+            output.append(itoa64.charAt((value >> 18) & 0x3f));
         } while (i < count);
-        return output;
+        return output.toString();
     }
 
     String _hash_crypt_private(String password, String setting) {
@@ -109,9 +103,7 @@ public class PHPBB implements EncryptionMethod {
             MessageDigest md5er = MessageDigest.getInstance("MD5");
             byte[] hash = md5er.digest(bytes);
             return bytes2hex(hash);
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        } catch (UnsupportedEncodingException e) {
+        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -126,9 +118,9 @@ public class PHPBB implements EncryptionMethod {
     }
 
     private static String bytes2hex(byte[] bytes) {
-        StringBuffer r = new StringBuffer(32);
-        for (int i = 0; i < bytes.length; i++) {
-            String x = Integer.toHexString(bytes[i] & 0xff);
+        StringBuilder r = new StringBuilder(32);
+        for (byte b : bytes) {
+            String x = Integer.toHexString(b & 0xff);
             if (x.length() < 2)
                 r.append("0");
             r.append(x);
@@ -137,7 +129,7 @@ public class PHPBB implements EncryptionMethod {
     }
 
     static String pack(String hex) {
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < hex.length(); i += 2) {
             char c1 = hex.charAt(i);
             char c2 = hex.charAt(i + 1);
@@ -155,7 +147,7 @@ public class PHPBB implements EncryptionMethod {
 
     @Override
     public boolean comparePassword(String hash, String password,
-            String playerName) throws NoSuchAlgorithmException {
+                                   String playerName) throws NoSuchAlgorithmException {
         return phpbb_check_hash(password, hash);
     }
 }

@@ -48,7 +48,7 @@ public class xAuthToFlat {
                 String pl = getIdPlayer(id);
                 String psw = getPassword(id);
                 if (psw != null && !psw.isEmpty() && pl != null) {
-                    PlayerAuth auth = new PlayerAuth(pl, psw, "192.168.0.1", 0, "your@email.com");
+                    PlayerAuth auth = new PlayerAuth(pl, psw, "192.168.0.1", 0, "your@email.com", pl);
                     database.saveAuth(auth);
                 }
             }
@@ -82,7 +82,7 @@ public class xAuthToFlat {
     }
 
     public List<Integer> getXAuthPlayers() {
-        List<Integer> xP = new ArrayList<Integer>();
+        List<Integer> xP = new ArrayList<>();
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
         ResultSet rs = null;
@@ -95,7 +95,7 @@ public class xAuthToFlat {
             }
         } catch (SQLException e) {
             xAuthLog.severe("Cannot import xAuthPlayers", e);
-            return new ArrayList<Integer>();
+            return new ArrayList<>();
         } finally {
             xAuth.getPlugin().getDatabaseController().close(conn, ps, rs);
         }

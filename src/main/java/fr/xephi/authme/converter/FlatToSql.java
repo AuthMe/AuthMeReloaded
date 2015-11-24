@@ -3,7 +3,6 @@ package fr.xephi.authme.converter;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -13,7 +12,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
 
 /**
- *
  * @author Xephi59
  */
 public class FlatToSql implements Converter {
@@ -30,8 +28,6 @@ public class FlatToSql implements Converter {
     private static String columnEmail;
     private static String columnLogged;
     private static String columnID;
-    private static File source;
-    private static File output;
 
     public FlatToSql() {
         tableName = Settings.getMySQLTablename;
@@ -51,9 +47,9 @@ public class FlatToSql implements Converter {
     @Override
     public void run() {
         try {
-            source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
+            File source = new File(AuthMe.getInstance().getDataFolder() + File.separator + "auths.db");
             source.createNewFile();
-            output = new File(AuthMe.getInstance().getDataFolder() + File.separator + "authme.sql");
+            File output = new File(AuthMe.getInstance().getDataFolder() + File.separator + "authme.sql");
             output.createNewFile();
             BufferedReader br = new BufferedReader(new FileReader(source));
             BufferedWriter sql = new BufferedWriter(new FileWriter(output));
@@ -79,10 +75,9 @@ public class FlatToSql implements Converter {
             sql.close();
             br.close();
             ConsoleLogger.info("The FlatFile has been converted to authme.sql file");
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.showError("Can't open the flat database file! Does it exist?");
         }
     }
 }

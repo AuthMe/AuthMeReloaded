@@ -1,10 +1,10 @@
 name: AuthMe
-author: Xephi59
-website: http://dev.bukkit.org/bukkit-plugins/authme-reloaded/
-description: AuthMe prevents people, which aren't logged in, from doing stuff like placing blocks, moving, typing commands or seeing the inventory of the current player.
-main: fr.xephi.authme.AuthMe
-version: maven-version
-softdepend: [Vault, ChestShop, Spout, Multiverse-Core, Notifications, Citizens, CombatTag, Essentials, EssentialsSpawn]
+authors: ${pluginAuthors}
+website: ${project.url}
+description: ${project.description}
+main: ${mainClass}
+version: ${project.version}
+softdepend: [Vault, Multiverse-Core, Essentials, EssentialsSpawn, ProtocolLib]
 commands:
     register:
         description: Register an account
@@ -22,10 +22,7 @@ commands:
         usage: /logout
     unregister:
         description: unregister your account
-        usage: /unregister password    
-    passpartu:
-        description: compare passpartu token
-        usage: /passpartu token          
+        usage: /unregister password
     authme:
         description: AuthMe op commands
         usage: '/authme reload|register playername password|changepassword playername password|unregister playername|version'
@@ -48,9 +45,10 @@ permissions:
             authme.changepassword: true
             authme.logout: true
             authme.unregister: true
-            authme.passpartu: true
             authme.l: true
             authme.reg: true
+            authme.email: true
+            authme.captcha: true
     authme.admin.*:
          description: Gives access to all authme admin commands
          children:
@@ -84,9 +82,6 @@ permissions:
         default: true
     authme.email:
         description: Email
-        default: true
-    authme.passpartu:
-        description: passpartu
         default: true
     authme.allow2accounts:
         description: allow more accounts for same ip

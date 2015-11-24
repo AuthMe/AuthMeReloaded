@@ -2,7 +2,6 @@ package fr.xephi.authme.converter;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
@@ -20,7 +19,6 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 
 /**
- *
  * @author Xephi59
  */
 public class RakamakConverter implements Converter {
@@ -39,27 +37,19 @@ public class RakamakConverter implements Converter {
         return this;
     }
 
-    private static Boolean useIP;
-    private static String fileName;
-    private static String ipFileName;
-    private static File source;
-    private static File ipfiles;
-
     @Override
     public void run() {
         HashAlgorithm hash = Settings.getPasswordHash;
-        useIP = Settings.rakamakUseIp;
-        fileName = Settings.rakamakUsers;
-        ipFileName = Settings.rakamakUsersIp;
-        HashMap<String, String> playerIP = new HashMap<String, String>();
-        HashMap<String, String> playerPSW = new HashMap<String, String>();
+        boolean useIP = Settings.rakamakUseIp;
+        String fileName = Settings.rakamakUsers;
+        String ipFileName = Settings.rakamakUsersIp;
+        File source = new File(Settings.PLUGIN_FOLDER, fileName);
+        File ipfiles = new File(Settings.PLUGIN_FOLDER, ipFileName);
+        HashMap<String, String> playerIP = new HashMap<>();
+        HashMap<String, String> playerPSW = new HashMap<>();
         try {
-            source = new File(AuthMe.getInstance().getDataFolder() + File.separator + fileName);
-            ipfiles = new File(AuthMe.getInstance().getDataFolder() + File.separator + ipFileName);
-            source.createNewFile();
-            ipfiles.createNewFile();
-            BufferedReader users = null;
-            BufferedReader ipFile = null;
+            BufferedReader users;
+            BufferedReader ipFile;
             ipFile = new BufferedReader(new FileReader(ipfiles));
             String line;
             if (useIP) {
@@ -85,27 +75,24 @@ public class RakamakConverter implements Converter {
             }
             users.close();
             for (Entry<String, String> m : playerPSW.entrySet()) {
-                String player = m.getKey();
-                String psw = playerPSW.get(player);
+                String playerName = m.getKey();
+                String psw = playerPSW.get(playerName);
                 String ip;
                 if (useIP) {
-                    ip = playerIP.get(player);
+                    ip = playerIP.get(playerName);
                 } else {
                     ip = "127.0.0.1";
                 }
-                PlayerAuth auth = new PlayerAuth(player, psw, ip, System.currentTimeMillis(), player);
-                if (PasswordSecurity.userSalt.containsKey(player))
-                    auth.setSalt(PasswordSecurity.userSalt.get(player));
+                PlayerAuth auth = new PlayerAuth(playerName, psw, ip, System.currentTimeMillis(), playerName);
+                if (PasswordSecurity.userSalt.containsKey(playerName))
+                    auth.setSalt(PasswordSecurity.userSalt.get(playerName));
                 database.saveAuth(auth);
             }
             ConsoleLogger.info("Rakamak database has been imported correctly");
             sender.sendMessage("Rakamak database has been imported correctly");
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            sender.sendMessage("Error file not found");
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            sender.sendMessage("Error IOException");
+            sender.sendMessage("Can't open the rakamak database file! Does it exist?");
         }
     }
 }
