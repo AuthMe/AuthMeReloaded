@@ -24,6 +24,7 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
 import net.minelink.ctplus.CombatTagPlus;
@@ -82,30 +83,30 @@ public class AuthMe extends JavaPlugin {
     public DataSource database;
     public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
-    // Hooks TODO: move into modules
+
+    // Hooks TODO: Move into modules
     public Essentials ess;
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
     public AuthMeInventoryPacketAdapter inventoryProtector;
-    // Random data maps and stuff
-    // TODO: Create Manager for this
+
+    // Data maps and stuff
+    // TODO: Move into a manager
     public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
-    // AntiBot Status
-    // TODO: Create Manager for this
-    public boolean antiBotMod = false;
-    public boolean delayedAntiBot = true;
+
+    // If cache is enabled, prevent any connection before the players data caching is completed.
+    // TODO: Move somewhere
+    private boolean canConnect = true;
+
     private CommandHandler commandHandler = null;
     private PermissionsManager permsMan = null;
     private Settings settings;
     private Messages messages;
     private JsonCache playerBackup;
     private ModuleManager moduleManager;
-    // If cache is enabled, prevent any connection before the players data caching is completed.
-    // TODO: Move somewhere
-    private boolean canConnect = true;
 
     /**
      * Returns the plugin's instance.
@@ -229,7 +230,7 @@ public class AuthMe extends JavaPlugin {
         setupConsoleFilter();
 
         // AntiBot delay
-        setupAntiBotDelay();
+        AntiBot.setupAntiBotService();
 
         // Download and load GeoIp.dat file if absent
         GeoLiteAPI.isDataAvailable();
@@ -441,20 +442,6 @@ public class AuthMe extends JavaPlugin {
             return true;
         }
         return false;
-    }
-
-    /**
-     * Set up the AntiBot delay.
-     */
-    private void setupAntiBotDelay() {
-        if (Settings.enableAntiBot) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-                @Override
-                public void run() {
-                    delayedAntiBot = false;
-                }
-            }, 2400);
-        }
     }
 
     /**
@@ -834,15 +821,6 @@ public class AuthMe extends JavaPlugin {
             return Spawn.getInstance().getSpawn();
         }
         return player.getWorld().getSpawnLocation();
-    }
-
-    public void switchAntiBotMod(boolean mode) {
-        this.antiBotMod = mode;
-        Settings.switchAntiBotMod(mode);
-    }
-
-    public boolean getAntiBotModMode() {
-        return this.antiBotMod;
     }
 
     private void recallEmail() {

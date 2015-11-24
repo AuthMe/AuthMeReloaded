@@ -2,6 +2,8 @@ package fr.xephi.authme.listener;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
+import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -27,9 +29,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -41,7 +41,6 @@ public class AuthMePlayerListener implements Listener {
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
     public final AuthMe plugin;
     private final Messages m = Messages.getInstance();
-    private final List<String> antibot = new ArrayList<>();
 
     /**
      * Constructor for AuthMePlayerListener.
@@ -207,44 +206,6 @@ public class AuthMePlayerListener implements Listener {
     }
 
     /**
-     * Method checkAntiBotMod.
-     *
-     * @param player Player
-     */
-    private void checkAntiBotMod(final Player player) {
-        if (plugin.delayedAntiBot || plugin.antiBotMod)
-            return;
-        if (plugin.getPermissionsManager().hasPermission(player, "authme.bypassantibot"))
-            return;
-        if (antibot.size() > Settings.antiBotSensibility) {
-            plugin.switchAntiBotMod(true);
-            for (String s : m.send("antibot_auto_enabled"))
-                Bukkit.broadcastMessage(s);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    if (plugin.antiBotMod) {
-                        plugin.switchAntiBotMod(false);
-                        antibot.clear();
-                        for (String s : m.send("antibot_auto_disabled"))
-                            Bukkit.broadcastMessage(s.replace("%m", "" + Settings.antiBotDuration));
-                    }
-                }
-            }, Settings.antiBotDuration * 1200);
-            return;
-        }
-        antibot.add(player.getName().toLowerCase());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                antibot.remove(player.getName().toLowerCase());
-            }
-        }, 300);
-    }
-
-    /**
      * Method onPlayerJoin.
      *
      * @param event PlayerJoinEvent
@@ -402,7 +363,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        checkAntiBotMod(player);
+        AntiBot.checkAntiBot(player);
 
         if (Settings.bungee) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();

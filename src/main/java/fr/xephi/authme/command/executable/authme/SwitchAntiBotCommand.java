@@ -1,6 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.help.HelpProvider;
@@ -22,25 +22,26 @@ public class SwitchAntiBotCommand extends ExecutableCommand {
      */
     @Override
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
         // Get the new state
-        String newState = plugin.getAntiBotModMode() ? "OFF" : "ON";
-        if (commandArguments.getCount() >= 1)
+        String newState = null;
+        if (commandArguments.getCount() == 1) {
             newState = commandArguments.get(0);
+        } else if(commandArguments.getCount() == 0) {
+            sender.sendMessage("[AuthMe] AntiBot status: " + AntiBot.getAntiBotStatus().name());
+            return true;
+        }
 
         // Enable the mod
         if (newState.equalsIgnoreCase("ON")) {
-            plugin.switchAntiBotMod(true);
-            sender.sendMessage("[AuthMe] AntiBotMod enabled");
+            AntiBot.switchAntiBotStatus(true);
+            sender.sendMessage("[AuthMe] AntiBot Manual Ovverride: enabled!");
             return true;
         }
 
         // Disable the mod
         if (newState.equalsIgnoreCase("OFF")) {
-            plugin.switchAntiBotMod(false);
-            sender.sendMessage("[AuthMe] AntiBotMod disabled");
+            AntiBot.switchAntiBotStatus(false);
+            sender.sendMessage("[AuthMe] AntiBotMod Manual Ovverride: disabled!");
             return true;
         }
 
