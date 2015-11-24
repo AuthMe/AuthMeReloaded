@@ -9,8 +9,10 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  */
@@ -43,6 +45,7 @@ public final class Settings extends YamlConfiguration {
     public static List<String> emailWhitelist;
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
+    public static Pattern nickPattern;
     public static boolean useLogging = false;
     public static int purgeDelay = 60;
     // Due to compatibility issues with plugins like FactionsChat
@@ -141,6 +144,7 @@ public final class Settings extends YamlConfiguration {
         getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
         getPasswordMinLen = configFile.getInt("settings.security.minPasswordLength", 4);
         getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
+        nickPattern = Pattern.compile(getNickRegex);
         isAllowRestrictedIp = configFile.getBoolean("settings.restrictions.AllowRestrictedUser", false);
         getRestrictedIp = configFile.getStringList("settings.restrictions.AllowedRestrictedUser");
         isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
@@ -192,21 +196,13 @@ public final class Settings extends YamlConfiguration {
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
         allowCommands = new ArrayList<>();
+        allowCommands.addAll(Arrays.asList("/login", "/l", "/register", "/reg", "/email", "/captcha"));
         for (String cmd : configFile.getStringList("settings.restrictions.allowCommands")) {
-            allowCommands.add(cmd.toLowerCase());
+            cmd = cmd.toLowerCase();
+            if (!allowCommands.contains(cmd)) {
+                allowCommands.add(cmd);
+            }
         }
-        if (!allowCommands.contains("/login"))
-            allowCommands.add("/login");
-        if (!allowCommands.contains("/register"))
-            allowCommands.add("/register");
-        if (!allowCommands.contains("/l"))
-            allowCommands.add("/l");
-        if (!allowCommands.contains("/reg"))
-            allowCommands.add("/reg");
-        if (!allowCommands.contains("/email"))
-            allowCommands.add("/email");
-        if (!allowCommands.contains("/captcha"))
-            allowCommands.add("/captcha");
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);

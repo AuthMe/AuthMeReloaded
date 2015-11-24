@@ -13,7 +13,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import java.io.*;
@@ -155,7 +154,7 @@ public final class Utils {
 
     /**
      * TODO: This method requires better explanation.
-     * <p/>
+     * <p>
      * Set the normal group of a player.
      *
      * @param player The player.
@@ -332,19 +331,8 @@ public final class Utils {
         return plugin.getServer().getPlayer(name);
     }
 
-    public static boolean isNPC(final Entity player) {
-        try {
-            if (player.hasMetadata("NPC")) {
-                return true;
-            } else if (plugin.combatTagPlus != null
-                && player instanceof Player
-                && plugin.combatTagPlus.getNpcPlayerHelper().isNpc((Player) player)) {
-                return true;
-            }
-            return false;
-        } catch (Exception e) {
-            return false;
-        }
+    public static boolean isNPC(Player player) {
+        return player.hasMetadata("NPC") || plugin.combatTagPlus != null && plugin.combatTagPlus.getNpcPlayerHelper().isNpc(player);
     }
 
     public static void teleportToSpawn(Player player) {

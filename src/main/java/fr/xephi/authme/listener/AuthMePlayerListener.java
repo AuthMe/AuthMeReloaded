@@ -31,7 +31,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.PatternSyntaxException;
 
 /**
  */
@@ -59,15 +58,16 @@ public class AuthMePlayerListener implements Listener {
      * @param event AsyncPlayerChatEvent
      */
     private void handleChat(AsyncPlayerChatEvent event) {
-        Player player = event.getPlayer();
+        if (Settings.isChatAllowed) {
+            return;
+        }
 
-        if (Settings.isChatAllowed)
+        Player player = event.getPlayer();
+        if (Utils.checkAuth(player)) {
             return;
-        if (Utils.checkAuth(player))
-            return;
+        }
 
         event.setCancelled(true);
-
         if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
             m.send(player, "login_msg");
         } else {
@@ -245,8 +245,9 @@ public class AuthMePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getPlayer() == null)
+        if (event.getPlayer() == null) {
             return;
+        }
 
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
@@ -254,7 +255,7 @@ public class AuthMePlayerListener implements Listener {
         final boolean delay = Settings.delayJoinLeaveMessages && joinMsg != null;
 
         // Remove the join message while the player isn't logging in
-        if (Settings.delayJoinLeaveMessages && event.getJoinMessage() != null) {
+        if (delay) {
             event.setJoinMessage(null);
         }
 
@@ -263,9 +264,10 @@ public class AuthMePlayerListener implements Listener {
         Bukkit.getScheduler().runTask(plugin, new Runnable() {
             @Override
             public void run() {
-                if (delay)
+                if (delay) {
                     joinMessage.put(name, joinMsg);
-                plugin.management.performJoin(player);
+                }
+                plugin.getManagement().performJoin(player);
             }
         });
     }
@@ -309,14 +311,25 @@ public class AuthMePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        final Player player = event.getPlayer();
-        if (player == null) {
+        if (event.getPlayer() == null) {
             return;
         }
 
-        final String name = player.getName().toLowerCase();
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
-            return;
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            int playersOnline = Utils.getOnlinePlayers().size();
+            if (playersOnline > plugin.getServer().getMaxPlayers()) {
+                event.allow();
+            } else {
+                Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
+                if (pl != null) {
+                    pl.kickPlayer(m.send("kick_forvip")[0]);
+                    event.allow();
+                } else {
+                    ConsoleLogger.info("The player " + event.getPlayer().getName() + " tryed to join, but the server was full");
+                    event.setKickMessage(m.send("kick_fullserver")[0]);
+                    event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+                }
+            }
         }
 
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
@@ -326,18 +339,32 @@ public class AuthMePlayerListener implements Listener {
         // Get the permissions manager
         PermissionsManager permsMan = plugin.getPermissionsManager();
 
+        final Player player = event.getPlayer();
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, "authme.vip")) {
+            event.setKickMessage(m.send("kick_fullserver")[0]);
+            event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+            return;
+        }
+
+        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
+            return;
+        }
+
+        final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
+
         if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
             String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || Settings.countriesBlacklist.contains(code))) {
+            if (Settings.countriesBlacklist.contains(code)) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
+
         if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
             String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || !Settings.countries.contains(code))) {
+            if (!Settings.countries.contains(code)) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -357,72 +384,24 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        int min = Settings.getMinNickLength;
-        int max = Settings.getMaxNickLength;
-        String regex = Settings.getNickRegex;
-
-        if (name.length() > max || name.length() < min) {
+        if (name.length() > Settings.getMaxNickLength || name.length() < Settings.getMinNickLength) {
             event.setKickMessage(Arrays.toString(m.send("name_len")));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
-        try {
-            if (!player.getName().matches(regex) || name.equalsIgnoreCase("Player")) {
-                try {
-                    event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
-                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                } catch (Exception exc) {
-                    event.setKickMessage("allowed char : " + regex);
-                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                }
-                return;
-            }
-        } catch (PatternSyntaxException pse) {
-            if (regex == null || regex.isEmpty()) {
-                event.setKickMessage("Your nickname do not match");
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-            try {
-                event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            } catch (Exception exc) {
-                event.setKickMessage("allowed char : " + regex);
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            }
+
+        if (!Settings.nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
+            event.setKickMessage(m.send("regex")[0].replace("REG_EX", Settings.getNickRegex));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
 
-        if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
-            checkAntiBotMod(player);
-            if (Settings.bungee) {
-                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                out.writeUTF("IP");
-                player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-            }
-            return;
-        }
-        if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL)
-            return;
-        if (!permsMan.hasPermission(player, "authme.vip")) {
-            event.setKickMessage(m.send("kick_fullserver")[0]);
-            event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-            return;
-        }
+        checkAntiBotMod(player);
 
-        int playersOnline = Utils.getOnlinePlayers().size();
-        if (playersOnline > plugin.getServer().getMaxPlayers()) {
-            event.allow();
-        } else {
-            final Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
-            if (pl != null) {
-                pl.kickPlayer(m.send("kick_forvip")[0]);
-                event.allow();
-            } else {
-                ConsoleLogger.info("The player " + player.getName() + " tryed to join, but the server was full");
-                event.setKickMessage(m.send("kick_fullserver")[0]);
-                event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-            }
+        if (Settings.bungee) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("IP");
+            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
         }
     }
 
