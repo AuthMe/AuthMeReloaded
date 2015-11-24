@@ -164,15 +164,21 @@ public class AuthMePlayerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.isCancelled())
+        if (event.isCancelled()) {
             return;
+        }
 
-        int radius = Settings.getMovementRadius;
-        boolean allowMove = Settings.isMovementAllowed;
         if (Settings.noTeleport) {
             return;
         }
-        if (allowMove && radius <= 0) {
+
+        if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0) {
+            return;
+        }
+
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX()
+            && event.getFrom().getBlockY() == event.getTo().getBlockY()
+            && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
             return;
         }
 
@@ -181,9 +187,9 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!allowMove) {
+        if (!Settings.isMovementAllowed) {
             if (event.getFrom().distance(event.getTo()) > 0) {
-                event.setCancelled(true);
+                event.setTo(event.getFrom());
                 return;
             }
         }
@@ -194,7 +200,7 @@ public class AuthMePlayerListener implements Listener {
                 player.teleport(spawn);
                 return;
             }
-            if ((spawn.distance(player.getLocation()) > radius)) {
+            if ((spawn.distance(player.getLocation()) > Settings.getMovementRadius)) {
                 player.teleport(spawn);
             }
         }

@@ -173,7 +173,8 @@ public final class Utils {
         assert permsMan != null;
 
         // Remove old groups
-        permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup, Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
+        permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup,
+            Settings.getRegisteredGroup, Settings.getUnloggedinGroup));
 
         // Add the normal group, return the result
         return permsMan.addGroup(player, group);
@@ -185,13 +186,12 @@ public final class Utils {
             return true;
         }
 
-        String name = player.getName().toLowerCase();
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+        if (PlayerCache.getInstance().isAuthenticated(player.getName())) {
             return true;
         }
 
         if (!Settings.isForcedRegistrationEnabled) {
-            if (!plugin.database.isAuthAvailable(name)) {
+            if (!plugin.database.isAuthAvailable(player.getName())) {
                 return true;
             }
         }
