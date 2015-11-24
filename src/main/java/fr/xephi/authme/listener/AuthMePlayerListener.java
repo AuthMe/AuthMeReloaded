@@ -57,6 +57,7 @@ public class AuthMePlayerListener implements Listener {
      * @param event AsyncPlayerChatEvent
      */
     private void handleChat(AsyncPlayerChatEvent event) {
+        Player player = event.getPlayer();
         for (Player p : Utils.getOnlinePlayers()) {
             if (p != player && !PlayerCache.getInstance().isAuthenticated(p)) {
                 event.getRecipients().remove(p);
@@ -67,7 +68,6 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
         if (Utils.checkAuth(player)) {
             return;
         }
