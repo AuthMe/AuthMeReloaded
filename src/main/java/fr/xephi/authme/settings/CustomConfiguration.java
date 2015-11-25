@@ -12,36 +12,70 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-/**
- */
 public abstract class CustomConfiguration extends YamlConfiguration {
 
+    /**
+     * The file of the configuration.
+     */
     private final File configFile;
 
     /**
-     * Constructor for CustomConfiguration.
+     * Constructor.
+     * This loads the configuration file.
      *
-     * @param file the config file
+     * @param file The file of the configuration.
      */
     public CustomConfiguration(File file) {
-        this.configFile = file;
-        load();
+        this(file, true);
     }
 
+    /**
+     * Constructor.
+     *
+     * @param file The file of the configuration.
+     * @param load True to load the configuration file.
+     */
+    public CustomConfiguration(File file, boolean load) {
+        // Set the configuration file
+        this.configFile = file;
+
+        // Load the configuration file
+        if(load)
+            load();
+    }
+
+    /**
+     * Load the configuration.
+     */
     public void load() {
+        // Try to load the configuration, catch exceptions
         try {
+            // Load the configuration
             super.load(configFile);
+
         } catch (FileNotFoundException e) {
+            // Show an error message
             ConsoleLogger.showError("Could not find " + configFile.getName() + ", creating new one...");
-            reLoad();
+
+            // Reload the configuration and create a new file
+            reload();
+
         } catch (IOException e) {
+            // Show an error message
             ConsoleLogger.showError("Could not load " + configFile.getName());
+
         } catch (InvalidConfigurationException e) {
+            // Show an error message
             ConsoleLogger.showError(configFile.getName() + " is no valid configuration file");
         }
     }
 
-    public boolean reLoad() {
+    /**
+     * Reload the configuration.
+     *
+     * @return
+     */
+    public boolean reload() {
         boolean out = true;
         if (!configFile.exists()) {
             out = loadResource(configFile);
@@ -51,13 +85,26 @@ public abstract class CustomConfiguration extends YamlConfiguration {
         return out;
     }
 
+    /**
+     * Save the configuration.
+     */
     public void save() {
+        // Try to save the configuration, catch exceptions
         try {
+            // Save the configuration
             super.save(configFile);
+
         } catch (IOException ex) {
+            // Show an error message
             ConsoleLogger.showError("Could not save config to " + configFile.getName());
         }
     }
+
+    /**
+     * Get the configuration file.
+     *
+     * @return File.
+     */
 
     public File getConfigFile() {
         return configFile;

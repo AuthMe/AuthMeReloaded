@@ -19,7 +19,7 @@ public class Messages extends CustomConfiguration {
      * @param lang the code of the language to use
      */
     public Messages(File file, String lang) {
-        super(file);
+        super(file, true);
         load();
         singleton = this;
         this.lang = lang;

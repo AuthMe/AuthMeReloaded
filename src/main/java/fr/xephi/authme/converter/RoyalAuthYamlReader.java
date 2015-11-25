@@ -14,7 +14,7 @@ public class RoyalAuthYamlReader extends CustomConfiguration {
      * @param file File
      */
     public RoyalAuthYamlReader(File file) {
-        super(file);
+        super(file, true);
         load();
         save();
     }

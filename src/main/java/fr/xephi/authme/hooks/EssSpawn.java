@@ -13,7 +13,7 @@ public class EssSpawn extends CustomConfiguration {
     private static EssSpawn spawn;
 
     public EssSpawn() {
-        super(new File("." + File.separator + "plugins" + File.separator + "Essentials" + File.separator + "spawn.yml"));
+        super(new File("." + File.separator + "plugins" + File.separator + "Essentials" + File.separator + "spawn.yml"), true);
         spawn = this;
         load();
     }

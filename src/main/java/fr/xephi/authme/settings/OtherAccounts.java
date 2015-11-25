@@ -17,7 +17,7 @@ public class OtherAccounts extends CustomConfiguration {
     private static OtherAccounts others = null;
 
     public OtherAccounts() {
-        super(new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "otheraccounts.yml"));
+        super(new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "otheraccounts.yml"), true);
         others = this;
         load();
         save();

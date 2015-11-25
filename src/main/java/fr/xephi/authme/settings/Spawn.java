@@ -14,7 +14,7 @@ public class Spawn extends CustomConfiguration {
     private static Spawn spawn;
 
     public Spawn() {
-        super(new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "spawn.yml"));
+        super(new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "spawn.yml"), true);
         spawn = this;
         load();
         save();
