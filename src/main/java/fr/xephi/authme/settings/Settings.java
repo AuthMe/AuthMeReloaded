@@ -48,9 +48,7 @@ public final class Settings extends YamlConfiguration {
     public static Pattern nickPattern;
     public static boolean useLogging = false;
     public static int purgeDelay = 60;
-    // Due to compatibility issues with plugins like FactionsChat
-    public static Boolean isChatAllowed;
-    public static boolean isPermissionCheckEnabled, isRegistrationEnabled,
+    public static boolean isChatAllowed, isPermissionCheckEnabled, isRegistrationEnabled,
         isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
         isSessionsEnabled, isAllowRestrictedIp,
         isMovementAllowed, isKickNonRegisteredEnabled,

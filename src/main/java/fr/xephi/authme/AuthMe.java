@@ -900,6 +900,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @return The real IP of the player.
      */
+    // TODO: Cache the result
     @Deprecated
     public String getVeryGamesIp(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();
