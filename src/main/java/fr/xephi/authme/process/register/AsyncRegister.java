@@ -163,7 +163,7 @@ public class AsyncRegister {
             database.setLogged(name);
         }
         plugin.otherAccounts.addPlayer(player.getUniqueId());
-        ProcessSyncronousPasswordRegister sync = new ProcessSyncronousPasswordRegister(player, plugin);
+        ProcessSynchronousPasswordRegister sync = new ProcessSynchronousPasswordRegister(player, plugin);
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, sync);
     }
 }

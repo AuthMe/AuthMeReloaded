@@ -297,7 +297,6 @@ public class AuthMe extends JavaPlugin {
 
         // Sponsor messages
         ConsoleLogger.info("AuthMe hooks perfectly with the VeryGames server hosting!");
-        ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
         ConsoleLogger.info("Do you want a good game server? Look at our sponsor GameHosting.it leader in Italy as Game Server Provider!");
 
         // Successful message
@@ -548,7 +547,7 @@ public class AuthMe extends JavaPlugin {
     public void setupDatabase() throws Exception {
         if (database != null)
             database.close();
-        // Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
+        // Backend MYSQL - FILE - SQLITE
         boolean isSQLite = false;
         switch (Settings.getDataSource) {
             case FILE:

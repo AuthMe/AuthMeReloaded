@@ -15,7 +15,7 @@ public class AntiBot {
 
     private static final AuthMe plugin = AuthMe.getInstance();
     private static final Messages messages = plugin.getMessages();
-    private static final List<String> antibotPlayers = new ArrayList<>();
+    private static final List<String> antiBotPlayers = new ArrayList<>();
     private static AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
     public static void setupAntiBotService() {
@@ -56,7 +56,7 @@ public class AntiBot {
             public void run() {
                 if (antiBotStatus == AntiBotStatus.ACTIVE) {
                     antiBotStatus = AntiBotStatus.LISTENING;
-                    antibotPlayers.clear();
+                    antiBotPlayers.clear();
                     for (String s : messages.send("antibot_auto_disabled"))
                         Bukkit.broadcastMessage(s.replace("%m", "" + Settings.antiBotDuration));
                 }
@@ -77,15 +77,15 @@ public class AntiBot {
             return;
         }
 
-        antibotPlayers.add(player.getName().toLowerCase());
-        if (antibotPlayers.size() > Settings.antiBotSensibility) {
+        antiBotPlayers.add(player.getName().toLowerCase());
+        if (antiBotPlayers.size() > Settings.antiBotSensibility) {
             activateAntiBot();
             return;
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                antibotPlayers.remove(player.getName().toLowerCase());
+                antiBotPlayers.remove(player.getName().toLowerCase());
             }
         }, 300);
     }

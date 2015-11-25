@@ -36,7 +36,7 @@ public class AsynchronousJoin {
     private final DataSource database;
     private final String name;
     private final Messages m;
-    private final BukkitScheduler sched;
+    private final BukkitScheduler scheduler;
 
     /**
      * Constructor for AsynchronousJoin.
@@ -48,7 +48,7 @@ public class AsynchronousJoin {
     public AsynchronousJoin(Player player, AuthMe plugin, DataSource database) {
         this.player = player;
         this.plugin = plugin;
-        this.sched = plugin.getServer().getScheduler();
+        this.scheduler = plugin.getServer().getScheduler();
         this.database = database;
         this.name = player.getName().toLowerCase();
         this.m = Messages.getInstance();
@@ -69,7 +69,7 @@ public class AsynchronousJoin {
 
         if (!plugin.canConnect()) {
             final GameMode gM = AuthMePlayerListener.gameMode.get(name);
-            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+            scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                 @Override
                 public void run() {
@@ -85,7 +85,7 @@ public class AsynchronousJoin {
         final String ip = plugin.getIP(player);
         if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
             final GameMode gM = AuthMePlayerListener.gameMode.get(name);
-            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+            scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                 @Override
                 public void run() {
@@ -101,7 +101,7 @@ public class AsynchronousJoin {
         }
         if (Settings.getMaxJoinPerIp > 0 && !plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
             if (plugin.hasJoinedIp(player.getName(), ip)) {
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+                scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                     @Override
                     public void run() {
@@ -116,7 +116,7 @@ public class AsynchronousJoin {
         final boolean isAuthAvailable = database.isAuthAvailable(name);
         if (isAuthAvailable) {
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+                scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                     @Override
                     public void run() {
@@ -128,7 +128,7 @@ public class AsynchronousJoin {
             }
             if (!Settings.noTeleport)
                 if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                    sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+                    scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                         @Override
                         public void run() {
@@ -158,7 +158,7 @@ public class AsynchronousJoin {
             }
         } else {
             if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+                scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                     @Override
                     public void run() {
@@ -176,7 +176,7 @@ public class AsynchronousJoin {
             }
             if (!Settings.noTeleport)
                 if (!needFirstSpawn() && Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                    sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+                    scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                         @Override
                         public void run() {
@@ -202,12 +202,12 @@ public class AsynchronousJoin {
         final int timeOut = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
         if (timeOut > 0) {
-            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
+            BukkitTask id = scheduler.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
 
         Utils.setGroup(player, isAuthAvailable ? GroupType.NOTLOGGEDIN : GroupType.UNREGISTERED);
-        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+        scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
                 player.setOp(false);
@@ -249,7 +249,7 @@ public class AsynchronousJoin {
 
         String[] msg = isAuthAvailable ? m.send("login_msg") :
             m.send("reg_" + (Settings.emailRegistration ? "email_" : "") + "msg");
-        BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
+        BukkitTask msgTask = scheduler.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
     }
 
@@ -297,7 +297,7 @@ public class AsynchronousJoin {
             return;
         if (!player.hasPlayedBefore())
             return;
-        sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+        scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
                 if (spawnLoc.getWorld() == null) {

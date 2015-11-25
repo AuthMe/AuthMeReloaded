@@ -183,7 +183,7 @@ public class AsynchronousLogin {
             if (!Settings.noConsoleSpam)
                 ConsoleLogger.info(realName + " logged in!");
 
-            // makes player isLoggedin via API
+            // Set player status to LoggedIn
             PlayerCache.getInstance().addPlayer(auth);
             database.setLogged(name);
             plugin.otherAccounts.addPlayer(player.getUniqueId());
@@ -192,14 +192,14 @@ public class AsynchronousLogin {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            ProcessSyncronousPlayerLogin syncronousPlayerLogin = new ProcessSyncronousPlayerLogin(player, plugin, database);
-            if (syncronousPlayerLogin.getLimbo() != null) {
-                if (syncronousPlayerLogin.getLimbo().getTimeoutTaskId() != null)
-                    syncronousPlayerLogin.getLimbo().getTimeoutTaskId().cancel();
-                if (syncronousPlayerLogin.getLimbo().getMessageTaskId() != null)
-                    syncronousPlayerLogin.getLimbo().getMessageTaskId().cancel();
+            ProcessSynchronousPlayerLogin synchronousPlayerLogin = new ProcessSynchronousPlayerLogin(player, plugin, database);
+            if (synchronousPlayerLogin.getLimbo() != null) {
+                if (synchronousPlayerLogin.getLimbo().getTimeoutTaskId() != null)
+                    synchronousPlayerLogin.getLimbo().getTimeoutTaskId().cancel();
+                if (synchronousPlayerLogin.getLimbo().getMessageTaskId() != null)
+                    synchronousPlayerLogin.getLimbo().getMessageTaskId().cancel();
             }
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, syncronousPlayerLogin);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, synchronousPlayerLogin);
         } else if (player.isOnline()) {
             if (!Settings.noConsoleSpam)
                 ConsoleLogger.info(realName + " used the wrong password");
@@ -236,7 +236,7 @@ public class AsynchronousLogin {
             return;
         }
         List<String> auths = this.database.getAllAuthsByName(auth);
-        // List<String> uuidlist =
+        // List<String> uuidList =
         // plugin.otherAccounts.getAllPlayersByUUID(player.getUniqueId());
         if (auths.isEmpty()) {
             return;
@@ -245,7 +245,7 @@ public class AsynchronousLogin {
             return;
         }
         StringBuilder message = new StringBuilder("[AuthMe] ");
-        // String uuidaccounts =
+        // String uuidAccounts =
         // "[AuthMe] PlayerNames has %size% links to this UUID : ";
         int i = 0;
         for (String account : auths) {
@@ -258,17 +258,17 @@ public class AsynchronousLogin {
             }
         }
         /*
-         * TODO: Active uuid system i = 0; for (String account : uuidlist) {
-         * i++; uuidaccounts = uuidaccounts + account; if (i != auths.size()) {
-         * uuidaccounts = uuidaccounts + ", "; } else { uuidaccounts =
-         * uuidaccounts + "."; } }
+         * TODO: Active uuid system i = 0; for (String account : uuidList) {
+         * i++; uuidAccounts = uuidAccounts + account; if (i != auths.size()) {
+         * uuidAccounts = uuidAccounts + ", "; } else { uuidAccounts =
+         * uuidAccounts + "."; } }
          */
         for (Player player : Utils.getOnlinePlayers()) {
             if (plugin.getPermissionsManager().hasPermission(player, "authme.seeOtherAccounts")) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
                 player.sendMessage(message.toString());
-                // player.sendMessage(uuidaccounts.replace("%size%",
-                // ""+uuidlist.size()));
+                // player.sendMessage(uuidAccounts.replace("%size%",
+                // ""+uuidList.size()));
             }
         }
     }

@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 
 /**
  */
-public class ProcessSyncronousPlayerQuit implements Runnable {
+public class ProcessSynchronousPlayerQuit implements Runnable {
 
     protected final AuthMe plugin;
     protected final Player player;
@@ -16,7 +16,7 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
     protected final boolean needToChange;
 
     /**
-     * Constructor for ProcessSyncronousPlayerQuit.
+     * Constructor for ProcessSynchronousPlayerQuit.
      *
      * @param plugin       AuthMe
      * @param player       Player
@@ -24,7 +24,7 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
      * @param isFlying     boolean
      * @param needToChange boolean
      */
-    public ProcessSyncronousPlayerQuit(AuthMe plugin, Player player
+    public ProcessSynchronousPlayerQuit(AuthMe plugin, Player player
         , boolean isOp, boolean isFlying
         , boolean needToChange) {
         this.plugin = plugin;

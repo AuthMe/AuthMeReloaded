@@ -234,7 +234,7 @@ public class AuthMePlayerListener implements Listener {
             event.setJoinMessage(null);
         }
 
-        // Shedule login task so works after the prelogin
+        // Schedule login task so works after the preLogin
         // (Fix found by Koolaid5000)
         Bukkit.getScheduler().runTask(plugin, new Runnable() {
             @Override
@@ -300,7 +300,7 @@ public class AuthMePlayerListener implements Listener {
                     pl.kickPlayer(m.send("kick_forvip")[0]);
                     event.allow();
                 } else {
-                    ConsoleLogger.info("The player " + event.getPlayer().getName() + " tryed to join, but the server was full");
+                    ConsoleLogger.info("The player " + event.getPlayer().getName() + " tried to join, but the server was full");
                     event.setKickMessage(m.send("kick_fullserver")[0]);
                     event.setResult(PlayerLoginEvent.Result.KICK_FULL);
                 }

@@ -35,8 +35,7 @@ public class AsynchronousQuit {
      * @param database DataSource
      * @param isKick   boolean
      */
-    public AsynchronousQuit(Player p, AuthMe plugin, DataSource database,
-                            boolean isKick) {
+    public AsynchronousQuit(Player p, AuthMe plugin, DataSource database, boolean isKick) {
         this.player = p;
         this.plugin = plugin;
         this.database = database;
@@ -45,9 +44,7 @@ public class AsynchronousQuit {
     }
 
     public void process() {
-        if (player == null)
-            return;
-        if (/*Utils.isNPC(player) || */Utils.isUnrestricted(player)) {
+        if (player == null || Utils.isUnrestricted(player)) {
             return;
         }
 
@@ -56,7 +53,8 @@ public class AsynchronousQuit {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             if (Settings.isSaveQuitLocationEnabled) {
                 Location loc = player.getLocation();
-                PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName(), player.getName());
+                PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName(),
+                    player.getName());
                 database.updateQuitLoc(auth);
             }
             PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis(), player.getName());
@@ -97,6 +95,6 @@ public class AsynchronousQuit {
         }
 
         AuthMePlayerListener.gameMode.remove(name);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, isFlying, needToChange));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSynchronousPlayerQuit(plugin, player, isOp, isFlying, needToChange));
     }
 }

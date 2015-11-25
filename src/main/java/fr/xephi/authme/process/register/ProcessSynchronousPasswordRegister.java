@@ -20,7 +20,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
-public class ProcessSyncronousPasswordRegister implements Runnable {
+public class ProcessSynchronousPasswordRegister implements Runnable {
 
     protected final Player player;
     protected final String name;
@@ -28,12 +28,12 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
     private final Messages m = Messages.getInstance();
 
     /**
-     * Constructor for ProcessSyncronousPasswordRegister.
+     * Constructor for ProcessSynchronousPasswordRegister.
      *
      * @param player Player
      * @param plugin AuthMe
      */
-    public ProcessSyncronousPasswordRegister(Player player, AuthMe plugin) {
+    public ProcessSynchronousPasswordRegister(Player player, AuthMe plugin) {
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.plugin = plugin;
