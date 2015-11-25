@@ -69,7 +69,6 @@ public class PBKDF2HexFormatter implements PBKDF2Formatter {
      * @return String * @see fr.xephi.authme.security.pbkdf2.PBKDF2Formatter#toString(PBKDF2Parameters)
      */
     public String toString(PBKDF2Parameters p) {
-        String s = BinTools.bin2hex(p.getSalt()) + ":" + String.valueOf(p.getIterationCount()) + ":" + BinTools.bin2hex(p.getDerivedKey());
-        return s;
+        return BinTools.bin2hex(p.getSalt()) + ":" + String.valueOf(p.getIterationCount()) + ":" + BinTools.bin2hex(p.getDerivedKey());
     }
 }

@@ -87,8 +87,7 @@ public class MacBasedPRF implements PRF {
      * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PRF#doFinal(byte[])
      */
     public byte[] doFinal(byte[] M) {
-        byte[] r = mac.doFinal(M);
-        return r;
+        return mac.doFinal(M);
     }
 
     /**
