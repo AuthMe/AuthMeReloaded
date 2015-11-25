@@ -46,7 +46,7 @@ public class RoyalAuthConverter implements Converter {
                 data.saveAuth(auth);
             } catch (Exception e) {
                 ConsoleLogger.writeStackTrace(e);
-                ConsoleLogger.showError("Error while trying to import " + o.getName() + " RoyalAuth datas");
+                ConsoleLogger.showError("Error while trying to import " + o.getName() + " RoyalAuth data");
             }
         }
     }
