@@ -108,22 +108,24 @@ public class MySQL implements DataSource {
     private synchronized void setConnectionArguments()
         throws IllegalArgumentException {
         HikariConfig config = new HikariConfig();
-        Properties mySqlProps = new Properties();
-        mySqlProps.setProperty("useConfigs", "maxPerformance");
+
+        config.setPoolName("AuthMe-ConnectionPool");
         config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
         config.setPassword(this.password);
-        config.setMaximumPoolSize((Runtime.getRuntime().availableProcessors() * 2) + 1);
+
+        Properties mySqlProps = new Properties();
+        mySqlProps.setProperty("useConfigs", "maxPerformance");
+        mySqlProps.setProperty("useUnicode", "true");
+        mySqlProps.setProperty("characterEncoding", "utf-8");
+        mySqlProps.setProperty("rewriteBatchedStatements", "true");
+        mySqlProps.setProperty("cachePrepStmts", "true");
+        mySqlProps.setProperty("prepStmtCacheSize", "250");
+        mySqlProps.setProperty("prepStmtCacheSqlLimit", "2048");
         config.setDataSourceProperties(mySqlProps);
-        //config.setPoolName("AuthMeMYSQLPool");
-        //config.addDataSourceProperty("cachePrepStmts", "false");
-        //config.addDataSourceProperty("autoReconnect", false);
-        //config.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
-        //config.setMaxLifetime(180000); // 3 Min
-        //config.setIdleTimeout(60000); // 1 Min
-        //config.setMinimumIdle(2);
-        //config.setMaximumPoolSize(maxConnections);
+        config.setMaximumPoolSize((Runtime.getRuntime().availableProcessors() * 2) + 1);
+
         ds = new HikariDataSource(config);
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
