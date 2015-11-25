@@ -9,8 +9,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-/**
- */
 public class XF implements EncryptionMethod {
 
     /**
@@ -55,10 +53,6 @@ public class XF implements EncryptionMethod {
         MessageDigest md = MessageDigest.getInstance("SHA-256");
         md.update(password.getBytes());
         byte byteData[] = md.digest();
-        StringBuilder sb = new StringBuilder();
-        for (byte element : byteData) {
-            sb.append(Integer.toString((element & 0xff) + 0x100, 16).substring(1));
-        }
         StringBuilder hexString = new StringBuilder();
         for (byte element : byteData) {
             String hex = Integer.toHexString(0xff & element);

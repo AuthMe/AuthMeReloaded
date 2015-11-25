@@ -36,9 +36,7 @@ public class BCRYPT2Y implements EncryptionMethod {
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
         String ok = hash.substring(0, 29);
-        if (ok.length() != 29)
-            return false;
-        return hash.equals(getHash(password, ok, playerName));
+        return ok.length() == 29 && hash.equals(getHash(password, ok, playerName));
     }
 
 }

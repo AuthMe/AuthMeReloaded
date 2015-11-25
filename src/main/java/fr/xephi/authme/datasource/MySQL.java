@@ -46,7 +46,7 @@ public class MySQL implements DataSource {
      *
      * @throws ClassNotFoundException * @throws SQLException * @throws PoolInitializationException
      */
-    public MySQL() throws ClassNotFoundException, SQLException, PoolInitializationException {
+    public MySQL() throws SQLException, PoolInitializationException {
         this.host = Settings.getMySQLHost;
         this.port = Settings.getMySQLPort;
         this.username = Settings.getMySQLUsername;
@@ -102,7 +102,7 @@ public class MySQL implements DataSource {
     /**
      * Method setConnectionArguments.
      *
-     * @throws ClassNotFoundException * @throws IllegalArgumentException
+     * @throws IllegalArgumentException
      */
     private synchronized void setConnectionArguments()
         throws IllegalArgumentException {
@@ -126,10 +126,10 @@ public class MySQL implements DataSource {
     /**
      * Method reloadArguments.
      *
-     * @throws ClassNotFoundException * @throws IllegalArgumentException
+     * @throws IllegalArgumentException
      */
     private synchronized void reloadArguments()
-        throws ClassNotFoundException, IllegalArgumentException {
+        throws IllegalArgumentException {
         if (ds != null) {
             ds.close();
         }

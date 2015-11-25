@@ -31,18 +31,19 @@ public class SwitchAntiBotCommand extends ExecutableCommand {
             return true;
         }
 
-        // Enable the mod
-        if (newState.equalsIgnoreCase("ON")) {
-            AntiBot.overrideAntiBotStatus(true);
-            sender.sendMessage("[AuthMe] AntiBot Manual Ovverride: enabled!");
-            return true;
-        }
-
-        // Disable the mod
-        if (newState.equalsIgnoreCase("OFF")) {
-            AntiBot.overrideAntiBotStatus(false);
-            sender.sendMessage("[AuthMe] AntiBotMod Manual Ovverride: disabled!");
-            return true;
+        if(newState != null) {
+            // Enable the mod
+            if (newState.equalsIgnoreCase("ON")) {
+                AntiBot.overrideAntiBotStatus(true);
+                sender.sendMessage("[AuthMe] AntiBot Manual Override: enabled!");
+                return true;
+            }
+            // Disable the mod
+            if (newState.equalsIgnoreCase("OFF")) {
+                AntiBot.overrideAntiBotStatus(false);
+                sender.sendMessage("[AuthMe] AntiBotMod Manual Override: disabled!");
+                return true;
+            }
         }
 
         // Show the invalid arguments warning

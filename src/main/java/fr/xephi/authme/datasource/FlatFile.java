@@ -564,7 +564,7 @@ public class FlatFile implements DataSource {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equals(auth.getNickname())) {

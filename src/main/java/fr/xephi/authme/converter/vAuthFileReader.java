@@ -9,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -35,8 +34,6 @@ public class vAuthFileReader {
 
     /**
      * Method convert.
-     *
-     * @throws IOException
      */
     public void convert() {
         final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
