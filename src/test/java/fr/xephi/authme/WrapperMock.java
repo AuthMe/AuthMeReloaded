@@ -2,6 +2,7 @@ package fr.xephi.authme;
 
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.Server;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.mockito.Mockito;
 
 import java.util.HashMap;
@@ -38,6 +39,11 @@ public class WrapperMock extends Wrapper {
     @Override
     public AuthMe getAuthMe() {
         return getMock(AuthMe.class);
+    }
+
+    @Override
+    public BukkitScheduler getScheduler() {
+        return getMock(BukkitScheduler.class);
     }
 
     @SuppressWarnings("unchecked")

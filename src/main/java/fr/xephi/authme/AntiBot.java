@@ -3,6 +3,7 @@ package fr.xephi.authme;
 import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Wrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -16,6 +17,7 @@ public class AntiBot {
 
     private static final AuthMe plugin = AuthMe.getInstance();
     private static final Messages messages = plugin.getMessages();
+    private static Wrapper wrapper = new Wrapper(plugin);
     private static final List<String> antibotPlayers = new ArrayList<>();
     private static AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
@@ -52,7 +54,7 @@ public class AntiBot {
             Bukkit.broadcastMessage(s);
         }
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+        wrapper.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
                 if (antiBotStatus == AntiBotStatus.ACTIVE) {

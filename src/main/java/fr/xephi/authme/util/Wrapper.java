@@ -1,7 +1,9 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
+import org.bukkit.Bukkit;
 import org.bukkit.Server;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import java.util.logging.Logger;
 
@@ -27,6 +29,10 @@ public class Wrapper {
 
     public Logger getLogger() {
         return authMe.getLogger();
+    }
+
+    public BukkitScheduler getScheduler() {
+        return Bukkit.getScheduler();
     }
 
 
