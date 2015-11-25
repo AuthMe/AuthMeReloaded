@@ -78,6 +78,10 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
         ProtocolLibrary.getProtocolManager().addPacketListener(this);
     }
 
+    public void unregister() {
+        ProtocolLibrary.getProtocolManager().removePacketListener(this);
+    }
+
     /**
      * Method sendInventoryPacket.
      *
@@ -87,7 +91,7 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         PacketContainer inventoryPacket = protocolManager.createPacket(PacketType.Play.Server.WINDOW_ITEMS);
 
-        //we are sending our own inventory
+        // we are sending our own inventory
         inventoryPacket.getIntegers().write(0, PLAYER_INVENTORY);
 
         ItemStack[] playerCrafting = new ItemStack[CRAFTING_SIZE];
@@ -95,21 +99,21 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
         ItemStack[] armorContents = player.getInventory().getArmorContents();
         ItemStack[] mainInventory = player.getInventory().getContents();
 
-        //bukkit saves the armor in reversed order
+        // bukkit saves the armor in reversed order
         Collections.reverse(Arrays.asList(armorContents));
 
-        //same main inventory. The hotbar is at the beginning but it should be at the end of the array
+        // same main inventory. The hotbar is at the beginning but it should be at the end of the array
         ItemStack[] hotbar = Arrays.copyOfRange(mainInventory, 0, HOTBAR_SIZE);
         ItemStack[] storedInventory = Arrays.copyOfRange(mainInventory, HOTBAR_SIZE, mainInventory.length);
 
-        //concat all parts of the inventory together
+        // concat all parts of the inventory together
         int inventorySize = playerCrafting.length + armorContents.length + mainInventory.length;
         ItemStack[] completeInventory = new ItemStack[inventorySize];
 
         System.arraycopy(playerCrafting, 0, completeInventory, 0, playerCrafting.length);
         System.arraycopy(armorContents, 0, completeInventory, playerCrafting.length, armorContents.length);
 
-        //storedInventory and hotbar
+        // storedInventory and hotbar
         System.arraycopy(storedInventory, 0, completeInventory
             , playerCrafting.length + armorContents.length, storedInventory.length);
         System.arraycopy(hotbar, 0, completeInventory

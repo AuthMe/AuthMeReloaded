@@ -691,7 +691,7 @@ public class AuthMe extends JavaPlugin {
             }
         } else {
             if (inventoryProtector != null) {
-                ProtocolLibrary.getProtocolManager().removePacketListener(inventoryProtector);
+                inventoryProtector.unregister();
                 inventoryProtector = null;
             }
         }

@@ -36,18 +36,24 @@ public class AuthMeServerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
-        if (!Settings.enableProtection)
+        if (!Settings.enableProtection) {
             return;
-        if (Settings.countries.isEmpty())
-            return;
-        if (!Settings.countriesBlacklist.isEmpty()) {
-            if (Settings.countriesBlacklist.contains(GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress())))
-                event.setMotd(m.send("country_banned")[0]);
         }
-        if (Settings.countries.contains(GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress()))) {
-            event.setMotd(plugin.getServer().getMotd());
-        } else {
-            event.setMotd(m.send("country_banned")[0]);
+
+        String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+        if (!Settings.countriesBlacklist.isEmpty()) {
+            if (Settings.countriesBlacklist.contains(countryCode)) {
+                event.setMotd(m.send("country_banned")[0]);
+                return;
+            }
+        }
+
+        if (!Settings.countries.isEmpty()) {
+            if (Settings.countries.contains(countryCode)) {
+                event.setMotd(plugin.getServer().getMotd());
+            } else {
+                event.setMotd(m.send("country_banned")[0]);
+            }
         }
     }
 
@@ -58,16 +64,18 @@ public class AuthMeServerListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginDisable(PluginDisableEvent event) {
+        // Make sure the plugin instance isn't null
+        if (event.getPlugin() == null) {
+            return;
+        }
+
         // Get the plugin instance
         Plugin pluginInstance = event.getPlugin();
 
-        // Make sure the plugin instance isn't null
-        if (pluginInstance == null)
-            return;
-
         // Make sure it's not this plugin itself
-        if (pluginInstance.equals(this.plugin))
+        if (pluginInstance.equals(this.plugin)) {
             return;
+        }
 
         // Call the onPluginDisable method in the permissions manager
         this.plugin.getPermissionsManager().onPluginDisable(event);
@@ -91,6 +99,7 @@ public class AuthMeServerListener implements Listener {
         if (pluginName.equalsIgnoreCase("CombatTagPlus")) {
             plugin.combatTagPlus = null;
             ConsoleLogger.info("CombatTagPlus has been disabled, unhook!");
+            return;
         }
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
             plugin.inventoryProtector = null;
@@ -109,12 +118,18 @@ public class AuthMeServerListener implements Listener {
         this.plugin.getPermissionsManager().onPluginEnable(event);
 
         String pluginName = event.getPlugin().getName();
-        if (pluginName.equalsIgnoreCase("Essentials") || pluginName.equalsIgnoreCase("EssentialsSpawn"))
+        if (pluginName.equalsIgnoreCase("Essentials") || pluginName.equalsIgnoreCase("EssentialsSpawn")) {
             plugin.checkEssentials();
-        if (pluginName.equalsIgnoreCase("Multiverse-Core"))
+            return;
+        }
+        if (pluginName.equalsIgnoreCase("Multiverse-Core")) {
             plugin.checkMultiverse();
-        if (pluginName.equalsIgnoreCase("CombatTagPlus"))
+            return;
+        }
+        if (pluginName.equalsIgnoreCase("CombatTagPlus")) {
             plugin.checkCombatTagPlus();
+            return;
+        }
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
             plugin.checkProtocolLib();
         }
