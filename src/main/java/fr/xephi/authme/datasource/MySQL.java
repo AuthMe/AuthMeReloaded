@@ -12,6 +12,7 @@ import fr.xephi.authme.settings.Settings;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 /**
  */
@@ -39,7 +40,7 @@ public class MySQL implements DataSource {
     private final List<String> columnOthers;
     private HikariDataSource ds;
     private final String columnRealName;
-    private final int maxConnections;
+    //private final int maxConnections;
 
     /**
      * Constructor for MySQL.
@@ -68,7 +69,7 @@ public class MySQL implements DataSource {
         this.columnID = Settings.getMySQLColumnId;
         this.columnLogged = Settings.getMySQLColumnLogged;
         this.columnRealName = Settings.getMySQLColumnRealName;
-        this.maxConnections = Settings.getMySQLMaxConnections;
+        //this.maxConnections = Settings.getMySQLMaxConnections;
 
         // Set the connection arguments (and check if connection is ok)
         try {
@@ -107,18 +108,22 @@ public class MySQL implements DataSource {
     private synchronized void setConnectionArguments()
         throws IllegalArgumentException {
         HikariConfig config = new HikariConfig();
-        config.setPoolName("AuthMeMYSQLPool");
+        Properties mySqlProps = new Properties();
+        mySqlProps.setProperty("useConfigs", "maxPerformance");
         config.setDriverClassName("com.mysql.jdbc.Driver");
         config.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
         config.setUsername(this.username);
         config.setPassword(this.password);
-        config.addDataSourceProperty("cachePrepStmts", "false");
-        config.addDataSourceProperty("autoReconnect", false);
-        config.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
-        config.setMaxLifetime(180000); // 3 Min
-        config.setIdleTimeout(60000); // 1 Min
-        config.setMinimumIdle(2);
-        config.setMaximumPoolSize(maxConnections);
+        config.setMaximumPoolSize((Runtime.getRuntime().availableProcessors() * 2) + 1);
+        config.setDataSourceProperties(mySqlProps);
+        //config.setPoolName("AuthMeMYSQLPool");
+        //config.addDataSourceProperty("cachePrepStmts", "false");
+        //config.addDataSourceProperty("autoReconnect", false);
+        //config.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
+        //config.setMaxLifetime(180000); // 3 Min
+        //config.setIdleTimeout(60000); // 1 Min
+        //config.setMinimumIdle(2);
+        //config.setMaximumPoolSize(maxConnections);
         ds = new HikariDataSource(config);
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
