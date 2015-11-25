@@ -7,7 +7,7 @@ import fr.xephi.authme.process.login.AsynchronousLogin;
 import fr.xephi.authme.process.logout.AsynchronousLogout;
 import fr.xephi.authme.process.quit.AsynchronousQuit;
 import fr.xephi.authme.process.register.AsyncRegister;
-import fr.xephi.authme.process.unregister.AsyncronousUnregister;
+import fr.xephi.authme.process.unregister.AsynchronousUnregister;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
