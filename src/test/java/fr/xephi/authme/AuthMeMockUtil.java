@@ -3,6 +3,7 @@ package fr.xephi.authme;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.util.Wrapper;
+import fr.xephi.authme.util.WrapperMock;
 import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
@@ -43,6 +44,11 @@ public final class AuthMeMockUtil {
         mockSingletonForClass(PlayerCache.class, "singleton", mock);
     }
 
+    public static void initializeWrapperMock() {
+        WrapperMock wrapper = new WrapperMock();
+        mockSingletonForClass(Wrapper.class, "singleton", wrapper);
+    }
+
     /**
      * Set the given class' {@link Wrapper} field to a mock implementation.
      *
@@ -59,7 +65,7 @@ public final class AuthMeMockUtil {
     }
 
     public static Wrapper insertMockWrapperInstance(Class<?> clazz, String fieldName, AuthMe authMe) {
-        Wrapper wrapperMock = new WrapperMock(authMe);
+        Wrapper wrapperMock = new WrapperMock();
         mockSingletonForClass(clazz, fieldName, wrapperMock);
         return wrapperMock;
     }
@@ -78,7 +84,7 @@ public final class AuthMeMockUtil {
      * @param fieldName The field name
      * @param mock The mock to set for the given field
      */
-    private static void mockSingletonForClass(Class<?> clazz, String fieldName, Object mock) {
+    public static void mockSingletonForClass(Class<?> clazz, String fieldName, Object mock) {
         try {
             Field instance = clazz.getDeclaredField(fieldName);
             instance.setAccessible(true);

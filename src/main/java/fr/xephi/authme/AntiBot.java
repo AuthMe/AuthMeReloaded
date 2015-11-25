@@ -17,7 +17,7 @@ public class AntiBot {
 
     private static final AuthMe plugin = AuthMe.getInstance();
     private static final Messages messages = plugin.getMessages();
-    private static Wrapper wrapper = new Wrapper(plugin);
+    private static Wrapper wrapper = Wrapper.getInstance();
     private static final List<String> antibotPlayers = new ArrayList<>();
     private static AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
