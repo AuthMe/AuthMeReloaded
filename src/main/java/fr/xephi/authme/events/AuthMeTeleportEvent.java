@@ -4,7 +4,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
- *
  * This event is call when AuthMe try to teleport a player
  *
  * @author Xephi59
@@ -12,14 +11,15 @@ import org.bukkit.entity.Player;
  */
 public class AuthMeTeleportEvent extends CustomEvent {
 
-    private Player player;
+    private final Player player;
     private Location to;
-    private Location from;
+    private final Location from;
 
     /**
      * Constructor for AuthMeTeleportEvent.
+     *
      * @param player Player
-     * @param to Location
+     * @param to     Location
      */
     public AuthMeTeleportEvent(Player player, Location to) {
         this.player = player;
@@ -29,14 +29,25 @@ public class AuthMeTeleportEvent extends CustomEvent {
 
     /**
      * Method getPlayer.
-    
-     * @return Player */
+     *
+     * @return Player
+     */
     public Player getPlayer() {
         return player;
     }
 
     /**
+     * Method getTo.
+     *
+     * @return Location
+     */
+    public Location getTo() {
+        return to;
+    }
+
+    /**
      * Method setTo.
+     *
      * @param to Location
      */
     public void setTo(Location to) {
@@ -44,17 +55,10 @@ public class AuthMeTeleportEvent extends CustomEvent {
     }
 
     /**
-     * Method getTo.
-    
-     * @return Location */
-    public Location getTo() {
-        return to;
-    }
-
-    /**
      * Method getFrom.
-    
-     * @return Location */
+     *
+     * @return Location
+     */
     public Location getFrom() {
         return from;
     }

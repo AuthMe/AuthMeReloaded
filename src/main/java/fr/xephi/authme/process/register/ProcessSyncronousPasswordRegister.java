@@ -1,12 +1,5 @@
 package fr.xephi.authme.process.register;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -18,18 +11,25 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
 public class ProcessSyncronousPasswordRegister implements Runnable {
 
-    protected Player player;
-    protected String name;
-    private AuthMe plugin;
-    private Messages m = Messages.getInstance();
+    protected final Player player;
+    protected final String name;
+    private final AuthMe plugin;
+    private final Messages m = Messages.getInstance();
 
     /**
      * Constructor for ProcessSyncronousPasswordRegister.
+     *
      * @param player Player
      * @param plugin AuthMe
      */
@@ -53,6 +53,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 
     /**
      * Method forceLogin.
+     *
      * @param player Player
      */
     protected void forceLogin(Player player) {
@@ -76,6 +77,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override
@@ -137,11 +139,11 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {
                 for (String s : Settings.welcomeMsg) {
-                    plugin.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
+                    plugin.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
                 for (String s : Settings.welcomeMsg) {
-                    player.sendMessage(plugin.replaceAllInfos(s, player));
+                    player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
 

@@ -1,10 +1,5 @@
 package fr.xephi.authme.process.quit;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -14,29 +9,34 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
-public class AsyncronousQuit {
+public class AsynchronousQuit {
 
-    protected AuthMe plugin;
-    protected DataSource database;
-    protected Player player;
-    private String name;
+    protected final AuthMe plugin;
+    protected final DataSource database;
+    protected final Player player;
+    private final String name;
     private boolean isOp = false;
     private boolean isFlying = false;
     private boolean needToChange = false;
     private boolean isKick = false;
 
     /**
-     * Constructor for AsyncronousQuit.
-     * @param p Player
-     * @param plugin AuthMe
+     * Constructor for AsynchronousQuit.
+     *
+     * @param p        Player
+     * @param plugin   AuthMe
      * @param database DataSource
-     * @param isKick boolean
+     * @param isKick   boolean
      */
-    public AsyncronousQuit(Player p, AuthMe plugin, DataSource database,
-            boolean isKick) {
+    public AsynchronousQuit(Player p, AuthMe plugin, DataSource database,
+                            boolean isKick) {
         this.player = p;
         this.plugin = plugin;
         this.database = database;

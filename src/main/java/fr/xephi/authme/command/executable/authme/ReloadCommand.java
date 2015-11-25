@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
 //import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -10,6 +9,7 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Profiler;
+import org.bukkit.command.CommandSender;
 
 /**
  */
@@ -22,8 +22,8 @@ public class ReloadCommand extends ExecutableCommand {
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
-    
-     * @return True if the command was executed successfully, false otherwise. */
+     * @return True if the command was executed successfully, false otherwise.
+     */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Profile the reload process

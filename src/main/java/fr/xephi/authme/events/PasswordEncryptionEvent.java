@@ -1,9 +1,8 @@
 package fr.xephi.authme.events;
 
+import fr.xephi.authme.security.crypts.EncryptionMethod;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
-import fr.xephi.authme.security.crypts.EncryptionMethod;
 
 /**
  * <p>
@@ -11,10 +10,9 @@ import fr.xephi.authme.security.crypts.EncryptionMethod;
  * a custom EncryptionMethod
  * </p>
  *
- * @see fr.xephi.authme.security.crypts.EncryptionMethod
- *
  * @author Xephi59
  * @version $Revision: 1.0 $
+ * @see fr.xephi.authme.security.crypts.EncryptionMethod
  */
 public class PasswordEncryptionEvent extends Event {
 
@@ -24,7 +22,8 @@ public class PasswordEncryptionEvent extends Event {
 
     /**
      * Constructor for PasswordEncryptionEvent.
-     * @param method EncryptionMethod
+     *
+     * @param method     EncryptionMethod
      * @param playerName String
      */
     public PasswordEncryptionEvent(EncryptionMethod method, String playerName) {
@@ -34,16 +33,36 @@ public class PasswordEncryptionEvent extends Event {
     }
 
     /**
+     * Method getHandlerList.
+     *
+     * @return HandlerList
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    /**
      * Method getHandlers.
-    
-     * @return HandlerList */
+     *
+     * @return HandlerList
+     */
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
 
     /**
+     * Method getMethod.
+     *
+     * @return EncryptionMethod
+     */
+    public EncryptionMethod getMethod() {
+        return method;
+    }
+
+    /**
      * Method setMethod.
+     *
      * @param method EncryptionMethod
      */
     public void setMethod(EncryptionMethod method) {
@@ -51,27 +70,12 @@ public class PasswordEncryptionEvent extends Event {
     }
 
     /**
-     * Method getMethod.
-    
-     * @return EncryptionMethod */
-    public EncryptionMethod getMethod() {
-        return method;
-    }
-
-    /**
      * Method getPlayerName.
-    
-     * @return String */
+     *
+     * @return String
+     */
     public String getPlayerName() {
         return playerName;
-    }
-
-    /**
-     * Method getHandlerList.
-    
-     * @return HandlerList */
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
 }

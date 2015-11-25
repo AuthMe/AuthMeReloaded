@@ -1,28 +1,26 @@
 package fr.xephi.authme;
 
-import java.io.File;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.settings.Settings;
+import org.apache.commons.mail.HtmlEmail;
+import org.bukkit.Bukkit;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
-
-import org.apache.commons.mail.HtmlEmail;
-import org.bukkit.Bukkit;
-
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.settings.Settings;
+import java.io.File;
 
 /**
- *
  * @author Xephi59
  * @version $Revision: 1.0 $
  */
 public class SendMailSSL {
 
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     /**
      * Constructor for SendMailSSL.
+     *
      * @param plugin AuthMe
      */
     public SendMailSSL(AuthMe plugin) {
@@ -31,19 +29,20 @@ public class SendMailSSL {
 
     /**
      * Method main.
-     * @param auth PlayerAuth
+     *
+     * @param auth    PlayerAuth
      * @param newPass String
      */
     public void main(final PlayerAuth auth, final String newPass) {
-        String sendername;
+        String senderName;
 
         if (Settings.getmailSenderName == null || Settings.getmailSenderName.isEmpty()) {
-            sendername = Settings.getmailAccount;
+            senderName = Settings.getmailAccount;
         } else {
-            sendername = Settings.getmailSenderName;
+            senderName = Settings.getmailSenderName;
         }
 
-        final String sender = sendername;
+        final String sender = senderName;
         final int port = Settings.getMailPort;
         final String acc = Settings.getmailAccount;
         final String subject = Settings.getMailSubject;
@@ -91,6 +90,7 @@ public class SendMailSSL {
                         ConsoleLogger.showError("Fail to send a mail to " + mail);
                     }
                     if (file != null)
+                        //noinspection ResultOfMethodCallIgnored
                         file.delete();
 
                 } catch (Exception e) {

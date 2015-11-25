@@ -1,18 +1,17 @@
 package fr.xephi.authme;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.GradientPaint;
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 
 /**
  */
 public class ImageGenerator {
 
-    private String pass;
+    private final String pass;
+
     /**
      * Constructor for ImageGenerator.
+     *
      * @param pass String
      */
     public ImageGenerator(String pass) {
@@ -21,8 +20,9 @@ public class ImageGenerator {
 
     /**
      * Method generateImage.
-    
-     * @return BufferedImage */
+     *
+     * @return BufferedImage
+     */
     public BufferedImage generateImage() {
         BufferedImage image = new BufferedImage(200, 60, BufferedImage.TYPE_BYTE_INDEXED);
         Graphics2D graphics = image.createGraphics();

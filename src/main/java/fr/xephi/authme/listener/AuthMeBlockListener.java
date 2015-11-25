@@ -1,22 +1,22 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.util.Utils;
-
 /**
  */
 public class AuthMeBlockListener implements Listener {
 
-    public AuthMe instance;
+    public final AuthMe instance;
 
     /**
      * Constructor for AuthMeBlockListener.
+     *
      * @param instance AuthMe
      */
     public AuthMeBlockListener(AuthMe instance) {
@@ -26,6 +26,7 @@ public class AuthMeBlockListener implements Listener {
 
     /**
      * Method onBlockPlace.
+     *
      * @param event BlockPlaceEvent
      */
     @EventHandler(ignoreCancelled = true)
@@ -37,6 +38,7 @@ public class AuthMeBlockListener implements Listener {
 
     /**
      * Method onBlockBreak.
+     *
      * @param event BlockBreakEvent
      */
     @EventHandler(ignoreCancelled = true)

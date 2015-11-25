@@ -3,7 +3,6 @@ package fr.xephi.authme.events;
 import org.bukkit.entity.Player;
 
 /**
- * 
  * This event is call when a creative inventory is reseted.
  *
  * @author Xephi59
@@ -15,6 +14,7 @@ public class ResetInventoryEvent extends CustomEvent {
 
     /**
      * Constructor for ResetInventoryEvent.
+     *
      * @param player Player
      */
     public ResetInventoryEvent(Player player) {
@@ -24,14 +24,16 @@ public class ResetInventoryEvent extends CustomEvent {
 
     /**
      * Method getPlayer.
-    
-     * @return Player */
+     *
+     * @return Player
+     */
     public Player getPlayer() {
         return this.player;
     }
 
     /**
      * Method setPlayer.
+     *
      * @param player Player
      */
     public void setPlayer(Player player) {

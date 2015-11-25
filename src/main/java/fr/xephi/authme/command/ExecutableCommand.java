@@ -10,7 +10,7 @@ public abstract class ExecutableCommand {
     /**
      * Execute the command.
      *
-     * @param sender The command sender.
+     * @param sender           The command sender.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *

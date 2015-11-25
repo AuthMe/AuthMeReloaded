@@ -1,5 +1,12 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -7,36 +14,28 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Utils;
-import net.milkbowl.vault.permission.Permission;
-
 /**
  */
 public class DataManager {
 
-    public AuthMe plugin;
+    public final AuthMe plugin;
 
     /**
      * Constructor for DataManager.
+     *
      * @param plugin AuthMe
      */
     public DataManager(AuthMe plugin) {
         this.plugin = plugin;
     }
 
-    public void run() {
-    }
-
     /**
      * Method getOfflinePlayer.
+     *
      * @param name String
-    
-     * @return OfflinePlayer */
+     *
+     * @return OfflinePlayer
+     */
     public synchronized OfflinePlayer getOfflinePlayer(final String name) {
         ExecutorService executor = Executors.newSingleThreadExecutor();
         Future<OfflinePlayer> result = executor.submit(new Callable<OfflinePlayer>() {
@@ -49,7 +48,7 @@ public class DataManager {
                             result = op;
                             break;
                         }
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
                 return result;
             }
@@ -65,6 +64,7 @@ public class DataManager {
 
     /**
      * Method purgeAntiXray.
+     *
      * @param cleared List<String>
      */
     public synchronized void purgeAntiXray(List<String> cleared) {
@@ -77,10 +77,11 @@ public class DataManager {
                 String playerName = player.getName();
                 File playerFile = new File("." + File.separator + "plugins" + File.separator + "AntiXRayData" + File.separator + "PlayerData" + File.separator + playerName);
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " AntiXRayData Files");
@@ -88,6 +89,7 @@ public class DataManager {
 
     /**
      * Method purgeLimitedCreative.
+     *
      * @param cleared List<String>
      */
     public synchronized void purgeLimitedCreative(List<String> cleared) {
@@ -100,20 +102,23 @@ public class DataManager {
                 String playerName = player.getName();
                 File playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + ".yml");
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
                 playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + "_creative.yml");
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
                 playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + "_adventure.yml");
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
-            } catch (Exception e) {
+            } catch (Exception ignored) {
             }
         }
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " LimitedCreative Survival, Creative and Adventure files");
@@ -121,6 +126,7 @@ public class DataManager {
 
     /**
      * Method purgeDat.
+     *
      * @param cleared List<String>
      */
     public synchronized void purgeDat(List<String> cleared) {
@@ -134,11 +140,13 @@ public class DataManager {
 
                 try {
                     File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getUniqueId() + ".dat");
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
-                } catch(Exception ignore) {
+                } catch (Exception ignore) {
                     File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + player.getName() + ".dat");
                     if (playerFile.exists()) {
+                        //noinspection ResultOfMethodCallIgnored
                         playerFile.delete();
                         i++;
                     }
@@ -151,6 +159,7 @@ public class DataManager {
 
     /**
      * Method purgeEssentials.
+     *
      * @param cleared List<String>
      */
     @SuppressWarnings("deprecation")
@@ -158,12 +167,14 @@ public class DataManager {
         int i = 0;
         for (String name : cleared) {
             try {
-                File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");                    
+                File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");
+                //noinspection ResultOfMethodCallIgnored
                 playerFile.delete();
                 i++;
             } catch (Exception e) {
                 File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + name + ".yml");
                 if (playerFile.exists()) {
+                    //noinspection ResultOfMethodCallIgnored
                     playerFile.delete();
                     i++;
                 }
@@ -172,13 +183,29 @@ public class DataManager {
         ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
     }
 
+    // TODO: What is this method for? Is it correct?
+
     /**
-     * Method purgePermissions.
-     * @param cleared List<String>
-     * @param permission Permission
+     * @param cleared Cleared players.
      */
-    public synchronized void purgePermissions(List<String> cleared, Permission permission) {
+    public synchronized void purgePermissions(List<String> cleared) {
+        // Get the permissions manager, and make sure it's valid
+        PermissionsManager permsMan = this.plugin.getPermissionsManager();
+        if (permsMan == null)
+            ConsoleLogger.showError("Unable to access permissions manager instance!");
+        assert permsMan != null;
+
         int i = 0;
+        for (String name : cleared) {
+            try {
+                permsMan.removeAllGroups(this.getOnlinePlayerLower(name.toLowerCase()));
+                i++;
+            } catch (Exception ignored) {
+            }
+        }
+        ConsoleLogger.info("AutoPurgeDatabase : Removed " + i + " permissions");
+
+        /*int i = 0;
         for (String name : cleared) {
             try {
                 OfflinePlayer p = this.getOfflinePlayer(name);
@@ -189,15 +216,17 @@ public class DataManager {
             } catch (Exception e) {
             }
         }
-        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " Permissions");
+        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " Permissions");*/
     }
 
     /**
      * Method isOnline.
+     *
      * @param player Player
-     * @param name String
-    
-     * @return boolean */
+     * @param name   String
+     *
+     * @return boolean
+     */
     public boolean isOnline(Player player, final String name) {
         if (player.isOnline())
             return true;
@@ -224,9 +253,11 @@ public class DataManager {
 
     /**
      * Method getOnlinePlayerLower.
+     *
      * @param name String
-    
-     * @return Player */
+     *
+     * @return Player
+     */
     public Player getOnlinePlayerLower(String name) {
         name = name.toLowerCase();
         for (Player player : Utils.getOnlinePlayers()) {

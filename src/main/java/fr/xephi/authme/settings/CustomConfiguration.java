@@ -1,5 +1,10 @@
 package fr.xephi.authme.settings;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,21 +12,16 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-
 /**
  */
-public class CustomConfiguration extends YamlConfiguration {
+public abstract class CustomConfiguration extends YamlConfiguration {
 
-    private File configFile;
+    private final File configFile;
 
     /**
      * Constructor for CustomConfiguration.
-     * @param file File
+     *
+     * @param file the config file
      */
     public CustomConfiguration(File file) {
         this.configFile = file;
@@ -41,10 +41,6 @@ public class CustomConfiguration extends YamlConfiguration {
         }
     }
 
-    /**
-     * Method reLoad.
-    
-     * @return boolean */
     public boolean reLoad() {
         boolean out = true;
         if (!configFile.exists()) {
@@ -63,20 +59,11 @@ public class CustomConfiguration extends YamlConfiguration {
         }
     }
 
-    /**
-     * Method getConfigFile.
-    
-     * @return File */
     public File getConfigFile() {
         return configFile;
     }
 
-    /**
-     * Method loadResource.
-     * @param file File
-    
-     * @return boolean */
-    public boolean loadResource(File file) {
+    private boolean loadResource(File file) {
         if (!file.exists()) {
             try {
                 if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {

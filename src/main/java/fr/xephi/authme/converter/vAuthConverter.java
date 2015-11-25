@@ -1,21 +1,21 @@
 package fr.xephi.authme.converter;
 
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
+import org.bukkit.command.CommandSender;
 
 /**
  */
 public class vAuthConverter implements Converter {
 
-    public AuthMe plugin;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe plugin;
+    public final DataSource database;
+    public final CommandSender sender;
 
     /**
      * Constructor for vAuthConverter.
+     *
      * @param plugin AuthMe
      * @param sender CommandSender
      */
@@ -27,6 +27,7 @@ public class vAuthConverter implements Converter {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override

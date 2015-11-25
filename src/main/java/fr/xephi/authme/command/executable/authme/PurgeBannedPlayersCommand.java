@@ -1,15 +1,14 @@
 package fr.xephi.authme.command.executable.authme;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  */
@@ -22,8 +21,8 @@ public class PurgeBannedPlayersCommand extends ExecutableCommand {
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
-    
-     * @return True if the command was executed successfully, false otherwise. */
+     * @return True if the command was executed successfully, false otherwise.
+     */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance

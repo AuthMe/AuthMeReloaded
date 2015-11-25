@@ -1,9 +1,5 @@
 package fr.xephi.authme.task;
 
-import java.security.NoSuchAlgorithmException;
-
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -11,6 +7,9 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.entity.Player;
+
+import java.security.NoSuchAlgorithmException;
 
 /**
  */
@@ -23,8 +22,9 @@ public class ChangePasswordTask implements Runnable {
 
     /**
      * Constructor for ChangePasswordTask.
-     * @param plugin AuthMe
-     * @param player Player
+     *
+     * @param plugin      AuthMe
+     * @param player      Player
      * @param oldPassword String
      * @param newPassword String
      */
@@ -37,6 +37,7 @@ public class ChangePasswordTask implements Runnable {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override
@@ -44,10 +45,10 @@ public class ChangePasswordTask implements Runnable {
         Messages m = Messages.getInstance();
         try {
             String name = player.getName().toLowerCase();
-            String hashnew = PasswordSecurity.getHash(Settings.getPasswordHash, newPassword, name);
+            String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, newPassword, name);
             PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
             if (PasswordSecurity.comparePasswordWithHash(oldPassword, auth.getHash(), player.getName())) {
-                auth.setHash(hashnew);
+                auth.setHash(hashNew);
                 if (PasswordSecurity.userSalt.containsKey(name) && PasswordSecurity.userSalt.get(name) != null) {
                     auth.setSalt(PasswordSecurity.userSalt.get(name));
                 } else {

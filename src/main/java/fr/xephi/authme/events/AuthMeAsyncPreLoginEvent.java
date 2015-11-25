@@ -5,7 +5,6 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- *
  * This event is call when a player try to /login
  *
  * @author Xephi59
@@ -13,12 +12,13 @@ import org.bukkit.event.HandlerList;
  */
 public class AuthMeAsyncPreLoginEvent extends Event {
 
-    private Player player;
-    private boolean canLogin = true;
     private static final HandlerList handlers = new HandlerList();
+    private final Player player;
+    private boolean canLogin = true;
 
     /**
      * Constructor for AuthMeAsyncPreLoginEvent.
+     *
      * @param player Player
      */
     public AuthMeAsyncPreLoginEvent(Player player) {
@@ -28,22 +28,25 @@ public class AuthMeAsyncPreLoginEvent extends Event {
 
     /**
      * Method getPlayer.
-    
-     * @return Player */
+     *
+     * @return Player
+     */
     public Player getPlayer() {
         return player;
     }
 
     /**
      * Method canLogin.
-    
-     * @return boolean */
+     *
+     * @return boolean
+     */
     public boolean canLogin() {
         return canLogin;
     }
 
     /**
      * Method setCanLogin.
+     *
      * @param canLogin boolean
      */
     public void setCanLogin(boolean canLogin) {
@@ -52,8 +55,9 @@ public class AuthMeAsyncPreLoginEvent extends Event {
 
     /**
      * Method getHandlers.
-    
-     * @return HandlerList */
+     *
+     * @return HandlerList
+     */
     @Override
     public HandlerList getHandlers() {
         return handlers;

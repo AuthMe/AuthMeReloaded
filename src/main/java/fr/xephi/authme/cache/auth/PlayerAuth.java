@@ -16,16 +16,17 @@ public class PlayerAuth {
     private double z;
     private String world;
     private String salt;
-    private int groupId;
+    private final int groupId;
     private String email;
     private String realName;
 
     /**
      * Constructor for PlayerAuth.
-     * @param nickname String
-     * @param ip String
+     *
+     * @param nickname  String
+     * @param ip        String
      * @param lastLogin long
-     * @param realName String
+     * @param realName  String
      */
     public PlayerAuth(String nickname, String ip, long lastLogin, String realName) {
         this(nickname, "", "", -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
@@ -33,11 +34,12 @@ public class PlayerAuth {
 
     /**
      * Constructor for PlayerAuth.
+     *
      * @param nickname String
-     * @param x double
-     * @param y double
-     * @param z double
-     * @param world String
+     * @param x        double
+     * @param y        double
+     * @param z        double
+     * @param world    String
      * @param realName String
      */
     public PlayerAuth(String nickname, double x, double y, double z, String world, String realName) {
@@ -46,11 +48,12 @@ public class PlayerAuth {
 
     /**
      * Constructor for PlayerAuth.
-     * @param nickname String
-     * @param hash String
-     * @param ip String
+     *
+     * @param nickname  String
+     * @param hash      String
+     * @param ip        String
      * @param lastLogin long
-     * @param realName String
+     * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String realName) {
         this(nickname, hash, "", -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
@@ -58,12 +61,13 @@ public class PlayerAuth {
 
     /**
      * Constructor for PlayerAuth.
-     * @param nickname String
-     * @param hash String
-     * @param ip String
+     *
+     * @param nickname  String
+     * @param hash      String
+     * @param ip        String
      * @param lastLogin long
-     * @param email String
-     * @param realName String
+     * @param email     String
+     * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String email, String realName) {
         this(nickname, hash, "", -1, ip, lastLogin, 0, 0, 0, "world", email, realName);
@@ -71,12 +75,13 @@ public class PlayerAuth {
 
     /**
      * Constructor for PlayerAuth.
-     * @param nickname String
-     * @param hash String
-     * @param salt String
-     * @param ip String
+     *
+     * @param nickname  String
+     * @param hash      String
+     * @param salt      String
+     * @param ip        String
      * @param lastLogin long
-     * @param realName String
+     * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, String realName) {
         this(nickname, hash, salt, -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
@@ -84,16 +89,17 @@ public class PlayerAuth {
 
     /**
      * Constructor for PlayerAuth.
-     * @param nickname String
-     * @param hash String
-     * @param ip String
+     *
+     * @param nickname  String
+     * @param hash      String
+     * @param ip        String
      * @param lastLogin long
-     * @param x double
-     * @param y double
-     * @param z double
-     * @param world String
-     * @param email String
-     * @param realName String
+     * @param x         double
+     * @param y         double
+     * @param z         double
+     * @param world     String
+     * @param email     String
+     * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
         this(nickname, hash, "", -1, ip, lastLogin, x, y, z, world, email, realName);
@@ -101,17 +107,18 @@ public class PlayerAuth {
 
     /**
      * Constructor for PlayerAuth.
-     * @param nickname String
-     * @param hash String
-     * @param salt String
-     * @param ip String
+     *
+     * @param nickname  String
+     * @param hash      String
+     * @param salt      String
+     * @param ip        String
      * @param lastLogin long
-     * @param x double
-     * @param y double
-     * @param z double
-     * @param world String
-     * @param email String
-     * @param realName String
+     * @param x         double
+     * @param y         double
+     * @param z         double
+     * @param world     String
+     * @param email     String
+     * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
         this(nickname, hash, salt, -1, ip, lastLogin, x, y, z, world, email, realName);
@@ -119,13 +126,14 @@ public class PlayerAuth {
 
     /**
      * Constructor for PlayerAuth.
-     * @param nickname String
-     * @param hash String
-     * @param salt String
-     * @param groupId int
-     * @param ip String
+     *
+     * @param nickname  String
+     * @param hash      String
+     * @param salt      String
+     * @param groupId   int
+     * @param ip        String
      * @param lastLogin long
-     * @param realName String
+     * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, String realName) {
         this(nickname, hash, salt, groupId, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
@@ -133,18 +141,19 @@ public class PlayerAuth {
 
     /**
      * Constructor for PlayerAuth.
-     * @param nickname String
-     * @param hash String
-     * @param salt String
-     * @param groupId int
-     * @param ip String
+     *
+     * @param nickname  String
+     * @param hash      String
+     * @param salt      String
+     * @param groupId   int
+     * @param ip        String
      * @param lastLogin long
-     * @param x double
-     * @param y double
-     * @param z double
-     * @param world String
-     * @param email String
-     * @param realName String
+     * @param x         double
+     * @param y         double
+     * @param z         double
+     * @param world     String
+     * @param email     String
+     * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
         this.nickname = nickname;
@@ -163,6 +172,7 @@ public class PlayerAuth {
 
     /**
      * Method set.
+     *
      * @param auth PlayerAuth
      */
     public void set(PlayerAuth auth) {
@@ -181,6 +191,7 @@ public class PlayerAuth {
 
     /**
      * Method setName.
+     *
      * @param nickname String
      */
     public void setName(String nickname) {
@@ -189,22 +200,25 @@ public class PlayerAuth {
 
     /**
      * Method getNickname.
-    
-     * @return String */
+     *
+     * @return String
+     */
     public String getNickname() {
         return nickname;
     }
 
     /**
      * Method getRealName.
-    
-     * @return String */
+     *
+     * @return String
+     */
     public String getRealName() {
         return realName;
     }
 
     /**
      * Method setRealName.
+     *
      * @param realName String
      */
     public void setRealName(String realName) {
@@ -213,14 +227,25 @@ public class PlayerAuth {
 
     /**
      * Method getGroupId.
-    
-     * @return int */
+     *
+     * @return int
+     */
     public int getGroupId() {
         return groupId;
     }
 
     /**
+     * Method getQuitLocX.
+     *
+     * @return double
+     */
+    public double getQuitLocX() {
+        return x;
+    }
+
+    /**
      * Method setQuitLocX.
+     *
      * @param d double
      */
     public void setQuitLocX(double d) {
@@ -228,15 +253,17 @@ public class PlayerAuth {
     }
 
     /**
-     * Method getQuitLocX.
-    
-     * @return double */
-    public double getQuitLocX() {
-        return x;
+     * Method getQuitLocY.
+     *
+     * @return double
+     */
+    public double getQuitLocY() {
+        return y;
     }
 
     /**
      * Method setQuitLocY.
+     *
      * @param d double
      */
     public void setQuitLocY(double d) {
@@ -244,15 +271,17 @@ public class PlayerAuth {
     }
 
     /**
-     * Method getQuitLocY.
-    
-     * @return double */
-    public double getQuitLocY() {
-        return y;
+     * Method getQuitLocZ.
+     *
+     * @return double
+     */
+    public double getQuitLocZ() {
+        return z;
     }
 
     /**
      * Method setQuitLocZ.
+     *
      * @param d double
      */
     public void setQuitLocZ(double d) {
@@ -260,15 +289,17 @@ public class PlayerAuth {
     }
 
     /**
-     * Method getQuitLocZ.
-    
-     * @return double */
-    public double getQuitLocZ() {
-        return z;
+     * Method getWorld.
+     *
+     * @return String
+     */
+    public String getWorld() {
+        return world;
     }
 
     /**
      * Method setWorld.
+     *
      * @param world String
      */
     public void setWorld(String world) {
@@ -276,15 +307,17 @@ public class PlayerAuth {
     }
 
     /**
-     * Method getWorld.
-    
-     * @return String */
-    public String getWorld() {
-        return world;
+     * Method getIp.
+     *
+     * @return String
+     */
+    public String getIp() {
+        return ip;
     }
 
     /**
      * Method setIp.
+     *
      * @param ip String
      */
     public void setIp(String ip) {
@@ -292,15 +325,17 @@ public class PlayerAuth {
     }
 
     /**
-     * Method getIp.
-    
-     * @return String */
-    public String getIp() {
-        return ip;
+     * Method getLastLogin.
+     *
+     * @return long
+     */
+    public long getLastLogin() {
+        return lastLogin;
     }
 
     /**
      * Method setLastLogin.
+     *
      * @param lastLogin long
      */
     public void setLastLogin(long lastLogin) {
@@ -308,15 +343,17 @@ public class PlayerAuth {
     }
 
     /**
-     * Method getLastLogin.
-    
-     * @return long */
-    public long getLastLogin() {
-        return lastLogin;
+     * Method getEmail.
+     *
+     * @return String
+     */
+    public String getEmail() {
+        return email;
     }
 
     /**
      * Method setEmail.
+     *
      * @param email String
      */
     public void setEmail(String email) {
@@ -324,15 +361,17 @@ public class PlayerAuth {
     }
 
     /**
-     * Method getEmail.
-    
-     * @return String */
-    public String getEmail() {
-        return email;
+     * Method getSalt.
+     *
+     * @return String
+     */
+    public String getSalt() {
+        return this.salt;
     }
 
     /**
      * Method setSalt.
+     *
      * @param salt String
      */
     public void setSalt(String salt) {
@@ -340,25 +379,10 @@ public class PlayerAuth {
     }
 
     /**
-     * Method getSalt.
-    
-     * @return String */
-    public String getSalt() {
-        return this.salt;
-    }
-
-    /**
-     * Method setHash.
-     * @param hash String
-     */
-    public void setHash(String hash) {
-        this.hash = hash;
-    }
-
-    /**
      * Method getHash.
-    
-     * @return String */
+     *
+     * @return String
+     */
     public String getHash() {
         if (Settings.getPasswordHash == HashAlgorithm.MD5VB) {
             if (salt != null && !salt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
@@ -369,10 +393,21 @@ public class PlayerAuth {
     }
 
     /**
+     * Method setHash.
+     *
+     * @param hash String
+     */
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    /**
      * Method equals.
+     *
      * @param obj Object
-    
-     * @return boolean */
+     *
+     * @return boolean
+     */
     @Override
     public boolean equals(Object obj) {
         if (!(obj instanceof PlayerAuth)) {
@@ -384,8 +419,9 @@ public class PlayerAuth {
 
     /**
      * Method hashCode.
-    
-     * @return int */
+     *
+     * @return int
+     */
     @Override
     public int hashCode() {
         int hashCode = 7;
@@ -396,17 +432,18 @@ public class PlayerAuth {
 
     /**
      * Method toString.
-    
-     * @return String */
+     *
+     * @return String
+     */
     @Override
     public String toString() {
         return ("Player : " + nickname + " | " + realName
-                + " ! IP : " + ip
-                + " ! LastLogin : " + lastLogin
-                + " ! LastPosition : " + x + "," + y + "," + z + "," + world
-                + " ! Email : " + email
-                + " ! Hash : " + hash
-                + " ! Salt : " + salt);
+            + " ! IP : " + ip
+            + " ! LastLogin : " + lastLogin
+            + " ! LastPosition : " + x + "," + y + "," + z + "," + world
+            + " ! Email : " + email
+            + " ! Hash : " + hash
+            + " ! Salt : " + salt);
     }
 
 }

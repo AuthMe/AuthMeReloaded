@@ -4,7 +4,7 @@ package fr.xephi.authme.security.pbkdf2;
  * <p>
  * Parameter data holder for PBKDF2 configuration.
  * </p>
- * 
+ * <p>
  * <hr />
  * <p>
  * A free Java implementation of Password Based Key Derivation Function 2 as
@@ -32,7 +32,7 @@ package fr.xephi.authme.security.pbkdf2;
  * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
  * >http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
  * </p>
- * 
+ *
  * @author Matthias G&auml;rtner
  * @version 1.0
  */
@@ -55,7 +55,6 @@ public class PBKDF2Parameters {
     /**
      * Constructor. Defaults to <code>null</code> for byte arrays, UTF-8 as
      * character set and 1000 for iteration count.
-     * 
      */
     public PBKDF2Parameters() {
         this.hashAlgorithm = null;
@@ -67,18 +66,14 @@ public class PBKDF2Parameters {
 
     /**
      * Constructor.
-     * 
-     * @param hashAlgorithm
-     *            for example HMacSHA1 or HMacMD5
-     * @param hashCharset
-     *            for example UTF-8
-     * @param salt
-     *            Salt as byte array, may be <code>null</code> (not recommended)
-     * @param iterationCount
-     *            Number of iterations to execute. Recommended value 1000.
+     *
+     * @param hashAlgorithm  for example HMacSHA1 or HMacMD5
+     * @param hashCharset    for example UTF-8
+     * @param salt           Salt as byte array, may be <code>null</code> (not recommended)
+     * @param iterationCount Number of iterations to execute. Recommended value 1000.
      */
     public PBKDF2Parameters(String hashAlgorithm, String hashCharset,
-            byte[] salt, int iterationCount) {
+                            byte[] salt, int iterationCount) {
         this.hashAlgorithm = hashAlgorithm;
         this.hashCharset = hashCharset;
         this.salt = salt;
@@ -88,20 +83,15 @@ public class PBKDF2Parameters {
 
     /**
      * Constructor.
-     * 
-     * @param hashAlgorithm
-     *            for example HMacSHA1 or HMacMD5
-     * @param hashCharset
-     *            for example UTF-8
-     * @param salt
-     *            Salt as byte array, may be <code>null</code> (not recommended)
-     * @param iterationCount
-     *            Number of iterations to execute. Recommended value 1000.
-     * @param derivedKey
-     *            Convenience data holder, not used during computation.
+     *
+     * @param hashAlgorithm  for example HMacSHA1 or HMacMD5
+     * @param hashCharset    for example UTF-8
+     * @param salt           Salt as byte array, may be <code>null</code> (not recommended)
+     * @param iterationCount Number of iterations to execute. Recommended value 1000.
+     * @param derivedKey     Convenience data holder, not used during computation.
      */
     public PBKDF2Parameters(String hashAlgorithm, String hashCharset,
-            byte[] salt, int iterationCount, byte[] derivedKey) {
+                            byte[] salt, int iterationCount, byte[] derivedKey) {
         this.hashAlgorithm = hashAlgorithm;
         this.hashCharset = hashCharset;
         this.salt = salt;
@@ -111,14 +101,16 @@ public class PBKDF2Parameters {
 
     /**
      * Method getIterationCount.
-    
-     * @return int */
+     *
+     * @return int
+     */
     public int getIterationCount() {
         return iterationCount;
     }
 
     /**
      * Method setIterationCount.
+     *
      * @param iterationCount int
      */
     public void setIterationCount(int iterationCount) {
@@ -127,14 +119,16 @@ public class PBKDF2Parameters {
 
     /**
      * Method getSalt.
-    
-     * @return byte[] */
+     *
+     * @return byte[]
+     */
     public byte[] getSalt() {
         return salt;
     }
 
     /**
      * Method setSalt.
+     *
      * @param salt byte[]
      */
     public void setSalt(byte[] salt) {
@@ -143,14 +137,16 @@ public class PBKDF2Parameters {
 
     /**
      * Method getDerivedKey.
-    
-     * @return byte[] */
+     *
+     * @return byte[]
+     */
     public byte[] getDerivedKey() {
         return derivedKey;
     }
 
     /**
      * Method setDerivedKey.
+     *
      * @param derivedKey byte[]
      */
     public void setDerivedKey(byte[] derivedKey) {
@@ -159,14 +155,16 @@ public class PBKDF2Parameters {
 
     /**
      * Method getHashAlgorithm.
-    
-     * @return String */
+     *
+     * @return String
+     */
     public String getHashAlgorithm() {
         return hashAlgorithm;
     }
 
     /**
      * Method setHashAlgorithm.
+     *
      * @param hashAlgorithm String
      */
     public void setHashAlgorithm(String hashAlgorithm) {
@@ -175,14 +173,16 @@ public class PBKDF2Parameters {
 
     /**
      * Method getHashCharset.
-    
-     * @return String */
+     *
+     * @return String
+     */
     public String getHashCharset() {
         return hashCharset;
     }
 
     /**
      * Method setHashCharset.
+     *
      * @param hashCharset String
      */
     public void setHashCharset(String hashCharset) {

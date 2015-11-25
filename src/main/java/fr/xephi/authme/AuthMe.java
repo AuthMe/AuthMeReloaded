@@ -1,5 +1,46 @@
 package fr.xephi.authme;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.earth2me.essentials.Essentials;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import fr.xephi.authme.api.API;
+import fr.xephi.authme.api.NewAPI;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.backup.JsonCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.command.CommandHandler;
+import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.converter.ForceFlatToSqlite;
+import fr.xephi.authme.datasource.*;
+import fr.xephi.authme.hooks.BungeeCordMessage;
+import fr.xephi.authme.hooks.EssSpawn;
+import fr.xephi.authme.listener.*;
+import fr.xephi.authme.modules.ModuleManager;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.process.Management;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.OtherAccounts;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.util.GeoLiteAPI;
+import fr.xephi.authme.util.Utils;
+import net.minelink.ctplus.CombatTagPlus;
+import org.apache.logging.log4j.LogManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -11,119 +52,136 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import fr.xephi.authme.listener.*;
-import fr.xephi.authme.permission.PermissionsManager;
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-import org.mcstats.Metrics;
-import org.mcstats.Metrics.Graph;
-
-import com.earth2me.essentials.Essentials;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-
-import fr.xephi.authme.api.API;
-import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.JsonCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.command.CommandHandler;
-import fr.xephi.authme.converter.Converter;
-import fr.xephi.authme.converter.ForceFlatToSqlite;
-import fr.xephi.authme.datasource.CacheDataSource;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DatabaseCalls;
-import fr.xephi.authme.datasource.FlatFile;
-import fr.xephi.authme.datasource.MySQL;
-import fr.xephi.authme.datasource.SQLite;
-import fr.xephi.authme.hooks.BungeeCordMessage;
-import fr.xephi.authme.hooks.EssSpawn;
-import fr.xephi.authme.modules.ModuleManager;
-import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.OtherAccounts;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.Spawn;
-import fr.xephi.authme.util.Utils;
-import net.milkbowl.vault.permission.Permission;
-import net.minelink.ctplus.CombatTagPlus;
-
 /**
  * The AuthMe main class.
  */
 public class AuthMe extends JavaPlugin {
 
-    /** Defines the name of the plugin. */
-    // TODO: Create a getter method for this constant, and make it private
-    public static final String PLUGIN_NAME = "AuthMeReloaded";
-    /** Defines the current AuthMeReloaded version name. */
+    /**
+     * Defines the name of the plugin.
+     */
+    private static final String PLUGIN_NAME = "AuthMeReloaded";
+    /**
+     * Defines the current AuthMeReloaded version name.
+     */
     private static final String PLUGIN_VERSION_NAME = "5.1-SNAPSHOT";
-    /** Defines the current AuthMeReloaded version code. */
-    private static final int PLUGIN_VERSION_CODE = 100; // Increase this number
-                                                        // by one when an update
-                                                        // is released
+    /**
+     * Defines the current AuthMeReloaded version code.
+     */
+    // TODO: Increase this number by one when an update is release
+    private static final int PLUGIN_VERSION_CODE = 100;
 
     private static AuthMe plugin;
     private static Server server;
-    private Logger authmeLogger;
-
-    // TODO: Move this to a better place! -- timvisee
-    private CommandHandler commandHandler = null;
-    private PermissionsManager permsMan = null;
 
     public Management management;
     public NewAPI api;
     public SendMailSSL mail;
-    private Settings settings;
-    private Messages m;
     public DataManager dataManager;
     public DataSource database;
-    private JsonCache playerBackup;
     public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
-    public boolean antibotMod = false;
-    public boolean delayedAntiBot = true;
 
-    // Hooks TODO: move into modules
-    public Permission vaultGroupManagement; // TODO: Remove this instance, and replace every usage with permissions manager!
+    // Hooks TODO: Move into modules
     public Essentials ess;
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
     public AuthMeInventoryPacketAdapter inventoryProtector;
 
-    // Module manager
-    private ModuleManager moduleManager;
+    // Data maps and stuff
+    // TODO: Move into a manager
+    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
 
-    // TODO: Create Manager for fields below
-    public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
-    public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
-
-    // In case we need to cache PlayerAuths, prevent connection before it's done
+    // If cache is enabled, prevent any connection before the players data caching is completed.
+    // TODO: Move somewhere
     private boolean canConnect = true;
 
+    private CommandHandler commandHandler = null;
+    private PermissionsManager permsMan = null;
+    private Settings settings;
+    private Messages messages;
+    private JsonCache playerBackup;
+    private ModuleManager moduleManager;
+
     /**
-     * Method canConnect.
-    
-     * @return boolean */
+     * Returns the plugin's instance.
+     *
+     * @return AuthMe
+     */
+    public static AuthMe getInstance() {
+        return plugin;
+    }
+
+    /**
+     * Get the plugin's name.
+     *
+     * @return Plugin name.
+     */
+    public static String getPluginName() {
+        return PLUGIN_NAME;
+    }
+
+    /**
+     * Get the current installed AuthMeReloaded version name.
+     *
+     * @return The version name of the currently installed AuthMeReloaded instance.
+     */
+    public static String getVersionName() {
+        return PLUGIN_VERSION_NAME;
+    }
+
+    /**
+     * Get the current installed AuthMeReloaded version code.
+     *
+     * @return The version code of the currently installed AuthMeReloaded instance.
+     */
+    public static int getVersionCode() {
+        return PLUGIN_VERSION_CODE;
+    }
+
+    /**
+     * Returns the plugin's Settings.
+     *
+     * @return Settings
+     */
+    public Settings getSettings() {
+        return settings;
+    }
+
+    /**
+     * Returns the Messages instance.
+     *
+     * @return Messages
+     */
+
+    public Messages getMessages() {
+        return messages;
+    }
+
+    /**
+     * Set the Messages instance.
+     *
+     * @param m Messages
+     */
+    public void setMessages(Messages m) {
+        this.messages = m;
+    }
+
+    /**
+     * Returns if players are allowed to join the server.
+     *
+     * @return boolean
+     */
     public boolean canConnect() {
         return canConnect;
     }
 
     /**
-     * Method setCanConnect.
+     * Define if players are allowed to join the server.
+     *
      * @param canConnect boolean
      */
     public void setCanConnect(boolean canConnect) {
@@ -131,69 +189,246 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Method getInstance.
-    
-     * @return AuthMe */
-    public static AuthMe getInstance() {
-        return plugin;
-    }
-
-    /**
-     * Method getSettings.
-    
-     * @return Settings */
-    public Settings getSettings() {
-        return settings;
-    }
-
-    /**
-     * Method setMessages.
-     * @param m Messages
-     */
-    public void setMessages(Messages m) {
-        this.m = m;
-    }
-
-    /**
-     * Method getMessages.
-    
-     * @return Messages */
-    public Messages getMessages() {
-        return m;
-    }
-
-    /**
-     * Method onEnable.
+     * Method called when the server enables the plugin.
+     *
      * @see org.bukkit.plugin.Plugin#onEnable()
      */
     @Override
     public void onEnable() {
-        // Set the Instance
+        // Set various instances
         server = getServer();
-        authmeLogger = Logger.getLogger("AuthMe");
         plugin = this;
 
         // Set up the permissions manager
         setupPermissionsManager();
 
         // Set up and initialize the command handler
+        setupCommandHandler();
+
+        // Set up the module manager
+        setupModuleManager();
+
+        // Load settings and custom configurations, if it fails, stop the server due to security reasons.
+        if (loadSettings()) {
+            server.shutdown();
+            setEnabled(false);
+            return;
+        }
+
+        // Setup otherAccounts file
+        this.otherAccounts = OtherAccounts.getInstance();
+
+        // Setup messages
+        this.messages = Messages.getInstance();
+
+        // Set up Metrics
+        setupMetrics();
+
+        // Set console filter
+        setupConsoleFilter();
+
+        // AntiBot delay
+        AntiBot.setupAntiBotService();
+
+        // Download and load GeoIp.dat file if absent
+        GeoLiteAPI.isDataAvailable();
+
+        // Set up the mail API
+        setupMailApi();
+
+        // Hooks
+        // Check Combat Tag Plus Version
+        checkCombatTagPlus();
+
+        // Check Multiverse
+        checkMultiverse();
+
+        // Check Essentials
+        checkEssentials();
+
+        // Check if the ProtocolLib is available. If so we could listen for
+        // inventory protection
+        checkProtocolLib();
+        // End of Hooks
+
+        // Do a backup on start
+        new PerformBackup(plugin).doBackup(PerformBackup.BackupCause.START);
+
+        // Connect to the database and setup tables
+        try {
+            setupDatabase();
+        } catch (Exception e) {
+            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.showError("Fatal error occurred during database connection! Authme initialization ABORTED!");
+            stopOrUnload();
+            return;
+        }
+
+        // Setup the inventory backup
+        playerBackup = new JsonCache();
+
+        // Set the DataManager
+        dataManager = new DataManager(this);
+
+        // Set up the new API
+        setupApi();
+
+        // Set up the management
+        management = new Management(this);
+
+        // Set up the BungeeCord hook
+        setupBungeeCordHook();
+
+        // Reload support hook
+        reloadSupportHook();
+
+        // Register event listeners
+        registerEventListeners();
+
+        // Purge on start if enabled
+        autoPurge();
+
+        // Start Email recall task if needed
+        recallEmail();
+
+        // Show settings warnings
+        showSettingsWarnings();
+
+        // Sponsor messages
+        ConsoleLogger.info("AuthMe hooks perfectly with the VeryGames server hosting!");
+        ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
+        ConsoleLogger.info("Do you want a good game server? Look at our sponsor GameHosting.it leader in Italy as Game Server Provider!");
+
+        // Successful message
+        ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
+    }
+
+    /**
+     * Set up the module manager.
+     */
+    private void setupModuleManager() {
+        // TODO: Clean this up!
+        // TODO: split the plugin in more modules
+        // TODO: log number of loaded modules
+
+        // Define the module manager instance
+        moduleManager = new ModuleManager(this);
+
+        // Load the modules
+        // int loaded = moduleManager.loadModules();
+    }
+
+    /**
+     * Set up the mail API, if enabled.
+     */
+    private void setupMailApi() {
+        // Make sure the mail API is enabled
+        if (Settings.getmailAccount.isEmpty() || Settings.getmailPassword.isEmpty()) {
+            return;
+        }
+
+        // Set up the mail API
+        this.mail = new SendMailSSL(this);
+    }
+
+    /**
+     * Show the settings warnings, for various risky settings.
+     */
+    private void showSettingsWarnings() {
+        // Force single session disabled
+        if (!Settings.isForceSingleSessionEnabled) {
+            ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
+        }
+
+        // Session timeout disabled
+        if (Settings.getSessionTimeout == 0 && Settings.isSessionsEnabled) {
+            ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
+        }
+    }
+
+    /**
+     * Register all event listeners.
+     */
+    private void registerEventListeners() {
+        // Get the plugin manager instance
+        PluginManager pluginManager = server.getPluginManager();
+
+        // Register event listeners
+        pluginManager.registerEvents(new AuthMePlayerListener(this), this);
+        pluginManager.registerEvents(new AuthMeBlockListener(this), this);
+        pluginManager.registerEvents(new AuthMeEntityListener(this), this);
+        pluginManager.registerEvents(new AuthMeServerListener(this), this);
+
+        // Try to register 1.6 player listeners
+        try {
+            Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
+            pluginManager.registerEvents(new AuthMePlayerListener16(this), this);
+        } catch (ClassNotFoundException ignore) {
+        }
+
+        // Try to register 1.8 player listeners
+        try {
+            Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
+            pluginManager.registerEvents(new AuthMePlayerListener18(this), this);
+        } catch (ClassNotFoundException ignore) {
+        }
+    }
+
+    private void reloadSupportHook() {
+        if (database != null) {
+            int playersOnline = Utils.getOnlinePlayers().size();
+            if (playersOnline < 1) {
+                database.purgeLogged();
+            } else if (Settings.reloadSupport) {
+                for (PlayerAuth auth : database.getLoggedPlayers()) {
+                    if (auth == null) {
+                        continue;
+                    }
+                    auth.setLastLogin(new Date().getTime());
+                    database.updateSession(auth);
+                    PlayerCache.getInstance().addPlayer(auth);
+                }
+            }
+        }
+    }
+
+    /**
+     * Set up the BungeeCord hook.
+     */
+    private void setupBungeeCordHook() {
+        if (Settings.bungee) {
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
+        }
+    }
+
+    /**
+     * Set up the API. This sets up the new and the old API.
+     */
+    @SuppressWarnings("deprecation")
+    private void setupApi() {
+        // Set up the API
+        api = new NewAPI(this);
+
+        // Setup the old deprecated API
+        new API(this);
+    }
+
+    /**
+     * Set up the command handler.
+     */
+    private void setupCommandHandler() {
         this.commandHandler = new CommandHandler(false);
         this.commandHandler.init();
+    }
 
-        // TODO: split the plugin in more modules
-        moduleManager = new ModuleManager(this);
-        @SuppressWarnings("unused")
-        int loaded = moduleManager.loadModules();
-
-        // TODO: remove vault as hard dependency
-        PluginManager pm = server.getPluginManager();
-
-        // Setup the Logger
-        if (authmeLogger == null)
-            authmeLogger = this.getLogger();
-        else authmeLogger.setParent(this.getLogger());
-
-        // Load settings and custom configurations
+    /**
+     * Load the plugin's settings.
+     *
+     * @return True on success, false on failure.
+     */
+    private boolean loadSettings() {
         // TODO: new configuration style (more files)
         try {
             settings = new Settings(this);
@@ -202,16 +437,34 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.writeStackTrace(e);
             ConsoleLogger.showError("Can't load the configuration file... Something went wrong, to avoid security issues the server will shutdown!");
             server.shutdown();
-            return;
+            return true;
         }
+        return false;
+    }
 
-        // Setup otherAccounts file
-        otherAccounts = OtherAccounts.getInstance();
+    /**
+     * Set up the console filter.
+     */
+    private void setupConsoleFilter() {
+        if (Settings.removePassword) {
+            ConsoleFilter filter = new ConsoleFilter();
+            getLogger().setFilter(filter);
+            Bukkit.getLogger().setFilter(filter);
+            Logger.getLogger("Minecraft").setFilter(filter);
+            // Set Log4J Filter
+            try {
+                Class.forName("org.apache.logging.log4j.core.Filter");
+                setLog4JFilter();
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
+            }
+        }
+    }
 
-        // Setup messages
-        m = Messages.getInstance();
-
-        // Start the metrics service
+    /**
+     * Set up Metrics.
+     */
+    private void setupMetrics() {
         try {
             Metrics metrics = new Metrics(this);
             Graph messagesLanguage = metrics.createGraph("Messages language");
@@ -242,158 +495,14 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.writeStackTrace(e);
             ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway...");
         }
-
-        // Set Console Filter
-        if (Settings.removePassword) {
-            ConsoleFilter filter = new ConsoleFilter();
-            this.getLogger().setFilter(filter);
-            Bukkit.getLogger().setFilter(filter);
-            Logger.getLogger("Minecraft").setFilter(filter);
-            authmeLogger.setFilter(filter);
-            // Set Log4J Filter
-            try {
-                Class.forName("org.apache.logging.log4j.core.Filter");
-                setLog4JFilter();
-            } catch (ClassNotFoundException | NoClassDefFoundError e) {
-                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
-            }
-        }
-
-        // AntiBot delay
-        if (Settings.enableAntiBot) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-
-                @Override
-                public void run() {
-                    delayedAntiBot = false;
-                }
-            }, 2400);
-        }
-
-        // Download GeoIp.dat file
-        Utils.checkGeoIP();
-
-        // Load MailApi if needed
-        if (!Settings.getmailAccount.isEmpty() && !Settings.getmailPassword.isEmpty()) {
-            mail = new SendMailSSL(this);
-        }
-
-        // Find Permissions
-        checkVault();
-
-        // Check Combat Tag Plus Version
-        checkCombatTagPlus();
-
-        // Check Multiverse
-        checkMultiverse();
-
-        // Check Essentials
-        checkEssentials();
-
-        // Check if the protocollib is available. If so we could listen for
-        // inventory protection
-        checkProtocolLib();
-
-        // Do backup on start if enabled
-        if (Settings.isBackupActivated && Settings.isBackupOnStart) {
-            // Do backup and check return value!
-            if (new PerformBackup(this).doBackup()) {
-                ConsoleLogger.info("Backup performed correctly");
-            } else {
-                ConsoleLogger.showError("Error while performing the backup!");
-            }
-        }
-
-        // Connect to the database and setup tables
-        try {
-            setupDatabase();
-        } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError(e.getMessage());
-            ConsoleLogger.showError("Fatal error occurred during database connection! Authme initialization ABORTED!");
-            stopOrUnload();
-            return;
-        }
-
-        // Setup the inventory backup
-        playerBackup = new JsonCache();
-
-        // Set the DataManager
-        dataManager = new DataManager(this);
-
-        // Setup the new API
-        api = new NewAPI(this);
-        // Setup the old deprecated API
-        new API(this);
-
-        // Setup Management
-        management = new Management(this);
-
-        // Bungeecord hook
-        if (Settings.bungee) {
-            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
-        }
-
-        // Reload support hook
-        if (database != null) {
-            int playersOnline = Utils.getOnlinePlayers().size();
-            if (playersOnline < 1) {
-                database.purgeLogged();
-            } else if (Settings.reloadSupport) {
-                for (PlayerAuth auth : database.getLoggedPlayers()) {
-                    if (auth == null)
-                        continue;
-                    auth.setLastLogin(new Date().getTime());
-                    database.updateSession(auth);
-                    PlayerCache.getInstance().addPlayer(auth);
-                }
-            }
-        }
-
-        // Register events
-        pm.registerEvents(new AuthMePlayerListener(this), this);
-        // Try to register 1.6 player listeners
-        try {
-            Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
-            pm.registerEvents(new AuthMePlayerListener16(this), this);
-        } catch (ClassNotFoundException ignore) {
-        }
-        // Try to register 1.8 player listeners
-        try {
-            Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
-            pm.registerEvents(new AuthMePlayerListener18(this), this);
-        } catch (ClassNotFoundException ignore) {
-        }
-        pm.registerEvents(new AuthMeBlockListener(this), this);
-        pm.registerEvents(new AuthMeEntityListener(this), this);
-        pm.registerEvents(new AuthMeServerListener(this), this);
-
-        // Purge on start if enabled
-        autoPurge();
-
-        // Start Email recall task if needed
-        recallEmail();
-
-        // Configuration Security Warnings
-        if (!Settings.isForceSingleSessionEnabled) {
-            ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
-        }
-        if (Settings.getSessionTimeout == 0 && Settings.isSessionsEnabled) {
-            ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
-        }
-
-        // Sponsor messages
-        ConsoleLogger.info("AuthMe hooks perfectly with the VERYGAMES server hosting!");
-        ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
-        ConsoleLogger.info("Do you want a good gameserver? Look at our sponsor GameHosting.it leader in Italy as Game Server Provider!");
-
-        // Successful message
-        ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
     }
+
+    // Show the exception message and stop/unload the server/plugin as defined
+    // in the configuration
 
     /**
      * Method onDisable.
+     *
      * @see org.bukkit.plugin.Plugin#onDisable()
      */
     @Override
@@ -407,12 +516,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Do backup on stop if enabled
-        if (Settings.isBackupActivated && Settings.isBackupOnStop) {
-            boolean Backup = new PerformBackup(this).doBackup();
-            if (Backup)
-                ConsoleLogger.info("Backup performed correctly.");
-            else ConsoleLogger.showError("Error while performing the backup!");
-        }
+        new PerformBackup(plugin).doBackup(PerformBackup.BackupCause.STOP);
 
         // Unload modules
         moduleManager.unloadModules();
@@ -426,6 +530,8 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
     }
 
+    // Initialize and setup the database
+
     // Stop/unload the server/plugin as defined in the configuration
     public void stopOrUnload() {
         if (Settings.isStopEnabled) {
@@ -436,22 +542,9 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    // Show the exception message and stop/unload the server/plugin as defined
-    // in the configuration
-    /**
-     * Method stopOrUnload.
-     * @param e Exception
-     */
-    public void stopOrUnload(Exception e) {
-        ConsoleLogger.showError(e.getMessage());
-        stopOrUnload();
-    }
-
-    // Initialize and setup the database
     /**
      * Method setupDatabase.
-    
-     * @throws Exception */
+     */
     public void setupDatabase() throws Exception {
         if (database != null)
             database.close();
@@ -525,21 +618,6 @@ public class AuthMe extends JavaPlugin {
         });
     }
 
-    // Check the presence of the Vault plugin and a permissions provider
-    public void checkVault() {
-        if (server.getPluginManager().isPluginEnabled("Vault")) {
-            RegisteredServiceProvider<Permission> permissionProvider = server.getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-            if (permissionProvider != null) {
-                vaultGroupManagement = permissionProvider.getProvider();
-                ConsoleLogger.info("Vault detected, hooking with the " + vaultGroupManagement.getName() + " group management system...");
-            } else {
-                ConsoleLogger.showError("Vault detected, but I can't find any group management plugin to hook with!");
-            }
-        } else {
-            vaultGroupManagement = null;
-        }
-    }
-
     // Get the Multiverse plugin
     public void checkMultiverse() {
         if (Settings.multiverse && server.getPluginManager().isPluginEnabled("Multiverse-Core")) {
@@ -560,7 +638,7 @@ public class AuthMe extends JavaPlugin {
             try {
                 ess = (Essentials) server.getPluginManager().getPlugin("Essentials");
                 ConsoleLogger.info("Hooked correctly with Essentials");
-            } catch (Exception | NoClassDefFoundError ingnored) {
+            } catch (Exception | NoClassDefFoundError ignored) {
                 ess = null;
             }
         } else {
@@ -585,7 +663,7 @@ public class AuthMe extends JavaPlugin {
             try {
                 combatTagPlus = (CombatTagPlus) server.getPluginManager().getPlugin("CombatTagPlus");
                 ConsoleLogger.info("Hooked correctly with CombatTagPlus");
-            } catch (Exception | NoClassDefFoundError ingnored) {
+            } catch (Exception | NoClassDefFoundError ignored) {
                 combatTagPlus = null;
             }
         } else {
@@ -595,58 +673,26 @@ public class AuthMe extends JavaPlugin {
 
     // Check the presence of the ProtocolLib plugin
     public void checkProtocolLib() {
-        if (Settings.protectInventoryBeforeLogInEnabled) {
-            if (server.getPluginManager().isPluginEnabled("ProtocolLib")) {
-                inventoryProtector = new AuthMeInventoryPacketAdapter(this);
-                inventoryProtector.register();
-            } else {
+        if (!server.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            if (Settings.protectInventoryBeforeLogInEnabled) {
                 ConsoleLogger.showError("WARNING!!! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
+                getSettings().set("settings.restrictions.ProtectInventoryBeforeLogIn", false);
+            }
+            return;
+        }
+
+        if (Settings.protectInventoryBeforeLogInEnabled) {
+            if (inventoryProtector == null) {
+                inventoryProtector = new AuthMeInventoryPacketAdapter(this);
+                inventoryProtector.register();
+            }
+        } else {
+            if (inventoryProtector != null) {
+                ProtocolLibrary.getProtocolManager().removePacketListener(inventoryProtector);
+                inventoryProtector = null;
             }
         }
-    }
-
-    /**
-     * Check if a player/command sender have a permission
-     *
-     * @deprecated Deprecated since v5.1. Use the permissions manager instead! See: getPermissionsManager()
-     *
-     * @param player
-     * @param perm
-    
-    
-     * @return boolean */
-    public boolean authmePermissible(Player player, String perm) {
-        // New code:
-        return getPermissionsManager().hasPermission(player, perm);
-
-        // Legacy code:
-        /*if (player.hasPermission(perm)) {
-            return true;
-        } else if (permission != null) {
-            return permission.playerHas(player, perm);
-        }
-        return false;*/
-    }
-
-    /**
-     * @deprecated Deprecated since v5.1. Use the permissions manager instead! See: getPermissionsManager()
-     *
-     * @param sender
-     * @param perm
-    
-    
-     * @return boolean */
-    public boolean authmePermissible(CommandSender sender, String perm) {
-        // Handle players with the permissions manager
-        if(sender instanceof Player) {
-            // Get the player instance
-            Player player = (Player) sender;
-
-            // Check whether the player has permission, return the result
-            return getPermissionsManager().hasPermission(player, perm);
-        }
-        return false;
     }
 
     // Save Player Data
@@ -706,19 +752,15 @@ public class AuthMe extends JavaPlugin {
         }
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
         if (Settings.purgeEssentialsFile && this.ess != null)
-            dataManager.purgeEssentials(cleared); // name to UUID convertion
-                                                  // needed with latest versions
+            dataManager.purgeEssentials(cleared);
         if (Settings.purgePlayerDat)
-            dataManager.purgeDat(cleared); // name to UUID convertion needed
-                                           // with latest versions of MC
+            dataManager.purgeDat(cleared);
         if (Settings.purgeLimitedCreative)
             dataManager.purgeLimitedCreative(cleared);
         if (Settings.purgeAntiXray)
-            dataManager.purgeAntiXray(cleared); // IDK if it uses UUID or
-                                                // names... (Actually it purges
-                                                // only names!)
+            dataManager.purgeAntiXray(cleared);
         if (Settings.purgePermissions)
-            dataManager.purgePermissions(cleared, vaultGroupManagement);
+            dataManager.purgePermissions(cleared);
     }
 
     // Return the spawn location of a player
@@ -743,12 +785,12 @@ public class AuthMe extends JavaPlugin {
         return spawnLoc;
     }
 
-    // Return the default spawnpoint of a world
+    // Return the default spawn point of a world
     private Location getDefaultSpawn(World world) {
         return world.getSpawnLocation();
     }
 
-    // Return the multiverse spawnpoint of a world
+    // Return the multiverse spawn point of a world
     private Location getMultiverseSpawn(World world) {
         if (multiverse != null && Settings.multiverse) {
             try {
@@ -760,7 +802,7 @@ public class AuthMe extends JavaPlugin {
         return null;
     }
 
-    // Return the essentials spawnpoint
+    // Return the essentials spawn point
     private Location getEssentialsSpawn() {
         if (essentialsSpawn != null) {
             return essentialsSpawn;
@@ -768,7 +810,7 @@ public class AuthMe extends JavaPlugin {
         return null;
     }
 
-    // Return the authme soawnpoint
+    // Return the AuthMe spawn point
     private Location getAuthMeSpawn(Player player) {
         if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null)) {
             return Spawn.getInstance().getFirstSpawn();
@@ -777,15 +819,6 @@ public class AuthMe extends JavaPlugin {
             return Spawn.getInstance().getSpawn();
         }
         return player.getWorld().getSpawnLocation();
-    }
-
-    public void switchAntiBotMod(boolean mode) {
-        this.antibotMod = mode;
-        Settings.switchAntiBotMod(mode);
-    }
-
-    public boolean getAntiBotModMode() {
-        return this.antibotMod;
     }
 
     private void recallEmail() {
@@ -802,7 +835,7 @@ public class AuthMe extends JavaPlugin {
                             if (PlayerCache.getInstance().isAuthenticated(name)) {
                                 String email = database.getAuth(name).getEmail();
                                 if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
-                                    m.send(player, "add_email");
+                                    messages.send(player, "add_email");
                             }
                     }
                 }
@@ -810,8 +843,7 @@ public class AuthMe extends JavaPlugin {
         }, 1, 1200 * Settings.delayRecall);
     }
 
-
-    public String replaceAllInfos(String message, Player player) {
+    public String replaceAllInfo(String message, Player player) {
         int playersOnline = Utils.getOnlinePlayers().size();
         message = message.replace("&", "\u00a7");
         message = message.replace("{PLAYER}", player.getName());
@@ -822,10 +854,9 @@ public class AuthMe extends JavaPlugin {
         message = message.replace("{WORLD}", player.getWorld().getName());
         message = message.replace("{SERVER}", server.getServerName());
         message = message.replace("{VERSION}", server.getBukkitVersion());
-        message = message.replace("{COUNTRY}", Utils.getCountryName(getIP(player)));
+        message = message.replace("{COUNTRY}", GeoLiteAPI.getCountryName(getIP(player)));
         return message;
     }
-
 
     public String getIP(Player player) {
         String name = player.getName().toLowerCase();
@@ -835,11 +866,10 @@ public class AuthMe extends JavaPlugin {
                 ip = realIp.get(name);
         }
         if (Settings.checkVeryGames)
-            if (getVeryGamesIP(player) != null)
-                ip = getVeryGamesIP(player);
+            if (getVeryGamesIp(player) != null)
+                ip = getVeryGamesIp(player);
         return ip;
     }
-
 
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
@@ -850,7 +880,6 @@ public class AuthMe extends JavaPlugin {
         return count >= Settings.getMaxLoginPerIp;
     }
 
-
     public boolean hasJoinedIp(String name, String ip) {
         int count = 0;
         for (Player player : Utils.getOnlinePlayers()) {
@@ -860,7 +889,6 @@ public class AuthMe extends JavaPlugin {
         return count >= Settings.getMaxJoinPerIp;
     }
 
-
     public ModuleManager getModuleManager() {
         return moduleManager;
     }
@@ -868,19 +896,20 @@ public class AuthMe extends JavaPlugin {
     /**
      * Gets a player's real IP through VeryGames method.
      *
-     * @param player the player to process
+     * @param player The player to process.
      *
-     * @return the real IP of the player
+     * @return The real IP of the player.
      */
+    // TODO: Cache the result
     @Deprecated
-    public String getVeryGamesIP(Player player) {
+    public String getVeryGamesIp(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();
         String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
         sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", "" + player.getAddress().getPort());
         try {
             URL url = new URL(sUrl);
-            URLConnection urlc = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
+            URLConnection urlCon = url.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));
             String inputLine = in.readLine();
             if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error") && !inputLine.contains("error")) {
                 realIP = inputLine;
@@ -890,19 +919,6 @@ public class AuthMe extends JavaPlugin {
         return realIP;
     }
 
-
-    @Deprecated
-    public String getCountryCode(String ip) {
-        return Utils.getCountryCode(ip);
-    }
-
-
-    @Deprecated
-    public String getCountryName(String ip) {
-        return Utils.getCountryName(ip);
-    }
-
-
     public CommandHandler getCommandHandler() {
         return this.commandHandler;
     }
@@ -910,20 +926,16 @@ public class AuthMe extends JavaPlugin {
     /**
      * Handle Bukkit commands.
      *
-     * @param sender
-     *            The command sender (Bukkit).
-     * @param cmd
-     *            The command (Bukkit).
-     * @param commandLabel
-     *            The command label (Bukkit).
-     * @param args
-     *            The command arguments (Bukkit).
+     * @param sender       The command sender (Bukkit).
+     * @param cmd          The command (Bukkit).
+     * @param commandLabel The command label (Bukkit).
+     * @param args         The command arguments (Bukkit).
      *
-     * @return True if the command was executed, false otherwise. 
+     * @return True if the command was executed, false otherwise.
      */
     @Override
     public boolean onCommand(CommandSender sender, Command cmd,
-            String commandLabel, String[] args) {
+                             String commandLabel, String[] args) {
         // Get the command handler, and make sure it's valid
         CommandHandler commandHandler = this.getCommandHandler();
         if (commandHandler == null)
@@ -934,27 +946,10 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Get the current installed AuthMeReloaded version name.
-     *
-     * @return The version name of the currently installed AuthMeReloaded
-     *         instance.
+     * Return the management instance.
      */
-    public static String getVersionName() {
-        return PLUGIN_VERSION_NAME;
-    }
-
-    /**
-     * Get the current installed AuthMeReloaded version code.
-     *
-     * @return The version code of the currently installed AuthMeReloaded
-     *         instance.
-     */
-    public static int getVersionCode() {
-        return PLUGIN_VERSION_CODE;
-    }
-
-    /** Returns the management instance. */
     public Management getManagement() {
         return management;
     }
+
 }

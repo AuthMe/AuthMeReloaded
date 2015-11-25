@@ -1,13 +1,5 @@
 package fr.xephi.authme.process.unregister;
 
-import java.security.NoSuchAlgorithmException;
-
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -20,28 +12,36 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.security.NoSuchAlgorithmException;
 
 /**
  */
-public class AsyncronousUnregister {
+public class AsynchronousUnregister {
 
-    protected Player player;
-    protected String name;
-    private AuthMe plugin;
-    private Messages m = Messages.getInstance();
-	protected String password;
-	protected boolean force;
-	private JsonCache playerCache;
+    protected final Player player;
+    protected final String name;
+    protected final String password;
+    protected final boolean force;
+    private final AuthMe plugin;
+    private final Messages m = Messages.getInstance();
+    private final JsonCache playerCache;
 
     /**
-     * Constructor for AsyncronousUnregister.
-     * @param player Player
+     * Constructor for AsynchronousUnregister.
+     *
+     * @param player   Player
      * @param password String
-     * @param force boolean
-     * @param plugin AuthMe
+     * @param force    boolean
+     * @param plugin   AuthMe
      */
-    public AsyncronousUnregister(Player player, String password,
-            boolean force, AuthMe plugin) {
+    public AsynchronousUnregister(Player player, String password,
+                                  boolean force, AuthMe plugin) {
         this.player = player;
         this.password = password;
         this.force = force;
@@ -52,8 +52,9 @@ public class AsyncronousUnregister {
 
     /**
      * Method getIp.
-    
-     * @return String */
+     *
+     * @return String
+     */
     protected String getIp() {
         return plugin.getIP(player);
     }
@@ -74,12 +75,12 @@ public class AsyncronousUnregister {
                     LimboCache.getInstance().addLimboPlayer(player);
                     int delay = Settings.getRegistrationTimeout * 20;
                     int interval = Settings.getWarnMessageInterval;
-                    BukkitScheduler sched = plugin.getServer().getScheduler();
+                    BukkitScheduler scheduler = plugin.getServer().getScheduler();
                     if (delay != 0) {
-                        BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), delay);
+                        BukkitTask id = scheduler.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), delay);
                         LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
                     }
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(scheduler.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
                     m.send(player, "unregistered");
                     ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                     return;

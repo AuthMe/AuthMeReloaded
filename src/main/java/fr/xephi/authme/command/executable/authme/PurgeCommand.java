@@ -1,15 +1,14 @@
 package fr.xephi.authme.command.executable.authme;
 
-import java.util.Calendar;
-import java.util.List;
-
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
+import java.util.Calendar;
+import java.util.List;
 
 /**
  */
@@ -22,8 +21,8 @@ public class PurgeCommand extends ExecutableCommand {
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
-    
-     * @return True if the command was executed successfully, false otherwise. */
+     * @return True if the command was executed successfully, false otherwise.
+     */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance
@@ -36,13 +35,13 @@ public class PurgeCommand extends ExecutableCommand {
         int days;
         try {
             days = Integer.valueOf(daysStr);
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             sender.sendMessage(ChatColor.RED + "The value you've entered is invalid!");
             return true;
         }
 
         // Validate the value
-        if(days < 30) {
+        if (days < 30) {
             sender.sendMessage(ChatColor.RED + "You can only purge data older than 30 days");
             return true;
         }
@@ -59,13 +58,13 @@ public class PurgeCommand extends ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");
 
         // Purge other data
-        if(Settings.purgeEssentialsFile && plugin.ess != null)
+        if (Settings.purgeEssentialsFile && plugin.ess != null)
             plugin.dataManager.purgeEssentials(purged);
-        if(Settings.purgePlayerDat)
+        if (Settings.purgePlayerDat)
             plugin.dataManager.purgeDat(purged);
-        if(Settings.purgeLimitedCreative)
+        if (Settings.purgeLimitedCreative)
             plugin.dataManager.purgeLimitedCreative(purged);
-        if(Settings.purgeAntiXray)
+        if (Settings.purgeAntiXray)
             plugin.dataManager.purgeAntiXray(purged);
 
         // Show a status message

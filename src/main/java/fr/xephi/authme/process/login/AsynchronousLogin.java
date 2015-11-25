@@ -1,12 +1,5 @@
 package fr.xephi.authme.process.login;
 
-import java.util.Date;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -21,31 +14,38 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.util.Date;
+import java.util.List;
 
 /**
  */
-public class AsyncronousLogin {
+public class AsynchronousLogin {
 
-    protected Player player;
-    protected String name;
-    protected String realName;
-    protected String password;
-    protected boolean forceLogin;
-    private AuthMe plugin;
-    private DataSource database;
-    private static RandomString rdm = new RandomString(Settings.captchaLength);
-    private Messages m = Messages.getInstance();
+    private static final RandomString rdm = new RandomString(Settings.captchaLength);
+    protected final Player player;
+    protected final String name;
+    protected final String realName;
+    protected final String password;
+    protected final boolean forceLogin;
+    private final AuthMe plugin;
+    private final DataSource database;
+    private final Messages m = Messages.getInstance();
 
     /**
-     * Constructor for AsyncronousLogin.
-     * @param player Player
-     * @param password String
+     * Constructor for AsynchronousLogin.
+     *
+     * @param player     Player
+     * @param password   String
      * @param forceLogin boolean
-     * @param plugin AuthMe
-     * @param data DataSource
+     * @param plugin     AuthMe
+     * @param data       DataSource
      */
-    public AsyncronousLogin(Player player, String password, boolean forceLogin,
-                            AuthMe plugin, DataSource data) {
+    public AsynchronousLogin(Player player, String password, boolean forceLogin,
+                             AuthMe plugin, DataSource data) {
         this.player = player;
         this.password = password;
         name = player.getName().toLowerCase();
@@ -57,16 +57,18 @@ public class AsyncronousLogin {
 
     /**
      * Method getIP.
-    
-     * @return String */
+     *
+     * @return String
+     */
     protected String getIP() {
         return plugin.getIP(player);
     }
 
     /**
      * Method needsCaptcha.
-    
-     * @return boolean */
+     *
+     * @return boolean
+     */
     protected boolean needsCaptcha() {
         if (Settings.useCaptcha) {
             if (!plugin.captcha.containsKey(name)) {
@@ -93,8 +95,9 @@ public class AsyncronousLogin {
     /**
      * Checks the precondition for authentication (like user known) and returns
      * the playerAuth-State
-    
-     * @return PlayerAuth */
+     *
+     * @return PlayerAuth
+     */
     protected PlayerAuth preAuth() {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             m.send(player, "logged_in");
@@ -221,8 +224,9 @@ public class AsyncronousLogin {
 
     /**
      * Method displayOtherAccounts.
+     *
      * @param auth PlayerAuth
-     * @param p Player
+     * @param p    Player
      */
     public void displayOtherAccounts(PlayerAuth auth, Player p) {
         if (!Settings.displayOtherAccounts) {

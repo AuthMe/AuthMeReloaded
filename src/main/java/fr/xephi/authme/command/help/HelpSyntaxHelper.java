@@ -1,11 +1,10 @@
 package fr.xephi.authme.command.help;
 
-import fr.xephi.authme.util.StringUtils;
-import org.bukkit.ChatColor;
-
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.util.StringUtils;
+import org.bukkit.ChatColor;
 
 /**
  * Helper class for formatting a command's structure (name and arguments)
@@ -21,9 +20,9 @@ public final class HelpSyntaxHelper {
      * Get the formatted syntax for a command.
      *
      * @param commandDescription The command to build the syntax for.
-     * @param commandReference The reference of the command.
-     * @param alternativeLabel The alternative label to use for this command syntax.
-     * @param highlight True to highlight the important parts of this command.
+     * @param commandReference   The reference of the command.
+     * @param alternativeLabel   The alternative label to use for this command syntax.
+     * @param highlight          True to highlight the important parts of this command.
      *
      * @return The command with proper syntax.
      */
@@ -37,7 +36,7 @@ public final class HelpSyntaxHelper {
         // Get the help command reference, and the command label
         CommandParts helpCommandReference = commandDescription.getCommandReference(commandReference);
         final String parentCommand = new CommandParts(
-                helpCommandReference.getRange(0, helpCommandReference.getCount() - 1)).toString();
+            helpCommandReference.getRange(0, helpCommandReference.getCount() - 1)).toString();
 
         // Check whether the alternative label should be used
         String commandLabel;

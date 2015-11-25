@@ -35,10 +35,11 @@ public enum HashAlgorithm {
     SALTEDSHA512(fr.xephi.authme.security.crypts.SALTEDSHA512.class),
     CUSTOM(Null.class);
 
-    Class<?> classe;
+    final Class<?> classe;
 
     /**
      * Constructor for HashAlgorithm.
+     *
      * @param classe Class<?>
      */
     HashAlgorithm(Class<?> classe) {
@@ -47,8 +48,9 @@ public enum HashAlgorithm {
 
     /**
      * Method getclasse.
-    
-     * @return Class<?> */
+     *
+     * @return Class<?>
+     */
     public Class<?> getclasse() {
         return classe;
     }

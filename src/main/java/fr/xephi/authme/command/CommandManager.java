@@ -1,29 +1,7 @@
 package fr.xephi.authme.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.xephi.authme.command.executable.HelpCommand;
-import fr.xephi.authme.command.executable.authme.AccountsCommand;
-import fr.xephi.authme.command.executable.authme.AuthMeCommand;
-import fr.xephi.authme.command.executable.authme.ChangePasswordCommand;
-import fr.xephi.authme.command.executable.authme.FirstSpawnCommand;
-import fr.xephi.authme.command.executable.authme.ForceLoginCommand;
-import fr.xephi.authme.command.executable.authme.GetEmailCommand;
-import fr.xephi.authme.command.executable.authme.GetIpCommand;
-import fr.xephi.authme.command.executable.authme.LastLoginCommand;
-import fr.xephi.authme.command.executable.authme.PurgeBannedPlayersCommand;
-import fr.xephi.authme.command.executable.authme.PurgeCommand;
-import fr.xephi.authme.command.executable.authme.PurgeLastPositionCommand;
-import fr.xephi.authme.command.executable.authme.RegisterCommand;
-import fr.xephi.authme.command.executable.authme.ReloadCommand;
-import fr.xephi.authme.command.executable.authme.SetEmailCommand;
-import fr.xephi.authme.command.executable.authme.SetFirstSpawnCommand;
-import fr.xephi.authme.command.executable.authme.SetSpawnCommand;
-import fr.xephi.authme.command.executable.authme.SpawnCommand;
-import fr.xephi.authme.command.executable.authme.SwitchAntiBotCommand;
-import fr.xephi.authme.command.executable.authme.UnregisterCommand;
-import fr.xephi.authme.command.executable.authme.VersionCommand;
+import fr.xephi.authme.command.executable.authme.*;
 import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
 import fr.xephi.authme.command.executable.converter.ConverterCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
@@ -32,18 +10,22 @@ import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  */
 public class CommandManager {
 
-    /** The list of commandDescriptions. */
-    private List<CommandDescription> commandDescriptions = new ArrayList<>();
+    /**
+     * The list of commandDescriptions.
+     */
+    private final List<CommandDescription> commandDescriptions = new ArrayList<>();
 
     /**
      * Constructor.
      *
-     * @param registerCommands
-     *            True to register the commands, false otherwise.
+     * @param registerCommands True to register the commands, false otherwise.
      */
     public CommandManager(boolean registerCommands) {
         // Register the commands
@@ -55,7 +37,7 @@ public class CommandManager {
      * Register all commands.
      */
     // TODO ljacqu 20151121: Create a builder class for CommandDescription
-    @SuppressWarnings({ "serial" })
+    @SuppressWarnings({"serial"})
     public void registerCommands() {
         // Register the base AuthMe Reloaded command
         CommandDescription authMeBaseCommand = new CommandDescription(new AuthMeCommand(), new ArrayList<String>() {
@@ -574,8 +556,8 @@ public class CommandManager {
     /**
      * Get the list of command descriptions
      *
-    
-     * @return List of command descriptions. */
+     * @return List of command descriptions.
+     */
     public List<CommandDescription> getCommandDescriptions() {
         return this.commandDescriptions;
     }
@@ -583,8 +565,8 @@ public class CommandManager {
     /**
      * Get the number of command description count.
      *
-    
-     * @return Command description count. */
+     * @return Command description count.
+     */
     public int getCommandDescriptionCount() {
         return this.getCommandDescriptions().size();
     }
@@ -592,11 +574,10 @@ public class CommandManager {
     /**
      * Find the best suitable command for the specified reference.
      *
-     * @param queryReference
-     *            The query reference to find a command for.
+     * @param queryReference The query reference to find a command for.
      *
-    
-     * @return The command found, or null. */
+     * @return The command found, or null.
+     */
     public FoundCommandResult findCommand(CommandParts queryReference) {
         // Make sure the command reference is valid
         if (queryReference.getCount() <= 0)

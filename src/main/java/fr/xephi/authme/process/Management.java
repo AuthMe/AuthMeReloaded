@@ -2,10 +2,10 @@ package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.process.email.AsyncChangeEmail;
-import fr.xephi.authme.process.join.AsyncronousJoin;
-import fr.xephi.authme.process.login.AsyncronousLogin;
-import fr.xephi.authme.process.logout.AsyncronousLogout;
-import fr.xephi.authme.process.quit.AsyncronousQuit;
+import fr.xephi.authme.process.join.AsynchronousJoin;
+import fr.xephi.authme.process.login.AsynchronousLogin;
+import fr.xephi.authme.process.logout.AsynchronousLogout;
+import fr.xephi.authme.process.quit.AsynchronousQuit;
 import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.process.unregister.AsyncronousUnregister;
 import org.bukkit.entity.Player;
@@ -18,6 +18,11 @@ public class Management {
     private final AuthMe plugin;
     private final BukkitScheduler sched;
 
+    /**
+     * Constructor for Management.
+     *
+     * @param plugin AuthMe
+     */
     public Management(AuthMe plugin) {
         this.plugin = plugin;
         this.sched = this.plugin.getServer().getScheduler();
@@ -28,7 +33,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncronousLogin(player, password, forceLogin, plugin, plugin.database).process();
+                new AsynchronousLogin(player, password, forceLogin, plugin, plugin.database).process();
             }
         });
     }
@@ -38,7 +43,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncronousLogout(player, plugin, plugin.database).process();
+                new AsynchronousLogout(player, plugin, plugin.database).process();
             }
         });
     }
@@ -58,7 +63,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncronousUnregister(player, password, force, plugin).process();
+                new AsynchronousUnregister(player, password, force, plugin).process();
             }
         });
     }
@@ -68,7 +73,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncronousJoin(player, plugin, plugin.database).process();
+                new AsynchronousJoin(player, plugin, plugin.database).process();
             }
 
         });
@@ -79,7 +84,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncronousQuit(player, plugin, plugin.database, isKick).process();
+                new AsynchronousQuit(player, plugin, plugin.database, isKick).process();
             }
 
         });

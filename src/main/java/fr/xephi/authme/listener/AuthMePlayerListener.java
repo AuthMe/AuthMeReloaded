@@ -1,12 +1,20 @@
 package fr.xephi.authme.listener;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.PatternSyntaxException;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
+import fr.xephi.authme.AntiBot;
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.GeoLiteAPI;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -19,52 +27,24 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerBedEnterEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerKickEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.player.*;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Utils;
+import java.util.Arrays;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  */
 public class AuthMePlayerListener implements Listener {
 
-    public AuthMe plugin;
-    private Messages m = Messages.getInstance();
-
-    public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
-    private List<String> antibot = new ArrayList<>();
+    public static final ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
+    public final AuthMe plugin;
+    private final Messages m = Messages.getInstance();
 
     /**
      * Constructor for AuthMePlayerListener.
+     *
      * @param plugin AuthMe
      */
     public AuthMePlayerListener(AuthMe plugin) {
@@ -73,18 +53,26 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method handleChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     private void handleChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
+        for (Player p : Utils.getOnlinePlayers()) {
+            if (p != player && !PlayerCache.getInstance().isAuthenticated(p.getName())) {
+                event.getRecipients().remove(p);
+            }
+        }
 
-        if (Settings.isChatAllowed)
+        if (Settings.isChatAllowed) {
             return;
-        if (Utils.checkAuth(player))
+        }
+
+        if (Utils.checkAuth(player)) {
             return;
+        }
 
         event.setCancelled(true);
-
         if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
             m.send(player, "login_msg");
         } else {
@@ -99,6 +87,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerCommandPreprocess.
+     *
      * @param event PlayerCommandPreprocessEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -115,6 +104,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerNormalChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -124,6 +114,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerHighChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
@@ -133,6 +124,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -142,6 +134,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerHighestChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -151,6 +144,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerEarlyChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -160,6 +154,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerLowChat.
+     *
      * @param event AsyncPlayerChatEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -169,87 +164,65 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerMove.
+     *
      * @param event PlayerMoveEvent
      */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
-        int radius = Settings.getMovementRadius;
-        boolean allowMove = Settings.isMovementAllowed;
-        if (allowMove && radius <= 0)
+        if (event.isCancelled()) {
             return;
-
-        Player player = event.getPlayer();
-        if (Utils.checkAuth(player))
-            return;
-
-        if (!allowMove) {
-            if (event.getFrom().distance(event.getTo()) > 0) {
-                event.setTo(event.getFrom());
-                return;
-            }
         }
 
-        if (radius <= 0) {
+        if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0) {
+            return;
+        }
+
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX()
+            && event.getFrom().getBlockY() == event.getTo().getBlockY()
+            && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+            return;
+        }
+
+        Player player = event.getPlayer();
+        if (Utils.checkAuth(player)) {
+            return;
+        }
+
+        if (!Settings.isMovementAllowed) {
+            event.setTo(event.getFrom());
+            if(Settings.isRemoveSpeedEnabled) {
+                player.setFlySpeed(0.0f);
+                player.setWalkSpeed(0.0f);
+            }
+            return;
+        }
+
+        if (Settings.noTeleport) {
             return;
         }
 
         Location spawn = plugin.getSpawnLocation(player);
         if (spawn != null && spawn.getWorld() != null) {
-            if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
-                event.getPlayer().teleport(spawn);
+            if (!player.getWorld().equals(spawn.getWorld())) {
+                player.teleport(spawn);
                 return;
             }
-            if ((spawn.distance(player.getLocation()) > radius)) {
-                event.getPlayer().teleport(spawn);
+            if ((spawn.distance(player.getLocation()) > Settings.getMovementRadius)) {
+                player.teleport(spawn);
             }
         }
-    }
-
-    /**
-     * Method checkAntiBotMod.
-     * @param player Player
-     */
-    private void checkAntiBotMod(final Player player) {
-        if (plugin.delayedAntiBot || plugin.antibotMod)
-            return;
-        if (plugin.getPermissionsManager().hasPermission(player, "authme.bypassantibot"))
-            return;
-        if (antibot.size() > Settings.antiBotSensibility) {
-            plugin.switchAntiBotMod(true);
-            for (String s : m.send("antibot_auto_enabled"))
-                Bukkit.broadcastMessage(s);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    if (plugin.antibotMod) {
-                        plugin.switchAntiBotMod(false);
-                        antibot.clear();
-                        for (String s : m.send("antibot_auto_disabled"))
-                            Bukkit.broadcastMessage(s.replace("%m", "" + Settings.antiBotDuration));
-                    }
-                }
-            }, Settings.antiBotDuration * 1200);
-            return;
-        }
-        antibot.add(player.getName().toLowerCase());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                antibot.remove(player.getName().toLowerCase());
-            }
-        }, 300);
     }
 
     /**
      * Method onPlayerJoin.
+     *
      * @param event PlayerJoinEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getPlayer() == null)
+        if (event.getPlayer() == null || Utils.isNPC(event.getPlayer())) {
             return;
+        }
 
         final Player player = event.getPlayer();
         final String name = player.getName().toLowerCase();
@@ -257,7 +230,7 @@ public class AuthMePlayerListener implements Listener {
         final boolean delay = Settings.delayJoinLeaveMessages && joinMsg != null;
 
         // Remove the join message while the player isn't logging in
-        if (Settings.delayJoinLeaveMessages && event.getJoinMessage() != null) {
+        if (delay) {
             event.setJoinMessage(null);
         }
 
@@ -266,22 +239,24 @@ public class AuthMePlayerListener implements Listener {
         Bukkit.getScheduler().runTask(plugin, new Runnable() {
             @Override
             public void run() {
-                if (delay)
-                 joinMessage.put(name, joinMsg);
-                plugin.management.performJoin(player);
+                if (delay) {
+                    joinMessage.put(name, joinMsg);
+                }
+                plugin.getManagement().performJoin(player);
             }
         });
     }
 
     /**
      * Method onPreLogin.
+     *
      * @param event AsyncPlayerPreLoginEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         final String name = event.getName().toLowerCase();
         final Player player = Utils.getPlayer(name);
-        if (player == null) {
+        if (player == null || Utils.isNPC(player)) {
             return;
         }
 
@@ -306,18 +281,30 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerLogin.
+     *
      * @param event PlayerLoginEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        final Player player = event.getPlayer();
-        if (player == null) {
+        if (event.getPlayer() == null) {
             return;
         }
 
-        final String name = player.getName().toLowerCase();
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
-            return;
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            int playersOnline = Utils.getOnlinePlayers().size();
+            if (playersOnline > plugin.getServer().getMaxPlayers()) {
+                event.allow();
+            } else {
+                Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
+                if (pl != null) {
+                    pl.kickPlayer(m.send("kick_forvip")[0]);
+                    event.allow();
+                } else {
+                    ConsoleLogger.info("The player " + event.getPlayer().getName() + " tryed to join, but the server was full");
+                    event.setKickMessage(m.send("kick_fullserver")[0]);
+                    event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+                }
+            }
         }
 
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
@@ -327,18 +314,32 @@ public class AuthMePlayerListener implements Listener {
         // Get the permissions manager
         PermissionsManager permsMan = plugin.getPermissionsManager();
 
+        final Player player = event.getPlayer();
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, "authme.vip")) {
+            event.setKickMessage(m.send("kick_fullserver")[0]);
+            event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+            return;
+        }
+
+        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
+            return;
+        }
+
+        final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
+
         if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
-            String code = Utils.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || Settings.countriesBlacklist.contains(code))) {
+            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            if (Settings.countriesBlacklist.contains(code)) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
+
         if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
-            String code = Utils.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || !Settings.countries.contains(code))) {
+            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            if (!Settings.countries.contains(code)) {
                 event.setKickMessage(m.send("country_banned")[0]);
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
@@ -358,77 +359,30 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        int min = Settings.getMinNickLength;
-        int max = Settings.getMaxNickLength;
-        String regex = Settings.getNickRegex;
-
-        if (name.length() > max || name.length() < min) {
+        if (name.length() > Settings.getMaxNickLength || name.length() < Settings.getMinNickLength) {
             event.setKickMessage(Arrays.toString(m.send("name_len")));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
-        try {
-            if (!player.getName().matches(regex) || name.equalsIgnoreCase("Player")) {
-                try {
-                    event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
-                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                } catch (Exception exc) {
-                    event.setKickMessage("allowed char : " + regex);
-                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                }
-                return;
-            }
-        } catch (PatternSyntaxException pse) {
-            if (regex == null || regex.isEmpty()) {
-                event.setKickMessage("Your nickname do not match");
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-            try {
-                event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            } catch (Exception exc) {
-                event.setKickMessage("allowed char : " + regex);
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            }
+
+        if (!Settings.nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
+            event.setKickMessage(m.send("regex")[0].replace("REG_EX", Settings.getNickRegex));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
 
-        if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
-            checkAntiBotMod(player);
-            if (Settings.bungee) {
-                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                out.writeUTF("IP");
-                player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-            }
-            return;
-        }
-        if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL)
-            return;
-        if (!permsMan.hasPermission(player, "authme.vip")) {
-            event.setKickMessage(m.send("kick_fullserver")[0]);
-            event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-            return;
-        }
+        AntiBot.checkAntiBot(player);
 
-        int playersOnline = Utils.getOnlinePlayers().size();
-        if (playersOnline > plugin.getServer().getMaxPlayers()) {
-            event.allow();
-        } else {
-            final Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
-            if (pl != null) {
-                pl.kickPlayer(m.send("kick_forvip")[0]);
-                event.allow();
-            } else {
-                ConsoleLogger.info("The player " + player.getName() + " tryed to join, but the server was full");
-                event.setKickMessage(m.send("kick_fullserver")[0]);
-                event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-            }
+        if (Settings.bungee) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("IP");
+            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
         }
     }
 
     /**
      * Method onPlayerQuit.
+     *
      * @param event PlayerQuitEvent
      */
     @EventHandler(priority = EventPriority.MONITOR)
@@ -448,6 +402,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerKick.
+     *
      * @param event PlayerKickEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -467,6 +422,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerPickupItem.
+     *
      * @param event PlayerPickupItemEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -478,6 +434,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerInteract.
+     *
      * @param event PlayerInteractEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -490,6 +447,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerConsumeItem.
+     *
      * @param event PlayerItemConsumeEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -501,6 +459,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerInventoryOpen.
+     *
      * @param event InventoryOpenEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -525,6 +484,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerInventoryClick.
+     *
      * @param event InventoryClickEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -540,6 +500,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method playerHitPlayerEvent.
+     *
      * @param event EntityDamageByEntityEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -556,6 +517,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerInteractEntity.
+     *
      * @param event PlayerInteractEntityEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -568,6 +530,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerDropItem.
+     *
      * @param event PlayerDropItemEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -579,6 +542,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerBedEnter.
+     *
      * @param event PlayerBedEnterEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -590,6 +554,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onSignChange.
+     *
      * @param event SignChangeEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -601,6 +566,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerRespawn.
+     *
      * @param event PlayerRespawnEvent
      */
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -621,6 +587,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerGameModeChange.
+     *
      * @param event PlayerGameModeChangeEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -643,6 +610,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerShear.
+     *
      * @param event PlayerShearEntityEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -655,6 +623,7 @@ public class AuthMePlayerListener implements Listener {
 
     /**
      * Method onPlayerFish.
+     *
      * @param event PlayerFishEvent
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)

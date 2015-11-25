@@ -1,27 +1,27 @@
 package fr.xephi.authme.task;
 
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
 public class MessageTask implements Runnable {
 
-    private AuthMe plugin;
-    private String name;
-    private String[] msg;
-    private int interval;
+    private final AuthMe plugin;
+    private final String name;
+    private final String[] msg;
+    private final int interval;
 
     /**
      * Constructor for MessageTask.
-     * @param plugin AuthMe
-     * @param name String
-     * @param strings String[]
+     *
+     * @param plugin   AuthMe
+     * @param name     String
+     * @param strings  String[]
      * @param interval int
      */
     public MessageTask(AuthMe plugin, String name, String[] strings,
@@ -34,6 +34,7 @@ public class MessageTask implements Runnable {
 
     /**
      * Method run.
+     *
      * @see java.lang.Runnable#run()
      */
     @Override
