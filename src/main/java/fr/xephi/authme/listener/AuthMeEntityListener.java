@@ -183,12 +183,12 @@ public class AuthMeEntityListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
-        Projectile projectile = event.getEntity();
-        Player player = null;
-        if (projectile == null) {
+        if (event.getEntity() == null) {
             return;
         }
 
+        Player player = null;
+        Projectile projectile = event.getEntity();
         if (shooterIsProjectileSource) {
             ProjectileSource shooter = projectile.getShooter();
             if (shooter == null || !(shooter instanceof Player)) {

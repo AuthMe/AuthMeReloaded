@@ -30,9 +30,9 @@ public class AuthMePlayerListener16 implements Listener {
      */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerEditBook(PlayerEditBookEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 

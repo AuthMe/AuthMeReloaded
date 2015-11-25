@@ -93,12 +93,15 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmd = event.getMessage().split(" ")[0].toLowerCase();
-        if (Settings.useEssentialsMotd && cmd.equals("/motd"))
+        if (Settings.useEssentialsMotd && cmd.equals("/motd")) {
             return;
-        if (Settings.allowCommands.contains(cmd))
+        }
+        if (Settings.allowCommands.contains(cmd)) {
             return;
-        if (Utils.checkAuth(event.getPlayer()))
+        }
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
@@ -167,12 +170,8 @@ public class AuthMePlayerListener implements Listener {
      *
      * @param event PlayerMoveEvent
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.isCancelled()) {
-            return;
-        }
-
         if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0) {
             return;
         }

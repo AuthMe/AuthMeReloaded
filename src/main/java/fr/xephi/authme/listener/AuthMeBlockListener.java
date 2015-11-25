@@ -20,7 +20,6 @@ public class AuthMeBlockListener implements Listener {
      * @param instance AuthMe
      */
     public AuthMeBlockListener(AuthMe instance) {
-
         this.instance = instance;
     }
 
@@ -31,8 +30,9 @@ public class AuthMeBlockListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
@@ -43,8 +43,7 @@ public class AuthMeBlockListener implements Listener {
      */
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player)) {
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
         event.setCancelled(true);
