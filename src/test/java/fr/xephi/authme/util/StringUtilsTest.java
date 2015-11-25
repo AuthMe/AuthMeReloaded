@@ -2,6 +2,7 @@ package fr.xephi.authme.util;
 
 import org.junit.Test;
 
+import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 
@@ -83,5 +84,17 @@ public class StringUtilsTest {
 
         // then
         assertThat(result, equalTo("hello"));
+    }
+
+    @Test
+    public void shouldFormatException() {
+        // given
+        MalformedURLException ex = new MalformedURLException("Unrecognized URL format");
+
+        // when
+        String result = StringUtils.formatException(ex);
+
+        // then
+        assertThat(result, equalTo("[MalformedURLException]: Unrecognized URL format"));
     }
 }

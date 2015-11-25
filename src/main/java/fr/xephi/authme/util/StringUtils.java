@@ -107,4 +107,15 @@ public class StringUtils {
         // Return the result as a string
         return stringWriter.toString();
     }
+    /**
+     * Format the information from a Throwable as string, retaining the type and its message.
+     *
+     * @param th The throwable to process
+     *
+     * @return String with the type of the Throwable and its message, e.g. "[IOException]: Could not open stream"
+     */
+    public static String formatException(Throwable th) {
+        return "[" + th.getClass().getSimpleName() + "]: " + th.getMessage();
+    }
+
 }
