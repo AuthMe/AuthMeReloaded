@@ -439,6 +439,10 @@
                     <groupId>net.milkbowl.vault</groupId>
                 </exclusion>
                 <exclusion>
+                    <artifactId>Vault</artifactId>
+                    <groupId>net.milkbowl.vault</groupId>
+                </exclusion>
+                <exclusion>
                     <artifactId>CommandHandler</artifactId>
                     <groupId>com.pneumaticraft.commandhandler</groupId>
                 </exclusion>
