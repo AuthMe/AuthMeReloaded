@@ -25,6 +25,7 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.util.GeoLiteAPI;
+import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import net.minelink.ctplus.CombatTagPlus;
 import org.apache.logging.log4j.LogManager;
@@ -42,6 +43,7 @@ import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
@@ -905,16 +907,23 @@ public class AuthMe extends JavaPlugin {
     public String getVeryGamesIp(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();
         String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
-        sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", "" + player.getAddress().getPort());
+        sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress())
+                   .replace("%PORT%", "" + player.getAddress().getPort());
         try {
             URL url = new URL(sUrl);
             URLConnection urlCon = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));
-            String inputLine = in.readLine();
-            if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error") && !inputLine.contains("error")) {
-                realIP = inputLine;
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()))) {
+                String inputLine = in.readLine();
+                if (!StringUtils.isEmpty(inputLine) && !inputLine.equalsIgnoreCase("error")
+                        && !inputLine.contains("error")) {
+                    realIP = inputLine;
+                }
+            } catch (IOException e) {
+                ConsoleLogger.showError("Could not read from Very Games API - " + StringUtils.formatException(e));
             }
-        } catch (Exception ignored) {
+        } catch (IOException e) {
+            ConsoleLogger.showError("Could not fetch Very Games API with URL '" + sUrl + "' - "
+                + StringUtils.formatException(e));
         }
         return realIP;
     }

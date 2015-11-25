@@ -33,11 +33,6 @@ public class vAuthFileReader {
         this.sender = sender;
     }
 
-    /**
-     * Method convert.
-     *
-     * @throws IOException
-     */
     public void convert() {
         final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
         Scanner scanner;
@@ -63,6 +58,7 @@ public class vAuthFileReader {
                 }
                 database.saveAuth(auth);
             }
+            scanner.close();
         } catch (Exception e) {
             ConsoleLogger.writeStackTrace(e);
         }
