@@ -1,19 +1,20 @@
 package fr.xephi.authme.command.executable.changepassword;
 
-import fr.xephi.authme.AuthMeMockUtil;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 
+import java.io.File;
 import java.util.Arrays;
 
 import static org.mockito.Matchers.anyInt;
@@ -25,7 +26,6 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link ChangePasswordCommand}.
  */
-@Ignore
 public class ChangePasswordCommandTest {
 
     private Messages messagesMock;
@@ -33,26 +33,16 @@ public class ChangePasswordCommandTest {
 
     @Before
     public void setUpMocks() {
-        AuthMeMockUtil.mockAuthMeInstance();
-        AuthMeMockUtil.mockPlayerCacheInstance();
-        cacheMock = PlayerCache.getInstance();
-
-        AuthMeMockUtil.mockMessagesInstance();
-        messagesMock = Messages.getInstance();
+        WrapperMock wrapper = WrapperMock.createInstance();
+        wrapper.setDataFolder(new File("/"));
+        messagesMock = wrapper.getMessages();
+        cacheMock = wrapper.getPlayerCache();
 
         // Only allow passwords with alphanumerical characters for the test
         Settings.getPassRegex = "[a-zA-Z0-9]+";
         Settings.getPasswordMinLen = 2;
         Settings.passwordMaxLength = 50;
-
-        // TODO ljacqu 20151121: Cannot mock getServer() as it's final
-        // Probably the Command class should delegate as the others do
-        /*
-        Server server = Mockito.mock(Server.class);
-        schedulerMock = Mockito.mock(BukkitScheduler.class);
-        Mockito.when(server.getScheduler()).thenReturn(schedulerMock);
-        Mockito.when(pluginMock.getServer()).thenReturn(server);
-        */
+        // TODO ljacqu 20151126: Verify the calls to getServer() (see commented code)
     }
 
     @Test
@@ -80,7 +70,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, new CommandParts(), new CommandParts("pass"));
 
         // then
-        verify(messagesMock).send(sender, "not_logged_in");
+        verify(messagesMock).send(sender, MessageKey.NOT_LOGGED_IN);
         //verify(pluginMock, never()).getServer();
     }
 
@@ -94,7 +84,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, new CommandParts(), new CommandParts("!pass"));
 
         // then
-        verify(messagesMock).send(sender, "password_error");
+        verify(messagesMock).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
         //verify(pluginMock, never()).getServer();
     }
 
@@ -109,7 +99,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, new CommandParts(), new CommandParts("Tester"));
 
         // then
-        verify(messagesMock).send(sender, "password_error_nick");
+        verify(messagesMock).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
         //verify(pluginMock, never()).getServer();
     }
 
@@ -124,7 +114,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, new CommandParts(), new CommandParts("test"));
 
         // then
-        verify(messagesMock).send(sender, "pass_len");
+        verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
         //verify(pluginMock, never()).getServer();
     }
 
@@ -139,7 +129,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, new CommandParts(), new CommandParts("tester"));
 
         // then
-        verify(messagesMock).send(sender, "pass_len");
+        verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
         //verify(pluginMock, never()).getServer();
     }
 
@@ -154,7 +144,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, new CommandParts(), new CommandParts("abc123"));
 
         // then
-        verify(messagesMock).send(sender, "password_error_unsafe");
+        verify(messagesMock).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
         //verify(pluginMock, never()).getServer();
     }
 

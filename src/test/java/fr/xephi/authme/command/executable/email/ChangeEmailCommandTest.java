@@ -1,9 +1,9 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.AuthMeMockUtil;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,8 +27,8 @@ public class ChangeEmailCommandTest {
 
     @Before
     public void setUpMocks() {
-        AuthMeMockUtil.mockAuthMeInstance();
-        authMeMock = AuthMe.getInstance();
+        WrapperMock wrapper = WrapperMock.createInstance();
+        authMeMock = wrapper.getAuthMe();
         managementMock = Mockito.mock(Management.class);
         when(authMeMock.getManagement()).thenReturn(managementMock);
     }

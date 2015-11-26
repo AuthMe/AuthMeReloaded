@@ -1,6 +1,7 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
@@ -53,6 +54,10 @@ public class Wrapper {
 
     public Messages getMessages() {
         return getAuthMe().getMessages();
+    }
+
+    public PlayerCache getPlayerCache() {
+        return PlayerCache.getInstance();
     }
 
     /**

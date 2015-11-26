@@ -1,6 +1,7 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Messages;
 import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -70,6 +71,11 @@ public class WrapperMock extends Wrapper {
     @Override
     public Messages getMessages() {
         return getMock(Messages.class);
+    }
+
+    @Override
+    public PlayerCache getPlayerCache() {
+        return getMock(PlayerCache.class);
     }
 
     @Override

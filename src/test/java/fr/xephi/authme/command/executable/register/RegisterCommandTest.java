@@ -1,12 +1,11 @@
 package fr.xephi.authme.command.executable.register;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.AuthMeMockUtil;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+
+import java.io.File;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -33,15 +34,13 @@ public class RegisterCommandTest {
 
     @Before
     public void initializeAuthMeMock() {
-        AuthMeMockUtil.mockAuthMeInstance();
-        AuthMe pluginMock = AuthMe.getInstance();
-
-        messagesMock = mock(Messages.class);
-        Mockito.when(pluginMock.getMessages()).thenReturn(messagesMock);
+        WrapperMock wrapper = WrapperMock.createInstance();
+        wrapper.setDataFolder(new File("/"));
+        messagesMock = wrapper.getMessages();
 
         Settings.captchaLength = 10;
         managementMock = mock(Management.class);
-        Mockito.when(pluginMock.getManagement()).thenReturn(managementMock);
+        Mockito.when(wrapper.getAuthMe().getManagement()).thenReturn(managementMock);
     }
 
     @Test

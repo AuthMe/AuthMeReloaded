@@ -8,6 +8,7 @@ import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.ChangePasswordTask;
+import fr.xephi.authme.util.Wrapper;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -22,8 +23,8 @@ public class ChangePasswordCommand extends ExecutableCommand {
             return true;
         }
 
-        final AuthMe plugin = AuthMe.getInstance();
-        final Messages m = plugin.getMessages();
+        final Wrapper wrapper = Wrapper.getInstance();
+        final Messages m = wrapper.getMessages();
 
         // Get the passwords
         String playerPass = commandArguments.get(0);
@@ -32,7 +33,8 @@ public class ChangePasswordCommand extends ExecutableCommand {
         // Get the player instance and make sure it's authenticated
         Player player = (Player) sender;
         String name = player.getName().toLowerCase();
-        if (!PlayerCache.getInstance().isAuthenticated(name)) {
+        final PlayerCache playerCache = wrapper.getPlayerCache();
+        if (!playerCache.isAuthenticated(name)) {
             m.send(player, MessageKey.NOT_LOGGED_IN);
             return true;
         }
@@ -45,7 +47,7 @@ public class ChangePasswordCommand extends ExecutableCommand {
             || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
             || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
             || !playerPassLowerCase.matches(Settings.getPassRegex)) {
-            m.send(player, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+            m.send(player, MessageKey.PASSWORD_MATCH_ERROR);
             return true;
         }
         if (playerPassLowerCase.equalsIgnoreCase(name)) {
@@ -63,6 +65,7 @@ public class ChangePasswordCommand extends ExecutableCommand {
         }
 
         // Set the password
+        final AuthMe plugin = wrapper.getAuthMe();
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
             new ChangePasswordTask(plugin, player, playerPass, playerPassVerify));
         return true;

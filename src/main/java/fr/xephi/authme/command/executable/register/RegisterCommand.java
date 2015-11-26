@@ -8,6 +8,7 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Wrapper;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -24,8 +25,9 @@ public class RegisterCommand extends ExecutableCommand {
             return true;
         }
 
-        final AuthMe plugin = AuthMe.getInstance();
-        final Messages m = plugin.getMessages();
+        final Wrapper wrapper = Wrapper.getInstance();
+        final AuthMe plugin = wrapper.getAuthMe();
+        final Messages m = wrapper.getMessages();
 
         // Make sure the command arguments are valid
         final Player player = (Player) sender;
