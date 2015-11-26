@@ -17,7 +17,7 @@ import java.util.Date;
  */
 public final class ConsoleLogger {
 
-    private static Wrapper wrapper = new Wrapper(AuthMe.getInstance());
+    private static Wrapper wrapper = Wrapper.getInstance();
     private static final DateFormat df = new SimpleDateFormat("[MM-dd HH:mm:ss]");
 
     private ConsoleLogger() {

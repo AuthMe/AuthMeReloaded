@@ -26,7 +26,7 @@ import java.util.Collections;
  */
 public final class Utils {
 
-    private static final AuthMe plugin;
+    private static AuthMe plugin;
     private static Wrapper wrapper;
 
     private static boolean getOnlinePlayersIsCollection = false;
@@ -34,7 +34,7 @@ public final class Utils {
 
     static {
         plugin = AuthMe.getInstance();
-        wrapper = new Wrapper(plugin);
+        wrapper = Wrapper.getInstance();
         initializeOnlinePlayersIsCollectionField();
     }
 
@@ -116,9 +116,10 @@ public final class Utils {
 
         // Get the permissions manager, and make sure it's valid
         PermissionsManager permsMan = plugin.getPermissionsManager();
-        if (permsMan == null)
-            ConsoleLogger.showError("Failed to access permissions manager instance, shutting down.");
-        assert permsMan != null;
+        if (permsMan == null) {
+            ConsoleLogger.showError("Failed to access permissions manager instance, aborting.");
+            return false;
+        }
 
         // Remove old groups
         permsMan.removeGroups(player, Arrays.asList(Settings.unRegisteredGroup,

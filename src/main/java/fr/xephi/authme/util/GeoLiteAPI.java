@@ -17,7 +17,6 @@ public class GeoLiteAPI {
         "available at http://www.maxmind.com";
     private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry" +
         "/GeoIP.dat.gz";
-    private static final Wrapper wrapper = new Wrapper(AuthMe.getInstance());
     private static final AuthMe plugin = AuthMe.getInstance();
     private static LookupService lookupService;
 

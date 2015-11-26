@@ -2,63 +2,44 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.AuthMeMockUtil;
-import fr.xephi.authme.WrapperMock;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.permission.PermissionsManager;
-import org.bukkit.Server;
+import fr.xephi.authme.settings.Settings;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.lang.reflect.Field;
 import java.util.Collection;
+import java.util.logging.Logger;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.*;
 
 /**
  * Test for the {@link Utils} class.
  */
-@Ignore
-// TODO ljacqu 20151123: Fix test setup
 public class UtilsTest {
 
     private AuthMe authMeMock;
     private PermissionsManager permissionsManagerMock;
-    private Wrapper wrapperMock;
 
     @Before
     public void setUpMocks() {
         authMeMock = AuthMeMockUtil.mockAuthMeInstance();
-
-        // We need to create the Wrapper mock before injecting it into Utils because it runs a lot of  code in
-        // a static block which needs the proper mocks to be set up.
-        wrapperMock = new WrapperMock(authMeMock);
-        Server serverMock = wrapperMock.getServer();
-
-        BukkitScheduler schedulerMock = mock(BukkitScheduler.class);
-        when(serverMock.getScheduler()).thenReturn(schedulerMock);
-
-
-        when(schedulerMock.runTaskAsynchronously(any(Plugin.class), any(Runnable.class)))
-            .thenReturn(mock(BukkitTask.class));
-
-        System.out.println("Initialized scheduler mock for server mock");
-        AuthMeMockUtil.insertMockWrapperInstance(Utils.class, "wrapper", (WrapperMock) wrapperMock);
-        System.out.println("Iniadfk");
-
-        permissionsManagerMock = mock(PermissionsManager.class);
+        AuthMeMockUtil.mockSingletonForClass(Utils.class, "plugin", authMeMock);
+        permissionsManagerMock = Mockito.mock(PermissionsManager.class);
         when(authMeMock.getPermissionsManager()).thenReturn(permissionsManagerMock);
+
+        AuthMeMockUtil.initializeWrapperMock();
     }
 
-    // TODO ljacques 20151122: The tests for Utils.forceGM somehow can't be set up with the mocks correctly
-    /*@Test
+    @Test
     public void shouldForceSurvivalGameMode() {
         // given
         Player player = mock(Player.class);
@@ -68,6 +49,7 @@ public class UtilsTest {
         Utils.forceGM(player);
 
         // then
+        verify(authMeMock).getPermissionsManager();
         verify(player).setGameMode(GameMode.SURVIVAL);
     }
 
@@ -84,10 +66,40 @@ public class UtilsTest {
         verify(authMeMock).getPermissionsManager();
         verify(permissionsManagerMock).hasPermission(player, "authme.bypassforcesurvival");
         verify(player, never()).setGameMode(any(GameMode.class));
-    }*/
+    }
 
     @Test
-    // Note ljacqu 20151122: This is a heavy test setup with Reflections... If it causes trouble, skip it with @Ignore
+    public void shouldNotAddToNormalGroupIfPermissionsAreDisabled() {
+        // given
+        Settings.isPermissionCheckEnabled = false;
+        Player player = mock(Player.class);
+
+        // when
+        boolean result = Utils.addNormal(player, "test_group");
+
+        // then
+        assertThat(result, equalTo(false));
+        verify(authMeMock, never()).getPermissionsManager();
+    }
+
+    @Test
+    public void shouldNotAddToNormalGroupIfPermManagerIsNull() {
+        // given
+        Settings.isPermissionCheckEnabled = true;
+        given(authMeMock.getPermissionsManager()).willReturn(null);
+        Player player = mock(Player.class);
+        AuthMeMockUtil.mockSingletonForClass(ConsoleLogger.class, "wrapper", Wrapper.getInstance());
+
+        // when
+        boolean result = Utils.addNormal(player, "test_group");
+
+        // then
+        assertThat(result, equalTo(false));
+        verify(authMeMock).getPermissionsManager();
+    }
+
+    @Test
+    // Note ljacqu 20151122: This is a heavy test setup with reflections... If it causes trouble, skip it with @Ignore
     public void shouldRetrieveListOfOnlinePlayersFromReflectedMethod() {
         // given
         setField("getOnlinePlayersIsCollection", false);
@@ -114,6 +126,7 @@ public class UtilsTest {
         }
     }
 
+    // Note: This method is used through reflections
     public static Player[] onlinePlayersImpl() {
         return new Player[]{
             mock(Player.class), mock(Player.class)

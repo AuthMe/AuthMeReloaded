@@ -10,9 +10,13 @@ import java.io.StringWriter;
 /**
  * Utility class for String operations.
  */
-public class StringUtils {
+public final class StringUtils {
 
     public static final String newline = System.getProperty("line.separator");
+
+    private StringUtils() {
+        // Utility class
+    }
 
     /**
      * Get the difference of two strings.
