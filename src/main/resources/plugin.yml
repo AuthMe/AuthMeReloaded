@@ -53,13 +53,13 @@ permissions:
              authme.admin.changepassword: true
              authme.admin.unregister: true
              authme.admin.purge: true
-             authme.seeOtherAccounts: true
+             authme.seeOtherAccounts: true # This isn't a child of the admin section! Probably doesn't work.
              authme.admin.lastlogin: true
              authme.admin.getemail: true
              authme.admin.chgemail: true
              authme.admin.purgelastpos: true
              authme.admin.switchantibot: true
-             authme.bypassantibot: true
+             authme.bypassantibot: true # This isn't a child of the admin section! Probably doesn't work.
              authme.admin.getip: true
              authme.admin.converter: true
              authme.admin.resetposition: true
