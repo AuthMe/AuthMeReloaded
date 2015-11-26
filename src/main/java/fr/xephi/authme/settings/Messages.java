@@ -94,11 +94,11 @@ public class Messages extends CustomConfiguration {
      *
      * @return The message
      */
-    private static String[] retrieve(String key) {
-        if (!Settings.messagesLanguage.equalsIgnoreCase(singleton.language)) {
-            singleton.reloadMessages();
+    private String[] retrieve(String key) {
+        if (!Settings.messagesLanguage.equalsIgnoreCase(language)) {
+            reloadMessages();
         }
-        String message = (String) singleton.get(key);
+        String message = (String) get(key);
         if (message != null) {
             return formatMessage(message);
         }
@@ -106,7 +106,7 @@ public class Messages extends CustomConfiguration {
         // Message is null: log key not being found and send error back as message
         String retrievalError = "Error getting message with key '" + key + "'. ";
         ConsoleLogger.showError(retrievalError + "Please verify your config file at '"
-            + singleton.getConfigFile().getName() + "'");
+            + getConfigFile().getName() + "'");
         return new String[]{
             retrievalError + "Please contact the admin to verify or update the AuthMe messages file."};
     }

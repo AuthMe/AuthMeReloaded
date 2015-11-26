@@ -33,11 +33,11 @@ public class RegisterCommandTest {
 
     @Before
     public void initializeAuthMeMock() {
-        AuthMeMockUtil.mockMessagesInstance();
-        messagesMock = Messages.getInstance();
-
         AuthMeMockUtil.mockAuthMeInstance();
         AuthMe pluginMock = AuthMe.getInstance();
+
+        messagesMock = mock(Messages.class);
+        Mockito.when(pluginMock.getMessages()).thenReturn(messagesMock);
 
         Settings.captchaLength = 10;
         managementMock = mock(Management.class);
