@@ -141,19 +141,19 @@
                 </executions>
                 <configuration>
                     <includes>
-                        <include>/target/**/AuthMe.java</include>
+                        <include>target/classes/**/AuthMe.java</include>
                     </includes>
                     <replacements>
                         <replacement>
-                            <token>>UNKNOWNVERSION</token>
+                            <token>${project.version}</token>
                             <value>${project.version}</value>
                         </replacement>
                         <replacement>
-                            <token>>BUILDNUMBER</token>
+                            <token>${buildNumber}</token>
                             <value>${buildNumber}</value>
                         </replacement>
                         <replacement>
-                            <token>>PLUGINAUTHORS</token>
+                            <token>${pluginAuthors}</token>
                             <value>${pluginAuthors}</value>
                         </replacement>
                     </replacements>
