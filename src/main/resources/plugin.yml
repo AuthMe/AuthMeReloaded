@@ -45,19 +45,6 @@ commands:
         description: Converter from different other auth plugins
         usage: /converter <datatype>
 permissions:
-    authme.player.*:
-        description: Gives access to all authme player commands
-        default: true
-        children:
-            authme.register: true
-            authme.login: true
-            authme.changepassword: true
-            authme.logout: true
-            authme.unregister: true
-            authme.l: true
-            authme.reg: true
-            authme.email: true
-            authme.captcha: true
     authme.admin.*:
          description: Gives access to all authme admin commands
          children:
