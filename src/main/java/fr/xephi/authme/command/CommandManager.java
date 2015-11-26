@@ -37,8 +37,18 @@ public class CommandManager {
      * Register all commands.
      */
     // TODO ljacqu 20151121: Create a builder class for CommandDescription
-    @SuppressWarnings({"serial"})
     public void registerCommands() {
+        // Create a list of help command labels
+        final List<String> helpCommandLabels = new ArrayList<String>() {
+            {
+                add("help");
+                add("hlp");
+                add("h");
+                add("sos");
+                add("?");
+            }
+        };
+
         // Register the base AuthMe Reloaded command
         CommandDescription authMeBaseCommand = new CommandDescription(new AuthMeCommand(), new ArrayList<String>() {
 
@@ -48,16 +58,8 @@ public class CommandManager {
         }, "Main command", "The main AuthMeReloaded command. The root for all admin commands.", null);
 
         // Register the help command
-        CommandDescription authMeHelpCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
-
-            {
-                add("help");
-                add("hlp");
-                add("h");
-                add("sos");
-                add("?");
-            }
-        }, "View help", "View detailed help pages about AuthMeReloaded commands.", authMeBaseCommand);
+        CommandDescription authMeHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+            "View help", "View detailed help pages about AuthMeReloaded commands.", authMeBaseCommand);
         authMeHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         authMeHelpCommand.setMaximumArguments(false);
 
@@ -75,16 +77,8 @@ public class CommandManager {
         registerCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
 
         // Register the unregister command
-        CommandDescription unregisterCommand = new CommandDescription(new UnregisterCommand(), new ArrayList<String>() {
-
-            {
-                add("unregister");
-                add("unreg");
-                add("unr");
-                add("delete");
-                add("del");
-            }
-        }, "Unregister a player", "Unregister the specified player.", authMeBaseCommand);
+        CommandDescription unregisterCommand = new CommandDescription(new UnregisterCommand(), helpCommandLabels,
+            "Unregister a player", "Unregister the specified player.", authMeBaseCommand);
         unregisterCommand.setCommandPermissions("authme.admin.unregister", CommandPermissions.DefaultPermission.OP_ONLY);
         unregisterCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
 
@@ -287,16 +281,8 @@ public class CommandManager {
         reloadCommand.setCommandPermissions("authme.admin.reload", CommandPermissions.DefaultPermission.OP_ONLY);
 
         // Register the version command
-        CommandDescription versionCommand = new CommandDescription(new VersionCommand(), new ArrayList<String>() {
-
-            {
-                add("version");
-                add("ver");
-                add("v");
-                add("about");
-                add("info");
-            }
-        }, "Version info", "Show detailed information about the installed AuthMeReloaded version, and shows the developers, contributors, license and other information.", authMeBaseCommand);
+        CommandDescription versionCommand = new CommandDescription(new VersionCommand(), helpCommandLabels,
+            "Version info", "Show detailed information about the installed AuthMeReloaded version, and shows the developers, contributors, license and other information.", authMeBaseCommand);
         versionCommand.setMaximumArguments(false);
 
         // Register the base Dungeon Maze command
@@ -311,16 +297,8 @@ public class CommandManager {
         loginBaseCommand.addArgument(new CommandArgumentDescription("password", "Login password", false));
 
         // Register the help command
-        CommandDescription loginHelpCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
-
-            {
-                add("help");
-                add("hlp");
-                add("h");
-                add("sos");
-                add("?");
-            }
-        }, "View help", "View detailed help pages about AuthMeReloaded login commands.", loginBaseCommand);
+        CommandDescription loginHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+            "View help", "View detailed help pages about AuthMeReloaded login commands.", loginBaseCommand);
         loginHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         loginHelpCommand.setMaximumArguments(false);
 
@@ -334,16 +312,8 @@ public class CommandManager {
         logoutBaseCommand.setCommandPermissions("authme.logout", CommandPermissions.DefaultPermission.ALLOWED);
 
         // Register the help command
-        CommandDescription logoutHelpCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
-
-            {
-                add("help");
-                add("hlp");
-                add("h");
-                add("sos");
-                add("?");
-            }
-        }, "View help", "View detailed help pages about AuthMeReloaded logout commands.", logoutBaseCommand);
+        CommandDescription logoutHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+            "View help", "View detailed help pages about AuthMeReloaded logout commands.", logoutBaseCommand);
         logoutHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         logoutHelpCommand.setMaximumArguments(false);
 
@@ -361,16 +331,8 @@ public class CommandManager {
         registerBaseCommand.setMaximumArguments(false);
 
         // Register the help command
-        CommandDescription registerHelpCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
-
-            {
-                add("help");
-                add("hlp");
-                add("h");
-                add("sos");
-                add("?");
-            }
-        }, "View help", "View detailed help pages about AuthMeReloaded register commands.", registerBaseCommand);
+        CommandDescription registerHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+            "View help", "View detailed help pages about AuthMeReloaded register commands.", registerBaseCommand);
         registerHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         registerHelpCommand.setMaximumArguments(false);
 
@@ -386,16 +348,7 @@ public class CommandManager {
         unregisterBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
 
         // Register the help command
-        CommandDescription unregisterHelpCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
-
-            {
-                add("help");
-                add("hlp");
-                add("h");
-                add("sos");
-                add("?");
-            }
-        }, "View help", "View detailed help pages about AuthMeReloaded unregister commands.", unregisterBaseCommand);
+        CommandDescription unregisterHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels, "View help", "View detailed help pages about AuthMeReloaded unregister commands.", unregisterBaseCommand);
         unregisterHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         unregisterHelpCommand.setMaximumArguments(false);
 
@@ -413,16 +366,8 @@ public class CommandManager {
         changePasswordBaseCommand.setMaximumArguments(false);
 
         // Register the help command
-        CommandDescription changePasswordHelpCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
-
-            {
-                add("help");
-                add("hlp");
-                add("h");
-                add("sos");
-                add("?");
-            }
-        }, "View help", "View detailed help pages about AuthMeReloaded change password commands.", changePasswordBaseCommand);
+        CommandDescription changePasswordHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+            "View help", "View detailed help pages about AuthMeReloaded change password commands.", changePasswordBaseCommand);
         changePasswordHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         changePasswordHelpCommand.setMaximumArguments(false);
 
@@ -436,16 +381,8 @@ public class CommandManager {
         }, "E-mail command", "The AuthMe Reloaded E-mail command. The root for all E-mail commands.", null);
 
         // Register the help command
-        CommandDescription emailHelpCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
-
-            {
-                add("help");
-                add("hlp");
-                add("h");
-                add("sos");
-                add("?");
-            }
-        }, "View help", "View detailed help pages about AuthMeReloaded help commands.", emailBaseCommand);
+        CommandDescription emailHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+            "View help", "View detailed help pages about AuthMeReloaded help commands.", emailBaseCommand);
         emailHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         emailHelpCommand.setMaximumArguments(false);
 
@@ -501,16 +438,8 @@ public class CommandManager {
         captchaBaseCommand.setMaximumArguments(false);
 
         // Register the help command
-        CommandDescription captchaHelpCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
-
-            {
-                add("help");
-                add("hlp");
-                add("h");
-                add("sos");
-                add("?");
-            }
-        }, "View help", "View detailed help pages about AuthMeReloaded change captcha commands.", captchaBaseCommand);
+        CommandDescription captchaHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+            "View help", "View detailed help pages about AuthMeReloaded change captcha commands.", captchaBaseCommand);
         captchaHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         captchaHelpCommand.setMaximumArguments(false);
 
@@ -528,16 +457,8 @@ public class CommandManager {
         converterBaseCommand.setMaximumArguments(false);
 
         // Register the help command
-        CommandDescription converterHelpCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
-
-            {
-                add("help");
-                add("hlp");
-                add("h");
-                add("sos");
-                add("?");
-            }
-        }, "View help", "View detailed help pages about AuthMeReloaded change captcha commands.", converterBaseCommand);
+        CommandDescription converterHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+            "View help", "View detailed help pages about AuthMeReloaded change captcha commands.", converterBaseCommand);
         converterHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
         converterHelpCommand.setMaximumArguments(false);
 
