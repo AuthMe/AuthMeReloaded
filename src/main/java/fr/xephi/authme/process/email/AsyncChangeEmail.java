@@ -9,8 +9,6 @@ import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 
-import java.util.Arrays;
-
 /**
  */
 public class AsyncChangeEmail {

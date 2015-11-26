@@ -1,6 +1,5 @@
 package fr.xephi.authme;
 
-import com.comphenix.protocol.ProtocolLibrary;
 import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import fr.xephi.authme.api.API;

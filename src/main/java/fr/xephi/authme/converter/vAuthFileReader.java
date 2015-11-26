@@ -9,7 +9,6 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
 import java.util.UUID;
 
