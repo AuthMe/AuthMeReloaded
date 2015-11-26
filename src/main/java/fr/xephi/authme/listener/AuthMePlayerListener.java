@@ -57,19 +57,15 @@ public class AuthMePlayerListener implements Listener {
      * @param event AsyncPlayerChatEvent
      */
     private void handleChat(AsyncPlayerChatEvent event) {
+        if (Settings.isChatAllowed || Utils.checkAuth(event.getPlayer())) {
+            return;
+        }
+
         Player player = event.getPlayer();
         for (Player p : Utils.getOnlinePlayers()) {
             if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
                 event.getRecipients().remove(p); // TODO: it should be configurable
             }
-        }
-
-        if (Settings.isChatAllowed) {
-            return;
-        }
-
-        if (Utils.checkAuth(player)) {
-            return;
         }
 
         event.setCancelled(true);
