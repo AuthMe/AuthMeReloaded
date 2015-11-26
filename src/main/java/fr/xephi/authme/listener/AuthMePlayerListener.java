@@ -61,7 +61,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
+        final Player player = event.getPlayer();
         for (Player p : Utils.getOnlinePlayers()) {
             if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
                 event.getRecipients().remove(p); // TODO: it should be configurable
@@ -69,16 +69,20 @@ public class AuthMePlayerListener implements Listener {
         }
 
         event.setCancelled(true);
-        if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
-            m.send(player, MessageKey.LOGIN_MESSAGE);
-        } else {
-            if (Settings.emailRegistration) {
-                m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
-            } else {
-                m.send(player, MessageKey.REGISTER_MESSAGE);
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
+                    m.send(player, MessageKey.LOGIN_MESSAGE);
+                } else {
+                    if (Settings.emailRegistration) {
+                        m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+                    } else {
+                        m.send(player, MessageKey.REGISTER_MESSAGE);
+                    }
+                }
             }
-        }
-
+        });
     }
 
     /**
