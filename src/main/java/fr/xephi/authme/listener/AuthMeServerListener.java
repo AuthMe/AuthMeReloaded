@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
@@ -44,7 +45,7 @@ public class AuthMeServerListener implements Listener {
         String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
         if (!Settings.countriesBlacklist.isEmpty()) {
             if (Settings.countriesBlacklist.contains(countryCode)) {
-                event.setMotd(m.send("country_banned")[0]);
+                event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
                 return;
             }
         }
@@ -53,7 +54,7 @@ public class AuthMeServerListener implements Listener {
             if (Settings.countries.contains(countryCode)) {
                 event.setMotd(plugin.getServer().getMotd());
             } else {
-                event.setMotd(m.send("country_banned")[0]);
+                event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
             }
         }
     }

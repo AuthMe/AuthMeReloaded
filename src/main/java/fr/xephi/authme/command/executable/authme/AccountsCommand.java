@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -40,16 +41,16 @@ public class AccountsCommand extends ExecutableCommand {
                     try {
                         auth = plugin.database.getAuth(playerQueryFinal.toLowerCase());
                     } catch (NullPointerException npe) {
-                        m.send(sender, "unknown_user");
+                        m.send(sender, MessageKey.UNKNOWN_USER);
                         return;
                     }
                     if (auth == null) {
-                        m.send(sender, "unknown_user");
+                        m.send(sender, MessageKey.UNKNOWN_USER);
                         return;
                     }
                     List<String> accountList = plugin.database.getAllAuthsByName(auth);
                     if (accountList == null || accountList.isEmpty()) {
-                        m.send(sender, "user_unknown");
+                        m.send(sender, MessageKey.USER_NOT_REGISTERED);
                         return;
                     }
                     if (accountList.size() == 1) {
@@ -81,7 +82,7 @@ public class AccountsCommand extends ExecutableCommand {
                     } catch (Exception e) {
                         ConsoleLogger.showError(e.getMessage());
                         ConsoleLogger.writeStackTrace(e);
-                        m.send(sender, "error");
+                        m.send(sender, MessageKey.ERROR);
                         return;
                     }
 

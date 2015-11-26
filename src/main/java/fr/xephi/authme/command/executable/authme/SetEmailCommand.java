@@ -5,6 +5,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
@@ -36,21 +37,21 @@ public class SetEmailCommand extends ExecutableCommand {
 
         // Validate the email address
         if (!Settings.isEmailCorrect(playerEmail)) {
-            m.send(sender, "email_invalid");
+            m.send(sender, MessageKey.INVALID_EMAIL);
             return true;
         }
 
         // Validate the user
         PlayerAuth auth = plugin.database.getAuth(playerName.toLowerCase());
         if (auth == null) {
-            m.send(sender, "unknown_user");
+            m.send(sender, MessageKey.UNKNOWN_USER);
             return true;
         }
 
         // Set the email address
         auth.setEmail(playerEmail);
         if (!plugin.database.updateEmail(auth)) {
-            m.send(sender, "error");
+            m.send(sender, MessageKey.ERROR);
             return true;
         }
 
@@ -59,7 +60,7 @@ public class SetEmailCommand extends ExecutableCommand {
             PlayerCache.getInstance().updatePlayer(auth);
 
         // Show a status message
-        m.send(sender, "email_changed");
+        m.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
         return true;
     }
 }

@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
@@ -55,19 +56,19 @@ public class ChangePasswordTask implements Runnable {
                     auth.setSalt("");
                 }
                 if (!plugin.database.updatePassword(auth)) {
-                    m.send(player, "error");
+                    m.send(player, MessageKey.ERROR);
                     return;
                 }
                 plugin.database.updateSalt(auth);
                 PlayerCache.getInstance().updatePlayer(auth);
-                m.send(player, "pwd_changed");
+                m.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
                 ConsoleLogger.info(player.getName() + " changed his password");
             } else {
-                m.send(player, "wrong_pwd");
+                m.send(player, MessageKey.WRONG_PASSWORD);
             }
         } catch (NoSuchAlgorithmException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            m.send(player, "error");
+            m.send(player, MessageKey.ERROR);
         }
     }
 }

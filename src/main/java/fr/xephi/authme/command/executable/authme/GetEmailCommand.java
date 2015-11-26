@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import org.bukkit.command.CommandSender;
 
@@ -32,7 +33,7 @@ public class GetEmailCommand extends ExecutableCommand {
         Messages m = plugin.getMessages();
         PlayerAuth auth = plugin.database.getAuth(playerName.toLowerCase());
         if (auth == null) {
-            m.send(sender, "unknown_user");
+            m.send(sender, MessageKey.UNKNOWN_USER);
             return true;
         }
 

@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -41,7 +42,7 @@ public class PurgeLastPositionCommand extends ExecutableCommand {
             // Get the user auth and make sure the user exists
             PlayerAuth auth = plugin.database.getAuth(playerNameLowerCase);
             if (auth == null) {
-                m.send(sender, "unknown_user");
+                m.send(sender, MessageKey.UNKNOWN_USER);
                 return true;
             }
 

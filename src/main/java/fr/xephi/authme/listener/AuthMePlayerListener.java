@@ -2,7 +2,6 @@ package fr.xephi.authme.listener;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
@@ -11,6 +10,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
@@ -29,7 +29,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 
-import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -75,12 +74,12 @@ public class AuthMePlayerListener implements Listener {
 
         event.setCancelled(true);
         if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
-            m.send(player, "login_msg");
+            m.send(player, MessageKey.LOGIN_MESSAGE);
         } else {
             if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
+                m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
             } else {
-                m.send(player, "reg_msg");
+                m.send(player, MessageKey.REGISTER_MESSAGE);
             }
         }
 
@@ -190,7 +189,7 @@ public class AuthMePlayerListener implements Listener {
 
         if (!Settings.isMovementAllowed) {
             event.setTo(event.getFrom());
-            if(Settings.isRemoveSpeedEnabled) {
+            if (Settings.isRemoveSpeedEnabled) {
                 player.setFlySpeed(0.0f);
                 player.setWalkSpeed(0.0f);
             }
@@ -297,11 +296,11 @@ public class AuthMePlayerListener implements Listener {
             } else {
                 Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
                 if (pl != null) {
-                    pl.kickPlayer(m.send("kick_forvip")[0]);
+                    pl.kickPlayer(m.retrieveSingle(MessageKey.KICK_FOR_VIP));
                     event.allow();
                 } else {
                     ConsoleLogger.info("The player " + event.getPlayer().getName() + " tryed to join, but the server was full");
-                    event.setKickMessage(m.send("kick_fullserver")[0]);
+                    event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
                     event.setResult(PlayerLoginEvent.Result.KICK_FULL);
                 }
             }
@@ -316,7 +315,7 @@ public class AuthMePlayerListener implements Listener {
 
         final Player player = event.getPlayer();
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, "authme.vip")) {
-            event.setKickMessage(m.send("kick_fullserver")[0]);
+            event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
             event.setResult(PlayerLoginEvent.Result.KICK_FULL);
             return;
         }
@@ -331,7 +330,7 @@ public class AuthMePlayerListener implements Listener {
         if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
             String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if (Settings.countriesBlacklist.contains(code)) {
-                event.setKickMessage(m.send("country_banned")[0]);
+                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
@@ -340,7 +339,7 @@ public class AuthMePlayerListener implements Listener {
         if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, "authme.bypassantibot")) {
             String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if (!Settings.countries.contains(code)) {
-                event.setKickMessage(m.send("country_banned")[0]);
+                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
@@ -353,20 +352,20 @@ public class AuthMePlayerListener implements Listener {
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             } else {
-                event.setKickMessage(m.send("reg_only")[0]);
+                event.setKickMessage(m.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             }
         }
 
         if (name.length() > Settings.getMaxNickLength || name.length() < Settings.getMinNickLength) {
-            event.setKickMessage(Arrays.toString(m.send("name_len")));
+            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_LENGTH));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
 
         if (!Settings.nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
-            event.setKickMessage(m.send("regex")[0].replace("REG_EX", Settings.getNickRegex));
+            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS).replace("REG_EX", Settings.getNickRegex));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }

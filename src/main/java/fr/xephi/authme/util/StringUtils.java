@@ -90,6 +90,31 @@ public class StringUtils {
     }
 
     /**
+     * Joins a list of elements into a single string with the specified delimiter.
+     *
+     * @param delimiter the delimiter to use
+     * @param elements  the elements to join
+     *
+     * @return a new String that is composed of the elements separated by the delimiter
+     */
+    public static String join(CharSequence delimiter, CharSequence... elements) {
+        if (elements.length == 0) {
+            return "";
+        }
+        if (delimiter == null) {
+            delimiter = "";
+        }
+        StringBuilder sb = new StringBuilder(elements[0]);
+        if (elements.length > 1) {
+            for (int i = 1; i < elements.length; i++) {
+                sb.append(delimiter);
+                sb.append(elements[i]);
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
      * Get a full stack trace of an exception as a string.
      *
      * @param exception The exception.
@@ -107,6 +132,7 @@ public class StringUtils {
         // Return the result as a string
         return stringWriter.toString();
     }
+
     /**
      * Format the information from a Throwable as string, retaining the type and its message.
      *

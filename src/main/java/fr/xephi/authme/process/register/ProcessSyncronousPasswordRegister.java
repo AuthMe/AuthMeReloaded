@@ -6,6 +6,7 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
@@ -69,7 +70,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
             BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), delay);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
+        BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.retrieve(MessageKey.LOGIN_MESSAGE), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -104,9 +105,9 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         if (!Settings.getRegisteredGroup.isEmpty()) {
             Utils.setGroup(player, Utils.GroupType.REGISTERED);
         }
-        m.send(player, "registered");
+        m.send(player, MessageKey.REGISTER_SUCCESS);
         if (!Settings.getmailAccount.isEmpty())
-            m.send(player, "add_email");
+            m.send(player, MessageKey.ADD_EMAIL_MESSAGE);
         if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
             player.setAllowFlight(false);
             player.setFlying(false);
@@ -126,7 +127,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
 
         // Kick Player after Registration is enabled, kick the player
         if (Settings.forceRegKick) {
-            player.kickPlayer(m.send("registered")[0]);
+            player.kickPlayer(m.retrieveSingle(MessageKey.REGISTER_SUCCESS));
             return;
         }
 

@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.*;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -35,7 +36,7 @@ public class ConverterCommand extends ExecutableCommand {
         // Determine the job type
         ConvertType jobType = ConvertType.fromName(job);
         if (jobType == null) {
-            m.send(sender, "error");
+            m.send(sender, MessageKey.ERROR);
             return true;
         }
 

@@ -42,8 +42,7 @@ public class AsyncChangeEmail {
             if (Settings.getmaxRegPerEmail > 0) {
                 if (!plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts")
                     && plugin.database.getAllAuthsByEmail(newEmail).size() >= Settings.getmaxRegPerEmail) {
-                    // TODO ljacqu 20151124: max_reg is not in enum
-                    m.send(player, "max_reg");
+                    m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
                     return;
                 }
             }
@@ -83,15 +82,16 @@ public class AsyncChangeEmail {
                 }
                 m.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
                 // TODO ljacqu 20151124: Did I really miss "email_defined" or is it not present in the 'en' messages?
-                player.sendMessage(Arrays.toString(m.send("email_defined")) + auth.getEmail());
+                // player.sendMessage(Arrays.toString(m.send("email_defined")) + auth.getEmail());
             } else {
                 if (plugin.database.isAuthAvailable(playerName)) {
                     m.send(player, MessageKey.LOGIN_MESSAGE);
                 } else {
-                    if (Settings.emailRegistration)
+                    if (Settings.emailRegistration) {
                         m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
-                    else
+                    } else {
                         m.send(player, MessageKey.REGISTER_MESSAGE);
+                    }
                 }
             }
         } catch (Exception e) {

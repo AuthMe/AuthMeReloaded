@@ -10,6 +10,7 @@ import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
@@ -80,7 +81,7 @@ public class AsynchronousLogin {
             }
             if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
                 plugin.cap.put(name, rdm.nextString());
-                for (String s : m.send("usage_captcha")) {
+                for (String s : m.retrieve(MessageKey.USAGE_CAPTCHA)) {
                     player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
                 }
                 return true;
@@ -100,18 +101,18 @@ public class AsynchronousLogin {
      */
     protected PlayerAuth preAuth() {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
-            m.send(player, "logged_in");
+            m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
         }
         if (!database.isAuthAvailable(name)) {
-            m.send(player, "user_unknown");
+            m.send(player, MessageKey.USER_NOT_REGISTERED);
             if (LimboCache.getInstance().hasLimboPlayer(name)) {
                 LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
                 String[] msg;
                 if (Settings.emailRegistration) {
-                    msg = m.send("reg_email_msg");
+                    msg = m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE);
                 } else {
-                    msg = m.send("reg_msg");
+                    msg = m.retrieve(MessageKey.REGISTER_MESSAGE);
                 }
                 BukkitTask msgT = Bukkit.getScheduler().runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, Settings.getWarnMessageInterval));
                 LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
@@ -120,17 +121,17 @@ public class AsynchronousLogin {
         }
         if (Settings.getMaxLoginPerIp > 0 && !plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
             if (plugin.isLoggedIp(name, getIP())) {
-                m.send(player, "logged_in");
+                m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
                 return null;
             }
         }
         PlayerAuth pAuth = database.getAuth(name);
         if (pAuth == null) {
-            m.send(player, "user_unknown");
+            m.send(player, MessageKey.USER_NOT_REGISTERED);
             return null;
         }
         if (!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
-            m.send(player, "vb_nonActiv");
+            m.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
             return null;
         }
         AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
@@ -153,7 +154,7 @@ public class AsynchronousLogin {
                 passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, realName);
             } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                m.send(player, "error");
+                m.send(player, MessageKey.ERROR);
                 return;
             }
         if (passwordVerified && player.isOnline()) {
@@ -171,17 +172,19 @@ public class AsynchronousLogin {
 
             player.setNoDamageTicks(0);
             if (!forceLogin)
-                m.send(player, "login");
+                m.send(player, MessageKey.LOGIN_SUCCESS);
 
             displayOtherAccounts(auth, player);
 
             if (Settings.recallEmail) {
-                if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
-                    m.send(player, "add_email");
+                if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com")) {
+                    m.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+                }
             }
 
-            if (!Settings.noConsoleSpam)
+            if (!Settings.noConsoleSpam) {
                 ConsoleLogger.info(realName + " logged in!");
+            }
 
             // makes player isLoggedin via API
             PlayerCache.getInstance().addPlayer(auth);
@@ -211,11 +214,11 @@ public class AsynchronousLogin {
                         if (AuthMePlayerListener.gameMode != null && AuthMePlayerListener.gameMode.containsKey(name)) {
                             player.setGameMode(AuthMePlayerListener.gameMode.get(name));
                         }
-                        player.kickPlayer(m.send("wrong_pwd")[0]);
+                        player.kickPlayer(m.retrieveSingle(MessageKey.WRONG_PASSWORD));
                     }
                 });
             } else {
-                m.send(player, "wrong_pwd");
+                m.send(player, MessageKey.WRONG_PASSWORD);
             }
         } else {
             ConsoleLogger.showError("Player " + name + " wasn't online during login process, aborted... ");

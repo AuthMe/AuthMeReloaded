@@ -1,6 +1,7 @@
 package fr.xephi.authme.settings;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
@@ -13,7 +14,7 @@ public class Messages extends CustomConfiguration {
 
     /** The section symbol, used in Minecraft for formatting codes. */
     private static final String SECTION_SIGN = "\u00a7";
-    private static Messages singleton = null;
+    private static Messages singleton;
     private String language = "en";
 
 
@@ -26,7 +27,6 @@ public class Messages extends CustomConfiguration {
     public Messages(File file, String lang) {
         super(file);
         load();
-        singleton = this;
         this.language = lang;
     }
 
@@ -68,6 +68,10 @@ public class Messages extends CustomConfiguration {
 
     public String[] retrieve(MessageKey key) {
         return retrieve(key.getKey());
+    }
+
+    public String retrieveSingle(MessageKey key) {
+        return StringUtils.join("\n", retrieve(key.getKey()));
     }
 
     /**

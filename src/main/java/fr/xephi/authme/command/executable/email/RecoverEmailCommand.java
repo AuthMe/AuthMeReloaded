@@ -8,6 +8,7 @@ import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
@@ -38,12 +39,12 @@ public class RecoverEmailCommand extends ExecutableCommand {
         final Messages m = plugin.getMessages();
 
         if (plugin.mail == null) {
-            m.send(player, "error");
+            m.send(player, MessageKey.ERROR);
             return true;
         }
         if (plugin.database.isAuthAvailable(playerName)) {
             if (PlayerCache.getInstance().isAuthenticated(playerName)) {
-                m.send(player, "logged_in");
+                m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
                 return true;
             }
             try {
@@ -56,29 +57,29 @@ public class RecoverEmailCommand extends ExecutableCommand {
                 } else if (plugin.database.isAuthAvailable(playerName)) {
                     auth = plugin.database.getAuth(playerName);
                 } else {
-                    m.send(player, "unknown_user");
+                    m.send(player, MessageKey.UNKNOWN_USER);
                     return true;
                 }
                 if (Settings.getmailAccount.equals("") || Settings.getmailAccount.isEmpty()) {
-                    m.send(player, "error");
+                    m.send(player, MessageKey.ERROR);
                     return true;
                 }
 
                 if (!playerMail.equalsIgnoreCase(auth.getEmail()) || playerMail.equalsIgnoreCase("your@email.com") || auth.getEmail().equalsIgnoreCase("your@email.com")) {
-                    m.send(player, "email_invalid");
+                    m.send(player, MessageKey.INVALID_EMAIL);
                     return true;
                 }
                 auth.setHash(hashNew);
                 plugin.database.updatePassword(auth);
                 plugin.mail.main(auth, thePass);
-                m.send(player, "email_send");
+                m.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
             } catch (NoSuchAlgorithmException | NoClassDefFoundError ex) {
                 ex.printStackTrace();
                 ConsoleLogger.showError(ex.getMessage());
-                m.send(sender, "error");
+                m.send(sender, MessageKey.ERROR);
             }
         } else {
-            m.send(player, "reg_email_msg");
+            m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
         }
 
         return true;

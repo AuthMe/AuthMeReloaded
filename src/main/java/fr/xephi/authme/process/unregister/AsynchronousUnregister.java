@@ -5,7 +5,9 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
@@ -63,48 +65,54 @@ public class AsynchronousUnregister {
         try {
             if (force || PasswordSecurity.comparePasswordWithHash(password, PlayerCache.getInstance().getAuth(name).getHash(), player.getName())) {
                 if (!plugin.database.removeAuth(name)) {
-                    player.sendMessage("error");
+                    m.send(player, MessageKey.ERROR);
                     return;
                 }
+                int timeOut = Settings.getRegistrationTimeout * 20;
                 if (Settings.isForcedRegistrationEnabled) {
                     Utils.teleportToSpawn(player);
                     player.saveData();
                     PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
-                    if (!Settings.getRegisteredGroup.isEmpty())
+                    if (!Settings.getRegisteredGroup.isEmpty()) {
                         Utils.setGroup(player, GroupType.UNREGISTERED);
+                    }
                     LimboCache.getInstance().addLimboPlayer(player);
-                    int delay = Settings.getRegistrationTimeout * 20;
+                    LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
                     int interval = Settings.getWarnMessageInterval;
                     BukkitScheduler scheduler = plugin.getServer().getScheduler();
-                    if (delay != 0) {
-                        BukkitTask id = scheduler.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), delay);
-                        LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
+                    if (timeOut != 0) {
+                        BukkitTask id = scheduler.runTaskLaterAsynchronously(plugin,
+                            new TimeoutTask(plugin, name, player), timeOut);
+                        limboPlayer.setTimeoutTaskId(id);
                     }
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(scheduler.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("reg_msg"), interval)));
-                    m.send(player, "unregistered");
+                    limboPlayer.setMessageTaskId(scheduler.runTaskAsynchronously(plugin,
+                            new MessageTask(plugin, name, m.retrieve(MessageKey.REGISTER_MESSAGE), interval)));
+                    m.send(player, MessageKey.UNREGISTERED_SUCCESS);
                     ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                     return;
                 }
                 if (!Settings.unRegisteredGroup.isEmpty()) {
                     Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
                 }
-                PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
+                PlayerCache.getInstance().removePlayer(name);
                 // check if Player cache File Exist and delete it, preventing
                 // duplication of items
                 if (playerCache.doesCacheExist(player)) {
                     playerCache.removeCache(player);
                 }
-                if (Settings.applyBlindEffect)
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
+                // Apply blind effect
+                if (Settings.applyBlindEffect) {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
+                }
                 if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
                     player.setWalkSpeed(0.0f);
                     player.setFlySpeed(0.0f);
                 }
-                m.send(player, "unregistered");
+                m.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                 Utils.teleportToSpawn(player);
             } else {
-                m.send(player, "wrong_pwd");
+                m.send(player, MessageKey.WRONG_PASSWORD);
             }
         } catch (NoSuchAlgorithmException ignored) {
         }

@@ -39,6 +39,10 @@ public enum MessageKey {
 
     REGISTER_EMAIL_MESSAGE("reg_email_msg"),
 
+    MAX_REGISTER_EXCEEDED("max_reg"),
+
+    USAGE_REGISTER("usage_reg"),
+
     USAGE_UNREGISTER("usage_unreg"),
 
     PASSWORD_CHANGED_SUCCESS("pwd_changed"),
@@ -57,7 +61,7 @@ public enum MessageKey {
 
     ALREADY_LOGGED_IN_ERROR("logged_in"),
 
-    LOGOUT_SUCCESS("logout_success"),
+    LOGOUT_SUCCESS("logout"),
 
     USERNAME_ALREADY_ONLINE_ERROR("same_nick"),
 

@@ -20,10 +20,7 @@ import fr.xephi.authme.listener.*;
 import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.OtherAccounts;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.settings.*;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
@@ -837,7 +834,7 @@ public class AuthMe extends JavaPlugin {
                             if (PlayerCache.getInstance().isAuthenticated(name)) {
                                 String email = database.getAuth(name).getEmail();
                                 if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
-                                    messages.send(player, "add_email");
+                                    messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
                             }
                     }
                 }

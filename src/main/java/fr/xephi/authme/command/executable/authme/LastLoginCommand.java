@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import org.bukkit.command.CommandSender;
 
@@ -28,11 +29,11 @@ public class LastLoginCommand extends ExecutableCommand {
         try {
             auth = plugin.database.getAuth(playerName.toLowerCase());
         } catch (NullPointerException e) {
-            m.send(sender, "unknown_user");
+            m.send(sender, MessageKey.UNKNOWN_USER);
             return true;
         }
         if (auth == null) {
-            m.send(sender, "user_unknown");
+            m.send(sender, MessageKey.USER_NOT_REGISTERED);
             return true;
         }
 

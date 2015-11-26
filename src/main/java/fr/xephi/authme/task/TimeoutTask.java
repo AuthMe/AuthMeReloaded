@@ -2,6 +2,7 @@ package fr.xephi.authme.task;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -53,7 +54,7 @@ public class TimeoutTask implements Runnable {
             @Override
             public void run() {
                 if (player.isOnline()) {
-                    player.kickPlayer(m.send("timeout")[0]);
+                    player.kickPlayer(m.retrieveSingle(MessageKey.LOGIN_TIMEOUT_ERROR));
                 }
             }
         });

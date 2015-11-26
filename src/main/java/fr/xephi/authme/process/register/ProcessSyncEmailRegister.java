@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
@@ -46,7 +47,7 @@ public class ProcessSyncEmailRegister implements Runnable {
         if (!Settings.getRegisteredGroup.isEmpty()) {
             Utils.setGroup(player, Utils.GroupType.REGISTERED);
         }
-        m.send(player, "vb_nonActiv");
+        m.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
         int time = Settings.getRegistrationTimeout * 20;
         int msgInterval = Settings.getWarnMessageInterval;
 
@@ -58,7 +59,7 @@ public class ProcessSyncEmailRegister implements Runnable {
         }
         if (limbo != null) {
             limbo.getMessageTaskId().cancel();
-            BukkitTask nwMsg = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), msgInterval));
+            BukkitTask nwMsg = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.retrieve(MessageKey.LOGIN_MESSAGE), msgInterval));
             limbo.setMessageTaskId(nwMsg);
         }
 

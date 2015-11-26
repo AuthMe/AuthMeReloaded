@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.FlatFile;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import org.bukkit.command.CommandSender;
 
@@ -52,7 +53,7 @@ public class SqlToFlat implements Converter {
             sender.sendMessage("Successfully convert from SQL table to file auths.db");
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            plugin.getMessages().send(sender, "error");
+            plugin.getMessages().send(sender, MessageKey.ERROR);
         }
     }
 

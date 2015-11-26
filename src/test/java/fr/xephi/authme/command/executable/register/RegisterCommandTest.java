@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.AuthMeMockUtil;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.BlockCommandSender;
@@ -69,7 +70,7 @@ public class RegisterCommandTest {
         command.executeCommand(sender, new CommandParts(), new CommandParts());
 
         // then
-        verify(messagesMock).send(sender, "usage_reg");
+        verify(messagesMock).send(sender, MessageKey.USAGE_REGISTER);
         verify(managementMock, never()).performRegister(any(Player.class), anyString(), anyString());
     }
 

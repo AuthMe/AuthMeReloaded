@@ -5,6 +5,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
@@ -39,7 +40,7 @@ public class AsynchronousLogout {
 
     private void preLogout() {
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
-            m.send(player, "not_logged_in");
+            m.send(player, MessageKey.NOT_LOGGED_IN);
             canLogout = false;
         }
     }

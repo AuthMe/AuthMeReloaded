@@ -5,6 +5,7 @@ import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
@@ -29,7 +30,7 @@ public class RegisterCommand extends ExecutableCommand {
         // Make sure the command arguments are valid
         final Player player = (Player) sender;
         if (commandArguments.getCount() == 0 || (Settings.getEnablePasswordVerifier && commandArguments.getCount() < 2)) {
-            m.send(player, "usage_reg");
+            m.send(player, MessageKey.USAGE_REGISTER);
             return true;
         }
 
@@ -37,13 +38,13 @@ public class RegisterCommand extends ExecutableCommand {
         if (Settings.emailRegistration && !Settings.getmailAccount.isEmpty()) {
             if (Settings.doubleEmailCheck) {
                 if (commandArguments.getCount() < 2 || !commandArguments.get(0).equals(commandArguments.get(1))) {
-                    m.send(player, "usage_reg");
+                    m.send(player, MessageKey.USAGE_REGISTER);
                     return true;
                 }
             }
             final String email = commandArguments.get(0);
             if (!Settings.isEmailCorrect(email)) {
-                m.send(player, "email_invalid");
+                m.send(player, MessageKey.INVALID_EMAIL);
                 return true;
             }
             final String thePass = new RandomString(Settings.getRecoveryPassLength).nextString();
@@ -52,7 +53,7 @@ public class RegisterCommand extends ExecutableCommand {
         }
         if (commandArguments.getCount() > 1 && Settings.getEnablePasswordVerifier) {
             if (!commandArguments.get(0).equals(commandArguments.get(1))) {
-                m.send(player, "password_error");
+                m.send(player, MessageKey.PASSWORD_IS_USERNAME_ERROR);
                 return true;
             }
         }
