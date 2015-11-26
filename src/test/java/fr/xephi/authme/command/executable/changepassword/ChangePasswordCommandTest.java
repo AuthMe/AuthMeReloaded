@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 
@@ -24,6 +25,7 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link ChangePasswordCommand}.
  */
+@Ignore
 public class ChangePasswordCommandTest {
 
     private Messages messagesMock;
