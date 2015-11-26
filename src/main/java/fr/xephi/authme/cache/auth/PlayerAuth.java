@@ -16,9 +16,17 @@ public class PlayerAuth {
     private double z;
     private String world;
     private String salt;
-    private final int groupId;
+    private int groupId;
     private String email;
     private String realName;
+
+    /**
+     *
+     */
+    public PlayerAuth(String serialized)
+    {
+    	this.unserialize(serialized);
+    }
 
     /**
      * Constructor for PlayerAuth.
@@ -446,4 +454,47 @@ public class PlayerAuth {
             + " ! Salt : " + salt);
     }
 
+    /**
+     * Method to serialize playerauth
+     *
+     * @return String
+     */
+    public String serialize()
+    {
+    	StringBuilder str = new StringBuilder();
+    	str.append(this.nickname).append(';');
+    	str.append(this.realName).append(';');
+    	str.append(this.ip).append(';');
+    	str.append(this.email).append(';');
+    	str.append(this.hash).append(';');
+    	str.append(this.salt).append(';');
+    	str.append(this.groupId).append(';');
+    	str.append(this.lastLogin).append(';');
+    	str.append(this.world).append(';');
+    	str.append(this.x).append(';');
+    	str.append(this.y).append(';');
+    	str.append(this.z);
+    	return str.toString();
+    }
+
+    /**
+     * Method to unserialize playerauth
+     *
+     */
+    public void unserialize(String str)
+    {
+    	String[] args = str.split(";");
+    	this.nickname = args[0];
+    	this.realName = args[1];
+    	this.ip = args[2];
+    	this.email = args[3];
+    	this.hash = args[4];
+    	this.salt = args[5];
+    	this.groupId = Integer.parseInt(args[6]);
+    	this.lastLogin = Long.parseLong(args[7]);
+    	this.world = args[8];
+    	this.x = Double.parseDouble(args[9]);
+    	this.y = Double.parseDouble(args[10]);
+    	this.z = Double.parseDouble(args[11]);
+    }
 }
