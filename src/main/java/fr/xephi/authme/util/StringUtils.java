@@ -6,6 +6,7 @@ import net.ricecode.similarity.StringSimilarityServiceImpl;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.Arrays;
 
 /**
  * Utility class for String operations.
@@ -79,6 +80,9 @@ public final class StringUtils {
      * @return a new String that is composed of the elements separated by the delimiter
      */
     public static String join(String delimiter, Iterable<String> elements) {
+        if (delimiter == null) {
+            delimiter = "";
+        }
         StringBuilder sb = new StringBuilder();
         for (String element : elements) {
             if (!isEmpty(element)) {
@@ -101,21 +105,8 @@ public final class StringUtils {
      *
      * @return a new String that is composed of the elements separated by the delimiter
      */
-    public static String join(CharSequence delimiter, CharSequence... elements) {
-        if (elements.length == 0) {
-            return "";
-        }
-        if (delimiter == null) {
-            delimiter = "";
-        }
-        StringBuilder sb = new StringBuilder(elements[0]);
-        if (elements.length > 1) {
-            for (int i = 1; i < elements.length; i++) {
-                sb.append(delimiter);
-                sb.append(elements[i]);
-            }
-        }
-        return sb.toString();
+    public static String join(String delimiter, String... elements) {
+        return join(delimiter, Arrays.asList(elements));
     }
 
     /**

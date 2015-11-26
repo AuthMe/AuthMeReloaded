@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import java.io.File;
 
 /**
+ * Class for retrieving and sending translatable messages to players.
  */
 // TODO ljacqu 20151124: This class is a weird mix between singleton and POJO
 // TODO: change it into POJO
@@ -15,7 +16,7 @@ public class Messages extends CustomConfiguration {
     /** The section symbol, used in Minecraft for formatting codes. */
     private static final String SECTION_SIGN = "\u00a7";
     private static Messages singleton;
-    private String language = "en";
+    private String language;
 
 
     /**
@@ -51,40 +52,25 @@ public class Messages extends CustomConfiguration {
     }
 
     /**
-     * Send the given message code to the player.
+     * Retrieve the message from the text file and return it split by new line as an array.
      *
-     * @param sender The entity to send the message to
-     * @param msg The message code to send
+     * @param key The message key to retrieve
      *
-     * @deprecated Use {@link Messages#send(CommandSender, MessageKey)} instead
+     * @return The message split by new lines
      */
-    @Deprecated
-    public void send(CommandSender sender, String msg) {
-        String[] lines = retrieve(msg);
-        for (String line : lines) {
-            sender.sendMessage(line);
-        }
-    }
-
     public String[] retrieve(MessageKey key) {
         return retrieve(key.getKey());
     }
 
+    /**
+     * Retrieve the message from the text file.
+     *
+     * @param key The message key to retrieve
+     *
+     * @return The message from the file
+     */
     public String retrieveSingle(MessageKey key) {
         return StringUtils.join("\n", retrieve(key.getKey()));
-    }
-
-    /**
-     * Retrieve the message from the text file and returns it split by new line as an array.
-     *
-     * @param msg The message code to retrieve
-     *
-     * @return The message split by new lines
-     * @deprecated Use {@link Messages#retrieve(MessageKey)} instead.
-     */
-    @Deprecated
-    public String[] send(String msg) {
-        return retrieve(msg);
     }
 
     /**

@@ -1,8 +1,5 @@
 package fr.xephi.authme.settings;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.AuthMeMockUtil;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -51,11 +48,23 @@ public class MessagesTest {
         MessageKey key = MessageKey.UNKNOWN_USER;
 
         // when
-        String[] send = messages.retrieve(key);
+        String[] message = messages.retrieve(key);
 
         // then
         String[] lines = new String[]{"This test message", "includes", "some new lines"};
-        assertThat(send, equalTo(lines));
+        assertThat(message, equalTo(lines));
+    }
+
+    @Test
+    public void shouldLoadMessageAsStringWithNewLines() {
+        // given
+        MessageKey key = MessageKey.UNKNOWN_USER;
+
+        // when
+        String message = messages.retrieveSingle(key);
+
+        // then
+        assertThat(message, equalTo("This test message\nincludes\nsome new lines"));
     }
 
     @Test

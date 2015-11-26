@@ -65,7 +65,7 @@ public class StringUtilsTest {
     }
 
     @Test
-    public void shouldJoinString() {
+    public void shouldJoinStrings() {
         // given
         List<String> elements = Arrays.asList("test", "for", null, "join", "StringUtils");
 
@@ -74,6 +74,18 @@ public class StringUtilsTest {
 
         // then
         assertThat(result, equalTo("test, for, join, StringUtils"));
+    }
+
+    @Test
+    public void shouldJoinStringArray() {
+        // given
+        String[] elements = {"A", "test", "sentence", "for", "the join", null, "method"};
+
+        // when
+        String result = StringUtils.join("_", elements);
+
+        // then
+        assertThat(result, equalTo("A_test_sentence_for_the join_method"));
     }
 
     @Test
@@ -86,6 +98,15 @@ public class StringUtilsTest {
 
         // then
         assertThat(result, equalTo("hello"));
+    }
+
+    @Test
+    public void shouldJoinWithNullDelimiter() {
+        // given/when
+        String result = StringUtils.join(null, "A", "Few", "Words", "\n", "To", "Join");
+
+        // then
+        assertThat(result, equalTo("AFewWordsToJoin"));
     }
 
     @Test
