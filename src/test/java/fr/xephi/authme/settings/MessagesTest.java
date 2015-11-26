@@ -3,6 +3,7 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.AuthMeMockUtil;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,8 +33,7 @@ public class MessagesTest {
      */
     @Before
     public void setUpMessages() {
-        AuthMe authMe = AuthMeMockUtil.mockAuthMeInstance();
-        AuthMeMockUtil.insertMockWrapperInstance(ConsoleLogger.class, "wrapper", authMe);
+        WrapperMock.getInstance();
 
         Settings.messagesLanguage = "en";
         URL url = getClass().getClassLoader().getResource(YML_TEST_FILE);

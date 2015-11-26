@@ -1,10 +1,12 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.settings.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import java.io.File;
 import java.util.logging.Logger;
 
 /**
@@ -19,6 +21,15 @@ public class Wrapper {
      * Package-private constructor for testing purposes to inject a mock instance.
      */
     Wrapper() {
+    }
+
+    /**
+     * Package-private setter of the singleton field used for tests to inject a mock instance.
+     *
+     * @param wrapper The wrapper to use as singleton
+     */
+    static void setSingleton(Wrapper wrapper) {
+        Wrapper.singleton = wrapper;
     }
 
     public static Wrapper getInstance() {
@@ -38,6 +49,20 @@ public class Wrapper {
 
     public Logger getLogger() {
         return getAuthMe().getLogger();
+    }
+
+    public Messages getMessages() {
+        return getAuthMe().getMessages();
+    }
+
+    /**
+     * Return the folder containing plugin data via the AuthMe instance.
+     *
+     * @return The plugin data folder
+     * @see AuthMe#getDataFolder()
+     */
+    public File getDataFolder() {
+        return getAuthMe().getDataFolder();
     }
 
     public BukkitScheduler getScheduler() {

@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.*;
@@ -18,7 +19,7 @@ import java.util.regex.Pattern;
  */
 public final class Settings extends YamlConfiguration {
 
-    public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
+    public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
     public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");

@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 /**
  * Creates a mock implementation of AuthMe for testing purposes.
  */
+@Deprecated
 public final class AuthMeMockUtil {
 
     private AuthMeMockUtil() {
@@ -44,38 +45,6 @@ public final class AuthMeMockUtil {
         mockSingletonForClass(PlayerCache.class, "singleton", mock);
     }
 
-    public static void initializeWrapperMock() {
-        WrapperMock wrapper = new WrapperMock();
-        mockSingletonForClass(Wrapper.class, "singleton", wrapper);
-    }
-
-    /**
-     * Set the given class' {@link Wrapper} field to a mock implementation.
-     *
-     * @param clazz The class to modify
-     * @param fieldName The name of the field containing the Wrapper in the class
-     *
-     * @return The generated Wrapper mock
-     * @see WrapperMock
-     */
-    public static Wrapper insertMockWrapperInstance(Class<?> clazz, String fieldName) {
-        Wrapper wrapperMock = new WrapperMock();
-        mockSingletonForClass(clazz, fieldName, wrapperMock);
-        return wrapperMock;
-    }
-
-    public static Wrapper insertMockWrapperInstance(Class<?> clazz, String fieldName, AuthMe authMe) {
-        Wrapper wrapperMock = new WrapperMock();
-        mockSingletonForClass(clazz, fieldName, wrapperMock);
-        return wrapperMock;
-    }
-
-    // TODO ljacqu 20151123: Find the use cases for the WrapperMock and remove any of these
-    // methods that will end up unused
-    public static Wrapper insertMockWrapperInstance(Class<?> clazz, String fieldName, WrapperMock wrapperMock) {
-        mockSingletonForClass(clazz, fieldName, wrapperMock);
-        return wrapperMock;
-    }
 
     /**
      * Set a field of a class to the given mock.

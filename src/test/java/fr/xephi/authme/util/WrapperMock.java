@@ -1,10 +1,12 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.settings.Messages;
 import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mockito.Mockito;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
@@ -16,10 +18,33 @@ import java.util.logging.Logger;
  */
 public class WrapperMock extends Wrapper {
 
-    private static Map<Class<?>, Object> mocks = new HashMap<>();
+    private Map<Class<?>, Object> mocks = new HashMap<>();
+    private static WrapperMock singleton;
+    private File getDataFolderValue;
 
-    public WrapperMock() {
+    private WrapperMock() {
         super();
+    }
+
+    /**
+     * Create a new instance of the WrapperMock and inject it as singleton into Wrapper.
+     *
+     * @return The created singleton
+     */
+    public static WrapperMock createInstance() {
+        singleton = new WrapperMock();
+        Wrapper.setSingleton(singleton);
+        return singleton;
+    }
+
+    /**
+     * Return the WrapperMock singleton or null if it hasn't been initialized. To avoid confusion, it may be best to
+     * only call {@link WrapperMock#createInstance()} and to keep a reference to the returned singleton.
+     *
+     * @return The singleton or null
+     */
+    public static WrapperMock getInstance() {
+        return singleton;
     }
 
     @Override
@@ -42,8 +67,25 @@ public class WrapperMock extends Wrapper {
         return getMock(BukkitScheduler.class);
     }
 
+    @Override
+    public Messages getMessages() {
+        return getMock(Messages.class);
+    }
+
+    @Override
+    public File getDataFolder() {
+        if (singleton.getDataFolderValue != null) {
+            return singleton.getDataFolderValue;
+        }
+        return getMock(File.class);
+    }
+
+    public void setDataFolder(File file) {
+        this.getDataFolderValue = file;
+    }
+
     @SuppressWarnings("unchecked")
-    private static <T> T getMock(Class<?> clazz) {
+    private <T> T getMock(Class<?> clazz) {
         Object o = mocks.get(clazz);
         if (o == null) {
             o = Mockito.mock(clazz);

@@ -33,8 +33,8 @@ public final class Utils {
     private static Method getOnlinePlayers;
 
     static {
-        plugin = AuthMe.getInstance();
         wrapper = Wrapper.getInstance();
+        plugin = wrapper.getAuthMe();
         initializeOnlinePlayersIsCollectionField();
     }
 
@@ -111,8 +111,9 @@ public final class Utils {
      * @return True on success, false on failure.
      */
     public static boolean addNormal(Player player, String group) {
-        if (!Settings.isPermissionCheckEnabled)
+        if (!Settings.isPermissionCheckEnabled) {
             return false;
+        }
 
         // Get the permissions manager, and make sure it's valid
         PermissionsManager permsMan = plugin.getPermissionsManager();
