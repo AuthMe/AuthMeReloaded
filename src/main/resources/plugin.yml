@@ -3,8 +3,17 @@ authors: ${pluginAuthors}
 website: ${project.url}
 description: ${project.description}
 main: ${mainClass}
-version: ${project.version}
-softdepend: [Vault, PermissionsBukkit, Permissions, PermissionsEX, EssentialsGroupManager, Multiverse-Core, Essentials, EssentialsSpawn, ProtocolLib]
+version: ${project.version} b${env.BUILD_NUMBER}
+softdepend:
+    - Vault
+    - PermissionsBukkit
+    - Permissions
+    - PermissionsEX
+    - EssentialsGroupManager
+    - Multiverse-Core
+    - Essentials
+    - EssentialsSpawn
+    - ProtocolLib
 commands:
     register:
         description: Register an account
