@@ -139,7 +139,7 @@ public final class Utils {
         }
 
         if (!Settings.isForcedRegistrationEnabled) {
-            // TODO ljacqu 20151123: Use a setter to retrieve things from AuthMe
+            // TODO ljacqu 20151123: Use a getter to retrieve things from AuthMe
             if (!plugin.database.isAuthAvailable(player.getName())) {
                 return true;
             }
@@ -162,16 +162,16 @@ public final class Utils {
      * @param w  String
      * @param pl Player
      */
-    public static void packCoords(double x, double y, double z, String w,
-                                  final Player pl) {
+    public static void packCoords(double x, double y, double z, String w, final Player pl) {
         World theWorld;
         if (w.equals("unavailableworld")) {
             theWorld = pl.getWorld();
         } else {
             theWorld = Bukkit.getWorld(w);
         }
-        if (theWorld == null)
+        if (theWorld == null) {
             theWorld = pl.getWorld();
+        }
         final World world = theWorld;
         final Location loc = new Location(world, x, y, z);
 

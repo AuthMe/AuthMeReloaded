@@ -59,8 +59,8 @@ public class AuthMePlayerListener implements Listener {
     private void handleChat(AsyncPlayerChatEvent event) {
         Player player = event.getPlayer();
         for (Player p : Utils.getOnlinePlayers()) {
-            if (p != player && !PlayerCache.getInstance().isAuthenticated(p.getName())) {
-                event.getRecipients().remove(p);
+            if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
+                event.getRecipients().remove(p); // TODO: it should be configurable
             }
         }
 
