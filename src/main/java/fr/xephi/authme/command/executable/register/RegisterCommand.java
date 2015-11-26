@@ -16,13 +16,15 @@ public class RegisterCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        final Messages m = Messages.getInstance();
 
         // Make sure the sender is a player
         if (!(sender instanceof Player)) {
             sender.sendMessage("Player Only! Use 'authme register <playername> <password>' instead");
             return true;
         }
+
+        final AuthMe plugin = AuthMe.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Make sure the command arguments are valid
         final Player player = (Player) sender;
@@ -31,7 +33,7 @@ public class RegisterCommand extends ExecutableCommand {
             return true;
         }
 
-        final Management management = AuthMe.getInstance().getManagement();
+        final Management management = plugin.getManagement();
         if (Settings.emailRegistration && !Settings.getmailAccount.isEmpty()) {
             if (Settings.doubleEmailCheck) {
                 if (commandArguments.getCount() < 2 || !commandArguments.get(0).equals(commandArguments.get(1))) {
@@ -44,16 +46,16 @@ public class RegisterCommand extends ExecutableCommand {
                 m.send(player, "email_invalid");
                 return true;
             }
-            RandomString rand = new RandomString(Settings.getRecoveryPassLength);
-            final String thePass = rand.nextString();
+            final String thePass = new RandomString(Settings.getRecoveryPassLength).nextString();
             management.performRegister(player, thePass, email);
             return true;
         }
-        if (commandArguments.getCount() > 1 && Settings.getEnablePasswordVerifier)
+        if (commandArguments.getCount() > 1 && Settings.getEnablePasswordVerifier) {
             if (!commandArguments.get(0).equals(commandArguments.get(1))) {
                 m.send(player, "password_error");
                 return true;
             }
+        }
         management.performRegister(player, commandArguments.get(0), "");
         return true;
     }

@@ -40,7 +40,7 @@ public class AuthMePlayerListener implements Listener {
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
     public final AuthMe plugin;
-    private final Messages m = Messages.getInstance();
+    private final Messages m;
 
     /**
      * Constructor for AuthMePlayerListener.
@@ -48,6 +48,7 @@ public class AuthMePlayerListener implements Listener {
      * @param plugin AuthMe
      */
     public AuthMePlayerListener(AuthMe plugin) {
+        this.m = plugin.getMessages();
         this.plugin = plugin;
     }
 

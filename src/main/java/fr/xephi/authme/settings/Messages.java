@@ -8,6 +8,7 @@ import java.io.File;
 /**
  */
 // TODO ljacqu 20151124: This class is a weird mix between singleton and POJO
+// TODO: change it into POJO
 public class Messages extends CustomConfiguration {
 
     /** The section symbol, used in Minecraft for formatting codes. */

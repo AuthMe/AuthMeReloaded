@@ -27,7 +27,7 @@ public class UnregisterCommand extends ExecutableCommand {
         final AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        final Messages m = Messages.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Make sure the current command executor is a player
         if (!(sender instanceof Player)) {

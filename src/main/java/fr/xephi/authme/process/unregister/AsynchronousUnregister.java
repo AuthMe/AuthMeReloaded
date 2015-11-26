@@ -29,7 +29,7 @@ public class AsynchronousUnregister {
     protected final String password;
     protected final boolean force;
     private final AuthMe plugin;
-    private final Messages m = Messages.getInstance();
+    private final Messages m;
     private final JsonCache playerCache;
 
     /**
@@ -40,12 +40,12 @@ public class AsynchronousUnregister {
      * @param force    boolean
      * @param plugin   AuthMe
      */
-    public AsynchronousUnregister(Player player, String password,
-                                  boolean force, AuthMe plugin) {
+    public AsynchronousUnregister(Player player, String password, boolean force, AuthMe plugin) {
+        this.m = plugin.getMessages();
         this.player = player;
+        this.name = player.getName().toLowerCase();
         this.password = password;
         this.force = force;
-        name = player.getName().toLowerCase();
         this.plugin = plugin;
         this.playerCache = new JsonCache();
     }

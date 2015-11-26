@@ -25,7 +25,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
     protected final Player player;
     protected final String name;
     private final AuthMe plugin;
-    private final Messages m = Messages.getInstance();
+    private final Messages m;
 
     /**
      * Constructor for ProcessSyncronousPasswordRegister.
@@ -34,6 +34,7 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
      * @param plugin AuthMe
      */
     public ProcessSyncronousPasswordRegister(Player player, AuthMe plugin) {
+        this.m = plugin.getMessages();
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.plugin = plugin;

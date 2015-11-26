@@ -42,7 +42,7 @@ public class ChangePasswordTask implements Runnable {
      */
     @Override
     public void run() {
-        Messages m = Messages.getInstance();
+        Messages m = plugin.getMessages();
         try {
             String name = player.getName().toLowerCase();
             String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, newPassword, name);

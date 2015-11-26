@@ -22,7 +22,7 @@ public class LastLoginCommand extends ExecutableCommand {
 
         // Validate the player
         AuthMe plugin = AuthMe.getInstance();
-        Messages m = Messages.getInstance();
+        Messages m = plugin.getMessages();
 
         PlayerAuth auth;
         try {

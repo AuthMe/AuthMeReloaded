@@ -16,7 +16,8 @@ public class ChangePasswordCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        final Messages m = Messages.getInstance();
+        final AuthMe plugin = AuthMe.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Get the passwords
         String playerPass = commandArguments.get(0);
@@ -37,7 +38,11 @@ public class ChangePasswordCommand extends ExecutableCommand {
 
         // Make sure the password is allowed
         String playerPassLowerCase = playerPass.toLowerCase();
-        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where") || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify") || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select") || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null") || !playerPassLowerCase.matches(Settings.getPassRegex)) {
+        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where")
+            || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify")
+            || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
+            || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
+            || !playerPassLowerCase.matches(Settings.getPassRegex)) {
             m.send(player, "password_error");
             return true;
         }
@@ -45,7 +50,8 @@ public class ChangePasswordCommand extends ExecutableCommand {
             m.send(player, "password_error_nick");
             return true;
         }
-        if (playerPassLowerCase.length() < Settings.getPasswordMinLen || playerPassLowerCase.length() > Settings.passwordMaxLength) {
+        if (playerPassLowerCase.length() < Settings.getPasswordMinLen
+            || playerPassLowerCase.length() > Settings.passwordMaxLength) {
             m.send(player, "pass_len");
             return true;
         }
@@ -57,8 +63,8 @@ public class ChangePasswordCommand extends ExecutableCommand {
         }
 
         // Set the password
-        final AuthMe plugin = AuthMe.getInstance();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new ChangePasswordTask(plugin, player, playerPass, playerPassVerify));
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
+            new ChangePasswordTask(plugin, player, playerPass, playerPassVerify));
         return true;
     }
 }

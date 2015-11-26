@@ -221,7 +221,7 @@ public class AuthMe extends JavaPlugin {
         this.otherAccounts = OtherAccounts.getInstance();
 
         // Setup messages
-        this.messages = Messages.getInstance();
+        this.messages = new Messages(Settings.messageFile, Settings.messagesLanguage);
 
         // Set up Metrics
         setupMetrics();
@@ -902,7 +902,7 @@ public class AuthMe extends JavaPlugin {
      *
      * @return The real IP of the player.
      */
-    // TODO: Cache the result
+    // TODO: Cache the result or run it async, it can cause trouble if verygames server isn't responding.
     @Deprecated
     public String getVeryGamesIp(Player player) {
         String realIP = player.getAddress().getAddress().getHostAddress();

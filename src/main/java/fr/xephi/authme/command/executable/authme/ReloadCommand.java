@@ -33,15 +33,15 @@ public class ReloadCommand extends ExecutableCommand {
         AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        Messages m = Messages.getInstance();
+        Messages m = plugin.getMessages();
 
         // Show a status message
         // sender.sendMessage(ChatColor.YELLOW + "Reloading AuthMeReloaded...");
 
         try {
             Settings.reload();
+            plugin.setMessages(new Messages(Settings.messageFile, Settings.messagesLanguage));
             plugin.getModuleManager().reloadModules();
-            Messages.getInstance().reloadMessages();
             plugin.setupDatabase();
         } catch (Exception e) {
             ConsoleLogger.showError("Fatal error occurred! AuthMe instance ABORTED!");

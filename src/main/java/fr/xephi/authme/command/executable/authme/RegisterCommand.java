@@ -32,7 +32,7 @@ public class RegisterCommand extends ExecutableCommand {
         final AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        final Messages m = Messages.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Get the player name and password
         final String playerName = commandArguments.get(0);

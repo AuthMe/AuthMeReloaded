@@ -23,12 +23,12 @@ public class AsyncChangeEmail {
     private final Messages m;
 
     public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail, String newEmailVerify) {
+        this.m = plugin.getMessages();
         this.player = player;
         this.plugin = plugin;
         this.oldEmail = oldEmail;
         this.newEmail = newEmail;
         this.newEmailVerify = newEmailVerify;
-        this.m = Messages.getInstance();
     }
 
     public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail) {

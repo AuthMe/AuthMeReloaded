@@ -33,7 +33,7 @@ public class AsynchronousLogin {
     protected final boolean forceLogin;
     private final AuthMe plugin;
     private final DataSource database;
-    private final Messages m = Messages.getInstance();
+    private final Messages m;
 
     /**
      * Constructor for AsynchronousLogin.
@@ -44,12 +44,12 @@ public class AsynchronousLogin {
      * @param plugin     AuthMe
      * @param data       DataSource
      */
-    public AsynchronousLogin(Player player, String password, boolean forceLogin,
-                             AuthMe plugin, DataSource data) {
+    public AsynchronousLogin(Player player, String password, boolean forceLogin, AuthMe plugin, DataSource data) {
+        this.m = plugin.getMessages();
         this.player = player;
+        this.name = player.getName().toLowerCase();
         this.password = password;
-        name = player.getName().toLowerCase();
-        realName = player.getName();
+        this.realName = player.getName();
         this.forceLogin = forceLogin;
         this.plugin = plugin;
         this.database = data;

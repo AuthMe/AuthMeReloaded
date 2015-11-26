@@ -29,8 +29,11 @@ public class CaptchaCommand extends ExecutableCommand {
         // Get the parameter values
         String captcha = commandArguments.get(0);
 
+        // AuthMe plugin instance
+        final AuthMe plugin = AuthMe.getInstance();
+
         // Messages instance
-        final Messages m = Messages.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Command logic
         if (PlayerCache.getInstance().isAuthenticated(playerNameLowerCase)) {
@@ -43,8 +46,6 @@ public class CaptchaCommand extends ExecutableCommand {
             return true;
         }
 
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
 
         if (!plugin.cap.containsKey(playerNameLowerCase)) {
             m.send(player, MessageKey.USAGE_LOGIN);

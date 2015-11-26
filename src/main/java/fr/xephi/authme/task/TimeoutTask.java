@@ -12,7 +12,7 @@ public class TimeoutTask implements Runnable {
 
     private final AuthMe plugin;
     private final String name;
-    private final Messages m = Messages.getInstance();
+    private final Messages m;
     private final Player player;
 
     /**
@@ -23,6 +23,7 @@ public class TimeoutTask implements Runnable {
      * @param player Player
      */
     public TimeoutTask(AuthMe plugin, String name, Player player) {
+        this.m = plugin.getMessages();
         this.plugin = plugin;
         this.name = name;
         this.player = player;
@@ -44,15 +45,16 @@ public class TimeoutTask implements Runnable {
      */
     @Override
     public void run() {
-        if (PlayerCache.getInstance().isAuthenticated(name))
+        if (PlayerCache.getInstance().isAuthenticated(name)) {
             return;
+        }
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
             @Override
             public void run() {
-                if (player.isOnline())
+                if (player.isOnline()) {
                     player.kickPlayer(m.send("timeout")[0]);
+                }
             }
         });
     }

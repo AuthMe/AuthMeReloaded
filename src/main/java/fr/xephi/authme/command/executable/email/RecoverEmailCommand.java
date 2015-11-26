@@ -35,7 +35,7 @@ public class RecoverEmailCommand extends ExecutableCommand {
 
         // Command logic
         final AuthMe plugin = AuthMe.getInstance();
-        final Messages m = Messages.getInstance();
+        final Messages m = plugin.getMessages();
 
         if (plugin.mail == null) {
             m.send(player, "error");

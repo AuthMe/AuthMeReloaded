@@ -29,7 +29,7 @@ public class GetEmailCommand extends ExecutableCommand {
 
         // Get the authenticated user
         AuthMe plugin = AuthMe.getInstance();
-        Messages m = Messages.getInstance();
+        Messages m = plugin.getMessages();
         PlayerAuth auth = plugin.database.getAuth(playerName.toLowerCase());
         if (auth == null) {
             m.send(sender, "unknown_user");

@@ -20,8 +20,9 @@ public class ChangePasswordCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+        final AuthMe plugin = AuthMe.getInstance();
         // Messages instance
-        final Messages m = Messages.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Get the player and password
         String playerName = commandArguments.get(0);
@@ -47,9 +48,7 @@ public class ChangePasswordCommand extends ExecutableCommand {
                 return true;
             }
         }
-
         // Set the password
-        final AuthMe plugin = AuthMe.getInstance();
         final String playerNameLowerCase = playerName.toLowerCase();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 

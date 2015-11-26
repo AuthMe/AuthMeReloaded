@@ -27,7 +27,7 @@ public class ConverterCommand extends ExecutableCommand {
         final AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        final Messages m = Messages.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Get the conversion job
         String job = commandArguments.get(0);

@@ -23,7 +23,7 @@ public class AsyncRegister {
     protected String email = "";
     private final AuthMe plugin;
     private final DataSource database;
-    private final Messages m = Messages.getInstance();
+    private final Messages m;
 
     /**
      * Constructor for AsyncRegister.
@@ -34,11 +34,11 @@ public class AsyncRegister {
      * @param plugin   AuthMe
      * @param data     DataSource
      */
-    public AsyncRegister(Player player, String password, String email,
-                         AuthMe plugin, DataSource data) {
+    public AsyncRegister(Player player, String password, String email, AuthMe plugin, DataSource data) {
+        this.m = plugin.getMessages();
         this.player = player;
         this.password = password;
-        name = player.getName().toLowerCase();
+        this.name = player.getName().toLowerCase();
         this.email = email;
         this.plugin = plugin;
         this.database = data;

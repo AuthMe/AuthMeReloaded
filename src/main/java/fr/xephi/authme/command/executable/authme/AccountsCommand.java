@@ -21,7 +21,7 @@ public class AccountsCommand extends ExecutableCommand {
         final AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        final Messages m = Messages.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Get the player query
         String playerQuery = sender.getName();

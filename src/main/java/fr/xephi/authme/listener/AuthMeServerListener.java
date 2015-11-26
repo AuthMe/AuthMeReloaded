@@ -17,8 +17,8 @@ import org.bukkit.plugin.Plugin;
  */
 public class AuthMeServerListener implements Listener {
 
-    public final AuthMe plugin;
-    private final Messages m = Messages.getInstance();
+    private final AuthMe plugin;
+    private final Messages m;
 
     /**
      * Constructor for AuthMeServerListener.
@@ -26,6 +26,7 @@ public class AuthMeServerListener implements Listener {
      * @param plugin AuthMe
      */
     public AuthMeServerListener(AuthMe plugin) {
+        this.m = plugin.getMessages();
         this.plugin = plugin;
     }
 

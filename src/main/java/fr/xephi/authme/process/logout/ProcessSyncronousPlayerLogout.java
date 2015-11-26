@@ -22,7 +22,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
     protected final Player player;
     protected final AuthMe plugin;
     protected final String name;
-    private final Messages m = Messages.getInstance();
+    private final Messages m;
 
     /**
      * Constructor for ProcessSyncronousPlayerLogout.
@@ -31,6 +31,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
      * @param plugin AuthMe
      */
     public ProcessSyncronousPlayerLogout(Player player, AuthMe plugin) {
+        this.m = plugin.getMessages();
         this.player = player;
         this.plugin = plugin;
         this.name = player.getName().toLowerCase();

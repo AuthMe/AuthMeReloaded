@@ -39,7 +39,7 @@ public class UnregisterCommand extends ExecutableCommand {
         final AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        final Messages m = Messages.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Get the player name
         String playerName = commandArguments.get(0);

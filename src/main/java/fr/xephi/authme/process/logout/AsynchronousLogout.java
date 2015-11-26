@@ -20,7 +20,7 @@ public class AsynchronousLogout {
     protected final AuthMe plugin;
     protected final DataSource database;
     protected boolean canLogout = true;
-    private final Messages m = Messages.getInstance();
+    private final Messages m;
 
     /**
      * Constructor for AsynchronousLogout.
@@ -29,8 +29,8 @@ public class AsynchronousLogout {
      * @param plugin   AuthMe
      * @param database DataSource
      */
-    public AsynchronousLogout(Player player, AuthMe plugin,
-                              DataSource database) {
+    public AsynchronousLogout(Player player, AuthMe plugin, DataSource database) {
+        this.m = plugin.getMessages();
         this.player = player;
         this.plugin = plugin;
         this.database = database;

@@ -52,7 +52,7 @@ public class SqlToFlat implements Converter {
             sender.sendMessage("Successfully convert from SQL table to file auths.db");
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            Messages.getInstance().send(sender, "error");
+            plugin.getMessages().send(sender, "error");
         }
     }
 

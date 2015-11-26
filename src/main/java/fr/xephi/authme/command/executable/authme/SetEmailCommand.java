@@ -28,7 +28,7 @@ public class SetEmailCommand extends ExecutableCommand {
         AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        Messages m = Messages.getInstance();
+        Messages m = plugin.getMessages();
 
         // Get the player name and email address
         String playerName = commandArguments.get(0);

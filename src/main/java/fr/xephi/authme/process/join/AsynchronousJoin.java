@@ -40,12 +40,12 @@ public class AsynchronousJoin {
     private final BukkitScheduler sched;
 
     public AsynchronousJoin(Player player, AuthMe plugin, DataSource database) {
+        this.m = plugin.getMessages();
         this.player = player;
         this.plugin = plugin;
         this.sched = plugin.getServer().getScheduler();
         this.database = database;
         this.name = player.getName().toLowerCase();
-        this.m = Messages.getInstance();
     }
 
     public void process() {
