@@ -1,5 +1,5 @@
 name: ${pluginName}
-authors: ${pluginAuthors}
+authors: [${pluginAuthors}]
 website: ${project.url}
 description: ${project.description}
 main: ${mainClass}

@@ -62,12 +62,11 @@ public class AuthMe extends JavaPlugin {
     /**
      * Defines the current AuthMeReloaded version name.
      */
-    private static final String PLUGIN_VERSION_NAME = "5.1-SNAPSHOT";
+    private static final String PLUGIN_VERSION_NAME = ">VERSION";
     /**
      * Defines the current AuthMeReloaded version code.
      */
-    // TODO: Increase this number by one when an update is release
-    private static final int PLUGIN_VERSION_CODE = 100;
+    private static final int PLUGIN_VERSION_CODE = Integer.parseInt(">BUILDNUMBER");
 
     private static AuthMe plugin;
     private static Server server;

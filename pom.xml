@@ -52,7 +52,8 @@
         <!-- Project Properties -->
         <pluginName>AuthMe</pluginName>
         <mainClass>fr.xephi.authme.AuthMe</mainClass>
-        <pluginAuthors>[Xephi, sgdc3, DNx5, timvisee, games647, ljacqu]</pluginAuthors>
+        <buildNumber>-1</buildNumber>
+        <pluginAuthors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</pluginAuthors>
 
         <!-- Change Compiler Version (JDK) HERE! -->
         <javaVersion>1.7</javaVersion>
@@ -60,6 +61,20 @@
         <!-- Change Bukkit Version HERE! -->
         <bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>jenkins</id>
+            <activation>
+                <property>
+                    <name>env.BUILD_NUMBER</name>
+                </property>
+            </activation>
+            <properties>
+                <buildNumber>${env.BUILD_NUMBER}</buildNumber>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <finalName>AuthMe-${project.version}</finalName>
@@ -109,6 +124,39 @@
                 <configuration>
                     <source>1.7</source>
                     <target>${javaVersion}</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.3</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <includes>
+                        <include>/target/**/AuthMe.java</include>
+                    </includes>
+                    <replacements>
+                        <replacement>
+                            <token>>UNKNOWNVERSION</token>
+                            <value>${project.version}</value>
+                        </replacement>
+                        <replacement>
+                            <token>>BUILDNUMBER</token>
+                            <value>${buildNumber}</value>
+                        </replacement>
+                        <replacement>
+                            <token>>PLUGINAUTHORS</token>
+                            <value>${pluginAuthors}</value>
+                        </replacement>
+                    </replacements>
                 </configuration>
             </plugin>
 
