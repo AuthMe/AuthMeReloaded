@@ -52,7 +52,6 @@
         <!-- Project Properties -->
         <pluginName>AuthMe</pluginName>
         <mainClass>fr.xephi.authme.AuthMe</mainClass>
-        <buildNumber>-1</buildNumber>
         <pluginAuthors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</pluginAuthors>
 
         <!-- Change Compiler Version (JDK) HERE! -->
@@ -61,20 +60,6 @@
         <!-- Change Bukkit Version HERE! -->
         <bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
     </properties>
-
-    <profiles>
-        <profile>
-            <id>jenkins</id>
-            <activation>
-                <property>
-                    <name>env.BUILD_NUMBER</name>
-                </property>
-            </activation>
-            <properties>
-                <buildNumber>${env.BUILD_NUMBER}</buildNumber>
-            </properties>
-        </profile>
-    </profiles>
 
     <build>
         <finalName>AuthMe-${project.version}</finalName>
@@ -124,39 +109,6 @@
                 <configuration>
                     <source>1.7</source>
                     <target>${javaVersion}</target>
-                </configuration>
-            </plugin>
-
-            <plugin>
-                <groupId>com.google.code.maven-replacer-plugin</groupId>
-                <artifactId>replacer</artifactId>
-                <version>1.5.3</version>
-                <executions>
-                    <execution>
-                        <phase>generate-sources</phase>
-                        <goals>
-                            <goal>replace</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <includes>
-                        <include>target/classes/**/AuthMe.java</include>
-                    </includes>
-                    <replacements>
-                        <replacement>
-                            <token>${project.version}</token>
-                            <value>${project.version}</value>
-                        </replacement>
-                        <replacement>
-                            <token>${buildNumber}</token>
-                            <value>${buildNumber}</value>
-                        </replacement>
-                        <replacement>
-                            <token>${pluginAuthors}</token>
-                            <value>${pluginAuthors}</value>
-                        </replacement>
-                    </replacements>
                 </configuration>
             </plugin>
 
@@ -272,10 +224,17 @@
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
                 </exclusion>
             </exclusions>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.12</version>
+            <scope>compile</scope>
             <optional>true</optional>
         </dependency>
 
@@ -324,8 +283,8 @@
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
                 </exclusion>
             </exclusions>
             <optional>true</optional>
@@ -367,8 +326,12 @@
             <optional>true</optional>
             <exclusions>
                 <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
+                    <artifactId>cglib-nodep</artifactId>
+                    <groupId>cglib</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>BukkitExecutors</artifactId>
+                    <groupId>com.comphenix.executors</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -381,8 +344,20 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.gravitydevelopment.updater</groupId>
+                    <artifactId>updater</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-dbcp</artifactId>
+                    <groupId>commons-dbcp</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>AccountsClient</artifactId>
+                    <groupId>com.mojang</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -431,8 +406,12 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
                 </exclusion>
             </exclusions>
             <optional>true</optional>
@@ -447,8 +426,44 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>AllPay</artifactId>
+                    <groupId>com.fernferret.allpay</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>VaultAPI</artifactId>
+                    <groupId>net.milkbowl.vault</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CommandHandler</artifactId>
+                    <groupId>com.pneumaticraft.commandhandler</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>SerializationConfig</artifactId>
+                    <groupId>me.main__.util</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>Logging</artifactId>
+                    <groupId>com.dumptruckman.minecraft</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>metrics</artifactId>
+                    <groupId>org.mcstats.bukkit</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>buscript</artifactId>
+                    <groupId>com.dumptruckman.minecraft</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
                 </exclusion>
             </exclusions>
             <optional>true</optional>
@@ -462,8 +477,8 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
                 </exclusion>
             </exclusions>
             <optional>true</optional>
@@ -477,8 +492,68 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusHook</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusFactions-v1_6</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_7_R3</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusFactions-v1_8</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_7_R4</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusWG-v5</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusWG-v6</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-API</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusFactions-v2_6</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_8_R3</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusFactions-v2_7</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_8_R2</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_8_R1</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>metrics-lite</artifactId>
+                    <groupId>org.mcstats.bukkit</groupId>
                 </exclusion>
             </exclusions>
             <optional>true</optional>
@@ -492,8 +567,36 @@
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>*</groupId>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>updater</artifactId>
+                    <groupId>net.gravitydevelopment.updater</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>lombok</artifactId>
+                    <groupId>org.projectlombok</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>EssentialsGroupManager</artifactId>
+                    <groupId>net.ess3</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>PermissionsEx</artifactId>
+                    <groupId>ru.tehkode</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>AccountsClient</artifactId>
+                    <groupId>com.mojang</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-core</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
                 </exclusion>
             </exclusions>
             <optional>true</optional>
