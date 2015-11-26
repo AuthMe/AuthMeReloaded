@@ -6,7 +6,9 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -96,5 +98,33 @@ public class StringUtilsTest {
 
         // then
         assertThat(result, equalTo("[MalformedURLException]: Unrecognized URL format"));
+    }
+
+    @Test
+    public void shouldPrintStackTrace() {
+        // given
+        MalformedURLException ex = new MalformedURLException("Unrecognized URL format");
+
+        // when
+        String result = StringUtils.getStackTrace(ex);
+
+        // then
+        assertThat(result, stringContainsInOrder(getClass().getName()));
+    }
+
+    @Test
+    public void shouldGetDifferenceWithNullString() {
+        // given/when/then
+        assertThat(StringUtils.getDifference(null, "test"), equalTo(1.0));
+        assertThat(StringUtils.getDifference("test", null), equalTo(1.0));
+        assertThat(StringUtils.getDifference(null, null), equalTo(1.0));
+    }
+
+    @Test
+    public void shouldGetDifferenceBetweenTwoString() {
+        // given/when/then
+        assertThat(StringUtils.getDifference("test", "taste"), equalTo(0.4));
+        assertThat(StringUtils.getDifference("test", "bear"), equalTo(0.75));
+        assertThat(StringUtils.getDifference("test", "something"), greaterThan(0.88));
     }
 }

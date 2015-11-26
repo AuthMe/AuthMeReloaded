@@ -1,6 +1,6 @@
-package fr.xephi.authme;
+package fr.xephi.authme.util;
 
-import fr.xephi.authme.util.Wrapper;
+import fr.xephi.authme.AuthMe;
 import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.mockito.Mockito;
@@ -19,11 +19,7 @@ public class WrapperMock extends Wrapper {
     private static Map<Class<?>, Object> mocks = new HashMap<>();
 
     public WrapperMock() {
-        this((AuthMe) getMock(AuthMe.class));
-    }
-
-    public WrapperMock(AuthMe authMe) {
-        super(authMe);
+        super();
     }
 
     @Override

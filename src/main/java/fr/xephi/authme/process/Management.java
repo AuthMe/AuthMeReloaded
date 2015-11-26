@@ -12,8 +12,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
 /**
- * @author Gabriele
- * @version $Revision: 1.0 $
  */
 public class Management {
 
@@ -30,13 +28,6 @@ public class Management {
         this.sched = this.plugin.getServer().getScheduler();
     }
 
-    /**
-     * Method performLogin.
-     *
-     * @param player     Player
-     * @param password   String
-     * @param forceLogin boolean
-     */
     public void performLogin(final Player player, final String password, final boolean forceLogin) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
 
@@ -47,11 +38,6 @@ public class Management {
         });
     }
 
-    /**
-     * Method performLogout.
-     *
-     * @param player Player
-     */
     public void performLogout(final Player player) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
 
@@ -62,13 +48,6 @@ public class Management {
         });
     }
 
-    /**
-     * Method performRegister.
-     *
-     * @param player   Player
-     * @param password String
-     * @param email    String
-     */
     public void performRegister(final Player player, final String password, final String email) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
 
@@ -79,13 +58,6 @@ public class Management {
         });
     }
 
-    /**
-     * Method performUnregister.
-     *
-     * @param player   Player
-     * @param password String
-     * @param force    boolean
-     */
     public void performUnregister(final Player player, final String password, final boolean force) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
 
@@ -96,11 +68,6 @@ public class Management {
         });
     }
 
-    /**
-     * Method performJoin.
-     *
-     * @param player Player
-     */
     public void performJoin(final Player player) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
 
@@ -112,12 +79,6 @@ public class Management {
         });
     }
 
-    /**
-     * Method performQuit.
-     *
-     * @param player Player
-     * @param isKick boolean
-     */
     public void performQuit(final Player player, final boolean isKick) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
 
@@ -129,13 +90,6 @@ public class Management {
         });
     }
 
-    /**
-     * Method performAddEmail.
-     *
-     * @param player         Player
-     * @param newEmail       String
-     * @param newEmailVerify String
-     */
     public void performAddEmail(final Player player, final String newEmail, final String newEmailVerify) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
             @Override
@@ -145,13 +99,6 @@ public class Management {
         });
     }
 
-    /**
-     * Method performChangeEmail.
-     *
-     * @param player   Player
-     * @param oldEmail String
-     * @param newEmail String
-     */
     public void performChangeEmail(final Player player, final String oldEmail, final String newEmail) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
             @Override

@@ -226,11 +226,11 @@ public class CommandDescription {
      */
     public void setLabels(List<String> labels) {
         // Check whether the command label list should be cleared
-        if (labels == null)
+        if (labels == null) {
             this.labels.clear();
-
-        else
+        } else {
             this.labels = labels;
+        }
     }
 
     /**
@@ -344,7 +344,7 @@ public class CommandDescription {
     /**
      * Get the absolute command label, without a slash.
      *
-     * @return String
+     * @return the absolute label
      */
     public String getAbsoluteLabel() {
         return getAbsoluteLabel(false);
@@ -364,8 +364,8 @@ public class CommandDescription {
     /**
      * Get the absolute command label.
      *
-     * @param includeSlash boolean
-     * @param reference    CommandParts
+     * @param includeSlash
+     * @param reference
      *
      * @return Absolute command label.
      */
@@ -644,11 +644,11 @@ public class CommandDescription {
      */
     public void setArguments(List<CommandArgumentDescription> arguments) {
         // Convert null into an empty argument list
-        if (arguments == null)
+        if (arguments == null) {
             this.arguments.clear();
-
-        else
+        } else {
             this.arguments = arguments;
+        }
     }
 
     /**
@@ -659,12 +659,7 @@ public class CommandDescription {
      * @return True if this argument already exists, false otherwise.
      */
     public boolean hasArgument(CommandArgumentDescription argument) {
-        // Make sure the argument is valid
-        if (argument == null)
-            return false;
-
-        // Check whether the argument exists, return the result
-        return this.arguments.contains(argument);
+        return argument != null && arguments.contains(argument);
     }
 
     /**
@@ -881,19 +876,22 @@ public class CommandDescription {
      */
     public int getSuitableArgumentsDifference(CommandParts commandReference) {
         // Make sure the command reference is valid
-        if (commandReference.getCount() <= 0)
+        if (commandReference.getCount() <= 0) {
             return -1;
+        }
 
         // Get the remaining command reference element count
         int remainingElementCount = commandReference.getCount() - getParentCount() - 1;
 
-        // Check if there are too less arguments
-        if (getMinimumArguments() > remainingElementCount)
+        // Check if there are too few arguments
+        if (getMinimumArguments() > remainingElementCount) {
             return Math.abs(getMinimumArguments() - remainingElementCount);
+        }
 
         // Check if there are too many arguments
-        if (getMaximumArguments() < remainingElementCount && getMaximumArguments() >= 0)
+        if (getMaximumArguments() < remainingElementCount && getMaximumArguments() >= 0) {
             return Math.abs(remainingElementCount - getMaximumArguments());
+        }
 
         // The arguments seem to be EQUALS, return the result
         return 0;
@@ -934,12 +932,14 @@ public class CommandDescription {
      */
     public boolean isValid() {
         // Make sure any command label is set
-        if (getLabels().size() == 0)
+        if (getLabels().size() == 0) {
             return false;
+        }
 
         // Make sure the permissions are set up properly
-        if (this.permissions == null)
+        if (this.permissions == null) {
             return false;
+        }
 
         // Everything seems to be correct, return the result
         return true;
