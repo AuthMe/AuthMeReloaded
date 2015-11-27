@@ -440,7 +440,7 @@ public class AuthMePlayerListener implements Listener {
      *
      * @param event PlayerInteractEvent
      */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (player == null || Utils.checkAuth(player))
