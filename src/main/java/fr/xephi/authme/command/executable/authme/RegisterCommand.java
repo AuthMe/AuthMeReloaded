@@ -69,7 +69,7 @@ public class RegisterCommand extends ExecutableCommand {
                         m.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
                         return;
                     }
-                    String hash = PasswordSecurity.getHash(Settings.getPasswordHash, playerPassLowerCase, playerNameLowerCase);
+                    String hash = PasswordSecurity.getHash(Settings.getPasswordHash, playerPass, playerNameLowerCase);
                     PlayerAuth auth = new PlayerAuth(playerNameLowerCase, hash, "192.168.0.1", 0L, "your@email.com", playerName);
                     if (PasswordSecurity.userSalt.containsKey(playerNameLowerCase) && PasswordSecurity.userSalt.get(playerNameLowerCase) != null)
                         auth.setSalt(PasswordSecurity.userSalt.get(playerNameLowerCase));
