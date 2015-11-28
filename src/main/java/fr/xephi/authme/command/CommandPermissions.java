@@ -2,6 +2,7 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PermissionNode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -18,7 +19,7 @@ public class CommandPermissions {
     /**
      * Defines the permission nodes required to have permission to execute this command.
      */
-    private List<String> permissionNodes = new ArrayList<>();
+    private List<PermissionNode> permissionNodes = new ArrayList<>();
     /**
      * Defines the default permission if the permission nodes couldn't be used.
      */
@@ -36,7 +37,7 @@ public class CommandPermissions {
      * @param permissionNode    The permission node required to execute a command.
      * @param defaultPermission The default permission if the permission nodes couldn't be used.
      */
-    public CommandPermissions(String permissionNode, DefaultPermission defaultPermission) {
+    public CommandPermissions(PermissionNode permissionNode, DefaultPermission defaultPermission) {
         this.permissionNodes.add(permissionNode);
         this.defaultPermission = defaultPermission;
     }
@@ -47,7 +48,7 @@ public class CommandPermissions {
      * @param permissionNodes   The permission nodes required to execute a command.
      * @param defaultPermission The default permission if the permission nodes couldn't be used.
      */
-    public CommandPermissions(List<String> permissionNodes, DefaultPermission defaultPermission) {
+    public CommandPermissions(List<PermissionNode> permissionNodes, DefaultPermission defaultPermission) {
         this.permissionNodes.addAll(permissionNodes);
     }
 
@@ -58,14 +59,7 @@ public class CommandPermissions {
      *
      * @return True on success, false on failure.
      */
-    public boolean addPermissionNode(String permissionNode) {
-        // Trim the permission node
-        permissionNode = permissionNode.trim();
-
-        // Make sure the permission node is valid
-        if (permissionNode.length() == 0)
-            return false;
-
+    public boolean addPermissionNode(PermissionNode permissionNode) {
         // Make sure this permission node hasn't been added already
         if (hasPermissionNode(permissionNode))
             return true;
@@ -81,7 +75,7 @@ public class CommandPermissions {
      *
      * @return True if this permission node is required, false if not.
      */
-    public boolean hasPermissionNode(String permissionNode) {
+    public boolean hasPermissionNode(PermissionNode permissionNode) {
         return this.permissionNodes.contains(permissionNode);
     }
 
@@ -90,7 +84,7 @@ public class CommandPermissions {
      *
      * @return The permission nodes required to execute this command.
      */
-    public List<String> getPermissionNodes() {
+    public List<PermissionNode> getPermissionNodes() {
         return this.permissionNodes;
     }
 
@@ -99,7 +93,7 @@ public class CommandPermissions {
      *
      * @param permissionNodes The permission nodes required to execute this command.
      */
-    public void setPermissionNodes(List<String> permissionNodes) {
+    public void setPermissionNodes(List<PermissionNode> permissionNodes) {
         this.permissionNodes = permissionNodes;
     }
 
@@ -140,9 +134,11 @@ public class CommandPermissions {
             return false;
 
         // Check whether the player has permission, return the result
-        for (String node : this.permissionNodes)
-            if (!permissionsManager.hasPermission(player, node, defaultPermission))
+        for (PermissionNode node : this.permissionNodes) {
+            if (!permissionsManager.hasPermission(player, node, defaultPermission)) {
                 return false;
+            }
+        }
         return true;
     }
 

@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.permission.UserPermission;
 import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -72,7 +73,7 @@ public class AntiBot {
         if (antiBotStatus == AntiBotStatus.ACTIVE || antiBotStatus == AntiBotStatus.DISABLED) {
             return;
         }
-        if (plugin.getPermissionsManager().hasPermission(player, "authme.bypassantibot")) {
+        if (plugin.getPermissionsManager().hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
             return;
         }
 

@@ -3,7 +3,7 @@ package fr.xephi.authme.permission;
 /**
  * AuthMe user permission nodes.
  */
-public enum UserPermission implements PermissionsNode {
+public enum UserPermission implements PermissionNode {
 
     BYPASS_ANTIBOT("authme.bypassantibot"),
 

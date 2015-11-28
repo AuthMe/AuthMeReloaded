@@ -10,6 +10,7 @@ import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.permission.UserPermission;
 import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -93,7 +94,10 @@ public class AsynchronousJoin {
             });
             return;
         }
-        if (Settings.getMaxJoinPerIp > 0 && !plugin.getPermissionsManager().hasPermission(player, "authme.allow2accounts") && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
+        if (Settings.getMaxJoinPerIp > 0
+                && !plugin.getPermissionsManager().hasPermission(player, UserPermission.ALLOW_MULTIPLE_ACCOUNTS)
+                && !ip.equalsIgnoreCase("127.0.0.1")
+                && !ip.equalsIgnoreCase("localhost")) {
             if (plugin.hasJoinedIp(player.getName(), ip)) {
                 sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 

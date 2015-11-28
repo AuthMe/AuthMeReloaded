@@ -98,10 +98,10 @@ public class PermissionsManager {
     /**
      * Return the permissions system where the permissions manager is currently hooked into.
      *
-     * @return Permissions system type.
+     * @return The name of the permissions system used.
      */
-    public PermissionsSystemType getUsedPermissionsSystemType() {
-        return this.permsType;
+    public String getUsedPermissionsSystemType() {
+        return this.permsType.getName();
     }
 
     /**
@@ -330,12 +330,16 @@ public class PermissionsManager {
      * the player has to be OP in order to have the permission.
      *
      * @param player    The player.
-     * @param permissionsNode The permissions node to verify.
+     * @param permissionNode The permissions node to verify.
      *
      * @return True if the player has the permission, false otherwise.
      */
-    public boolean hasPermission(Player player, PermissionsNode permissionsNode) {
-        return hasPermission(player, permissionsNode.getNode(), player.isOp());
+    public boolean hasPermission(Player player, PermissionNode permissionNode) {
+        return hasPermission(player, permissionNode, player.isOp());
+    }
+
+    public boolean hasPermission(Player player, PermissionNode permissionNode, boolean def) {
+        return hasPermission(player, permissionNode.getNode(), def);
     }
 
     /**
@@ -910,7 +914,7 @@ public class PermissionsManager {
         return removeGroups(player, groupNames);
     }
 
-    public enum PermissionsSystemType {
+    private enum PermissionsSystemType {
         NONE("None"),
         PERMISSIONS_EX("PermissionsEx"),
         PERMISSIONS_BUKKIT("Permissions Bukkit"),

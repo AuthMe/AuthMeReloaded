@@ -3,7 +3,7 @@ package fr.xephi.authme.permission;
 /**
  * AuthMe admin permissions.
  */
-public enum AdminPermission implements PermissionsNode {
+public enum AdminPermission implements PermissionNode {
 
     REGISTER("authme.admin.register"),
 

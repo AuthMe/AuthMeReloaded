@@ -1,5 +1,6 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
@@ -921,7 +922,7 @@ public class CommandDescription {
      * @param permissionNode    The permission node required.
      * @param defaultPermission The default permission.
      */
-    public void setCommandPermissions(String permissionNode, CommandPermissions.DefaultPermission defaultPermission) {
+    public void setCommandPermissions(PermissionNode permissionNode, CommandPermissions.DefaultPermission defaultPermission) {
         this.permissions = new CommandPermissions(permissionNode, defaultPermission);
     }
 
