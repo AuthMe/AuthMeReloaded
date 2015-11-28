@@ -326,6 +326,19 @@ public class PermissionsManager {
     }
 
     /**
+     * Check if the player has permission for the given permissions node. If no permissions system is used,
+     * the player has to be OP in order to have the permission.
+     *
+     * @param player    The player.
+     * @param permissionsNode The permissions node to verify.
+     *
+     * @return True if the player has the permission, false otherwise.
+     */
+    public boolean hasPermission(Player player, PermissionsNode permissionsNode) {
+        return hasPermission(player, permissionsNode.getNode(), player.isOp());
+    }
+
+    /**
      * Check if a player has permission.
      *
      * @param player    The player.
