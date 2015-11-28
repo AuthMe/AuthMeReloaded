@@ -36,11 +36,6 @@ public class ChangePasswordTask implements Runnable {
         this.newPassword = newPassword;
     }
 
-    /**
-     * Method run.
-     *
-     * @see java.lang.Runnable#run()
-     */
     @Override
     public void run() {
         Messages m = plugin.getMessages();

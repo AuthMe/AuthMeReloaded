@@ -23,7 +23,6 @@ import static org.mockito.Mockito.*;
  */
 public class UtilsTest {
 
-    private static WrapperMock wrapperMock;
     private static AuthMe authMeMock;
     private PermissionsManager permissionsManagerMock;
 
@@ -34,7 +33,7 @@ public class UtilsTest {
      */
     @BeforeClass
     public static void setUpMocks() {
-        wrapperMock = WrapperMock.createInstance();
+        WrapperMock wrapperMock = WrapperMock.createInstance();
         authMeMock = wrapperMock.getAuthMe();
     }
 
@@ -109,16 +108,11 @@ public class UtilsTest {
     }
 
     @Test
-    // Note ljacqu 20151122: This is a heavy test setup with reflections... If it causes trouble, skip it with @Ignore
     public void shouldRetrieveListOfOnlinePlayersFromReflectedMethod() {
         // given
         ReflectionTestUtils.setField(Utils.class, null, "getOnlinePlayersIsCollection", false);
-        try {
-            ReflectionTestUtils.setField(Utils.class, null, "getOnlinePlayers",
-                UtilsTest.class.getDeclaredMethod("onlinePlayersImpl"));
-        } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Could not get method onlinePlayersImpl() in test class", e);
-        }
+        ReflectionTestUtils.setField(Utils.class, null, "getOnlinePlayers",
+            ReflectionTestUtils.getMethod(UtilsTest.class, "onlinePlayersImpl"));
 
         // when
         Collection<? extends Player> players = Utils.getOnlinePlayers();

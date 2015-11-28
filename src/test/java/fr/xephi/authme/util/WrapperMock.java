@@ -20,8 +20,6 @@ import java.util.logging.Logger;
 public class WrapperMock extends Wrapper {
 
     private Map<Class<?>, Object> mocks = new HashMap<>();
-    private static WrapperMock singleton;
-    private File getDataFolderValue = new File("/");
 
     private WrapperMock() {
         super();
@@ -33,9 +31,9 @@ public class WrapperMock extends Wrapper {
      * @return The created singleton
      */
     public static WrapperMock createInstance() {
-        singleton = new WrapperMock();
-        Wrapper.setSingleton(singleton);
-        return singleton;
+        WrapperMock instance = new WrapperMock();
+        Wrapper.setSingleton(instance);
+        return instance;
     }
 
     @Override
@@ -70,20 +68,19 @@ public class WrapperMock extends Wrapper {
 
     @Override
     public File getDataFolder() {
-        if (singleton.getDataFolderValue != null) {
-            return singleton.getDataFolderValue;
-        }
-        return getMock(File.class);
+        return new File("/");
     }
 
     /**
-     * Set the data folder to be returned for test contexts. Defaults to File("/"); supply null to make WrapperMock
-     * return a mock of the File class as with the other fields.
+     * Return whether a mock of the given class type was created, i.e. verify whether a certain method was executed on
+     * the Wrapper to retrieve an entity.
      *
-     * @param file The data folder location to return
+     * @param mockClass The class of the mock to verify
+     *
+     * @return True if the mock has been created, false otherwise
      */
-    public void setDataFolder(File file) {
-        this.getDataFolderValue = file;
+    public boolean wasMockCalled(Class<?> mockClass) {
+        return mocks.get(mockClass) != null;
     }
 
     @SuppressWarnings("unchecked")

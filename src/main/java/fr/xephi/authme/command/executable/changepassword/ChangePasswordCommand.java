@@ -66,7 +66,7 @@ public class ChangePasswordCommand extends ExecutableCommand {
 
         // Set the password
         final AuthMe plugin = wrapper.getAuthMe();
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin,
+        wrapper.getServer().getScheduler().runTaskAsynchronously(plugin,
             new ChangePasswordTask(plugin, player, playerPass, playerPassVerify));
         return true;
     }

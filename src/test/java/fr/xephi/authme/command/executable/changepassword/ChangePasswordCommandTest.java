@@ -1,19 +1,29 @@
 package fr.xephi.authme.command.executable.changepassword;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.task.ChangePasswordTask;
 import fr.xephi.authme.util.WrapperMock;
+import org.bukkit.Server;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 
-import java.util.Arrays;
+import java.util.Collections;
 
+import static java.util.Arrays.asList;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.*;
 
@@ -22,20 +32,21 @@ import static org.mockito.Mockito.*;
  */
 public class ChangePasswordCommandTest {
 
+    private WrapperMock wrapperMock;
     private Messages messagesMock;
     private PlayerCache cacheMock;
 
     @Before
     public void setUpMocks() {
-        WrapperMock wrapper = WrapperMock.createInstance();
-        messagesMock = wrapper.getMessages();
-        cacheMock = wrapper.getPlayerCache();
+        wrapperMock = WrapperMock.createInstance();
+        messagesMock = wrapperMock.getMessages();
+        cacheMock = wrapperMock.getPlayerCache();
 
         // Only allow passwords with alphanumerical characters for the test
         Settings.getPassRegex = "[a-zA-Z0-9]+";
         Settings.getPasswordMinLen = 2;
         Settings.passwordMaxLength = 50;
-        // TODO ljacqu 20151126: Verify the calls to getServer() (see commented code)
+        Settings.unsafePasswords = Collections.EMPTY_LIST;
     }
 
     @Test
@@ -50,7 +61,7 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(arguments, never()).get(anyInt());
-        //verify(pluginMock, never()).getServer();
+        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -64,7 +75,7 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(messagesMock).send(sender, MessageKey.NOT_LOGGED_IN);
-        //verify(pluginMock, never()).getServer();
+        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -78,7 +89,7 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(messagesMock).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
-        //verify(pluginMock, never()).getServer();
+        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
 
@@ -93,7 +104,7 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(messagesMock).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-        //verify(pluginMock, never()).getServer();
+        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -108,7 +119,7 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-        //verify(pluginMock, never()).getServer();
+        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -123,7 +134,7 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-        //verify(pluginMock, never()).getServer();
+        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -131,14 +142,34 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("player", true);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        Settings.unsafePasswords = Arrays.asList("test", "abc123");
+        Settings.unsafePasswords = asList("test", "abc123");
 
         // when
         command.executeCommand(sender, new CommandParts(), new CommandParts("abc123"));
 
         // then
         verify(messagesMock).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
-        //verify(pluginMock, never()).getServer();
+        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
+    }
+
+    @Test
+    public void shouldForwardTheDataForValidPassword() {
+        // given
+        CommandSender sender = initPlayerWithName("parker", true);
+        ChangePasswordCommand command = new ChangePasswordCommand();
+        BukkitScheduler schedulerMock = mock(BukkitScheduler.class);
+        given(wrapperMock.getServer().getScheduler()).willReturn(schedulerMock);
+
+        // when
+        command.executeCommand(sender, new CommandParts(), new CommandParts(asList("abc123", "abc123")));
+
+        // then
+        verify(messagesMock, never()).send(eq(sender), any(MessageKey.class));
+        ArgumentCaptor<ChangePasswordTask> taskCaptor = ArgumentCaptor.forClass(ChangePasswordTask.class);
+        verify(schedulerMock).runTaskAsynchronously(any(AuthMe.class), taskCaptor.capture());
+        ChangePasswordTask task = taskCaptor.getValue();
+        assertThat((String) ReflectionTestUtils.getFieldValue(ChangePasswordTask.class, task, "newPassword"),
+            equalTo("abc123"));
     }
 
     private Player initPlayerWithName(String name, boolean loggedIn) {
