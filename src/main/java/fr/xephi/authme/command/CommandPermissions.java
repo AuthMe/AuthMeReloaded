@@ -9,9 +9,6 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
-//import com.timvisee.dungeonmaze.Core;
-//import com.timvisee.dungeonmaze.permission.PermissionsManager;
-
 /**
  */
 public class CommandPermissions {
@@ -19,17 +16,11 @@ public class CommandPermissions {
     /**
      * Defines the permission nodes required to have permission to execute this command.
      */
-    private List<PermissionNode> permissionNodes = new ArrayList<>();
+    private List<PermissionNode> permissionNodes;
     /**
      * Defines the default permission if the permission nodes couldn't be used.
      */
-    private DefaultPermission defaultPermission = DefaultPermission.NOT_ALLOWED;
-
-    /**
-     * Constructor.
-     */
-    public CommandPermissions() {
-    }
+    private DefaultPermission defaultPermission;
 
     /**
      * Constructor.
@@ -38,6 +29,7 @@ public class CommandPermissions {
      * @param defaultPermission The default permission if the permission nodes couldn't be used.
      */
     public CommandPermissions(PermissionNode permissionNode, DefaultPermission defaultPermission) {
+        this.permissionNodes = new ArrayList<>();
         this.permissionNodes.add(permissionNode);
         this.defaultPermission = defaultPermission;
     }
@@ -49,34 +41,8 @@ public class CommandPermissions {
      * @param defaultPermission The default permission if the permission nodes couldn't be used.
      */
     public CommandPermissions(List<PermissionNode> permissionNodes, DefaultPermission defaultPermission) {
-        this.permissionNodes.addAll(permissionNodes);
-    }
-
-    /**
-     * Add a permission node required to execute this command.
-     *
-     * @param permissionNode The permission node to add.
-     *
-     * @return True on success, false on failure.
-     */
-    public boolean addPermissionNode(PermissionNode permissionNode) {
-        // Make sure this permission node hasn't been added already
-        if (hasPermissionNode(permissionNode))
-            return true;
-
-        // Add the permission node, return the result
-        return this.permissionNodes.add(permissionNode);
-    }
-
-    /**
-     * Check whether this command requires a specified permission node to execute.
-     *
-     * @param permissionNode The permission node to check for.
-     *
-     * @return True if this permission node is required, false if not.
-     */
-    public boolean hasPermissionNode(PermissionNode permissionNode) {
-        return this.permissionNodes.contains(permissionNode);
+        this.permissionNodes = permissionNodes;
+        this.defaultPermission = defaultPermission;
     }
 
     /**
@@ -88,14 +54,6 @@ public class CommandPermissions {
         return this.permissionNodes;
     }
 
-    /**
-     * Set the permission nodes required to execute this command.
-     *
-     * @param permissionNodes The permission nodes required to execute this command.
-     */
-    public void setPermissionNodes(List<PermissionNode> permissionNodes) {
-        this.permissionNodes = permissionNodes;
-    }
 
     /**
      * Get the number of permission nodes set.

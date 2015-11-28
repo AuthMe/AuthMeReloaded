@@ -7,7 +7,7 @@ public class CommandArgumentDescription {
     // TODO: Allow argument to consist of infinite parts. <label ...>
 
     /**
-     * Argument label.
+     * Argument label (one-word description of the argument).
      */
     private String label;
     /**
@@ -15,31 +15,21 @@ public class CommandArgumentDescription {
      */
     private String description;
     /**
-     * Defines whether the argument is optional.
+     * Defines whether the argument is isOptional.
      */
-    private boolean optional = false;
+    private boolean isOptional = false;
 
     /**
      * Constructor.
      *
      * @param label       The argument label.
      * @param description The argument description.
+     * @param isOptional  True if the argument is isOptional, false otherwise.
      */
-    public CommandArgumentDescription(String label, String description) {
-        this(label, description, false);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param label       The argument label.
-     * @param description The argument description.
-     * @param optional    True if the argument is optional, false otherwise.
-     */
-    public CommandArgumentDescription(String label, String description, boolean optional) {
-        setLabel(label);
-        setDescription(description);
-        setOptional(optional);
+    public CommandArgumentDescription(String label, String description, boolean isOptional) {
+        this.label = label;
+        this.description = description;
+        this.isOptional = isOptional;
     }
 
     /**
@@ -52,15 +42,6 @@ public class CommandArgumentDescription {
     }
 
     /**
-     * Set the argument label.
-     *
-     * @param label Argument label.
-     */
-    public void setLabel(String label) {
-        this.label = label;
-    }
-
-    /**
      * Get the argument description.
      *
      * @return Argument description.
@@ -70,29 +51,12 @@ public class CommandArgumentDescription {
     }
 
     /**
-     * Set the argument description.
-     *
-     * @param description Argument description.
-     */
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    /**
      * Check whether the argument is optional.
      *
      * @return True if the argument is optional, false otherwise.
      */
     public boolean isOptional() {
-        return optional;
+        return isOptional;
     }
 
-    /**
-     * Set whether the argument is optional.
-     *
-     * @param optional True if the argument is optional, false otherwise.
-     */
-    public void setOptional(boolean optional) {
-        this.optional = optional;
-    }
 }

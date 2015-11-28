@@ -44,7 +44,7 @@ public class HelpPrinter {
             sender.sendMessage(ChatColor.GOLD + "Short Description: " + ChatColor.WHITE + command.getDescription());
 
         // Print the detailed description, if available
-        if (command.hasDetailedDescription()) {
+        if (!StringUtils.isEmpty(command.getDetailedDescription())) {
             sender.sendMessage(ChatColor.GOLD + "Detailed Description:");
             sender.sendMessage(ChatColor.WHITE + " " + command.getDetailedDescription());
         }

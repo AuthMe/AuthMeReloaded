@@ -6,6 +6,7 @@ import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.executable.authme.AuthMeCommand;
 import fr.xephi.authme.command.executable.authme.RegisterCommand;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,7 +27,9 @@ public class HelpSyntaxHelperTest {
     @Test
     public void shouldFormatSimpleCommand() {
         // given
-        CommandDescription description = getDescription();
+        CommandDescription description = getDescriptionBuilder()
+            .withArgument("name", "The name", true)
+            .build();
 
         // when
         String result = HelpSyntaxHelper.getCommandSyntax(
@@ -39,9 +42,9 @@ public class HelpSyntaxHelperTest {
     @Test
     public void shouldFormatSimpleCommandWithOptionalParam() {
         // given
-        CommandDescription description = getDescription();
-        description.setArguments(singletonList(
-                new CommandArgumentDescription("test", "", false)));
+        CommandDescription description = getDescriptionBuilder()
+            .withArgument("test", "", false)
+            .build();
 
         // when
         String result = HelpSyntaxHelper.getCommandSyntax(
@@ -54,10 +57,10 @@ public class HelpSyntaxHelperTest {
     @Test
     public void shouldFormatCommandWithMultipleParams() {
         // given
-        CommandDescription description = getDescription();
-        description.setArguments(Arrays.asList(
-                new CommandArgumentDescription("name", "", true),
-                new CommandArgumentDescription("test", "", false)));
+        CommandDescription description = getDescriptionBuilder()
+            .withArgument("name", "", true)
+            .withArgument("test", "", false)
+            .build();
 
         // when
         String result = HelpSyntaxHelper.getCommandSyntax(
@@ -70,10 +73,10 @@ public class HelpSyntaxHelperTest {
     @Test
     public void shouldHighlightCommandWithMultipleParams() {
         // given
-        CommandDescription description = getDescription();
-        description.setArguments(Arrays.asList(
-                new CommandArgumentDescription("name", "", true),
-                new CommandArgumentDescription("test", "", false)));
+        CommandDescription description = getDescriptionBuilder()
+            .withArgument("name", "", true)
+            .withArgument("test", "", false)
+            .build();
 
         // when
         String result = HelpSyntaxHelper.getCommandSyntax(
@@ -88,8 +91,7 @@ public class HelpSyntaxHelperTest {
     @Test
     public void shouldHighlightCommandWithNoParams() {
         // given
-        CommandDescription description = getDescription();
-        description.setArguments(new ArrayList<CommandArgumentDescription>());
+        CommandDescription description = getDescriptionBuilder().build();
 
         // when
         String result = HelpSyntaxHelper.getCommandSyntax(
@@ -102,7 +104,9 @@ public class HelpSyntaxHelperTest {
     @Test
     public void shouldFormatSimpleCommandWithAlternativeLabel() {
         // given
-        CommandDescription description = getDescription();
+        CommandDescription description = getDescriptionBuilder()
+            .withArgument("name", "The name", true)
+            .build();
 
         // when
         String result = HelpSyntaxHelper.getCommandSyntax(
@@ -115,11 +119,11 @@ public class HelpSyntaxHelperTest {
     @Test
     public void shouldHighlightCommandWithAltLabelAndUnlimitedArguments() {
         // given
-        CommandDescription description = getDescription();
-        description.setArguments(Arrays.asList(
-            new CommandArgumentDescription("name", "", true),
-            new CommandArgumentDescription("test", "", false)));
-        description.setMaximumArguments(false);
+        CommandDescription description = getDescriptionBuilder()
+            .withArgument("name", "", true)
+            .withArgument("test", "", false)
+            .noArgumentMaximum(true)
+            .build();
 
         // when
         String result = HelpSyntaxHelper.getCommandSyntax(
@@ -132,21 +136,19 @@ public class HelpSyntaxHelperTest {
     }
 
 
-    private static CommandDescription getDescription() {
-        CommandDescription base = new CommandDescription(new AuthMeCommand(),
-                singletonList("authme"),
-                "Base command",
-                "AuthMe base command",
-                null);
-        CommandArgumentDescription userArg = new CommandArgumentDescription(
-                "name", "", true);
+    private static CommandDescription.Builder getDescriptionBuilder() {
+        CommandDescription base = CommandDescription.builder()
+            .labels("authme")
+            .description("Base command")
+            .detailedDescription("AuthMe base command")
+            .parent(null)
+            .build();
 
-        return new CommandDescription(
-                new RegisterCommand(),
-                Arrays.asList("register", "r"),
-                "Register a player",
-                "Register the specified player with the specified password.",
-                base,
-                singletonList(userArg));
+        return CommandDescription.builder()
+            .executableCommand(Mockito.mock(RegisterCommand.class))
+            .labels("register", "r")
+            .description("Register a player")
+            .detailedDescription("Register the specified player with the specified password.")
+            .parent(base);
     }
 }
