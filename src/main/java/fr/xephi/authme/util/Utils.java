@@ -53,18 +53,22 @@ public final class Utils {
      */
     public static boolean setGroup(Player player, GroupType group) {
         // Check whether the permissions check is enabled
-        if (!Settings.isPermissionCheckEnabled)
+        if (!Settings.isPermissionCheckEnabled) {
             return false;
+        }
 
         // Get the permissions manager, and make sure it's valid
         PermissionsManager permsMan = plugin.getPermissionsManager();
-        if (permsMan == null)
+        if (permsMan == null) {
             ConsoleLogger.showError("Failed to access permissions manager instance, shutting down.");
-        assert permsMan != null;
+            return false;
+        }
 
         // Make sure group support is available
-        if (!permsMan.hasGroupSupport())
+        if (!permsMan.hasGroupSupport()) {
             ConsoleLogger.showError("The current permissions system doesn't have group support, unable to set group!");
+            return false;
+        }
 
         switch (group) {
             case UNREGISTERED:

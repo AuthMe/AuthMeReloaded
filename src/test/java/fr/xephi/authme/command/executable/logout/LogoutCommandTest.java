@@ -1,16 +1,18 @@
 package fr.xephi.authme.command.executable.logout;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.AuthMeMockUtil;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.io.File;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -25,8 +27,9 @@ public class LogoutCommandTest {
 
     @Before
     public void initializeAuthMeMock() {
-        AuthMeMockUtil.mockAuthMeInstance();
-        AuthMe pluginMock = AuthMe.getInstance();
+        WrapperMock wrapper = WrapperMock.createInstance();
+        wrapper.setDataFolder(new File("/"));
+        AuthMe pluginMock = wrapper.getAuthMe();
 
         Settings.captchaLength = 10;
         managementMock = mock(Management.class);

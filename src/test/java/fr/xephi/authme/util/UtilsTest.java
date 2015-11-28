@@ -8,10 +8,12 @@ import fr.xephi.authme.settings.Settings;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.io.File;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.logging.Logger;
@@ -25,18 +27,33 @@ import static org.mockito.Mockito.*;
 /**
  * Test for the {@link Utils} class.
  */
-@Ignore
-// TODO ljacqu 20151126: Fix tests
 public class UtilsTest {
 
-    private AuthMe authMeMock;
+    private static WrapperMock wrapperMock;
+    private static AuthMe authMeMock;
     private PermissionsManager permissionsManagerMock;
 
+    /**
+     * The Utils class initializes its fields in a {@code static} block which is only executed once during the JUnit
+     * tests, too. It is therefore important to initialize the mocks once with {@code @BeforeClass}. Initializing with
+     * {@code @Before} as we usually do will create mocks that won't have any use in the Utils class.
+     */
+    @BeforeClass
+    public static void setUpMocks() {
+        wrapperMock = WrapperMock.createInstance();
+        wrapperMock.setDataFolder(new File("/"));
+        authMeMock = wrapperMock.getAuthMe();
+    }
+
     @Before
-    public void setUpMocks() {
-        WrapperMock w = WrapperMock.getInstance();
-        authMeMock = w.getAuthMe();
-        permissionsManagerMock = Mockito.mock(PermissionsManager.class);
+    public void setIndirectMocks() {
+        // Since the mocks aren't set up for each test case it is important to reset them when verifying whether or not
+        // they have been called. We want to return null for permissions manager once so we initialize a mock for it
+        // before every test -- this is OK because it is retrieved via authMeMock. It is just crucial that authMeMock
+        // remain the same object.
+        reset(authMeMock);
+
+        permissionsManagerMock = mock(PermissionsManager.class);
         when(authMeMock.getPermissionsManager()).thenReturn(permissionsManagerMock);
     }
 
@@ -89,7 +106,6 @@ public class UtilsTest {
         Settings.isPermissionCheckEnabled = true;
         given(authMeMock.getPermissionsManager()).willReturn(null);
         Player player = mock(Player.class);
-        AuthMeMockUtil.mockSingletonForClass(ConsoleLogger.class, "wrapper", Wrapper.getInstance());
 
         // when
         boolean result = Utils.addNormal(player, "test_group");
@@ -128,6 +144,7 @@ public class UtilsTest {
     }
 
     // Note: This method is used through reflections
+    @SuppressWarnings("unused")
     public static Player[] onlinePlayersImpl() {
         return new Player[]{
             mock(Player.class), mock(Player.class)
