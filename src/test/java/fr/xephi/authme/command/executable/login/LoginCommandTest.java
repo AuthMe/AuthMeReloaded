@@ -11,12 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.File;
-
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
@@ -30,7 +25,6 @@ public class LoginCommandTest {
     @Before
     public void initializeAuthMeMock() {
         WrapperMock wrapper = WrapperMock.createInstance();
-        wrapper.setDataFolder(new File("/"));
 
         Settings.captchaLength = 10;
         managementMock = mock(Management.class);

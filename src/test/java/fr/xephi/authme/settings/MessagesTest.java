@@ -30,7 +30,7 @@ public class MessagesTest {
      */
     @Before
     public void setUpMessages() {
-        WrapperMock.getInstance();
+        WrapperMock.createInstance();
 
         Settings.messagesLanguage = "en";
         URL url = getClass().getClassLoader().getResource(YML_TEST_FILE);

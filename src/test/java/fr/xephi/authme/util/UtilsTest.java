@@ -1,22 +1,16 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.AuthMeMockUtil;
-import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.Mockito;
 
-import java.io.File;
-import java.lang.reflect.Field;
 import java.util.Collection;
-import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -41,7 +35,6 @@ public class UtilsTest {
     @BeforeClass
     public static void setUpMocks() {
         wrapperMock = WrapperMock.createInstance();
-        wrapperMock.setDataFolder(new File("/"));
         authMeMock = wrapperMock.getAuthMe();
     }
 
@@ -119,11 +112,12 @@ public class UtilsTest {
     // Note ljacqu 20151122: This is a heavy test setup with reflections... If it causes trouble, skip it with @Ignore
     public void shouldRetrieveListOfOnlinePlayersFromReflectedMethod() {
         // given
-        setField("getOnlinePlayersIsCollection", false);
+        ReflectionTestUtils.setField(Utils.class, null, "getOnlinePlayersIsCollection", false);
         try {
-            setField("getOnlinePlayers", UtilsTest.class.getDeclaredMethod("onlinePlayersImpl"));
+            ReflectionTestUtils.setField(Utils.class, null, "getOnlinePlayers",
+                UtilsTest.class.getDeclaredMethod("onlinePlayersImpl"));
         } catch (NoSuchMethodException e) {
-            throw new RuntimeException("Cannot initialize test with custom test method", e);
+            throw new RuntimeException("Could not get method onlinePlayersImpl() in test class", e);
         }
 
         // when
@@ -131,16 +125,6 @@ public class UtilsTest {
 
         // then
         assertThat(players, hasSize(2));
-    }
-
-    private static void setField(String name, Object value) {
-        try {
-            Field field = Utils.class.getDeclaredField(name);
-            field.setAccessible(true);
-            field.set(null, value);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new RuntimeException("Could not set field '" + name + "'", e);
-        }
     }
 
     // Note: This method is used through reflections

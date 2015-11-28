@@ -21,30 +21,20 @@ public class WrapperMock extends Wrapper {
 
     private Map<Class<?>, Object> mocks = new HashMap<>();
     private static WrapperMock singleton;
-    private File getDataFolderValue;
+    private File getDataFolderValue = new File("/");
 
     private WrapperMock() {
         super();
     }
 
     /**
-     * Create a new instance of the WrapperMock and inject it as singleton into Wrapper.
+     * Create a new instance of the WrapperMock and inject it as singleton into the Wrapper class.
      *
      * @return The created singleton
      */
     public static WrapperMock createInstance() {
         singleton = new WrapperMock();
         Wrapper.setSingleton(singleton);
-        return singleton;
-    }
-
-    /**
-     * Return the WrapperMock singleton or null if it hasn't been initialized. To avoid confusion, it may be best to
-     * only call {@link WrapperMock#createInstance()} and to keep a reference to the returned singleton.
-     *
-     * @return The singleton or null
-     */
-    public static WrapperMock getInstance() {
         return singleton;
     }
 
@@ -86,6 +76,12 @@ public class WrapperMock extends Wrapper {
         return getMock(File.class);
     }
 
+    /**
+     * Set the data folder to be returned for test contexts. Defaults to File("/"); supply null to make WrapperMock
+     * return a mock of the File class as with the other fields.
+     *
+     * @param file The data folder location to return
+     */
     public void setDataFolder(File file) {
         this.getDataFolderValue = file;
     }

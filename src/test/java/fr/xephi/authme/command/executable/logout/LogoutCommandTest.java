@@ -12,8 +12,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.io.File;
-
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -28,7 +26,6 @@ public class LogoutCommandTest {
     @Before
     public void initializeAuthMeMock() {
         WrapperMock wrapper = WrapperMock.createInstance();
-        wrapper.setDataFolder(new File("/"));
         AuthMe pluginMock = wrapper.getAuthMe();
 
         Settings.captchaLength = 10;

@@ -14,8 +14,6 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
-import java.io.File;
-
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -35,7 +33,6 @@ public class RegisterCommandTest {
     @Before
     public void initializeAuthMeMock() {
         WrapperMock wrapper = WrapperMock.createInstance();
-        wrapper.setDataFolder(new File("/"));
         messagesMock = wrapper.getMessages();
 
         Settings.captchaLength = 10;
