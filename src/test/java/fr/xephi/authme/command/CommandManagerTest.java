@@ -65,6 +65,28 @@ public class CommandManagerTest {
         walkThroughCommands(manager.getCommandDescriptions(), descriptionTester);
     }
 
+    /** Ensure that all children of a command stored the parent. */
+    @Test
+    public void shouldHaveConnectionBetweenParentAndChild() {
+        // given
+        BiConsumer connectionTester = new BiConsumer() {
+            @Override
+            public void accept(CommandDescription command, int depth) {
+                if (command.hasChildren()) {
+                    for (CommandDescription child : command.getChildren()) {
+                        assertThat(command.equals(child.getParent()), equalTo(true));
+                    }
+                }
+                // Checking that the parent has the current command as child is redundant as this is how we can traverse
+                // the "command tree" in the first place - if we're here, it's that the parent definitely has the
+                // command as child.
+            }
+        };
+
+        // when/then
+        walkThroughCommands(manager.getCommandDescriptions(), connectionTester);
+    }
+
     @Test
     public void shouldNotDefineSameLabelTwice() {
         // given

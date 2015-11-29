@@ -108,12 +108,15 @@ public class FoundCommandResult {
      * @return True if the command sender has permission, false otherwise.
      */
     public boolean hasPermission(CommandSender sender) {
-        // Make sure the command description is valid
-        if (this.commandDescription == null)
+        if (commandDescription == null) {
             return false;
+        } else if (commandDescription.getCommandPermissions() == null) {
+            return true;
+        }
 
-        // Get and return the permission
-        return this.commandDescription.getCommandPermissions().hasPermission(sender);
+        // TODO: Move permissions check to the permission package; command package should not define permission-checking
+        // API
+        return commandDescription.getCommandPermissions().hasPermission(sender);
     }
 
     /**
