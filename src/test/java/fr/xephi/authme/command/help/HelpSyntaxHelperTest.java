@@ -1,17 +1,12 @@
 package fr.xephi.authme.command.help;
 
-import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
-import fr.xephi.authme.command.executable.authme.AuthMeCommand;
+import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.executable.authme.RegisterCommand;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-
-import static java.util.Collections.singletonList;
 import static org.bukkit.ChatColor.BOLD;
 import static org.bukkit.ChatColor.ITALIC;
 import static org.bukkit.ChatColor.WHITE;
@@ -142,6 +137,7 @@ public class HelpSyntaxHelperTest {
             .description("Base command")
             .detailedDescription("AuthMe base command")
             .parent(null)
+            .executableCommand(Mockito.mock(ExecutableCommand.class))
             .build();
 
         return CommandDescription.builder()
@@ -149,6 +145,7 @@ public class HelpSyntaxHelperTest {
             .labels("register", "r")
             .description("Register a player")
             .detailedDescription("Register the specified player with the specified password.")
-            .parent(base);
+            .parent(base)
+            .executableCommand(Mockito.mock(ExecutableCommand.class));
     }
 }

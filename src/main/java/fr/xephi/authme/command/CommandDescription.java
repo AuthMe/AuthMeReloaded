@@ -63,19 +63,6 @@ public class CommandDescription {
      * Constructor.
      *
      * @param executableCommand   The executable command, or null.
-     * @param label               Command label.
-     * @param description         Command description.
-     * @param detailedDescription Detailed comment description.
-     * @param parent              Parent command.
-     */
-    public CommandDescription(ExecutableCommand executableCommand, String label, String description, String detailedDescription, CommandDescription parent) {
-        this(executableCommand, label, description, parent, detailedDescription, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param executableCommand   The executable command, or null.
      * @param labels              List of command labels.
      * @param description         Command description.
      * @param detailedDescription Detailed comment description.
@@ -83,25 +70,6 @@ public class CommandDescription {
      */
     public CommandDescription(ExecutableCommand executableCommand, List<String> labels, String description, String detailedDescription, CommandDescription parent) {
         this(executableCommand, labels, description, detailedDescription, parent, null);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param executableCommand   The executable command, or null.
-     * @param label               Command label.
-     * @param description         Command description.
-     * @param parent              Parent command.
-     * @param detailedDescription Detailed comment description.
-     * @param arguments           Command arguments.
-     */
-    public CommandDescription(ExecutableCommand executableCommand, String label, String description, CommandDescription parent, String detailedDescription, List<CommandArgumentDescription> arguments) {
-        setExecutableCommand(executableCommand);
-        this.labels = Collections.singletonList(label);
-        this.description = description;
-        this.detailedDescription = detailedDescription;
-        setParent(parent);
-        setArguments(arguments);
     }
 
     /**

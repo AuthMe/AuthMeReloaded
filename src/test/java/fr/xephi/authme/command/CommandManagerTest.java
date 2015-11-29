@@ -2,7 +2,6 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.util.StringUtils;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -16,9 +15,10 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
- * Test for {@link CommandManager}.
+ * Test for {@link CommandManager}, especially to guarantee the integrity of the defined commands.
  */
 public class CommandManagerTest {
 
@@ -77,7 +77,7 @@ public class CommandManagerTest {
                 commandMappings.addAll(newMappings);
                 // Set only contains unique entries, so we just check after adding all new mappings that the size
                 // of the Set corresponds to our expectation
-                assertThat("All bindings are unique for command with bindings '" + command.getLabels() + "'",
+                assertThat("All bindings are unique for command with bindings '" + newMappings + "'",
                     commandMappings.size() == initialSize + newMappings.size(), equalTo(true));
             }
         };
@@ -91,18 +91,21 @@ public class CommandManagerTest {
      * detailed description should be longer and end with a period.
      */
     @Test
-    public void shouldHaveDescription() {
+    public void shouldHaveProperDescription() {
         // given
         BiConsumer descriptionTester = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
-                assertThat("has description", StringUtils.isEmpty(command.getDescription()), equalTo(false));
-                assertThat("short description doesn't end in '.'", command.getDescription().endsWith("."),
-                    equalTo(false));
-                assertThat("has detailed description", StringUtils.isEmpty(command.getDetailedDescription()),
-                    equalTo(false));
-                assertThat("detailed description ends in '.'", command.getDetailedDescription().endsWith("."),
-                    equalTo(true));
+                String forCommandText = " for command with labels '" + command.getLabels() + "'";
+
+                assertThat("has description" + forCommandText,
+                    StringUtils.isEmpty(command.getDescription()), equalTo(false));
+                assertThat("short description doesn't end in '.'" + forCommandText,
+                    command.getDescription().endsWith("."), equalTo(false));
+                assertThat("has detailed description" + forCommandText,
+                    StringUtils.isEmpty(command.getDetailedDescription()), equalTo(false));
+                assertThat("detailed description ends in '.'" + forCommandText,
+                    command.getDetailedDescription().endsWith("."), equalTo(true));
             }
         };
 
@@ -140,6 +143,51 @@ public class CommandManagerTest {
 
         // then
         walkThroughCommands(commands, descriptionTester);
+    }
+
+    @Test
+    public void shouldHaveOptionalArgumentsAfterMandatoryOnes() {
+        // given
+        BiConsumer argumentOrderTester = new BiConsumer() {
+            @Override
+            public void accept(CommandDescription command, int depth) {
+                boolean encounteredOptionalArg = false;
+                for (CommandArgumentDescription argument : command.getArguments()) {
+                    if (argument.isOptional()) {
+                        encounteredOptionalArg = true;
+                    } else if (!argument.isOptional() && encounteredOptionalArg) {
+                        fail("Mandatory arguments should come before optional ones for command with labels '"
+                            + command.getLabels() + "'");
+                    }
+                }
+            }
+        };
+
+        // when/then
+        walkThroughCommands(manager.getCommandDescriptions(), argumentOrderTester);
+    }
+
+    /**
+     * Ensure that a command with children (i.e. a base command) doesn't define any arguments. This might otherwise
+     * clash with the label of the child.
+     */
+    @Test
+    public void shouldNotHaveArgumentsIfCommandHasChildren() {
+        // given
+        BiConsumer noArgumentForParentChecker = new BiConsumer() {
+            @Override
+            public void accept(CommandDescription command, int depth) {
+                // Fail if the command has children and has arguments at the same time
+                // Exception: If the parent only has one child defining the help label, it is acceptable
+                if (command.hasChildren() && command.hasArguments()
+                        && (command.getChildren().size() != 1 || !command.getChildren().get(0).hasLabel("help"))) {
+                    fail("Parent command (labels='" + command.getLabels() + "') should not have any arguments");
+                }
+            }
+        };
+
+        // when/then
+        walkThroughCommands(manager.getCommandDescriptions(), noArgumentForParentChecker);
     }
 
 

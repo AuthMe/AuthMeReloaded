@@ -81,7 +81,7 @@ public class CommandManager {
         // Register the unregister command
         CommandDescription unregisterCommand = CommandDescription.builder()
             .executableCommand(new UnregisterCommand())
-            .labels("unregister", "unreg", "unr", "delete", "del")
+            .labels("unregister", "unreg", "unr")
             .description("Unregister a player")
             .detailedDescription("Unregister the specified player.")
             .parent(authMeBaseCommand)
@@ -117,7 +117,7 @@ public class CommandManager {
             .executableCommand(new LastLoginCommand())
             .labels("lastlogin", "ll")
             .description("Player's last login")
-            .detailedDescription("View the date of the specified players last login")
+            .detailedDescription("View the date of the specified players last login.")
             .parent(authMeBaseCommand)
             .permissions(OP_ONLY, AdminPermission.LAST_LOGIN)
             .withArgument("player", "Player name", true)
