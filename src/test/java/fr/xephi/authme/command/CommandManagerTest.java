@@ -1,9 +1,11 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.util.StringUtils;
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -24,12 +26,18 @@ public class CommandManagerTest {
      * Defines the maximum allowed depths for nesting CommandDescription instances.
      * Note that the depth starts at 0 (e.g. /authme), so a depth of 2 is something like /authme hello world
      */
-    private static int MAX_ALLOWED_DEPTH = 2;
+    private static int MAX_ALLOWED_DEPTH = 1;
+
+    private static CommandManager manager;
+
+    @BeforeClass
+    public static void initializeCommandManager() {
+        manager = new CommandManager(true);
+    }
 
     @Test
     public void shouldInitializeCommands() {
         // given/when
-        CommandManager manager = new CommandManager(true);
         int commandCount = manager.getCommandDescriptionCount();
         List<CommandDescription> commands = manager.getCommandDescriptions();
 
@@ -46,8 +54,7 @@ public class CommandManagerTest {
     @Test
     public void shouldNotBeNestedExcessively() {
         // given
-        CommandManager manager = new CommandManager(true);
-        Consumer descriptionTester = new Consumer() {
+        BiConsumer descriptionTester = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
                 assertThat(depth <= MAX_ALLOWED_DEPTH, equalTo(true));
@@ -55,25 +62,28 @@ public class CommandManagerTest {
         };
 
         // when/then
-        List<CommandDescription> commands = manager.getCommandDescriptions();
-        walkThroughCommands(commands, descriptionTester);
+        walkThroughCommands(manager.getCommandDescriptions(), descriptionTester);
     }
 
     @Test
-    @Ignore
     public void shouldNotDefineSameLabelTwice() {
         // given
-        CommandManager manager = new CommandManager(true);
-        Set<String> commandMappings = new HashSet<>();
-        Consumer uniqueMappingTester = new Consumer() {
+        final Set<String> commandMappings = new HashSet<>();
+        BiConsumer uniqueMappingTester = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
-
+                int initialSize = commandMappings.size();
+                List<String> newMappings = getAbsoluteLabels(command);
+                commandMappings.addAll(newMappings);
+                // Set only contains unique entries, so we just check after adding all new mappings that the size
+                // of the Set corresponds to our expectation
+                assertThat("All bindings are unique for command with bindings '" + command.getLabels() + "'",
+                    commandMappings.size() == initialSize + newMappings.size(), equalTo(true));
             }
         };
 
-        // when
-        // TODO finish this
+        // when/then
+        walkThroughCommands(manager.getCommandDescriptions(), uniqueMappingTester);
     }
 
     /**
@@ -83,8 +93,7 @@ public class CommandManagerTest {
     @Test
     public void shouldHaveDescription() {
         // given
-        CommandManager manager = new CommandManager(true);
-        Consumer descriptionTester = new Consumer() {
+        BiConsumer descriptionTester = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
                 assertThat("has description", StringUtils.isEmpty(command.getDescription()), equalTo(false));
@@ -97,17 +106,20 @@ public class CommandManagerTest {
             }
         };
 
-        // when
-        List<CommandDescription> commands = manager.getCommandDescriptions();
-        walkThroughCommands(commands, descriptionTester);
+        // when/then
+        walkThroughCommands(manager.getCommandDescriptions(), descriptionTester);
     }
 
+    /**
+     * Check that the implementation of {@link ExecutableCommand} a command points to is the same for each type:
+     * it is inefficient to instantiate the same type multiple times.
+     */
     @Test
     public void shouldNotHaveMultipleInstancesOfSameExecutableCommandSubType() {
         // given
         final Map<Class<? extends ExecutableCommand>, ExecutableCommand> implementations = new HashMap<>();
         CommandManager manager = new CommandManager(true);
-        Consumer descriptionTester = new Consumer() {
+        BiConsumer descriptionTester = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
                 assertThat(command.getExecutableCommand(), not(nullValue()));
@@ -125,6 +137,8 @@ public class CommandManagerTest {
 
         // when
         List<CommandDescription> commands = manager.getCommandDescriptions();
+
+        // then
         walkThroughCommands(commands, descriptionTester);
     }
 
@@ -132,11 +146,11 @@ public class CommandManagerTest {
     // ------------
     // Helper methods
     // ------------
-    private static void walkThroughCommands(List<CommandDescription> commands, Consumer consumer) {
+    private static void walkThroughCommands(List<CommandDescription> commands, BiConsumer consumer) {
         walkThroughCommands(commands, consumer, 0);
     }
 
-    private static void walkThroughCommands(List<CommandDescription> commands, Consumer consumer, int depth) {
+    private static void walkThroughCommands(List<CommandDescription> commands, BiConsumer consumer, int depth) {
         for (CommandDescription command : commands) {
             consumer.accept(command, depth);
             if (command.hasChildren()) {
@@ -154,8 +168,32 @@ public class CommandManagerTest {
         return false;
     }
 
-    private interface Consumer {
+    private interface BiConsumer {
         void accept(CommandDescription command, int depth);
+    }
+
+    /**
+     * Get the absolute label that a command defines. Note: Assumes that only the passed command might have
+     * multiple labels; only considering the first label for all of the command's parents.
+     *
+     * @param command The command to verify
+     *
+     * @return The full command binding
+     */
+    private static List<String> getAbsoluteLabels(CommandDescription command) {
+        String parentPath = "";
+        CommandDescription elem = command.getParent();
+        while (elem != null) {
+            parentPath = elem.getLabels().get(0) + " " + parentPath;
+            elem = elem.getParent();
+        }
+        parentPath = parentPath.trim();
+
+        List<String> bindings = new ArrayList<>(command.getLabels().size());
+        for (String label : command.getLabels()) {
+            bindings.add(StringUtils.join(" ", parentPath, label));
+        }
+        return bindings;
     }
 
 }

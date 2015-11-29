@@ -6,6 +6,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -144,6 +145,11 @@ public class CommandDescription {
         this.arguments = arguments;
         this.noArgumentMaximum = noArgumentMaximum;
         this.permissions = permissions;
+
+        if (parent != null) {
+            // Passing `this` in constructor is not very nice; consider creating a "static create()" method instead
+            parent.addChild(this);
+        }
     }
 
     /**
@@ -246,9 +252,9 @@ public class CommandDescription {
     }
 
     /**
-     * Get the absolute command label, without a slash.
+     * Get the absolute command label, without a starting slash.
      *
-     * @return the absolute label
+     * @return The absolute label
      */
     public String getAbsoluteLabel() {
         return getAbsoluteLabel(false);
@@ -443,20 +449,6 @@ public class CommandDescription {
      */
     public List<CommandDescription> getChildren() {
         return this.children;
-    }
-
-    /**
-     * Set the children of this command.
-     *
-     * @param children New command children. Null to remove all children.
-     */
-    public void setChildren(List<CommandDescription> children) {
-        // Check whether the children list should be cleared
-        if (children == null)
-            this.children.clear();
-
-        else
-            this.children = children;
     }
 
     /**
@@ -757,7 +749,7 @@ public class CommandDescription {
     }
 
     /**
-     * Get the command permissions.
+     * Get the command permissions. Return null if the command doesn't require any permission.
      *
      * @return The command permissions.
      */
@@ -796,10 +788,10 @@ public class CommandDescription {
          */
         public CommandDescription build() {
             return new CommandDescription(
-                valueOrEmptyList(labels),
+                getOrThrow(labels, "labels"),
                 firstNonNull(description, ""),
                 firstNonNull(detailedDescription, ""),
-                firstNonNull(executableCommand, null), // TODO ljacqu 20151128: May `executableCommand` be null?
+                getOrThrow(executableCommand, "executableCommand"),
                 firstNonNull(parent, null),
                 arguments,
                 noArgumentMaximum,
@@ -857,16 +849,28 @@ public class CommandDescription {
             return new ArrayList<>(Arrays.asList(items));
         }
 
-        private static <T> List<T> valueOrEmptyList(List<T> givenList) {
-            if (givenList != null) {
-                return givenList;
-            }
-            return new ArrayList<>();
-        }
-
         private static <T> T firstNonNull(T first, T second) {
             return first != null ? first : second;
         }
+
+        private static <T> T getOrThrow(T element, String elementName) {
+            if (!isEmpty(element)) {
+                return element;
+            }
+            throw new RuntimeException("The element '" + elementName + "' may not be empty in CommandDescription");
+        }
+
+        private static <T> boolean isEmpty(T element) {
+            if (element == null) {
+                return true;
+            } else if (element instanceof Collection<?>) {
+                return ((Collection<?>) element).isEmpty();
+            } else if (element instanceof String) {
+                return StringUtils.isEmpty((String) element);
+            }
+            return false;
+        }
+
     }
 
 }
