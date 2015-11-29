@@ -4,14 +4,25 @@ import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
+ * Command description - defines which labels ("names") will lead to a command and points to the
+ * {@link ExecutableCommand} implementation that executes the logic of the command.
+ *
+ * CommandDescription is built hierarchically and have one parent or {@code null} for base commands (main commands
+ * such as /authme) and may have multiple children extending the mapping of the parent: e.g. if /authme has a child
+ * whose label is "register", then "/authme register" is the command that the child defines.
  */
 public class CommandDescription {
 
     /**
-     * Defines the acceptable labels.
+     * Defines the labels to execute the command. For example, if labels are "register" and "r" and the parent is
+     * the command for "/authme", then both "/authme register" and "/authme r" will be handled by this command.
      */
     private List<String> labels;
     /**
@@ -19,7 +30,7 @@ public class CommandDescription {
      */
     private String description;
     /**
-     * Detailed description.
+     * Detailed description of the command.
      */
     private String detailedDescription;
     /**
@@ -31,12 +42,11 @@ public class CommandDescription {
      */
     private CommandDescription parent;
     /**
-     * The child labels.
+     * The child commands that extend this command.
      */
-    // TODO: Remove list instantiation once Builder is the only way to construct objects
     private List<CommandDescription> children = new ArrayList<>();
     /**
-     * The command arguments.
+     * The arguments the command takes.
      */
     private List<CommandArgumentDescription> arguments;
     /**
@@ -124,14 +134,13 @@ public class CommandDescription {
      */
     private CommandDescription(List<String> labels, String description, String detailedDescription,
                                ExecutableCommand executableCommand, CommandDescription parent,
-                               List<CommandDescription> children, List<CommandArgumentDescription> arguments,
-                               boolean noArgumentMaximum, CommandPermissions permissions) {
+                               List<CommandArgumentDescription> arguments, boolean noArgumentMaximum,
+                               CommandPermissions permissions) {
         this.labels = labels;
         this.description = description;
         this.detailedDescription = detailedDescription;
         this.executableCommand = executableCommand;
         this.parent = parent;
-        this.children = children;
         this.arguments = arguments;
         this.noArgumentMaximum = noArgumentMaximum;
         this.permissions = permissions;
@@ -629,7 +638,7 @@ public class CommandDescription {
      * @return Command detailed description.
      */
     public String getDetailedDescription() {
-        return StringUtils.isEmpty(detailedDescription) ? this.detailedDescription : this.description;
+        return !StringUtils.isEmpty(detailedDescription) ? this.detailedDescription : this.description;
     }
 
     /**
@@ -776,8 +785,7 @@ public class CommandDescription {
         private String detailedDescription;
         private ExecutableCommand executableCommand;
         private CommandDescription parent;
-        private List<CommandDescription> children;
-        private List<CommandArgumentDescription> arguments;
+        private List<CommandArgumentDescription> arguments = new ArrayList<>();
         private boolean noArgumentMaximum;
         private CommandPermissions permissions;
 
@@ -793,8 +801,7 @@ public class CommandDescription {
                 firstNonNull(detailedDescription, ""),
                 firstNonNull(executableCommand, null), // TODO ljacqu 20151128: May `executableCommand` be null?
                 firstNonNull(parent, null),
-                valueOrEmptyList(children),
-                valueOrEmptyList(arguments),
+                arguments,
                 noArgumentMaximum,
                 firstNonNull(permissions, null)
             );
@@ -829,19 +836,7 @@ public class CommandDescription {
             return this;
         }
 
-        public Builder children(List<CommandDescription> children) {
-            this.children = children;
-            return this;
-        }
-
-        public Builder children(CommandDescription... children) {
-            return children(asMutableList(children));
-        }
-
         public Builder withArgument(String label, String description, boolean isOptional) {
-            if (arguments == null) {
-                arguments = new ArrayList<>();
-            }
             arguments.add(new CommandArgumentDescription(label, description, isOptional));
             return this;
         }

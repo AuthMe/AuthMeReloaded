@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static fr.xephi.authme.command.CommandPermissions.DefaultPermission.ALLOWED;
 import static fr.xephi.authme.command.CommandPermissions.DefaultPermission.OP_ONLY;
 
 /**
@@ -44,6 +45,7 @@ public class CommandManager {
     public void registerCommands() {
         // Create a list of help command labels
         final List<String> helpCommandLabels = Arrays.asList("help", "hlp", "h", "sos", "?");
+        ExecutableCommand helpCommandExecutable = new HelpCommand();
 
         // Register the base AuthMe Reloaded command
         CommandDescription authMeBaseCommand = CommandDescription.builder()
@@ -56,7 +58,7 @@ public class CommandManager {
 
         // Register the help command
         CommandDescription authMeHelpCommand = CommandDescription.builder()
-            .executableCommand(new HelpCommand())
+            .executableCommand(helpCommandExecutable)
             .labels(helpCommandLabels)
             .description("View help")
             .detailedDescription("View detailed help pages about AuthMeReloaded commands.")
@@ -88,51 +90,49 @@ public class CommandManager {
             .build();
 
         // Register the forcelogin command
-        CommandDescription forceLoginCommand = new CommandDescription(new ForceLoginCommand(), new ArrayList<String>() {
-
-            {
-                add("forcelogin");
-                add("login");
-            }
-        }, "Enforce login player", "Enforce the specified player to login.", authMeBaseCommand);
-        forceLoginCommand.setCommandPermissions(UserPermission.CAN_LOGIN_BE_FORCED, OP_ONLY);
-        forceLoginCommand.addArgument(new CommandArgumentDescription("player", "Online player name", true));
+        CommandDescription forceLoginCommand = CommandDescription.builder()
+            .executableCommand(new ForceLoginCommand())
+            .labels("forcelogin", "login")
+            .description("Enforce login player")
+            .detailedDescription("Enforce the specified player to login.")
+            .parent(authMeBaseCommand)
+            .permissions(OP_ONLY, UserPermission.CAN_LOGIN_BE_FORCED)
+            .withArgument("player", "Online player name", true)
+            .build();
 
         // Register the changepassword command
-        CommandDescription changePasswordCommand = new CommandDescription(new ChangePasswordCommand(), new ArrayList<String>() {
+        CommandDescription changePasswordCommand = CommandDescription.builder()
+            .executableCommand(new ChangePasswordCommand())
+            .labels("password", "changepassword", "changepass", "cp")
+            .description("Change a player's password")
+            .detailedDescription("Change the password of a player.")
+            .parent(authMeBaseCommand)
+            .permissions(OP_ONLY, UserPermission.CHANGE_PASSWORD)
+            .withArgument("player", "Player name", false)
+            .withArgument("pwd", "New password", false)
+            .build();
 
-            {
-                add("password");
-                add("changepassword");
-                add("changepass");
-                add("cp");
-            }
-        }, "Change player's password", "Change the password of a player.", authMeBaseCommand);
-        changePasswordCommand.setCommandPermissions(AdminPermission.CHANGE_PASSWORD, OP_ONLY);
-        changePasswordCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
-        changePasswordCommand.addArgument(new CommandArgumentDescription("pwd", "New password", false));
-
-        // Register the purge command
-        CommandDescription lastLoginCommand = new CommandDescription(new LastLoginCommand(), new ArrayList<String>() {
-
-            {
-                add("lastlogin");
-                add("ll");
-            }
-        }, "Player's last login", "View the date of the specified players last login", authMeBaseCommand);
-        lastLoginCommand.setCommandPermissions(AdminPermission.LAST_LOGIN, OP_ONLY);
-        lastLoginCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
+        // Register the last login command
+        CommandDescription lastLoginCommand = CommandDescription.builder()
+            .executableCommand(new LastLoginCommand())
+            .labels("lastlogin", "ll")
+            .description("Player's last login")
+            .detailedDescription("View the date of the specified players last login")
+            .parent(authMeBaseCommand)
+            .permissions(OP_ONLY, AdminPermission.LAST_LOGIN)
+            .withArgument("player", "Player name", true)
+            .build();
 
         // Register the accounts command
-        CommandDescription accountsCommand = new CommandDescription(new AccountsCommand(), new ArrayList<String>() {
-
-            {
-                add("accounts");
-                add("account");
-            }
-        }, "Display player accounts", "Display all accounts of a player by it's player name or IP.", authMeBaseCommand);
-        accountsCommand.setCommandPermissions(AdminPermission.ACCOUNTS, OP_ONLY);
-        accountsCommand.addArgument(new CommandArgumentDescription("player", "Player name or IP", true));
+        CommandDescription accountsCommand = CommandDescription.builder()
+            .executableCommand(new AccountsCommand())
+            .labels("accounts", "account")
+            .description("Display player accounts")
+            .detailedDescription("Display all accounts of a player by his player name or IP.")
+            .parent(authMeBaseCommand)
+            .permissions(OP_ONLY, AdminPermission.ACCOUNTS)
+            .withArgument("player", "Player name or IP", true)
+            .build();
 
         // Register the getemail command
         CommandDescription getEmailCommand = new CommandDescription(new GetEmailCommand(), new ArrayList<String>() {
@@ -286,28 +286,28 @@ public class CommandManager {
         reloadCommand.setCommandPermissions(AdminPermission.RELOAD, OP_ONLY);
 
         // Register the version command
-        /* TODO ljacqu 20151128: labels should not be helpCommandLabels! Previously it was:
-        add("version");
-        add("ver");
-        add("v");
-        add("about");
-        add("info");*/
-        CommandDescription versionCommand = new CommandDescription(new VersionCommand(), helpCommandLabels,
-            "Version info", "Show detailed information about the installed AuthMeReloaded version, and shows the developers, contributors, license and other information.", authMeBaseCommand);
+        CommandDescription versionCommand = CommandDescription.builder()
+            .executableCommand(new VersionCommand())
+            .labels("version", "ver", "v", "about", "info")
+            .description("Version info")
+            .detailedDescription("Show detailed information about the installed AuthMeReloaded version, and shows the "
+                + "developers, contributors, license and other information.")
+            .parent(authMeBaseCommand)
+            .build();
 
         // Register the base login command
-        CommandDescription loginBaseCommand = new CommandDescription(new LoginCommand(), new ArrayList<String>() {
-
-            {
-                add("login");
-                add("l");
-            }
-        }, "Login command", "Command to login using AuthMeReloaded.", null);
-        loginBaseCommand.setCommandPermissions(UserPermission.LOGIN, CommandPermissions.DefaultPermission.ALLOWED);
-        loginBaseCommand.addArgument(new CommandArgumentDescription("password", "Login password", false));
+        CommandDescription loginBaseCommand = CommandDescription.builder()
+            .executableCommand(new LoginCommand())
+            .labels("login", "l")
+            .description("Login command")
+            .detailedDescription("Command to log in using AuthMeReloaded.")
+            .parent(null)
+            .permissions(ALLOWED, UserPermission.LOGIN)
+            .withArgument("password", "Login password", false)
+            .build();
 
         // Register the help command
-        CommandDescription loginHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+        CommandDescription loginHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
             "View help", "View detailed help pages about AuthMeReloaded login commands.", loginBaseCommand);
         loginHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 
@@ -321,7 +321,7 @@ public class CommandManager {
         logoutBaseCommand.setCommandPermissions(UserPermission.LOGOUT, CommandPermissions.DefaultPermission.ALLOWED);
 
         // Register the help command
-        CommandDescription logoutHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+        CommandDescription logoutHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
             "View help", "View detailed help pages about AuthMeReloaded logout commands.", logoutBaseCommand);
         logoutHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 
@@ -338,7 +338,7 @@ public class CommandManager {
         registerBaseCommand.addArgument(new CommandArgumentDescription("verifyPassword", "Verify password", false));
 
         // Register the help command
-        CommandDescription registerHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+        CommandDescription registerHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
             "View help", "View detailed help pages about AuthMeReloaded register commands.", registerBaseCommand);
         registerHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 
@@ -354,7 +354,7 @@ public class CommandManager {
         unregisterBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
 
         // Register the help command
-        CommandDescription unregisterHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels, "View help", "View detailed help pages about AuthMeReloaded unregister commands.", unregisterBaseCommand);
+        CommandDescription unregisterHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels, "View help", "View detailed help pages about AuthMeReloaded unregister commands.", unregisterBaseCommand);
         unregisterHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 
         // Register the base changepassword command
@@ -370,12 +370,12 @@ public class CommandManager {
         changePasswordBaseCommand.addArgument(new CommandArgumentDescription("verifyPassword", "Verify password", false));
 
         // Register the help command
-        CommandDescription changePasswordHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+        CommandDescription changePasswordHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
             "View help", "View detailed help pages about AuthMeReloaded change password commands.", changePasswordBaseCommand);
         changePasswordHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 
         // Register the base Dungeon Maze command
-        CommandDescription emailBaseCommand = new CommandDescription(new HelpCommand(), new ArrayList<String>() {
+        CommandDescription emailBaseCommand = new CommandDescription(helpCommandExecutable, new ArrayList<String>() {
 
             {
                 add("email");
@@ -384,7 +384,7 @@ public class CommandManager {
         }, "E-mail command", "The AuthMe Reloaded E-mail command. The root for all E-mail commands.", null);
 
         // Register the help command
-        CommandDescription emailHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+        CommandDescription emailHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
             "View help", "View detailed help pages about AuthMeReloaded help commands.", emailBaseCommand);
         emailHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 
@@ -439,7 +439,7 @@ public class CommandManager {
         captchaBaseCommand.addArgument(new CommandArgumentDescription("captcha", "The captcha", false));
 
         // Register the help command
-        CommandDescription captchaHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+        CommandDescription captchaHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
             "View help", "View detailed help pages about AuthMeReloaded change captcha commands.", captchaBaseCommand);
         captchaHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 
@@ -456,7 +456,7 @@ public class CommandManager {
         converterBaseCommand.addArgument(new CommandArgumentDescription("job", "Conversion job: flattosql / flattosqlite /| xauth / crazylogin / rakamak / royalauth / vauth / sqltoflat", false));
 
         // Register the help command
-        CommandDescription converterHelpCommand = new CommandDescription(new HelpCommand(), helpCommandLabels,
+        CommandDescription converterHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
             "View help", "View detailed help pages about AuthMeReloaded change captcha commands.", converterBaseCommand);
         converterHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 

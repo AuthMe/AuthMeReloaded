@@ -15,7 +15,7 @@ public class CommandArgumentDescription {
      */
     private String description;
     /**
-     * Defines whether the argument is isOptional.
+     * Defines whether the argument is optional.
      */
     private boolean isOptional = false;
 
@@ -24,7 +24,7 @@ public class CommandArgumentDescription {
      *
      * @param label       The argument label.
      * @param description The argument description.
-     * @param isOptional  True if the argument is isOptional, false otherwise.
+     * @param isOptional  True if the argument is optional, false otherwise.
      */
     public CommandArgumentDescription(String label, String description, boolean isOptional) {
         this.label = label;
