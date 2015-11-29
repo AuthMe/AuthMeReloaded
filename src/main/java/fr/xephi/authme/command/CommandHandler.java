@@ -10,77 +10,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
+ * or to display help messages for unknown invocations.
  */
 public class CommandHandler {
-
-    /**
-     * The command manager instance.
-     */
-    private CommandManager commandManager;
-
-    /**
-     * Constructor.
-     *
-     * @param init True to immediately initialize.
-     */
-    public CommandHandler(boolean init) {
-        // Initialize
-        if (init)
-            init();
-    }
-
-    /**
-     * Initialize the command handler.
-     *
-     * @return True if succeed, false on failure. True will also be returned if the command handler was already
-     * initialized.
-     */
-    public boolean init() {
-        // Make sure the handler isn't initialized already
-        if (isInit())
-            return true;
-
-        // Initialize the command manager
-        this.commandManager = new CommandManager(false);
-        this.commandManager.registerCommands();
-
-        // Return the result
-        return true;
-    }
-
-    /**
-     * Check whether the command handler is initialized.
-     *
-     * @return True if the command handler is initialized.
-     */
-    public boolean isInit() {
-        return this.commandManager != null;
-    }
-
-    /**
-     * Destroy the command handler.
-     *
-     * @return True if the command handler was destroyed successfully, false otherwise. True will also be returned if
-     * the command handler wasn't initialized.
-     */
-    public boolean destroy() {
-        // Make sure the command handler is initialized
-        if (!isInit())
-            return true;
-
-        // Unset the command manager
-        this.commandManager = null;
-        return true;
-    }
-
-    /**
-     * Get the command manager.
-     *
-     * @return Command manager instance.
-     */
-    public CommandManager getCommandManager() {
-        return this.commandManager;
-    }
 
     /**
      * Process a command.
@@ -92,6 +25,7 @@ public class CommandHandler {
      *
      * @return True if the command was executed, false otherwise.
      */
+    // TODO ljacqu 20151129: Rename onCommand() method to something not suggesting it is auto-invoked by an event
     public boolean onCommand(CommandSender sender, org.bukkit.command.Command bukkitCommand, String bukkitCommandLabel, String[] bukkitArgs) {
         // Process the arguments
         List<String> args = processArguments(bukkitArgs);
@@ -102,7 +36,7 @@ public class CommandHandler {
             return false;
 
         // Get a suitable command for this reference, and make sure it isn't null
-        FoundCommandResult result = this.commandManager.findCommand(commandReference);
+        FoundCommandResult result = findCommand(commandReference);
         if (result == null) {
             sender.sendMessage(ChatColor.DARK_RED + "Failed to parse " + AuthMe.getPluginName() + " command!");
             return false;
@@ -206,5 +140,34 @@ public class CommandHandler {
 
         // Return the argument
         return arguments;
+    }
+
+    /**
+     * Find the best suitable command for the specified reference.
+     *
+     * @param queryReference The query reference to find a command for.
+     *
+     * @return The command found, or null.
+     */
+    public FoundCommandResult findCommand(CommandParts queryReference) {
+        // Make sure the command reference is valid
+        if (queryReference.getCount() <= 0)
+            return null;
+
+        // TODO ljacqu 20151129: If base commands are only used in here (or in the future CommandHandler after changes),
+        // it might make sense to make the CommandInitializer package-private and to return its result into this class
+        // instead of regularly fetching the list of base commands from the other class.
+        for (CommandDescription commandDescription : CommandInitializer.getBaseCommands()) {
+            // Check whether there's a command description available for the
+            // current command
+            if (!commandDescription.isSuitableLabel(queryReference))
+                continue;
+
+            // Find the command reference, return the result
+            return commandDescription.findCommand(queryReference);
+        }
+
+        // No applicable command description found, return false
+        return null;
     }
 }

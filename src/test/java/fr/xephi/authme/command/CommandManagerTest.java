@@ -18,7 +18,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Test for {@link CommandManager}, especially to guarantee the integrity of the defined commands.
+ * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
  */
 public class CommandManagerTest {
 
@@ -28,24 +28,20 @@ public class CommandManagerTest {
      */
     private static int MAX_ALLOWED_DEPTH = 1;
 
-    private static CommandManager manager;
+    private static List<CommandDescription> commands;
 
     @BeforeClass
     public static void initializeCommandManager() {
-        manager = new CommandManager(true);
+        commands = CommandInitializer.getBaseCommands();
     }
 
     @Test
     public void shouldInitializeCommands() {
-        // given/when
-        int commandCount = manager.getCommandDescriptionCount();
-        List<CommandDescription> commands = manager.getCommandDescriptions();
-
-        // then
+        // given/when/then
         // It obviously doesn't make sense to test much of the concrete data
         // that is being initialized; we just want to guarantee with this test
         // that data is indeed being initialized and we take a few "probes"
-        assertThat(commandCount, equalTo(9));
+        assertThat(commands.size(), equalTo(9));
         assertThat(commandsIncludeLabel(commands, "authme"), equalTo(true));
         assertThat(commandsIncludeLabel(commands, "register"), equalTo(true));
         assertThat(commandsIncludeLabel(commands, "help"), equalTo(false));
@@ -62,7 +58,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), descriptionTester);
+        walkThroughCommands(commands, descriptionTester);
     }
 
     /** Ensure that all children of a command stored the parent. */
@@ -84,7 +80,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), connectionTester);
+        walkThroughCommands(commands, connectionTester);
     }
 
     @Test
@@ -105,7 +101,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), uniqueMappingTester);
+        walkThroughCommands(commands, uniqueMappingTester);
     }
 
     /**
@@ -132,7 +128,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), descriptionTester);
+        walkThroughCommands(commands, descriptionTester);
     }
 
     /**
@@ -143,7 +139,6 @@ public class CommandManagerTest {
     public void shouldNotHaveMultipleInstancesOfSameExecutableCommandSubType() {
         // given
         final Map<Class<? extends ExecutableCommand>, ExecutableCommand> implementations = new HashMap<>();
-        CommandManager manager = new CommandManager(true);
         BiConsumer descriptionTester = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
@@ -160,10 +155,7 @@ public class CommandManagerTest {
             }
         };
 
-        // when
-        List<CommandDescription> commands = manager.getCommandDescriptions();
-
-        // then
+        // when/then
         walkThroughCommands(commands, descriptionTester);
     }
 
@@ -186,7 +178,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), argumentOrderTester);
+        walkThroughCommands(commands, argumentOrderTester);
     }
 
     /**
@@ -209,7 +201,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), noArgumentForParentChecker);
+        walkThroughCommands(commands, noArgumentForParentChecker);
     }
 
 

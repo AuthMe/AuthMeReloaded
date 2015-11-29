@@ -15,9 +15,9 @@ import java.util.List;
  * Command description - defines which labels ("names") will lead to a command and points to the
  * {@link ExecutableCommand} implementation that executes the logic of the command.
  *
- * CommandDescription is built hierarchically and have one parent or {@code null} for base commands (main commands
- * such as /authme) and may have multiple children extending the mapping of the parent: e.g. if /authme has a child
- * whose label is "register", then "/authme register" is the command that the child defines.
+ * CommandDescription instances are built hierarchically and have one parent or {@code null} for base commands
+ * (main commands such as /authme) and may have multiple children extending the mapping of the parent: e.g. if
+ * /authme has a child whose label is "register", then "/authme register" is the command that the child defines.
  */
 public class CommandDescription {
 
@@ -68,6 +68,7 @@ public class CommandDescription {
      * @param detailedDescription Detailed comment description.
      * @param parent              Parent command.
      */
+    @Deprecated
     public CommandDescription(ExecutableCommand executableCommand, List<String> labels, String description, String detailedDescription, CommandDescription parent) {
         this(executableCommand, labels, description, detailedDescription, parent, null);
     }
@@ -82,6 +83,7 @@ public class CommandDescription {
      * @param parent              Parent command.
      * @param arguments           Command arguments.
      */
+    @Deprecated
     public CommandDescription(ExecutableCommand executableCommand, List<String> labels, String description, String detailedDescription, CommandDescription parent, List<CommandArgumentDescription> arguments) {
         setExecutableCommand(executableCommand);
         this.labels = labels;
@@ -739,6 +741,9 @@ public class CommandDescription {
         return new Builder();
     }
 
+    /**
+     * Builder for initializing CommandDescription objects.
+     */
     public static final class Builder {
         private List<String> labels;
         private String description;
@@ -750,7 +755,8 @@ public class CommandDescription {
         private CommandPermissions permissions;
 
         /**
-         * Build a CommandDescription from the builder.
+         * Build a CommandDescription from the builder or throw an exception if mandatory
+         * fields have not been set.
          *
          * @return The generated CommandDescription object
          */
@@ -796,6 +802,16 @@ public class CommandDescription {
             return this;
         }
 
+        /**
+         * Add an argument that the command description requires. This method can be called multiples times to add
+         * multiple arguments.
+         *
+         * @param label The label of the argument (single word name of the argument)
+         * @param description The description of the argument
+         * @param isOptional True if the argument is option, false if it is mandatory
+         *
+         * @return The builder
+         */
         public Builder withArgument(String label, String description, boolean isOptional) {
             arguments.add(new CommandArgumentDescription(label, description, isOptional));
             return this;

@@ -1,7 +1,26 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.HelpCommand;
-import fr.xephi.authme.command.executable.authme.*;
+import fr.xephi.authme.command.executable.authme.AccountsCommand;
+import fr.xephi.authme.command.executable.authme.AuthMeCommand;
+import fr.xephi.authme.command.executable.authme.ChangePasswordCommand;
+import fr.xephi.authme.command.executable.authme.FirstSpawnCommand;
+import fr.xephi.authme.command.executable.authme.ForceLoginCommand;
+import fr.xephi.authme.command.executable.authme.GetEmailCommand;
+import fr.xephi.authme.command.executable.authme.GetIpCommand;
+import fr.xephi.authme.command.executable.authme.LastLoginCommand;
+import fr.xephi.authme.command.executable.authme.PurgeBannedPlayersCommand;
+import fr.xephi.authme.command.executable.authme.PurgeCommand;
+import fr.xephi.authme.command.executable.authme.PurgeLastPositionCommand;
+import fr.xephi.authme.command.executable.authme.RegisterCommand;
+import fr.xephi.authme.command.executable.authme.ReloadCommand;
+import fr.xephi.authme.command.executable.authme.SetEmailCommand;
+import fr.xephi.authme.command.executable.authme.SetFirstSpawnCommand;
+import fr.xephi.authme.command.executable.authme.SetSpawnCommand;
+import fr.xephi.authme.command.executable.authme.SpawnCommand;
+import fr.xephi.authme.command.executable.authme.SwitchAntiBotCommand;
+import fr.xephi.authme.command.executable.authme.UnregisterCommand;
+import fr.xephi.authme.command.executable.authme.VersionCommand;
 import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
 import fr.xephi.authme.command.executable.converter.ConverterCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
@@ -11,6 +30,7 @@ import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.util.Wrapper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -20,132 +40,125 @@ import static fr.xephi.authme.command.CommandPermissions.DefaultPermission.ALLOW
 import static fr.xephi.authme.command.CommandPermissions.DefaultPermission.OP_ONLY;
 
 /**
+ * Initializes all available AuthMe commands.
  */
-public class CommandManager {
+public final class CommandInitializer {
 
-    /**
-     * The list of commandDescriptions.
-     */
-    private final List<CommandDescription> commandDescriptions = new ArrayList<>();
+    private static List<CommandDescription> baseCommands;
 
-    /**
-     * Constructor.
-     *
-     * @param registerCommands True to register the commands, false otherwise.
-     */
-    public CommandManager(boolean registerCommands) {
-        // Register the commands
-        if (registerCommands)
-            registerCommands();
+    private CommandInitializer() {
+        // Helper class
     }
 
-    /**
-     * Register all commands.
-     */
-    public void registerCommands() {
+    public static List<CommandDescription> getBaseCommands() {
+        if (baseCommands == null) {
+            Wrapper.getInstance().getLogger().info("Initializing AuthMe commands");
+            initializeCommands();
+        }
+        return baseCommands;
+    }
+
+    private static void initializeCommands() {
         // Create a list of help command labels
         final List<String> helpCommandLabels = Arrays.asList("help", "hlp", "h", "sos", "?");
-        ExecutableCommand helpCommandExecutable = new HelpCommand();
+        final ExecutableCommand helpCommandExecutable = new HelpCommand();
 
         // Register the base AuthMe Reloaded command
-        CommandDescription authMeBaseCommand = CommandDescription.builder()
-            .executableCommand(new AuthMeCommand())
+        final CommandDescription AUTHME_BASE = CommandDescription.builder()
             .labels("authme")
             .description("Main command")
             .detailedDescription("The main AuthMeReloaded command. The root for all admin commands.")
-            .parent(null)
+            .executableCommand(new AuthMeCommand())
             .build();
 
         // Register the help command
-        CommandDescription authMeHelpCommand = CommandDescription.builder()
-            .executableCommand(helpCommandExecutable)
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
             .labels(helpCommandLabels)
             .description("View help")
             .detailedDescription("View detailed help pages about AuthMeReloaded commands.")
-            .parent(authMeBaseCommand)
             .withArgument("query", "The command or query to view help for.", true)
+            .executableCommand(helpCommandExecutable)
             .build();
 
         // Register the register command
-        CommandDescription registerCommand = CommandDescription.builder()
-            .executableCommand(new RegisterCommand())
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
             .labels("register", "reg", "r")
             .description("Register a player")
             .detailedDescription("Register the specified player with the specified password.")
-            .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.REGISTER)
             .withArgument("player", "Player name", false)
             .withArgument("password", "Password", false)
+            .permissions(OP_ONLY, UserPermission.REGISTER)
+            .executableCommand(new RegisterCommand())
             .build();
 
         // Register the unregister command
-        CommandDescription unregisterCommand = CommandDescription.builder()
-            .executableCommand(new UnregisterCommand())
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
             .labels("unregister", "unreg", "unr")
             .description("Unregister a player")
             .detailedDescription("Unregister the specified player.")
-            .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.UNREGISTER)
             .withArgument("player", "Player name", false)
+            .permissions(OP_ONLY, UserPermission.UNREGISTER)
+            .executableCommand(new UnregisterCommand())
             .build();
 
         // Register the forcelogin command
-        CommandDescription forceLoginCommand = CommandDescription.builder()
-            .executableCommand(new ForceLoginCommand())
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
             .labels("forcelogin", "login")
             .description("Enforce login player")
             .detailedDescription("Enforce the specified player to login.")
-            .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.CAN_LOGIN_BE_FORCED)
             .withArgument("player", "Online player name", true)
+            .permissions(OP_ONLY, UserPermission.CAN_LOGIN_BE_FORCED)
+            .executableCommand(new ForceLoginCommand())
             .build();
 
         // Register the changepassword command
-        CommandDescription changePasswordCommand = CommandDescription.builder()
-            .executableCommand(new ChangePasswordCommand())
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
             .labels("password", "changepassword", "changepass", "cp")
             .description("Change a player's password")
             .detailedDescription("Change the password of a player.")
-            .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.CHANGE_PASSWORD)
             .withArgument("player", "Player name", false)
             .withArgument("pwd", "New password", false)
+            .permissions(OP_ONLY, UserPermission.CHANGE_PASSWORD)
+            .executableCommand(new ChangePasswordCommand())
             .build();
 
         // Register the last login command
-        CommandDescription lastLoginCommand = CommandDescription.builder()
-            .executableCommand(new LastLoginCommand())
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
             .labels("lastlogin", "ll")
             .description("Player's last login")
             .detailedDescription("View the date of the specified players last login.")
-            .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, AdminPermission.LAST_LOGIN)
             .withArgument("player", "Player name", true)
+            .permissions(OP_ONLY, AdminPermission.LAST_LOGIN)
+            .executableCommand(new LastLoginCommand())
             .build();
 
         // Register the accounts command
-        CommandDescription accountsCommand = CommandDescription.builder()
-            .executableCommand(new AccountsCommand())
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
             .labels("accounts", "account")
             .description("Display player accounts")
             .detailedDescription("Display all accounts of a player by his player name or IP.")
-            .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, AdminPermission.ACCOUNTS)
             .withArgument("player", "Player name or IP", true)
+            .permissions(OP_ONLY, AdminPermission.ACCOUNTS)
+            .executableCommand(new AccountsCommand())
             .build();
 
         // Register the getemail command
-        CommandDescription getEmailCommand = new CommandDescription(new GetEmailCommand(), new ArrayList<String>() {
-
-            {
-                add("getemail");
-                add("getmail");
-                add("email");
-                add("mail");
-            }
-        }, "Display player's email", "Display the email address of the specified player if set.", authMeBaseCommand);
-        getEmailCommand.setCommandPermissions(AdminPermission.GET_EMAIL, OP_ONLY);
-        getEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
+            .labels("getemail", "getmail", "email", "mail")
+            .description("Display player's email")
+            .detailedDescription("Display the email address of the specified player if set.")
+            .withArgument("player", "Player name", true)
+            .permissions(OP_ONLY, AdminPermission.GET_EMAIL)
+            .executableCommand(new GetEmailCommand())
+            .build();
 
         // Register the setemail command
         CommandDescription setEmailCommand = new CommandDescription(new SetEmailCommand(), new ArrayList<String>() {
@@ -156,7 +169,7 @@ public class CommandManager {
                 add("setemail");
                 add("setmail");
             }
-        }, "Change player's email", "Change the email address of the specified player.", authMeBaseCommand);
+        }, "Change player's email", "Change the email address of the specified player.", AUTHME_BASE);
         setEmailCommand.setCommandPermissions(AdminPermission.CHANGE_EMAIL, OP_ONLY);
         setEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
         setEmailCommand.addArgument(new CommandArgumentDescription("email", "Player email", false));
@@ -168,7 +181,7 @@ public class CommandManager {
                 add("getip");
                 add("ip");
             }
-        }, "Get player's IP", "Get the IP address of the specified online player.", authMeBaseCommand);
+        }, "Get player's IP", "Get the IP address of the specified online player.", AUTHME_BASE);
         getIpCommand.setCommandPermissions(AdminPermission.GET_IP, OP_ONLY);
         getIpCommand.addArgument(new CommandArgumentDescription("player", "Online player name", true));
 
@@ -179,7 +192,7 @@ public class CommandManager {
                 add("spawn");
                 add("home");
             }
-        }, "Teleport to spawn", "Teleport to the spawn.", authMeBaseCommand);
+        }, "Teleport to spawn", "Teleport to the spawn.", AUTHME_BASE);
         spawnCommand.setCommandPermissions(AdminPermission.SPAWN, OP_ONLY);
 
         // Register the setspawn command
@@ -189,7 +202,7 @@ public class CommandManager {
                 add("setspawn");
                 add("chgspawn");
             }
-        }, "Change the spawn", "Change the player's spawn to your current position.", authMeBaseCommand);
+        }, "Change the spawn", "Change the player's spawn to your current position.", AUTHME_BASE);
         setSpawnCommand.setCommandPermissions(AdminPermission.SET_SPAWN, OP_ONLY);
 
         // Register the firstspawn command
@@ -199,7 +212,7 @@ public class CommandManager {
                 add("firstspawn");
                 add("firsthome");
             }
-        }, "Teleport to first spawn", "Teleport to the first spawn.", authMeBaseCommand);
+        }, "Teleport to first spawn", "Teleport to the first spawn.", AUTHME_BASE);
         firstSpawnCommand.setCommandPermissions(AdminPermission.FIRST_SPAWN, OP_ONLY);
 
         // Register the setfirstspawn command
@@ -209,7 +222,7 @@ public class CommandManager {
                 add("setfirstspawn");
                 add("chgfirstspawn");
             }
-        }, "Change the first spawn", "Change the first player's spawn to your current position.", authMeBaseCommand);
+        }, "Change the first spawn", "Change the first player's spawn to your current position.", AUTHME_BASE);
         setFirstSpawnCommand.setCommandPermissions(AdminPermission.SET_FIRST_SPAWN, OP_ONLY);
 
         // Register the purge command
@@ -219,7 +232,7 @@ public class CommandManager {
                 add("purge");
                 add("delete");
             }
-        }, "Purge old data", "Purge old AuthMeReloaded data longer than the specified amount of days ago.", authMeBaseCommand);
+        }, "Purge old data", "Purge old AuthMeReloaded data longer than the specified amount of days ago.", AUTHME_BASE);
         purgeCommand.setCommandPermissions(AdminPermission.PURGE, OP_ONLY);
         purgeCommand.addArgument(new CommandArgumentDescription("days", "Number of days", false));
 
@@ -234,7 +247,7 @@ public class CommandManager {
                 add("resetlastposition");
                 add("resetlastpos");
             }
-        }, "Purge player's last position", "Purge the last know position of the specified player.", authMeBaseCommand);
+        }, "Purge player's last position", "Purge the last know position of the specified player.", AUTHME_BASE);
         purgeLastPositionCommand.setCommandPermissions(AdminPermission.PURGE_LAST_POSITION, OP_ONLY);
         purgeLastPositionCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
 
@@ -247,7 +260,7 @@ public class CommandManager {
                 add("deletebannedplayers");
                 add("deletebannedplayer");
             }
-        }, "Purge banned palyers data", "Purge all AuthMeReloaded data for banned players.", authMeBaseCommand);
+        }, "Purge banned palyers data", "Purge all AuthMeReloaded data for banned players.", AUTHME_BASE);
         purgeBannedPlayersCommand.setCommandPermissions(AdminPermission.PURGE_BANNED_PLAYERS, OP_ONLY);
 
         // Register the switchantibot command
@@ -258,7 +271,7 @@ public class CommandManager {
                 add("toggleantibot");
                 add("antibot");
             }
-        }, "Switch AntiBot mode", "Switch or toggle the AntiBot mode to the specified state.", authMeBaseCommand);
+        }, "Switch AntiBot mode", "Switch or toggle the AntiBot mode to the specified state.", AUTHME_BASE);
         switchAntiBotCommand.setCommandPermissions(AdminPermission.SWITCH_ANTIBOT, OP_ONLY);
         switchAntiBotCommand.addArgument(new CommandArgumentDescription("mode", "ON / OFF", true));
 
@@ -282,7 +295,7 @@ public class CommandManager {
                 add("reload");
                 add("rld");
             }
-        }, "Reload plugin", "Reload the AuthMeReloaded plugin.", authMeBaseCommand);
+        }, "Reload plugin", "Reload the AuthMeReloaded plugin.", AUTHME_BASE);
         reloadCommand.setCommandPermissions(AdminPermission.RELOAD, OP_ONLY);
 
         // Register the version command
@@ -292,7 +305,7 @@ public class CommandManager {
             .description("Version info")
             .detailedDescription("Show detailed information about the installed AuthMeReloaded version, and shows the "
                 + "developers, contributors, license and other information.")
-            .parent(authMeBaseCommand)
+            .parent(AUTHME_BASE)
             .build();
 
         // Register the base login command
@@ -461,59 +474,15 @@ public class CommandManager {
         converterHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 
         // Add the base commands to the commands array
-        this.commandDescriptions.add(authMeBaseCommand);
-        this.commandDescriptions.add(loginBaseCommand);
-        this.commandDescriptions.add(logoutBaseCommand);
-        this.commandDescriptions.add(registerBaseCommand);
-        this.commandDescriptions.add(unregisterBaseCommand);
-        this.commandDescriptions.add(changePasswordBaseCommand);
-        this.commandDescriptions.add(emailBaseCommand);
-        this.commandDescriptions.add(captchaBaseCommand);
-        this.commandDescriptions.add(converterBaseCommand);
-    }
-
-    /**
-     * Get the list of command descriptions
-     *
-     * @return List of command descriptions.
-     */
-    public List<CommandDescription> getCommandDescriptions() {
-        return this.commandDescriptions;
-    }
-
-    /**
-     * Get the number of command description count.
-     *
-     * @return Command description count.
-     */
-    public int getCommandDescriptionCount() {
-        return this.getCommandDescriptions().size();
-    }
-
-    /**
-     * Find the best suitable command for the specified reference.
-     *
-     * @param queryReference The query reference to find a command for.
-     *
-     * @return The command found, or null.
-     */
-    public FoundCommandResult findCommand(CommandParts queryReference) {
-        // Make sure the command reference is valid
-        if (queryReference.getCount() <= 0)
-            return null;
-
-        // Get the base command description
-        for (CommandDescription commandDescription : this.commandDescriptions) {
-            // Check whether there's a command description available for the
-            // current command
-            if (!commandDescription.isSuitableLabel(queryReference))
-                continue;
-
-            // Find the command reference, return the result
-            return commandDescription.findCommand(queryReference);
-        }
-
-        // No applicable command description found, return false
-        return null;
+        baseCommands = Arrays.asList(
+            AUTHME_BASE,
+            loginBaseCommand,
+            logoutBaseCommand,
+            registerBaseCommand,
+            unregisterBaseCommand,
+            changePasswordBaseCommand,
+            emailBaseCommand,
+            captchaBaseCommand,
+            converterBaseCommand);
     }
 }
