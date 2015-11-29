@@ -3,7 +3,7 @@ authors: [${pluginAuthors}]
 website: ${project.url}
 description: ${project.description}
 main: ${mainClass}
-version: ${project.version}-b${env.BUILD_NUMBER}
+version: ${project.version}-b${buildNumber}-t${build.time}
 softdepend:
     - Vault
     - PermissionsBukkit

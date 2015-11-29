@@ -53,6 +53,7 @@
         <pluginName>AuthMe</pluginName>
         <mainClass>fr.xephi.authme.AuthMe</mainClass>
         <pluginAuthors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</pluginAuthors>
+        <buildNumber>Unknown</buildNumber>
 
         <!-- Change Compiler Version (JDK) HERE! -->
         <javaVersion>1.7</javaVersion>
@@ -60,6 +61,20 @@
         <!-- Change Bukkit Version HERE! -->
         <bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
     </properties>
+
+    <profiles>
+        <profile>
+            <id>jenkins</id>
+            <activation>
+                <property>
+                    <name>env.BUILD_NUMBER</name>
+                </property>
+            </activation>
+            <properties>
+                <buildNumber>${env.BUILD_NUMBER}</buildNumber>
+            </properties>
+        </profile>
+    </profiles>
 
     <build>
         <finalName>AuthMe-${project.version}</finalName>
@@ -101,6 +116,39 @@
             </testResource>
         </testResources>
 
+		<!-- Just to keep Eclipse compatibility... -->
+		<pluginManagement>
+		    <plugins>
+		        <plugin>
+		            <groupId>org.eclipse.m2e</groupId>
+		            <artifactId>lifecycle-mapping</artifactId>
+		            <version>1.0.0</version>
+		            <configuration>
+		                <lifecycleMappingMetadata>
+		                    <pluginExecutions>
+		                        <pluginExecution>
+		                            <pluginExecutionFilter>
+		                                <groupId>org.codehaus.mojo</groupId>
+		                                <artifactId>buildnumber-maven-plugin</artifactId>
+		                                <versionRange>[1.0,)</versionRange>
+		                                <goals>
+		                                    <goal>create-timestamp</goal>
+		                                </goals>
+		                            </pluginExecutionFilter>
+		                            <action>
+		                                <execute>
+		                                    <runOnConfiguration>true</runOnConfiguration>
+		                                    <runOnIncremental>true</runOnIncremental>
+		                                </execute>
+		                            </action>
+		                        </pluginExecution>
+		                    </pluginExecutions>
+		                </lifecycleMappingMetadata>
+		            </configuration>
+		        </plugin>
+		    </plugins>
+		</pluginManagement>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -111,6 +159,23 @@
                     <target>${javaVersion}</target>
                 </configuration>
             </plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+			    <artifactId>buildnumber-maven-plugin</artifactId>
+			    <version>1.4</version>
+			    <configuration>
+			  		<timestampFormat>dd-MM-yy_HH:mm</timestampFormat>
+			    	<timestampPropertyName>build.time</timestampPropertyName>
+			    </configuration>
+			    <executions>
+			    	<execution>
+			        	<phase>generate-resources</phase>
+			            <goals>
+			       			<goal>create-timestamp</goal>
+			    		</goals>
+			    	</execution>
+			    </executions>
+			</plugin>
 
             <!-- TODO: we need also to relocate the other libs -->
             <plugin>

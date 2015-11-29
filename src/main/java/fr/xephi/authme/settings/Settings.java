@@ -69,7 +69,7 @@ public final class Settings extends YamlConfiguration {
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
         customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
-    public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
+    public static String helpHeader, getNickRegex, getUnloggedinGroup, getMySQLHost,
         getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
         getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
         getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
@@ -129,6 +129,7 @@ public final class Settings extends YamlConfiguration {
 
 
     public static void loadVariables() {
+        helpHeader = configFile.getString("settings.helpHeader", "AuthMeReloaded");
         messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en").toLowerCase());
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
@@ -549,6 +550,10 @@ public final class Settings extends YamlConfiguration {
             countriesBlacklist = new ArrayList<>();
             countriesBlacklist.add("A1");
             set("Protection.countriesBlacklist", countriesBlacklist);
+            changes = true;
+        }
+        if (!contains("settings.helpHeader")) {
+            set("settings.helpHeader", "AuthMeReloaded");
             changes = true;
         }
         if (!contains("settings.broadcastWelcomeMessage")) {
