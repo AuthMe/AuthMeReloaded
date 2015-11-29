@@ -164,7 +164,7 @@
 			    <artifactId>buildnumber-maven-plugin</artifactId>
 			    <version>1.4</version>
 			    <configuration>
-			  		<timestampFormat>dd-MM-yy_HH:mm</timestampFormat>
+			  		<timestampFormat>dd-MM-yy_HH-mm</timestampFormat>
 			    	<timestampPropertyName>build.time</timestampPropertyName>
 			    </configuration>
 			    <executions>
