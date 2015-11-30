@@ -117,7 +117,10 @@ public class LimboCache {
      * @param name String
      */
     public void deleteLimboPlayer(String name) {
-        cache.remove(name);
+        if(cache.containsKey(name)) {
+            cache.get(name).clearTask();
+            cache.remove(name);
+        }
     }
 
     /**
@@ -148,8 +151,9 @@ public class LimboCache {
      * @param player Player
      */
     public void updateLimboPlayer(Player player) {
-        if (this.hasLimboPlayer(player.getName().toLowerCase())) {
-            this.deleteLimboPlayer(player.getName().toLowerCase());
+        String name = player.getName().toLowerCase();
+        if (hasLimboPlayer(name)) {
+            deleteLimboPlayer(name);
         }
         addLimboPlayer(player);
     }

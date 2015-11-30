@@ -50,13 +50,11 @@ public class AsynchronousJoin {
     }
 
     public void process() {
-        if (AuthMePlayerListener.gameMode.containsKey(name))
-            AuthMePlayerListener.gameMode.remove(name);
-        AuthMePlayerListener.gameMode.putIfAbsent(name, player.getGameMode());
-
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
+        if (Utils.isUnrestricted(player)) {
             return;
         }
+
+        AuthMePlayerListener.gameMode.put(name, player.getGameMode());
 
         if (plugin.ess != null && Settings.disableSocialSpy) {
             plugin.ess.getUser(player).setSocialSpyEnabled(false);
