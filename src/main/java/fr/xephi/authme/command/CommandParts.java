@@ -1,20 +1,24 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.util.StringUtils;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.xephi.authme.util.ListUtils;
-import fr.xephi.authme.util.StringUtils;
-
+/**
+ */
 public class CommandParts {
 
-    /** The list of parts for this command. */
-    private List<String> parts = new ArrayList<>();
+    /**
+     * The list of parts for this command.
+     */
+    private final List<String> parts = new ArrayList<>();
 
     /**
      * Constructor.
      */
-    public CommandParts() { }
+    public CommandParts() {
+    }
 
     /**
      * Constructor.
@@ -46,7 +50,7 @@ public class CommandParts {
     /**
      * Constructor.
      *
-     * @param base The base part.
+     * @param base  The base part.
      * @param parts The list of additional parts.
      */
     public CommandParts(String base, List<String> parts) {
@@ -93,7 +97,7 @@ public class CommandParts {
      * @return The result.
      */
     public boolean add(String[] parts) {
-        for(String entry : parts)
+        for (String entry : parts)
             add(entry);
         return true;
     }
@@ -116,7 +120,7 @@ public class CommandParts {
      */
     public String get(int i) {
         // Make sure the index is in-bound
-        if(i < 0 || i >= getCount())
+        if (i < 0 || i >= getCount())
             return null;
 
         // Get and return the argument
@@ -147,10 +151,10 @@ public class CommandParts {
         List<String> elements = new ArrayList<>();
 
         // Get the range
-        for(int i = start; i < start + count; i++) {
+        for (int i = start; i < start + count; i++) {
             // Get the part and add it if it's valid
             String element = get(i);
-            if(element != null)
+            if (element != null)
                 elements.add(element);
         }
 
@@ -172,21 +176,21 @@ public class CommandParts {
     /**
      * Get the difference value between two references.
      *
-     * @param other The other reference.
+     * @param other       The other reference.
      * @param fullCompare True to compare the full references as far as the range reaches.
      *
      * @return The result from zero to above. A negative number will be returned on error.
      */
     public double getDifference(CommandParts other, boolean fullCompare) {
         // Make sure the other reference is correct
-        if(other == null)
+        if (other == null)
             return -1;
 
         // Get the range to use
         int range = Math.min(this.getCount(), other.getCount());
 
         // Get and the difference
-        if(fullCompare)
+        if (fullCompare)
             return StringUtils.getDifference(this.toString(), other.toString());
         return StringUtils.getDifference(this.getRange(range - 1, 1).toString(), other.getRange(range - 1, 1).toString());
     }
@@ -198,6 +202,6 @@ public class CommandParts {
      */
     @Override
     public String toString() {
-        return ListUtils.implode(this.parts, " ");
+        return StringUtils.join(" ", this.parts);
     }
 }

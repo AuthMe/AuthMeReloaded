@@ -1,15 +1,14 @@
 package fr.xephi.authme.security.pbkdf2;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
 /**
  * Default PRF implementation based on standard javax.crypt.Mac mechanisms.
- *
+ * <p>
  * <hr />
  * <p>
  * A free Java implementation of Password Based Key Derivation Function 2 as
@@ -47,13 +46,12 @@ public class MacBasedPRF implements PRF {
 
     protected int hLen;
 
-    protected String macAlgorithm;
+    protected final String macAlgorithm;
 
     /**
      * Create Mac-based Pseudo Random Function.
      *
-     * @param macAlgorithm
-     *            Mac algorithm to use, i.e. HMacSHA1 or HMacMD5.
+     * @param macAlgorithm Mac algorithm to use, i.e. HMacSHA1 or HMacMD5.
      */
     public MacBasedPRF(String macAlgorithm) {
         this.macAlgorithm = macAlgorithm;
@@ -65,6 +63,12 @@ public class MacBasedPRF implements PRF {
         }
     }
 
+    /**
+     * Constructor for MacBasedPRF.
+     *
+     * @param macAlgorithm String
+     * @param provider     String
+     */
     public MacBasedPRF(String macAlgorithm, String provider) {
         this.macAlgorithm = macAlgorithm;
         try {
@@ -75,15 +79,34 @@ public class MacBasedPRF implements PRF {
         }
     }
 
+    /**
+     * Method doFinal.
+     *
+     * @param M byte[]
+     *
+     * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PRF#doFinal(byte[])
+     */
     public byte[] doFinal(byte[] M) {
         byte[] r = mac.doFinal(M);
         return r;
     }
 
+    /**
+     * Method getHLen.
+     *
+     * @return int * @see fr.xephi.authme.security.pbkdf2.PRF#getHLen()
+     */
     public int getHLen() {
         return hLen;
     }
 
+    /**
+     * Method init.
+     *
+     * @param P byte[]
+     *
+     * @see fr.xephi.authme.security.pbkdf2.PRF#init(byte[])
+     */
     public void init(byte[] P) {
         try {
             mac.init(new SecretKeySpec(P, macAlgorithm));

@@ -1,13 +1,14 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Spawn;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
+/**
+ */
 public class SpawnCommand extends ExecutableCommand {
 
     /**

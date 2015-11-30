@@ -1,12 +1,13 @@
 package fr.xephi.authme.hooks;
 
-import java.io.File;
-
+import fr.xephi.authme.settings.CustomConfiguration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import fr.xephi.authme.settings.CustomConfiguration;
+import java.io.File;
 
+/**
+ */
 public class EssSpawn extends CustomConfiguration {
 
     private static EssSpawn spawn;
@@ -17,6 +18,11 @@ public class EssSpawn extends CustomConfiguration {
         load();
     }
 
+    /**
+     * Method getInstance.
+     *
+     * @return EssSpawn
+     */
     public static EssSpawn getInstance() {
         if (spawn == null) {
             spawn = new EssSpawn();
@@ -24,6 +30,11 @@ public class EssSpawn extends CustomConfiguration {
         return spawn;
     }
 
+    /**
+     * Method getLocation.
+     *
+     * @return Location
+     */
     public Location getLocation() {
         try {
             if (!this.contains("spawns.default.world"))

@@ -1,12 +1,5 @@
 package fr.xephi.authme.process.login;
 
-import java.util.Date;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -15,40 +8,69 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.permission.UserPermission;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitTask;
 
-public class AsyncronousLogin {
+import java.util.Date;
+import java.util.List;
 
-    protected Player player;
-    protected String name;
-    protected String realName;
-    protected String password;
-    protected boolean forceLogin;
-    private AuthMe plugin;
-    private DataSource database;
-    private static RandomString rdm = new RandomString(Settings.captchaLength);
-    private Messages m = Messages.getInstance();
+/**
+ */
+public class AsynchronousLogin {
 
-    public AsyncronousLogin(Player player, String password, boolean forceLogin,
-                            AuthMe plugin, DataSource data) {
+    private static final RandomString rdm = new RandomString(Settings.captchaLength);
+    protected final Player player;
+    protected final String name;
+    protected final String realName;
+    protected final String password;
+    protected final boolean forceLogin;
+    private final AuthMe plugin;
+    private final DataSource database;
+    private final Messages m;
+
+    /**
+     * Constructor for AsynchronousLogin.
+     *
+     * @param player     Player
+     * @param password   String
+     * @param forceLogin boolean
+     * @param plugin     AuthMe
+     * @param data       DataSource
+     */
+    public AsynchronousLogin(Player player, String password, boolean forceLogin, AuthMe plugin, DataSource data) {
+        this.m = plugin.getMessages();
         this.player = player;
+        this.name = player.getName().toLowerCase();
         this.password = password;
-        name = player.getName().toLowerCase();
-        realName = player.getName();
+        this.realName = player.getName();
         this.forceLogin = forceLogin;
         this.plugin = plugin;
         this.database = data;
     }
 
+    /**
+     * Method getIP.
+     *
+     * @return String
+     */
     protected String getIP() {
         return plugin.getIP(player);
     }
 
+    /**
+     * Method needsCaptcha.
+     *
+     * @return boolean
+     */
     protected boolean needsCaptcha() {
         if (Settings.useCaptcha) {
             if (!plugin.captcha.containsKey(name)) {
@@ -60,7 +82,7 @@ public class AsyncronousLogin {
             }
             if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
                 plugin.cap.put(name, rdm.nextString());
-                for (String s : m.send("usage_captcha")) {
+                for (String s : m.retrieve(MessageKey.USAGE_CAPTCHA)) {
                     player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
                 }
                 return true;
@@ -75,40 +97,42 @@ public class AsyncronousLogin {
     /**
      * Checks the precondition for authentication (like user known) and returns
      * the playerAuth-State
+     *
+     * @return PlayerAuth
      */
     protected PlayerAuth preAuth() {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
-            m.send(player, "logged_in");
+            m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
         }
         if (!database.isAuthAvailable(name)) {
-            m.send(player, "user_unknown");
+            m.send(player, MessageKey.USER_NOT_REGISTERED);
             if (LimboCache.getInstance().hasLimboPlayer(name)) {
                 LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
                 String[] msg;
                 if (Settings.emailRegistration) {
-                    msg = m.send("reg_email_msg");
+                    msg = m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE);
                 } else {
-                    msg = m.send("reg_msg");
+                    msg = m.retrieve(MessageKey.REGISTER_MESSAGE);
                 }
                 BukkitTask msgT = Bukkit.getScheduler().runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, Settings.getWarnMessageInterval));
                 LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
             }
             return null;
         }
-        if (Settings.getMaxLoginPerIp > 0 && !plugin.authmePermissible(player, "authme.allow2accounts") && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
+        if (Settings.getMaxLoginPerIp > 0 && !plugin.getPermissionsManager().hasPermission(player, UserPermission.ALLOW_MULTIPLE_ACCOUNTS) && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
             if (plugin.isLoggedIp(name, getIP())) {
-                m.send(player, "logged_in");
+                m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
                 return null;
             }
         }
         PlayerAuth pAuth = database.getAuth(name);
         if (pAuth == null) {
-            m.send(player, "user_unknown");
+            m.send(player, MessageKey.USER_NOT_REGISTERED);
             return null;
         }
         if (!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
-            m.send(player, "vb_nonActiv");
+            m.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
             return null;
         }
         AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
@@ -131,7 +155,7 @@ public class AsyncronousLogin {
                 passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, realName);
             } catch (Exception ex) {
                 ConsoleLogger.showError(ex.getMessage());
-                m.send(player, "error");
+                m.send(player, MessageKey.ERROR);
                 return;
             }
         if (passwordVerified && player.isOnline()) {
@@ -149,17 +173,19 @@ public class AsyncronousLogin {
 
             player.setNoDamageTicks(0);
             if (!forceLogin)
-                m.send(player, "login");
+                m.send(player, MessageKey.LOGIN_SUCCESS);
 
             displayOtherAccounts(auth, player);
 
             if (Settings.recallEmail) {
-                if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
-                    m.send(player, "add_email");
+                if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com")) {
+                    m.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+                }
             }
 
-            if (!Settings.noConsoleSpam)
+            if (!Settings.noConsoleSpam) {
                 ConsoleLogger.info(realName + " logged in!");
+            }
 
             // makes player isLoggedin via API
             PlayerCache.getInstance().addPlayer(auth);
@@ -189,17 +215,23 @@ public class AsyncronousLogin {
                         if (AuthMePlayerListener.gameMode != null && AuthMePlayerListener.gameMode.containsKey(name)) {
                             player.setGameMode(AuthMePlayerListener.gameMode.get(name));
                         }
-                        player.kickPlayer(m.send("wrong_pwd")[0]);
+                        player.kickPlayer(m.retrieveSingle(MessageKey.WRONG_PASSWORD));
                     }
                 });
             } else {
-                m.send(player, "wrong_pwd");
+                m.send(player, MessageKey.WRONG_PASSWORD);
             }
         } else {
             ConsoleLogger.showError("Player " + name + " wasn't online during login process, aborted... ");
         }
     }
 
+    /**
+     * Method displayOtherAccounts.
+     *
+     * @param auth PlayerAuth
+     * @param p    Player
+     */
     public void displayOtherAccounts(PlayerAuth auth, Player p) {
         if (!Settings.displayOtherAccounts) {
             return;
@@ -226,7 +258,7 @@ public class AsyncronousLogin {
             if (i != auths.size()) {
                 message.append(", ");
             } else {
-                message.append(".");
+                message.append('.');
             }
         }
         /*
@@ -236,7 +268,7 @@ public class AsyncronousLogin {
          * uuidaccounts + "."; } }
          */
         for (Player player : Utils.getOnlinePlayers()) {
-            if (plugin.authmePermissible(player, "authme.seeOtherAccounts")) {
+            if (plugin.getPermissionsManager().hasPermission(player, UserPermission.SEE_OTHER_ACCOUNTS)) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
                 player.sendMessage(message.toString());
                 // player.sendMessage(uuidaccounts.replace("%size%",

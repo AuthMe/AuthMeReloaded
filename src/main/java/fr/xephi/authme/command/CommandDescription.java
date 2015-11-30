@@ -1,56 +1,72 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.util.StringUtils;
+import org.bukkit.command.CommandSender;
+
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.bukkit.command.CommandSender;
-
-import fr.xephi.authme.util.StringUtils;
-
+/**
+ * Command description - defines which labels ("names") will lead to a command and points to the
+ * {@link ExecutableCommand} implementation that executes the logic of the command.
+ *
+ * CommandDescription is built hierarchically and have one parent or {@code null} for base commands (main commands
+ * such as /authme) and may have multiple children extending the mapping of the parent: e.g. if /authme has a child
+ * whose label is "register", then "/authme register" is the command that the child defines.
+ */
 public class CommandDescription {
 
-    /** Defines the acceptable labels. */
-    private List<String> labels = new ArrayList<>();
-    /** Command description. */
-    private String description = "";
-    /** Detailed description. */
-    private String detailedDescription = "";
-    /** The executable command instance. */
-    private ExecutableCommand executableCommand;
-    /** The parent command. */
-    private CommandDescription parent = null;
-    /** The child labels. */
-    private List<CommandDescription> children = new ArrayList<>();
-    /** The command arguments. */
-    private List<CommandArgumentDescription> arguments = new ArrayList<>();
-    /** Defines whether there is an argument maximum or not. */
-    private boolean noArgumentMaximum = false;
-    /** Defines the command permissions. */
-    private CommandPermissions permissions = new CommandPermissions();
-
     /**
-     * Constructor.
-     *
-     * @param executableCommand The executable command, or null.
-     * @param label Command label.
-     * @param description Command description.
-     * @param detailedDescription Detailed comment description.
-     * @param parent Parent command.
+     * Defines the labels to execute the command. For example, if labels are "register" and "r" and the parent is
+     * the command for "/authme", then both "/authme register" and "/authme r" will be handled by this command.
      */
-    public CommandDescription(ExecutableCommand executableCommand, String label, String description, String detailedDescription, CommandDescription parent) {
-        this(executableCommand, label, description, parent, detailedDescription, null);
-    }
+    private List<String> labels;
+    /**
+     * Command description.
+     */
+    private String description;
+    /**
+     * Detailed description of the command.
+     */
+    private String detailedDescription;
+    /**
+     * The executable command instance.
+     */
+    private ExecutableCommand executableCommand;
+    /**
+     * The parent command.
+     */
+    private CommandDescription parent;
+    /**
+     * The child commands that extend this command.
+     */
+    private List<CommandDescription> children = new ArrayList<>();
+    /**
+     * The arguments the command takes.
+     */
+    private List<CommandArgumentDescription> arguments;
+    /**
+     * Defines whether there is an argument maximum or not.
+     */
+    private boolean noArgumentMaximum;
+    /**
+     * Defines the command permissions.
+     */
+    private CommandPermissions permissions;
 
     /**
      * Constructor.
      *
-     * @param executableCommand The executable command, or null.
-     * @param labels List of command labels.
-     * @param description Command description.
+     * @param executableCommand   The executable command, or null.
+     * @param labels              List of command labels.
+     * @param description         Command description.
      * @param detailedDescription Detailed comment description.
-     * @param parent Parent command.
+     * @param parent              Parent command.
      */
     public CommandDescription(ExecutableCommand executableCommand, List<String> labels, String description, String detailedDescription, CommandDescription parent) {
         this(executableCommand, labels, description, detailedDescription, parent, null);
@@ -59,54 +75,69 @@ public class CommandDescription {
     /**
      * Constructor.
      *
-     * @param executableCommand The executable command, or null.
-     * @param label Command label.
-     * @param description Command description.
-     * @param parent Parent command.
+     * @param executableCommand   The executable command, or null.
+     * @param labels              List of command labels.
+     * @param description         Command description.
      * @param detailedDescription Detailed comment description.
-     * @param arguments Command arguments.
-     */
-    public CommandDescription(ExecutableCommand executableCommand, String label, String description, CommandDescription parent, String detailedDescription, List<CommandArgumentDescription> arguments) {
-        setExecutableCommand(executableCommand);
-        setLabel(label);
-        setDescription(description);
-        setDetailedDescription(detailedDescription);
-        setParent(parent);
-        setArguments(arguments);
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param executableCommand The executable command, or null.
-     * @param labels List of command labels.
-     * @param description Command description.
-     * @param detailedDescription Detailed comment description.
-     * @param parent Parent command.
-     * @param arguments Command arguments.
+     * @param parent              Parent command.
+     * @param arguments           Command arguments.
      */
     public CommandDescription(ExecutableCommand executableCommand, List<String> labels, String description, String detailedDescription, CommandDescription parent, List<CommandArgumentDescription> arguments) {
         setExecutableCommand(executableCommand);
-        setLabels(labels);
-        setDescription(description);
-        setDetailedDescription(detailedDescription);
+        this.labels = labels;
+        this.description = description;
+        this.detailedDescription = detailedDescription;
         setParent(parent);
         setArguments(arguments);
     }
 
     /**
-     * Get the first relative command label.
+     * Private constructor. Use {@link CommandDescription#builder()} to create instances of this class.
      *
-     * @return First relative command label.
+     * @param executableCommand   The executable command, or null.
+     * @param labels              List of command labels.
+     * @param description         Command description.
+     * @param detailedDescription Detailed comment description.
+     * @param parent              Parent command.
+     * @param arguments           Command arguments.
      */
-    public String getLabel() {
-        // Ensure there's any item in the command list
-        if(this.labels.size() == 0)
-            return "";
+    private CommandDescription(List<String> labels, String description, String detailedDescription,
+                               ExecutableCommand executableCommand, CommandDescription parent,
+                               List<CommandArgumentDescription> arguments, boolean noArgumentMaximum,
+                               CommandPermissions permissions) {
+        this.labels = labels;
+        this.description = description;
+        this.detailedDescription = detailedDescription;
+        this.executableCommand = executableCommand;
+        this.parent = parent;
+        this.arguments = arguments;
+        this.noArgumentMaximum = noArgumentMaximum;
+        this.permissions = permissions;
 
-        // Return the first command on the list
-        return this.labels.get(0);
+        if (parent != null) {
+            // Passing `this` in constructor is not very nice; consider creating a "static create()" method instead
+            parent.addChild(this);
+        }
     }
+
+    /**
+     * Check whether two labels are equal to each other.
+     *
+     * @param commandLabel      The first command label.
+     * @param otherCommandLabel The other command label.
+     *
+     * @return True if the labels are equal to each other.
+     */
+    private static boolean commandLabelEquals(String commandLabel, String otherCommandLabel) {
+        // Trim the command labels from unwanted whitespaces
+        commandLabel = commandLabel.trim();
+        otherCommandLabel = otherCommandLabel.trim();
+
+        // Check whether the the two command labels are equal (case insensitive)
+        return (commandLabel.equalsIgnoreCase(otherCommandLabel));
+    }
+
+
 
     /**
      * Get the label most similar to the reference. The first label will be returned if no reference was supplied.
@@ -117,11 +148,11 @@ public class CommandDescription {
      */
     public String getLabel(CommandParts reference) {
         // Ensure there's any item in the command list
-        if(this.labels.size() == 0)
+        if (this.labels.size() == 0)
             return "";
 
         // Return the first label if we can't use the reference
-        if(reference == null)
+        if (reference == null)
             return this.labels.get(0);
 
         // Get the correct label from the reference
@@ -130,9 +161,9 @@ public class CommandDescription {
         // Check whether the preferred label is in the label list
         double currentDifference = -1;
         String currentLabel = this.labels.get(0);
-        for(String entry : this.labels) {
+        for (String entry : this.labels) {
             double entryDifference = StringUtils.getDifference(entry, preferred);
-            if(entryDifference < currentDifference || currentDifference < 0) {
+            if (entryDifference < currentDifference || currentDifference < 0) {
                 currentDifference = entryDifference;
                 currentLabel = entry;
             }
@@ -152,83 +183,6 @@ public class CommandDescription {
     }
 
     /**
-     * Set the list of command labels.
-     *
-     * @param labels New list of command labels. Null to clear the list of labels.
-     */
-    public void setLabels(List<String> labels) {
-        // Check whether the command label list should be cleared
-        if(labels == null)
-            this.labels.clear();
-
-        else
-            this.labels = labels;
-    }
-
-    /**
-     * Set the command label, this will append the command label to already existing ones.
-     *
-     * @param commandLabel Command label to set or add.
-     */
-    public void setLabel(String commandLabel) {
-        setLabel(commandLabel, false);
-    }
-
-    /**
-     * Set the command label.
-     *
-     * @param commandLabel Command label to set.
-     * @param overwrite True to replace all old command labels, false to append this command label to the currently
-     *                  existing labels.
-     *
-     * @return Trie if the command label is added, or if it was added already. False on failure.
-     */
-    public boolean setLabel(String commandLabel, boolean overwrite) {
-        // Check whether this new command should overwrite the previous ones
-        if(!overwrite)
-            return addLabel(commandLabel);
-
-        // Replace all labels with this new one
-        this.labels.clear();
-        return this.labels.add(commandLabel);
-    }
-
-    /**
-     * Add a command label to the list.
-     *
-     * @param commandLabel Command label to add.
-     *
-     * @return True if the label was added, or if it was added already. False on error.
-     */
-    public boolean addLabel(String commandLabel) {
-        // Verify the label
-        if(!isValidLabel(commandLabel))
-            return false;
-
-        // Ensure this command isn't a duplicate
-        if(hasLabel(commandLabel))
-            return true;
-
-        // Add the command to the list
-        return this.labels.add(commandLabel);
-    }
-
-    /**
-     * Add a list of command labels.
-     *
-     * @param commandLabels List of command labels to add.
-     *
-     * @return True if succeed, false on failure.
-     */
-    public boolean addLabels(List<String> commandLabels) {
-        // Add each command label separately
-        for(String cmd : commandLabels)
-            if(!addLabel(cmd))
-                return false;
-        return true;
-    }
-
-    /**
      * Check whether this command description has a specific command.
      *
      * @param commandLabel Command to check for.
@@ -237,27 +191,12 @@ public class CommandDescription {
      */
     public boolean hasLabel(String commandLabel) {
         // Check whether any command matches with the argument
-        for(String entry : this.labels)
-            if(commandLabelEquals(entry, commandLabel))
+        for (String entry : this.labels)
+            if (commandLabelEquals(entry, commandLabel))
                 return true;
 
         // No match found, return false
         return false;
-    }
-
-    /**
-     * Check whether this command description has a list of labels
-     * @param commandLabels List of labels
-     * @return True if all labels match, false otherwise
-     */
-    public boolean hasLabels(List<String> commandLabels) {
-        // Check if there's a match for every command
-        for(String cmd : commandLabels)
-            if(!hasLabel(cmd))
-                return false;
-
-        // There seems to be a match for every command, return true
-        return true;
     }
 
     /**
@@ -270,7 +209,7 @@ public class CommandDescription {
      */
     public boolean isSuitableLabel(CommandParts commandReference) {
         // Make sure the command reference is valid
-        if(commandReference.getCount() <= 0)
+        if (commandReference.getCount() <= 0)
             return false;
 
         // Get the parent count
@@ -281,30 +220,9 @@ public class CommandDescription {
     }
 
     /**
-     * Check whether a label is valid to use.
+     * Get the absolute command label, without a starting slash.
      *
-     * @param label The label to test.
-     *
-     * @return True if the label is valid to use, false otherwise.
-     */
-    public static boolean isValidLabel(String label) {
-        // Make sure the label isn't null
-        if(label == null)
-            return false;
-
-        // Trim the label
-        label = label.trim();
-
-        // Make sure the label is at least one character long
-        if(label.length() <= 0)
-            return false;
-
-        // Make sure the label doesn't contain any spaces, return the result
-        return !label.contains(" ");
-    }
-
-    /**
-     * Get the absolute command label, without a slash.
+     * @return The absolute label
      */
     public String getAbsoluteLabel() {
         return getAbsoluteLabel(false);
@@ -312,6 +230,8 @@ public class CommandDescription {
 
     /**
      * Get the absolute command label.
+     *
+     * @param includeSlash boolean
      *
      * @return Absolute command label.
      */
@@ -322,12 +242,15 @@ public class CommandDescription {
     /**
      * Get the absolute command label.
      *
+     * @param includeSlash
+     * @param reference
+     *
      * @return Absolute command label.
      */
     public String getAbsoluteLabel(boolean includeSlash, CommandParts reference) {
         // Get the command reference, and make sure it is valid
         CommandParts out = getCommandReference(reference);
-        if(out == null)
+        if (out == null)
             return "";
 
         // Return the result
@@ -346,7 +269,7 @@ public class CommandDescription {
         List<String> referenceList = new ArrayList<>();
 
         // Check whether this command has a parent, if so, add the absolute parent command
-        if(getParent() != null)
+        if (getParent() != null)
             referenceList.addAll(getParent().getCommandReference(reference).getList());
 
         // Get the current label
@@ -370,14 +293,14 @@ public class CommandDescription {
     /**
      * Get the difference between this command and another command reference.
      *
-     * @param other The other command reference.
+     * @param other       The other command reference.
      * @param fullCompare True to fully compare both command references.
      *
      * @return The command difference. Zero if there's no difference. A negative number on error.
      */
     public double getCommandDifference(CommandParts other, boolean fullCompare) {
         // Make sure the reference is valid
-        if(other == null)
+        if (other == null)
             return -1;
 
         // Get the command reference
@@ -417,7 +340,7 @@ public class CommandDescription {
     /**
      * Execute the command, if possible.
      *
-     * @param sender The command sender that triggered the execution of this command.
+     * @param sender           The command sender that triggered the execution of this command.
      * @param commandReference The command reference.
      * @param commandArguments The command arguments.
      *
@@ -425,7 +348,7 @@ public class CommandDescription {
      */
     public boolean execute(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Make sure the command is executable
-        if(!isExecutable())
+        if (!isExecutable())
             return false;
 
         // Execute the command, return the result
@@ -448,7 +371,7 @@ public class CommandDescription {
      */
     public int getParentCount() {
         // Check whether the this description has a parent
-        if(!hasParent())
+        if (!hasParent())
             return 0;
 
         // Get the parent count of the parent, return the result
@@ -464,14 +387,14 @@ public class CommandDescription {
      */
     public boolean setParent(CommandDescription parent) {
         // Make sure the parent is different
-        if(this.parent == parent)
+        if (this.parent == parent)
             return true;
 
         // Set the parent
         this.parent = parent;
 
         // Make sure the parent isn't null
-        if(parent == null)
+        if (parent == null)
             return true;
 
         // Add this description as a child to the parent
@@ -505,17 +428,15 @@ public class CommandDescription {
      */
     public boolean addChild(CommandDescription commandDescription) {
         // Make sure the description is valid
-        if(commandDescription == null)
-            return false;
-        if(!commandDescription.isValid())
+        if (commandDescription == null)
             return false;
 
         // Make sure the child doesn't exist already
-        if(isChild(commandDescription))
+        if (isChild(commandDescription))
             return true;
 
         // The command description to add as a child
-        if(!this.children.add(commandDescription))
+        if (!this.children.add(commandDescription))
             return false;
 
         // Set this description as parent on the child
@@ -523,25 +444,11 @@ public class CommandDescription {
     }
 
     /**
-     * Set the children of this command.
-     *
-     * @param children New command children. Null to remove all children.
-     */
-    public void setChildren(List<CommandDescription> children) {
-        // Check whether the children list should be cleared
-        if(children == null)
-            this.children.clear();
-
-        else
-            this.children = children;
-    }
-
-    /**
      * Check whether this command has any child labels.
      *
      * @return True if this command has any child labels.
      */
-    public boolean hasChilds() {
+    public boolean hasChildren() {
         return (this.children.size() != 0);
     }
 
@@ -554,9 +461,7 @@ public class CommandDescription {
      */
     public boolean isChild(CommandDescription commandDescription) {
         // Make sure the description is valid
-        if(commandDescription == null)
-            return false;
-        if(!commandDescription.isValid())
+        if (commandDescription == null) // TODO: After builder, commandDescription == null -> never
             return false;
 
         // Check whether this child exists, return the result
@@ -572,11 +477,11 @@ public class CommandDescription {
      */
     public boolean addArgument(CommandArgumentDescription argument) {
         // Make sure the argument is valid
-        if(argument == null)
+        if (argument == null)
             return false;
 
         // Make sure the argument isn't added already
-        if(hasArgument(argument))
+        if (hasArgument(argument))
             return true;
 
         // Add the argument, return the result
@@ -599,11 +504,14 @@ public class CommandDescription {
      */
     public void setArguments(List<CommandArgumentDescription> arguments) {
         // Convert null into an empty argument list
-        if(arguments == null)
-            this.arguments.clear();
-
-        else
+        if (arguments == null) {
+            // Note ljacqu 20151128: Temporary workaround to avoid null pointer exception. Soon we won't need setters
+            // on the main class (-> complete instantiation via Builder)
+            // TODO Remove this method once unused
+            this.arguments = new ArrayList<>();
+        } else {
             this.arguments = arguments;
+        }
     }
 
     /**
@@ -614,12 +522,7 @@ public class CommandDescription {
      * @return True if this argument already exists, false otherwise.
      */
     public boolean hasArgument(CommandArgumentDescription argument) {
-        // Make sure the argument is valid
-        if(argument == null)
-            return false;
-
-        // Check whether the argument exists, return the result
-        return this.arguments.contains(argument);
+        return argument != null && arguments.contains(argument);
     }
 
     /**
@@ -628,7 +531,7 @@ public class CommandDescription {
      * @return True if this command has any arguments.
      */
     public boolean hasArguments() {
-        return (this.arguments.size() != 0);
+        return !arguments.isEmpty();
     }
 
     /**
@@ -642,9 +545,9 @@ public class CommandDescription {
         int optionalArgument = 0;
 
         // Loop through each argument
-        for(CommandArgumentDescription argument : this.arguments) {
+        for (CommandArgumentDescription argument : this.arguments) {
             // Check whether the command is optional
-            if(!argument.isOptional()) {
+            if (!argument.isOptional()) {
                 requiredArguments += optionalArgument + 1;
                 optionalArgument = 0;
 
@@ -663,20 +566,12 @@ public class CommandDescription {
      */
     public int getMaximumArguments() {
         // Check whether there is a maximum set
-        if(this.noArgumentMaximum)
+        if (this.noArgumentMaximum)
+            // TODO ljacqu 20151128: Magic number
             return -1;
 
         // Return the maximum based on the registered arguments
         return this.arguments.size();
-    }
-
-    /**
-     * Set whether there is an argument maximum.
-     *
-     * @param maximumArguments True if there is an argument maximum, based on the number of registered arguments.
-     */
-    public void setMaximumArguments(boolean maximumArguments) {
-        this.noArgumentMaximum = !maximumArguments;
     }
 
     /**
@@ -689,25 +584,12 @@ public class CommandDescription {
     }
 
     /**
-     * Set the command description.
-     *
-     * @param description New command description. Null to reset the description.
-     */
-    public void setDescription(String description) {
-        if(description == null)
-            this.description = "";
-
-        else
-            this.description = description;
-    }
-
-    /**
      * Check whether this command has any description.
      *
      * @return True if this command has any description.
      */
     public boolean hasDescription() {
-        return (this.description.trim().length() != 0);
+        return !StringUtils.isEmpty(description);
     }
 
     /**
@@ -716,29 +598,7 @@ public class CommandDescription {
      * @return Command detailed description.
      */
     public String getDetailedDescription() {
-        return hasDetailedDescription() ? this.detailedDescription : this.description;
-    }
-
-    /**
-     * Set the command detailed description.
-     *
-     * @param detailedDescription New command description. Null to reset the description.
-     */
-    public void setDetailedDescription(String detailedDescription) {
-        if(detailedDescription == null)
-            this.detailedDescription = "";
-
-        else
-            this.detailedDescription = detailedDescription;
-    }
-
-    /**
-     * Check whether this command has any detailed description.
-     *
-     * @return True if this command has any detailed description.
-     */
-    public boolean hasDetailedDescription() {
-        return (this.detailedDescription.trim().length() != 0);
+        return !StringUtils.isEmpty(detailedDescription) ? this.detailedDescription : this.description;
     }
 
     /**
@@ -750,31 +610,31 @@ public class CommandDescription {
      */
     public FoundCommandResult findCommand(final CommandParts queryReference) {
         // Make sure the command reference is valid
-        if(queryReference.getCount() <= 0)
+        if (queryReference.getCount() <= 0)
             return null;
 
         // Check whether this description is for the last element in the command reference, if so return the current command
-        if(queryReference.getCount() <= getParentCount() + 1)
+        if (queryReference.getCount() <= getParentCount() + 1)
             return new FoundCommandResult(
-                    this,
-                    getCommandReference(queryReference),
-                    new CommandParts(),
-                    queryReference);
+                this,
+                getCommandReference(queryReference),
+                new CommandParts(),
+                queryReference);
 
         // Get the new command reference and arguments
         CommandParts newReference = new CommandParts(queryReference.getRange(0, getParentCount() + 1));
         CommandParts newArguments = new CommandParts(queryReference.getRange(getParentCount() + 1));
 
         // Handle the child's, if this command has any
-        if(getChildren().size() > 0) {
+        if (getChildren().size() > 0) {
             // Get a new instance of the child's list, and sort them by their difference in comparison to the query reference
             List<CommandDescription> commandChildren = new ArrayList<>(getChildren());
             Collections.sort(commandChildren, new Comparator<CommandDescription>() {
                 @Override
                 public int compare(CommandDescription o1, CommandDescription o2) {
                     return Double.compare(
-                            o1.getCommandDifference(queryReference),
-                            o2.getCommandDifference(queryReference));
+                        o1.getCommandDifference(queryReference),
+                        o2.getCommandDifference(queryReference));
                 }
             });
 
@@ -782,21 +642,21 @@ public class CommandDescription {
             double firstChildDifference = commandChildren.get(0).getCommandDifference(queryReference, true);
 
             // Check if the reference perfectly suits the arguments of the current command if it doesn't perfectly suits a child command
-            if(firstChildDifference > 0.0)
-                if(getSuitableArgumentsDifference(queryReference) == 0)
+            if (firstChildDifference > 0.0)
+                if (getSuitableArgumentsDifference(queryReference) == 0)
                     return new FoundCommandResult(this, newReference, newArguments, queryReference);
 
             // Loop through each child
-            for(CommandDescription child : commandChildren) {
+            for (CommandDescription child : commandChildren) {
                 // Get the best suitable command
                 FoundCommandResult result = child.findCommand(queryReference);
-                if(result != null)
+                if (result != null)
                     return result;
             }
         }
 
         // Check if the remaining command reference elements fit the arguments for this command
-        if(getSuitableArgumentsDifference(queryReference) >= 0)
+        if (getSuitableArgumentsDifference(queryReference) >= 0)
             return new FoundCommandResult(this, newReference, newArguments, queryReference);
 
         // No command found, return null
@@ -835,26 +695,29 @@ public class CommandDescription {
      */
     public int getSuitableArgumentsDifference(CommandParts commandReference) {
         // Make sure the command reference is valid
-        if(commandReference.getCount() <= 0)
+        if (commandReference.getCount() <= 0) {
             return -1;
+        }
 
         // Get the remaining command reference element count
         int remainingElementCount = commandReference.getCount() - getParentCount() - 1;
 
-        // Check if there are too less arguments
-        if(getMinimumArguments() > remainingElementCount)
+        // Check if there are too few arguments
+        if (getMinimumArguments() > remainingElementCount) {
             return Math.abs(getMinimumArguments() - remainingElementCount);
+        }
 
         // Check if there are too many arguments
-        if(getMaximumArguments() < remainingElementCount && getMaximumArguments() >= 0)
+        if (getMaximumArguments() < remainingElementCount && getMaximumArguments() >= 0) {
             return Math.abs(remainingElementCount - getMaximumArguments());
+        }
 
         // The arguments seem to be EQUALS, return the result
         return 0;
     }
 
     /**
-     * Get the command permissions.
+     * Get the command permissions. Return null if the command doesn't require any permission.
      *
      * @return The command permissions.
      */
@@ -865,54 +728,117 @@ public class CommandDescription {
     /**
      * Set the command permissions.
      *
-     * @param commandPermissions The command permissions.
-     */
-    public void setCommandPermissions(CommandPermissions commandPermissions) {
-        this.permissions = commandPermissions;
-    }
-
-    /**
-     * Set the command permissions.
-     *
-     * @param permissionNode The permission node required.
+     * @param permissionNode    The permission node required.
      * @param defaultPermission The default permission.
      */
-    public void setCommandPermissions(String permissionNode, CommandPermissions.DefaultPermission defaultPermission) {
+    public void setCommandPermissions(PermissionNode permissionNode, CommandPermissions.DefaultPermission defaultPermission) {
         this.permissions = new CommandPermissions(permissionNode, defaultPermission);
     }
 
-    /**
-     * Check whether two labels equal to each other.
-     *
-     * @param commandLabel The first command label.
-     * @param otherCommandLabel The other command label.
-     *
-     * @return True if the labels are equal to each other.
-     */
-    private static boolean commandLabelEquals(String commandLabel, String otherCommandLabel) {
-        // Trim the command labels from unwanted whitespaces
-        commandLabel = commandLabel.trim();
-        otherCommandLabel = otherCommandLabel.trim();
-
-        // Check whether the the two command labels are equal (case insensitive)
-        return (commandLabel.equalsIgnoreCase(otherCommandLabel));
+    public static Builder builder() {
+        return new Builder();
     }
 
-    /**
-     * Check whether the command description has been set up properly.
-     *
-     * @return True if the command description is valid, false otherwise.
-     */
-    public boolean isValid() {
-        // Make sure any command label is set
-        if(getLabels().size() == 0)
-            return false;
+    public static final class Builder {
+        private List<String> labels;
+        private String description;
+        private String detailedDescription;
+        private ExecutableCommand executableCommand;
+        private CommandDescription parent;
+        private List<CommandArgumentDescription> arguments = new ArrayList<>();
+        private boolean noArgumentMaximum;
+        private CommandPermissions permissions;
 
-        // Make sure the permissions are set up properly
-        if(this.permissions == null)
-            return false;
+        /**
+         * Build a CommandDescription from the builder.
+         *
+         * @return The generated CommandDescription object
+         */
+        public CommandDescription build() {
+            return new CommandDescription(
+                getOrThrow(labels, "labels"),
+                firstNonNull(description, ""),
+                firstNonNull(detailedDescription, ""),
+                getOrThrow(executableCommand, "executableCommand"),
+                firstNonNull(parent, null),
+                arguments,
+                noArgumentMaximum,
+                firstNonNull(permissions, null)
+            );
+        }
 
-        // Everything seems to be correct, return the result
-        return true;
+        public Builder labels(List<String> labels) {
+            this.labels = labels;
+            return this;
+        }
+
+        public Builder labels(String... labels) {
+            return labels(asMutableList(labels));
+        }
+
+        public Builder description(String description) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder detailedDescription(String detailedDescription) {
+            this.detailedDescription = detailedDescription;
+            return this;
+        }
+
+        public Builder executableCommand(ExecutableCommand executableCommand) {
+            this.executableCommand = executableCommand;
+            return this;
+        }
+
+        public Builder parent(CommandDescription parent) {
+            this.parent = parent;
+            return this;
+        }
+
+        public Builder withArgument(String label, String description, boolean isOptional) {
+            arguments.add(new CommandArgumentDescription(label, description, isOptional));
+            return this;
+        }
+
+        public Builder noArgumentMaximum(boolean noArgumentMaximum) {
+            this.noArgumentMaximum = noArgumentMaximum;
+            return this;
+        }
+
+        public Builder permissions(CommandPermissions.DefaultPermission defaultPermission,
+                                   PermissionNode... permissionNodes) {
+            this.permissions = new CommandPermissions(asMutableList(permissionNodes), defaultPermission);
+            return this;
+        }
+
+        @SafeVarargs
+        private static <T> List<T> asMutableList(T... items) {
+            return new ArrayList<>(Arrays.asList(items));
+        }
+
+        private static <T> T firstNonNull(T first, T second) {
+            return first != null ? first : second;
+        }
+
+        private static <T> T getOrThrow(T element, String elementName) {
+            if (!isEmpty(element)) {
+                return element;
+            }
+            throw new RuntimeException("The element '" + elementName + "' may not be empty in CommandDescription");
+        }
+
+        private static <T> boolean isEmpty(T element) {
+            if (element == null) {
+                return true;
+            } else if (element instanceof Collection<?>) {
+                return ((Collection<?>) element).isEmpty();
+            } else if (element instanceof String) {
+                return StringUtils.isEmpty((String) element);
+            }
+            return false;
+        }
+
     }
+
 }

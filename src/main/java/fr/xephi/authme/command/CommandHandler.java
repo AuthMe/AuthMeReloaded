@@ -1,18 +1,21 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.help.HelpProvider;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.help.HelpProvider;
-
+/**
+ */
 public class CommandHandler {
 
-    /** The command manager instance. */
+    /**
+     * The command manager instance.
+     */
     private CommandManager commandManager;
 
     /**
@@ -22,7 +25,7 @@ public class CommandHandler {
      */
     public CommandHandler(boolean init) {
         // Initialize
-        if(init)
+        if (init)
             init();
     }
 
@@ -34,7 +37,7 @@ public class CommandHandler {
      */
     public boolean init() {
         // Make sure the handler isn't initialized already
-        if(isInit())
+        if (isInit())
             return true;
 
         // Initialize the command manager
@@ -62,7 +65,7 @@ public class CommandHandler {
      */
     public boolean destroy() {
         // Make sure the command handler is initialized
-        if(!isInit())
+        if (!isInit())
             return true;
 
         // Unset the command manager
@@ -82,10 +85,10 @@ public class CommandHandler {
     /**
      * Process a command.
      *
-     * @param sender The command sender (Bukkit).
-     * @param bukkitCommand The command (Bukkit).
+     * @param sender             The command sender (Bukkit).
+     * @param bukkitCommand      The command (Bukkit).
      * @param bukkitCommandLabel The command label (Bukkit).
-     * @param bukkitArgs The command arguments (Bukkit).
+     * @param bukkitArgs         The command arguments (Bukkit).
      *
      * @return True if the command was executed, false otherwise.
      */
@@ -95,13 +98,13 @@ public class CommandHandler {
 
         // Create a command reference, and make sure at least one command part is available
         CommandParts commandReference = new CommandParts(bukkitCommandLabel, args);
-        if(commandReference.getCount() == 0)
+        if (commandReference.getCount() == 0)
             return false;
 
         // Get a suitable command for this reference, and make sure it isn't null
         FoundCommandResult result = this.commandManager.findCommand(commandReference);
-        if(result == null) {
-            sender.sendMessage(ChatColor.DARK_RED + "Failed to parse " + AuthMe.PLUGIN_NAME + " command!");
+        if (result == null) {
+            sender.sendMessage(ChatColor.DARK_RED + "Failed to parse " + AuthMe.getPluginName() + " command!");
             return false;
         }
 
@@ -110,13 +113,13 @@ public class CommandHandler {
 
         // Make sure the difference between the command reference and the actual command isn't too big
         final double commandDifference = result.getDifference();
-        if(commandDifference > 0.12) {
+        if (commandDifference > 0.12) {
             // Show the unknown command warning
             sender.sendMessage(ChatColor.DARK_RED + "Unknown command!");
 
             // Show a command suggestion if available and the difference isn't too big
-            if(commandDifference < 0.75)
-                if(result.getCommandDescription() != null)
+            if (commandDifference < 0.75)
+                if (result.getCommandDescription() != null)
                     sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/" + result.getCommandDescription().getCommandReference(commandReference) + ChatColor.YELLOW + "?");
 
             // Show the help command
@@ -125,17 +128,17 @@ public class CommandHandler {
         }
 
         // Show a message when the command handler is assuming a command
-        if(commandDifference > 0) {
+        if (commandDifference > 0) {
             // Get the suggested command
             CommandParts suggestedCommandParts = new CommandParts(result.getCommandDescription().getCommandReference(commandReference));
 
             // Show the suggested command
             sender.sendMessage(ChatColor.DARK_RED + "Unknown command, assuming " + ChatColor.GOLD + "/" + suggestedCommandParts +
-                    ChatColor.DARK_RED + "!");
+                ChatColor.DARK_RED + "!");
         }
 
         // Make sure the command is executable
-        if(!result.isExecutable()) {
+        if (!result.isExecutable()) {
             // Get the command reference
             CommandParts helpCommandReference = new CommandParts(result.getCommandReference().getRange(1));
 
@@ -148,14 +151,14 @@ public class CommandHandler {
         }
 
         // Make sure the command sender has permission
-        if(!result.hasPermission(sender)) {
+        if (!result.hasPermission(sender)) {
             // Show the no permissions warning
             sender.sendMessage(ChatColor.DARK_RED + "You don't have permission to use this command!");
             return true;
         }
 
         // Make sure the command sender has permission
-        if(!result.hasProperArguments()) {
+        if (!result.hasProperArguments()) {
             // Get the command and the suggested command reference
             CommandParts suggestedCommandReference = new CommandParts(result.getCommandDescription().getCommandReference(commandReference));
             CommandParts helpCommandReference = new CommandParts(suggestedCommandReference.getRange(1));
@@ -187,12 +190,12 @@ public class CommandHandler {
         List<String> arguments = new ArrayList<>(Arrays.asList(args));
 
         /// Remove all empty arguments
-        for(int i = 0; i < arguments.size(); i++) {
+        for (int i = 0; i < arguments.size(); i++) {
             // Get the argument value
             final String arg = arguments.get(i);
 
             // Check whether the argument value is empty
-            if(arg.trim().length() == 0) {
+            if (arg.trim().length() == 0) {
                 // Remove the current argument
                 arguments.remove(i);
 

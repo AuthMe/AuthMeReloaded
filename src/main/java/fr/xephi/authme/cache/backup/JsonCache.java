@@ -1,27 +1,19 @@
 package fr.xephi.authme.cache.backup;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import com.google.gson.*;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-import org.bukkit.entity.Player;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonDeserializationContext;
-import com.google.gson.JsonDeserializer;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonSerializationContext;
-import com.google.gson.JsonSerializer;
-
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Utils;
-
+/**
+ */
 public class JsonCache {
 
     private final Gson gson;
@@ -33,12 +25,18 @@ public class JsonCache {
             ConsoleLogger.showError("Failed to create cache directory.");
         }
         gson = new GsonBuilder()
-                .registerTypeAdapter(DataFileCache.class, new PlayerDataSerializer())
-                .registerTypeAdapter(DataFileCache.class, new PlayerDataDeserializer())
-                .setPrettyPrinting()
-                .create();
+            .registerTypeAdapter(DataFileCache.class, new PlayerDataSerializer())
+            .registerTypeAdapter(DataFileCache.class, new PlayerDataDeserializer())
+            .setPrettyPrinting()
+            .create();
     }
 
+    /**
+     * Method createCache.
+     *
+     * @param player     Player
+     * @param playerData DataFileCache
+     */
     public void createCache(Player player, DataFileCache playerData) {
         if (player == null) {
             return;
@@ -68,6 +66,13 @@ public class JsonCache {
         }
     }
 
+    /**
+     * Method readCache.
+     *
+     * @param player Player
+     *
+     * @return DataFileCache
+     */
     public DataFileCache readCache(Player player) {
         String path;
         try {
@@ -90,19 +95,57 @@ public class JsonCache {
         }
     }
 
-    private class PlayerDataSerializer implements JsonSerializer<DataFileCache> {
-        @Override
-        public JsonElement serialize(DataFileCache dataFileCache, Type type, JsonSerializationContext jsonSerializationContext) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("group", dataFileCache.getGroup());
-            jsonObject.addProperty("operator", dataFileCache.getOperator());
-            jsonObject.addProperty("flying", dataFileCache.isFlying());
-
-            return jsonObject;
+    /**
+     * Method removeCache.
+     *
+     * @param player Player
+     */
+    public void removeCache(Player player) {
+        String path;
+        try {
+            path = player.getUniqueId().toString();
+        } catch (Exception | Error e) {
+            path = player.getName().toLowerCase();
+        }
+        File file = new File(cacheDir, path);
+        if (file.exists()) {
+            Utils.purgeDirectory(file);
+            if (!file.delete()) {
+                ConsoleLogger.showError("Failed to remove" + player.getName() + "cache.");
+            }
         }
     }
 
+    /**
+     * Method doesCacheExist.
+     *
+     * @param player Player
+     *
+     * @return boolean
+     */
+    public boolean doesCacheExist(Player player) {
+        String path;
+        try {
+            path = player.getUniqueId().toString();
+        } catch (Exception | Error e) {
+            path = player.getName().toLowerCase();
+        }
+        File file = new File(cacheDir, path + File.separator + "cache.json");
+        return file.exists();
+    }
+
+    /**
+     */
     private static class PlayerDataDeserializer implements JsonDeserializer<DataFileCache> {
+        /**
+         * Method deserialize.
+         *
+         * @param jsonElement                JsonElement
+         * @param type                       Type
+         * @param jsonDeserializationContext JsonDeserializationContext
+         *
+         * @return DataFileCache * @throws JsonParseException * @see com.google.gson.JsonDeserializer#deserialize(JsonElement, Type, JsonDeserializationContext)
+         */
         @Override
         public DataFileCache deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
@@ -128,31 +171,27 @@ public class JsonCache {
         }
     }
 
-    public void removeCache(Player player) {
-        String path;
-        try {
-            path = player.getUniqueId().toString();
-        } catch (Exception | Error e) {
-            path = player.getName().toLowerCase();
-        }
-        File file = new File(cacheDir, path);
-        if (file.exists()) {
-            Utils.purgeDirectory(file);
-            if (!file.delete()) {
-                ConsoleLogger.showError("Failed to remove" + player.getName() + "cache.");
-            }
-        }
-    }
+    /**
+     */
+    private class PlayerDataSerializer implements JsonSerializer<DataFileCache> {
+        /**
+         * Method serialize.
+         *
+         * @param dataFileCache            DataFileCache
+         * @param type                     Type
+         * @param jsonSerializationContext JsonSerializationContext
+         *
+         * @return JsonElement
+         */
+        @Override
+        public JsonElement serialize(DataFileCache dataFileCache, Type type, JsonSerializationContext jsonSerializationContext) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("group", dataFileCache.getGroup());
+            jsonObject.addProperty("operator", dataFileCache.getOperator());
+            jsonObject.addProperty("flying", dataFileCache.isFlying());
 
-    public boolean doesCacheExist(Player player) {
-        String path;
-        try {
-            path = player.getUniqueId().toString();
-        } catch (Exception | Error e) {
-            path = player.getName().toLowerCase();
+            return jsonObject;
         }
-        File file = new File(cacheDir, path + File.separator + "cache.json");
-        return file.exists();
     }
 
 }

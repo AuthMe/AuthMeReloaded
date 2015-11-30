@@ -1,49 +1,39 @@
 package fr.xephi.authme.command.executable.authme;
 
-import java.util.Date;
-
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
+import org.bukkit.command.CommandSender;
 
+import java.util.Date;
+
+/**
+ */
 public class LastLoginCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        Messages m = Messages.getInstance();
-
         // Get the player
         String playerName = sender.getName();
-        if(commandArguments.getCount() >= 1)
+        if (commandArguments.getCount() >= 1)
             playerName = commandArguments.get(0);
 
         // Validate the player
+        AuthMe plugin = AuthMe.getInstance();
+        Messages m = plugin.getMessages();
+
         PlayerAuth auth;
         try {
             auth = plugin.database.getAuth(playerName.toLowerCase());
         } catch (NullPointerException e) {
-            m.send(sender, "unknown_user");
+            m.send(sender, MessageKey.UNKNOWN_USER);
             return true;
         }
         if (auth == null) {
-            m.send(sender, "user_unknown");
+            m.send(sender, MessageKey.USER_NOT_REGISTERED);
             return true;
         }
 

@@ -1,16 +1,19 @@
 package fr.xephi.authme.command.executable.authme;
 
 //import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Profiler;
+import org.bukkit.command.CommandSender;
 
+/**
+ */
 public class ReloadCommand extends ExecutableCommand {
 
     /**
@@ -31,15 +34,15 @@ public class ReloadCommand extends ExecutableCommand {
         AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        Messages m = Messages.getInstance();
+        Messages m = plugin.getMessages();
 
         // Show a status message
         // sender.sendMessage(ChatColor.YELLOW + "Reloading AuthMeReloaded...");
 
         try {
             Settings.reload();
+            plugin.setMessages(new Messages(Settings.messageFile, Settings.messagesLanguage));
             plugin.getModuleManager().reloadModules();
-            Messages.getInstance().reloadMessages();
             plugin.setupDatabase();
         } catch (Exception e) {
             ConsoleLogger.showError("Fatal error occurred! AuthMe instance ABORTED!");
@@ -50,7 +53,7 @@ public class ReloadCommand extends ExecutableCommand {
 
         // Show a status message
         // TODO: add the profiler result
-        m.send(sender, "reload");
+        m.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
 
         // AuthMeReloaded reloaded, show a status message
         // sender.sendMessage(ChatColor.GREEN + "AuthMeReloaded has been reloaded successfully, took " + p.getTimeFormatted() + "!");

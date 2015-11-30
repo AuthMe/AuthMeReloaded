@@ -1,38 +1,32 @@
 package fr.xephi.authme.settings;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.util.Wrapper;
+import org.bukkit.configuration.file.YamlConfiguration;
 
+import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
+
+/**
+ */
 public final class Settings extends YamlConfiguration {
 
-    private static AuthMe plugin;
-    private static Settings instance;
-
-    // This is not an option!
-    public static boolean antiBotInAction = false;
-
-    public static final File PLUGIN_FOLDER = AuthMe.getInstance().getDataFolder();
+    public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
     public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
     public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
     public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
-
+    // This is not an option!
+    public static boolean antiBotInAction = false;
     public static File messageFile;
     public static List<String> allowCommands;
     public static List<String> getJoinPermissions;
@@ -52,64 +46,70 @@ public final class Settings extends YamlConfiguration {
     public static List<String> emailWhitelist;
     public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
+    public static Pattern nickPattern;
     public static boolean useLogging = false;
     public static int purgeDelay = 60;
-
-    // Due to compatibility issues with plugins like FactionsChat
-    public static Boolean isChatAllowed;
-
-    public static boolean isPermissionCheckEnabled, isRegistrationEnabled,
-            isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
-            isSessionsEnabled, isAllowRestrictedIp,
-            isMovementAllowed, isKickNonRegisteredEnabled,
-            isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
-            isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
-            isResetInventoryIfCreative, isCachingEnabled,
-            isKickOnWrongPasswordEnabled, getEnablePasswordVerifier,
-            protectInventoryBeforeLogInEnabled, isBackupActivated,
-            isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
-            rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-            useCaptcha, emailRegistration, multiverse, bungee,
-            banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-            disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
-            purgePlayerDat, purgeEssentialsFile, supportOldPassword,
-            purgeLimitedCreative, purgeAntiXray, purgePermissions,
-            enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
-            broadcastWelcomeMessage, forceRegKick, forceRegLogin,
-            checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
-            customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
-
-    public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
-            getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
-            getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
-            getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
-            getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup,
-            backupWindowsPath, getRegisteredGroup,
-            messagesLanguage, getMySQLlastlocX, getMySQLlastlocY,
-            getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
-            getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName,
-            getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
-            getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
-            spawnPriority, crazyloginFileName, getPassRegex,
-            getMySQLColumnRealName;
-
+    public static boolean isChatAllowed, isPermissionCheckEnabled, isRegistrationEnabled,
+        isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
+        isSessionsEnabled, isAllowRestrictedIp,
+        isMovementAllowed, isKickNonRegisteredEnabled,
+        isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
+        isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
+        isResetInventoryIfCreative, isCachingEnabled,
+        isKickOnWrongPasswordEnabled, getEnablePasswordVerifier,
+        protectInventoryBeforeLogInEnabled, isBackupActivated,
+        isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
+        rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
+        useCaptcha, emailRegistration, multiverse, bungee,
+        banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
+        disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
+        purgePlayerDat, purgeEssentialsFile, supportOldPassword,
+        purgeLimitedCreative, purgeAntiXray, purgePermissions,
+        enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
+        broadcastWelcomeMessage, forceRegKick, forceRegLogin,
+        checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
+        customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
+    public static String helpHeader, getNickRegex, getUnloggedinGroup, getMySQLHost,
+        getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
+        getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
+        getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
+        getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup,
+        backupWindowsPath, getRegisteredGroup,
+        messagesLanguage, getMySQLlastlocX, getMySQLlastlocY,
+        getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
+        getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName,
+        getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
+        getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
+        spawnPriority, crazyloginFileName, getPassRegex,
+        getMySQLColumnRealName;
     public static int getWarnMessageInterval, getSessionTimeout,
-            getRegistrationTimeout, getMaxNickLength, getMinNickLength,
-            getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
-            getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
-            getMailPort, maxLoginTry, captchaLength, saltLength,
-            getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
-            antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
-            getMaxJoinPerIp, getMySQLMaxConnections;
-
+        getRegistrationTimeout, getMaxNickLength, getMinNickLength,
+        getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
+        getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
+        getMailPort, maxLoginTry, captchaLength, saltLength,
+        getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
+        antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
+        getMaxJoinPerIp, getMySQLMaxConnections;
     protected static YamlConfiguration configFile;
+    private static AuthMe plugin;
+    private static Settings instance;
 
+    /**
+     * Constructor for Settings.
+     *
+     * @param pl AuthMe
+     */
     public Settings(AuthMe pl) {
         instance = this;
         plugin = pl;
         configFile = (YamlConfiguration) plugin.getConfig();
     }
 
+    /**
+     * Method reload.
+     *
+     * @throws Exception
+     */
     public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
         boolean exist = SETTINGS_FILE.exists();
@@ -129,6 +129,7 @@ public final class Settings extends YamlConfiguration {
 
 
     public static void loadVariables() {
+        helpHeader = configFile.getString("settings.helpHeader", "AuthMeReloaded");
         messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en").toLowerCase());
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
@@ -143,6 +144,7 @@ public final class Settings extends YamlConfiguration {
         getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
         getPasswordMinLen = configFile.getInt("settings.security.minPasswordLength", 4);
         getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
+        nickPattern = Pattern.compile(getNickRegex);
         isAllowRestrictedIp = configFile.getBoolean("settings.restrictions.AllowRestrictedUser", false);
         getRestrictedIp = configFile.getStringList("settings.restrictions.AllowedRestrictedUser");
         isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
@@ -185,7 +187,10 @@ public final class Settings extends YamlConfiguration {
         getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
         getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
+
         protectInventoryBeforeLogInEnabled = configFile.getBoolean("settings.restrictions.ProtectInventoryBeforeLogIn", true);
+        plugin.checkProtocolLib();
+
         passwordMaxLength = configFile.getInt("settings.security.passwordMaxLength", 20);
         isBackupActivated = configFile.getBoolean("BackupSystem.ActivateBackup", false);
         isBackupOnStart = configFile.getBoolean("BackupSystem.OnServerStart", false);
@@ -193,22 +198,16 @@ public final class Settings extends YamlConfiguration {
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
+
         allowCommands = new ArrayList<>();
+        allowCommands.addAll(Arrays.asList("/login", "/l", "/register", "/reg", "/email", "/captcha"));
         for (String cmd : configFile.getStringList("settings.restrictions.allowCommands")) {
-            allowCommands.add(cmd.toLowerCase());
+            cmd = cmd.toLowerCase();
+            if (!allowCommands.contains(cmd)) {
+                allowCommands.add(cmd);
+            }
         }
-        if (!allowCommands.contains("/login"))
-            allowCommands.add("/login");
-        if (!allowCommands.contains("/register"))
-            allowCommands.add("/register");
-        if (!allowCommands.contains("/l"))
-            allowCommands.add("/l");
-        if (!allowCommands.contains("/reg"))
-            allowCommands.add("/reg");
-        if (!allowCommands.contains("/email"))
-            allowCommands.add("/email");
-        if (!allowCommands.contains("/captcha"))
-            allowCommands.add("/captcha");
+
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
@@ -292,6 +291,192 @@ public final class Settings extends YamlConfiguration {
 
     }
 
+    /**
+     * Method setValue.
+     *
+     * @param key   String
+     * @param value Object
+     */
+    public static void setValue(String key, Object value) {
+        instance.set(key, value);
+        save();
+    }
+
+    /**
+     * Method getPasswordHash.
+     *
+     * @return HashAlgorithm
+     */
+    private static HashAlgorithm getPasswordHash() {
+        String key = "settings.security.passwordHash";
+        try {
+            return HashAlgorithm.valueOf(configFile.getString(key, "SHA256").toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            ConsoleLogger.showError("Unknown Hash Algorithm; defaulting to SHA256");
+            return HashAlgorithm.SHA256;
+        }
+    }
+
+    /**
+     * Method getDataSource.
+     *
+     * @return DataSourceType
+     */
+    private static DataSourceType getDataSource() {
+        String key = "DataSource.backend";
+        try {
+            return DataSource.DataSourceType.valueOf(configFile.getString(key, "sqlite").toUpperCase());
+        } catch (IllegalArgumentException ex) {
+            ConsoleLogger.showError("Unknown database backend; defaulting to SQLite database");
+            return DataSource.DataSourceType.SQLITE;
+        }
+    }
+
+    /**
+     * Config option for setting and check restricted user by username;ip ,
+     * return false if ip and name doesn't match with player that join the
+     * server, so player has a restricted access
+     *
+     * @param name String
+     * @param ip   String
+     *
+     * @return boolean
+     */
+    public static boolean getRestrictedIp(String name, String ip) {
+
+        Iterator<String> iterator = getRestrictedIp.iterator();
+        boolean trueOnce = false;
+        boolean nameFound = false;
+        while (iterator.hasNext()) {
+            String[] args = iterator.next().split(";");
+            String testName = args[0];
+            String testIp = args[1];
+            if (testName.equalsIgnoreCase(name)) {
+                nameFound = true;
+                if (testIp.equalsIgnoreCase(ip)) {
+                    trueOnce = true;
+                }
+            }
+        }
+        return !nameFound || trueOnce;
+    }
+
+    /**
+     * Saves the configuration to disk
+     *
+     * @return True if saved successfully
+     */
+    public static boolean save() {
+        try {
+            instance.save(SETTINGS_FILE);
+            return true;
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    /**
+     * Method checkLang.
+     *
+     * @param lang String
+     *
+     * @return String
+     */
+    public static String checkLang(String lang) {
+        if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
+            ConsoleLogger.info("Set Language to: " + lang);
+            return lang;
+        }
+        if (AuthMe.class.getResourceAsStream("/messages/messages_" + lang + ".yml") != null) {
+            ConsoleLogger.info("Set Language to: " + lang);
+            return lang;
+        }
+        ConsoleLogger.info("Language file not found for " + lang + ", set to default language: en !");
+        return "en";
+    }
+
+    /**
+     * Method switchAntiBotMod.
+     *
+     * @param mode boolean
+     */
+    public static void switchAntiBotMod(boolean mode) {
+        if (mode) {
+            isKickNonRegisteredEnabled = true;
+            antiBotInAction = true;
+        } else {
+            isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
+            antiBotInAction = false;
+        }
+    }
+
+    private static void getWelcomeMessage() {
+        AuthMe plugin = AuthMe.getInstance();
+        welcomeMsg = new ArrayList<>();
+        if (!useWelcomeMessage) {
+            return;
+        }
+        if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt").exists())) {
+            try {
+                FileWriter fw = new FileWriter(plugin.getDataFolder() + File.separator + "welcome.txt", true);
+                BufferedWriter w = new BufferedWriter(fw);
+                w.write("Welcome {PLAYER} on {SERVER} server");
+                w.newLine();
+                w.write("This server uses " + AuthMe.getPluginName() + " protection!");
+                w.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        try {
+            FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
+            BufferedReader br = new BufferedReader(fr);
+            String line;
+            while ((line = br.readLine()) != null) {
+                welcomeMsg.add(line);
+            }
+            br.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Method isEmailCorrect.
+     *
+     * @param email String
+     *
+     * @return boolean
+     */
+    public static boolean isEmailCorrect(String email) {
+        if (!email.contains("@"))
+            return false;
+        if (email.equalsIgnoreCase("your@email.com"))
+            return false;
+        String emailDomain = email.split("@")[1];
+        boolean correct = true;
+        if (emailWhitelist != null && !emailWhitelist.isEmpty()) {
+            for (String domain : emailWhitelist) {
+                if (!domain.equalsIgnoreCase(emailDomain)) {
+                    correct = false;
+                } else {
+                    correct = true;
+                    break;
+                }
+            }
+            return correct;
+        }
+        if (emailBlacklist != null && !emailBlacklist.isEmpty()) {
+            for (String domain : emailBlacklist) {
+                if (domain.equalsIgnoreCase(emailDomain)) {
+                    correct = false;
+                    break;
+                }
+            }
+        }
+        return correct;
+    }
+
     public void mergeConfig() {
         boolean changes = false;
         if (contains("Xenoforo.predefinedSalt")) {
@@ -299,7 +484,7 @@ public final class Settings extends YamlConfiguration {
             changes = true;
         }
         if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") ||
-                configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
+            configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
             set("settings.security.passwordHash", "XENFORO");
             changes = true;
         }
@@ -365,6 +550,10 @@ public final class Settings extends YamlConfiguration {
             countriesBlacklist = new ArrayList<>();
             countriesBlacklist.add("A1");
             set("Protection.countriesBlacklist", countriesBlacklist);
+            changes = true;
+        }
+        if (!contains("settings.helpHeader")) {
+            set("settings.helpHeader", "AuthMeReloaded");
             changes = true;
         }
         if (!contains("settings.broadcastWelcomeMessage")) {
@@ -435,10 +624,6 @@ public final class Settings extends YamlConfiguration {
             set("Email.emailBlacklisted", new ArrayList<String>());
             changes = true;
         }
-        if (contains("Performances.useMultiThreading")) {
-            set("Performances.useMultiThreading", null);
-            changes = true;
-        }
         if (contains("Performances")) {
             set("Performances", null);
             changes = true;
@@ -502,72 +687,9 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
-    public static void setValue(String key, Object value) {
-        instance.set(key, value);
-        save();
-    }
-
-    private static HashAlgorithm getPasswordHash() {
-        String key = "settings.security.passwordHash";
-        try {
-            return HashAlgorithm.valueOf(configFile.getString(key, "SHA256").toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            ConsoleLogger.showError("Unknown Hash Algorithm; defaulting to SHA256");
-            return HashAlgorithm.SHA256;
-        }
-    }
-
-    private static DataSourceType getDataSource() {
-        String key = "DataSource.backend";
-        try {
-            return DataSource.DataSourceType.valueOf(configFile.getString(key, "sqlite").toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            ConsoleLogger.showError("Unknown database backend; defaulting to sqlite database");
-            return DataSource.DataSourceType.SQLITE;
-        }
-    }
-
-    /**
-     * Config option for setting and check restricted user by username;ip ,
-     * return false if ip and name doesnt amtch with player that join the
-     * server, so player has a restricted access
-     */
-    public static boolean getRestrictedIp(String name, String ip) {
-
-        Iterator<String> iter = getRestrictedIp.iterator();
-        boolean trueonce = false;
-        boolean namefound = false;
-        while (iter.hasNext()) {
-            String[] args = iter.next().split(";");
-            String testname = args[0];
-            String testip = args[1];
-            if (testname.equalsIgnoreCase(name)) {
-                namefound = true;
-                if (testip.equalsIgnoreCase(ip)) {
-                    trueonce = true;
-                }
-            }
-        }
-        return !namefound || trueonce;
-    }
-
-    /**
-     * Saves the configuration to disk
-     *
-     * @return True if saved successfully
-     */
-    public static boolean save() {
-        try {
-            instance.save(SETTINGS_FILE);
-            return true;
-        } catch (Exception ex) {
-            return false;
-        }
-    }
-
     /**
      * Saves current configuration (plus defaults) to disk.
-     * <p>
+     * <p/>
      * If defaults and configuration are empty, saves blank file.
      *
      * @return True if saved successfully
@@ -579,88 +701,5 @@ public final class Settings extends YamlConfiguration {
         options().copyDefaults(false);
         options().copyHeader(false);
         return success;
-    }
-
-    public static String checkLang(String lang) {
-        if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
-            ConsoleLogger.info("Set Language to: " + lang);
-            return lang;
-        }
-        if (AuthMe.class.getResourceAsStream("/messages/messages_" + lang + ".yml") != null) {
-            ConsoleLogger.info("Set Language to: " + lang);
-            return lang;
-        }
-        ConsoleLogger.info("Language file not found for " + lang + ", set to default language: en !");
-        return "en";
-    }
-
-    public static void switchAntiBotMod(boolean mode) {
-        if (mode) {
-            isKickNonRegisteredEnabled = true;
-            antiBotInAction = true;
-        } else {
-            isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
-            antiBotInAction = false;
-        }
-    }
-
-    private static void getWelcomeMessage() {
-        AuthMe plugin = AuthMe.getInstance();
-        welcomeMsg = new ArrayList<>();
-        if (!useWelcomeMessage) {
-            return;
-        }
-        if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt").exists())) {
-            try {
-                FileWriter fw = new FileWriter(plugin.getDataFolder() + File.separator + "welcome.txt", true);
-                BufferedWriter w = new BufferedWriter(fw);
-                w.write("Welcome {PLAYER} on {SERVER} server");
-                w.newLine();
-                w.write("This server use AuthMe protection!");
-                w.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
-            BufferedReader br = new BufferedReader(fr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                welcomeMsg.add(line);
-            }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static boolean isEmailCorrect(String email) {
-        if (!email.contains("@"))
-            return false;
-        if (email.equalsIgnoreCase("your@email.com"))
-            return false;
-        String emailDomain = email.split("@")[1];
-        boolean correct = true;
-        if (emailWhitelist != null && !emailWhitelist.isEmpty()) {
-            for (String domain : emailWhitelist) {
-                if (!domain.equalsIgnoreCase(emailDomain)) {
-                    correct = false;
-                } else {
-                    correct = true;
-                    break;
-                }
-            }
-            return correct;
-        }
-        if (emailBlacklist != null && !emailBlacklist.isEmpty()) {
-            for (String domain : emailBlacklist) {
-                if (domain.equalsIgnoreCase(emailDomain)) {
-                    correct = false;
-                    break;
-                }
-            }
-        }
-        return correct;
     }
 }

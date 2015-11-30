@@ -1,14 +1,17 @@
 package fr.xephi.authme.command.executable.authme;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.Settings;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
-import fr.xephi.authme.command.ExecutableCommand;
-
+/**
+ */
 public class VersionCommand extends ExecutableCommand {
 
     /**
@@ -23,8 +26,8 @@ public class VersionCommand extends ExecutableCommand {
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Show some version info
-        sender.sendMessage(ChatColor.GOLD + "==========[ " + AuthMe.PLUGIN_NAME.toUpperCase() + " ABOUT ]==========");
-        sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.PLUGIN_NAME + " v" + AuthMe.getVersionName() + ChatColor.GRAY + " (code: " + AuthMe.getVersionCode() + ")");
+        sender.sendMessage(ChatColor.GOLD + "==========[ " + Settings.helpHeader.toUpperCase() + " ABOUT ]==========");
+        sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.getPluginName() + " v" + AuthMe.getPluginVersion() + ChatColor.GRAY + " (build: " + AuthMe.getPluginBuildNumber() + ")");
         sender.sendMessage(ChatColor.GOLD + "Developers:");
         printDeveloper(sender, "Xephi", "xephi59", "Lead Developer");
         printDeveloper(sender, "DNx5", "DNx5", "Developer");
@@ -40,10 +43,10 @@ public class VersionCommand extends ExecutableCommand {
     /**
      * Print a developer with proper styling.
      *
-     * @param sender The command sender.
-     * @param name The display name of the developer.
+     * @param sender        The command sender.
+     * @param name          The display name of the developer.
      * @param minecraftName The Minecraft username of the developer, if available.
-     * @param function The function of the developer.
+     * @param function      The function of the developer.
      */
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     private void printDeveloper(CommandSender sender, String name, String minecraftName, String function) {
@@ -53,13 +56,13 @@ public class VersionCommand extends ExecutableCommand {
         msg.append(name);
 
         // Append the Minecraft name, if available
-        if(minecraftName.length() != 0)
+        if (minecraftName.length() != 0)
             msg.append(ChatColor.GRAY + " // " + ChatColor.WHITE + minecraftName);
         msg.append(ChatColor.GRAY + "" + ChatColor.ITALIC + " (" + function + ")");
 
         // Show the online status
-        if(minecraftName.length() != 0)
-            if(isPlayerOnline(minecraftName))
+        if (minecraftName.length() != 0)
+            if (isPlayerOnline(minecraftName))
                 msg.append(ChatColor.GREEN + "" + ChatColor.ITALIC + " (In-Game)");
 
         // Print the message
@@ -74,9 +77,13 @@ public class VersionCommand extends ExecutableCommand {
      * @return True if the player is online, false otherwise.
      */
     private boolean isPlayerOnline(String minecraftName) {
-        for(Player player : Bukkit.getOnlinePlayers())
-            if(player.getName().equalsIgnoreCase(minecraftName))
+        // Note ljacqu 20151121: Generally you should use Utils#getOnlinePlayers to retrieve the list of online players.
+        // If it's only used in a for-each loop such as here, it's fine. For other purposes, go through the Utils class.
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(minecraftName)) {
                 return true;
+            }
+        }
         return false;
     }
 }

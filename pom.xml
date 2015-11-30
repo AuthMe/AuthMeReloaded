@@ -1,533 +1,702 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-    
-	<groupId>fr.xephi</groupId>
-	<artifactId>authme</artifactId>
-	<version>5.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
-    
-	<name>AuthMeReloaded</name>
-	<description>Authentication plugin for CraftBukkit/Spigot!</description>
-	<inceptionYear>2013</inceptionYear>
-	<url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
-	<!-- See also: https://www.spigotmc.org/resources/authme-reloaded.6269/ -->
-    
-	<organization>
-		<name>AuthMe-Team</name>
-		<url>https://github.com/AuthMe-Team</url>
-	</organization>
-    
-	<scm>
-		<connection>scm:git:https://github.com/Xephi/AuthMeReloaded.git</connection>
-		<developerConnection>scm:git:git@github.com:Xephi/AuthMeReloaded.git</developerConnection>
-		<url>http://github.com/Xephi/AuthMeReloaded</url>
-	</scm>
-    
-	<ciManagement>
-		<system>jenkins</system>
-		<url>http://ci.xephi.fr/job/AuthMeReloaded/</url>
-	</ciManagement>
-    
-	<issueManagement>
-		<system>GitHub</system>
-		<url>https://github.com/Xephi/AuthMeReloaded/issues</url>
-	</issueManagement>
-    
-	<licenses>
-		<license>
-			<name>The GNU General Public Licence version 3 (GPLv3)</name>
-			<url>http://www.gnu.org/licenses/gpl-3.0.html</url>
-		</license>
-	</licenses>
-    
-	<properties>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>fr.xephi</groupId>
+    <artifactId>authme</artifactId>
+    <version>5.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>AuthMeReloaded</name>
+    <description>Authentication plugin for CraftBukkit/Spigot!</description>
+    <inceptionYear>2013</inceptionYear>
+    <url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
+    <!-- See also: https://www.spigotmc.org/resources/authme-reloaded.6269/ -->
+
+    <organization>
+        <name>AuthMe-Team</name>
+        <url>https://github.com/AuthMe-Team</url>
+    </organization>
+
+    <scm>
+        <connection>scm:git:https://github.com/Xephi/AuthMeReloaded.git</connection>
+        <developerConnection>scm:git:git@github.com:Xephi/AuthMeReloaded.git</developerConnection>
+        <url>http://github.com/Xephi/AuthMeReloaded</url>
+    </scm>
+
+    <ciManagement>
+        <system>jenkins</system>
+        <url>http://ci.xephi.fr/job/AuthMeReloaded/</url>
+    </ciManagement>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/Xephi/AuthMeReloaded/issues</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>The GNU General Public Licence version 3 (GPLv3)</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+        </license>
+    </licenses>
+
+    <prerequisites>
+        <maven>3.3.3</maven>
+    </prerequisites>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
         <!-- Project Properties -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <pluginName>AuthMe</pluginName>
         <mainClass>fr.xephi.authme.AuthMe</mainClass>
-		<buildNumber>CustomBuild</buildNumber>
-        <pluginAuthors>[Xephi, sgdc3, DNx5, timvisee, games647]</pluginAuthors>
-        
-		<!-- Change Compiler Version (JDK) HERE! -->
-		<javaVersion>1.7</javaVersion>
-		
-		<!-- Change Bukkit Version HERE! -->
-		<bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
-	</properties>
+        <pluginAuthors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</pluginAuthors>
+        <buildNumber>Unknown</buildNumber>
 
-	<build>
-		<finalName>AuthMe-${project.version}</finalName>
-		<resources>
-			<resource>
-				<targetPath>.</targetPath>
-				<filtering>true</filtering>
-				<directory>src/main/resources/</directory>
-				<includes>
-					<include>*.yml</include>
-				</includes>
-			</resource>
-			<resource>
-				<targetPath>./messages/</targetPath>
-				<filtering>false</filtering>
-				<directory>src/main/resources/messages/</directory>
-				<includes>
-					<include>*.yml</include>
-				</includes>
-			</resource>
-		</resources>
-		<plugins>
+        <!-- Change Compiler Version (JDK) HERE! -->
+        <javaVersion>1.7</javaVersion>
+
+        <!-- Change Bukkit Version HERE! -->
+        <bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>jenkins</id>
+            <activation>
+                <property>
+                    <name>env.BUILD_NUMBER</name>
+                </property>
+            </activation>
+            <properties>
+                <buildNumber>${env.BUILD_NUMBER}</buildNumber>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <finalName>AuthMe-${project.version}</finalName>
+        <sourceDirectory>src/main/java</sourceDirectory>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
+
+        <resources>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>src/main/resources/</directory>
+                <includes>
+                    <include>plugin.yml</include>
+                </includes>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>false</filtering>
+                <directory>src/main/resources/</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+                <excludes>
+                    <exclude>plugin.yml</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <targetPath>./messages/</targetPath>
+                <filtering>false</filtering>
+                <directory>src/main/resources/messages/</directory>
+                <includes>
+                    <include>*.yml</include>
+                </includes>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+
+		<!-- Just to keep Eclipse compatibility... -->
+		<pluginManagement>
+		    <plugins>
+		        <plugin>
+		            <groupId>org.eclipse.m2e</groupId>
+		            <artifactId>lifecycle-mapping</artifactId>
+		            <version>1.0.0</version>
+		            <configuration>
+		                <lifecycleMappingMetadata>
+		                    <pluginExecutions>
+		                        <pluginExecution>
+		                            <pluginExecutionFilter>
+		                                <groupId>org.codehaus.mojo</groupId>
+		                                <artifactId>buildnumber-maven-plugin</artifactId>
+		                                <versionRange>[1.0,)</versionRange>
+		                                <goals>
+		                                    <goal>create-timestamp</goal>
+		                                </goals>
+		                            </pluginExecutionFilter>
+		                            <action>
+		                                <execute>
+		                                    <runOnConfiguration>true</runOnConfiguration>
+		                                    <runOnIncremental>true</runOnIncremental>
+		                                </execute>
+		                            </action>
+		                        </pluginExecution>
+		                    </pluginExecutions>
+		                </lifecycleMappingMetadata>
+		            </configuration>
+		        </plugin>
+		    </plugins>
+		</pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.7</source>
+                    <target>${javaVersion}</target>
+                </configuration>
+            </plugin>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.3</version>
-				<configuration>
-					<source>1.7</source>
-					<target>${javaVersion}</target>
-				</configuration>
+				<groupId>org.codehaus.mojo</groupId>
+			    <artifactId>buildnumber-maven-plugin</artifactId>
+			    <version>1.4</version>
+			    <configuration>
+			  		<timestampFormat>dd-MM-yy_HH-mm</timestampFormat>
+			    	<timestampPropertyName>build.time</timestampPropertyName>
+			    </configuration>
+			    <executions>
+			    	<execution>
+			        	<phase>generate-resources</phase>
+			            <goals>
+			       			<goal>create-timestamp</goal>
+			    		</goals>
+			    	</execution>
+			    </executions>
 			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.4.2</version>
-				<configuration>
-					<createDependencyReducedPom>false</createDependencyReducedPom>
-					<minimizeJar>false</minimizeJar>
-					<relocations>
-						<relocation>
-							<pattern>org.mcstats</pattern>
-							<shadedPattern>fr.xephi.authme</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.google.gson</pattern>
-							<shadedPattern>fr.xephi.authme.libs.gson</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.zaxxer.hikari</pattern>
-							<shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.slf4j</pattern>
-							<shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.maxmind.geoip</pattern>
-							<shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>net.ricecode.similarity</pattern>
-							<shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
-						</relocation>
-					</relocations>
-				</configuration>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 
-	<repositories>
-		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
-		<repository>
-			<id>spigot-repo</id>
-			<url>http://hub.spigotmc.org/nexus/content/groups/public</url>
-		</repository>
+            <!-- TODO: we need also to relocate the other libs -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>2.4.2</version>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <minimizeJar>false</minimizeJar>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.mcstats</pattern>
+                            <shadedPattern>fr.xephi.authme</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.google.gson</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.gson</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.zaxxer.hikari</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.slf4j</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.maxmind.geoip</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.ricecode.similarity</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
-		<!-- EssentialsX Repo -->
-		<repository>
-			<id>ess-repo</id>
-			<url>http://ci.drtshock.net/plugin/repository/everything</url>
-		</repository>
+    <repositories>
+        <!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
+        <repository>
+            <id>spigot-repo</id>
+            <url>http://hub.spigotmc.org/nexus/content/groups/public</url>
+        </repository>
 
-		<!-- CombatTagPlus Repo -->
-		<repository>
-			<id>minelink-thirdparty</id>
-			<url>http://repo.minelink.net/content/repositories/public</url>
-		</repository>
+        <!-- EssentialsX Repo -->
+        <repository>
+            <id>ess-repo</id>
+            <url>http://ci.drtshock.net/plugin/repository/everything</url>
+        </repository>
 
-		<!-- ProtocolLib Repo -->
-		<repository>
-			<id>dmulloy2-repo</id>
-			<url>http://repo.dmulloy2.net/content/groups/public/</url>
-		</repository>
+        <!-- CombatTagPlus Repo -->
+        <repository>
+            <id>minelink-thirdparty</id>
+            <url>http://repo.minelink.net/content/repositories/public</url>
+        </repository>
 
-		<!-- Multiverse Repo -->
-		<repository>
-			<id>onarandombox</id>
-			<url>http://repo.onarandombox.com/content/groups/public</url>
-		</repository>
+        <!-- ProtocolLib Repo -->
+        <repository>
+            <id>dmulloy2-repo</id>
+            <url>http://repo.dmulloy2.net/content/groups/public/</url>
+        </repository>
 
-		<!-- Vault Repo -->
-		<repository>
-			<id>vault-repo</id>
-			<url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
-		</repository>
+        <!-- Multiverse Repo -->
+        <repository>
+            <id>onarandombox</id>
+            <url>http://repo.onarandombox.com/content/groups/public</url>
+        </repository>
 
-		<!-- XAuth Repo -->
-		<repository>
-			<id>luricos-releases</id>
-			<url>http://repo.luricos.de/content/repositories/releases</url>
-		</repository>
+        <!-- Vault Repo -->
+        <repository>
+            <id>vault-repo</id>
+            <url>http://nexus.theyeticave.net/content/repositories/pub_releases</url>
+        </repository>
 
-		<!-- Xephi Repo -->
-		<repository>
-			<id>xephi-repo</id>
-			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
-		</repository>
-	</repositories>
+        <!-- XAuth Repo -->
+        <repository>
+            <id>luricos-releases</id>
+            <url>http://repo.luricos.de/content/repositories/releases</url>
+        </repository>
 
-	<dependencies>
-		<!-- Database Connection Pool -->
-		<dependency>
-			<groupId>com.zaxxer</groupId>
-			<artifactId>HikariCP</artifactId>
-			<version>2.4.1</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<artifactId>slf4j-api</artifactId>
-					<groupId>org.slf4j</groupId>
-				</exclusion>
-			</exclusions>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-jdk14</artifactId>
-			<version>1.7.12</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
+        <!-- Xephi Repo -->
+        <repository>
+            <id>xephi-repo</id>
+            <url>http://ci.xephi.fr/plugin/repository/everything/</url>
+        </repository>
 
-		<!-- Log4J Logger (required by the console filter) -->
-		<dependency>
-			<groupId>org.apache.logging.log4j</groupId>
-			<artifactId>log4j-core</artifactId>
-			<!-- Can't use newer versions due to api changes! -->
-			<version>2.0-beta9</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-		</dependency>
+        <!-- PermissionsEx Repo -->
+        <repository>
+            <id>pex-repo</id>
+            <url>http://pex-repo.aoeu.xyz/</url>
+        </repository>
+    </repositories>
 
-		<!-- Java Email Implementation -->
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>mailapi</artifactId>
-			<version>1.5.4</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.mail</groupId>
-			<artifactId>smtp</artifactId>
-			<version>1.5.4</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-email</artifactId>
-			<version>1.4</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
+    <dependencies>
+        <!-- Database Connection Pool -->
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>2.4.1</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-jdk14</artifactId>
+            <version>1.7.12</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
 
-		<!-- GSON (required to provide 1.7.10 and below compatibility) -->
-		<dependency>
-			<groupId>com.google.code.gson</groupId>
-			<artifactId>gson</artifactId>
-			<version>2.4</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
+        <!-- Log4J Logger (required by the console filter) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <!-- Can't use newer versions due to api changes! -->
+            <version>2.0-beta9</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+        </dependency>
 
-		<!-- Maxmind GeoIp API -->
-		<dependency>
-			<groupId>com.maxmind.geoip</groupId>
-			<artifactId>geoip-api</artifactId>
-			<version>1.2.15</version>
-			<scope>compile</scope>
-			<optional>true</optional>
-		</dependency>
+        <!-- Java Email Library -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-email</artifactId>
+            <version>1.4</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
 
-		<!-- Metrics API -->
-		<dependency>
-			<groupId>org.mcstats.bukkit</groupId>
-			<artifactId>metrics</artifactId>
-			<version>R8-SNAPSHOT</version>
-			<scope>compile</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-			</exclusions>
-			<optional>true</optional>
-		</dependency>
+        <!-- GSON (required to provide 1.7.10 and below compatibility) -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.4</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
 
-		<!-- Bukkit API, http://www.spigotmc.org/ or http://bukkit.org/ -->
-		<dependency>
-			<groupId>org.bukkit</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>${bukkitVersion}</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<artifactId>junit</artifactId>
-					<groupId>junit</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>json-simple</artifactId>
-					<groupId>com.googlecode.json-simple</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>gson</artifactId>
-					<groupId>com.google.code.gson</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>persistence-api</artifactId>
-					<groupId>javax.persistence</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+        <!-- Maxmind GeoIp API -->
+        <dependency>
+            <groupId>com.maxmind.geoip</groupId>
+            <artifactId>geoip-api</artifactId>
+            <version>1.2.15</version>
+            <scope>compile</scope>
+            <optional>true</optional>
+        </dependency>
 
-		<!-- ProtocolLib, http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
-		<dependency>
-			<groupId>com.comphenix.protocol</groupId>
-			<artifactId>ProtocolLib</artifactId>
-			<version>3.6.5-SNAPSHOT</version>
-			<scope>provided</scope>
-			<optional>true</optional>
-			<exclusions>
-				<exclusion>
-					<artifactId>cglib-nodep</artifactId>
-					<groupId>cglib</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>BukkitExecutors</artifactId>
-					<groupId>com.comphenix.executors</groupId>
-				</exclusion>
-			</exclusions>
-		</dependency>
+        <!-- Metrics API -->
+        <dependency>
+            <groupId>org.mcstats.bukkit</groupId>
+            <artifactId>metrics</artifactId>
+            <version>R8-SNAPSHOT</version>
+            <scope>compile</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
+            <optional>true</optional>
+        </dependency>
 
-		<!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
-		<dependency>
-			<groupId>net.milkbowl.vault</groupId>
-			<artifactId>VaultAPI</artifactId>
-			<version>1.5</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-			</exclusions>
-			<optional>true</optional>
-		</dependency>
+        <!-- Bukkit API, http://www.spigotmc.org/ or http://bukkit.org/ -->
+        <dependency>
+            <groupId>org.bukkit</groupId>
+            <artifactId>bukkit</artifactId>
+            <version>${bukkitVersion}</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>json-simple</artifactId>
+                    <groupId>com.googlecode.json-simple</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>gson</artifactId>
+                    <groupId>com.google.code.gson</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>persistence-api</artifactId>
+                    <groupId>javax.persistence</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
-		<dependency>
-			<groupId>com.onarandombox.multiversecore</groupId>
-			<artifactId>Multiverse-Core</artifactId>
-			<version>2.5</version>
-			<type>jar</type>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>AllPay</artifactId>
-					<groupId>com.fernferret.allpay</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>Vault</artifactId>
-					<groupId>net.milkbowl.vault</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CommandHandler</artifactId>
-					<groupId>com.pneumaticraft.commandhandler</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>SerializationConfig</artifactId>
-					<groupId>me.main__.util</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>Logging</artifactId>
-					<groupId>com.dumptruckman.minecraft</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>metrics</artifactId>
-					<groupId>org.mcstats.bukkit</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>buscript</artifactId>
-					<groupId>com.dumptruckman.minecraft</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>junit</artifactId>
-					<groupId>junit</groupId>
-				</exclusion>
-			</exclusions>
-			<optional>true</optional>
-		</dependency>
+        <!-- ProtocolLib, http://dev.bukkit.org/bukkit-plugins/protocollib/ -->
+        <dependency>
+            <groupId>com.comphenix.protocol</groupId>
+            <artifactId>ProtocolLib</artifactId>
+            <version>3.6.5-SNAPSHOT</version>
+            <scope>provided</scope>
+            <optional>true</optional>
+            <exclusions>
+                <exclusion>
+                    <artifactId>cglib-nodep</artifactId>
+                    <groupId>cglib</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>BukkitExecutors</artifactId>
+                    <groupId>com.comphenix.executors</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<!-- EssentialsX plugin, http://www.spigotmc.org/resources/essentialsx.9089/ -->
-		<dependency>
-			<groupId>net.ess3</groupId>
-			<artifactId>EssentialsX</artifactId>
-			<version>2.0.1-SNAPSHOT</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.spigotmc</groupId>
-					<artifactId>spigot-api</artifactId>
-				</exclusion>
-			</exclusions>
-			<optional>true</optional>
-		</dependency>
+        <!-- PermissionsEx plugin -->
+        <dependency>
+            <groupId>ru.tehkode</groupId>
+            <artifactId>PermissionsEx</artifactId>
+            <version>1.23.1</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.gravitydevelopment.updater</groupId>
+                    <artifactId>updater</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-dbcp</artifactId>
+                    <groupId>commons-dbcp</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>AccountsClient</artifactId>
+                    <groupId>com.mojang</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
 
-		<!-- Anti-PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
-		<dependency>
-			<groupId>net.minelink</groupId>
-			<artifactId>CombatTagPlus</artifactId>
-			<version>1.2.1-SNAPSHOT</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusHook</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusFactions-v1_6</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusCompat-v1_7_R3</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusFactions-v1_8</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusCompat-v1_7_R4</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusWG-v5</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusWG-v6</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusCompat-API</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusFactions-v2_6</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusCompat-v1_8_R3</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusFactions-v2_7</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusCompat-v1_8_R2</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>CombatTagPlusCompat-v1_8_R1</artifactId>
-					<groupId>net.minelink</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>metrics-lite</artifactId>
-					<groupId>org.mcstats.bukkit</groupId>
-				</exclusion>
-			</exclusions>
-			<optional>true</optional>
-		</dependency>
+        <!-- GroupManager plugin -->
+        <dependency>
+            <groupId>org.anjocaido</groupId>
+            <artifactId>groupmanager</artifactId>
+            <version>2.13.1</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/EssentialsGroupManager-2.13.1.jar</systemPath>
+        </dependency>
 
-		<!-- XAuth, another authentication plugin, required by the database converter -->
-		<dependency>
-			<groupId>de.luricos.bukkit</groupId>
-			<artifactId>xAuth</artifactId>
-			<version>2.6</version>
-			<scope>provided</scope>
-			<exclusions>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>bukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<groupId>org.bukkit</groupId>
-					<artifactId>craftbukkit</artifactId>
-				</exclusion>
-				<exclusion>
-					<artifactId>updater</artifactId>
-					<groupId>net.gravitydevelopment.updater</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>lombok</artifactId>
-					<groupId>org.projectlombok</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>EssentialsGroupManager</artifactId>
-					<groupId>net.ess3</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>PermissionsEx</artifactId>
-					<groupId>ru.tehkode</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>AccountsClient</artifactId>
-					<groupId>com.mojang</groupId>
-				</exclusion>
-				<exclusion>
-					<artifactId>log4j-core</artifactId>
-					<groupId>org.apache.logging.log4j</groupId>
-				</exclusion>
-			</exclusions>
-			<optional>true</optional>
-		</dependency>
+        <!-- bPermissions plugin -->
+        <dependency>
+            <groupId>de.bananaco</groupId>
+            <artifactId>bpermissions</artifactId>
+            <version>1.12-DEV</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/bPermissions-2.12-DEV.jar</systemPath>
+        </dependency>
+
+        <!-- zPermissions plugin -->
+        <dependency>
+            <groupId>org.tyrannyofheaven.bukkit</groupId>
+            <artifactId>zPermissions</artifactId>
+            <version>1.3-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/zPermissions-1.3beta1.jar</systemPath>
+        </dependency>
+
+        <!-- Permissions plugin (obsolete) -->
+        <dependency>
+            <groupId>com.nijiko</groupId>
+            <artifactId>permissions</artifactId>
+            <version>3.1.6</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/Permission-3.1.6.jar</systemPath>
+        </dependency>
+
+        <!-- Vault, http://dev.bukkit.org/bukkit-plugins/vault/ -->
+        <dependency>
+            <groupId>net.milkbowl.vault</groupId>
+            <artifactId>VaultAPI</artifactId>
+            <version>1.5</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+            </exclusions>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Multi World plugin, http://www.spigotmc.org/resources/multiverse-core.390/ -->
+        <dependency>
+            <groupId>com.onarandombox.multiversecore</groupId>
+            <artifactId>Multiverse-Core</artifactId>
+            <version>2.5</version>
+            <type>jar</type>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>AllPay</artifactId>
+                    <groupId>com.fernferret.allpay</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>VaultAPI</artifactId>
+                    <groupId>net.milkbowl.vault</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CommandHandler</artifactId>
+                    <groupId>com.pneumaticraft.commandhandler</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>SerializationConfig</artifactId>
+                    <groupId>me.main__.util</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>Logging</artifactId>
+                    <groupId>com.dumptruckman.minecraft</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>metrics</artifactId>
+                    <groupId>org.mcstats.bukkit</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>buscript</artifactId>
+                    <groupId>com.dumptruckman.minecraft</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>junit</artifactId>
+                    <groupId>junit</groupId>
+                </exclusion>
+            </exclusions>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- EssentialsX plugin, http://www.spigotmc.org/resources/essentialsx.9089/ -->
+        <dependency>
+            <groupId>net.ess3</groupId>
+            <artifactId>EssentialsX</artifactId>
+            <version>2.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.spigotmc</groupId>
+                    <artifactId>spigot-api</artifactId>
+                </exclusion>
+            </exclusions>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Anti-PvPLogging plugin, https://github.com/MinelinkNetwork/CombatTagPlus -->
+        <dependency>
+            <groupId>net.minelink</groupId>
+            <artifactId>CombatTagPlus</artifactId>
+            <version>1.2.1-SNAPSHOT</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusHook</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusFactions-v1_6</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_7_R3</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusFactions-v1_8</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_7_R4</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusWG-v5</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusWG-v6</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-API</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusFactions-v2_6</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_8_R3</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusFactions-v2_7</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_8_R2</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>CombatTagPlusCompat-v1_8_R1</artifactId>
+                    <groupId>net.minelink</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>metrics-lite</artifactId>
+                    <groupId>org.mcstats.bukkit</groupId>
+                </exclusion>
+            </exclusions>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- XAuth, another authentication plugin, required by the database converter -->
+        <dependency>
+            <groupId>de.luricos.bukkit</groupId>
+            <artifactId>xAuth</artifactId>
+            <version>2.6</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>updater</artifactId>
+                    <groupId>net.gravitydevelopment.updater</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>lombok</artifactId>
+                    <groupId>org.projectlombok</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>EssentialsGroupManager</artifactId>
+                    <groupId>net.ess3</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>PermissionsEx</artifactId>
+                    <groupId>ru.tehkode</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>AccountsClient</artifactId>
+                    <groupId>com.mojang</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-core</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+            </exclusions>
+            <optional>true</optional>
+        </dependency>
+
+        <!-- Unit Testing Libraries -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+            <version>4.12</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>java-hamcrest</artifactId>
+            <scope>test</scope>
+            <version>2.0.0.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
+            <version>2.0.5-beta</version>
+            <optional>true</optional>
+        </dependency>
 
         <!-- String comparison library. Used for dynamic help system. -->
         <dependency>
             <groupId>net.ricecode</groupId>
             <artifactId>string-similarity</artifactId>
             <version>1.0.0</version>
-			<scope>compile</scope>
-			<optional>true</optional>
+            <scope>compile</scope>
+            <optional>true</optional>
         </dependency>
-	</dependencies>
+    </dependencies>
 </project>

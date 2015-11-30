@@ -1,9 +1,8 @@
 package fr.xephi.authme.events;
 
+import fr.xephi.authme.security.crypts.EncryptionMethod;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-
-import fr.xephi.authme.security.crypts.EncryptionMethod;
 
 /**
  * <p>
@@ -11,9 +10,9 @@ import fr.xephi.authme.security.crypts.EncryptionMethod;
  * a custom EncryptionMethod
  * </p>
  *
- * @see fr.xephi.authme.security.crypts.EncryptionMethod
- *
  * @author Xephi59
+ * @version $Revision: 1.0 $
+ * @see fr.xephi.authme.security.crypts.EncryptionMethod
  */
 public class PasswordEncryptionEvent extends Event {
 
@@ -21,31 +20,62 @@ public class PasswordEncryptionEvent extends Event {
     private EncryptionMethod method = null;
     private String playerName = "";
 
+    /**
+     * Constructor for PasswordEncryptionEvent.
+     *
+     * @param method     EncryptionMethod
+     * @param playerName String
+     */
     public PasswordEncryptionEvent(EncryptionMethod method, String playerName) {
         super(false);
         this.method = method;
         this.playerName = playerName;
     }
 
+    /**
+     * Method getHandlerList.
+     *
+     * @return HandlerList
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    /**
+     * Method getHandlers.
+     *
+     * @return HandlerList
+     */
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
 
-    public void setMethod(EncryptionMethod method) {
-        this.method = method;
-    }
-
+    /**
+     * Method getMethod.
+     *
+     * @return EncryptionMethod
+     */
     public EncryptionMethod getMethod() {
         return method;
     }
 
-    public String getPlayerName() {
-        return playerName;
+    /**
+     * Method setMethod.
+     *
+     * @param method EncryptionMethod
+     */
+    public void setMethod(EncryptionMethod method) {
+        this.method = method;
     }
 
-    public static HandlerList getHandlerList() {
-        return handlers;
+    /**
+     * Method getPlayerName.
+     *
+     * @return String
+     */
+    public String getPlayerName() {
+        return playerName;
     }
 
 }

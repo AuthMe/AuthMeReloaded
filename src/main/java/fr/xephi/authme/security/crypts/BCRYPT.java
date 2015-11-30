@@ -21,37 +21,37 @@ import java.security.SecureRandom;
  * BCrypt implements OpenBSD-style Blowfish password hashing using the scheme
  * described in "A Future-Adaptable Password Scheme" by Niels Provos and David
  * Mazieres.
- * <p>
+ * <p/>
  * This password hashing system tries to thwart off-line password cracking using
  * a computationally-intensive hashing algorithm, based on Bruce Schneier's
  * Blowfish cipher. The work factor of the algorithm is parameterised, so it can
  * be increased as computers get faster.
- * <p>
+ * <p/>
  * Usage is really simple. To hash a password for the first time, call the
  * hashpw method with a random salt, like this:
- * <p>
+ * <p/>
  * <code>
  * String pw_hash = BCrypt.hashpw(plain_password, BCrypt.gensalt()); <br />
  * </code>
- * <p>
+ * <p/>
  * To check whether a plaintext password matches one that has been hashed
  * previously, use the checkpw method:
- * <p>
+ * <p/>
  * <code>
  * if (BCrypt.checkpw(candidate_password, stored_hash))<br />
  * &nbsp;&nbsp;&nbsp;&nbsp;System.out.println("It matches");<br />
  * else<br />
  * &nbsp;&nbsp;&nbsp;&nbsp;System.out.println("It does not match");<br />
  * </code>
- * <p>
+ * <p/>
  * The gensalt() method takes an optional parameter (log_rounds) that determines
  * the computational complexity of the hashing:
- * <p>
+ * <p/>
  * <code>
  * String strong_salt = BCrypt.gensalt(10)<br />
  * String stronger_salt = BCrypt.gensalt(12)<br />
  * </code>
- * <p>
+ * <p/>
  * The amount of work increases exponentially (2**log_rounds), so each increment
  * is twice as much work. The default log_rounds is 10, and the valid range is 4
  * to 31.
@@ -92,13 +92,13 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param d   the byte array to encode
      * @param len the number of bytes to encode
-     * @return base64-encoded string
-     * @throws IllegalArgumentException if the length is invalid
+     *
+     * @return base64-encoded string * @throws IllegalArgumentException if the length is invalid * @throws IllegalArgumentException
      */
     private static String encode_base64(byte d[], int len)
-            throws IllegalArgumentException {
+        throws IllegalArgumentException {
         int off = 0;
-        StringBuffer rs = new StringBuffer();
+        StringBuilder rs = new StringBuilder();
         int c1, c2;
 
         if (len <= 0 || len > d.length)
@@ -133,6 +133,7 @@ public class BCRYPT implements EncryptionMethod {
      * range-checking againt conversion table
      *
      * @param x the base64-encoded value
+     *
      * @return the decoded value of x
      */
     private static byte char64(char x) {
@@ -148,12 +149,12 @@ public class BCRYPT implements EncryptionMethod {
      *
      * @param s       the string to decode
      * @param maxolen the maximum number of bytes to decode
-     * @return an array containing the decoded bytes
-     * @throws IllegalArgumentException if maxolen is invalid
+     *
+     * @return an array containing the decoded bytes * @throws IllegalArgumentException if maxolen is invalid * @throws IllegalArgumentException
      */
     private static byte[] decode_base64(String s, int maxolen)
-            throws IllegalArgumentException {
-        StringBuffer rs = new StringBuffer();
+        throws IllegalArgumentException {
+        StringBuilder rs = new StringBuilder();
         int off = 0, slen = s.length(), olen = 0;
         byte ret[];
         byte c1, c2, c3, c4, o;
@@ -193,6 +194,185 @@ public class BCRYPT implements EncryptionMethod {
     }
 
     /**
+     * Cycically extract a word of key material
+     *
+     * @param data the string to extract the data from
+     * @param offp a "pointer" (as a one-entry array) to the current offset into
+     *             data
+     *
+     * @return the next word of material from data
+     */
+    private static int streamtoword(byte data[], int offp[]) {
+        int i;
+        int word = 0;
+        int off = offp[0];
+
+        for (i = 0; i < 4; i++) {
+            word = (word << 8) | (data[off] & 0xff);
+            off = (off + 1) % data.length;
+        }
+
+        offp[0] = off;
+        return word;
+    }
+
+    /**
+     * Hash a password using the OpenBSD bcrypt scheme
+     *
+     * @param password the password to hash
+     * @param salt     the salt to hash with (perhaps generated using BCrypt.gensalt)
+     *
+     * @return the hashed password
+     */
+    public static String hashpw(String password, String salt) {
+        BCRYPT B;
+        String real_salt;
+        byte passwordb[], saltb[], hashed[];
+        char minor = (char) 0;
+        int rounds, off = 0;
+        StringBuilder rs = new StringBuilder();
+
+        if (salt.charAt(0) != '$' || salt.charAt(1) != '2')
+            throw new IllegalArgumentException("Invalid salt version");
+        if (salt.charAt(2) == '$')
+            off = 3;
+        else {
+            minor = salt.charAt(2);
+            if (minor < 'a' || minor > 'z' || salt.charAt(3) != '$')
+                throw new IllegalArgumentException("Invalid salt revision");
+            off = 4;
+        }
+
+        // Extract number of rounds
+        if (salt.charAt(off + 2) > '$')
+            throw new IllegalArgumentException("Missing salt rounds");
+        rounds = Integer.parseInt(salt.substring(off, off + 2));
+
+        real_salt = salt.substring(off + 3, off + 25);
+        try {
+            passwordb = (password + (minor >= 'a' ? "\000" : "")).getBytes("UTF-8");
+        } catch (UnsupportedEncodingException uee) {
+            throw new AssertionError("UTF-8 is not supported");
+        }
+
+        saltb = decode_base64(real_salt, BCRYPT_SALT_LEN);
+
+        B = new BCRYPT();
+        hashed = B.crypt_raw(passwordb, saltb, rounds);
+
+        rs.append("$2");
+        if (minor >= 'a')
+            rs.append(minor);
+        rs.append('$');
+        if (rounds < 10)
+            rs.append('0');
+        rs.append(Integer.toString(rounds));
+        rs.append('$');
+        rs.append(encode_base64(saltb, saltb.length));
+        rs.append(encode_base64(hashed, bf_crypt_ciphertext.length * 4 - 1));
+        return rs.toString();
+    }
+
+    /**
+     * Generate a salt for use with the BCrypt.hashpw() method
+     *
+     * @param log_rounds the log2 of the number of rounds of hashing to apply - the
+     *                   work factor therefore increases as 2**log_rounds.
+     * @param random     an instance of SecureRandom to use
+     *
+     * @return an encoded salt value
+     */
+    public static String gensalt(int log_rounds, SecureRandom random) {
+        StringBuilder rs = new StringBuilder();
+        byte rnd[] = new byte[BCRYPT_SALT_LEN];
+
+        random.nextBytes(rnd);
+
+        rs.append("$2a$");
+        if (log_rounds < 10)
+            rs.append('0');
+        rs.append(Integer.toString(log_rounds));
+        rs.append('$');
+        rs.append(encode_base64(rnd, rnd.length));
+        return rs.toString();
+    }
+
+    /**
+     * Generate a salt for use with the BCrypt.hashpw() method
+     *
+     * @param log_rounds the log2 of the number of rounds of hashing to apply - the
+     *                   work factor therefore increases as 2**log_rounds.
+     *
+     * @return an encoded salt value
+     */
+    public static String gensalt(int log_rounds) {
+        return gensalt(log_rounds, new SecureRandom());
+    }
+
+    /**
+     * Generate a salt for use with the BCrypt.hashpw() method, selecting a
+     * reasonable default for the number of hashing rounds to apply
+     *
+     * @return an encoded salt value
+     */
+    public static String gensalt() {
+        return gensalt(GENSALT_DEFAULT_LOG2_ROUNDS);
+    }
+
+    /**
+     * Check that a plaintext password matches a previously hashed one
+     *
+     * @param plaintext the plaintext password to verify
+     * @param hashed    the previously-hashed password
+     *
+     * @return true if the passwords match, false otherwise
+     */
+    public static boolean checkpw(String plaintext, String hashed) {
+        return (hashed.compareTo(hashpw(plaintext, hashed)) == 0);
+    }
+
+    /**
+     * Check that a text password matches a previously hashed one with the
+     * specified number of rounds using recursion
+     *
+     * @param text   plaintext or hashed text
+     * @param hashed the previously-hashed password
+     * @param rounds number of rounds to hash the password
+     *
+     * @return boolean
+     */
+    public static boolean checkpw(String text, String hashed, int rounds) {
+        boolean matched = false;
+
+        if (rounds > 0) {
+            String hash = hashpw(text, hashed);
+
+            if (rounds > 1) {
+                matched = checkpw(hash, hashed, rounds - 1);
+            } else {
+                matched = hash.compareTo(hashed) == 0;
+            }
+        } else {
+            matched = text.compareTo(hashed) == 0;
+        }
+
+        return matched;
+    }
+
+    /**
+     * Method getDoubleHash.
+     *
+     * @param text String
+     * @param salt String
+     *
+     * @return String
+     */
+    public static String getDoubleHash(String text, String salt) {
+        String hash = hashpw(text, salt);
+        return hashpw(text, hash);
+    }
+
+    /**
      * Blowfish encipher a single 64-bit block encoded as two 32-bit halves
      *
      * @param lr  an array containing the two 32-bit half blocks
@@ -222,33 +402,11 @@ public class BCRYPT implements EncryptionMethod {
     }
 
     /**
-     * Cycically extract a word of key material
-     *
-     * @param data the string to extract the data from
-     * @param offp a "pointer" (as a one-entry array) to the current offset into
-     *             data
-     * @return the next word of material from data
-     */
-    private static int streamtoword(byte data[], int offp[]) {
-        int i;
-        int word = 0;
-        int off = offp[0];
-
-        for (i = 0; i < 4; i++) {
-            word = (word << 8) | (data[off] & 0xff);
-            off = (off + 1) % data.length;
-        }
-
-        offp[0] = off;
-        return word;
-    }
-
-    /**
      * Initialise the Blowfish key schedule
      */
     private void init_key() {
-        P = (int[]) P_orig.clone();
-        S = (int[]) S_orig.clone();
+        P = P_orig.clone();
+        S = S_orig.clone();
     }
 
     /**
@@ -319,11 +477,12 @@ public class BCRYPT implements EncryptionMethod {
      * @param salt       the binary salt to hash with the password
      * @param log_rounds the binary logarithm of the number of rounds of hashing to
      *                   apply
+     *
      * @return an array containing the binary hashed password
      */
     private byte[] crypt_raw(byte password[], byte salt[], int log_rounds) {
         int rounds, i, j;
-        int cdata[] = (int[]) bf_crypt_ciphertext.clone();
+        int cdata[] = bf_crypt_ciphertext.clone();
         int clen = cdata.length;
         byte ret[];
 
@@ -356,157 +515,32 @@ public class BCRYPT implements EncryptionMethod {
     }
 
     /**
-     * Hash a password using the OpenBSD bcrypt scheme
+     * Method getHash.
      *
-     * @param password the password to hash
-     * @param salt     the salt to hash with (perhaps generated using BCrypt.gensalt)
-     * @return the hashed password
-     */
-    public static String hashpw(String password, String salt) {
-        BCRYPT B;
-        String real_salt;
-        byte passwordb[], saltb[], hashed[];
-        char minor = (char) 0;
-        int rounds, off = 0;
-        StringBuffer rs = new StringBuffer();
-
-        if (salt.charAt(0) != '$' || salt.charAt(1) != '2')
-            throw new IllegalArgumentException("Invalid salt version");
-        if (salt.charAt(2) == '$')
-            off = 3;
-        else {
-            minor = salt.charAt(2);
-            if (minor < 'a' || minor > 'z' || salt.charAt(3) != '$')
-                throw new IllegalArgumentException("Invalid salt revision");
-            off = 4;
-        }
-
-        // Extract number of rounds
-        if (salt.charAt(off + 2) > '$')
-            throw new IllegalArgumentException("Missing salt rounds");
-        rounds = Integer.parseInt(salt.substring(off, off + 2));
-
-        real_salt = salt.substring(off + 3, off + 25);
-        try {
-            passwordb = (password + (minor >= 'a' ? "\000" : "")).getBytes("UTF-8");
-        } catch (UnsupportedEncodingException uee) {
-            throw new AssertionError("UTF-8 is not supported");
-        }
-
-        saltb = decode_base64(real_salt, BCRYPT_SALT_LEN);
-
-        B = new BCRYPT();
-        hashed = B.crypt_raw(passwordb, saltb, rounds);
-
-        rs.append("$2");
-        if (minor >= 'a')
-            rs.append(minor);
-        rs.append("$");
-        if (rounds < 10)
-            rs.append("0");
-        rs.append(Integer.toString(rounds));
-        rs.append("$");
-        rs.append(encode_base64(saltb, saltb.length));
-        rs.append(encode_base64(hashed, bf_crypt_ciphertext.length * 4 - 1));
-        return rs.toString();
-    }
-
-    /**
-     * Generate a salt for use with the BCrypt.hashpw() method
+     * @param password String
+     * @param salt     String
+     * @param name     String
      *
-     * @param log_rounds the log2 of the number of rounds of hashing to apply - the
-     *                   work factor therefore increases as 2**log_rounds.
-     * @param random     an instance of SecureRandom to use
-     * @return an encoded salt value
+     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
      */
-    public static String gensalt(int log_rounds, SecureRandom random) {
-        StringBuffer rs = new StringBuffer();
-        byte rnd[] = new byte[BCRYPT_SALT_LEN];
-
-        random.nextBytes(rnd);
-
-        rs.append("$2a$");
-        if (log_rounds < 10)
-            rs.append("0");
-        rs.append(Integer.toString(log_rounds));
-        rs.append("$");
-        rs.append(encode_base64(rnd, rnd.length));
-        return rs.toString();
-    }
-
-    /**
-     * Generate a salt for use with the BCrypt.hashpw() method
-     *
-     * @param log_rounds the log2 of the number of rounds of hashing to apply - the
-     *                   work factor therefore increases as 2**log_rounds.
-     * @return an encoded salt value
-     */
-    public static String gensalt(int log_rounds) {
-        return gensalt(log_rounds, new SecureRandom());
-    }
-
-    /**
-     * Generate a salt for use with the BCrypt.hashpw() method, selecting a
-     * reasonable default for the number of hashing rounds to apply
-     *
-     * @return an encoded salt value
-     */
-    public static String gensalt() {
-        return gensalt(GENSALT_DEFAULT_LOG2_ROUNDS);
-    }
-
-    /**
-     * Check that a plaintext password matches a previously hashed one
-     *
-     * @param plaintext the plaintext password to verify
-     * @param hashed    the previously-hashed password
-     * @return true if the passwords match, false otherwise
-     */
-    public static boolean checkpw(String plaintext, String hashed) {
-        return (hashed.compareTo(hashpw(plaintext, hashed)) == 0);
-    }
-
-    /**
-     * Check that a text password matches a previously hashed one with the
-     * specified number of rounds using recursion
-     *
-     * @param text   plaintext or hashed text
-     * @param hashed the previously-hashed password
-     * @param rounds number of rounds to hash the password
-     * @return
-     */
-    public static boolean checkpw(String text, String hashed, int rounds) {
-        boolean matched = false;
-
-        if (rounds > 0) {
-            String hash = hashpw(text, hashed);
-
-            if (rounds > 1) {
-                matched = checkpw(hash, hashed, rounds - 1);
-            } else {
-                matched = hash.compareTo(hashed) == 0;
-            }
-        } else {
-            matched = text.compareTo(hashed) == 0;
-        }
-
-        return matched;
-    }
-
     @Override
     public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         return hashpw(password, salt);
     }
 
+    /**
+     * Method comparePassword.
+     *
+     * @param hash       String
+     * @param password   String
+     * @param playerName String
+     *
+     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
+     */
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
         return checkpw(password, hash);
-    }
-
-    public static String getDoubleHash(String text, String salt) {
-        String hash = hashpw(text, salt);
-        return hashpw(text, hash);
     }
 }

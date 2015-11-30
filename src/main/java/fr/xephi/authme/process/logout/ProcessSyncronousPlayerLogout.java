@@ -1,5 +1,14 @@
 package fr.xephi.authme.process.logout;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.events.LogoutEvent;
+import fr.xephi.authme.settings.MessageKey;
+import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.task.TimeoutTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -7,41 +16,50 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.events.LogoutEvent;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
-
+/**
+ */
 public class ProcessSyncronousPlayerLogout implements Runnable {
 
-    protected Player player;
-    protected AuthMe plugin;
-    protected String name;
-    private Messages m = Messages.getInstance();
+    protected final Player player;
+    protected final AuthMe plugin;
+    protected final String name;
+    private final Messages m;
 
+    /**
+     * Constructor for ProcessSyncronousPlayerLogout.
+     *
+     * @param player Player
+     * @param plugin AuthMe
+     */
     public ProcessSyncronousPlayerLogout(Player player, AuthMe plugin) {
+        this.m = plugin.getMessages();
         this.player = player;
         this.plugin = plugin;
         this.name = player.getName().toLowerCase();
     }
 
+    /**
+     * Method run.
+     *
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
-        if (plugin.sessions.containsKey(name))
+        if (plugin.sessions.containsKey(name)) {
             plugin.sessions.get(name).cancel();
-        plugin.sessions.remove(name);
-        int delay = Settings.getRegistrationTimeout * 20;
+            plugin.sessions.remove(name);
+        }
+        if (Settings.protectInventoryBeforeLogInEnabled) {
+            plugin.inventoryProtector.sendBlankInventoryPacket(player);
+        }
+        int timeOut = Settings.getRegistrationTimeout * 20;
         int interval = Settings.getWarnMessageInterval;
         BukkitScheduler sched = player.getServer().getScheduler();
-        if (delay != 0) {
-            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), delay);
+        if (timeOut != 0) {
+            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.send("login_msg"), interval));
+        BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.retrieve(MessageKey.LOGIN_MESSAGE), interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         if (player.isInsideVehicle() && player.getVehicle() != null)
             player.getVehicle().eject();
@@ -58,7 +76,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         }
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
-        m.send(player, "logout");
+        m.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");
     }
 

@@ -1,25 +1,31 @@
 package fr.xephi.authme.api;
 
-import java.security.NoSuchAlgorithmException;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
+import java.security.NoSuchAlgorithmException;
+
+/**
+ */
 public class API {
 
     public static final String newline = System.getProperty("line.separator");
     public static AuthMe instance;
 
+    /**
+     * Constructor for API.
+     *
+     * @param instance AuthMe
+     */
     @Deprecated
     public API(AuthMe instance) {
         API.instance = instance;
@@ -42,14 +48,9 @@ public class API {
         return instance;
     }
 
-    @Deprecated
-    public AuthMe getPlugin() {
-        return instance;
-    }
-
     /**
-     *
      * @param player
+     *
      * @return true if player is authenticate
      */
     @Deprecated
@@ -58,28 +59,8 @@ public class API {
     }
 
     /**
-     *
      * @param player
-     * @return true if player is a npc
-     */
-    @Deprecated
-    public boolean isaNPC(Player player) {
-        return Utils.isNPC(player);
-    }
-
-    /**
      *
-     * @param player
-     * @return true if player is a npc
-     */
-    @Deprecated
-    public boolean isNPC(Player player) {
-        return Utils.isNPC(player);
-    }
-
-    /**
-     *
-     * @param player
      * @return true if the player is unrestricted
      */
     @Deprecated
@@ -87,6 +68,13 @@ public class API {
         return Utils.isUnrestricted(player);
     }
 
+    /**
+     * Method getLastLocation.
+     *
+     * @param player Player
+     *
+     * @return Location
+     */
     @Deprecated
     public static Location getLastLocation(Player player) {
         try {
@@ -104,19 +92,26 @@ public class API {
         }
     }
 
+    /**
+     * Method setPlayerInventory.
+     *
+     * @param player  Player
+     * @param content ItemStack[]
+     * @param armor   ItemStack[]
+     */
     @Deprecated
     public static void setPlayerInventory(Player player, ItemStack[] content,
-            ItemStack[] armor) {
+                                          ItemStack[] armor) {
         try {
             player.getInventory().setContents(content);
             player.getInventory().setArmorContents(armor);
-        } catch (NullPointerException npe) {
+        } catch (NullPointerException ignored) {
         }
     }
 
     /**
-     *
      * @param playerName
+     *
      * @return true if player is registered
      */
     @Deprecated
@@ -126,13 +121,14 @@ public class API {
     }
 
     /**
-     * @param String
-     *            playerName, String passwordToCheck
+     * @param playerName      String
+     * @param passwordToCheck String
+     *
      * @return true if the password is correct , false else
      */
     @Deprecated
     public static boolean checkPassword(String playerName,
-            String passwordToCheck) {
+                                        String passwordToCheck) {
         if (!isRegistered(playerName))
             return false;
         String player = playerName.toLowerCase();
@@ -147,8 +143,9 @@ public class API {
     /**
      * Register a player
      *
-     * @param String
-     *            playerName, String password
+     * @param playerName String
+     * @param password   String
+     *
      * @return true if the player is register correctly
      */
     @Deprecated
@@ -160,10 +157,7 @@ public class API {
                 return false;
             }
             PlayerAuth auth = new PlayerAuth(name, hash, "198.18.0.1", 0, "your@email.com", playerName);
-            if (!instance.database.saveAuth(auth)) {
-                return false;
-            }
-            return true;
+            return instance.database.saveAuth(auth);
         } catch (NoSuchAlgorithmException ex) {
             return false;
         }
@@ -172,12 +166,41 @@ public class API {
     /**
      * Force a player to login
      *
-     * @param Player
-     *            player
+     * @param player *            player
      */
     @Deprecated
     public static void forceLogin(Player player) {
         instance.management.performLogin(player, "dontneed", true);
+    }
+
+    /**
+     * Method getPlugin.
+     *
+     * @return AuthMe
+     */
+    @Deprecated
+    public AuthMe getPlugin() {
+        return instance;
+    }
+
+    /**
+     * @param player
+     *
+     * @return true if player is a npc
+     */
+    @Deprecated
+    public boolean isaNPC(Player player) {
+        return Utils.isNPC(player);
+    }
+
+    /**
+     * @param player
+     *
+     * @return true if player is a npc
+     */
+    @Deprecated
+    public boolean isNPC(Player player) {
+        return Utils.isNPC(player);
     }
 
 }

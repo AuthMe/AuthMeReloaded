@@ -1,12 +1,5 @@
 package fr.xephi.authme.process.login;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.potion.PotionEffectType;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -21,20 +14,34 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.potion.PotionEffectType;
 
+/**
+ */
 public class ProcessSyncronousPlayerLogin implements Runnable {
 
-    private LimboPlayer limbo;
-    private Player player;
-    private String name;
-    private PlayerAuth auth;
-    private AuthMe plugin;
-    private DataSource database;
-    private PluginManager pm;
-    private JsonCache playerCache;
+    private final LimboPlayer limbo;
+    private final Player player;
+    private final String name;
+    private final PlayerAuth auth;
+    private final AuthMe plugin;
+    private final DataSource database;
+    private final PluginManager pm;
+    private final JsonCache playerCache;
 
+    /**
+     * Constructor for ProcessSyncronousPlayerLogin.
+     *
+     * @param player Player
+     * @param plugin AuthMe
+     * @param data   DataSource
+     */
     public ProcessSyncronousPlayerLogin(Player player, AuthMe plugin,
-            DataSource data) {
+                                        DataSource data) {
         this.plugin = plugin;
         this.database = data;
         this.pm = plugin.getServer().getPluginManager();
@@ -45,21 +52,27 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         this.playerCache = new JsonCache();
     }
 
+    /**
+     * Method getLimbo.
+     *
+     * @return LimboPlayer
+     */
     public LimboPlayer getLimbo() {
         return limbo;
     }
 
     protected void restoreOpState() {
         player.setOp(limbo.getOperator());
-        if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
-            if (limbo.getGameMode() != GameMode.CREATIVE) {
-                player.setAllowFlight(limbo.isFlying());
-                player.setFlying(limbo.isFlying());
-            } else {
-                player.setAllowFlight(false);
-                player.setFlying(false);
-            }
+    }
+
+    protected void restoreFlyghtState() {
+        if (Settings.isForceSurvivalModeEnabled) {
+            player.setAllowFlight(false);
+            player.setFlying(false);
+            return;
         }
+        player.setAllowFlight(limbo.isFlying());
+        player.setFlying(limbo.isFlying());
     }
 
     protected void packQuitLocation() {
@@ -85,58 +98,43 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
     protected void restoreInventory() {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-        Bukkit.getServer().getPluginManager().callEvent(event);
-        if (!event.isCancelled()) {
+        pm.callEvent(event);
+        if (!event.isCancelled() && plugin.inventoryProtector != null) {
             plugin.inventoryProtector.sendInventoryPacket(player);
         }
     }
 
     protected void forceCommands() {
         for (String command : Settings.forceCommands) {
-            try {
-                player.performCommand(command.replace("%p", player.getName()));
-            } catch (Exception ignored) {
-            }
+            player.performCommand(command.replace("%p", player.getName()));
         }
         for (String command : Settings.forceCommandsAsConsole) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
         }
     }
 
+    /**
+     * Method run.
+     *
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
-            // Op & Flying
-            restoreOpState();
 
-            /*
-             * Restore Inventories and GameMode We need to restore them before
-             * teleport the player Cause in AuthMePlayerListener, we call
-             * ProtectInventoryEvent after Teleporting Also it's the current
-             * world inventory !
-             */
-            player.setGameMode(limbo.getGameMode());
-            // Inventory - Make it after restore GameMode , cause we need to
-            // restore the
-            // right inventory in the right gamemode
-            if (Settings.protectInventoryBeforeLogInEnabled  && plugin.inventoryProtector != null) {
-                restoreInventory();
-            }
-            if (Settings.forceOnlyAfterLogin) {
-                player.setGameMode(GameMode.SURVIVAL);
-            }
+            // Restore Op state and Permission Group
+            restoreOpState();
+            Utils.setGroup(player, GroupType.LOGGEDIN);
 
             if (!Settings.noTeleport) {
-                // Teleport
                 if (Settings.isTeleportToSpawnEnabled && !Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
                     if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
                         packQuitLocation();
                     } else {
                         teleportBackFromSpawn();
                     }
-                } else
-                    if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
+                } else if (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName())) {
                     teleportToSpawn();
                 } else if (Settings.isSaveQuitLocationEnabled && auth.getQuitLocY() != 0) {
                     packQuitLocation();
@@ -145,13 +143,17 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
                 }
             }
 
-            // Re-Force Survival GameMode if we need due to world change
-            // specification
-            if (Settings.isForceSurvivalModeEnabled)
+            if (Settings.isForceSurvivalModeEnabled && Settings.forceOnlyAfterLogin) {
                 Utils.forceGM(player);
+            } else {
+                player.setGameMode(limbo.getGameMode());
+            }
 
-            // Restore Permission Group
-            Utils.setGroup(player, GroupType.LOGGEDIN);
+            restoreFlyghtState();
+
+            if (Settings.protectInventoryBeforeLogInEnabled) {
+                restoreInventory();
+            }
 
             // Cleanup no longer used temporary data
             LimboCache.getInstance().deleteLimboPlayer(name);
@@ -160,23 +162,28 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             }
         }
 
-        // We can now display the join message
-        if (AuthMePlayerListener.joinMessage.containsKey(name) && AuthMePlayerListener.joinMessage.get(name) != null && !AuthMePlayerListener.joinMessage.get(name).isEmpty()) {
-            for (Player p : Utils.getOnlinePlayers()) {
-                if (p.isOnline())
-                    p.sendMessage(AuthMePlayerListener.joinMessage.get(name));
+        // We can now display the join message (if delayed)
+        String jm = AuthMePlayerListener.joinMessage.get(name);
+        if (jm != null) {
+            if (!jm.isEmpty()) {
+                for (Player p : Utils.getOnlinePlayers()) {
+                    if (p.isOnline())
+                        p.sendMessage(jm);
+                }
             }
             AuthMePlayerListener.joinMessage.remove(name);
         }
 
-        if (Settings.applyBlindEffect)
+        if (Settings.applyBlindEffect) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
+        }
+
         if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
             player.setWalkSpeed(0.2f);
             player.setFlySpeed(0.1f);
         }
 
-        // The Loginevent now fires (as intended) after everything is processed
+        // The Login event now fires (as intended) after everything is processed
         Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
         player.saveData();
 
@@ -184,11 +191,11 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {
                 for (String s : Settings.welcomeMsg) {
-                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfos(s, player));
+                    Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
                 for (String s : Settings.welcomeMsg) {
-                    player.sendMessage(plugin.replaceAllInfos(s, player));
+                    player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
 

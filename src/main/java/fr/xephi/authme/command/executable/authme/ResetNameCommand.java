@@ -1,15 +1,16 @@
 package fr.xephi.authme.command.executable.authme;
 
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
+/**
+ */
 public class ResetNameCommand extends ExecutableCommand {
 
     /**
@@ -31,7 +32,7 @@ public class ResetNameCommand extends ExecutableCommand {
             @Override
             public void run() {
                 List<PlayerAuth> authentications = plugin.database.getAllAuths();
-                for(PlayerAuth auth : authentications) {
+                for (PlayerAuth auth : authentications) {
                     auth.setRealName("Player");
                     plugin.database.updateSession(auth);
                 }
