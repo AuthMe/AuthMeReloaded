@@ -198,6 +198,12 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
+        if (!plugin.canConnect()) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage("Server is loading, please wait before joining!");
+            return;
+        }
+
         final String name = event.getName().toLowerCase();
         final Player player = Utils.getPlayer(name);
         if (player == null || Utils.isNPC(player)) {
