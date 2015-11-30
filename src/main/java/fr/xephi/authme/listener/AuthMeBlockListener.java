@@ -1,34 +1,48 @@
 package fr.xephi.authme.listener;
 
-import org.bukkit.entity.Player;
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.util.Utils;
-
+/**
+ */
 public class AuthMeBlockListener implements Listener {
 
-    public AuthMe instance;
+    public final AuthMe instance;
 
+    /**
+     * Constructor for AuthMeBlockListener.
+     *
+     * @param instance AuthMe
+     */
     public AuthMeBlockListener(AuthMe instance) {
-
         this.instance = instance;
     }
 
+    /**
+     * Method onBlockPlace.
+     *
+     * @param event BlockPlaceEvent
+     */
     @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
+    /**
+     * Method onBlockBreak.
+     *
+     * @param event BlockBreakEvent
+     */
     @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player)) {
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
         event.setCancelled(true);

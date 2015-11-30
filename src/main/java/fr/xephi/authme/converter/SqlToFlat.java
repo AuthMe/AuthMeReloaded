@@ -1,28 +1,40 @@
 package fr.xephi.authme.converter;
 
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.FlatFile;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.settings.MessageKey;
+import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
+/**
+ */
 public class SqlToFlat implements Converter {
 
-    public AuthMe plugin;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe plugin;
+    public final DataSource database;
+    public final CommandSender sender;
 
+    /**
+     * Constructor for SqlToFlat.
+     *
+     * @param plugin AuthMe
+     * @param sender CommandSender
+     */
     public SqlToFlat(AuthMe plugin, CommandSender sender) {
         this.plugin = plugin;
         this.database = plugin.database;
         this.sender = sender;
     }
 
+    /**
+     * Method run.
+     *
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         try {
@@ -40,7 +52,7 @@ public class SqlToFlat implements Converter {
             sender.sendMessage("Successfully convert from SQL table to file auths.db");
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
-            Messages.getInstance().send(sender, "error");
+            plugin.getMessages().send(sender, MessageKey.ERROR);
         }
     }
 

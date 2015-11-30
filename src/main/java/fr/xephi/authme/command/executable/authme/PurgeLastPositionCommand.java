@@ -1,15 +1,17 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
+/**
+ */
 public class PurgeLastPositionCommand extends ExecutableCommand {
 
     /**
@@ -27,11 +29,11 @@ public class PurgeLastPositionCommand extends ExecutableCommand {
         final AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        final Messages m = Messages.getInstance();
+        final Messages m = plugin.getMessages();
 
         // Get the player
         String playerName = sender.getName();
-        if(commandArguments.getCount() >= 1)
+        if (commandArguments.getCount() >= 1)
             playerName = commandArguments.get(0);
         String playerNameLowerCase = playerName.toLowerCase();
 
@@ -40,7 +42,7 @@ public class PurgeLastPositionCommand extends ExecutableCommand {
             // Get the user auth and make sure the user exists
             PlayerAuth auth = plugin.database.getAuth(playerNameLowerCase);
             if (auth == null) {
-                m.send(sender, "unknown_user");
+                m.send(sender, MessageKey.UNKNOWN_USER);
                 return true;
             }
 

@@ -1,5 +1,14 @@
 package fr.xephi.authme.converter;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.settings.Settings;
+import org.bukkit.command.CommandSender;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,35 +17,42 @@ import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import org.bukkit.command.CommandSender;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.Settings;
-
 /**
  * @author Xephi59
+ * @version $Revision: 1.0 $
  */
 public class RakamakConverter implements Converter {
 
-    public AuthMe instance;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe instance;
+    public final DataSource database;
+    public final CommandSender sender;
 
+    /**
+     * Constructor for RakamakConverter.
+     *
+     * @param instance AuthMe
+     * @param sender   CommandSender
+     */
     public RakamakConverter(AuthMe instance, CommandSender sender) {
         this.instance = instance;
         this.database = instance.database;
         this.sender = sender;
     }
 
+    /**
+     * Method getInstance.
+     *
+     * @return RakamakConverter
+     */
     public RakamakConverter getInstance() {
         return this;
     }
 
+    /**
+     * Method run.
+     *
+     * @see java.lang.Runnable#run()
+     */
     @Override
     public void run() {
         HashAlgorithm hash = Settings.getPasswordHash;

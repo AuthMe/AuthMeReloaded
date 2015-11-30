@@ -2,6 +2,8 @@ package fr.xephi.authme.security;
 
 import org.apache.commons.lang.ObjectUtils.Null;
 
+/**
+ */
 public enum HashAlgorithm {
 
     MD5(fr.xephi.authme.security.crypts.MD5.class),
@@ -33,12 +35,22 @@ public enum HashAlgorithm {
     SALTEDSHA512(fr.xephi.authme.security.crypts.SALTEDSHA512.class),
     CUSTOM(Null.class);
 
-    Class<?> classe;
+    final Class<?> classe;
 
+    /**
+     * Constructor for HashAlgorithm.
+     *
+     * @param classe Class<?>
+     */
     HashAlgorithm(Class<?> classe) {
         this.classe = classe;
     }
 
+    /**
+     * Method getclasse.
+     *
+     * @return Class<?>
+     */
     public Class<?> getclasse() {
         return classe;
     }

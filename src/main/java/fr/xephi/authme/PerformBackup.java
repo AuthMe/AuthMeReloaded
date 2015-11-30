@@ -1,35 +1,71 @@
 package fr.xephi.authme;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import fr.xephi.authme.settings.Settings;
+
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import fr.xephi.authme.settings.Settings;
-
 /**
+ * The backup management class
  *
  * @author stefano
+ * @version $Revision: 1.0 $
  */
 public class PerformBackup {
 
-    private String dbName = Settings.getMySQLDatabase;
-    private String dbUserName = Settings.getMySQLUsername;
-    private String dbPassword = Settings.getMySQLPassword;
-    private String tblname = Settings.getMySQLTablename;
-    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
-    String dateString = format.format(new Date());
-    private String path = AuthMe.getInstance().getDataFolder() + File.separator + "backups" + File.separator + "backup" + dateString;
+    final SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd_HH-mm");
+    final String dateString = format.format(new Date());
+    private final String dbName = Settings.getMySQLDatabase;
+    private final String dbUserName = Settings.getMySQLUsername;
+    private final String dbPassword = Settings.getMySQLPassword;
+    private final String tblname = Settings.getMySQLTablename;
+    private final String path = AuthMe.getInstance().getDataFolder() + File.separator + "backups" + File.separator + "backup" + dateString;
     private AuthMe instance;
 
+    /**
+     * Constructor for PerformBackup.
+     *
+     * @param instance AuthMe
+     */
     public PerformBackup(AuthMe instance) {
         this.setInstance(instance);
     }
 
+    /**
+     * Perform a backup with the given reason.
+     *
+     * @param cause BackupCause The cause of the backup.
+     */
+    public void doBackup(BackupCause cause) {
+        if (!Settings.isBackupActivated) {
+            ConsoleLogger.showError("Can't perform a Backup: disabled in configuration. Cause of the Backup: " + cause.name());
+        }
+        // Check whether a backup should be made at the specified point in time
+        switch (cause) {
+            case START:
+                if (!Settings.isBackupOnStart)
+                    return;
+            case STOP:
+                if (!Settings.isBackupOnStop)
+                    return;
+            case COMMAND:
+            case OTHER:
+        }
+
+        // Do backup and check return value!
+        if (doBackup()) {
+            ConsoleLogger.info("A backup has been performed successfully. Cause of the Backup: " + cause.name());
+        } else {
+            ConsoleLogger.showError("Error while performing a backup! Cause of the Backup: " + cause.name());
+        }
+    }
+
+    /**
+     * Method doBackup.
+     *
+     * @return boolean
+     */
     public boolean doBackup() {
 
         switch (Settings.getDataSource) {
@@ -44,6 +80,11 @@ public class PerformBackup {
         return false;
     }
 
+    /**
+     * Method MySqlBackup.
+     *
+     * @return boolean
+     */
     private boolean MySqlBackup() {
         File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
@@ -83,6 +124,13 @@ public class PerformBackup {
         return false;
     }
 
+    /**
+     * Method FileBackup.
+     *
+     * @param backend String
+     *
+     * @return boolean
+     */
     private boolean FileBackup(String backend) {
         File dirBackup = new File(AuthMe.getInstance().getDataFolder() + "/backups");
 
@@ -99,13 +147,16 @@ public class PerformBackup {
         return false;
     }
 
-    /*
-     * Check if we are under Windows and correct location of mysqldump.exe
-     * otherwise return error.
+    /**
+     * Method checkWindows.
+     *
+     * @param windowsPath String
+     *
+     * @return boolean
      */
     private boolean checkWindows(String windowsPath) {
         String isWin = System.getProperty("os.name").toLowerCase();
-        if (isWin.indexOf("win") >= 0) {
+        if (isWin.contains("win")) {
             if (new File(windowsPath + "\\bin\\mysqldump.exe").exists()) {
                 return true;
             } else {
@@ -116,7 +167,17 @@ public class PerformBackup {
     }
 
     /*
-     * Copyr src bytefile into dst file
+     * Check if we are under Windows and correct location of mysqldump.exe
+     * otherwise return error.
+     */
+
+    /**
+     * Method copy.
+     *
+     * @param src File
+     * @param dst File
+     *
+     * @throws IOException
      */
     void copy(File src, File dst) throws IOException {
         InputStream in = new FileInputStream(src);
@@ -132,12 +193,36 @@ public class PerformBackup {
         out.close();
     }
 
+    /*
+     * Copyr src bytefile into dst file
+     */
+
+    /**
+     * Method getInstance.
+     *
+     * @return AuthMe
+     */
+    public AuthMe getInstance() {
+        return instance;
+    }
+
+    /**
+     * Method setInstance.
+     *
+     * @param instance AuthMe
+     */
     public void setInstance(AuthMe instance) {
         this.instance = instance;
     }
 
-    public AuthMe getInstance() {
-        return instance;
+    /**
+     * Possible backup causes.
+     */
+    public enum BackupCause {
+        START,
+        STOP,
+        COMMAND,
+        OTHER,
     }
 
 }

@@ -1,50 +1,51 @@
 package fr.xephi.authme.datasource;
 
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.PoolInitializationException;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ */
 public class MySQL implements DataSource {
 
-    private String host;
-    private String port;
-    private String username;
-    private String password;
-    private String database;
-    private String tableName;
-    private String columnName;
-    private String columnPassword;
-    private String columnIp;
-    private String columnLastLogin;
-    private String columnSalt;
-    private String columnGroup;
-    private String lastlocX;
-    private String lastlocY;
-    private String lastlocZ;
-    private String lastlocWorld;
-    private String columnEmail;
-    private String columnID;
-    private String columnLogged;
-    private List<String> columnOthers;
+    private final String host;
+    private final String port;
+    private final String username;
+    private final String password;
+    private final String database;
+    private final String tableName;
+    private final String columnName;
+    private final String columnPassword;
+    private final String columnIp;
+    private final String columnLastLogin;
+    private final String columnSalt;
+    private final String columnGroup;
+    private final String lastlocX;
+    private final String lastlocY;
+    private final String lastlocZ;
+    private final String lastlocWorld;
+    private final String columnEmail;
+    private final String columnID;
+    private final String columnLogged;
+    private final List<String> columnOthers;
     private HikariDataSource ds;
-    private String columnRealName;
-    private int maxConnections;
+    private final String columnRealName;
+    private final int maxConnections;
 
+    /**
+     * Constructor for MySQL.
+     *
+     * @throws ClassNotFoundException * @throws SQLException * @throws PoolInitializationException
+     */
     public MySQL() throws ClassNotFoundException, SQLException, PoolInitializationException {
         this.host = Settings.getMySQLHost;
         this.port = Settings.getMySQLPort;
@@ -98,8 +99,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method setConnectionArguments.
+     *
+     * @throws ClassNotFoundException * @throws IllegalArgumentException
+     */
     private synchronized void setConnectionArguments()
-            throws ClassNotFoundException, IllegalArgumentException {
+        throws IllegalArgumentException {
         HikariConfig config = new HikariConfig();
         config.setPoolName("AuthMeMYSQLPool");
         config.setDriverClassName("com.mysql.jdbc.Driver");
@@ -117,8 +123,13 @@ public class MySQL implements DataSource {
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
+    /**
+     * Method reloadArguments.
+     *
+     * @throws ClassNotFoundException * @throws IllegalArgumentException
+     */
     private synchronized void reloadArguments()
-            throws ClassNotFoundException, IllegalArgumentException {
+        throws ClassNotFoundException, IllegalArgumentException {
         if (ds != null) {
             ds.close();
         }
@@ -126,10 +137,20 @@ public class MySQL implements DataSource {
         ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
+    /**
+     * Method getConnection.
+     *
+     * @return Connection * @throws SQLException
+     */
     private synchronized Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
 
+    /**
+     * Method setupConnection.
+     *
+     * @throws SQLException
+     */
     private synchronized void setupConnection() throws SQLException {
         Connection con = null;
         Statement st = null;
@@ -193,6 +214,13 @@ public class MySQL implements DataSource {
         ConsoleLogger.info("MySQL Setup finished");
     }
 
+    /**
+     * Method isAuthAvailable.
+     *
+     * @param user String
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
+     */
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         Connection con = null;
@@ -215,6 +243,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method getAuth.
+     *
+     * @param user String
+     *
+     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
+     */
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         Connection con = null;
@@ -268,6 +303,13 @@ public class MySQL implements DataSource {
         return pAuth;
     }
 
+    /**
+     * Method saveAuth.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
+     */
     @Override
     public synchronized boolean saveAuth(PlayerAuth auth) {
         Connection con = null;
@@ -475,6 +517,13 @@ public class MySQL implements DataSource {
         return true;
     }
 
+    /**
+     * Method updatePassword.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
+     */
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
         Connection con = null;
@@ -520,6 +569,13 @@ public class MySQL implements DataSource {
         return true;
     }
 
+    /**
+     * Method updateSession.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateSession(PlayerAuth auth) {
         Connection con = null;
@@ -543,6 +599,13 @@ public class MySQL implements DataSource {
         return true;
     }
 
+    /**
+     * Method purgeDatabase.
+     *
+     * @param until long
+     *
+     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
+     */
     @Override
     public synchronized int purgeDatabase(long until) {
         Connection con = null;
@@ -562,6 +625,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method autoPurgeDatabase.
+     *
+     * @param until long
+     *
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
+     */
     @Override
     public synchronized List<String> autoPurgeDatabase(long until) {
         Connection con = null;
@@ -592,6 +662,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method removeAuth.
+     *
+     * @param user String
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
+     */
     @Override
     public synchronized boolean removeAuth(String user) {
         Connection con = null;
@@ -629,6 +706,13 @@ public class MySQL implements DataSource {
         return true;
     }
 
+    /**
+     * Method updateQuitLoc.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateQuitLoc(PlayerAuth auth) {
         Connection con = null;
@@ -653,6 +737,13 @@ public class MySQL implements DataSource {
         return true;
     }
 
+    /**
+     * Method getIps.
+     *
+     * @param ip String
+     *
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
+     */
     @Override
     public synchronized int getIps(String ip) {
         Connection con = null;
@@ -679,6 +770,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method updateEmail.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateEmail(PlayerAuth auth) {
         Connection con = null;
@@ -701,6 +799,13 @@ public class MySQL implements DataSource {
         return true;
     }
 
+    /**
+     * Method updateSalt.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateSalt(PlayerAuth auth) {
         if (columnSalt.isEmpty()) {
@@ -725,6 +830,11 @@ public class MySQL implements DataSource {
         return true;
     }
 
+    /**
+     * Method reload.
+     *
+     * @see fr.xephi.authme.datasource.DataSource#reload()
+     */
     @Override
     public void reload() {
         try {
@@ -740,12 +850,22 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method close.
+     *
+     * @see fr.xephi.authme.datasource.DataSource#close()
+     */
     @Override
     public synchronized void close() {
         if (ds != null && !ds.isClosed())
             ds.close();
     }
 
+    /**
+     * Method close.
+     *
+     * @param o AutoCloseable
+     */
     private void close(AutoCloseable o) {
         if (o != null) {
             try {
@@ -757,6 +877,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method getAllAuthsByName.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
+     */
     @Override
     public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
         Connection con = null;
@@ -783,6 +910,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method getAllAuthsByIp.
+     *
+     * @param ip String
+     *
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
+     */
     @Override
     public synchronized List<String> getAllAuthsByIp(String ip) {
         Connection con = null;
@@ -809,6 +943,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method getAllAuthsByEmail.
+     *
+     * @param email String
+     *
+     * @return List<String> * @throws SQLException * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
+     */
     @Override
     public synchronized List<String> getAllAuthsByEmail(String email) throws SQLException {
         final Connection con = getConnection();
@@ -831,6 +972,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method purgeBanned.
+     *
+     * @param banned List<String>
+     *
+     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
+     */
     @Override
     public synchronized void purgeBanned(List<String> banned) {
         Connection con = null;
@@ -851,11 +999,23 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method getType.
+     *
+     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType()
+     */
     @Override
     public DataSourceType getType() {
         return DataSourceType.MYSQL;
     }
 
+    /**
+     * Method isLogged.
+     *
+     * @param user String
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
+     */
     @Override
     public boolean isLogged(String user) {
         Connection con = null;
@@ -880,6 +1040,13 @@ public class MySQL implements DataSource {
         return false;
     }
 
+    /**
+     * Method setLogged.
+     *
+     * @param user String
+     *
+     * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
+     */
     @Override
     public void setLogged(String user) {
         Connection con = null;
@@ -899,6 +1066,13 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method setUnlogged.
+     *
+     * @param user String
+     *
+     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
+     */
     @Override
     public void setUnlogged(String user) {
         Connection con = null;
@@ -919,6 +1093,11 @@ public class MySQL implements DataSource {
             }
     }
 
+    /**
+     * Method purgeLogged.
+     *
+     * @see fr.xephi.authme.datasource.DataSource#purgeLogged()
+     */
     @Override
     public void purgeLogged() {
         Connection con = null;
@@ -938,6 +1117,11 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method getAccountsRegistered.
+     *
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
+     */
     @Override
     public int getAccountsRegistered() {
         int result = 0;
@@ -962,16 +1146,24 @@ public class MySQL implements DataSource {
         return result;
     }
 
+    /**
+     * Method updateName.
+     *
+     * @param oldOne String
+     * @param newOne String
+     *
+     * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
+     */
     @Override
-    public void updateName(String oldone, String newone) {
+    public void updateName(String oldOne, String newOne) {
         Connection con = null;
         PreparedStatement pst = null;
         try {
             if ((con = getConnection()) == null)
                 return;
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE LOWER(" + columnName + ")=?;");
-            pst.setString(1, newone);
-            pst.setString(2, oldone);
+            pst.setString(1, newOne);
+            pst.setString(2, oldOne);
             pst.executeUpdate();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -981,6 +1173,11 @@ public class MySQL implements DataSource {
         }
     }
 
+    /**
+     * Method getAllAuths.
+     *
+     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
+     */
     @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
@@ -1032,6 +1229,11 @@ public class MySQL implements DataSource {
         return auths;
     }
 
+    /**
+     * Method getLoggedPlayers.
+     *
+     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
+     */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         List<PlayerAuth> auths = new ArrayList<>();

@@ -1,5 +1,13 @@
 package fr.xephi.authme.converter;
 
+import de.luricos.bukkit.xAuth.database.DatabaseTables;
+import de.luricos.bukkit.xAuth.utils.xAuthLog;
+import de.luricos.bukkit.xAuth.xAuth;
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.datasource.DataSource;
+import org.bukkit.command.CommandSender;
+
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,27 +16,31 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.command.CommandSender;
-
-import de.luricos.bukkit.xAuth.xAuth;
-import de.luricos.bukkit.xAuth.database.DatabaseTables;
-import de.luricos.bukkit.xAuth.utils.xAuthLog;
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource;
-
+/**
+ */
 public class xAuthToFlat {
 
-    public AuthMe instance;
-    public DataSource database;
-    public CommandSender sender;
+    public final AuthMe instance;
+    public final DataSource database;
+    public final CommandSender sender;
 
+    /**
+     * Constructor for xAuthToFlat.
+     *
+     * @param instance AuthMe
+     * @param sender   CommandSender
+     */
     public xAuthToFlat(AuthMe instance, CommandSender sender) {
         this.instance = instance;
         this.database = instance.database;
         this.sender = sender;
     }
 
+    /**
+     * Method convert.
+     *
+     * @return boolean
+     */
     public boolean convert() {
         if (instance.getServer().getPluginManager().getPlugin("xAuth") == null) {
             sender.sendMessage("[AuthMe] xAuth plugin not found");
@@ -52,13 +64,20 @@ public class xAuthToFlat {
                     database.saveAuth(auth);
                 }
             }
-            sender.sendMessage("[AuthMe] Successfull convert from xAuth database");
+            sender.sendMessage("[AuthMe] Successfully convert from xAuth database");
         } catch (Exception e) {
             sender.sendMessage("[AuthMe] An error has been thrown while import xAuth database, the import hadn't fail but can be not complete ");
         }
         return true;
     }
 
+    /**
+     * Method getIdPlayer.
+     *
+     * @param id int
+     *
+     * @return String
+     */
     public String getIdPlayer(int id) {
         String realPass = "";
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
@@ -81,6 +100,11 @@ public class xAuthToFlat {
         return realPass;
     }
 
+    /**
+     * Method getXAuthPlayers.
+     *
+     * @return List<Integer>
+     */
     public List<Integer> getXAuthPlayers() {
         List<Integer> xP = new ArrayList<>();
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
@@ -102,6 +126,13 @@ public class xAuthToFlat {
         return xP;
     }
 
+    /**
+     * Method getPassword.
+     *
+     * @param accountId int
+     *
+     * @return String
+     */
     public String getPassword(int accountId) {
         String realPass = "";
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();

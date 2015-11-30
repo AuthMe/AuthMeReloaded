@@ -1,27 +1,35 @@
 package fr.xephi.authme.security;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-import java.util.HashMap;
-
-import org.bukkit.Bukkit;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.security.crypts.BCRYPT;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.settings.Settings;
+import org.bukkit.Bukkit;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.util.HashMap;
+
+/**
+ */
 public class PasswordSecurity {
 
-    private static SecureRandom rnd = new SecureRandom();
-    public static HashMap<String, String> userSalt = new HashMap<>();
+    public static final HashMap<String, String> userSalt = new HashMap<>();
+    private static final SecureRandom rnd = new SecureRandom();
 
+    /**
+     * Method createSalt.
+     *
+     * @param length int
+     *
+     * @return String * @throws NoSuchAlgorithmException
+     */
     public static String createSalt(int length)
-            throws NoSuchAlgorithmException {
+        throws NoSuchAlgorithmException {
         byte[] msg = new byte[40];
         rnd.nextBytes(msg);
         MessageDigest sha1 = MessageDigest.getInstance("SHA1");
@@ -30,6 +38,15 @@ public class PasswordSecurity {
         return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest)).substring(0, length);
     }
 
+    /**
+     * Method getHash.
+     *
+     * @param alg        HashAlgorithm
+     * @param password   String
+     * @param playerName String
+     *
+     * @return String * @throws NoSuchAlgorithmException
+     */
     public static String getHash(HashAlgorithm alg, String password,
                                  String playerName) throws NoSuchAlgorithmException {
         EncryptionMethod method;
@@ -125,13 +142,22 @@ public class PasswordSecurity {
         return method.getHash(password, salt, playerName);
     }
 
+    /**
+     * Method comparePasswordWithHash.
+     *
+     * @param password   String
+     * @param hash       String
+     * @param playerName String
+     *
+     * @return boolean * @throws NoSuchAlgorithmException
+     */
     public static boolean comparePasswordWithHash(String password, String hash,
                                                   String playerName) throws NoSuchAlgorithmException {
-        HashAlgorithm algo = Settings.getPasswordHash;
+        HashAlgorithm algorithm = Settings.getPasswordHash;
         EncryptionMethod method;
         try {
-            if (algo != HashAlgorithm.CUSTOM)
-                method = (EncryptionMethod) algo.getclasse().newInstance();
+            if (algorithm != HashAlgorithm.CUSTOM)
+                method = (EncryptionMethod) algorithm.getclasse().newInstance();
             else
                 method = null;
 
@@ -155,8 +181,17 @@ public class PasswordSecurity {
         return false;
     }
 
+    /**
+     * Method compareWithAllEncryptionMethod.
+     *
+     * @param password   String
+     * @param hash       String
+     * @param playerName String
+     *
+     * @return boolean * @throws NoSuchAlgorithmException
+     */
     private static boolean compareWithAllEncryptionMethod(String password,
-                                                          String hash, String playerName) throws NoSuchAlgorithmException {
+                                                          String hash, String playerName) {
         for (HashAlgorithm algo : HashAlgorithm.values()) {
             if (algo != HashAlgorithm.CUSTOM) {
                 try {

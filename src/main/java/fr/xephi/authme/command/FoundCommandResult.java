@@ -2,24 +2,34 @@ package fr.xephi.authme.command;
 
 import org.bukkit.command.CommandSender;
 
+/**
+ */
 public class FoundCommandResult {
 
-    /** The command description instance. */
+    /**
+     * The command description instance.
+     */
     private CommandDescription commandDescription;
-    /** The command reference. */
-    private CommandParts commandReference;
-    /** The command arguments. */
-    private CommandParts commandArguments;
-    /** The original search query reference. */
-    private CommandParts queryReference;
+    /**
+     * The command reference.
+     */
+    private final CommandParts commandReference;
+    /**
+     * The command arguments.
+     */
+    private final CommandParts commandArguments;
+    /**
+     * The original search query reference.
+     */
+    private final CommandParts queryReference;
 
     /**
      * Constructor.
      *
      * @param commandDescription The command description.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     * @param queryReference The original query reference.
+     * @param commandReference   The command reference.
+     * @param commandArguments   The command arguments.
+     * @param queryReference     The original query reference.
      */
     public FoundCommandResult(CommandDescription commandDescription, CommandParts commandReference, CommandParts commandArguments, CommandParts queryReference) {
         this.commandDescription = commandDescription;
@@ -35,7 +45,7 @@ public class FoundCommandResult {
      */
     public boolean hasProperArguments() {
         // Make sure the command description is set
-        if(this.commandDescription == null)
+        if (this.commandDescription == null)
             return false;
 
         // Get and return the result
@@ -55,7 +65,6 @@ public class FoundCommandResult {
      * Set the command description.
      *
      * @param commandDescription The command description.
-     *
      */
     public void setCommandDescription(CommandDescription commandDescription) {
         this.commandDescription = commandDescription;
@@ -68,7 +77,7 @@ public class FoundCommandResult {
      */
     public boolean isExecutable() {
         // Make sure the command description is valid
-        if(this.commandDescription == null)
+        if (this.commandDescription == null)
             return false;
 
         // Check whether the command is executable, return the result
@@ -84,7 +93,7 @@ public class FoundCommandResult {
      */
     public boolean executeCommand(CommandSender sender) {
         // Make sure the command description is valid
-        if(this.commandDescription == null)
+        if (this.commandDescription == null)
             return false;
 
         // Execute the command
@@ -99,12 +108,15 @@ public class FoundCommandResult {
      * @return True if the command sender has permission, false otherwise.
      */
     public boolean hasPermission(CommandSender sender) {
-        // Make sure the command description is valid
-        if(this.commandDescription == null)
+        if (commandDescription == null) {
             return false;
+        } else if (commandDescription.getCommandPermissions() == null) {
+            return true;
+        }
 
-        // Get and return the permission
-        return this.commandDescription.getCommandPermissions().hasPermission(sender);
+        // TODO: Move permissions check to the permission package; command package should not define permission-checking
+        // API
+        return commandDescription.getCommandPermissions().hasPermission(sender);
     }
 
     /**
@@ -141,7 +153,7 @@ public class FoundCommandResult {
      */
     public double getDifference() {
         // Get the difference through the command found
-        if(this.commandDescription != null)
+        if (this.commandDescription != null)
             return this.commandDescription.getCommandDifference(this.queryReference);
 
         // Get the difference from the query reference

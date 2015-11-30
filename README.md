@@ -47,8 +47,7 @@ McStats: http://mcstats.org/plugin/AuthMe
 #####Running Requirements:
 >- Java 1.7 (should work also with Java 1.8)
 >- Spigot or CraftBukkit (1.7.10 or 1.8.X)
->- Vault
->- Protocollib
+>- ProtocolLib (optional, required by the protectInventory feature)
 
 <hr>
 ###Plugin Description:
@@ -129,7 +128,7 @@ typing commands or use the inventory. It can also kick players with uncommon lon
 <hr>
 
 #####Donate
-<p>Do you like my work? Do you want to buy me a coffee? :)<br>
+<p>Do you like our work? Do you want to buy us a coffee? :)<br>
 EUR: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=QLMM9SNCX825Y"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a>
 USD: <a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&amp;hosted_button_id=PWQMYCP2SAH6L"><img src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif"></a></p>
 

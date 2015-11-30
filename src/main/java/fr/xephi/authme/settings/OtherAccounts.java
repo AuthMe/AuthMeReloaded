@@ -1,16 +1,16 @@
 package fr.xephi.authme.settings;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 /**
- *
  * @author Xephi59
+ * @version $Revision: 1.0 $
  */
 public class OtherAccounts extends CustomConfiguration {
 
@@ -23,11 +23,11 @@ public class OtherAccounts extends CustomConfiguration {
         save();
     }
 
-    public void clear(UUID uuid) {
-        set(uuid.toString(), new ArrayList<String>());
-        save();
-    }
-
+    /**
+     * Method getInstance.
+     *
+     * @return OtherAccounts
+     */
     public static OtherAccounts getInstance() {
         if (others == null) {
             others = new OtherAccounts();
@@ -35,6 +35,21 @@ public class OtherAccounts extends CustomConfiguration {
         return others;
     }
 
+    /**
+     * Method clear.
+     *
+     * @param uuid UUID
+     */
+    public void clear(UUID uuid) {
+        set(uuid.toString(), new ArrayList<String>());
+        save();
+    }
+
+    /**
+     * Method addPlayer.
+     *
+     * @param uuid UUID
+     */
     public void addPlayer(UUID uuid) {
         try {
             Player player = Bukkit.getPlayer(uuid);
@@ -49,6 +64,11 @@ public class OtherAccounts extends CustomConfiguration {
         }
     }
 
+    /**
+     * Method removePlayer.
+     *
+     * @param uuid UUID
+     */
     public void removePlayer(UUID uuid) {
         try {
             Player player = Bukkit.getPlayer(uuid);
@@ -63,6 +83,13 @@ public class OtherAccounts extends CustomConfiguration {
         }
     }
 
+    /**
+     * Method getAllPlayersByUUID.
+     *
+     * @param uuid UUID
+     *
+     * @return List<String>
+     */
     public List<String> getAllPlayersByUUID(UUID uuid) {
         return this.getStringList(uuid.toString());
     }

@@ -1,24 +1,17 @@
 package fr.xephi.authme.command.executable.authme;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.permission.UserPermission;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
-import fr.xephi.authme.command.ExecutableCommand;
-
+/**
+ */
 public class ForceLoginCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance
@@ -26,7 +19,7 @@ public class ForceLoginCommand extends ExecutableCommand {
 
         // Get the player query
         String playerName = sender.getName();
-        if(commandArguments.getCount() >= 1)
+        if (commandArguments.getCount() >= 1)
             playerName = commandArguments.get(0);
 
         // Command logic
@@ -37,7 +30,7 @@ public class ForceLoginCommand extends ExecutableCommand {
                 sender.sendMessage("Player needs to be online!");
                 return true;
             }
-            if (!plugin.authmePermissible(player, "authme.canbeforced")) {
+            if (!plugin.getPermissionsManager().hasPermission(player, UserPermission.CAN_LOGIN_BE_FORCED)) {
                 sender.sendMessage("You cannot force login for the player " + playerName + "!");
                 return true;
             }

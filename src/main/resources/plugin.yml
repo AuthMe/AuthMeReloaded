@@ -1,10 +1,19 @@
-name: AuthMe
-authors: ${pluginAuthors}
+name: ${pluginName}
+authors: [${pluginAuthors}]
 website: ${project.url}
 description: ${project.description}
 main: ${mainClass}
-version: ${project.version}
-softdepend: [Vault, Multiverse-Core, Essentials, EssentialsSpawn, ProtocolLib]
+version: ${project.version}-b${buildNumber}
+softdepend:
+    - Vault
+    - PermissionsBukkit
+    - Permissions
+    - PermissionsEX
+    - EssentialsGroupManager
+    - Multiverse-Core
+    - Essentials
+    - EssentialsSpawn
+    - ProtocolLib
 commands:
     register:
         description: Register an account
@@ -36,19 +45,6 @@ commands:
         description: Converter from different other auth plugins
         usage: /converter <datatype>
 permissions:
-    authme.player.*:
-        description: Gives access to all authme player commands
-        default: true
-        children:
-            authme.register: true
-            authme.login: true
-            authme.changepassword: true
-            authme.logout: true
-            authme.unregister: true
-            authme.l: true
-            authme.reg: true
-            authme.email: true
-            authme.captcha: true
     authme.admin.*:
          description: Gives access to all authme admin commands
          children:
@@ -57,13 +53,13 @@ permissions:
              authme.admin.changepassword: true
              authme.admin.unregister: true
              authme.admin.purge: true
-             authme.seeOtherAccounts: true
+             authme.seeOtherAccounts: true # This isn't a child of the admin section! Probably doesn't work.
              authme.admin.lastlogin: true
              authme.admin.getemail: true
              authme.admin.chgemail: true
              authme.admin.purgelastpos: true
              authme.admin.switchantibot: true
-             authme.bypassantibot: true
+             authme.bypassantibot: true # This isn't a child of the admin section! Probably doesn't work.
              authme.admin.getip: true
              authme.admin.converter: true
              authme.admin.resetposition: true

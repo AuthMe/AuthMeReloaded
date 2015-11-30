@@ -1,13 +1,13 @@
 package fr.xephi.authme.settings;
 
-import java.io.File;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import java.io.File;
+
 /**
- *
  * @author Xephi59
+ * @version $Revision: 1.0 $
  */
 public class Spawn extends CustomConfiguration {
 
@@ -19,6 +19,18 @@ public class Spawn extends CustomConfiguration {
         load();
         save();
         saveDefault();
+    }
+
+    /**
+     * Method getInstance.
+     *
+     * @return Spawn
+     */
+    public static Spawn getInstance() {
+        if (spawn == null) {
+            spawn = new Spawn();
+        }
+        return spawn;
     }
 
     private void saveDefault() {
@@ -42,13 +54,13 @@ public class Spawn extends CustomConfiguration {
         }
     }
 
-    public static Spawn getInstance() {
-        if (spawn == null) {
-            spawn = new Spawn();
-        }
-        return spawn;
-    }
-
+    /**
+     * Method setSpawn.
+     *
+     * @param location Location
+     *
+     * @return boolean
+     */
     public boolean setSpawn(Location location) {
         try {
             set("spawn.world", location.getWorld().getName());
@@ -64,6 +76,13 @@ public class Spawn extends CustomConfiguration {
         }
     }
 
+    /**
+     * Method setFirstSpawn.
+     *
+     * @param location Location
+     *
+     * @return boolean
+     */
     public boolean setFirstSpawn(Location location) {
         try {
             set("firstspawn.world", location.getWorld().getName());
@@ -79,11 +98,21 @@ public class Spawn extends CustomConfiguration {
         }
     }
 
+    /**
+     * Method getLocation.
+     *
+     * @return Location
+     */
     @Deprecated
     public Location getLocation() {
         return getSpawn();
     }
 
+    /**
+     * Method getSpawn.
+     *
+     * @return Location
+     */
     public Location getSpawn() {
         try {
             if (this.getString("spawn.world").isEmpty() || this.getString("spawn.world").equals(""))
@@ -95,6 +124,11 @@ public class Spawn extends CustomConfiguration {
         }
     }
 
+    /**
+     * Method getFirstSpawn.
+     *
+     * @return Location
+     */
     public Location getFirstSpawn() {
         try {
             if (this.getString("firstspawn.world").isEmpty() || this.getString("firstspawn.world").equals(""))

@@ -2,12 +2,18 @@ package fr.xephi.authme.util;
 
 import java.text.DecimalFormat;
 
+/**
+ */
 @SuppressWarnings("UnusedDeclaration")
 public class Profiler {
 
-    /** Defines the past time in milliseconds. */
+    /**
+     * Defines the past time in milliseconds.
+     */
     private long time = 0;
-    /** Defines the time in milliseconds the profiler last started at. */
+    /**
+     * Defines the time in milliseconds the profiler last started at.
+     */
     private long start = -1;
 
     /**
@@ -24,7 +30,7 @@ public class Profiler {
      */
     public Profiler(boolean start) {
         // Should the timer be started
-        if(start)
+        if (start)
             start();
     }
 
@@ -36,7 +42,7 @@ public class Profiler {
      */
     public boolean start() {
         // Make sure the timer isn't started already
-        if(isActive())
+        if (isActive())
             return true;
 
         // Set the start time
@@ -51,7 +57,7 @@ public class Profiler {
      */
     public boolean pause() {
         // Toggle the profiler state
-        if(isStarted())
+        if (isStarted())
             stop();
         else
             start();
@@ -68,7 +74,7 @@ public class Profiler {
      */
     public boolean stop() {
         // Make sure the profiler is active
-        if(!isActive())
+        if (!isActive())
             return false;
 
         // Stop the profiler, calculate the passed time
@@ -102,7 +108,7 @@ public class Profiler {
      */
     public long getTime() {
         // Check whether the profiler is currently active
-        if(isActive())
+        if (isActive())
             return this.time + (System.currentTimeMillis() - this.start);
         return this.time;
     }
@@ -117,11 +123,11 @@ public class Profiler {
         long time = getTime();
 
         // Return the time if it's less than one millisecond
-        if(time <= 0)
+        if (time <= 0)
             return "<1 ms";
 
         // Return the time in milliseconds
-        if(time < 1000)
+        if (time < 1000)
             return time + " ms";
 
         // Convert the time into seconds with a single decimal

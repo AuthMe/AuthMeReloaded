@@ -1,23 +1,37 @@
 package fr.xephi.authme.datasource;
 
+import fr.xephi.authme.cache.auth.PlayerAuth;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
-
+/**
+ */
 public class DatabaseCalls implements DataSource {
 
-    private DataSource database;
     private final ExecutorService exec;
+    private final DataSource database;
 
+    /**
+     * Constructor for DatabaseCalls.
+     *
+     * @param database DataSource
+     */
     public DatabaseCalls(DataSource database) {
         this.database = database;
         this.exec = Executors.newCachedThreadPool();
     }
 
+    /**
+     * Method isAuthAvailable.
+     *
+     * @param user String
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
+     */
     @Override
     public synchronized boolean isAuthAvailable(final String user) {
         try {
@@ -31,6 +45,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method getAuth.
+     *
+     * @param user String
+     *
+     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
+     */
     @Override
     public synchronized PlayerAuth getAuth(final String user) {
         try {
@@ -44,6 +65,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method saveAuth.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
+     */
     @Override
     public synchronized boolean saveAuth(final PlayerAuth auth) {
         try {
@@ -57,6 +85,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method updateSession.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateSession(final PlayerAuth auth) {
         try {
@@ -70,6 +105,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method updatePassword.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
+     */
     @Override
     public synchronized boolean updatePassword(final PlayerAuth auth) {
         try {
@@ -83,6 +125,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method purgeDatabase.
+     *
+     * @param until long
+     *
+     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
+     */
     @Override
     public synchronized int purgeDatabase(final long until) {
         try {
@@ -96,6 +145,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method autoPurgeDatabase.
+     *
+     * @param until long
+     *
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
+     */
     @Override
     public synchronized List<String> autoPurgeDatabase(final long until) {
         try {
@@ -109,6 +165,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method removeAuth.
+     *
+     * @param user String
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
+     */
     @Override
     public synchronized boolean removeAuth(final String user) {
         try {
@@ -122,6 +185,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method updateQuitLoc.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateQuitLoc(final PlayerAuth auth) {
         try {
@@ -135,6 +205,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method getIps.
+     *
+     * @param ip String
+     *
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
+     */
     @Override
     public synchronized int getIps(final String ip) {
         try {
@@ -149,6 +226,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method getAllAuthsByName.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
+     */
     @Override
     public synchronized List<String> getAllAuthsByName(final PlayerAuth auth) {
         try {
@@ -162,6 +246,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method getAllAuthsByIp.
+     *
+     * @param ip String
+     *
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
+     */
     @Override
     public synchronized List<String> getAllAuthsByIp(final String ip) {
         try {
@@ -175,6 +266,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method getAllAuthsByEmail.
+     *
+     * @param email String
+     *
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
+     */
     @Override
     public synchronized List<String> getAllAuthsByEmail(final String email) {
         try {
@@ -188,6 +286,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method updateEmail.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateEmail(final PlayerAuth auth) {
         try {
@@ -201,6 +306,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method updateSalt.
+     *
+     * @param auth PlayerAuth
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
+     */
     @Override
     public synchronized boolean updateSalt(final PlayerAuth auth) {
         try {
@@ -214,17 +326,34 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method close.
+     *
+     * @see fr.xephi.authme.datasource.DataSource#close()
+     */
     @Override
     public synchronized void close() {
         exec.shutdown();
         database.close();
     }
 
+    /**
+     * Method reload.
+     *
+     * @see fr.xephi.authme.datasource.DataSource#reload()
+     */
     @Override
     public synchronized void reload() {
         database.reload();
     }
 
+    /**
+     * Method purgeBanned.
+     *
+     * @param banned List<String>
+     *
+     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
+     */
     @Override
     public synchronized void purgeBanned(final List<String> banned) {
         new Thread(new Runnable() {
@@ -234,11 +363,23 @@ public class DatabaseCalls implements DataSource {
         }).start();
     }
 
+    /**
+     * Method getType.
+     *
+     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType()
+     */
     @Override
     public synchronized DataSourceType getType() {
         return database.getType();
     }
 
+    /**
+     * Method isLogged.
+     *
+     * @param user String
+     *
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
+     */
     @Override
     public synchronized boolean isLogged(final String user) {
         try {
@@ -252,6 +393,13 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method setLogged.
+     *
+     * @param user String
+     *
+     * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
+     */
     @Override
     public synchronized void setLogged(final String user) {
         exec.execute(new Runnable() {
@@ -261,6 +409,13 @@ public class DatabaseCalls implements DataSource {
         });
     }
 
+    /**
+     * Method setUnlogged.
+     *
+     * @param user String
+     *
+     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
+     */
     @Override
     public synchronized void setUnlogged(final String user) {
         exec.execute(new Runnable() {
@@ -270,6 +425,11 @@ public class DatabaseCalls implements DataSource {
         });
     }
 
+    /**
+     * Method purgeLogged.
+     *
+     * @see fr.xephi.authme.datasource.DataSource#purgeLogged()
+     */
     @Override
     public synchronized void purgeLogged() {
         exec.execute(new Runnable() {
@@ -279,6 +439,11 @@ public class DatabaseCalls implements DataSource {
         });
     }
 
+    /**
+     * Method getAccountsRegistered.
+     *
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
+     */
     @Override
     public synchronized int getAccountsRegistered() {
         try {
@@ -292,15 +457,28 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method updateName.
+     *
+     * @param oldOne String
+     * @param newOne String
+     *
+     * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
+     */
     @Override
-    public synchronized void updateName(final String oldone, final String newone) {
+    public synchronized void updateName(final String oldOne, final String newOne) {
         exec.execute(new Runnable() {
             public synchronized void run() {
-                database.updateName(oldone, newone);
+                database.updateName(oldOne, newOne);
             }
         });
     }
 
+    /**
+     * Method getAllAuths.
+     *
+     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
+     */
     @Override
     public synchronized List<PlayerAuth> getAllAuths() {
         try {
@@ -314,6 +492,11 @@ public class DatabaseCalls implements DataSource {
         }
     }
 
+    /**
+     * Method getLoggedPlayers.
+     *
+     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
+     */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         try {

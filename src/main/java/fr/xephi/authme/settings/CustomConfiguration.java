@@ -1,5 +1,10 @@
 package fr.xephi.authme.settings;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -7,16 +12,17 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.YamlConfiguration;
+/**
+ */
+public abstract class CustomConfiguration extends YamlConfiguration {
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
+    private final File configFile;
 
-public class CustomConfiguration extends YamlConfiguration {
-
-    private File configFile;
-
+    /**
+     * Constructor for CustomConfiguration.
+     *
+     * @param file the config file
+     */
     public CustomConfiguration(File file) {
         this.configFile = file;
         load();
@@ -57,7 +63,7 @@ public class CustomConfiguration extends YamlConfiguration {
         return configFile;
     }
 
-    public boolean loadResource(File file) {
+    private boolean loadResource(File file) {
         if (!file.exists()) {
             try {
                 if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {

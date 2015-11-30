@@ -1,13 +1,15 @@
 package fr.xephi.authme.command.executable.authme;
 
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
+import org.bukkit.command.CommandSender;
 
+/**
+ */
 public class GetEmailCommand extends ExecutableCommand {
 
     /**
@@ -21,21 +23,17 @@ public class GetEmailCommand extends ExecutableCommand {
      */
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        Messages m = Messages.getInstance();
-
         // Get the player name
         String playerName = sender.getName();
-        if(commandArguments.getCount() >= 1)
+        if (commandArguments.getCount() >= 1)
             playerName = commandArguments.get(0);
 
         // Get the authenticated user
+        AuthMe plugin = AuthMe.getInstance();
+        Messages m = plugin.getMessages();
         PlayerAuth auth = plugin.database.getAuth(playerName.toLowerCase());
         if (auth == null) {
-            m.send(sender, "unknown_user");
+            m.send(sender, MessageKey.UNKNOWN_USER);
             return true;
         }
 
