@@ -1,6 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -10,6 +11,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -20,7 +22,7 @@ import static org.junit.Assert.fail;
 /**
  * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
  */
-public class CommandManagerTest {
+public class CommandInitializerTest {
 
     /**
      * Defines the maximum allowed depths for nesting CommandDescription instances.
@@ -32,6 +34,7 @@ public class CommandManagerTest {
 
     @BeforeClass
     public static void initializeCommandManager() {
+        WrapperMock.createInstance();
         commands = CommandInitializer.getBaseCommands();
     }
 
@@ -81,6 +84,27 @@ public class CommandManagerTest {
 
         // when/then
         walkThroughCommands(commands, connectionTester);
+    }
+
+    @Test
+    public void shouldUseProperLowerCaseLabels() {
+        // given
+        final Pattern invalidPattern = Pattern.compile("\\s");
+        BiConsumer labelFormatTester = new BiConsumer() {
+            @Override
+            public void accept(CommandDescription command, int depth) {
+                for (String label : command.getLabels()) {
+                    if (!label.equals(label.toLowerCase())) {
+                        fail("Label '" + label + "' should be lowercase");
+                    } else if (invalidPattern.matcher(label).matches()) {
+                        fail("Label '" + label + "' has whitespace");
+                    }
+                }
+            }
+        };
+
+        // when/then
+        walkThroughCommands(commands, labelFormatTester);
     }
 
     @Test
