@@ -681,7 +681,7 @@ public final class Settings extends YamlConfiguration {
             set("DataSource.mySQLRealName", "realname");
             changes = true;
         }
-        if (!contains("DataSource.mySQLQueryCache")) {
+        if (!contains("DataSource.mySQLWebsite")) {
             set("DataSource.mySQLWebsite", false);
             changes = true;
         }
