@@ -163,17 +163,6 @@ public class CommandParts {
     }
 
     /**
-     * Get the difference value between two references. This won't do a full compare, just the last reference parts instead.
-     *
-     * @param other The other reference.
-     *
-     * @return The result from zero to above. A negative number will be returned on error.
-     */
-    public double getDifference(CommandParts other) {
-        return getDifference(other, false);
-    }
-
-    /**
      * Get the difference value between two references.
      *
      * @param other       The other reference.

@@ -62,7 +62,7 @@ public final class HelpSyntaxHelper {
         }
 
         // Add some dots if the command allows unlimited arguments
-        if (commandDescription.getMaximumArguments() < 0) {
+        if (!commandDescription.hasMaximumArguments()) {
             sb.append(ChatColor.ITALIC).append(" ...");
         }
 

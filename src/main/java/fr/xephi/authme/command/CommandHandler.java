@@ -2,11 +2,12 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -14,6 +15,18 @@ import java.util.List;
  * or to display help messages for unknown invocations.
  */
 public class CommandHandler {
+
+    /**
+     * The threshold for assuming an existing command. If the difference is below this value, we assume
+     * that the user meant the similar command and we will run it.
+     */
+    private static final double ASSUME_COMMAND_THRESHOLD = 0.12;
+
+    /**
+     * The threshold for suggesting a similar command. If the difference is below this value, we will
+     * ask the player whether he meant the similar command.
+     */
+    private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
 
     /**
      * Process a command.
@@ -26,12 +39,11 @@ public class CommandHandler {
      * @return True if the command was executed, false otherwise.
      */
     // TODO ljacqu 20151129: Rename onCommand() method to something not suggesting it is auto-invoked by an event
-    public boolean onCommand(CommandSender sender, org.bukkit.command.Command bukkitCommand, String bukkitCommandLabel, String[] bukkitArgs) {
-        // Process the arguments
-        List<String> args = processArguments(bukkitArgs);
+    public boolean onCommand(CommandSender sender, Command bukkitCommand, String bukkitCommandLabel, String[] bukkitArgs) {
+        List<String> commandArgs = skipEmptyArguments(bukkitArgs);
 
-        // Create a command reference, and make sure at least one command part is available
-        CommandParts commandReference = new CommandParts(bukkitCommandLabel, args);
+        // Make sure the command isn't empty (does this happen?)
+        CommandParts commandReference = new CommandParts(bukkitCommandLabel, commandArgs);
         if (commandReference.getCount() == 0)
             return false;
 
@@ -47,12 +59,12 @@ public class CommandHandler {
 
         // Make sure the difference between the command reference and the actual command isn't too big
         final double commandDifference = result.getDifference();
-        if (commandDifference > 0.12) {
+        if (commandDifference > ASSUME_COMMAND_THRESHOLD) {
             // Show the unknown command warning
             sender.sendMessage(ChatColor.DARK_RED + "Unknown command!");
 
             // Show a command suggestion if available and the difference isn't too big
-            if (commandDifference < 0.75)
+            if (commandDifference < SUGGEST_COMMAND_THRESHOLD)
                 if (result.getCommandDescription() != null)
                     sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/" + result.getCommandDescription().getCommandReference(commandReference) + ChatColor.YELLOW + "?");
 
@@ -113,33 +125,29 @@ public class CommandHandler {
     }
 
     /**
-     * Process the command arguments, and return them as an array list.
+     * Skips all entries of the given array that are simply whitespace.
      *
-     * @param args The command arguments to process.
-     *
-     * @return The processed command arguments.
+     * @param args The array to process
+     * @return List of the items that are not empty
      */
-    private List<String> processArguments(String[] args) {
-        // Convert the array into a list of arguments
-        List<String> arguments = new ArrayList<>(Arrays.asList(args));
-
-        /// Remove all empty arguments
-        for (int i = 0; i < arguments.size(); i++) {
-            // Get the argument value
-            final String arg = arguments.get(i);
-
-            // Check whether the argument value is empty
-            if (arg.trim().length() == 0) {
-                // Remove the current argument
-                arguments.remove(i);
-
-                // Decrease the index by one, continue to the next argument
-                i--;
+    private static List<String> skipEmptyArguments(String[] args) {
+        List<String> cleanArguments = new ArrayList<>(args.length);
+        for (String argument : args) {
+            if (!StringUtils.isEmpty(argument)) {
+                cleanArguments.add(argument);
             }
         }
+        return cleanArguments;
+    }
 
-        // Return the argument
-        return arguments;
+
+    private static CommandDescription mapToBase(String commandLabel) {
+        for (CommandDescription command : CommandInitializer.getBaseCommands()) {
+            if (command.getLabels().contains(commandLabel)) {
+                return command;
+            }
+        }
+        return null;
     }
 
     /**
@@ -168,6 +176,45 @@ public class CommandHandler {
         }
 
         // No applicable command description found, return false
+        return null;
+    }
+
+    /**
+     * Find the best suitable command for the specified reference.
+     *
+     * @param commandParts The query reference to find a command for.
+     *
+     * @return The command found, or null.
+     */
+    public CommandDescription findCommand(List<String> commandParts) {
+        // Make sure the command reference is valid
+        if (commandParts.isEmpty()) {
+            return null;
+        }
+
+        // TODO ljacqu 20151129: Since we only use .contains() on the CommandDescription#labels after init, change
+        // the type to set for faster lookup
+        Iterable<CommandDescription> commandsToScan = CommandInitializer.getBaseCommands();
+        CommandDescription result = null;
+        for (String label : commandParts) {
+            result = findLabel(label, commandsToScan);
+            if (result == null) {
+                return null;
+            }
+            commandsToScan = result.getChildren();
+        }
+        return result;
+    }
+
+    private static CommandDescription findLabel(String label, Iterable<CommandDescription> commands) {
+        if (commands == null) {
+            return null;
+        }
+        for (CommandDescription command : commands) {
+            if (command.getLabels().contains(label)) {
+                return command;
+            }
+        }
         return null;
     }
 }

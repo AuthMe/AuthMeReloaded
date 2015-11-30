@@ -25,7 +25,7 @@ public class CommandDescription {
      * Defines the labels to execute the command. For example, if labels are "register" and "r" and the parent is
      * the command for "/authme", then both "/authme register" and "/authme r" will be handled by this command.
      */
-    private List<String> labels;
+    private List<String> labels = new ArrayList<>(); // TODO remove field initialization
     /**
      * Command description.
      */
@@ -49,11 +49,11 @@ public class CommandDescription {
     /**
      * The arguments the command takes.
      */
-    private List<CommandArgumentDescription> arguments;
+    private List<CommandArgumentDescription> arguments = new ArrayList<>(); // TODO remove field initialization
     /**
      * Defines whether there is an argument maximum or not.
      */
-    private boolean noArgumentMaximum;
+    private boolean noArgumentMaximum = false; // TODO remove field initialization
     /**
      * Defines the command permissions.
      */
@@ -70,7 +70,8 @@ public class CommandDescription {
      */
     @Deprecated
     public CommandDescription(ExecutableCommand executableCommand, List<String> labels, String description, String detailedDescription, CommandDescription parent) {
-        this(executableCommand, labels, description, detailedDescription, parent, null);
+        this(executableCommand, labels, description, detailedDescription, parent,
+            new ArrayList<CommandArgumentDescription>());
     }
 
     /**
@@ -90,7 +91,7 @@ public class CommandDescription {
         this.description = description;
         this.detailedDescription = detailedDescription;
         setParent(parent);
-        setArguments(arguments);
+        this.arguments = arguments;
     }
 
     /**
@@ -121,25 +122,6 @@ public class CommandDescription {
             parent.addChild(this);
         }
     }
-
-    /**
-     * Check whether two labels are equal to each other.
-     *
-     * @param commandLabel      The first command label.
-     * @param otherCommandLabel The other command label.
-     *
-     * @return True if the labels are equal to each other.
-     */
-    private static boolean commandLabelEquals(String commandLabel, String otherCommandLabel) {
-        // Trim the command labels from unwanted whitespaces
-        commandLabel = commandLabel.trim();
-        otherCommandLabel = otherCommandLabel.trim();
-
-        // Check whether the the two command labels are equal (case insensitive)
-        return (commandLabel.equalsIgnoreCase(otherCommandLabel));
-    }
-
-
 
     /**
      * Get the label most similar to the reference. The first label will be returned if no reference was supplied.
@@ -192,12 +174,11 @@ public class CommandDescription {
      * @return True if this command label equals to the param command.
      */
     public boolean hasLabel(String commandLabel) {
-        // Check whether any command matches with the argument
-        for (String entry : this.labels)
-            if (commandLabelEquals(entry, commandLabel))
+        for (String label : this.labels) {
+            if (label.equalsIgnoreCase(commandLabel)) {
                 return true;
-
-        // No match found, return false
+            }
+        }
         return false;
     }
 
@@ -215,48 +196,16 @@ public class CommandDescription {
             return false;
 
         // Get the parent count
+        //getParent() = getParent().getParentCount() + 1
         String element = commandReference.get(getParentCount());
 
         // Check whether this command description has this command label
-        return hasLabel(element);
-    }
-
-    /**
-     * Get the absolute command label, without a starting slash.
-     *
-     * @return The absolute label
-     */
-    public String getAbsoluteLabel() {
-        return getAbsoluteLabel(false);
-    }
-
-    /**
-     * Get the absolute command label.
-     *
-     * @param includeSlash boolean
-     *
-     * @return Absolute command label.
-     */
-    public String getAbsoluteLabel(boolean includeSlash) {
-        return getAbsoluteLabel(includeSlash, null);
-    }
-
-    /**
-     * Get the absolute command label.
-     *
-     * @param includeSlash
-     * @param reference
-     *
-     * @return Absolute command label.
-     */
-    public String getAbsoluteLabel(boolean includeSlash, CommandParts reference) {
-        // Get the command reference, and make sure it is valid
-        CommandParts out = getCommandReference(reference);
-        if (out == null)
-            return "";
-
-        // Return the result
-        return (includeSlash ? "/" : "") + out.toString();
+        for (String label : labels) {
+            if (label.equalsIgnoreCase(element)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -463,7 +412,7 @@ public class CommandDescription {
      */
     public boolean isChild(CommandDescription commandDescription) {
         // Make sure the description is valid
-        if (commandDescription == null) // TODO: After builder, commandDescription == null -> never
+        if (commandDescription == null)
             return false;
 
         // Check whether this child exists, return the result
@@ -482,10 +431,6 @@ public class CommandDescription {
         if (argument == null)
             return false;
 
-        // Make sure the argument isn't added already
-        if (hasArgument(argument))
-            return true;
-
         // Add the argument, return the result
         return this.arguments.add(argument);
     }
@@ -500,80 +445,16 @@ public class CommandDescription {
     }
 
     /**
-     * Set the arguments of this command.
-     *
-     * @param arguments New command arguments. Null to clear the list of arguments.
-     */
-    public void setArguments(List<CommandArgumentDescription> arguments) {
-        // Convert null into an empty argument list
-        if (arguments == null) {
-            // Note ljacqu 20151128: Temporary workaround to avoid null pointer exception. Soon we won't need setters
-            // on the main class (-> complete instantiation via Builder)
-            // TODO Remove this method once unused
-            this.arguments = new ArrayList<>();
-        } else {
-            this.arguments = arguments;
-        }
-    }
-
-    /**
-     * Check whether an argument exists.
-     *
-     * @param argument The argument to check for.
-     *
-     * @return True if this argument already exists, false otherwise.
-     */
-    public boolean hasArgument(CommandArgumentDescription argument) {
-        return argument != null && arguments.contains(argument);
-    }
-
-    /**
      * Check whether this command has any arguments.
      *
      * @return True if this command has any arguments.
      */
     public boolean hasArguments() {
-        return !arguments.isEmpty();
+        return !getArguments().isEmpty();
     }
 
-    /**
-     * The minimum number of arguments required for this command.
-     *
-     * @return The minimum number of required arguments.
-     */
-    public int getMinimumArguments() {
-        // Get the number of required and optional arguments
-        int requiredArguments = 0;
-        int optionalArgument = 0;
-
-        // Loop through each argument
-        for (CommandArgumentDescription argument : this.arguments) {
-            // Check whether the command is optional
-            if (!argument.isOptional()) {
-                requiredArguments += optionalArgument + 1;
-                optionalArgument = 0;
-
-            } else
-                optionalArgument++;
-        }
-
-        // Return the number of required arguments
-        return requiredArguments;
-    }
-
-    /**
-     * Get the maximum number of arguments.
-     *
-     * @return The maximum number of arguments. A negative number will be returned if there's no maximum.
-     */
-    public int getMaximumArguments() {
-        // Check whether there is a maximum set
-        if (this.noArgumentMaximum)
-            // TODO ljacqu 20151128: Magic number
-            return -1;
-
-        // Return the maximum based on the registered arguments
-        return this.arguments.size();
+    public boolean hasMaximumArguments() {
+        return !noArgumentMaximum; // TODO ljacqu 20151130 Change variable name
     }
 
     /**
@@ -582,16 +463,7 @@ public class CommandDescription {
      * @return Command description.
      */
     public String getDescription() {
-        return hasDescription() ? this.description : this.detailedDescription;
-    }
-
-    /**
-     * Check whether this command has any description.
-     *
-     * @return True if this command has any description.
-     */
-    public boolean hasDescription() {
-        return !StringUtils.isEmpty(description);
+        return description;
     }
 
     /**
@@ -600,7 +472,7 @@ public class CommandDescription {
      * @return Command detailed description.
      */
     public String getDetailedDescription() {
-        return !StringUtils.isEmpty(detailedDescription) ? this.detailedDescription : this.description;
+        return detailedDescription;
     }
 
     /**
@@ -616,12 +488,13 @@ public class CommandDescription {
             return null;
 
         // Check whether this description is for the last element in the command reference, if so return the current command
-        if (queryReference.getCount() <= getParentCount() + 1)
+        if (queryReference.getCount() <= getParentCount() + 1) {
             return new FoundCommandResult(
                 this,
                 getCommandReference(queryReference),
                 new CommandParts(),
                 queryReference);
+        }
 
         // Get the new command reference and arguments
         CommandParts newReference = new CommandParts(queryReference.getRange(0, getParentCount() + 1));
@@ -666,28 +539,6 @@ public class CommandDescription {
     }
 
     /**
-     * Check whether there's any command description that matches the specified command reference.
-     *
-     * @param commandReference The command reference.
-     *
-     * @return True if so, false otherwise.
-     */
-    public boolean hasSuitableCommand(CommandParts commandReference) {
-        return findCommand(commandReference) != null;
-    }
-
-    /**
-     * Check if the remaining command reference elements are suitable with arguments of the current command description.
-     *
-     * @param commandReference The command reference.
-     *
-     * @return True if the arguments are suitable, false otherwise.
-     */
-    public boolean hasSuitableArguments(CommandParts commandReference) {
-        return getSuitableArgumentsDifference(commandReference) == 0;
-    }
-
-    /**
      * Check if the remaining command reference elements are suitable with arguments of the current command description,
      * and get the difference in argument count.
      *
@@ -705,16 +556,18 @@ public class CommandDescription {
         int remainingElementCount = commandReference.getCount() - getParentCount() - 1;
 
         // Check if there are too few arguments
-        if (getMinimumArguments() > remainingElementCount) {
-            return Math.abs(getMinimumArguments() - remainingElementCount);
+        int minArguments = CommandUtils.getMinNumberOfArguments(this);
+        if (minArguments > remainingElementCount) {
+            return Math.abs(minArguments - remainingElementCount);
         }
 
         // Check if there are too many arguments
-        if (getMaximumArguments() < remainingElementCount && getMaximumArguments() >= 0) {
-            return Math.abs(remainingElementCount - getMaximumArguments());
+        int maxArguments = CommandUtils.getMaxNumberOfArguments(this);
+        if (maxArguments >= 0 && maxArguments < remainingElementCount) {
+            return Math.abs(remainingElementCount - maxArguments);
         }
 
-        // The arguments seem to be EQUALS, return the result
+        // The argument count is the same
         return 0;
     }
 

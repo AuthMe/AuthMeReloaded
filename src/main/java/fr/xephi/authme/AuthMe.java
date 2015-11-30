@@ -24,6 +24,7 @@ import fr.xephi.authme.settings.*;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.Wrapper;
 import net.minelink.ctplus.CombatTagPlus;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
@@ -72,6 +73,7 @@ public class AuthMe extends JavaPlugin {
 
     private static AuthMe plugin;
     private static Server server;
+    private static Wrapper wrapper = Wrapper.getInstance();
 
     public Management management;
     public NewAPI api;
@@ -942,9 +944,10 @@ public class AuthMe extends JavaPlugin {
     public boolean onCommand(CommandSender sender, Command cmd,
                              String commandLabel, String[] args) {
         // Get the command handler, and make sure it's valid
-        CommandHandler commandHandler = this.getCommandHandler();
-        if (commandHandler == null)
+        if (commandHandler == null) {
+            wrapper.getLogger().warning("AuthMe command handler is not available");
             return false;
+        }
 
         // Handle the command, return the result
         return commandHandler.onCommand(sender, cmd, commandLabel, args);

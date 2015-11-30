@@ -5,6 +5,7 @@ import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.CommandPermissions;
+import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
@@ -39,9 +40,7 @@ public class HelpPrinter {
      * @param command The command to print the description help for.
      */
     public static void printCommandDescription(CommandSender sender, CommandDescription command) {
-        // Print the regular description, if available
-        if (command.hasDescription())
-            sender.sendMessage(ChatColor.GOLD + "Short Description: " + ChatColor.WHITE + command.getDescription());
+        sender.sendMessage(ChatColor.GOLD + "Short Description: " + ChatColor.WHITE + command.getDescription());
 
         // Print the detailed description, if available
         if (!StringUtils.isEmpty(command.getDetailedDescription())) {
@@ -59,7 +58,7 @@ public class HelpPrinter {
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     public static void printArguments(CommandSender sender, CommandDescription command) {
         // Make sure there are any commands to print
-        if (!command.hasArguments() && command.getMaximumArguments() >= 0)
+        if (!command.hasArguments())
             return;
 
         // Print the header
@@ -80,7 +79,7 @@ public class HelpPrinter {
         }
 
         // Show the unlimited arguments argument
-        if (command.getMaximumArguments() < 0)
+        if (!command.hasMaximumArguments())
             sender.sendMessage(" " + ChatColor.YELLOW + ChatColor.ITALIC + "... : " + ChatColor.WHITE + "Any additional arguments." + ChatColor.GRAY + ChatColor.ITALIC + " (Optional)");
     }
 
