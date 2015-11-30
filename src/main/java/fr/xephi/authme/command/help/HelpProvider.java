@@ -4,6 +4,8 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.FoundCommandResult;
+import fr.xephi.authme.settings.Settings;
+
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -99,7 +101,7 @@ public class HelpProvider {
         }
 
         // Print the help header
-        sender.sendMessage(ChatColor.GOLD + "==========[ " + AuthMe.getPluginName().toUpperCase() + " HELP ]==========");
+        sender.sendMessage(ChatColor.GOLD + "==========[ " + Settings.helpHeader.toUpperCase() + " HELP ]==========");
 
         // Print the command help information
         if (showCommand)

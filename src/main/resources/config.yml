@@ -45,6 +45,8 @@ DataSource:
     # Enable this when you allow registration through a website
     mySQLWebsite: false
 settings:
+    # The name shown in the help messages.
+    helpHeader: AuthMeReloaded
     sessions:
         # Do you want to enable the session feature?
         # If enabled, when a player authenticates successfully,

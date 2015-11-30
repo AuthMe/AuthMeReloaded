@@ -61,15 +61,9 @@ public class AuthMe extends JavaPlugin {
      * Defines the name of the plugin.
      */
     private static final String PLUGIN_NAME = "AuthMeReloaded";
-    /**
-     * Defines the current AuthMeReloaded version name.
-     */
-    private static final String PLUGIN_VERSION_NAME = "5.1-SNAPSHOT";
-    /**
-     * Defines the current AuthMeReloaded version code.
-     */
-    // TODO: increment this value manually
-    private static final int PLUGIN_VERSION_CODE = 120;
+
+    private static String pluginVersion = "N/D";
+    private static String pluginBuildNumber = "Unknown";
 
     private static AuthMe plugin;
     private static Server server;
@@ -130,8 +124,8 @@ public class AuthMe extends JavaPlugin {
      *
      * @return The version name of the currently installed AuthMeReloaded instance.
      */
-    public static String getVersionName() {
-        return PLUGIN_VERSION_NAME;
+    public static String getPluginVersion() {
+        return pluginVersion;
     }
 
     /**
@@ -139,8 +133,8 @@ public class AuthMe extends JavaPlugin {
      *
      * @return The version code of the currently installed AuthMeReloaded instance.
      */
-    public static int getVersionCode() {
-        return PLUGIN_VERSION_CODE;
+    public static String getPluginBuildNumber() {
+        return pluginBuildNumber;
     }
 
     /**
@@ -189,6 +183,20 @@ public class AuthMe extends JavaPlugin {
         this.canConnect = canConnect;
     }
 
+    // Get version and build number of the plugin
+    // TODO: enhance this
+    private void setupConstants() {
+        String versionRaw = this.getDescription().getVersion();
+        int index = versionRaw.lastIndexOf("-");
+        if (index != -1) {
+            pluginVersion = versionRaw.substring(0, index);
+            pluginBuildNumber = versionRaw.substring(index + 1);
+            if (pluginBuildNumber.startsWith("b")) {
+                pluginBuildNumber = pluginBuildNumber.substring(1);
+            }
+        }
+    }
+
     /**
      * Method called when the server enables the plugin.
      *
@@ -199,6 +207,7 @@ public class AuthMe extends JavaPlugin {
         // Set various instances
         server = getServer();
         plugin = this;
+        setupConstants();
 
         // Set up the permissions manager
         setupPermissionsManager();
