@@ -184,7 +184,12 @@ public final class Settings extends YamlConfiguration {
         getMySQLColumnRealName = configFile.getString("DataSource.mySQLRealName", "realname");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
-        getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
+
+        getUnrestrictedName = new ArrayList<>();
+        for (String name : configFile.getStringList("settings.unrestrictions.UnrestrictedName")) {
+            getUnrestrictedName.add(name.toLowerCase());
+        }
+
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
         getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
 
@@ -689,7 +694,7 @@ public final class Settings extends YamlConfiguration {
 
     /**
      * Saves current configuration (plus defaults) to disk.
-     * <p/>
+     * <p>
      * If defaults and configuration are empty, saves blank file.
      *
      * @return True if saved successfully
