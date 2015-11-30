@@ -185,9 +185,14 @@ public class AuthMe extends JavaPlugin {
     // TODO: enhance this
     private void setupConstants() {
         String versionRaw = this.getDescription().getVersion();
-        pluginVersion = versionRaw.substring(0, versionRaw.indexOf("-b"));
-        String buildRaw = versionRaw.substring(1, versionRaw.indexOf("-b"));
-        pluginBuildNumber = buildRaw.substring(0, buildRaw.indexOf("-t"));
+        int index = versionRaw.lastIndexOf("-");
+        if (index != -1) {
+            pluginVersion = versionRaw.substring(0, index);
+            pluginBuildNumber = versionRaw.substring(index + 1);
+            if (pluginBuildNumber.startsWith("b")) {
+                pluginBuildNumber = pluginBuildNumber.substring(1);
+            }
+        }
     }
 
     /**
