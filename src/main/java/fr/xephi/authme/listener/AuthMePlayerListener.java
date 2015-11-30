@@ -204,6 +204,20 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
+        if (Settings.enableProtection) {
+            String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            if (!Settings.countriesBlacklist.isEmpty() && Settings.countriesBlacklist.contains(countryCode)) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
+            }
+            if (!Settings.countries.isEmpty() && !Settings.countries.contains(countryCode)) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
+            }
+        }
+
         final String name = event.getName().toLowerCase();
         final Player player = Utils.getPlayer(name);
         if (player == null) {
@@ -262,24 +276,6 @@ public class AuthMePlayerListener implements Listener {
 
         final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
-
-        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
-            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-            if (Settings.countriesBlacklist.contains(code)) {
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
-
-        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
-            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-            if (!Settings.countries.contains(code)) {
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
 
         // TODO: Add message to the messages file!!!
         if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
