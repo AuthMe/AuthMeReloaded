@@ -497,4 +497,97 @@ public class PlayerAuth {
     	this.y = Double.parseDouble(args[10]);
     	this.z = Double.parseDouble(args[11]);
     }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static final class Builder {
+        private String name;
+        private String realName;
+        private String hash;
+        private String salt;
+        private String ip;
+        private String world;
+        private double x;
+        private double y;
+        private double z;
+        private long lastLogin;
+        private int groupId;
+        private String email;
+
+        public PlayerAuth build() {
+            return new PlayerAuth(
+                name,
+                hash,
+                salt,
+                groupId,
+                ip,
+                lastLogin,
+                x, y, z, world,
+                email,
+                realName
+            );
+        }
+
+        public Builder name(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder realName(String realName) {
+            this.realName = realName;
+            return this;
+        }
+
+        public Builder hash(String hash) {
+            this.hash = hash;
+            return this;
+        }
+
+        public Builder salt(String salt) {
+            this.salt = salt;
+            return this;
+        }
+
+        public Builder ip(String ip) {
+            this.ip = ip;
+            return this;
+        }
+
+        public Builder locWorld(String world) {
+            this.world = world;
+            return this;
+        }
+
+        public Builder locX(double x) {
+            this.x = x;
+            return this;
+        }
+
+        public Builder locY(double y) {
+            this.y = y;
+            return this;
+        }
+
+        public Builder locZ(double z) {
+            this.z = z;
+            return this;
+        }
+
+        public Builder lastLogin(long lastLogin) {
+            this.lastLogin = lastLogin;
+            return this;
+        }
+
+        public Builder groupId(int groupId) {
+            this.groupId = groupId;
+            return this;
+        }
+
+        public Builder email(String email) {
+            this.email = email;
+            return this;
+        }
+    }
 }
