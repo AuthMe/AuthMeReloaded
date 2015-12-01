@@ -68,7 +68,7 @@ public final class Settings extends YamlConfiguration {
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
-        customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
+        customAttributes, generateImage, isRemoveSpeedEnabled;
     public static String helpHeader, getNickRegex, getUnloggedinGroup, getMySQLHost,
         getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
         getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
@@ -284,7 +284,6 @@ public final class Settings extends YamlConfiguration {
         forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
         generateImage = configFile.getBoolean("Email.generateImage", false);
-        isMySQLWebsite = configFile.getBoolean("DataSource.mySQLWebsite", false);
 
         // Load the welcome message
         getWelcomeMessage();
@@ -674,10 +673,6 @@ public final class Settings extends YamlConfiguration {
         }
         if (!contains("DataSource.mySQLRealName")) {
             set("DataSource.mySQLRealName", "realname");
-            changes = true;
-        }
-        if (!contains("DataSource.mySQLQueryCache")) {
-            set("DataSource.mySQLWebsite", false);
             changes = true;
         }
 
