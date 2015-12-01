@@ -428,7 +428,7 @@ public class CommandManager {
                 add("conv");
             }
         }, "Convert command", "Convert command for AuthMeReloaded.", null);
-        converterBaseCommand.setCommandPermissions(PlayerPermission.CONVERTER, OP_ONLY);
+        converterBaseCommand.setCommandPermissions(AdminPermission.CONVERTER, OP_ONLY);
         converterBaseCommand.addArgument(new CommandArgumentDescription("job", "Conversion job: flattosql / flattosqlite /| xauth / crazylogin / rakamak / royalauth / vauth / sqltoflat", false));
 
         // Register the help command
