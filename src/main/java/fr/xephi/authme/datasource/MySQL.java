@@ -283,10 +283,9 @@ public class MySQL implements DataSource {
             if (!rs.next()) {
                 return null;
             }
-
             String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : "";
             int group = !salt.isEmpty() && !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
-
+            int id = rs.getInt(columnID);
             pAuth = PlayerAuth.builder()
                 .name(rs.getString(columnName))
                 .realName(rs.getString(columnRealName))
@@ -301,11 +300,9 @@ public class MySQL implements DataSource {
                 .salt(salt)
                 .groupId(group)
                 .build();
-
+            rs.close();
+            pst.close();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                int id = rs.getInt(columnID);
-                rs.close();
-                pst.close();
                 pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
                 pst.setInt(1, id);
                 rs = pst.executeQuery();
