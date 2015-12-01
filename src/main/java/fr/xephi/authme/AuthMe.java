@@ -18,7 +18,7 @@ import fr.xephi.authme.hooks.EssSpawn;
 import fr.xephi.authme.listener.*;
 import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.*;
 import fr.xephi.authme.util.GeoLiteAPI;
@@ -736,7 +736,7 @@ public class AuthMe extends JavaPlugin {
     public Player generateKickPlayer(Collection<? extends Player> collection) {
         Player player = null;
         for (Player p : collection) {
-            if (!getPermissionsManager().hasPermission(p, UserPermission.IS_VIP)) {
+            if (!getPermissionsManager().hasPermission(p, PlayerPermission.IS_VIP)) {
                 player = p;
                 break;
             }

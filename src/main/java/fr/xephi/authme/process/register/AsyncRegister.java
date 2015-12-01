@@ -5,7 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
@@ -65,7 +65,7 @@ public class AsyncRegister {
             m.send(player, MessageKey.NAME_ALREADY_REGISTERED);
             return false;
         } else if (Settings.getmaxRegPerIp > 0
-                && !plugin.getPermissionsManager().hasPermission(player, UserPermission.ALLOW_MULTIPLE_ACCOUNTS)
+                && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
                 && database.getAllAuthsByIp(getIp()).size() >= Settings.getmaxRegPerIp
                 && !getIp().equalsIgnoreCase("127.0.0.1")
                 && !getIp().equalsIgnoreCase("localhost")) {
@@ -82,7 +82,7 @@ public class AsyncRegister {
             }
             if (!email.isEmpty() && !email.equals("")) {
                 if (Settings.getmaxRegPerEmail > 0
-                        && !plugin.getPermissionsManager().hasPermission(player, UserPermission.ALLOW_MULTIPLE_ACCOUNTS)
+                        && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
                         && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
                     m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
                     return;
@@ -100,7 +100,7 @@ public class AsyncRegister {
 
     protected void emailRegister() throws Exception {
         if (Settings.getmaxRegPerEmail > 0
-                && !plugin.getPermissionsManager().hasPermission(player, UserPermission.ALLOW_MULTIPLE_ACCOUNTS)
+                && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
                 && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
             m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
             return;

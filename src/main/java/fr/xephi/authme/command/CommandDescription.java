@@ -590,14 +590,14 @@ public class CommandDescription {
         this.permissions = new CommandPermissions(permissionNode, defaultPermission);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    public static CommandBuilder builder() {
+        return new CommandBuilder();
     }
 
     /**
      * Builder for initializing CommandDescription objects.
      */
-    public static final class Builder {
+    public static final class CommandBuilder {
         private List<String> labels;
         private String description;
         private String detailedDescription;
@@ -626,31 +626,31 @@ public class CommandDescription {
             );
         }
 
-        public Builder labels(List<String> labels) {
+        public CommandBuilder labels(List<String> labels) {
             this.labels = labels;
             return this;
         }
 
-        public Builder labels(String... labels) {
+        public CommandBuilder labels(String... labels) {
             return labels(asMutableList(labels));
         }
 
-        public Builder description(String description) {
+        public CommandBuilder description(String description) {
             this.description = description;
             return this;
         }
 
-        public Builder detailedDescription(String detailedDescription) {
+        public CommandBuilder detailedDescription(String detailedDescription) {
             this.detailedDescription = detailedDescription;
             return this;
         }
 
-        public Builder executableCommand(ExecutableCommand executableCommand) {
+        public CommandBuilder executableCommand(ExecutableCommand executableCommand) {
             this.executableCommand = executableCommand;
             return this;
         }
 
-        public Builder parent(CommandDescription parent) {
+        public CommandBuilder parent(CommandDescription parent) {
             this.parent = parent;
             return this;
         }
@@ -665,18 +665,18 @@ public class CommandDescription {
          *
          * @return The builder
          */
-        public Builder withArgument(String label, String description, boolean isOptional) {
+        public CommandBuilder withArgument(String label, String description, boolean isOptional) {
             arguments.add(new CommandArgumentDescription(label, description, isOptional));
             return this;
         }
 
-        public Builder noArgumentMaximum(boolean noArgumentMaximum) {
+        public CommandBuilder noArgumentMaximum(boolean noArgumentMaximum) {
             this.noArgumentMaximum = noArgumentMaximum;
             return this;
         }
 
-        public Builder permissions(CommandPermissions.DefaultPermission defaultPermission,
-                                   PermissionNode... permissionNodes) {
+        public CommandBuilder permissions(CommandPermissions.DefaultPermission defaultPermission,
+                                          PermissionNode... permissionNodes) {
             this.permissions = new CommandPermissions(asMutableList(permissionNodes), defaultPermission);
             return this;
         }

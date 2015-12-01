@@ -8,9 +8,9 @@ import java.util.Set;
 import static org.junit.Assert.fail;
 
 /**
- * Test for {@link AdminPermission}.
+ * Test for {@link PlayerPermission}.
  */
-public class AdminPermissionTest {
+public class PlayerPermissionTest {
 
     @Test
     public void shouldStartWithAuthMePrefix() {
@@ -18,7 +18,7 @@ public class AdminPermissionTest {
         String requiredPrefix = "authme.";
 
         // when/then
-        for (AdminPermission permission : AdminPermission.values()) {
+        for (PlayerPermission permission : PlayerPermission.values()) {
             if (!permission.getNode().startsWith(requiredPrefix)) {
                 fail("The permission '" + permission + "' does not start with the required prefix '" + requiredPrefix + "'");
             }
@@ -26,14 +26,20 @@ public class AdminPermissionTest {
     }
 
     @Test
-    public void shouldContainAdminBranch() {
+    public void shouldContainPlayerBranch() {
         // given
-        String requiredBranch = ".admin.";
+        String playerBranch = ".player.";
+        String adminBranch = ".admin.";
 
         // when/then
-        for (AdminPermission permission : AdminPermission.values()) {
-            if (!permission.getNode().contains(requiredBranch)) {
-                fail("The permission '" + permission + "' does not contain with the required branch '" + requiredBranch + "'");
+        for (PlayerPermission permission : PlayerPermission.values()) {
+            if (permission.getNode().contains(adminBranch)) {
+                fail("The permission '" + permission + "' should not use a node with the admin-specific branch '"
+                    + adminBranch + "'");
+
+            } else if (!permission.getNode().contains(playerBranch)) {
+                fail("The permission '" + permission + "' should use a node with the player-specific branch '"
+                    + playerBranch + "'");
             }
         }
     }
@@ -44,12 +50,11 @@ public class AdminPermissionTest {
         Set<String> nodes = new HashSet<>();
 
         // when/then
-        for (AdminPermission permission : AdminPermission.values()) {
+        for (PlayerPermission permission : PlayerPermission.values()) {
             if (nodes.contains(permission.getNode())) {
                 fail("More than one enum value defines the node '" + permission.getNode() + "'");
             }
             nodes.add(permission.getNode());
         }
     }
-
 }
