@@ -288,7 +288,7 @@ public class AuthMePlayerListener implements Listener {
         // TODO: Add message to the messages file!!!
         if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
             if (Settings.antiBotInAction) {
-                event.setKickMessage("AntiBot service in action! You actually need to be registered!");
+                event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             } else {
