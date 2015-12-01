@@ -136,7 +136,6 @@ public class CommandManager {
 
         // Register the getemail command
         CommandDescription getEmailCommand = new CommandDescription(new GetEmailCommand(), new ArrayList<String>() {
-
             {
                 add("getemail");
                 add("getmail");
@@ -149,7 +148,6 @@ public class CommandManager {
 
         // Register the setemail command
         CommandDescription setEmailCommand = new CommandDescription(new SetEmailCommand(), new ArrayList<String>() {
-
             {
                 add("chgemail");
                 add("chgmail");
@@ -163,7 +161,6 @@ public class CommandManager {
 
         // Register the getip command
         CommandDescription getIpCommand = new CommandDescription(new GetIpCommand(), new ArrayList<String>() {
-
             {
                 add("getip");
                 add("ip");
@@ -174,7 +171,6 @@ public class CommandManager {
 
         // Register the spawn command
         CommandDescription spawnCommand = new CommandDescription(new SpawnCommand(), new ArrayList<String>() {
-
             {
                 add("spawn");
                 add("home");
@@ -184,7 +180,6 @@ public class CommandManager {
 
         // Register the setspawn command
         CommandDescription setSpawnCommand = new CommandDescription(new SetSpawnCommand(), new ArrayList<String>() {
-
             {
                 add("setspawn");
                 add("chgspawn");
@@ -194,7 +189,6 @@ public class CommandManager {
 
         // Register the firstspawn command
         CommandDescription firstSpawnCommand = new CommandDescription(new FirstSpawnCommand(), new ArrayList<String>() {
-
             {
                 add("firstspawn");
                 add("firsthome");
@@ -204,7 +198,6 @@ public class CommandManager {
 
         // Register the setfirstspawn command
         CommandDescription setFirstSpawnCommand = new CommandDescription(new SetFirstSpawnCommand(), new ArrayList<String>() {
-
             {
                 add("setfirstspawn");
                 add("chgfirstspawn");
@@ -214,7 +207,6 @@ public class CommandManager {
 
         // Register the purge command
         CommandDescription purgeCommand = new CommandDescription(new PurgeCommand(), new ArrayList<String>() {
-
             {
                 add("purge");
                 add("delete");
@@ -225,7 +217,6 @@ public class CommandManager {
 
         // Register the purgelastposition command
         CommandDescription purgeLastPositionCommand = new CommandDescription(new PurgeLastPositionCommand(), new ArrayList<String>() {
-
             {
                 add("resetpos");
                 add("purgelastposition");
@@ -240,7 +231,6 @@ public class CommandManager {
 
         // Register the purgebannedplayers command
         CommandDescription purgeBannedPlayersCommand = new CommandDescription(new PurgeBannedPlayersCommand(), new ArrayList<String>() {
-
             {
                 add("purgebannedplayers");
                 add("purgebannedplayer");
@@ -252,7 +242,6 @@ public class CommandManager {
 
         // Register the switchantibot command
         CommandDescription switchAntiBotCommand = new CommandDescription(new SwitchAntiBotCommand(), new ArrayList<String>() {
-
             {
                 add("switchantibot");
                 add("toggleantibot");
@@ -277,7 +266,6 @@ public class CommandManager {
 
         // Register the reload command
         CommandDescription reloadCommand = new CommandDescription(new ReloadCommand(), new ArrayList<String>() {
-
             {
                 add("reload");
                 add("rld");
@@ -313,7 +301,6 @@ public class CommandManager {
 
         // Register the base logout command
         CommandDescription logoutBaseCommand = new CommandDescription(new LogoutCommand(), new ArrayList<String>() {
-
             {
                 add("logout");
             }
@@ -327,7 +314,6 @@ public class CommandManager {
 
         // Register the base register command
         CommandDescription registerBaseCommand = new CommandDescription(new fr.xephi.authme.command.executable.register.RegisterCommand(), new ArrayList<String>() {
-
             {
                 add("register");
                 add("reg");
@@ -344,7 +330,6 @@ public class CommandManager {
 
         // Register the base unregister command
         CommandDescription unregisterBaseCommand = new CommandDescription(new fr.xephi.authme.command.executable.unregister.UnregisterCommand(), new ArrayList<String>() {
-
             {
                 add("unregister");
                 add("unreg");
@@ -359,7 +344,6 @@ public class CommandManager {
 
         // Register the base changepassword command
         CommandDescription changePasswordBaseCommand = new CommandDescription(new fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand(), new ArrayList<String>() {
-
             {
                 add("changepassword");
                 add("changepass");
@@ -376,7 +360,6 @@ public class CommandManager {
 
         // Register the base Dungeon Maze command
         CommandDescription emailBaseCommand = new CommandDescription(helpCommandExecutable, new ArrayList<String>() {
-
             {
                 add("email");
                 add("mail");
@@ -390,7 +373,6 @@ public class CommandManager {
 
         // Register the add command
         CommandDescription addEmailCommand = new CommandDescription(new AddEmailCommand(), new ArrayList<String>() {
-
             {
                 add("add");
                 add("addemail");
@@ -403,7 +385,6 @@ public class CommandManager {
 
         // Register the change command
         CommandDescription changeEmailCommand = new CommandDescription(new ChangeEmailCommand(), new ArrayList<String>() {
-
             {
                 add("change");
                 add("changeemail");
@@ -416,7 +397,6 @@ public class CommandManager {
 
         // Register the recover command
         CommandDescription recoverEmailCommand = new CommandDescription(new RecoverEmailCommand(), new ArrayList<String>() {
-
             {
                 add("recover");
                 add("recovery");
@@ -429,7 +409,6 @@ public class CommandManager {
 
         // Register the base captcha command
         CommandDescription captchaBaseCommand = new CommandDescription(new CaptchaCommand(), new ArrayList<String>() {
-
             {
                 add("captcha");
                 add("capt");
@@ -445,7 +424,6 @@ public class CommandManager {
 
         // Register the base converter command
         CommandDescription converterBaseCommand = new CommandDescription(new ConverterCommand(), new ArrayList<String>() {
-
             {
                 add("converter");
                 add("convert");

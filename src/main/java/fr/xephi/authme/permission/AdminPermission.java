@@ -5,41 +5,41 @@ package fr.xephi.authme.permission;
  */
 public enum AdminPermission implements PermissionNode {
 
-    REGISTER("authme.admin.register"),
+    REGISTER("authme.command.admin.register"),
 
-    UNREGISTER("authme.admin.unregister"),
+    UNREGISTER("authme.command.admin.unregister"),
 
-    FORCE_LOGIN("authme.admin.forcelogin"),
+    FORCE_LOGIN("authme.command.admin.forcelogin"),
 
-    CHANGE_PASSWORD("authme.admin.changepassword"),
+    CHANGE_PASSWORD("authme.command.admin.changepassword"),
 
-    LAST_LOGIN("authme.admin.lastlogin"),
+    LAST_LOGIN("authme.command.admin.lastlogin"),
 
-    ACCOUNTS("authme.admin.accounts"),
+    ACCOUNTS("authme.command.admin.accounts"),
 
-    GET_EMAIL("authme.admin.getemail"),
+    GET_EMAIL("authme.command.admin.getemail"),
 
-    CHANGE_EMAIL("authme.admin.chgemail"),
+    CHANGE_EMAIL("authme.command.admin.chgemail"),
 
-    GET_IP("authme.admin.getip"),
+    GET_IP("authme.command.admin.getip"),
 
-    SPAWN("authme.admin.spawn"),
+    SPAWN("authme.command.admin.spawn"),
 
-    SET_SPAWN("authme.admin.setspawn"),
+    SET_SPAWN("authme.command.admin.setspawn"),
 
-    FIRST_SPAWN("authme.admin.firstspawn"),
+    FIRST_SPAWN("authme.command.admin.firstspawn"),
 
-    SET_FIRST_SPAWN("authme.admin.setfirstspawn"),
+    SET_FIRST_SPAWN("authme.command.admin.setfirstspawn"),
 
-    PURGE("authme.admin.purge"),
+    PURGE("authme.command.admin.purge"),
 
-    PURGE_LAST_POSITION("authme.admin.purgelastpos"),
+    PURGE_LAST_POSITION("authme.command.admin.purgelastpos"),
 
-    PURGE_BANNED_PLAYERS("authme.admin.purgebannedplayers"),
+    PURGE_BANNED_PLAYERS("authme.command.admin.purgebannedplayers"),
 
-    SWITCH_ANTIBOT("authme.admin.switchantibot"),
+    SWITCH_ANTIBOT("authme.command.admin.switchantibot"),
 
-    RELOAD("authme.admin.reload");
+    RELOAD("authme.command.admin.reload");
 
     private String node;
 
@@ -51,5 +51,4 @@ public enum AdminPermission implements PermissionNode {
     AdminPermission(String node) {
         this.node = node;
     }
-
 }
