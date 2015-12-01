@@ -12,8 +12,6 @@ import org.mockito.Mockito;
 
 /**
  * Test for {@link Log4JFilter}.
- * @author Gabriele
- * @version $Revision: 1.0 $
  */
 public class Log4JFilterTest {
 	

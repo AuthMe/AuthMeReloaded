@@ -3,6 +3,7 @@ package fr.xephi.authme;
 import fr.xephi.authme.util.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.Logger;
 import org.apache.logging.log4j.message.Message;
@@ -11,9 +12,8 @@ import org.apache.logging.log4j.message.Message;
  * Implements a filter for Log4j to skip sensitive AuthMe commands.
  *
  * @author Xephi59
- * @version $Revision: 1.0 $
  */
-public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
+public class Log4JFilter implements Filter {
 
     /**
      * List of commands (lower-case) to skip.
@@ -30,8 +30,7 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
 
     /**
      * Validates a Message instance and returns the {@link Result} value
-     * depending depending on whether the message contains sensitive AuthMe
-     * data.
+     * depending on whether the message contains sensitive AuthMe data.
      *
      * @param message the Message object to verify
      *
@@ -46,7 +45,7 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
 
     /**
      * Validates a message and returns the {@link Result} value depending
-     * depending on whether the message contains sensitive AuthMe data.
+     * on whether the message contains sensitive AuthMe data.
      *
      * @param message the message to verify
      *
@@ -74,14 +73,12 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
     }
 
     @Override
-    public Result filter(Logger arg0, Level arg1, Marker arg2, String message,
-                         Object... arg4) {
+    public Result filter(Logger arg0, Level arg1, Marker arg2, String message, Object... arg4) {
         return validateMessage(message);
     }
 
     @Override
-    public Result filter(Logger arg0, Level arg1, Marker arg2, Object message,
-                         Throwable arg4) {
+    public Result filter(Logger arg0, Level arg1, Marker arg2, Object message, Throwable arg4) {
         if (message == null) {
             return Result.NEUTRAL;
         }
@@ -89,8 +86,7 @@ public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
     }
 
     @Override
-    public Result filter(Logger arg0, Level arg1, Marker arg2, Message message,
-                         Throwable arg4) {
+    public Result filter(Logger arg0, Level arg1, Marker arg2, Message message, Throwable arg4) {
         return validateMessage(message);
     }
 
