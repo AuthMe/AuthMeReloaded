@@ -5,37 +5,37 @@ package fr.xephi.authme.permission;
  */
 public enum UserPermission implements PermissionNode {
 
-    BYPASS_ANTIBOT("authme.bypassantibot"),
+    BYPASS_ANTIBOT("authme.command.player.bypassantibot"),
 
-    IS_VIP("authme.vip"),
+    IS_VIP("authme.command.player.vip"),
 
-    LOGIN("authme.login"),
+    LOGIN("authme.command.player.login"),
 
-    LOGOUT("authme.logout"),
+    LOGOUT("authme.command.player.logout"),
 
-    REGISTER("authme.register"),
+    REGISTER("authme.command.player.register"),
 
-    UNREGISTER("authme.unregister"),
+    UNREGISTER("authme.command.player.unregister"),
 
-    CHANGE_PASSWORD("authme.changepassword"),
+    CHANGE_PASSWORD("authme.command.player.changepassword"),
 
-    ADD_EMAIL("authme.email.add"),
+    ADD_EMAIL("authme.command.player.email.add"),
 
-    CHANGE_EMAIL("authme.email.change"),
+    CHANGE_EMAIL("authme.command.player.email.change"),
 
-    RECOVER_EMAIL("authme.email.recover"),
+    RECOVER_EMAIL("authme.command.player.email.recover"),
 
-    CAPTCHA("authme.captcha"),
+    CAPTCHA("authme.command.player.captcha"),
 
-    CONVERTER("authme.converter"),
+    CONVERTER("authme.command.player.converter"),
 
-    CAN_LOGIN_BE_FORCED("authme.canbeforced"),
+    CAN_LOGIN_BE_FORCED("authme.command.player.canbeforced"),
 
-    BYPASS_FORCE_SURVIVAL("authme.bypassforcesurvival"),
+    BYPASS_FORCE_SURVIVAL("authme.command.player.bypassforcesurvival"),
 
-    ALLOW_MULTIPLE_ACCOUNTS("authme.allow2accounts"),
+    ALLOW_MULTIPLE_ACCOUNTS("authme.command.player.allow2accounts"),
 
-    SEE_OTHER_ACCOUNTS("authme.seeOtherAccounts");
+    SEE_OTHER_ACCOUNTS("authme.command.player.seeOtherAccounts");
 
     private String node;
 
@@ -47,6 +47,4 @@ public enum UserPermission implements PermissionNode {
     UserPermission(String node) {
         this.node = node;
     }
-
-
 }
