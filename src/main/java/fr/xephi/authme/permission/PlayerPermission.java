@@ -1,7 +1,7 @@
 package fr.xephi.authme.permission;
 
 /**
- * AuthMe player permission nodes, for regular players.
+ * AuthMe player command permission nodes, for regular players.
  */
 public enum PlayerPermission implements PermissionNode {
 

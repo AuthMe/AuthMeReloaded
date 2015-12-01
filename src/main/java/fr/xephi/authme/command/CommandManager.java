@@ -135,29 +135,27 @@ public class CommandManager {
             .build();
 
         // Register the getemail command
-        CommandDescription getEmailCommand = new CommandDescription(new GetEmailCommand(), new ArrayList<String>() {
-            {
-                add("getemail");
-                add("getmail");
-                add("email");
-                add("mail");
-            }
-        }, "Display player's email", "Display the email address of the specified player if set.", authMeBaseCommand);
-        getEmailCommand.setCommandPermissions(AdminPermission.GET_EMAIL, OP_ONLY);
-        getEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
+        CommandDescription getEmailCommand = CommandDescription.builder()
+            .executableCommand(new GetEmailCommand())
+            .labels("getemail", "getmail", "email", "mail")
+            .description("Display player's email")
+            .detailedDescription("Display the email address of the specified player if set.")
+            .parent(authMeBaseCommand)
+            .permissions(OP_ONLY, AdminPermission.GET_EMAIL)
+            .withArgument("player", "Player name", true)
+            .build();
 
         // Register the setemail command
-        CommandDescription setEmailCommand = new CommandDescription(new SetEmailCommand(), new ArrayList<String>() {
-            {
-                add("chgemail");
-                add("chgmail");
-                add("setemail");
-                add("setmail");
-            }
-        }, "Change player's email", "Change the email address of the specified player.", authMeBaseCommand);
-        setEmailCommand.setCommandPermissions(AdminPermission.CHANGE_EMAIL, OP_ONLY);
-        setEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
-        setEmailCommand.addArgument(new CommandArgumentDescription("email", "Player email", false));
+        CommandDescription setEmailCommand = CommandDescription.builder()
+            .executableCommand(new SetEmailCommand())
+            .labels("chgemail", "chgmail", "setemail", "setmail")
+            .description("Change player's email")
+            .detailedDescription("Change the email address of the specified player.")
+            .parent(authMeBaseCommand)
+            .permissions(OP_ONLY, AdminPermission.CHANGE_EMAIL)
+            .withArgument("player", "Player name", false)
+            .withArgument("email", "Player email", false)
+            .build();
 
         // Register the getip command
         CommandDescription getIpCommand = new CommandDescription(new GetIpCommand(), new ArrayList<String>() {

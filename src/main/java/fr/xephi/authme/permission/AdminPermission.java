@@ -1,7 +1,7 @@
 package fr.xephi.authme.permission;
 
 /**
- * AuthMe admin permissions.
+ * AuthMe admin command permissions.
  */
 public enum AdminPermission implements PermissionNode {
 
