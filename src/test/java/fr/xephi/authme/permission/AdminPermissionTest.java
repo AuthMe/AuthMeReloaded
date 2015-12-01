@@ -18,9 +18,9 @@ public class AdminPermissionTest {
         String requiredPrefix = "authme.";
 
         // when/then
-        for (AdminPermission perm : AdminPermission.values()) {
-            if (!perm.getNode().startsWith(requiredPrefix)) {
-                fail("The permission '" + perm + "' does not start with the required prefix '" + requiredPrefix + "'");
+        for (AdminPermission permission : AdminPermission.values()) {
+            if (!permission.getNode().startsWith(requiredPrefix)) {
+                fail("The permission '" + permission + "' does not start with the required prefix '" + requiredPrefix + "'");
             }
         }
     }
@@ -31,9 +31,9 @@ public class AdminPermissionTest {
         String requiredBranch = ".admin.";
 
         // when/then
-        for (AdminPermission perm : AdminPermission.values()) {
-            if (!perm.getNode().contains(requiredBranch)) {
-                fail("The permission '" + perm + "' does not contain with the required branch '" + requiredBranch + "'");
+        for (AdminPermission permission : AdminPermission.values()) {
+            if (!permission.getNode().contains(requiredBranch)) {
+                fail("The permission '" + permission + "' does not contain with the required branch '" + requiredBranch + "'");
             }
         }
     }
@@ -44,11 +44,11 @@ public class AdminPermissionTest {
         Set<String> nodes = new HashSet<>();
 
         // when/then
-        for (AdminPermission perm : AdminPermission.values()) {
-            if (nodes.contains(perm.getNode())) {
-                fail("More than one enum value defines the node '" + perm.getNode() + "'");
+        for (AdminPermission permission : AdminPermission.values()) {
+            if (nodes.contains(permission.getNode())) {
+                fail("More than one enum value defines the node '" + permission.getNode() + "'");
             }
-            nodes.add(perm.getNode());
+            nodes.add(permission.getNode());
         }
     }
 
