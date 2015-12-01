@@ -1,4 +1,4 @@
-package fr.xephi.authme;
+package fr.xephi.authme.output;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;

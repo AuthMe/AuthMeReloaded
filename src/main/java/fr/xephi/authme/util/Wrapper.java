@@ -2,7 +2,7 @@ package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitScheduler;

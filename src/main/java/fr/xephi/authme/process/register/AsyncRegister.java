@@ -7,8 +7,8 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 

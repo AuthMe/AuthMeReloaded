@@ -1,8 +1,8 @@
 package fr.xephi.authme;
 
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.Bukkit;

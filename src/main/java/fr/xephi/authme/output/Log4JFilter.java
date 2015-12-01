@@ -1,4 +1,4 @@
-package fr.xephi.authme;
+package fr.xephi.authme.output;
 
 import fr.xephi.authme.util.StringUtils;
 import org.apache.logging.log4j.Level;
