@@ -17,6 +17,8 @@ import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.EssSpawn;
 import fr.xephi.authme.listener.*;
 import fr.xephi.authme.modules.ModuleManager;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
@@ -227,7 +229,7 @@ public class AuthMe extends JavaPlugin {
         this.otherAccounts = OtherAccounts.getInstance();
 
         // Setup messages
-        this.messages = new Messages(Settings.messageFile, Settings.messagesLanguage);
+        this.messages = Messages.getInstance();
 
         // Set up Metrics
         setupMetrics();

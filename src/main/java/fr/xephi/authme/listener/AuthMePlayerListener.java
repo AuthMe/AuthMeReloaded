@@ -11,8 +11,8 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
@@ -31,6 +31,8 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+import static fr.xephi.authme.output.MessageKey.USERNAME_ALREADY_ONLINE_ERROR;
 
 /**
  */
@@ -207,7 +209,7 @@ public class AuthMePlayerListener implements Listener {
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
         if (Settings.isForceSingleSessionEnabled && player.isOnline()) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, m.getString("same_nick"));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, m.retrieveSingle(USERNAME_ALREADY_ONLINE_ERROR));
             if (LimboCache.getInstance().hasLimboPlayer(name))
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -340,7 +342,8 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if ((!Settings.isForceSingleSessionEnabled) && (event.getReason().contains(m.getString("same_nick")))) {
+        if (!Settings.isForceSingleSessionEnabled && event.getReason().contains(
+            m.retrieveSingle(USERNAME_ALREADY_ONLINE_ERROR))) {
             event.setCancelled(true);
             return;
         }

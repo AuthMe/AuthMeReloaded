@@ -5,7 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.FlatFile;
-import fr.xephi.authme.settings.MessageKey;
+import fr.xephi.authme.output.MessageKey;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;

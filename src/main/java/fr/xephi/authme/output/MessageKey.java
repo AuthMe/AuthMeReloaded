@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings;
+package fr.xephi.authme.output;
 
 /**
  * Keys for translatable messages managed by {@link Messages}.

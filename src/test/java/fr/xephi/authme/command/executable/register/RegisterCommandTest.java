@@ -2,8 +2,8 @@ package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
