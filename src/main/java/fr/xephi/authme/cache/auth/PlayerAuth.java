@@ -23,9 +23,8 @@ public class PlayerAuth {
     /**
      *
      */
-    public PlayerAuth(String serialized)
-    {
-    	this.unserialize(serialized);
+    public PlayerAuth(String serialized) {
+        this.deserialize(serialized);
     }
 
     /**
@@ -163,8 +162,10 @@ public class PlayerAuth {
      * @param email     String
      * @param realName  String
      */
-    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
-        this.nickname = nickname;
+    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip,
+                      long lastLogin, double x, double y, double z, String world, String email,
+                      String realName) {
+        this.nickname = nickname.toLowerCase();
         this.hash = hash;
         this.ip = ip;
         this.lastLogin = lastLogin;
@@ -203,7 +204,7 @@ public class PlayerAuth {
      * @param nickname String
      */
     public void setName(String nickname) {
-        this.nickname = nickname;
+        this.nickname = nickname.toLowerCase();
     }
 
     /**
@@ -455,47 +456,45 @@ public class PlayerAuth {
     }
 
     /**
-     * Method to serialize playerauth
+     * Method to serialize PlayerAuth
      *
      * @return String
      */
-    public String serialize()
-    {
-    	StringBuilder str = new StringBuilder();
-    	str.append(this.nickname).append(';');
-    	str.append(this.realName).append(';');
-    	str.append(this.ip).append(';');
-    	str.append(this.email).append(';');
-    	str.append(this.hash).append(';');
-    	str.append(this.salt).append(';');
-    	str.append(this.groupId).append(';');
-    	str.append(this.lastLogin).append(';');
-    	str.append(this.world).append(';');
-    	str.append(this.x).append(';');
-    	str.append(this.y).append(';');
-    	str.append(this.z);
-    	return str.toString();
+    public String serialize() {
+        StringBuilder str = new StringBuilder();
+        char d = ';';
+        str.append(this.nickname).append(d);
+        str.append(this.realName).append(d);
+        str.append(this.ip).append(d);
+        str.append(this.email).append(d);
+        str.append(this.hash).append(d);
+        str.append(this.salt).append(d);
+        str.append(this.groupId).append(d);
+        str.append(this.lastLogin).append(d);
+        str.append(this.world).append(d);
+        str.append(this.x).append(d);
+        str.append(this.y).append(d);
+        str.append(this.z);
+        return str.toString();
     }
 
     /**
-     * Method to unserialize playerauth
-     *
+     * Method to deserialize PlayerAuth
      */
-    public void unserialize(String str)
-    {
-    	String[] args = str.split(";");
-    	this.nickname = args[0];
-    	this.realName = args[1];
-    	this.ip = args[2];
-    	this.email = args[3];
-    	this.hash = args[4];
-    	this.salt = args[5];
-    	this.groupId = Integer.parseInt(args[6]);
-    	this.lastLogin = Long.parseLong(args[7]);
-    	this.world = args[8];
-    	this.x = Double.parseDouble(args[9]);
-    	this.y = Double.parseDouble(args[10]);
-    	this.z = Double.parseDouble(args[11]);
+    public void deserialize(String str) {
+        String[] args = str.split(";");
+        this.nickname = args[0];
+        this.realName = args[1];
+        this.ip = args[2];
+        this.email = args[3];
+        this.hash = args[4];
+        this.salt = args[5];
+        this.groupId = Integer.parseInt(args[6]);
+        this.lastLogin = Long.parseLong(args[7]);
+        this.world = args[8];
+        this.x = Double.parseDouble(args[9]);
+        this.y = Double.parseDouble(args[10]);
+        this.z = Double.parseDouble(args[11]);
     }
 
     public static Builder builder() {
@@ -504,17 +503,17 @@ public class PlayerAuth {
 
     public static final class Builder {
         private String name;
-        private String realName;
-        private String hash;
-        private String salt;
-        private String ip;
-        private String world;
-        private double x;
-        private double y;
-        private double z;
-        private long lastLogin;
-        private int groupId;
-        private String email;
+        private String realName = "Player";
+        private String hash = "";
+        private String salt = "";
+        private String ip = "127.0.0.1";
+        private String world = "world";
+        private double x = 0.0f;
+        private double y = 0.0f;
+        private double z = 0.0f;
+        private long lastLogin = System.currentTimeMillis();
+        private int groupId = -1;
+        private String email = "your@email.com";
 
         public PlayerAuth build() {
             return new PlayerAuth(
