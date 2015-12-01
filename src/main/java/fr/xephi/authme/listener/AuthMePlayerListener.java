@@ -54,7 +54,7 @@ public class AuthMePlayerListener implements Listener {
 
         final Player player = event.getPlayer();
 
-        if(Utils.checkAuth(player)) {
+        if (Utils.checkAuth(player)) {
             for (Player p : Utils.getOnlinePlayers()) {
                 if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
                     event.getRecipients().remove(p); // TODO: it should be configurable
@@ -198,34 +198,48 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
+        if (!plugin.canConnect()) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage("Server is loading, please wait before joining!");
+            return;
+        }
+
+        if (Settings.enableProtection) {
+            String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            if (!Settings.countriesBlacklist.isEmpty() && Settings.countriesBlacklist.contains(countryCode)) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
+            }
+            if (!Settings.countries.isEmpty() && !Settings.countries.contains(countryCode)) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
+            }
+        }
+
         final String name = event.getName().toLowerCase();
         final Player player = Utils.getPlayer(name);
-        if (player == null || Utils.isNPC(player)) {
+        if (player == null) {
             return;
         }
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
-        if (Settings.isForceSingleSessionEnabled && player.isOnline()) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, m.getString("same_nick"));
-            if (LimboCache.getInstance().hasLimboPlayer(name))
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-                        if (limbo != null && PlayerCache.getInstance().isAuthenticated(name)) {
-                            Utils.addNormal(player, limbo.getGroup());
-                            LimboCache.getInstance().deleteLimboPlayer(name);
-                        }
-                    }
-                });
+        if (Settings.isForceSingleSessionEnabled) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR));
+            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+            if (limbo != null && PlayerCache.getInstance().isAuthenticated(name)) {
+                Utils.addNormal(player, limbo.getGroup());
+                LimboCache.getInstance().deleteLimboPlayer(name);
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        if (event.getPlayer() == null) {
+        if (event.getPlayer() == null || Utils.isUnrestricted(event.getPlayer())) {
             return;
         }
 
@@ -260,30 +274,8 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
-            return;
-        }
-
         final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
-
-        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
-            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-            if (Settings.countriesBlacklist.contains(code)) {
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
-
-        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
-            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-            if (!Settings.countries.contains(code)) {
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
 
         // TODO: Add message to the messages file!!!
         if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
@@ -327,7 +319,7 @@ public class AuthMePlayerListener implements Listener {
 
         Player player = event.getPlayer();
 
-        if (!Utils.checkAuth(player) && Settings.delayJoinLeaveMessages) {
+        if (Settings.delayJoinLeaveMessages && !Utils.checkAuth(player)) {
             event.setQuitMessage(null);
         }
 
@@ -340,7 +332,8 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if ((!Settings.isForceSingleSessionEnabled) && (event.getReason().contains(m.getString("same_nick")))) {
+        if ((!Settings.isForceSingleSessionEnabled)
+            && (event.getReason().equals(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR)))) {
             event.setCancelled(true);
             return;
         }
@@ -351,31 +344,34 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
-        if (Utils.checkAuth(player))
+        if (Utils.checkAuth(player)) {
             return;
+        }
         event.setCancelled(true);
 
         /*
@@ -383,7 +379,6 @@ public class AuthMePlayerListener implements Listener {
          * real, cause no packet is send to server by client for the main inv
          */
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
             @Override
             public void run() {
                 player.closeInventory();
@@ -408,46 +403,51 @@ public class AuthMePlayerListener implements Listener {
         if (!(damager instanceof Player)) {
             return;
         }
-        if (Utils.checkAuth((Player) damager))
+        if (Utils.checkAuth((Player) damager)) {
             return;
-
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
+
+        Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
         Location spawn = plugin.getSpawnLocation(player);
         if (Settings.isSaveQuitLocationEnabled && plugin.database.isAuthAvailable(name)) {
@@ -461,13 +461,14 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
+        if (Utils.checkAuth(event.getPlayer())) {
+            return;
+        }
+
         Player player = event.getPlayer();
-        if (player == null)
+        if (plugin.getPermissionsManager().hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL)) {
             return;
-        if (plugin.getPermissionsManager().hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL))
-            return;
-        if (Utils.checkAuth(player))
-            return;
+        }
 
         String name = player.getName().toLowerCase();
         if (causeByAuthMe.containsKey(name)) {
@@ -479,17 +480,17 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerShear(PlayerShearEntityEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerFish(PlayerFishEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
         event.setCancelled(true);
     }
 

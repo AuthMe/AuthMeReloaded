@@ -156,8 +156,9 @@ public final class Utils {
     }
 
     public static boolean isUnrestricted(Player player) {
-        return Settings.isAllowRestrictedIp && !Settings.getUnrestrictedName.isEmpty()
-            && (Settings.getUnrestrictedName.contains(player.getName()));
+        return Settings.isAllowRestrictedIp
+            && !Settings.getUnrestrictedName.isEmpty()
+            && (Settings.getUnrestrictedName.contains(player.getName().toLowerCase()));
     }
 
     /**
