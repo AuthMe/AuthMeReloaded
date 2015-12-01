@@ -8,9 +8,9 @@ import java.util.Set;
 import static org.junit.Assert.fail;
 
 /**
- * Test for {@link UserPermission}.
+ * Test for {@link PlayerPermission}.
  */
-public class UserPermissionTest {
+public class PlayerPermissionTest {
 
     @Test
     public void shouldStartWithRegularAuthMePrefix() {
@@ -19,7 +19,7 @@ public class UserPermissionTest {
         String adminPrefix = "authme.admin";
 
         // when/then
-        for (UserPermission perm : UserPermission.values()) {
+        for (PlayerPermission perm : PlayerPermission.values()) {
             if (!perm.getNode().startsWith(requiredPrefix)) {
                 fail("The permission '" + perm + "' does not start with the required prefix '" + requiredPrefix + "'");
             } else if (perm.getNode().startsWith(adminPrefix)) {
@@ -35,7 +35,7 @@ public class UserPermissionTest {
         Set<String> nodes = new HashSet<>();
 
         // when/then
-        for (UserPermission perm : UserPermission.values()) {
+        for (PlayerPermission perm : PlayerPermission.values()) {
             if (nodes.contains(perm.getNode())) {
                 fail("More than one enum value defines the node '" + perm.getNode() + "'");
             }

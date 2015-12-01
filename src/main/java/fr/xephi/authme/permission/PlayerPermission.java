@@ -1,9 +1,9 @@
 package fr.xephi.authme.permission;
 
 /**
- * AuthMe user permission nodes.
+ * AuthMe player permission nodes, for regular players.
  */
-public enum UserPermission implements PermissionNode {
+public enum PlayerPermission implements PermissionNode {
 
     BYPASS_ANTIBOT("authme.command.player.bypassantibot"),
 
@@ -44,7 +44,7 @@ public enum UserPermission implements PermissionNode {
         return node;
     }
 
-    UserPermission(String node) {
+    PlayerPermission(String node) {
         this.node = node;
     }
 }

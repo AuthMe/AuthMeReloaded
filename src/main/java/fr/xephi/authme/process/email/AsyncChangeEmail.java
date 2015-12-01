@@ -4,7 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -39,7 +39,7 @@ public class AsyncChangeEmail {
             String playerName = player.getName().toLowerCase();
 
             if (Settings.getmaxRegPerEmail > 0) {
-                if (!plugin.getPermissionsManager().hasPermission(player, UserPermission.ALLOW_MULTIPLE_ACCOUNTS)
+                if (!plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
                     && plugin.database.getAllAuthsByEmail(newEmail).size() >= Settings.getmaxRegPerEmail) {
                     m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
                     return;

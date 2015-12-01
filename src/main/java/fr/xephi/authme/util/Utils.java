@@ -7,7 +7,7 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -201,7 +201,7 @@ public final class Utils {
      * @param player the player to modify.
      */
     public static void forceGM(Player player) {
-        if (!plugin.getPermissionsManager().hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL)) {
+        if (!plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)) {
             player.setGameMode(GameMode.SURVIVAL);
         }
     }

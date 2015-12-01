@@ -10,7 +10,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.MessageKey;
 import fr.xephi.authme.settings.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -254,7 +254,7 @@ public class AuthMePlayerListener implements Listener {
         PermissionsManager permsMan = plugin.getPermissionsManager();
 
         final Player player = event.getPlayer();
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, UserPermission.IS_VIP)) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
             event.setResult(PlayerLoginEvent.Result.KICK_FULL);
             return;
@@ -267,7 +267,7 @@ public class AuthMePlayerListener implements Listener {
         final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
 
-        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
+        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, PlayerPermission.BYPASS_ANTIBOT)) {
             String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if (Settings.countriesBlacklist.contains(code)) {
                 event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
@@ -276,7 +276,7 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
+        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, PlayerPermission.BYPASS_ANTIBOT)) {
             String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if (!Settings.countries.contains(code)) {
                 event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
@@ -464,7 +464,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player == null)
             return;
-        if (plugin.getPermissionsManager().hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL))
+        if (plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL))
             return;
         if (Utils.checkAuth(player))
             return;

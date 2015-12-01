@@ -10,7 +10,7 @@ import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 import fr.xephi.authme.permission.AdminPermission;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +73,7 @@ public class CommandManager {
             .description("Register a player")
             .detailedDescription("Register the specified player with the specified password.")
             .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.REGISTER)
+            .permissions(OP_ONLY, PlayerPermission.REGISTER)
             .withArgument("player", "Player name", false)
             .withArgument("password", "Password", false)
             .build();
@@ -85,7 +85,7 @@ public class CommandManager {
             .description("Unregister a player")
             .detailedDescription("Unregister the specified player.")
             .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.UNREGISTER)
+            .permissions(OP_ONLY, PlayerPermission.UNREGISTER)
             .withArgument("player", "Player name", false)
             .build();
 
@@ -96,7 +96,7 @@ public class CommandManager {
             .description("Enforce login player")
             .detailedDescription("Enforce the specified player to login.")
             .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.CAN_LOGIN_BE_FORCED)
+            .permissions(OP_ONLY, PlayerPermission.CAN_LOGIN_BE_FORCED)
             .withArgument("player", "Online player name", true)
             .build();
 
@@ -107,7 +107,7 @@ public class CommandManager {
             .description("Change a player's password")
             .detailedDescription("Change the password of a player.")
             .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.CHANGE_PASSWORD)
+            .permissions(OP_ONLY, PlayerPermission.CHANGE_PASSWORD)
             .withArgument("player", "Player name", false)
             .withArgument("pwd", "New password", false)
             .build();
@@ -290,7 +290,7 @@ public class CommandManager {
             .description("Login command")
             .detailedDescription("Command to log in using AuthMeReloaded.")
             .parent(null)
-            .permissions(ALLOWED, UserPermission.LOGIN)
+            .permissions(ALLOWED, PlayerPermission.LOGIN)
             .withArgument("password", "Login password", false)
             .build();
 
@@ -305,7 +305,7 @@ public class CommandManager {
                 add("logout");
             }
         }, "Logout command", "Command to logout using AuthMeReloaded.", null);
-        logoutBaseCommand.setCommandPermissions(UserPermission.LOGOUT, CommandPermissions.DefaultPermission.ALLOWED);
+        logoutBaseCommand.setCommandPermissions(PlayerPermission.LOGOUT, CommandPermissions.DefaultPermission.ALLOWED);
 
         // Register the help command
         CommandDescription logoutHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
@@ -319,7 +319,7 @@ public class CommandManager {
                 add("reg");
             }
         }, "Registration command", "Command to register using AuthMeReloaded.", null);
-        registerBaseCommand.setCommandPermissions(UserPermission.REGISTER, CommandPermissions.DefaultPermission.ALLOWED);
+        registerBaseCommand.setCommandPermissions(PlayerPermission.REGISTER, CommandPermissions.DefaultPermission.ALLOWED);
         registerBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
         registerBaseCommand.addArgument(new CommandArgumentDescription("verifyPassword", "Verify password", false));
 
@@ -335,7 +335,7 @@ public class CommandManager {
                 add("unreg");
             }
         }, "Unregistration command", "Command to unregister using AuthMeReloaded.", null);
-        unregisterBaseCommand.setCommandPermissions(UserPermission.UNREGISTER, CommandPermissions.DefaultPermission.ALLOWED);
+        unregisterBaseCommand.setCommandPermissions(PlayerPermission.UNREGISTER, CommandPermissions.DefaultPermission.ALLOWED);
         unregisterBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
 
         // Register the help command
@@ -349,7 +349,7 @@ public class CommandManager {
                 add("changepass");
             }
         }, "Change password command", "Command to change your password using AuthMeReloaded.", null);
-        changePasswordBaseCommand.setCommandPermissions(UserPermission.CHANGE_PASSWORD, CommandPermissions.DefaultPermission.ALLOWED);
+        changePasswordBaseCommand.setCommandPermissions(PlayerPermission.CHANGE_PASSWORD, CommandPermissions.DefaultPermission.ALLOWED);
         changePasswordBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
         changePasswordBaseCommand.addArgument(new CommandArgumentDescription("verifyPassword", "Verify password", false));
 
@@ -379,7 +379,7 @@ public class CommandManager {
                 add("addmail");
             }
         }, "Add E-mail", "Add an new E-Mail address to your account.", emailBaseCommand);
-        addEmailCommand.setCommandPermissions(UserPermission.ADD_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
+        addEmailCommand.setCommandPermissions(PlayerPermission.ADD_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
         addEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
         addEmailCommand.addArgument(new CommandArgumentDescription("verifyEmail", "Email address verification", false));
 
@@ -391,7 +391,7 @@ public class CommandManager {
                 add("changemail");
             }
         }, "Change E-mail", "Change an E-Mail address of your account.", emailBaseCommand);
-        changeEmailCommand.setCommandPermissions(UserPermission.CHANGE_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
+        changeEmailCommand.setCommandPermissions(PlayerPermission.CHANGE_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
         changeEmailCommand.addArgument(new CommandArgumentDescription("oldEmail", "Old email address", false));
         changeEmailCommand.addArgument(new CommandArgumentDescription("newEmail", "New email address", false));
 
@@ -404,7 +404,7 @@ public class CommandManager {
                 add("recovermail");
             }
         }, "Recover using E-mail", "Recover your account using an E-mail address.", emailBaseCommand);
-        recoverEmailCommand.setCommandPermissions(UserPermission.RECOVER_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
+        recoverEmailCommand.setCommandPermissions(PlayerPermission.RECOVER_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
         recoverEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
 
         // Register the base captcha command
@@ -414,7 +414,7 @@ public class CommandManager {
                 add("capt");
             }
         }, "Captcha command", "Captcha command for AuthMeReloaded.", null);
-        captchaBaseCommand.setCommandPermissions(UserPermission.CAPTCHA, CommandPermissions.DefaultPermission.ALLOWED);
+        captchaBaseCommand.setCommandPermissions(PlayerPermission.CAPTCHA, CommandPermissions.DefaultPermission.ALLOWED);
         captchaBaseCommand.addArgument(new CommandArgumentDescription("captcha", "The captcha", false));
 
         // Register the help command
@@ -430,7 +430,7 @@ public class CommandManager {
                 add("conv");
             }
         }, "Convert command", "Convert command for AuthMeReloaded.", null);
-        converterBaseCommand.setCommandPermissions(UserPermission.CONVERTER, OP_ONLY);
+        converterBaseCommand.setCommandPermissions(PlayerPermission.CONVERTER, OP_ONLY);
         converterBaseCommand.addArgument(new CommandArgumentDescription("job", "Conversion job: flattosql / flattosqlite /| xauth / crazylogin / rakamak / royalauth / vauth / sqltoflat", false));
 
         // Register the help command

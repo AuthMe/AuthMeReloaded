@@ -3,7 +3,7 @@ package fr.xephi.authme.util;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -54,7 +54,7 @@ public class UtilsTest {
     public void shouldForceSurvivalGameMode() {
         // given
         Player player = mock(Player.class);
-        given(permissionsManagerMock.hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL)).willReturn(false);
+        given(permissionsManagerMock.hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)).willReturn(false);
 
         // when
         Utils.forceGM(player);
@@ -68,14 +68,14 @@ public class UtilsTest {
     public void shouldNotForceGameModeForUserWithBypassPermission() {
         // given
         Player player = mock(Player.class);
-        given(permissionsManagerMock.hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL)).willReturn(true);
+        given(permissionsManagerMock.hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)).willReturn(true);
 
         // when
         Utils.forceGM(player);
 
         // then
         verify(authMeMock).getPermissionsManager();
-        verify(permissionsManagerMock).hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL);
+        verify(permissionsManagerMock).hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL);
         verify(player, never()).setGameMode(any(GameMode.class));
     }
 
