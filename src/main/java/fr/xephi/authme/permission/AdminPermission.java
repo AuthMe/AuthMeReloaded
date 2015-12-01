@@ -19,7 +19,7 @@ public enum AdminPermission implements PermissionNode {
 
     GET_EMAIL("authme.command.admin.getemail"),
 
-    CHANGE_EMAIL("authme.command.admin.chgemail"),
+    CHANGE_EMAIL("authme.command.admin.changemail"),
 
     GET_IP("authme.command.admin.getip"),
 
