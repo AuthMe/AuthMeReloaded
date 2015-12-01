@@ -35,7 +35,7 @@ public enum PlayerPermission implements PermissionNode {
 
     ALLOW_MULTIPLE_ACCOUNTS("authme.command.player.allow2accounts"),
 
-    SEE_OTHER_ACCOUNTS("authme.command.player.seeOtherAccounts");
+    SEE_OTHER_ACCOUNTS("authme.command.player.seeotheraccounts");
 
     private String node;
 
