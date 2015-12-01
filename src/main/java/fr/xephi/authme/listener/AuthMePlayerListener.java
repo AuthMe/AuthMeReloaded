@@ -10,9 +10,9 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.UserPermission;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
@@ -31,6 +31,8 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 
 import java.util.concurrent.ConcurrentHashMap;
+
+import static fr.xephi.authme.output.MessageKey.USERNAME_ALREADY_ONLINE_ERROR;
 
 /**
  */
@@ -207,7 +209,7 @@ public class AuthMePlayerListener implements Listener {
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
         if (Settings.isForceSingleSessionEnabled && player.isOnline()) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, m.getString("same_nick"));
+            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, m.retrieveSingle(USERNAME_ALREADY_ONLINE_ERROR));
             if (LimboCache.getInstance().hasLimboPlayer(name))
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -254,7 +256,7 @@ public class AuthMePlayerListener implements Listener {
         PermissionsManager permsMan = plugin.getPermissionsManager();
 
         final Player player = event.getPlayer();
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, UserPermission.IS_VIP)) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
             event.setResult(PlayerLoginEvent.Result.KICK_FULL);
             return;
@@ -267,7 +269,7 @@ public class AuthMePlayerListener implements Listener {
         final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
 
-        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
+        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, PlayerPermission.BYPASS_ANTIBOT)) {
             String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if (Settings.countriesBlacklist.contains(code)) {
                 event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
@@ -276,7 +278,7 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
+        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, PlayerPermission.BYPASS_ANTIBOT)) {
             String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if (!Settings.countries.contains(code)) {
                 event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
@@ -288,7 +290,7 @@ public class AuthMePlayerListener implements Listener {
         // TODO: Add message to the messages file!!!
         if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
             if (Settings.antiBotInAction) {
-                event.setKickMessage("AntiBot service in action! You actually need to be registered!");
+                event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             } else {
@@ -340,7 +342,8 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if ((!Settings.isForceSingleSessionEnabled) && (event.getReason().contains(m.getString("same_nick")))) {
+        if (!Settings.isForceSingleSessionEnabled && event.getReason().contains(
+            m.retrieveSingle(USERNAME_ALREADY_ONLINE_ERROR))) {
             event.setCancelled(true);
             return;
         }
@@ -464,7 +467,7 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         if (player == null)
             return;
-        if (plugin.getPermissionsManager().hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL))
+        if (plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL))
             return;
         if (Utils.checkAuth(player))
             return;

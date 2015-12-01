@@ -10,7 +10,7 @@ import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
 import fr.xephi.authme.permission.AdminPermission;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -73,7 +73,7 @@ public class CommandManager {
             .description("Register a player")
             .detailedDescription("Register the specified player with the specified password.")
             .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.REGISTER)
+            .permissions(OP_ONLY, PlayerPermission.REGISTER)
             .withArgument("player", "Player name", false)
             .withArgument("password", "Password", false)
             .build();
@@ -85,7 +85,7 @@ public class CommandManager {
             .description("Unregister a player")
             .detailedDescription("Unregister the specified player.")
             .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.UNREGISTER)
+            .permissions(OP_ONLY, PlayerPermission.UNREGISTER)
             .withArgument("player", "Player name", false)
             .build();
 
@@ -96,7 +96,7 @@ public class CommandManager {
             .description("Enforce login player")
             .detailedDescription("Enforce the specified player to login.")
             .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.CAN_LOGIN_BE_FORCED)
+            .permissions(OP_ONLY, PlayerPermission.CAN_LOGIN_BE_FORCED)
             .withArgument("player", "Online player name", true)
             .build();
 
@@ -107,7 +107,7 @@ public class CommandManager {
             .description("Change a player's password")
             .detailedDescription("Change the password of a player.")
             .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, UserPermission.CHANGE_PASSWORD)
+            .permissions(OP_ONLY, PlayerPermission.CHANGE_PASSWORD)
             .withArgument("player", "Player name", false)
             .withArgument("pwd", "New password", false)
             .build();
@@ -135,35 +135,30 @@ public class CommandManager {
             .build();
 
         // Register the getemail command
-        CommandDescription getEmailCommand = new CommandDescription(new GetEmailCommand(), new ArrayList<String>() {
-
-            {
-                add("getemail");
-                add("getmail");
-                add("email");
-                add("mail");
-            }
-        }, "Display player's email", "Display the email address of the specified player if set.", authMeBaseCommand);
-        getEmailCommand.setCommandPermissions(AdminPermission.GET_EMAIL, OP_ONLY);
-        getEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", true));
+        CommandDescription getEmailCommand = CommandDescription.builder()
+            .executableCommand(new GetEmailCommand())
+            .labels("getemail", "getmail", "email", "mail")
+            .description("Display player's email")
+            .detailedDescription("Display the email address of the specified player if set.")
+            .parent(authMeBaseCommand)
+            .permissions(OP_ONLY, AdminPermission.GET_EMAIL)
+            .withArgument("player", "Player name", true)
+            .build();
 
         // Register the setemail command
-        CommandDescription setEmailCommand = new CommandDescription(new SetEmailCommand(), new ArrayList<String>() {
-
-            {
-                add("chgemail");
-                add("chgmail");
-                add("setemail");
-                add("setmail");
-            }
-        }, "Change player's email", "Change the email address of the specified player.", authMeBaseCommand);
-        setEmailCommand.setCommandPermissions(AdminPermission.CHANGE_EMAIL, OP_ONLY);
-        setEmailCommand.addArgument(new CommandArgumentDescription("player", "Player name", false));
-        setEmailCommand.addArgument(new CommandArgumentDescription("email", "Player email", false));
+        CommandDescription setEmailCommand = CommandDescription.builder()
+            .executableCommand(new SetEmailCommand())
+            .labels("chgemail", "chgmail", "setemail", "setmail")
+            .description("Change player's email")
+            .detailedDescription("Change the email address of the specified player.")
+            .parent(authMeBaseCommand)
+            .permissions(OP_ONLY, AdminPermission.CHANGE_EMAIL)
+            .withArgument("player", "Player name", false)
+            .withArgument("email", "Player email", false)
+            .build();
 
         // Register the getip command
         CommandDescription getIpCommand = new CommandDescription(new GetIpCommand(), new ArrayList<String>() {
-
             {
                 add("getip");
                 add("ip");
@@ -174,7 +169,6 @@ public class CommandManager {
 
         // Register the spawn command
         CommandDescription spawnCommand = new CommandDescription(new SpawnCommand(), new ArrayList<String>() {
-
             {
                 add("spawn");
                 add("home");
@@ -184,7 +178,6 @@ public class CommandManager {
 
         // Register the setspawn command
         CommandDescription setSpawnCommand = new CommandDescription(new SetSpawnCommand(), new ArrayList<String>() {
-
             {
                 add("setspawn");
                 add("chgspawn");
@@ -194,7 +187,6 @@ public class CommandManager {
 
         // Register the firstspawn command
         CommandDescription firstSpawnCommand = new CommandDescription(new FirstSpawnCommand(), new ArrayList<String>() {
-
             {
                 add("firstspawn");
                 add("firsthome");
@@ -204,7 +196,6 @@ public class CommandManager {
 
         // Register the setfirstspawn command
         CommandDescription setFirstSpawnCommand = new CommandDescription(new SetFirstSpawnCommand(), new ArrayList<String>() {
-
             {
                 add("setfirstspawn");
                 add("chgfirstspawn");
@@ -214,7 +205,6 @@ public class CommandManager {
 
         // Register the purge command
         CommandDescription purgeCommand = new CommandDescription(new PurgeCommand(), new ArrayList<String>() {
-
             {
                 add("purge");
                 add("delete");
@@ -225,7 +215,6 @@ public class CommandManager {
 
         // Register the purgelastposition command
         CommandDescription purgeLastPositionCommand = new CommandDescription(new PurgeLastPositionCommand(), new ArrayList<String>() {
-
             {
                 add("resetpos");
                 add("purgelastposition");
@@ -240,7 +229,6 @@ public class CommandManager {
 
         // Register the purgebannedplayers command
         CommandDescription purgeBannedPlayersCommand = new CommandDescription(new PurgeBannedPlayersCommand(), new ArrayList<String>() {
-
             {
                 add("purgebannedplayers");
                 add("purgebannedplayer");
@@ -252,7 +240,6 @@ public class CommandManager {
 
         // Register the switchantibot command
         CommandDescription switchAntiBotCommand = new CommandDescription(new SwitchAntiBotCommand(), new ArrayList<String>() {
-
             {
                 add("switchantibot");
                 add("toggleantibot");
@@ -277,7 +264,6 @@ public class CommandManager {
 
         // Register the reload command
         CommandDescription reloadCommand = new CommandDescription(new ReloadCommand(), new ArrayList<String>() {
-
             {
                 add("reload");
                 add("rld");
@@ -302,7 +288,7 @@ public class CommandManager {
             .description("Login command")
             .detailedDescription("Command to log in using AuthMeReloaded.")
             .parent(null)
-            .permissions(ALLOWED, UserPermission.LOGIN)
+            .permissions(ALLOWED, PlayerPermission.LOGIN)
             .withArgument("password", "Login password", false)
             .build();
 
@@ -313,12 +299,11 @@ public class CommandManager {
 
         // Register the base logout command
         CommandDescription logoutBaseCommand = new CommandDescription(new LogoutCommand(), new ArrayList<String>() {
-
             {
                 add("logout");
             }
         }, "Logout command", "Command to logout using AuthMeReloaded.", null);
-        logoutBaseCommand.setCommandPermissions(UserPermission.LOGOUT, CommandPermissions.DefaultPermission.ALLOWED);
+        logoutBaseCommand.setCommandPermissions(PlayerPermission.LOGOUT, CommandPermissions.DefaultPermission.ALLOWED);
 
         // Register the help command
         CommandDescription logoutHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
@@ -327,13 +312,12 @@ public class CommandManager {
 
         // Register the base register command
         CommandDescription registerBaseCommand = new CommandDescription(new fr.xephi.authme.command.executable.register.RegisterCommand(), new ArrayList<String>() {
-
             {
                 add("register");
                 add("reg");
             }
         }, "Registration command", "Command to register using AuthMeReloaded.", null);
-        registerBaseCommand.setCommandPermissions(UserPermission.REGISTER, CommandPermissions.DefaultPermission.ALLOWED);
+        registerBaseCommand.setCommandPermissions(PlayerPermission.REGISTER, CommandPermissions.DefaultPermission.ALLOWED);
         registerBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
         registerBaseCommand.addArgument(new CommandArgumentDescription("verifyPassword", "Verify password", false));
 
@@ -344,13 +328,12 @@ public class CommandManager {
 
         // Register the base unregister command
         CommandDescription unregisterBaseCommand = new CommandDescription(new fr.xephi.authme.command.executable.unregister.UnregisterCommand(), new ArrayList<String>() {
-
             {
                 add("unregister");
                 add("unreg");
             }
         }, "Unregistration command", "Command to unregister using AuthMeReloaded.", null);
-        unregisterBaseCommand.setCommandPermissions(UserPermission.UNREGISTER, CommandPermissions.DefaultPermission.ALLOWED);
+        unregisterBaseCommand.setCommandPermissions(PlayerPermission.UNREGISTER, CommandPermissions.DefaultPermission.ALLOWED);
         unregisterBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
 
         // Register the help command
@@ -359,13 +342,12 @@ public class CommandManager {
 
         // Register the base changepassword command
         CommandDescription changePasswordBaseCommand = new CommandDescription(new fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand(), new ArrayList<String>() {
-
             {
                 add("changepassword");
                 add("changepass");
             }
         }, "Change password command", "Command to change your password using AuthMeReloaded.", null);
-        changePasswordBaseCommand.setCommandPermissions(UserPermission.CHANGE_PASSWORD, CommandPermissions.DefaultPermission.ALLOWED);
+        changePasswordBaseCommand.setCommandPermissions(PlayerPermission.CHANGE_PASSWORD, CommandPermissions.DefaultPermission.ALLOWED);
         changePasswordBaseCommand.addArgument(new CommandArgumentDescription("password", "Password", false));
         changePasswordBaseCommand.addArgument(new CommandArgumentDescription("verifyPassword", "Verify password", false));
 
@@ -376,7 +358,6 @@ public class CommandManager {
 
         // Register the base Dungeon Maze command
         CommandDescription emailBaseCommand = new CommandDescription(helpCommandExecutable, new ArrayList<String>() {
-
             {
                 add("email");
                 add("mail");
@@ -390,33 +371,30 @@ public class CommandManager {
 
         // Register the add command
         CommandDescription addEmailCommand = new CommandDescription(new AddEmailCommand(), new ArrayList<String>() {
-
             {
                 add("add");
                 add("addemail");
                 add("addmail");
             }
         }, "Add E-mail", "Add an new E-Mail address to your account.", emailBaseCommand);
-        addEmailCommand.setCommandPermissions(UserPermission.ADD_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
+        addEmailCommand.setCommandPermissions(PlayerPermission.ADD_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
         addEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
         addEmailCommand.addArgument(new CommandArgumentDescription("verifyEmail", "Email address verification", false));
 
         // Register the change command
         CommandDescription changeEmailCommand = new CommandDescription(new ChangeEmailCommand(), new ArrayList<String>() {
-
             {
                 add("change");
                 add("changeemail");
                 add("changemail");
             }
         }, "Change E-mail", "Change an E-Mail address of your account.", emailBaseCommand);
-        changeEmailCommand.setCommandPermissions(UserPermission.CHANGE_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
+        changeEmailCommand.setCommandPermissions(PlayerPermission.CHANGE_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
         changeEmailCommand.addArgument(new CommandArgumentDescription("oldEmail", "Old email address", false));
         changeEmailCommand.addArgument(new CommandArgumentDescription("newEmail", "New email address", false));
 
         // Register the recover command
         CommandDescription recoverEmailCommand = new CommandDescription(new RecoverEmailCommand(), new ArrayList<String>() {
-
             {
                 add("recover");
                 add("recovery");
@@ -424,18 +402,17 @@ public class CommandManager {
                 add("recovermail");
             }
         }, "Recover using E-mail", "Recover your account using an E-mail address.", emailBaseCommand);
-        recoverEmailCommand.setCommandPermissions(UserPermission.RECOVER_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
+        recoverEmailCommand.setCommandPermissions(PlayerPermission.RECOVER_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
         recoverEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
 
         // Register the base captcha command
         CommandDescription captchaBaseCommand = new CommandDescription(new CaptchaCommand(), new ArrayList<String>() {
-
             {
                 add("captcha");
                 add("capt");
             }
         }, "Captcha command", "Captcha command for AuthMeReloaded.", null);
-        captchaBaseCommand.setCommandPermissions(UserPermission.CAPTCHA, CommandPermissions.DefaultPermission.ALLOWED);
+        captchaBaseCommand.setCommandPermissions(PlayerPermission.CAPTCHA, CommandPermissions.DefaultPermission.ALLOWED);
         captchaBaseCommand.addArgument(new CommandArgumentDescription("captcha", "The captcha", false));
 
         // Register the help command
@@ -445,14 +422,13 @@ public class CommandManager {
 
         // Register the base converter command
         CommandDescription converterBaseCommand = new CommandDescription(new ConverterCommand(), new ArrayList<String>() {
-
             {
                 add("converter");
                 add("convert");
                 add("conv");
             }
         }, "Convert command", "Convert command for AuthMeReloaded.", null);
-        converterBaseCommand.setCommandPermissions(UserPermission.CONVERTER, OP_ONLY);
+        converterBaseCommand.setCommandPermissions(AdminPermission.CONVERTER, OP_ONLY);
         converterBaseCommand.addArgument(new CommandArgumentDescription("job", "Conversion job: flattosql / flattosqlite /| xauth / crazylogin / rakamak / royalauth / vauth / sqltoflat", false));
 
         // Register the help command
