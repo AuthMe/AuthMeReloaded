@@ -131,7 +131,7 @@ public class HelpSyntaxHelperTest {
     }
 
 
-    private static CommandDescription.Builder getDescriptionBuilder() {
+    private static CommandDescription.CommandBuilder getDescriptionBuilder() {
         CommandDescription base = CommandDescription.builder()
             .labels("authme")
             .description("Base command")
