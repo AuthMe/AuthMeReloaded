@@ -17,6 +17,8 @@ import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.EssSpawn;
 import fr.xephi.authme.listener.*;
 import fr.xephi.authme.modules.ModuleManager;
+import fr.xephi.authme.output.ConsoleFilter;
+import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;

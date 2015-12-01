@@ -6,6 +6,8 @@ import org.bukkit.command.CommandSender;
 
 /**
  * Class for retrieving and sending translatable messages to players.
+ * This class detects when the language settings have changed and will
+ * automatically update to use a new language file.
  */
 public class Messages {
 
@@ -19,6 +21,11 @@ public class Messages {
         this.manager = manager;
     }
 
+    /**
+     * Get the instance of Messages.
+     *
+     * @return The Messages instance
+     */
     public static Messages getInstance() {
         if (singleton == null) {
             MessagesManager manager = new MessagesManager(Settings.messageFile);
@@ -65,6 +72,9 @@ public class Messages {
         return StringUtils.join("\n", retrieve(key));
     }
 
+    /**
+     * Reload the messages manager.
+     */
     public void reloadManager() {
         manager = new MessagesManager(Settings.messageFile);
     }

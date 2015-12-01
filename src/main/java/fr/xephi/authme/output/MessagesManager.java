@@ -6,7 +6,10 @@ import fr.xephi.authme.settings.CustomConfiguration;
 import java.io.File;
 
 /**
- * Class for retrieving and sending translatable messages to players.
+ * Class responsible for reading messages from a file and formatting them for Minecraft.
+ * <p />
+ * This class is used within {@link Messages}, which offers a high-level interface for accessing
+ * or sending messages from a properties file.
  */
 class MessagesManager extends CustomConfiguration {
 

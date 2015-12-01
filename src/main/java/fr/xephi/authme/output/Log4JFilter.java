@@ -1,4 +1,4 @@
-package fr.xephi.authme;
+package fr.xephi.authme.output;
 
 import fr.xephi.authme.util.StringUtils;
 import org.apache.logging.log4j.Level;
@@ -11,7 +11,6 @@ import org.apache.logging.log4j.message.Message;
  * Implements a filter for Log4j to skip sensitive AuthMe commands.
  *
  * @author Xephi59
- * @version $Revision: 1.0 $
  */
 public class Log4JFilter implements org.apache.logging.log4j.core.Filter {
 

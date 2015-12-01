@@ -20,7 +20,8 @@ public class PlayerPermissionTest {
         // when/then
         for (PlayerPermission permission : PlayerPermission.values()) {
             if (!permission.getNode().startsWith(requiredPrefix)) {
-                fail("The permission '" + permission + "' does not start with the required prefix '" + requiredPrefix + "'");
+                fail("The permission '" + permission + "' does not start with the required prefix '" + requiredPrefix
+                    + "'");
             }
         }
     }
