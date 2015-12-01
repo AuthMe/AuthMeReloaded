@@ -91,6 +91,11 @@ public enum AdminPermission implements PermissionNode {
     SWITCH_ANTIBOT("authme.command.admin.switchantibot"),
 
     /**
+     * Administrator command to convert old or other data to AuthMe data.
+     */
+    CONVERTER("authme.command.admin.converter"),
+
+    /**
      * Administrator command to reload the plugin configuration.
      */
     RELOAD("authme.command.admin.reload");

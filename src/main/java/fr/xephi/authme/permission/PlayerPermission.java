@@ -61,11 +61,6 @@ public enum PlayerPermission implements PermissionNode {
     CAPTCHA("authme.command.player.captcha"),
 
     /**
-     * Administrator command to convert old or other data to AuthMe data.
-     */
-    CONVERTER("authme.command.player.converter"),
-
-    /**
      * Permission for users a login can be forced to.
      */
     CAN_LOGIN_BE_FORCED("authme.player.canbeforced"),
