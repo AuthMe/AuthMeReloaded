@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 
 /**
  */
-public final class Settings extends YamlConfiguration {
+public final class Settings {
 
     public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
@@ -105,18 +105,13 @@ public final class Settings extends YamlConfiguration {
         configFile = (YamlConfiguration) plugin.getConfig();
     }
 
-    /**
-     * Method reload.
-     *
-     * @throws Exception
-     */
     public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
         boolean exist = SETTINGS_FILE.exists();
         if (!exist) {
             plugin.saveDefaultConfig();
         }
-        instance.load(SETTINGS_FILE);
+        configFile.load(SETTINGS_FILE);
         if (exist) {
             instance.mergeConfig();
         }
@@ -290,22 +285,11 @@ public final class Settings extends YamlConfiguration {
 
     }
 
-    /**
-     * Method setValue.
-     *
-     * @param key   String
-     * @param value Object
-     */
     public static void setValue(String key, Object value) {
         instance.set(key, value);
         save();
     }
 
-    /**
-     * Method getPasswordHash.
-     *
-     * @return HashAlgorithm
-     */
     private static HashAlgorithm getPasswordHash() {
         String key = "settings.security.passwordHash";
         try {
@@ -316,11 +300,6 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
-    /**
-     * Method getDataSource.
-     *
-     * @return DataSourceType
-     */
     private static DataSourceType getDataSource() {
         String key = "DataSource.backend";
         try {
@@ -367,20 +346,13 @@ public final class Settings extends YamlConfiguration {
      */
     public static boolean save() {
         try {
-            instance.save(SETTINGS_FILE);
+            configFile.save(SETTINGS_FILE);
             return true;
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             return false;
         }
     }
 
-    /**
-     * Method checkLang.
-     *
-     * @param lang String
-     *
-     * @return String
-     */
     public static String checkLang(String lang) {
         if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
             ConsoleLogger.info("Set Language to: " + lang);
@@ -394,11 +366,6 @@ public final class Settings extends YamlConfiguration {
         return "en";
     }
 
-    /**
-     * Method switchAntiBotMod.
-     *
-     * @param mode boolean
-     */
     public static void switchAntiBotMod(boolean mode) {
         if (mode) {
             isKickNonRegisteredEnabled = true;
@@ -440,13 +407,6 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
-    /**
-     * Method isEmailCorrect.
-     *
-     * @param email String
-     *
-     * @return boolean
-     */
     public static boolean isEmailCorrect(String email) {
         if (!email.contains("@"))
             return false;
@@ -587,7 +547,7 @@ public final class Settings extends YamlConfiguration {
             set("VeryGames.enableIpCheck", false);
             changes = true;
         }
-        if (getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*")) {
+        if (configFile.getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*")) {
             set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
             changes = true;
         }
@@ -682,6 +642,15 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
+    private static boolean contains(String path) {
+        return configFile.contains(path);
+    }
+
+    // public because it's used in AuthMe at one place
+    public void set(String path, Object value) {
+        configFile.set(path, value);
+    }
+
     /**
      * Saves current configuration (plus defaults) to disk.
      * <p/>
@@ -690,11 +659,13 @@ public final class Settings extends YamlConfiguration {
      * @return True if saved successfully
      */
     public final boolean saveDefaults() {
-        options().copyDefaults(true);
-        options().copyHeader(true);
+        configFile.options()
+            .copyDefaults(true)
+            .copyHeader(true);
         boolean success = save();
-        options().copyDefaults(false);
-        options().copyHeader(false);
+        configFile.options()
+            .copyDefaults(false)
+            .copyHeader(false);
         return success;
     }
 }
