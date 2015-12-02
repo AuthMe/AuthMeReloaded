@@ -86,8 +86,7 @@ public class SendMailSSL {
                     try {
                         email.send();
                     } catch (Exception e) {
-                        e.printStackTrace();
-                        ConsoleLogger.showError("Fail to send a mail to " + mail);
+                        ConsoleLogger.showError("Fail to send a mail to " + mail + " cause " + e.getLocalizedMessage());
                     }
                     if (file != null)
                         //noinspection ResultOfMethodCallIgnored
