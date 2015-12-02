@@ -1,6 +1,5 @@
 package fr.xephi.authme.output;
 
-import fr.xephi.authme.util.StringUtils;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.core.Filter;
@@ -16,13 +15,6 @@ import org.apache.logging.log4j.message.Message;
 public class Log4JFilter implements Filter {
 
     /**
-     * List of commands (lower-case) to skip.
-     */
-    private static final String[] COMMANDS_TO_SKIP = {"/login ", "/l ", "/reg ", "/changepassword ",
-        "/unregister ", "/authme register ", "/authme changepassword ", "/authme reg ", "/authme cp ",
-        "/register "};
-
-    /**
      * Constructor.
      */
     public Log4JFilter() {
@@ -32,9 +24,9 @@ public class Log4JFilter implements Filter {
      * Validates a Message instance and returns the {@link Result} value
      * depending on whether the message contains sensitive AuthMe data.
      *
-     * @param message the Message object to verify
+     * @param message The Message object to verify
      *
-     * @return the Result value
+     * @return The Result value
      */
     private static Result validateMessage(Message message) {
         if (message == null) {
@@ -47,21 +39,14 @@ public class Log4JFilter implements Filter {
      * Validates a message and returns the {@link Result} value depending
      * on whether the message contains sensitive AuthMe data.
      *
-     * @param message the message to verify
+     * @param message The message to verify
      *
-     * @return the Result value
+     * @return The Result value
      */
     private static Result validateMessage(String message) {
-        if (message == null) {
-            return Result.NEUTRAL;
-        }
-
-        String lowerMessage = message.toLowerCase();
-        if (lowerMessage.contains("issued server command:")
-            && StringUtils.containsAny(lowerMessage, COMMANDS_TO_SKIP)) {
-            return Result.DENY;
-        }
-        return Result.NEUTRAL;
+        return LogFilterHelper.isSensitiveAuthMeCommand(message)
+            ? Result.DENY
+            : Result.NEUTRAL;
     }
 
     @Override

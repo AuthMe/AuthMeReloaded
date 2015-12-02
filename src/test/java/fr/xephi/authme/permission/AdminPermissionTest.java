@@ -20,7 +20,8 @@ public class AdminPermissionTest {
         // when/then
         for (AdminPermission permission : AdminPermission.values()) {
             if (!permission.getNode().startsWith(requiredPrefix)) {
-                fail("The permission '" + permission + "' does not start with the required prefix '" + requiredPrefix + "'");
+                fail("The permission '" + permission + "' does not start with the required prefix '"
+                    + requiredPrefix + "'");
             }
         }
     }
@@ -33,7 +34,8 @@ public class AdminPermissionTest {
         // when/then
         for (AdminPermission permission : AdminPermission.values()) {
             if (!permission.getNode().contains(requiredBranch)) {
-                fail("The permission '" + permission + "' does not contain with the required branch '" + requiredBranch + "'");
+                fail("The permission '" + permission + "' does not contain with the required branch '"
+                    + requiredBranch + "'");
             }
         }
     }
