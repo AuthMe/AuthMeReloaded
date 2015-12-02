@@ -170,7 +170,7 @@ public class NewAPI {
      * @param player *            player
      */
     public void forceLogin(Player player) {
-        plugin.management.performLogin(player, "dontneed", true);
+        plugin.getManagement().performLogin(player, "dontneed", true);
     }
 
     /**
@@ -179,7 +179,7 @@ public class NewAPI {
      * @param player * 			player
      */
     public void forceLogout(Player player) {
-        plugin.management.performLogout(player);
+        plugin.getManagement().performLogout(player);
     }
 
     /**
@@ -189,7 +189,7 @@ public class NewAPI {
      * @param password String
      */
     public void forceRegister(Player player, String password) {
-        plugin.management.performRegister(player, password, null);
+        plugin.getManagement().performRegister(player, password, null);
     }
 
     /**
@@ -198,6 +198,6 @@ public class NewAPI {
      * @param player * 			player
      */
     public void forceUnregister(Player player) {
-        plugin.management.performUnregister(player, "", true);
+        plugin.getManagement().performUnregister(player, "", true);
     }
 }

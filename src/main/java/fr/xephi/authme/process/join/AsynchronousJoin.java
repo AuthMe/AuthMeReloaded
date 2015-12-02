@@ -238,7 +238,7 @@ public class AsynchronousJoin {
             PlayerCache.getInstance().removePlayer(name);
             if (auth != null && auth.getIp().equals(ip)) {
                 m.send(player, MessageKey.SESSION_RECONNECTION);
-                plugin.management.performLogin(player, "dontneed", true);
+                plugin.getManagement().performLogin(player, "dontneed", true);
                 return;
             } else if (Settings.sessionExpireOnIpChange) {
                 m.send(player, MessageKey.SESSION_EXPIRED);

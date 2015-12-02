@@ -73,7 +73,7 @@ public class AuthMe extends JavaPlugin {
     private static Server server;
     private static Wrapper wrapper = Wrapper.getInstance();
 
-    public Management management;
+    private Management management;
     public NewAPI api;
     public SendMailSSL mail;
     public DataManager dataManager;
