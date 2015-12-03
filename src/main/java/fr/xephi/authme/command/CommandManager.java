@@ -107,7 +107,7 @@ public class CommandManager {
             .description("Change a player's password")
             .detailedDescription("Change the password of a player.")
             .parent(authMeBaseCommand)
-            .permissions(OP_ONLY, PlayerPermission.CHANGE_PASSWORD)
+            .permissions(OP_ONLY, AdminPermission.CHANGE_PASSWORD)
             .withArgument("player", "Player name", false)
             .withArgument("pwd", "New password", false)
             .build();

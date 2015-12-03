@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
+ * The command for a player to change his password with.
  */
 public class ChangePasswordCommand extends ExecutableCommand {
 
@@ -27,10 +28,10 @@ public class ChangePasswordCommand extends ExecutableCommand {
         final Messages m = wrapper.getMessages();
 
         // Get the passwords
-        String playerPass = commandArguments.get(0);
-        String playerPassVerify = commandArguments.get(1);
+        String oldPassword = commandArguments.get(0);
+        String newPassword = commandArguments.get(1);
 
-        // Get the player instance and make sure it's authenticated
+        // Get the player instance and make sure he's authenticated
         Player player = (Player) sender;
         String name = player.getName().toLowerCase();
         final PlayerCache playerCache = wrapper.getPlayerCache();
@@ -40,8 +41,7 @@ public class ChangePasswordCommand extends ExecutableCommand {
         }
 
         // Make sure the password is allowed
-        // TODO ljacqu 20151121: The password confirmation appears to be never verified
-        String playerPassLowerCase = playerPass.toLowerCase();
+        String playerPassLowerCase = newPassword.toLowerCase();
         if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where")
             || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify")
             || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
@@ -66,8 +66,8 @@ public class ChangePasswordCommand extends ExecutableCommand {
 
         // Set the password
         final AuthMe plugin = wrapper.getAuthMe();
-        wrapper.getServer().getScheduler().runTaskAsynchronously(plugin,
-            new ChangePasswordTask(plugin, player, playerPass, playerPassVerify));
+        wrapper.getScheduler().runTaskAsynchronously(plugin,
+            new ChangePasswordTask(plugin, player, oldPassword, newPassword));
         return true;
     }
 }

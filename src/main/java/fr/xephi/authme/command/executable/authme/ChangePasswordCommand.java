@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * Admin command for changing a player's password.
  */
 public class ChangePasswordCommand extends ExecutableCommand {
 
@@ -31,23 +32,26 @@ public class ChangePasswordCommand extends ExecutableCommand {
 
         // Validate the password
         String playerPassLowerCase = playerPass.toLowerCase();
-        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where") || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify") || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select") || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null") || !playerPassLowerCase.matches(Settings.getPassRegex)) {
-            m.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where")
+            || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify")
+            || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
+            || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
+            || !playerPassLowerCase.matches(Settings.getPassRegex)) {
+            m.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
             return true;
         }
         if (playerPassLowerCase.equalsIgnoreCase(playerName)) {
             m.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
             return true;
         }
-        if (playerPassLowerCase.length() < Settings.getPasswordMinLen || playerPassLowerCase.length() > Settings.passwordMaxLength) {
+        if (playerPassLowerCase.length() < Settings.getPasswordMinLen
+                || playerPassLowerCase.length() > Settings.passwordMaxLength) {
             m.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
             return true;
         }
-        if (!Settings.unsafePasswords.isEmpty()) {
-            if (Settings.unsafePasswords.contains(playerPassLowerCase)) {
-                m.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
-                return true;
-            }
+        if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(playerPassLowerCase)) {
+            m.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
+            return true;
         }
         // Set the password
         final String playerNameLowerCase = playerName.toLowerCase();
