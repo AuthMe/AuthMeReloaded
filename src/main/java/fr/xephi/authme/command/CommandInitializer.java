@@ -123,7 +123,7 @@ public final class CommandInitializer {
             .detailedDescription("Change the password of a player.")
             .withArgument("player", "Player name", false)
             .withArgument("pwd", "New password", false)
-            .permissions(OP_ONLY, PlayerPermission.CHANGE_PASSWORD)
+            .permissions(OP_ONLY, AdminPermission.CHANGE_PASSWORD)
             .executableCommand(new ChangePasswordCommand())
             .build();
 
