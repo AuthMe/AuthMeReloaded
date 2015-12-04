@@ -9,10 +9,10 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.UserPermission;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
@@ -31,8 +31,6 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.*;
 
 import java.util.concurrent.ConcurrentHashMap;
-
-import static fr.xephi.authme.output.MessageKey.USERNAME_ALREADY_ONLINE_ERROR;
 
 /**
  */
@@ -169,20 +167,21 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
         if (event.getPlayer() == null || Utils.isNPC(event.getPlayer())) {
             return;
         }
 
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-        final String joinMsg = event.getJoinMessage();
-        final boolean delay = Settings.delayJoinLeaveMessages && joinMsg != null;
+        String name = player.getName().toLowerCase();
+        String joinMsg = event.getJoinMessage();
+        boolean delay = Settings.delayJoinLeaveMessages && joinMsg != null;
 
         // Remove the join message while the player isn't logging in
         if (delay) {
             event.setJoinMessage(null);
+            joinMessage.put(name, joinMsg);
         }
 
         // Shedule login task so works after the prelogin
@@ -190,9 +189,6 @@ public class AuthMePlayerListener implements Listener {
         Bukkit.getScheduler().runTask(plugin, new Runnable() {
             @Override
             public void run() {
-                if (delay) {
-                    joinMessage.put(name, joinMsg);
-                }
                 plugin.getManagement().performJoin(player);
             }
         });
@@ -453,7 +449,7 @@ public class AuthMePlayerListener implements Listener {
         String name = player.getName().toLowerCase();
         Location spawn = plugin.getSpawnLocation(player);
         if (Settings.isSaveQuitLocationEnabled && plugin.database.isAuthAvailable(name)) {
-            final PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName(), player.getName());
+            PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName(), player.getName());
             plugin.database.updateQuitLoc(auth);
         }
         if (spawn != null && spawn.getWorld() != null) {
@@ -468,7 +464,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        if (plugin.getPermissionsManager().hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL)) {
+        if (plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)) {
             return;
         }
 
