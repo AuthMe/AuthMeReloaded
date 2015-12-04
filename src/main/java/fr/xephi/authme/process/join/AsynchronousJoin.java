@@ -253,8 +253,11 @@ public class AsynchronousJoin {
                 ? m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE)
                 : m.retrieve(MessageKey.REGISTER_MESSAGE);
         }
-        BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
-        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
+        if (LimboCache.getInstance().getLimboPlayer(name) != null)
+        {
+            BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
+            LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
+        }
     }
 
     private boolean needFirstSpawn() {

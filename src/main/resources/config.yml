@@ -393,6 +393,7 @@ Protection:
     - 'US'
     - 'GB'
     # Countries blacklisted automatically ( without any needed to enable protection )
+    # PLEASE USE QUOTES!
     countriesBlacklist:
     - 'A1'
     # Do we need to enable automatic antibot system?
