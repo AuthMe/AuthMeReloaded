@@ -21,7 +21,7 @@ public class Log4JFilter implements Filter {
     }
 
     /**
-     * Validate a Message instance and return the {@link Result} value
+     * Validates a Message instance and returns the {@link Result} value
      * depending on whether the message contains sensitive AuthMe data.
      *
      * @param message The Message object to verify
@@ -36,7 +36,7 @@ public class Log4JFilter implements Filter {
     }
 
     /**
-     * Validate a message and return the {@link Result} value depending
+     * Validates a message and returns the {@link Result} value depending
      * on whether the message contains sensitive AuthMe data.
      *
      * @param message The message to verify

@@ -39,9 +39,7 @@ public class HelpPrinter {
      * @param command The command to print the description help for.
      */
     public static void printCommandDescription(CommandSender sender, CommandDescription command) {
-        // Print the regular description, if available
-        if (command.hasDescription())
-            sender.sendMessage(ChatColor.GOLD + "Short Description: " + ChatColor.WHITE + command.getDescription());
+        sender.sendMessage(ChatColor.GOLD + "Short Description: " + ChatColor.WHITE + command.getDescription());
 
         // Print the detailed description, if available
         if (!StringUtils.isEmpty(command.getDetailedDescription())) {
@@ -59,7 +57,7 @@ public class HelpPrinter {
     @SuppressWarnings("StringConcatenationInsideStringBufferAppend")
     public static void printArguments(CommandSender sender, CommandDescription command) {
         // Make sure there are any commands to print
-        if (!command.hasArguments() && command.getMaximumArguments() >= 0)
+        if (!command.hasArguments())
             return;
 
         // Print the header
@@ -78,10 +76,6 @@ public class HelpPrinter {
             // Print the syntax
             sender.sendMessage(argString.toString());
         }
-
-        // Show the unlimited arguments argument
-        if (command.getMaximumArguments() < 0)
-            sender.sendMessage(" " + ChatColor.YELLOW + ChatColor.ITALIC + "... : " + ChatColor.WHITE + "Any additional arguments." + ChatColor.GRAY + ChatColor.ITALIC + " (Optional)");
     }
 
     /**

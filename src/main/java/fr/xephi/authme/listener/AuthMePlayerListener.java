@@ -321,7 +321,7 @@ public class AuthMePlayerListener implements Listener {
             event.setQuitMessage(null);
         }
 
-        plugin.management.performQuit(player, false);
+        plugin.getManagement().performQuit(player, false);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -337,7 +337,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         Player player = event.getPlayer();
-        plugin.management.performQuit(player, true);
+        plugin.getManagement().performQuit(player, true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)

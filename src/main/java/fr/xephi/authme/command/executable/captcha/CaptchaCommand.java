@@ -8,6 +8,7 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Wrapper;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -30,10 +31,11 @@ public class CaptchaCommand extends ExecutableCommand {
         String captcha = commandArguments.get(0);
 
         // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
+        final Wrapper wrapper = Wrapper.getInstance();
+        final AuthMe plugin = wrapper.getAuthMe();
 
         // Messages instance
-        final Messages m = plugin.getMessages();
+        final Messages m = wrapper.getMessages();
 
         // Command logic
         if (PlayerCache.getInstance().isAuthenticated(playerNameLowerCase)) {

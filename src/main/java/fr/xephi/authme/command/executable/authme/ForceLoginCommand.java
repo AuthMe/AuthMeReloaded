@@ -34,7 +34,7 @@ public class ForceLoginCommand extends ExecutableCommand {
                 sender.sendMessage("You cannot force login for the player " + playerName + "!");
                 return true;
             }
-            plugin.management.performLogin(player, "dontneed", true);
+            plugin.getManagement().performLogin(player, "dontneed", true);
             sender.sendMessage("Force Login for " + playerName + " performed!");
         } catch (Exception e) {
             sender.sendMessage("An error occurred while trying to get that player!");

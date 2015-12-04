@@ -1,15 +1,12 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -18,9 +15,9 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
- * Test for {@link CommandManager}, especially to guarantee the integrity of the defined commands.
+ * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
  */
-public class CommandManagerTest {
+public class CommandInitializerTest {
 
     /**
      * Defines the maximum allowed depths for nesting CommandDescription instances.
@@ -28,24 +25,21 @@ public class CommandManagerTest {
      */
     private static int MAX_ALLOWED_DEPTH = 1;
 
-    private static CommandManager manager;
+    private static Set<CommandDescription> commands;
 
     @BeforeClass
     public static void initializeCommandManager() {
-        manager = new CommandManager(true);
+        WrapperMock.createInstance();
+        commands = CommandInitializer.getBaseCommands();
     }
 
     @Test
     public void shouldInitializeCommands() {
-        // given/when
-        int commandCount = manager.getCommandDescriptionCount();
-        List<CommandDescription> commands = manager.getCommandDescriptions();
-
-        // then
+        // given/when/then
         // It obviously doesn't make sense to test much of the concrete data
         // that is being initialized; we just want to guarantee with this test
         // that data is indeed being initialized and we take a few "probes"
-        assertThat(commandCount, equalTo(9));
+        assertThat(commands.size(), equalTo(9));
         assertThat(commandsIncludeLabel(commands, "authme"), equalTo(true));
         assertThat(commandsIncludeLabel(commands, "register"), equalTo(true));
         assertThat(commandsIncludeLabel(commands, "help"), equalTo(false));
@@ -62,7 +56,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), descriptionTester);
+        walkThroughCommands(commands, descriptionTester);
     }
 
     /** Ensure that all children of a command stored the parent. */
@@ -84,7 +78,28 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), connectionTester);
+        walkThroughCommands(commands, connectionTester);
+    }
+
+    @Test
+    public void shouldUseProperLowerCaseLabels() {
+        // given
+        final Pattern invalidPattern = Pattern.compile("\\s");
+        BiConsumer labelFormatTester = new BiConsumer() {
+            @Override
+            public void accept(CommandDescription command, int depth) {
+                for (String label : command.getLabels()) {
+                    if (!label.equals(label.toLowerCase())) {
+                        fail("Label '" + label + "' should be lowercase");
+                    } else if (invalidPattern.matcher(label).matches()) {
+                        fail("Label '" + label + "' has whitespace");
+                    }
+                }
+            }
+        };
+
+        // when/then
+        walkThroughCommands(commands, labelFormatTester);
     }
 
     @Test
@@ -105,7 +120,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), uniqueMappingTester);
+        walkThroughCommands(commands, uniqueMappingTester);
     }
 
     /**
@@ -132,7 +147,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), descriptionTester);
+        walkThroughCommands(commands, descriptionTester);
     }
 
     /**
@@ -143,7 +158,6 @@ public class CommandManagerTest {
     public void shouldNotHaveMultipleInstancesOfSameExecutableCommandSubType() {
         // given
         final Map<Class<? extends ExecutableCommand>, ExecutableCommand> implementations = new HashMap<>();
-        CommandManager manager = new CommandManager(true);
         BiConsumer descriptionTester = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
@@ -160,10 +174,7 @@ public class CommandManagerTest {
             }
         };
 
-        // when
-        List<CommandDescription> commands = manager.getCommandDescriptions();
-
-        // then
+        // when/then
         walkThroughCommands(commands, descriptionTester);
     }
 
@@ -186,7 +197,7 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), argumentOrderTester);
+        walkThroughCommands(commands, argumentOrderTester);
     }
 
     /**
@@ -209,18 +220,18 @@ public class CommandManagerTest {
         };
 
         // when/then
-        walkThroughCommands(manager.getCommandDescriptions(), noArgumentForParentChecker);
+        walkThroughCommands(commands, noArgumentForParentChecker);
     }
 
 
     // ------------
     // Helper methods
     // ------------
-    private static void walkThroughCommands(List<CommandDescription> commands, BiConsumer consumer) {
+    private static void walkThroughCommands(Collection<CommandDescription> commands, BiConsumer consumer) {
         walkThroughCommands(commands, consumer, 0);
     }
 
-    private static void walkThroughCommands(List<CommandDescription> commands, BiConsumer consumer, int depth) {
+    private static void walkThroughCommands(Collection<CommandDescription> commands, BiConsumer consumer, int depth) {
         for (CommandDescription command : commands) {
             consumer.accept(command, depth);
             if (command.hasChildren()) {
@@ -243,12 +254,12 @@ public class CommandManagerTest {
     }
 
     /**
-     * Get the absolute label that a command defines. Note: Assumes that only the passed command might have
+     * Get the absolute binding that a command defines. Note: Assumes that only the passed command can have
      * multiple labels; only considering the first label for all of the command's parents.
      *
-     * @param command The command to verify
+     * @param command The command to process
      *
-     * @return The full command binding
+     * @return List of all bindings that lead to the command
      */
     private static List<String> getAbsoluteLabels(CommandDescription command) {
         String parentPath = "";

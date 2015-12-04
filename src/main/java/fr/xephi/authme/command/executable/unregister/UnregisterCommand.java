@@ -49,7 +49,7 @@ public class UnregisterCommand extends ExecutableCommand {
         }
 
         // Unregister the player
-        plugin.management.performUnregister(player, playerPass, false);
+        plugin.getManagement().performUnregister(player, playerPass, false);
         return true;
     }
 }

@@ -1,23 +1,22 @@
 package fr.xephi.authme.command;
 
 /**
+ * Wrapper for the description of a command argument.
  */
 public class CommandArgumentDescription {
-
-    // TODO: Allow argument to consist of infinite parts. <label ...>
 
     /**
      * Argument label (one-word description of the argument).
      */
-    private String label;
+    private final String label;
     /**
      * Argument description.
      */
-    private String description;
+    private final String description;
     /**
      * Defines whether the argument is optional.
      */
-    private boolean isOptional = false;
+    private final boolean isOptional;
 
     /**
      * Constructor.
@@ -51,7 +50,7 @@ public class CommandArgumentDescription {
     }
 
     /**
-     * Check whether the argument is optional.
+     * Return whether the argument is optional.
      *
      * @return True if the argument is optional, false otherwise.
      */

@@ -3,11 +3,16 @@ package fr.xephi.authme.command.help;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.settings.Settings;
 
+import fr.xephi.authme.util.CollectionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  */
@@ -39,9 +44,14 @@ public class HelpProvider {
      */
     public static void showHelp(CommandSender sender, CommandParts reference, CommandParts helpQuery, boolean showCommand, boolean showDescription, boolean showArguments, boolean showPermissions, boolean showAlternatives, boolean showCommands) {
         // Find the command for this help query, one with and one without a prefixed base command
-        FoundCommandResult result = AuthMe.getInstance().getCommandHandler().getCommandManager().findCommand(new CommandParts(helpQuery.getList()));
-        CommandParts commandReferenceOther = new CommandParts(reference.get(0), helpQuery.getList());
-        FoundCommandResult resultOther = AuthMe.getInstance().getCommandHandler().getCommandManager().findCommand(commandReferenceOther);
+        FoundCommandResult result = AuthMe.getInstance().getCommandHandler().findCommand(new CommandParts(helpQuery.getList()));
+
+        // TODO ljacqu 20151204 Fix me to nicer code
+        List<String> parts = new ArrayList<>(helpQuery.getList());
+        parts.add(0, reference.get(0));
+        CommandParts commandReferenceOther = new CommandParts(parts);
+
+        FoundCommandResult resultOther = AuthMe.getInstance().getCommandHandler().findCommand(commandReferenceOther);
         if (resultOther != null) {
             if (result == null)
                 result = resultOther;
@@ -78,13 +88,14 @@ public class HelpProvider {
             // Show the unknown command warning
             sender.sendMessage(ChatColor.DARK_RED + "No help found for '" + helpQuery + "'!");
 
-            // Get the suggested command
-            CommandParts suggestedCommandParts = new CommandParts(result.getCommandDescription().getCommandReference(commandReference).getRange(1));
-
             // Show a command suggestion if available and the difference isn't too big
-            if (commandDifference < 0.75)
-                if (result.getCommandDescription() != null)
-                    sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/" + baseCommand + " help " + suggestedCommandParts + ChatColor.YELLOW + "?");
+            if (commandDifference < 0.75 && result.getCommandDescription() != null) {
+                // Get the suggested command
+                List<String> suggestedCommandParts = CollectionUtils.getRange(
+                    result.getCommandDescription().getCommandReference(commandReference).getList(), 1);
+                sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/" + baseCommand
+                    + " help " + CommandUtils.labelsToString(suggestedCommandParts) + ChatColor.YELLOW + "?");
+            }
 
             // Show the help command
             sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + baseCommand + " help" + ChatColor.YELLOW + " to view help.");
@@ -94,10 +105,12 @@ public class HelpProvider {
         // Show a message when the command handler is assuming a command
         if (commandDifference > 0) {
             // Get the suggested command
-            CommandParts suggestedCommandParts = new CommandParts(result.getCommandDescription().getCommandReference(commandReference).getRange(1));
+            List<String> suggestedCommandParts = CollectionUtils.getRange(
+                result.getCommandDescription().getCommandReference(commandReference).getList(), 1);
 
             // Show the suggested command
-            sender.sendMessage(ChatColor.DARK_RED + "No help found, assuming '" + ChatColor.GOLD + suggestedCommandParts + ChatColor.DARK_RED + "'!");
+            sender.sendMessage(ChatColor.DARK_RED + "No help found, assuming '" + ChatColor.GOLD
+                + CommandUtils.labelsToString(suggestedCommandParts) + ChatColor.DARK_RED + "'!");
         }
 
         // Print the help header
