@@ -10,6 +10,7 @@ import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.command.CommandHandler;
+import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.converter.Converter;
 import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.*;
@@ -17,13 +18,18 @@ import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.EssSpawn;
 import fr.xephi.authme.listener.*;
 import fr.xephi.authme.modules.ModuleManager;
+import fr.xephi.authme.output.ConsoleFilter;
+import fr.xephi.authme.output.Log4JFilter;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.*;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.Wrapper;
 import net.minelink.ctplus.CombatTagPlus;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
@@ -66,8 +72,9 @@ public class AuthMe extends JavaPlugin {
 
     private static AuthMe plugin;
     private static Server server;
+    private static Wrapper wrapper = Wrapper.getInstance();
 
-    public Management management;
+    private Management management;
     public NewAPI api;
     public SendMailSSL mail;
     public DataManager dataManager;
@@ -227,7 +234,7 @@ public class AuthMe extends JavaPlugin {
         this.otherAccounts = OtherAccounts.getInstance();
 
         // Setup messages
-        this.messages = new Messages(Settings.messageFile, Settings.messagesLanguage);
+        this.messages = Messages.getInstance();
 
         // Set up Metrics
         setupMetrics();
@@ -427,8 +434,7 @@ public class AuthMe extends JavaPlugin {
      * Set up the command handler.
      */
     private void setupCommandHandler() {
-        this.commandHandler = new CommandHandler(false);
-        this.commandHandler.init();
+        this.commandHandler = new CommandHandler(CommandInitializer.getBaseCommands());
     }
 
     /**
@@ -735,7 +741,7 @@ public class AuthMe extends JavaPlugin {
     public Player generateKickPlayer(Collection<? extends Player> collection) {
         Player player = null;
         for (Player p : collection) {
-            if (!getPermissionsManager().hasPermission(p, UserPermission.IS_VIP)) {
+            if (!getPermissionsManager().hasPermission(p, PlayerPermission.IS_VIP)) {
                 player = p;
                 break;
             }
@@ -951,13 +957,14 @@ public class AuthMe extends JavaPlugin {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd,
                              String commandLabel, String[] args) {
-        // Get the command handler, and make sure it's valid
-        CommandHandler commandHandler = this.getCommandHandler();
-        if (commandHandler == null)
+        // Make sure the command handler has been initialized
+        if (commandHandler == null) {
+            wrapper.getLogger().severe("AuthMe command handler is not available");
             return false;
+        }
 
-        // Handle the command, return the result
-        return commandHandler.onCommand(sender, cmd, commandLabel, args);
+        // Handle the command
+        return commandHandler.processCommand(sender, commandLabel, args);
     }
 
     /**

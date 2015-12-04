@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 import static org.mockito.Mockito.never;
@@ -40,7 +41,7 @@ public class ChangeEmailCommandTest {
         ChangeEmailCommand command = new ChangeEmailCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts());
+        command.executeCommand(sender, newParts(), newParts());
 
         // then
         verify(authMeMock, never()).getManagement();
@@ -53,11 +54,15 @@ public class ChangeEmailCommandTest {
         ChangeEmailCommand command = new ChangeEmailCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(),
+        command.executeCommand(sender, newParts(),
                 new CommandParts(Arrays.asList("new.mail@example.org", "old_mail@example.org")));
 
         // then
         verify(authMeMock).getManagement();
         verify(managementMock).performChangeEmail(sender, "new.mail@example.org", "old_mail@example.org");
+    }
+
+    private static CommandParts newParts() {
+        return new CommandParts(new ArrayList<String>());
     }
 }

@@ -260,6 +260,7 @@ public class PermissionsManager {
      *
      * @param event Event instance.
      */
+    // TODO ljacqu 20151129: Misleading name since onPluginEnable is a typical event-based method name
     public void onPluginEnable(PluginEnableEvent event) {
         // Get the plugin and it's name
         Plugin plugin = event.getPlugin();

@@ -1,5 +1,6 @@
-package fr.xephi.authme.settings;
+package fr.xephi.authme.output;
 
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -18,7 +19,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link Messages}.
  */
-public class MessagesTest {
+public class MessagesIntegrationTest {
 
     private static final String YML_TEST_FILE = "messages_test.yml";
     private Messages messages;
@@ -38,8 +39,9 @@ public class MessagesTest {
             throw new RuntimeException("File '" + YML_TEST_FILE + "' could not be loaded");
         }
 
-        File file = new File(url.getFile());
-        messages = new Messages(file, "en");
+        Settings.messageFile = new File(url.getFile());
+        Settings.messagesLanguage = "en";
+        messages = Messages.getInstance();
     }
 
     @Test

@@ -2,10 +2,14 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.util.CollectionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 /**
  */
@@ -32,16 +36,16 @@ public class SwitchAntiBotCommand extends ExecutableCommand {
         }
 
         // Enable the mod
-        if (newState.equalsIgnoreCase("ON")) {
+        if ("ON".equalsIgnoreCase(newState)) {
             AntiBot.overrideAntiBotStatus(true);
-            sender.sendMessage("[AuthMe] AntiBot Manual Ovverride: enabled!");
+            sender.sendMessage("[AuthMe] AntiBot Manual Override: enabled!");
             return true;
         }
 
         // Disable the mod
-        if (newState.equalsIgnoreCase("OFF")) {
+        if ("OFF".equalsIgnoreCase(newState)) {
             AntiBot.overrideAntiBotStatus(false);
-            sender.sendMessage("[AuthMe] AntiBotMod Manual Ovverride: disabled!");
+            sender.sendMessage("[AuthMe] AntiBotMod Manual Override: disabled!");
             return true;
         }
 
@@ -52,8 +56,9 @@ public class SwitchAntiBotCommand extends ExecutableCommand {
         HelpProvider.showHelp(sender, commandReference, commandReference, true, false, true, false, false, false);
 
         // Show the command to use for detailed help
-        CommandParts helpCommandReference = new CommandParts(commandReference.getRange(1));
-        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/" + commandReference.get(0) + " help " + helpCommandReference);
+        List<String> helpCommandReference = CollectionUtils.getRange(commandReference.getList(), 1);
+        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/"
+            + commandReference.get(0) + " help " + CommandUtils.labelsToString(helpCommandReference));
         return true;
     }
 }

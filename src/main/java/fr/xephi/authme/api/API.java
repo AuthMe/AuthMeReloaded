@@ -170,7 +170,7 @@ public class API {
      */
     @Deprecated
     public static void forceLogin(Player player) {
-        instance.management.performLogin(player, "dontneed", true);
+        instance.getManagement().performLogin(player, "dontneed", true);
     }
 
     /**

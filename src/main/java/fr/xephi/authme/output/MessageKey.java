@@ -1,9 +1,11 @@
-package fr.xephi.authme.settings;
+package fr.xephi.authme.output;
 
 /**
  * Keys for translatable messages managed by {@link Messages}.
  */
 public enum MessageKey {
+
+    KICK_ANTIBOT("kick_antibot"),
 
     UNKNOWN_USER("unknown_user"),
 

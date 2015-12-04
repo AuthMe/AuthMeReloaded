@@ -4,8 +4,8 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -49,7 +49,7 @@ public class UnregisterCommand extends ExecutableCommand {
         }
 
         // Unregister the player
-        plugin.management.performUnregister(player, playerPass, false);
+        plugin.getManagement().performUnregister(player, playerPass, false);
         return true;
     }
 }

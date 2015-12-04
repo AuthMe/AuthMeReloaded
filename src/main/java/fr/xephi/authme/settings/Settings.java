@@ -8,7 +8,11 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -17,12 +21,13 @@ import java.util.regex.Pattern;
 
 /**
  */
-public final class Settings extends YamlConfiguration {
+public final class Settings {
 
     public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
     public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
+    public static final File EMAIL_FILE = new File(PLUGIN_FOLDER, "email.html");
     public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
     public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
     // This is not an option!
@@ -68,7 +73,7 @@ public final class Settings extends YamlConfiguration {
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
-        customAttributes, generateImage, isRemoveSpeedEnabled, isMySQLWebsite;
+        customAttributes, generateImage, isRemoveSpeedEnabled;
     public static String helpHeader, getNickRegex, getUnloggedinGroup, getMySQLHost,
         getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
         getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
@@ -116,7 +121,7 @@ public final class Settings extends YamlConfiguration {
         if (!exist) {
             plugin.saveDefaultConfig();
         }
-        instance.load(SETTINGS_FILE);
+        configFile.load(SETTINGS_FILE);
         if (exist) {
             instance.mergeConfig();
         }
@@ -184,7 +189,12 @@ public final class Settings extends YamlConfiguration {
         getMySQLColumnRealName = configFile.getString("DataSource.mySQLRealName", "realname");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
-        getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
+
+        getUnrestrictedName = new ArrayList<>();
+        for (String name : configFile.getStringList("settings.unrestrictions.UnrestrictedName")) {
+            getUnrestrictedName.add(name.toLowerCase());
+        }
+
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
         getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
 
@@ -226,7 +236,7 @@ public final class Settings extends YamlConfiguration {
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
         getMailSubject = configFile.getString("Email.mailSubject", "Your new AuthMe Password");
-        getMailText = configFile.getString("Email.mailText", "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
+        getMailText = loadEmailText();
         emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
@@ -284,20 +294,46 @@ public final class Settings extends YamlConfiguration {
         forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
         generateImage = configFile.getBoolean("Email.generateImage", false);
-        isMySQLWebsite = configFile.getBoolean("DataSource.mySQLWebsite", false);
 
         // Load the welcome message
         getWelcomeMessage();
 
     }
 
-    /**
-     * Method setValue.
-     *
-     * @param key   String
-     * @param value Object
-     */
-    public static void setValue(String key, Object value) {
+    private static String loadEmailText() {
+    	if (!EMAIL_FILE.exists())
+    		saveDefaultEmailText();
+    	StringBuilder str = new StringBuilder();
+    	try {
+    		BufferedReader in = new BufferedReader(new FileReader(EMAIL_FILE));
+    		String s;
+    		while ((s = in.readLine()) != null)
+    			str.append(s);
+    		in.close();
+    	} catch(IOException e)
+    	{
+    	}
+    	return str.toString();
+	}
+
+	private static void saveDefaultEmailText() {
+		InputStream file = plugin.getResource("email.html");
+		StringBuilder str = new StringBuilder();
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(file, Charset.forName("utf-8")));
+			String s;
+			while ((s = in.readLine()) != null)
+				str.append(s);
+			in.close();
+			Files.touch(EMAIL_FILE);
+			Files.write(str.toString(), EMAIL_FILE, Charsets.UTF_8);
+		}
+		catch(Exception e)
+		{
+		}
+	}
+
+	public static void setValue(String key, Object value) {
         instance.set(key, value);
         save();
     }
@@ -368,9 +404,9 @@ public final class Settings extends YamlConfiguration {
      */
     public static boolean save() {
         try {
-            instance.save(SETTINGS_FILE);
+            configFile.save(SETTINGS_FILE);
             return true;
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             return false;
         }
     }
@@ -588,7 +624,7 @@ public final class Settings extends YamlConfiguration {
             set("VeryGames.enableIpCheck", false);
             changes = true;
         }
-        if (getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*")) {
+        if (configFile.getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*")) {
             set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
             changes = true;
         }
@@ -676,9 +712,11 @@ public final class Settings extends YamlConfiguration {
             set("DataSource.mySQLRealName", "realname");
             changes = true;
         }
-        if (!contains("DataSource.mySQLQueryCache")) {
-            set("DataSource.mySQLWebsite", false);
-            changes = true;
+
+        if (contains("Email.mailText"))
+        {
+        	set("Email.mailText", null);
+        	ConsoleLogger.showError("Remove Email.mailText from config, we now use the email.html file");
         }
 
         if (changes) {
@@ -687,19 +725,30 @@ public final class Settings extends YamlConfiguration {
         }
     }
 
+    private static boolean contains(String path) {
+        return configFile.contains(path);
+    }
+
+    // public because it's used in AuthMe at one place
+    public void set(String path, Object value) {
+        configFile.set(path, value);
+    }
+
     /**
      * Saves current configuration (plus defaults) to disk.
-     * <p/>
+     * <p>
      * If defaults and configuration are empty, saves blank file.
      *
      * @return True if saved successfully
      */
     public final boolean saveDefaults() {
-        options().copyDefaults(true);
-        options().copyHeader(true);
+        configFile.options()
+            .copyDefaults(true)
+            .copyHeader(true);
         boolean success = save();
-        options().copyDefaults(false);
-        options().copyHeader(false);
+        configFile.options()
+            .copyDefaults(false)
+            .copyHeader(false);
         return success;
     }
 }

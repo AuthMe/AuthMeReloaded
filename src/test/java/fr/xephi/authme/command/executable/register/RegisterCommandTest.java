@@ -2,8 +2,8 @@ package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
@@ -13,6 +13,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
+
+import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -48,7 +50,7 @@ public class RegisterCommandTest {
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts());
+        command.executeCommand(sender, newParts(), newParts());
 
         // then
         verify(sender).sendMessage(messageCaptor.capture());
@@ -63,7 +65,7 @@ public class RegisterCommandTest {
         RegisterCommand command = new RegisterCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts());
+        command.executeCommand(sender, newParts(), newParts());
 
         // then
         verify(messagesMock).send(sender, MessageKey.USAGE_REGISTER);
@@ -77,9 +79,13 @@ public class RegisterCommandTest {
         RegisterCommand command = new RegisterCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts("password"));
+        command.executeCommand(sender, newParts(), new CommandParts("password"));
 
         // then
         verify(managementMock).performRegister(sender, "password", "");
+    }
+
+    private static CommandParts newParts() {
+        return new CommandParts(new ArrayList<String>());
     }
 }

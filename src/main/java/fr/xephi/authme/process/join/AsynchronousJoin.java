@@ -10,9 +10,9 @@ import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.permission.UserPermission;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.task.MessageTask;
@@ -50,31 +50,14 @@ public class AsynchronousJoin {
     }
 
     public void process() {
-        if (AuthMePlayerListener.gameMode.containsKey(name))
-            AuthMePlayerListener.gameMode.remove(name);
-        AuthMePlayerListener.gameMode.putIfAbsent(name, player.getGameMode());
-
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
+        if (Utils.isUnrestricted(player)) {
             return;
         }
+
+        AuthMePlayerListener.gameMode.put(name, player.getGameMode());
 
         if (plugin.ess != null && Settings.disableSocialSpy) {
             plugin.ess.getUser(player).setSocialSpyEnabled(false);
-        }
-
-        if (!plugin.canConnect()) {
-            final GameMode gM = AuthMePlayerListener.gameMode.get(name);
-            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                    player.setGameMode(gM);
-                    player.kickPlayer("Server is loading, please wait before joining!");
-                }
-
-            });
-            return;
         }
 
         final String ip = plugin.getIP(player);
@@ -95,7 +78,7 @@ public class AsynchronousJoin {
             return;
         }
         if (Settings.getMaxJoinPerIp > 0
-                && !plugin.getPermissionsManager().hasPermission(player, UserPermission.ALLOW_MULTIPLE_ACCOUNTS)
+                && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
                 && !ip.equalsIgnoreCase("127.0.0.1")
                 && !ip.equalsIgnoreCase("localhost")) {
             if (plugin.hasJoinedIp(player.getName(), ip)) {
@@ -238,7 +221,7 @@ public class AsynchronousJoin {
             PlayerCache.getInstance().removePlayer(name);
             if (auth != null && auth.getIp().equals(ip)) {
                 m.send(player, MessageKey.SESSION_RECONNECTION);
-                plugin.management.performLogin(player, "dontneed", true);
+                plugin.getManagement().performLogin(player, "dontneed", true);
                 return;
             } else if (Settings.sessionExpireOnIpChange) {
                 m.send(player, MessageKey.SESSION_EXPIRED);
@@ -253,8 +236,11 @@ public class AsynchronousJoin {
                 ? m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE)
                 : m.retrieve(MessageKey.REGISTER_MESSAGE);
         }
-        BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
-        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
+        if (LimboCache.getInstance().getLimboPlayer(name) != null)
+        {
+            BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
+            LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
+        }
     }
 
     private boolean needFirstSpawn() {
