@@ -5,8 +5,6 @@ package fr.xephi.authme.command;
  */
 public class CommandArgumentDescription {
 
-    // TODO: Allow argument to consist of infinite parts. <label ...>
-
     /**
      * Argument label (one-word description of the argument).
      */

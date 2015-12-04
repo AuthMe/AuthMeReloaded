@@ -26,7 +26,7 @@ public class CommandDescription {
      * Defines the labels to execute the command. For example, if labels are "register" and "r" and the parent is
      * the command for "/authme", then both "/authme register" and "/authme r" will be handled by this command.
      */
-    private List<String> labels = new ArrayList<>(); // TODO remove field initialization
+    private List<String> labels;
     /**
      * Command description.
      */
@@ -50,7 +50,7 @@ public class CommandDescription {
     /**
      * The arguments the command takes.
      */
-    private List<CommandArgumentDescription> arguments = new ArrayList<>(); // TODO remove field initialization
+    private List<CommandArgumentDescription> arguments;
     /**
      * Defines the command permissions.
      */
@@ -67,55 +67,54 @@ public class CommandDescription {
      */
     @Deprecated
     public CommandDescription(ExecutableCommand executableCommand, List<String> labels, String description, String detailedDescription, CommandDescription parent) {
-        this(executableCommand, labels, description, detailedDescription, parent,
-            new ArrayList<CommandArgumentDescription>());
-    }
-
-    /**
-     * Constructor.
-     *
-     * @param executableCommand   The executable command, or null.
-     * @param labels              List of command labels.
-     * @param description         Command description.
-     * @param detailedDescription Detailed comment description.
-     * @param parent              Parent command.
-     * @param arguments           Command arguments.
-     */
-    @Deprecated
-    public CommandDescription(ExecutableCommand executableCommand, List<String> labels, String description, String detailedDescription, CommandDescription parent, List<CommandArgumentDescription> arguments) {
         setExecutableCommand(executableCommand);
         this.labels = labels;
         this.description = description;
         this.detailedDescription = detailedDescription;
         setParent(parent);
-        this.arguments = arguments;
+        this.arguments = new ArrayList<>();
     }
 
     /**
      * Private constructor. Use {@link CommandDescription#builder()} to create instances of this class.
+     * <p />
+     * Note for developers: Instances should be created with {@link CommandDescription#createInstance} to be properly
+     * registered in the command tree.
+     */
+    private CommandDescription() {
+    }
+
+    /**
+     * Create an instance for internal use.
      *
-     * @param executableCommand   The executable command, or null.
      * @param labels              List of command labels.
      * @param description         Command description.
      * @param detailedDescription Detailed comment description.
+     * @param executableCommand   The executable command, or null.
      * @param parent              Parent command.
      * @param arguments           Command arguments.
+     * @param permissions         The permissions required to execute this command.
+     *
+     * @return The created instance
+     * @see CommandDescription#builder()
      */
-    private CommandDescription(List<String> labels, String description, String detailedDescription,
-                               ExecutableCommand executableCommand, CommandDescription parent,
-                               List<CommandArgumentDescription> arguments, CommandPermissions permissions) {
-        this.labels = labels;
-        this.description = description;
-        this.detailedDescription = detailedDescription;
-        this.executableCommand = executableCommand;
-        this.parent = parent;
-        this.arguments = arguments;
-        this.permissions = permissions;
+    private static CommandDescription createInstance(List<String> labels, String description,
+                                                 String detailedDescription, ExecutableCommand executableCommand,
+                                                 CommandDescription parent, List<CommandArgumentDescription> arguments,
+                                                 CommandPermissions permissions) {
+        CommandDescription instance = new CommandDescription();
+        instance.labels = labels;
+        instance.description = description;
+        instance.detailedDescription = detailedDescription;
+        instance.executableCommand = executableCommand;
+        instance.parent = parent;
+        instance.arguments = arguments;
+        instance.permissions = permissions;
 
         if (parent != null) {
-            // Passing `this` in constructor is not very nice; consider creating a "static create()" method instead
-            parent.addChild(this);
+            parent.addChild(instance);
         }
+        return instance;
     }
 
     /**
@@ -589,7 +588,7 @@ public class CommandDescription {
          * @return The generated CommandDescription object
          */
         public CommandDescription build() {
-            return new CommandDescription(
+            return createInstance(
                 getOrThrow(labels, "labels"),
                 firstNonNull(description, ""),
                 firstNonNull(detailedDescription, ""),
