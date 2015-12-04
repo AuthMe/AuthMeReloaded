@@ -9,7 +9,10 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -29,7 +32,7 @@ import static org.mockito.Mockito.verify;
  */
 public class CommandHandlerTest {
 
-    private static List<CommandDescription> commands;
+    private static Set<CommandDescription> commands;
     private static CommandHandler handler;
 
     @BeforeClass
@@ -42,7 +45,7 @@ public class CommandHandlerTest {
             newArgument("password", false), newArgument("confirmation", false));
 
         CommandDescription testBase = createCommand(null, null, singletonList("test"), newArgument("test", true));
-        commands = asList(authMeBase, testBase);
+        commands = new HashSet<>(asList(authMeBase, testBase));
         handler = new CommandHandler(commands);
     }
 
@@ -58,7 +61,7 @@ public class CommandHandlerTest {
         handler.processCommand(sender, bukkitLabel, args);
 
         // then
-        final CommandDescription loginCmd = commands.get(0).getChildren().get(0);
+        final CommandDescription loginCmd = getChildWithLabel("login", getCommandWithLabel("authme", commands));
         verify(sender, never()).sendMessage(anyString());
         verify(loginCmd.getExecutableCommand()).executeCommand(
             eq(sender), any(CommandParts.class), any(CommandParts.class));
@@ -78,10 +81,7 @@ public class CommandHandlerTest {
 
         // then
         assertThat(result, equalTo(true));
-        final CommandDescription loginCmd = commands.get(0).getChildren().get(0);
         assertSenderGotMessageContaining("help", sender);
-        verify(loginCmd.getExecutableCommand()).executeCommand(
-            eq(sender), any(CommandParts.class), any(CommandParts.class));
     }
 
     private static CommandDescription createCommand(PlayerPermission permission, CommandDescription parent,
@@ -111,5 +111,23 @@ public class CommandHandlerTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender).sendMessage(captor.capture());
         assertThat(captor.getValue(), stringContainsInOrder(text));
+    }
+
+    private static CommandDescription getCommandWithLabel(String label, Collection<CommandDescription> commands) {
+        for (CommandDescription command : commands) {
+            if (command.getLabels().contains(label)) {
+                return command;
+            }
+        }
+        return null;
+    }
+
+    private static CommandDescription getChildWithLabel(String label, CommandDescription command) {
+        for (CommandDescription child : command.getChildren()) {
+            if (child.getLabels().contains(label)) {
+                return child;
+            }
+        }
+        return null;
     }
 }

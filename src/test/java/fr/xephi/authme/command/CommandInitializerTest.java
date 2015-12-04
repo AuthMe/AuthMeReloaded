@@ -5,12 +5,7 @@ import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -30,7 +25,7 @@ public class CommandInitializerTest {
      */
     private static int MAX_ALLOWED_DEPTH = 1;
 
-    private static List<CommandDescription> commands;
+    private static Set<CommandDescription> commands;
 
     @BeforeClass
     public static void initializeCommandManager() {
@@ -232,11 +227,11 @@ public class CommandInitializerTest {
     // ------------
     // Helper methods
     // ------------
-    private static void walkThroughCommands(List<CommandDescription> commands, BiConsumer consumer) {
+    private static void walkThroughCommands(Collection<CommandDescription> commands, BiConsumer consumer) {
         walkThroughCommands(commands, consumer, 0);
     }
 
-    private static void walkThroughCommands(List<CommandDescription> commands, BiConsumer consumer, int depth) {
+    private static void walkThroughCommands(Collection<CommandDescription> commands, BiConsumer consumer, int depth) {
         for (CommandDescription command : commands) {
             consumer.accept(command, depth);
             if (command.hasChildren()) {

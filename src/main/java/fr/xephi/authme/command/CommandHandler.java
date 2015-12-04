@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
@@ -27,14 +28,14 @@ public class CommandHandler {
      */
     private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
 
-    private List<CommandDescription> commands;
+    private final Set<CommandDescription> commands;
 
     /**
      * Create a command handler.
      *
      * @param commands The collection of available AuthMe commands
      */
-    public CommandHandler(List<CommandDescription> commands) {
+    public CommandHandler(Set<CommandDescription> commands) {
         this.commands = commands;
     }
 
@@ -50,7 +51,7 @@ public class CommandHandler {
      */
     public boolean processCommand(CommandSender sender, String bukkitCommandLabel, String[] bukkitArgs) {
         List<String> commandArgs = skipEmptyArguments(bukkitArgs);
-        // Add the Bukkit command label to the front so we get something like [authme, register, pass, passConfirm]
+        // Add the Bukkit command label to the front so we get a list like [authme, register, pass, passConfirm]
         commandArgs.add(0, bukkitCommandLabel);
 
         // TODO: remove commandParts
