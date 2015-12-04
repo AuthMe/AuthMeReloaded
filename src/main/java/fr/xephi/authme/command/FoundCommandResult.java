@@ -62,26 +62,12 @@ public class FoundCommandResult {
     }
 
     /**
-     * Set the command description.
-     *
-     * @param commandDescription The command description.
-     */
-    public void setCommandDescription(CommandDescription commandDescription) {
-        this.commandDescription = commandDescription;
-    }
-
-    /**
      * Check whether the command is executable.
      *
      * @return True if the command is executable, false otherwise.
      */
     public boolean isExecutable() {
-        // Make sure the command description is valid
-        if (this.commandDescription == null)
-            return false;
-
-        // Check whether the command is executable, return the result
-        return this.commandDescription.isExecutable();
+        return commandDescription != null;
     }
 
     /**

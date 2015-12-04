@@ -13,9 +13,7 @@ public final class CommandUtils {
     }
 
     public static int getMaxNumberOfArguments(CommandDescription command) {
-        return command.hasMaximumArguments()
-            ? command.getArguments().size()
-            : -1;
+        return command.getArguments().size();
     }
 
 }

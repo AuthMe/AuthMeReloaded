@@ -27,8 +27,7 @@ public class HelpSyntaxHelperTest {
             .build();
 
         // when
-        String result = HelpSyntaxHelper.getCommandSyntax(
-                description, new CommandParts(), "", false);
+        String result = HelpSyntaxHelper.getCommandSyntax(description, new CommandParts(), "", false);
 
         // then
         assertThat(result, equalTo(WHITE + "/authme register" + ITALIC + " [name]"));
@@ -42,8 +41,7 @@ public class HelpSyntaxHelperTest {
             .build();
 
         // when
-        String result = HelpSyntaxHelper.getCommandSyntax(
-                description, new CommandParts(), null, false);
+        String result = HelpSyntaxHelper.getCommandSyntax(description, new CommandParts(), null, false);
 
         // then
         assertThat(result, equalTo(WHITE + "/authme register" + ITALIC + " <test>"));
@@ -58,8 +56,7 @@ public class HelpSyntaxHelperTest {
             .build();
 
         // when
-        String result = HelpSyntaxHelper.getCommandSyntax(
-                description, new CommandParts(), "", false);
+        String result = HelpSyntaxHelper.getCommandSyntax(description, new CommandParts(), "", false);
 
         // then
         assertThat(result, equalTo(WHITE + "/authme register" + ITALIC + " [name]" + ITALIC + " <test>"));
@@ -74,8 +71,7 @@ public class HelpSyntaxHelperTest {
             .build();
 
         // when
-        String result = HelpSyntaxHelper.getCommandSyntax(
-                description, new CommandParts(), "", true);
+        String result = HelpSyntaxHelper.getCommandSyntax(description, new CommandParts(), "", true);
 
         // then
         assertThat(result, equalTo(WHITE + "/authme "
@@ -89,8 +85,7 @@ public class HelpSyntaxHelperTest {
         CommandDescription description = getDescriptionBuilder().build();
 
         // when
-        String result = HelpSyntaxHelper.getCommandSyntax(
-                description, new CommandParts(), null, true);
+        String result = HelpSyntaxHelper.getCommandSyntax(description, new CommandParts(), null, true);
 
         // then
         assertThat(result, equalTo(WHITE + "/authme " + YELLOW + BOLD + "register" + YELLOW));
@@ -104,30 +99,10 @@ public class HelpSyntaxHelperTest {
             .build();
 
         // when
-        String result = HelpSyntaxHelper.getCommandSyntax(
-                description, new CommandParts(), "alt", false);
+        String result = HelpSyntaxHelper.getCommandSyntax(description, new CommandParts(), "alt", false);
 
         // then
         assertThat(result, equalTo(WHITE + "/authme alt" + ITALIC + " [name]"));
-    }
-
-    @Test
-    public void shouldHighlightCommandWithAltLabelAndUnlimitedArguments() {
-        // given
-        CommandDescription description = getDescriptionBuilder()
-            .withArgument("name", "", true)
-            .withArgument("test", "", false)
-            .noArgumentMaximum(true)
-            .build();
-
-        // when
-        String result = HelpSyntaxHelper.getCommandSyntax(
-                description, new CommandParts(), "test", true);
-
-        // then
-        assertThat(result, equalTo(WHITE + "/authme "
-                + YELLOW + BOLD + "test"
-                + YELLOW + ITALIC + " [name]" + ITALIC + " <test>" + ITALIC + " ..."));
     }
 
 

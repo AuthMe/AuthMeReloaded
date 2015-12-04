@@ -51,10 +51,6 @@ public class CommandDescription {
      */
     private List<CommandArgumentDescription> arguments = new ArrayList<>(); // TODO remove field initialization
     /**
-     * Defines whether there is an argument maximum or not.
-     */
-    private boolean noArgumentMaximum = false; // TODO remove field initialization
-    /**
      * Defines the command permissions.
      */
     private CommandPermissions permissions;
@@ -106,15 +102,13 @@ public class CommandDescription {
      */
     private CommandDescription(List<String> labels, String description, String detailedDescription,
                                ExecutableCommand executableCommand, CommandDescription parent,
-                               List<CommandArgumentDescription> arguments, boolean noArgumentMaximum,
-                               CommandPermissions permissions) {
+                               List<CommandArgumentDescription> arguments, CommandPermissions permissions) {
         this.labels = labels;
         this.description = description;
         this.detailedDescription = detailedDescription;
         this.executableCommand = executableCommand;
         this.parent = parent;
         this.arguments = arguments;
-        this.noArgumentMaximum = noArgumentMaximum;
         this.permissions = permissions;
 
         if (parent != null) {
@@ -280,15 +274,6 @@ public class CommandDescription {
     }
 
     /**
-     * Check whether this command is executable, based on the assigned executable command.
-     *
-     * @return True if this command is executable.
-     */
-    public boolean isExecutable() {
-        return this.executableCommand != null;
-    }
-
-    /**
      * Execute the command, if possible.
      *
      * @param sender           The command sender that triggered the execution of this command.
@@ -298,10 +283,6 @@ public class CommandDescription {
      * @return True on success, false on failure.
      */
     public boolean execute(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Make sure the command is executable
-        if (!isExecutable())
-            return false;
-
         // Execute the command, return the result
         return getExecutableCommand().executeCommand(sender, commandReference, commandArguments);
     }
@@ -453,10 +434,6 @@ public class CommandDescription {
         return !getArguments().isEmpty();
     }
 
-    public boolean hasMaximumArguments() {
-        return !noArgumentMaximum; // TODO ljacqu 20151130 Change variable name
-    }
-
     /**
      * Get the command description.
      *
@@ -604,7 +581,6 @@ public class CommandDescription {
         private ExecutableCommand executableCommand;
         private CommandDescription parent;
         private List<CommandArgumentDescription> arguments = new ArrayList<>();
-        private boolean noArgumentMaximum;
         private CommandPermissions permissions;
 
         /**
@@ -621,7 +597,6 @@ public class CommandDescription {
                 getOrThrow(executableCommand, "executableCommand"),
                 firstNonNull(parent, null),
                 arguments,
-                noArgumentMaximum,
                 firstNonNull(permissions, null)
             );
         }
@@ -667,11 +642,6 @@ public class CommandDescription {
          */
         public CommandBuilder withArgument(String label, String description, boolean isOptional) {
             arguments.add(new CommandArgumentDescription(label, description, isOptional));
-            return this;
-        }
-
-        public CommandBuilder noArgumentMaximum(boolean noArgumentMaximum) {
-            this.noArgumentMaximum = noArgumentMaximum;
             return this;
         }
 

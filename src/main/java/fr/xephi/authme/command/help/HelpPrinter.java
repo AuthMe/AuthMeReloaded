@@ -5,7 +5,6 @@ import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.CommandPermissions;
-import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
@@ -77,10 +76,6 @@ public class HelpPrinter {
             // Print the syntax
             sender.sendMessage(argString.toString());
         }
-
-        // Show the unlimited arguments argument
-        if (!command.hasMaximumArguments())
-            sender.sendMessage(" " + ChatColor.YELLOW + ChatColor.ITALIC + "... : " + ChatColor.WHITE + "Any additional arguments." + ChatColor.GRAY + ChatColor.ITALIC + " (Optional)");
     }
 
     /**

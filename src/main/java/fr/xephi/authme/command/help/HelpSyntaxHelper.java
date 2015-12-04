@@ -61,11 +61,6 @@ public final class HelpSyntaxHelper {
             sb.append(ChatColor.ITALIC).append(formatArgument(arg));
         }
 
-        // Add some dots if the command allows unlimited arguments
-        if (!commandDescription.hasMaximumArguments()) {
-            sb.append(ChatColor.ITALIC).append(" ...");
-        }
-
         // Return the build command syntax
         return sb.toString();
     }
