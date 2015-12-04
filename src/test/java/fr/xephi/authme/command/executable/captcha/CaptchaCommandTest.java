@@ -15,6 +15,8 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.verify;
@@ -40,7 +42,7 @@ public class CaptchaCommandTest {
         ExecutableCommand command = new CaptchaCommand();
 
         // when
-        boolean result = command.executeCommand(sender, new CommandParts(), new CommandParts());
+        boolean result = command.executeCommand(sender, new CommandParts(Collections.EMPTY_LIST), new CommandParts(Collections.EMPTY_LIST));
 
         // then
         assertThat(result, equalTo(true));
@@ -56,7 +58,7 @@ public class CaptchaCommandTest {
         ExecutableCommand command = new CaptchaCommand();
 
         // when
-        boolean result = command.executeCommand(player, new CommandParts(), new CommandParts());
+        boolean result = command.executeCommand(player, new CommandParts(Collections.EMPTY_LIST), new CommandParts(Collections.EMPTY_LIST));
 
         // then
         assertThat(result, equalTo(true));

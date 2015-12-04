@@ -12,6 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -40,7 +42,7 @@ public class LogoutCommandTest {
         LogoutCommand command = new LogoutCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts());
+        command.executeCommand(sender, new CommandParts(new ArrayList<String>()), new CommandParts(new ArrayList<String>()));
 
         // then
         Mockito.verify(managementMock, never()).performLogout(any(Player.class));
@@ -53,7 +55,7 @@ public class LogoutCommandTest {
         LogoutCommand command = new LogoutCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts("password"));
+        command.executeCommand(sender, new CommandParts(new ArrayList<String>()), new CommandParts("password"));
 
         // then
         Mockito.verify(managementMock).performLogout(sender);

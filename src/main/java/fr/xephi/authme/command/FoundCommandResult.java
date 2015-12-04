@@ -139,10 +139,11 @@ public class FoundCommandResult {
      */
     public double getDifference() {
         // Get the difference through the command found
-        if (this.commandDescription != null)
+        if (this.commandDescription != null) {
             return this.commandDescription.getCommandDifference(this.queryReference);
+        }
 
         // Get the difference from the query reference
-        return this.queryReference.getDifference(commandReference, true);
+        return CommandUtils.getDifference(queryReference.getList(), commandReference.getList(), true);
     }
 }

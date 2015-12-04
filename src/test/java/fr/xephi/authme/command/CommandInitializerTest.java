@@ -254,12 +254,12 @@ public class CommandInitializerTest {
     }
 
     /**
-     * Get the absolute label that a command defines. Note: Assumes that only the passed command might have
+     * Get the absolute binding that a command defines. Note: Assumes that only the passed command can have
      * multiple labels; only considering the first label for all of the command's parents.
      *
-     * @param command The command to verify
+     * @param command The command to process
      *
-     * @return The full command binding
+     * @return List of all bindings that lead to the command
      */
     private static List<String> getAbsoluteLabels(CommandDescription command) {
         String parentPath = "";

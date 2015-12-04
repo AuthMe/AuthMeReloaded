@@ -9,6 +9,9 @@ import fr.xephi.authme.settings.Settings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  */
 public class HelpProvider {
@@ -40,7 +43,12 @@ public class HelpProvider {
     public static void showHelp(CommandSender sender, CommandParts reference, CommandParts helpQuery, boolean showCommand, boolean showDescription, boolean showArguments, boolean showPermissions, boolean showAlternatives, boolean showCommands) {
         // Find the command for this help query, one with and one without a prefixed base command
         FoundCommandResult result = AuthMe.getInstance().getCommandHandler().findCommand(new CommandParts(helpQuery.getList()));
-        CommandParts commandReferenceOther = new CommandParts(reference.get(0), helpQuery.getList());
+
+        // TODO ljacqu 20151204 Fix me to nicer code
+        List<String> parts = new ArrayList<>(helpQuery.getList());
+        parts.add(0, reference.get(0));
+        CommandParts commandReferenceOther = new CommandParts(parts);
+
         FoundCommandResult resultOther = AuthMe.getInstance().getCommandHandler().findCommand(commandReferenceOther);
         if (resultOther != null) {
             if (result == null)

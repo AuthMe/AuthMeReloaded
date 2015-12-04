@@ -16,12 +16,6 @@ public class CommandParts {
 
     /**
      * Constructor.
-     */
-    public CommandParts() {
-    }
-
-    /**
-     * Constructor.
      *
      * @param part The part to add.
      */
@@ -48,58 +42,12 @@ public class CommandParts {
     }
 
     /**
-     * Constructor.
-     *
-     * @param base  The base part.
-     * @param parts The list of additional parts.
-     */
-    public CommandParts(String base, List<String> parts) {
-        this.parts.add(base);
-        this.parts.addAll(parts);
-    }
-
-    /**
      * Get the command parts.
      *
      * @return Command parts.
      */
     public List<String> getList() {
         return this.parts;
-    }
-
-    /**
-     * Add a part.
-     *
-     * @param part The part to add.
-     *
-     * @return The result.
-     */
-    public boolean add(String part) {
-        return this.parts.add(part);
-    }
-
-    /**
-     * Add some parts.
-     *
-     * @param parts The parts to add.
-     *
-     * @return The result.
-     */
-    public boolean add(List<String> parts) {
-        return this.parts.addAll(parts);
-    }
-
-    /**
-     * Add some parts.
-     *
-     * @param parts The parts to add.
-     *
-     * @return The result.
-     */
-    public boolean add(String[] parts) {
-        for (String entry : parts)
-            add(entry);
-        return true;
     }
 
     /**
@@ -146,6 +94,7 @@ public class CommandParts {
      *
      * @return The parts range. Parts that were out of bound are not included.
      */
+    @Deprecated
     public List<String> getRange(int start, int count) {
         // Create a new list to put the range into
         List<String> elements = new ArrayList<>();
@@ -162,27 +111,7 @@ public class CommandParts {
         return elements;
     }
 
-    /**
-     * Get the difference value between two references.
-     *
-     * @param other       The other reference.
-     * @param fullCompare True to compare the full references as far as the range reaches.
-     *
-     * @return The result from zero to above. A negative number will be returned on error.
-     */
-    public double getDifference(CommandParts other, boolean fullCompare) {
-        // Make sure the other reference is correct
-        if (other == null)
-            return -1;
 
-        // Get the range to use
-        int range = Math.min(this.getCount(), other.getCount());
-
-        // Get and the difference
-        if (fullCompare)
-            return StringUtils.getDifference(this.toString(), other.toString());
-        return StringUtils.getDifference(this.getRange(range - 1, 1).toString(), other.getRange(range - 1, 1).toString());
-    }
 
     /**
      * Convert the parts to a string.

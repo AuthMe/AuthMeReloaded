@@ -1,6 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
@@ -185,10 +186,6 @@ public class CommandDescription {
      * @return True if the command reference is suitable to this command label, false otherwise.
      */
     public boolean isSuitableLabel(CommandParts commandReference) {
-        // Make sure the command reference is valid
-        if (commandReference.getCount() <= 0)
-            return false;
-
         // Get the parent count
         //getParent() = getParent().getParentCount() + 1
         String element = commandReference.get(getParentCount());
@@ -252,7 +249,8 @@ public class CommandDescription {
         CommandParts reference = getCommandReference(other);
 
         // Compare the two references, return the result
-        return reference.getDifference(new CommandParts(other.getRange(0, reference.getCount())), fullCompare);
+        return CommandUtils.getDifference(reference.getList(),
+            CollectionUtils.getRange(other.getList(), 0, reference.getList().size()), fullCompare);
     }
 
     /**
@@ -469,13 +467,13 @@ public class CommandDescription {
             return new FoundCommandResult(
                 this,
                 getCommandReference(queryReference),
-                new CommandParts(),
+                new CommandParts(new ArrayList<String>()),
                 queryReference);
         }
 
         // Get the new command reference and arguments
-        CommandParts newReference = new CommandParts(queryReference.getRange(0, getParentCount() + 1));
-        CommandParts newArguments = new CommandParts(queryReference.getRange(getParentCount() + 1));
+        CommandParts newReference = new CommandParts(CollectionUtils.getRange(queryReference.getList(), 0, getParentCount() + 1));
+        CommandParts newArguments = new CommandParts(CollectionUtils.getRange(queryReference.getList(), getParentCount() + 1));
 
         // Handle the child's, if this command has any
         if (getChildren().size() > 0) {
