@@ -2,8 +2,8 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
 import org.bukkit.event.EventHandler;

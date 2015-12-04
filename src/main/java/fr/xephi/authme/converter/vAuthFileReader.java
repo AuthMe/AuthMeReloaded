@@ -42,16 +42,16 @@ public class vAuthFileReader {
                 String name = line.split(": ")[0];
                 String password = line.split(": ")[1];
                 PlayerAuth auth;
-                if (isUUIDinstance(password)) {
-                    String playerName;
+                if (isUuidInstance(password)) {
+                    String pname;
                     try {
-                        playerName = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
+                        pname = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
                     } catch (Exception | NoSuchMethodError e) {
-                        playerName = getName(UUID.fromString(name));
+                        pname = getName(UUID.fromString(name));
                     }
-                    if (playerName == null)
+                    if (pname == null)
                         continue;
-                    auth = new PlayerAuth(playerName.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", playerName);
+                    auth = new PlayerAuth(pname.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", pname);
                 } else {
                     auth = new PlayerAuth(name.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", name);
                 }
@@ -64,17 +64,8 @@ public class vAuthFileReader {
 
     }
 
-    /**
-     * Method isUUIDinstance.
-     *
-     * @param s String
-     *
-     * @return boolean
-     */
-    private boolean isUUIDinstance(String s) {
-        if (String.valueOf(s.charAt(8)).equalsIgnoreCase("-"))
-            return true;
-        return true;
+    private static boolean isUuidInstance(String s) {
+        return s.length() > 8 && s.charAt(8) == '-';
     }
 
     /**

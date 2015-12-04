@@ -162,8 +162,10 @@ public class PlayerAuth {
      * @param email     String
      * @param realName  String
      */
-    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip, long lastLogin, double x, double y, double z, String world, String email, String realName) {
-        this.nickname = nickname;
+    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip,
+                      long lastLogin, double x, double y, double z, String world, String email,
+                      String realName) {
+        this.nickname = nickname.toLowerCase();
         this.hash = hash;
         this.ip = ip;
         this.lastLogin = lastLogin;
@@ -202,7 +204,7 @@ public class PlayerAuth {
      * @param nickname String
      */
     public void setName(String nickname) {
-        this.nickname = nickname;
+        this.nickname = nickname.toLowerCase();
     }
 
     /**

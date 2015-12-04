@@ -4,8 +4,8 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandParts;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.ChangePasswordTask;
 import fr.xephi.authme.util.WrapperMock;
@@ -18,6 +18,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import static java.util.Arrays.asList;
@@ -85,7 +86,7 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts("!pass"));
+        command.executeCommand(sender, new CommandParts(), newParts("old123", "!pass"));
 
         // then
         verify(messagesMock).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
@@ -100,7 +101,7 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts("Tester"));
+        command.executeCommand(sender, new CommandParts(), newParts("old_", "Tester"));
 
         // then
         verify(messagesMock).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
@@ -115,7 +116,7 @@ public class ChangePasswordCommandTest {
         Settings.passwordMaxLength = 3;
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts("test"));
+        command.executeCommand(sender, new CommandParts(), newParts("12", "test"));
 
         // then
         verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
@@ -130,7 +131,7 @@ public class ChangePasswordCommandTest {
         Settings.getPasswordMinLen = 7;
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts("tester"));
+        command.executeCommand(sender, new CommandParts(), newParts("oldverylongpassword", "tester"));
 
         // then
         verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
@@ -145,7 +146,7 @@ public class ChangePasswordCommandTest {
         Settings.unsafePasswords = asList("test", "abc123");
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts("abc123"));
+        command.executeCommand(sender, new CommandParts(), newParts("oldpw", "abc123"));
 
         // then
         verify(messagesMock).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
@@ -157,16 +158,14 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("parker", true);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        BukkitScheduler schedulerMock = mock(BukkitScheduler.class);
-        given(wrapperMock.getServer().getScheduler()).willReturn(schedulerMock);
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts(asList("abc123", "abc123")));
+        command.executeCommand(sender, new CommandParts(), newParts("abc123", "abc123"));
 
         // then
         verify(messagesMock, never()).send(eq(sender), any(MessageKey.class));
         ArgumentCaptor<ChangePasswordTask> taskCaptor = ArgumentCaptor.forClass(ChangePasswordTask.class);
-        verify(schedulerMock).runTaskAsynchronously(any(AuthMe.class), taskCaptor.capture());
+        verify(wrapperMock.getScheduler()).runTaskAsynchronously(any(AuthMe.class), taskCaptor.capture());
         ChangePasswordTask task = taskCaptor.getValue();
         assertThat((String) ReflectionTestUtils.getFieldValue(ChangePasswordTask.class, task, "newPassword"),
             equalTo("abc123"));
@@ -177,6 +176,10 @@ public class ChangePasswordCommandTest {
         when(player.getName()).thenReturn(name);
         when(cacheMock.isAuthenticated(name)).thenReturn(loggedIn);
         return player;
+    }
+
+    private static CommandParts newParts(String... parts) {
+        return new CommandParts(Arrays.asList(parts));
     }
 
 }

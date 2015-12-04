@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings;
+package fr.xephi.authme.output;
 
 import fr.xephi.authme.util.StringUtils;
 import org.junit.Test;

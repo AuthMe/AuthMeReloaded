@@ -32,6 +32,8 @@ import org.bukkit.event.player.*;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import static fr.xephi.authme.output.MessageKey.USERNAME_ALREADY_ONLINE_ERROR;
+
 /**
  */
 public class AuthMePlayerListener implements Listener {
@@ -268,7 +270,7 @@ public class AuthMePlayerListener implements Listener {
         PermissionsManager permsMan = plugin.getPermissionsManager();
 
         final Player player = event.getPlayer();
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, UserPermission.IS_VIP)) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
             event.setResult(PlayerLoginEvent.Result.KICK_FULL);
             return;
@@ -280,7 +282,7 @@ public class AuthMePlayerListener implements Listener {
         // TODO: Add message to the messages file!!!
         if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
             if (Settings.antiBotInAction) {
-                event.setKickMessage("AntiBot service in action! You actually need to be registered!");
+                event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             } else {
