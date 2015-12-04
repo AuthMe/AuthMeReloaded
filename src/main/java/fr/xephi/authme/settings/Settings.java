@@ -110,6 +110,11 @@ public final class Settings {
         configFile = (YamlConfiguration) plugin.getConfig();
     }
 
+    /**
+     * Method reload.
+     *
+     * @throws Exception
+     */
     public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
         boolean exist = SETTINGS_FILE.exists();
@@ -184,7 +189,12 @@ public final class Settings {
         getMySQLColumnRealName = configFile.getString("DataSource.mySQLRealName", "realname");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
-        getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
+
+        getUnrestrictedName = new ArrayList<>();
+        for (String name : configFile.getStringList("settings.unrestrictions.UnrestrictedName")) {
+            getUnrestrictedName.add(name.toLowerCase());
+        }
+
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
         getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
 
@@ -328,6 +338,11 @@ public final class Settings {
         save();
     }
 
+    /**
+     * Method getPasswordHash.
+     *
+     * @return HashAlgorithm
+     */
     private static HashAlgorithm getPasswordHash() {
         String key = "settings.security.passwordHash";
         try {
@@ -338,6 +353,11 @@ public final class Settings {
         }
     }
 
+    /**
+     * Method getDataSource.
+     *
+     * @return DataSourceType
+     */
     private static DataSourceType getDataSource() {
         String key = "DataSource.backend";
         try {
@@ -391,6 +411,13 @@ public final class Settings {
         }
     }
 
+    /**
+     * Method checkLang.
+     *
+     * @param lang String
+     *
+     * @return String
+     */
     public static String checkLang(String lang) {
         if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
             ConsoleLogger.info("Set Language to: " + lang);
@@ -404,6 +431,11 @@ public final class Settings {
         return "en";
     }
 
+    /**
+     * Method switchAntiBotMod.
+     *
+     * @param mode boolean
+     */
     public static void switchAntiBotMod(boolean mode) {
         if (mode) {
             isKickNonRegisteredEnabled = true;
@@ -445,6 +477,13 @@ public final class Settings {
         }
     }
 
+    /**
+     * Method isEmailCorrect.
+     *
+     * @param email String
+     *
+     * @return boolean
+     */
     public static boolean isEmailCorrect(String email) {
         if (!email.contains("@"))
             return false;
@@ -697,7 +736,7 @@ public final class Settings {
 
     /**
      * Saves current configuration (plus defaults) to disk.
-     * <p/>
+     * <p>
      * If defaults and configuration are empty, saves blank file.
      *
      * @return True if saved successfully

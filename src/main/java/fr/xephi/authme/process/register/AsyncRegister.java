@@ -5,15 +5,12 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
-
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
 
 /**
  */
@@ -22,7 +19,8 @@ public class AsyncRegister {
     protected final Player player;
     protected final String name;
     protected final String password;
-    protected String email = "";
+    private final String ip;
+    private String email = "";
     private final AuthMe plugin;
     private final DataSource database;
     private final Messages m;
@@ -35,13 +33,10 @@ public class AsyncRegister {
         this.email = email;
         this.plugin = plugin;
         this.database = data;
+        this.ip = plugin.getIP(player);
     }
 
-    protected String getIp() {
-        return plugin.getIP(player);
-    }
-
-    protected boolean preRegisterCheck() throws Exception {
+    private boolean preRegisterCheck() throws Exception {
         String passLow = password.toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
@@ -65,10 +60,10 @@ public class AsyncRegister {
             m.send(player, MessageKey.NAME_ALREADY_REGISTERED);
             return false;
         } else if (Settings.getmaxRegPerIp > 0
-                && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
-                && database.getAllAuthsByIp(getIp()).size() >= Settings.getmaxRegPerIp
-                && !getIp().equalsIgnoreCase("127.0.0.1")
-                && !getIp().equalsIgnoreCase("localhost")) {
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !ip.equalsIgnoreCase("127.0.0.1")
+            && !ip.equalsIgnoreCase("localhost")
+            && database.getAllAuthsByIp(ip).size() >= Settings.getmaxRegPerIp) {
             m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
             return false;
         }
@@ -81,16 +76,10 @@ public class AsyncRegister {
                 return;
             }
             if (!email.isEmpty() && !email.equals("")) {
-                if (Settings.getmaxRegPerEmail > 0
-                        && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
-                        && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
-                    m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
-                    return;
-                }
                 emailRegister();
-                return;
+            } else {
+                passwordRegister();
             }
-            passwordRegister();
         } catch (Exception e) {
             ConsoleLogger.showError(e.getMessage());
             ConsoleLogger.writeStackTrace(e);
@@ -98,20 +87,32 @@ public class AsyncRegister {
         }
     }
 
-    protected void emailRegister() throws Exception {
+    private void emailRegister() throws Exception {
         if (Settings.getmaxRegPerEmail > 0
-                && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
-                && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
             m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
             return;
         }
-        PlayerAuth auth;
         final String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
-        auth = new PlayerAuth(name, hashNew, getIp(), 0, (int) player.getLocation().getX(), (int) player.getLocation().getY(), (int) player.getLocation().getZ(), player.getLocation().getWorld().getName(), email, player.getName());
-        if (PasswordSecurity.userSalt.containsKey(name)) {
-            auth.setSalt(PasswordSecurity.userSalt.get(name));
+        final String salt = PasswordSecurity.userSalt.get(name);
+        PlayerAuth auth = PlayerAuth.builder()
+            .name(name)
+            .realName(player.getName())
+            .hash(hashNew)
+            .ip(ip)
+            .locWorld(player.getLocation().getWorld().getName())
+            .locX(player.getLocation().getX())
+            .locY(player.getLocation().getY())
+            .locZ(player.getLocation().getZ())
+            .email(email)
+            .salt(salt != null ? salt : "")
+            .build();
+
+        if (!database.saveAuth(auth)) {
+            m.send(player, MessageKey.ERROR);
+            return;
         }
-        database.saveAuth(auth);
         database.updateEmail(auth);
         database.updateSession(auth);
         plugin.mail.main(auth, password);
@@ -120,21 +121,21 @@ public class AsyncRegister {
 
     }
 
-    protected void passwordRegister() {
-        PlayerAuth auth;
-        String hash;
-        try {
-            hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
-        } catch (NoSuchAlgorithmException e) {
-            ConsoleLogger.showError(e.getMessage());
-            m.send(player, MessageKey.ERROR);
-            return;
-        }
-        if (Settings.getMySQLColumnSalt.isEmpty() && !PasswordSecurity.userSalt.containsKey(name)) {
-            auth = new PlayerAuth(name, hash, getIp(), new Date().getTime(), "your@email.com", player.getName());
-        } else {
-            auth = new PlayerAuth(name, hash, PasswordSecurity.userSalt.get(name), getIp(), new Date().getTime(), player.getName());
-        }
+    private void passwordRegister() throws Exception {
+        final String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
+        final String salt = PasswordSecurity.userSalt.get(name);
+        PlayerAuth auth = PlayerAuth.builder()
+            .name(name)
+            .realName(player.getName())
+            .hash(hashNew)
+            .ip(ip)
+            .locWorld(player.getLocation().getWorld().getName())
+            .locX(player.getLocation().getX())
+            .locY(player.getLocation().getY())
+            .locZ(player.getLocation().getZ())
+            .salt(salt != null ? salt : "")
+            .build();
+
         if (!database.saveAuth(auth)) {
             m.send(player, MessageKey.ERROR);
             return;
