@@ -48,7 +48,7 @@ public class SendMailSSL {
         final String subject = Settings.getMailSubject;
         final String smtp = Settings.getmailSMTP;
         final String password = Settings.getmailPassword;
-        final String mailText = Settings.getMailText.replace("<playername>", auth.getNickname()).replace("<servername>", plugin.getServer().getServerName()).replace("<generatedpass>", newPass);
+        final String mailText = Settings.getMailText.replace("%playername%", auth.getNickname()).replace("%servername%", plugin.getServer().getServerName()).replace("%generatedpass%", newPass);
         final String mail = auth.getEmail();
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -76,7 +76,7 @@ public class SendMailSSL {
                             ImageIO.write(gen.generateImage(), "jpg", file);
                             DataSource source = new FileDataSource(file);
                             String tag = email.embed(source, auth.getNickname() + "_new_pass.jpg");
-                            content = content.replace("<image>", "<img src=\"cid:" + tag + "\">");
+                            content = content.replace("%image%", "<img src=\"cid:" + tag + "\">");
                         } catch (Exception e) {
                             ConsoleLogger.showError("Unable to send new password as image! Using normal text! Dest: " + mail);
                         }

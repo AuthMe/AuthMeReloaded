@@ -117,6 +117,8 @@ public class LimboCache {
      * @param name String
      */
     public void deleteLimboPlayer(String name) {
+    	if (name == null)
+    		return;
         cache.remove(name);
     }
 
@@ -128,6 +130,8 @@ public class LimboCache {
      * @return LimboPlayer
      */
     public LimboPlayer getLimboPlayer(String name) {
+    	if (name == null)
+    		return null;
         return cache.get(name);
     }
 
@@ -139,6 +143,8 @@ public class LimboCache {
      * @return boolean
      */
     public boolean hasLimboPlayer(String name) {
+    	if (name == null)
+    		return false;
         return cache.containsKey(name);
     }
 
