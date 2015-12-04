@@ -13,8 +13,6 @@ import java.util.Arrays;
  */
 public final class StringUtils {
 
-    public static final String newline = System.getProperty("line.separator");
-
     private StringUtils() {
         // Utility class
     }

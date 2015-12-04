@@ -2,6 +2,7 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -209,28 +210,28 @@ public class CommandHandler {
     private static void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result,
                                                      CommandParts commandReference, String baseCommand) {
         // Get the command and the suggested command reference
-        CommandParts suggestedCommandReference =
-            new CommandParts(result.getCommandDescription().getCommandReference(commandReference));
-        CommandParts helpCommandReference = new CommandParts(suggestedCommandReference.getRange(1));
+        List<String> suggestedCommandReference =
+            result.getCommandDescription().getCommandReference(commandReference).getList();
+        List<String> helpCommandReference = CollectionUtils.getRange(suggestedCommandReference, 1);
 
         // Show the invalid arguments warning
         sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
 
         // Show the command argument help
-        HelpProvider.showHelp(sender, commandReference, suggestedCommandReference,
+        HelpProvider.showHelp(sender, commandReference, new CommandParts(suggestedCommandReference),
             true, false, true, false, false, false);
 
         // Show the command to use for detailed help
         sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/" + baseCommand
-            + " help " + helpCommandReference);
+            + " help " + CommandUtils.labelsToString(helpCommandReference));
     }
 
     private static void sendCommandAssumptionMessage(CommandSender sender, FoundCommandResult result,
                                                      CommandParts commandReference) {
-        CommandParts assumedCommandParts =
-            new CommandParts(result.getCommandDescription().getCommandReference(commandReference));
+        List<String> assumedCommandParts =
+            result.getCommandDescription().getCommandReference(commandReference).getList();
 
         sender.sendMessage(ChatColor.DARK_RED + "Unknown command, assuming " + ChatColor.GOLD + "/"
-            + assumedCommandParts + ChatColor.DARK_RED + "!");
+            + CommandUtils.labelsToString(assumedCommandParts) + ChatColor.DARK_RED + "!");
     }
 }

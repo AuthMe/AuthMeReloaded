@@ -26,15 +26,6 @@ public class CommandParts {
     /**
      * Constructor.
      *
-     * @param commandParts The command parts instance.
-     */
-    public CommandParts(CommandParts commandParts) {
-        this.parts.addAll(commandParts.getList());
-    }
-
-    /**
-     * Constructor.
-     *
      * @param parts The list of parts.
      */
     public CommandParts(List<String> parts) {
@@ -60,7 +51,7 @@ public class CommandParts {
     }
 
     /**
-     * Get a part by it's index.
+     * Get a part by its index.
      *
      * @param i Part index.
      *
@@ -74,44 +65,6 @@ public class CommandParts {
         // Get and return the argument
         return this.parts.get(i);
     }
-
-    /**
-     * Get a range of the parts starting at the specified index up to the end of the range.
-     *
-     * @param start The starting index.
-     *
-     * @return The parts range. Arguments that were out of bound are not included.
-     */
-    public List<String> getRange(int start) {
-        return getRange(start, getCount() - start);
-    }
-
-    /**
-     * Get a range of the parts.
-     *
-     * @param start The starting index.
-     * @param count The number of parts to get.
-     *
-     * @return The parts range. Parts that were out of bound are not included.
-     */
-    @Deprecated
-    public List<String> getRange(int start, int count) {
-        // Create a new list to put the range into
-        List<String> elements = new ArrayList<>();
-
-        // Get the range
-        for (int i = start; i < start + count; i++) {
-            // Get the part and add it if it's valid
-            String element = get(i);
-            if (element != null)
-                elements.add(element);
-        }
-
-        // Return the list of parts
-        return elements;
-    }
-
-
 
     /**
      * Convert the parts to a string.

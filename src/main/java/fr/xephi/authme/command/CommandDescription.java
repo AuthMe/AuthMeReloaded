@@ -211,8 +211,9 @@ public class CommandDescription {
         List<String> referenceList = new ArrayList<>();
 
         // Check whether this command has a parent, if so, add the absolute parent command
-        if (getParent() != null)
+        if (getParent() != null) {
             referenceList.addAll(getParent().getCommandReference(reference).getList());
+        }
 
         // Get the current label
         referenceList.add(getLabel(reference));
