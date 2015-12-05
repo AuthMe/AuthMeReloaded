@@ -259,6 +259,9 @@ settings:
     delayJoinLeaveMessages: true
     # Do we need to add potion effect Blinding before login/register ?
     applyBlindEffect: false
+    # Do we need to prevent people to login without another case ?
+    # Xephi is registered, also Xephi can login, but not XEPHI/xephi/XePhI
+    preventOtherCase: false
 ExternalBoardOptions:
     # MySQL column for the salt , needed for some forum/cms support
     mySQLColumnSalt: ''

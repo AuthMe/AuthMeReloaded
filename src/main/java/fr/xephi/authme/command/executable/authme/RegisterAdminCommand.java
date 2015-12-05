@@ -43,8 +43,12 @@ public class RegisterAdminCommand extends ExecutableCommand {
         final String playerPassLowerCase = playerPass.toLowerCase();
 
         // Command logic
-        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where") || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify") || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select") || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null") || !playerPassLowerCase.matches(Settings.getPassRegex)) {
-            m.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where")
+            || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify")
+            || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
+            || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
+            || !playerPassLowerCase.matches(Settings.getPassRegex)) {
+            m.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
             return true;
         }
         if (playerPassLowerCase.equalsIgnoreCase(playerName)) {

@@ -18,47 +18,47 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Command permission to login.
      */
-    LOGIN("authme.command.player.login"),
+    LOGIN("authme.player.login"),
 
     /**
      * Command permission to logout.
      */
-    LOGOUT("authme.command.player.logout"),
+    LOGOUT("authme.player.logout"),
 
     /**
      * Command permission to register.
      */
-    REGISTER("authme.command.player.register"),
+    REGISTER("authme.player.register"),
 
     /**
      * Command permission to unregister.
      */
-    UNREGISTER("authme.command.player.unregister"),
+    UNREGISTER("authme.player.unregister"),
 
     /**
      * Command permission to change the password.
      */
-    CHANGE_PASSWORD("authme.command.player.changepassword"),
+    CHANGE_PASSWORD("authme.player.changepassword"),
 
     /**
      * Command permission to add an email address.
      */
-    ADD_EMAIL("authme.command.player.email.add"),
+    ADD_EMAIL("authme.player.email.add"),
 
     /**
      * Command permission to change the email address.
      */
-    CHANGE_EMAIL("authme.command.player.email.change"),
+    CHANGE_EMAIL("authme.player.email.change"),
 
     /**
      * Command permission to recover an account using it's email address.
      */
-    RECOVER_EMAIL("authme.command.player.email.recover"),
+    RECOVER_EMAIL("authme.player.email.recover"),
 
     /**
      * Command permission to use captcha.
      */
-    CAPTCHA("authme.command.player.captcha"),
+    CAPTCHA("authme.player.captcha"),
 
     /**
      * Permission for users a login can be forced to.
@@ -68,32 +68,27 @@ public enum PlayerPermission implements PermissionNode {
     /**
      * Permission for users to bypass force-survival mode.
      */
-    BYPASS_FORCE_SURVIVAL("authme.command.player.bypassforcesurvival"),
+    BYPASS_FORCE_SURVIVAL("authme.player.bypassforcesurvival"),
 
     /**
      * Permission for users to allow two accounts.
      */
-    ALLOW_MULTIPLE_ACCOUNTS("authme.command.player.allow2accounts"),
+    ALLOW_MULTIPLE_ACCOUNTS("authme.player.allow2accounts"),
 
     /**
      * Permission for user to see other accounts.
      */
-    SEE_OTHER_ACCOUNTS("authme.command.player.seeotheraccounts");
+    SEE_OTHER_ACCOUNTS("authme.player.seeotheraccounts"),
+
+	/**
+	 * Permission to use all player (non-admin) commands.
+	 */
+	PLAYER_ALL("authme.player.*");
 
     /**
-     * Permission node.
+     * The permission node.
      */
     private String node;
-
-    /**
-     * Get the permission node.
-     *
-     * @return Permission node.
-     */
-    @Override
-    public String getNode() {
-        return node;
-    }
 
     /**
      * Constructor.
@@ -102,5 +97,15 @@ public enum PlayerPermission implements PermissionNode {
      */
     PlayerPermission(String node) {
         this.node = node;
+    }
+
+    @Override
+    public String getNode() {
+        return node;
+    }
+
+    @Override
+    public PermissionNode getWildcardNode() {
+        return PLAYER_ALL;
     }
 }

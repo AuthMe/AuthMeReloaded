@@ -1,6 +1,7 @@
 package fr.xephi.authme.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ public final class CollectionUtils {
      * @return The sublist consisting at most of {@code count} elements (less if the parameters
      * exceed the size of the list)
      */
-    public static List<String> getRange(List<String> list, int start, int count) {
+    public static <T> List<T> getRange(List<T> list, int start, int count) {
         if (start >= list.size() || count <= 0) {
             return new ArrayList<>();
         } else if (start < 0) {
@@ -38,10 +39,14 @@ public final class CollectionUtils {
      * @return The sublist of all elements from index {@code start} and on; empty list
      * if the start index exceeds the list's size
      */
-    public static List<String> getRange(List<String> list, int start) {
+    public static <T> List<T> getRange(List<T> list, int start) {
         if (start >= list.size()) {
             return new ArrayList<>();
         }
         return getRange(list, start, list.size() - start);
+    }
+
+    public static <T> boolean isEmpty(Collection<T> coll) {
+        return coll == null || coll.isEmpty();
     }
 }
