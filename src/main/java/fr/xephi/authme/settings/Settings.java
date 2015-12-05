@@ -1,5 +1,7 @@
 package fr.xephi.authme.settings;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
@@ -8,10 +10,14 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -94,7 +100,7 @@ public final class Settings {
         getMailPort, maxLoginTry, captchaLength, saltLength,
         getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
         antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
-        getMaxJoinPerIp, getMySQLMaxConnections;
+        getMaxJoinPerIp;
     protected static YamlConfiguration configFile;
     private static AuthMe plugin;
     private static Settings instance;
@@ -170,7 +176,6 @@ public final class Settings {
         isCachingEnabled = configFile.getBoolean("DataSource.caching", true);
         getMySQLHost = configFile.getString("DataSource.mySQLHost", "127.0.0.1");
         getMySQLPort = configFile.getString("DataSource.mySQLPort", "3306");
-        getMySQLMaxConnections = configFile.getInt("DataSource.mySQLMaxConections", 25);
         getMySQLUsername = configFile.getString("DataSource.mySQLUsername", "authme");
         getMySQLPassword = configFile.getString("DataSource.mySQLPassword", "12345");
         getMySQLDatabase = configFile.getString("DataSource.mySQLDatabase", "authme");
@@ -301,39 +306,36 @@ public final class Settings {
     }
 
     private static String loadEmailText() {
-    	if (!EMAIL_FILE.exists())
-    		saveDefaultEmailText();
-    	StringBuilder str = new StringBuilder();
-    	try {
-    		BufferedReader in = new BufferedReader(new FileReader(EMAIL_FILE));
-    		String s;
-    		while ((s = in.readLine()) != null)
-    			str.append(s);
-    		in.close();
-    	} catch(IOException e)
-    	{
-    	}
-    	return str.toString();
-	}
+        if (!EMAIL_FILE.exists())
+            saveDefaultEmailText();
+        StringBuilder str = new StringBuilder();
+        try {
+            BufferedReader in = new BufferedReader(new FileReader(EMAIL_FILE));
+            String s;
+            while ((s = in.readLine()) != null)
+                str.append(s);
+            in.close();
+        } catch (IOException ignored) {
+        }
+        return str.toString();
+    }
 
-	private static void saveDefaultEmailText() {
-		InputStream file = plugin.getResource("email.html");
-		StringBuilder str = new StringBuilder();
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(file, Charset.forName("utf-8")));
-			String s;
-			while ((s = in.readLine()) != null)
-				str.append(s);
-			in.close();
-			Files.touch(EMAIL_FILE);
-			Files.write(str.toString(), EMAIL_FILE, Charsets.UTF_8);
-		}
-		catch(Exception e)
-		{
-		}
-	}
+    private static void saveDefaultEmailText() {
+        InputStream file = plugin.getResource("email.html");
+        StringBuilder str = new StringBuilder();
+        try {
+            BufferedReader in = new BufferedReader(new InputStreamReader(file, Charset.forName("utf-8")));
+            String s;
+            while ((s = in.readLine()) != null)
+                str.append(s);
+            in.close();
+            Files.touch(EMAIL_FILE);
+            Files.write(str.toString(), EMAIL_FILE, Charsets.UTF_8);
+        } catch (Exception ignored) {
+        }
+    }
 
-	public static void setValue(String key, Object value) {
+    public static void setValue(String key, Object value) {
         instance.set(key, value);
         save();
     }
@@ -713,10 +715,9 @@ public final class Settings {
             changes = true;
         }
 
-        if (contains("Email.mailText"))
-        {
-        	set("Email.mailText", null);
-        	ConsoleLogger.showError("Remove Email.mailText from config, we now use the email.html file");
+        if (contains("Email.mailText")) {
+            set("Email.mailText", null);
+            ConsoleLogger.showError("Remove Email.mailText from config, we now use the email.html file");
         }
 
         if (changes) {
