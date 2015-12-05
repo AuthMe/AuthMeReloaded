@@ -90,7 +90,7 @@ public final class CommandInitializer {
             .detailedDescription("Register the specified player with the specified password.")
             .withArgument("player", "Player name", false)
             .withArgument("password", "Password", false)
-            .permissions(OP_ONLY, AdminPermission.REGISTER, AdminPermission.ALL)
+            .permissions(OP_ONLY, AdminPermission.REGISTER)
             .executableCommand(new RegisterAdminCommand())
             .build();
 
@@ -101,7 +101,7 @@ public final class CommandInitializer {
             .description("Unregister a player")
             .detailedDescription("Unregister the specified player.")
             .withArgument("player", "Player name", false)
-            .permissions(OP_ONLY, AdminPermission.UNREGISTER, AdminPermission.ALL)
+            .permissions(OP_ONLY, AdminPermission.UNREGISTER)
             .executableCommand(new UnregisterAdminCommand())
             .build();
 
@@ -112,7 +112,7 @@ public final class CommandInitializer {
             .description("Enforce login player")
             .detailedDescription("Enforce the specified player to login.")
             .withArgument("player", "Online player name", true)
-            .permissions(OP_ONLY, PlayerPermission.CAN_LOGIN_BE_FORCED, AdminPermission.ALL)
+            .permissions(OP_ONLY, PlayerPermission.CAN_LOGIN_BE_FORCED)
             .executableCommand(new ForceLoginCommand())
             .build();
 
@@ -124,7 +124,7 @@ public final class CommandInitializer {
             .detailedDescription("Change the password of a player.")
             .withArgument("player", "Player name", false)
             .withArgument("pwd", "New password", false)
-            .permissions(OP_ONLY, AdminPermission.CHANGE_PASSWORD, AdminPermission.ALL)
+            .permissions(OP_ONLY, AdminPermission.CHANGE_PASSWORD)
             .executableCommand(new ChangePasswordAdminCommand())
             .build();
 
@@ -135,7 +135,7 @@ public final class CommandInitializer {
             .description("Player's last login")
             .detailedDescription("View the date of the specified players last login.")
             .withArgument("player", "Player name", true)
-            .permissions(OP_ONLY, AdminPermission.LAST_LOGIN, AdminPermission.ALL)
+            .permissions(OP_ONLY, AdminPermission.LAST_LOGIN)
             .executableCommand(new LastLoginCommand())
             .build();
 
@@ -146,7 +146,7 @@ public final class CommandInitializer {
             .description("Display player accounts")
             .detailedDescription("Display all accounts of a player by his player name or IP.")
             .withArgument("player", "Player name or IP", true)
-            .permissions(OP_ONLY, AdminPermission.ACCOUNTS, AdminPermission.ALL)
+            .permissions(OP_ONLY, AdminPermission.ACCOUNTS)
             .executableCommand(new AccountsCommand())
             .build();
 
@@ -156,7 +156,7 @@ public final class CommandInitializer {
             .labels("getemail", "getmail", "email", "mail")
             .description("Display player's email")
             .detailedDescription("Display the email address of the specified player if set.")
-            .permissions(OP_ONLY, AdminPermission.GET_EMAIL, AdminPermission.ALL)
+            .permissions(OP_ONLY, AdminPermission.GET_EMAIL)
             .withArgument("player", "Player name", true)
             .executableCommand(new GetEmailCommand())
             .build();
@@ -168,7 +168,7 @@ public final class CommandInitializer {
             .labels("chgemail", "chgmail", "setemail", "setmail")
             .description("Change player's email")
             .detailedDescription("Change the email address of the specified player.")
-            .permissions(OP_ONLY, AdminPermission.CHANGE_EMAIL, AdminPermission.ALL)
+            .permissions(OP_ONLY, AdminPermission.CHANGE_EMAIL)
             .withArgument("player", "Player name", false)
             .withArgument("email", "Player email", false)
             .build();
@@ -180,7 +180,7 @@ public final class CommandInitializer {
         		.labels("getip", "ip")
         		.description("Get player's IP")
         		.detailedDescription("Get the IP address of the specified online player.")
-        		.permissions(OP_ONLY, AdminPermission.GET_IP, AdminPermission.ALL)
+        		.permissions(OP_ONLY, AdminPermission.GET_IP)
         		.withArgument("player", "Player Name", false)
         		.build();
 
@@ -192,7 +192,7 @@ public final class CommandInitializer {
         		.labels("spawn", "home")
         		.description("Teleport to spawn")
         		.detailedDescription("Teleport to the spawn.")
-        		.permissions(OP_ONLY, AdminPermission.SPAWN, AdminPermission.ALL)
+        		.permissions(OP_ONLY, AdminPermission.SPAWN)
         		.withArgument("player", "Player Name", false)
         		.build();
 
@@ -203,7 +203,7 @@ public final class CommandInitializer {
         		.labels("setspawn", "chgspawn")
         		.description("Change the spawn")
         		.detailedDescription("Change the player's spawn to your current position.")
-        		.permissions(OP_ONLY, AdminPermission.SET_SPAWN, AdminPermission.ALL)
+        		.permissions(OP_ONLY, AdminPermission.SET_SPAWN)
         		.build();
 
         // Register the firstspawn command
@@ -213,7 +213,7 @@ public final class CommandInitializer {
         		.labels("firstspawn", "firsthome")
         		.description("Teleport to first spawn")
         		.detailedDescription("Teleport to the first spawn.")
-        		.permissions(OP_ONLY, AdminPermission.FIRST_SPAWN, AdminPermission.ALL)
+        		.permissions(OP_ONLY, AdminPermission.FIRST_SPAWN)
         		.build();
 
 
@@ -224,7 +224,7 @@ public final class CommandInitializer {
         		.labels("setfirstspawn", "chgfirstspawn")
         		.description("Change the first spawn")
         		.detailedDescription("Change the first player's spawn to your current position.")
-        		.permissions(OP_ONLY, AdminPermission.SET_FIRST_SPAWN, AdminPermission.ALL)
+        		.permissions(OP_ONLY, AdminPermission.SET_FIRST_SPAWN)
         		.build();
 
         // Register the purge command
@@ -234,7 +234,7 @@ public final class CommandInitializer {
         		.labels("purge", "delete")
         		.description("Purge old data")
         		.detailedDescription("Purge old AuthMeReloaded data longer than the specified amount of days ago.")
-        		.permissions(OP_ONLY, AdminPermission.PURGE, AdminPermission.ALL)
+        		.permissions(OP_ONLY, AdminPermission.PURGE)
         		.withArgument("days", "Number of days", false)
         		.build();
 
@@ -245,7 +245,7 @@ public final class CommandInitializer {
         		.labels("resetpos", "purgelastposition", "purgelastpos", "resetposition", "resetlastposition", "resetlastpos")
         		.description("Purge player's last position")
         		.detailedDescription("Purge the last know position of the specified player.")
-        		.permissions(OP_ONLY, AdminPermission.PURGE_LAST_POSITION, AdminPermission.ALL)
+        		.permissions(OP_ONLY, AdminPermission.PURGE_LAST_POSITION)
         		.withArgument("player", "Player name", false)
         		.build();
 
@@ -310,7 +310,7 @@ public final class CommandInitializer {
             .description("Login command")
             .detailedDescription("Command to log in using AuthMeReloaded.")
             .parent(null)
-            .permissions(ALLOWED, PlayerPermission.LOGIN, PlayerPermission.ALL_COMMANDS)
+            .permissions(ALLOWED, PlayerPermission.LOGIN)
             .withArgument("password", "Login password", false)
             .build();
 
@@ -340,7 +340,7 @@ public final class CommandInitializer {
             .detailedDescription("Command to register using AuthMeReloaded.")
             .withArgument("password", "Password", false)
             .withArgument("verifyPassword", "Verify password", false)
-            .permissions(ALLOWED, PlayerPermission.REGISTER, PlayerPermission.ALL_COMMANDS)
+            .permissions(ALLOWED, PlayerPermission.REGISTER)
             .executableCommand(new RegisterCommand())
             .build();
 

@@ -26,27 +26,27 @@ public enum AdminPermission implements PermissionNode {
     CHANGE_PASSWORD("authme.command.admin.changepassword"),
 
     /**
-     * Administrator command to see the last login date and time of an user.
+     * Administrator command to see the last login date and time of a user.
      */
     LAST_LOGIN("authme.command.admin.lastlogin"),
 
     /**
-     * Administrator command to see all accounts associated with an user.
+     * Administrator command to see all accounts associated with a user.
      */
     ACCOUNTS("authme.command.admin.accounts"),
 
     /**
-     * Administrator command to get the email address of an user, if set.
+     * Administrator command to get the email address of a user, if set.
      */
     GET_EMAIL("authme.command.admin.getemail"),
 
     /**
-     * Administrator command to set or change the email adress of an user.
+     * Administrator command to set or change the email address of a user.
      */
     CHANGE_EMAIL("authme.command.admin.changemail"),
 
     /**
-     * Administrator command to get the last known IP of an user.
+     * Administrator command to get the last known IP of a user.
      */
     GET_IP("authme.command.admin.getip"),
 
@@ -76,7 +76,7 @@ public enum AdminPermission implements PermissionNode {
     PURGE("authme.command.admin.purge"),
 
     /**
-     * Administrator command to purge the last position of an user.
+     * Administrator command to purge the last position of a user.
      */
     PURGE_LAST_POSITION("authme.command.admin.purgelastpos"),
 
@@ -101,7 +101,7 @@ public enum AdminPermission implements PermissionNode {
     RELOAD("authme.command.admin.reload"),
 
 	/**
-	 * Give access to all admin commands
+	 * Give access to all admin commands.
 	 */
 	ALL("authme.command.admin.*");
 
@@ -112,7 +112,8 @@ public enum AdminPermission implements PermissionNode {
 
     /**
      * Get the permission node.
-     * @return
+     *
+     * @return Permission node.
      */
     @Override
     public String getNode() {
