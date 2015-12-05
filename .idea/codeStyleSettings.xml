@@ -5,6 +5,8 @@
       <value>
         <option name="AUTODETECT_INDENTS" value="false" />
         <option name="LINE_SEPARATOR" value="&#10;" />
+        <option name="CLASS_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
+        <option name="NAMES_COUNT_TO_USE_IMPORT_ON_DEMAND" value="99" />
         <option name="JD_ADD_BLANK_AFTER_PARM_COMMENTS" value="true" />
         <option name="JD_ADD_BLANK_AFTER_RETURN" value="true" />
         <XML>
