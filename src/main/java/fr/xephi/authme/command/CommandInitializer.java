@@ -162,7 +162,7 @@ public final class CommandInitializer {
             .build();
 
         // Register the setemail command
-        CommandDescription setEmailCommand = CommandDescription.builder()
+        CommandDescription.builder()
             .executableCommand(new SetEmailCommand())
             .parent(AUTHME_BASE)
             .labels("chgemail", "chgmail", "setemail", "setmail")
@@ -174,7 +174,7 @@ public final class CommandInitializer {
             .build();
 
         // Register the getip command
-        CommandDescription getIpCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new GetIpCommand())
         		.parent(AUTHME_BASE)
         		.labels("getip", "ip")
@@ -186,18 +186,18 @@ public final class CommandInitializer {
 
 
         // Register the spawn command
-        CommandDescription spawnCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new SpawnCommand())
         		.parent(AUTHME_BASE)
         		.labels("spawn", "home")
         		.description("Teleport to spawn")
-        		.detailedDescription("Teleport to the spawn")
+        		.detailedDescription("Teleport to the spawn.")
         		.permissions(OP_ONLY, AdminPermission.SPAWN, AdminPermission.ALL)
         		.withArgument("player", "Player Name", false)
         		.build();
 
         // Register the setspawn command
-        CommandDescription setSpawnCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new SetSpawnCommand())
         		.parent(AUTHME_BASE)
         		.labels("setspawn", "chgspawn")
@@ -207,7 +207,7 @@ public final class CommandInitializer {
         		.build();
 
         // Register the firstspawn command
-        CommandDescription firstSpawnCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new FirstSpawnCommand())
         		.parent(AUTHME_BASE)
         		.labels("firstspawn", "firsthome")
@@ -218,7 +218,7 @@ public final class CommandInitializer {
 
 
         // Register the setfirstspawn command
-        CommandDescription setFirstSpawnCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new SetFirstSpawnCommand())
         		.parent(AUTHME_BASE)
         		.labels("setfirstspawn", "chgfirstspawn")
@@ -228,7 +228,7 @@ public final class CommandInitializer {
         		.build();
 
         // Register the purge command
-        CommandDescription purgeCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new PurgeCommand())
         		.parent(AUTHME_BASE)
         		.labels("purge", "delete")
@@ -239,7 +239,7 @@ public final class CommandInitializer {
         		.build();
 
         // Register the purgelastposition command
-        CommandDescription purgeLastPositionCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new PurgeLastPositionCommand())
         		.parent(AUTHME_BASE)
         		.labels("resetpos", "purgelastposition", "purgelastpos", "resetposition", "resetlastposition", "resetlastpos")
