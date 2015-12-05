@@ -8,6 +8,8 @@ import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 
+import java.util.List;
+
 /**
  * Helper class for formatting a command's structure (name and arguments)
  * for a Minecraft user.
@@ -37,13 +39,15 @@ public final class HelpSyntaxHelper {
 
         // Get the help command reference, and the command label
         CommandParts helpCommandReference = commandDescription.getCommandReference(commandReference);
+        List<String> helpLabels = helpCommandReference.getList();
+
         final String parentCommand = CommandUtils.labelsToString(
-            CollectionUtils.getRange(helpCommandReference.getList(), 0, helpCommandReference.getCount() - 1));
+            CollectionUtils.getRange(helpCommandReference.getList(), 0, helpLabels.size() - 1));
 
         // Check whether the alternative label should be used
         String commandLabel;
         if (StringUtils.isEmpty(alternativeLabel)) {
-            commandLabel = helpCommandReference.get(helpCommandReference.getCount() - 1);
+            commandLabel = helpLabels.get(helpLabels.size() - 1);
         } else {
             commandLabel = alternativeLabel;
         }

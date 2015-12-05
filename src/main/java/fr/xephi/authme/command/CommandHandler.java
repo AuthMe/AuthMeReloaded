@@ -126,8 +126,10 @@ public class CommandHandler {
      */
     public FoundCommandResult findCommand(CommandParts queryReference) {
         // Make sure the command reference is valid
-        if (queryReference.getCount() <= 0)
+        List<String> labels = queryReference.getList();
+        if (labels.isEmpty()) {
             return null;
+        }
 
         for (CommandDescription commandDescription : commands) {
             // Check whether there's a command description available for the

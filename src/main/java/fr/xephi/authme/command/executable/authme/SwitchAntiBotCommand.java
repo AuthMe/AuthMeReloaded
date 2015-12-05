@@ -28,9 +28,11 @@ public class SwitchAntiBotCommand extends ExecutableCommand {
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Get the new state
         String newState = null;
-        if (commandArguments.getCount() == 1) {
+        List<String> arguments = commandArguments.getList();
+
+        if (arguments.size() == 1) {
             newState = commandArguments.get(0);
-        } else if(commandArguments.getCount() == 0) {
+        } else if (arguments.size() == 0) {
             sender.sendMessage("[AuthMe] AntiBot status: " + AntiBot.getAntiBotStatus().name());
             return true;
         }

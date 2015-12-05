@@ -9,6 +9,7 @@ import fr.xephi.authme.output.Messages;
 import org.bukkit.command.CommandSender;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  */
@@ -17,9 +18,8 @@ public class LastLoginCommand extends ExecutableCommand {
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Get the player
-        String playerName = sender.getName();
-        if (commandArguments.getCount() >= 1)
-            playerName = commandArguments.get(0);
+        List<String> arguments = commandArguments.getList();
+        String playerName = (arguments.size() >= 1) ? arguments.get(0) : sender.getName();
 
         // Validate the player
         AuthMe plugin = AuthMe.getInstance();

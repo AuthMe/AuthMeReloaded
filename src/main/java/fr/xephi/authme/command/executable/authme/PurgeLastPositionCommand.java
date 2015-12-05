@@ -10,6 +10,8 @@ import fr.xephi.authme.output.Messages;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  */
 public class PurgeLastPositionCommand extends ExecutableCommand {
@@ -25,16 +27,13 @@ public class PurgeLastPositionCommand extends ExecutableCommand {
      */
     @Override
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
         final Messages m = plugin.getMessages();
 
+        List<String> arguments = commandArguments.getList();
+        String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
+
         // Get the player
-        String playerName = sender.getName();
-        if (commandArguments.getCount() >= 1)
-            playerName = commandArguments.get(0);
         String playerNameLowerCase = playerName.toLowerCase();
 
         // Purge the last position of the player

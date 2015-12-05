@@ -8,6 +8,8 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 /**
  */
 public class GetEmailCommand extends ExecutableCommand {
@@ -24,8 +26,9 @@ public class GetEmailCommand extends ExecutableCommand {
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // Get the player name
+        List<String> arguments = commandArguments.getList();
         String playerName = sender.getName();
-        if (commandArguments.getCount() >= 1)
+        if (arguments.size() >= 1)
             playerName = commandArguments.get(0);
 
         // Get the authenticated user

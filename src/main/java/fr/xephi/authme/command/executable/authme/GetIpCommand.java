@@ -7,21 +7,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  */
 public class GetIpCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
+        List<String> arguments = commandArguments.getList();
 
         // Get the player query
-        String playerName = sender.getName();
-        if (commandArguments.getCount() >= 1)
-            playerName = commandArguments.get(0);
+        String playerName = (arguments.size() >= 1) ? arguments.get(0) : sender.getName();
 
-        @SuppressWarnings("deprecation")
         Player player = Bukkit.getPlayer(playerName);
         if (player == null) {
             sender.sendMessage("This player is not actually online");

@@ -42,15 +42,6 @@ public class CommandParts {
     }
 
     /**
-     * Get the number of parts.
-     *
-     * @return Part count.
-     */
-    public int getCount() {
-        return this.parts.size();
-    }
-
-    /**
      * Get a part by its index.
      *
      * @param i Part index.
@@ -59,8 +50,9 @@ public class CommandParts {
      */
     public String get(int i) {
         // Make sure the index is in-bound
-        if (i < 0 || i >= getCount())
+        if (i < 0 || i >= parts.size()) {
             return null;
+        }
 
         // Get and return the argument
         return this.parts.get(i);

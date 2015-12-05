@@ -8,6 +8,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  */
 public class ForceLoginCommand extends ExecutableCommand {
@@ -19,7 +21,8 @@ public class ForceLoginCommand extends ExecutableCommand {
 
         // Get the player query
         String playerName = sender.getName();
-        if (commandArguments.getCount() >= 1)
+        List<String> arguments = commandArguments.getList();
+        if (arguments.size() >= 1)
             playerName = commandArguments.get(0);
 
         // Command logic

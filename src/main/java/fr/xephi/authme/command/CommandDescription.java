@@ -459,11 +459,13 @@ public class CommandDescription {
      */
     public FoundCommandResult findCommand(final CommandParts queryReference) {
         // Make sure the command reference is valid
-        if (queryReference.getCount() <= 0)
+        List<String> queryRef = queryReference.getList();
+        if (queryRef.isEmpty()) {
             return null;
+        }
 
         // Check whether this description is for the last element in the command reference, if so return the current command
-        if (queryReference.getCount() <= getParentCount() + 1) {
+        if (queryRef.size() <= getParentCount() + 1) {
             return new FoundCommandResult(
                 this,
                 getCommandReference(queryReference),
@@ -523,12 +525,13 @@ public class CommandDescription {
      */
     public int getSuitableArgumentsDifference(CommandParts commandReference) {
         // Make sure the command reference is valid
-        if (commandReference.getCount() <= 0) {
+        List<String> labels = commandReference.getList();
+        if (labels.isEmpty()) {
             return -1;
         }
 
         // Get the remaining command reference element count
-        int remainingElementCount = commandReference.getCount() - getParentCount() - 1;
+        int remainingElementCount = labels.size() - getParentCount() - 1;
 
         // Check if there are too few arguments
         int minArguments = CommandUtils.getMinNumberOfArguments(this);

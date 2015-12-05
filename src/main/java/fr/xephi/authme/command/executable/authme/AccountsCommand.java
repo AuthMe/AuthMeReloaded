@@ -18,15 +18,14 @@ public class AccountsCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
         final Messages m = plugin.getMessages();
+
+        List<String> arguments = commandArguments.getList();
 
         // Get the player query
         String playerQuery = sender.getName();
-        if (commandArguments.getCount() >= 1)
+        if (arguments.size() >= 1)
             playerQuery = commandArguments.get(0);
         final String playerQueryFinal = playerQuery;
 
