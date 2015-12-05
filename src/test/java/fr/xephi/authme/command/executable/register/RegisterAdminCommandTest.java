@@ -27,7 +27,7 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link RegisterCommand}.
  */
-public class RegisterCommandTest {
+public class RegisterAdminCommandTest {
 
     private static Management managementMock;
     private static Messages messagesMock;

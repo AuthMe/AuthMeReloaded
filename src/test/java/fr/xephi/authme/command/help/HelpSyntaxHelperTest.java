@@ -3,7 +3,7 @@ package fr.xephi.authme.command.help;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.command.executable.authme.RegisterCommand;
+import fr.xephi.authme.command.executable.authme.RegisterAdminCommand;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -122,7 +122,7 @@ public class HelpSyntaxHelperTest {
             .build();
 
         return CommandDescription.builder()
-            .executableCommand(Mockito.mock(RegisterCommand.class))
+            .executableCommand(Mockito.mock(RegisterAdminCommand.class))
             .labels("register", "r")
             .description("Register a player")
             .detailedDescription("Register the specified player with the specified password.")

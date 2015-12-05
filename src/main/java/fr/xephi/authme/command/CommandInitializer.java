@@ -3,7 +3,7 @@ package fr.xephi.authme.command;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.executable.authme.AccountsCommand;
 import fr.xephi.authme.command.executable.authme.AuthMeCommand;
-import fr.xephi.authme.command.executable.authme.ChangePasswordCommand;
+import fr.xephi.authme.command.executable.authme.ChangePasswordAdminCommand;
 import fr.xephi.authme.command.executable.authme.FirstSpawnCommand;
 import fr.xephi.authme.command.executable.authme.ForceLoginCommand;
 import fr.xephi.authme.command.executable.authme.GetEmailCommand;
@@ -12,22 +12,25 @@ import fr.xephi.authme.command.executable.authme.LastLoginCommand;
 import fr.xephi.authme.command.executable.authme.PurgeBannedPlayersCommand;
 import fr.xephi.authme.command.executable.authme.PurgeCommand;
 import fr.xephi.authme.command.executable.authme.PurgeLastPositionCommand;
-import fr.xephi.authme.command.executable.authme.RegisterCommand;
+import fr.xephi.authme.command.executable.authme.RegisterAdminCommand;
 import fr.xephi.authme.command.executable.authme.ReloadCommand;
 import fr.xephi.authme.command.executable.authme.SetEmailCommand;
 import fr.xephi.authme.command.executable.authme.SetFirstSpawnCommand;
 import fr.xephi.authme.command.executable.authme.SetSpawnCommand;
 import fr.xephi.authme.command.executable.authme.SpawnCommand;
 import fr.xephi.authme.command.executable.authme.SwitchAntiBotCommand;
-import fr.xephi.authme.command.executable.authme.UnregisterCommand;
+import fr.xephi.authme.command.executable.authme.UnregisterAdminCommand;
 import fr.xephi.authme.command.executable.authme.VersionCommand;
 import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
+import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.converter.ConverterCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
+import fr.xephi.authme.command.executable.register.RegisterCommand;
+import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.util.Wrapper;
@@ -87,8 +90,8 @@ public final class CommandInitializer {
             .detailedDescription("Register the specified player with the specified password.")
             .withArgument("player", "Player name", false)
             .withArgument("password", "Password", false)
-            .permissions(OP_ONLY, PlayerPermission.REGISTER)
-            .executableCommand(new RegisterCommand())
+            .permissions(OP_ONLY, AdminPermission.REGISTER)
+            .executableCommand(new RegisterAdminCommand())
             .build();
 
         // Register the unregister command
@@ -98,8 +101,8 @@ public final class CommandInitializer {
             .description("Unregister a player")
             .detailedDescription("Unregister the specified player.")
             .withArgument("player", "Player name", false)
-            .permissions(OP_ONLY, PlayerPermission.UNREGISTER)
-            .executableCommand(new UnregisterCommand())
+            .permissions(OP_ONLY, AdminPermission.UNREGISTER)
+            .executableCommand(new UnregisterAdminCommand())
             .build();
 
         // Register the forcelogin command
@@ -122,7 +125,7 @@ public final class CommandInitializer {
             .withArgument("player", "Player name", false)
             .withArgument("pwd", "New password", false)
             .permissions(OP_ONLY, AdminPermission.CHANGE_PASSWORD)
-            .executableCommand(new ChangePasswordCommand())
+            .executableCommand(new ChangePasswordAdminCommand())
             .build();
 
         // Register the last login command
@@ -316,7 +319,7 @@ public final class CommandInitializer {
                 add("logout");
             }
         }, "Logout command", "Command to logout using AuthMeReloaded.", null);
-        LOGOUT_BASE.setCommandPermissions(PlayerPermission.LOGOUT, CommandPermissions.DefaultPermission.ALLOWED);
+        LOGOUT_BASE.setCommandPermissions(PlayerPermission.LOGOUT, ALLOWED);
 
         // Register the help command
         CommandDescription logoutHelpCommand = new CommandDescription(helpCommandExecutable, helpCommandLabels,
@@ -332,7 +335,7 @@ public final class CommandInitializer {
             .withArgument("password", "Password", false)
             .withArgument("verifyPassword", "Verify password", false)
             .permissions(ALLOWED, PlayerPermission.REGISTER)
-            .executableCommand(new fr.xephi.authme.command.executable.register.RegisterCommand())
+            .executableCommand(new RegisterCommand())
             .build();
 
         // Register the help command
@@ -341,13 +344,13 @@ public final class CommandInitializer {
         registerHelpCommand.addArgument(new CommandArgumentDescription("query", "The command or query to view help for.", true));
 
         // Register the base unregister command
-        CommandDescription UNREGISTER_BASE = new CommandDescription(new fr.xephi.authme.command.executable.unregister.UnregisterCommand(), new ArrayList<String>() {
+        CommandDescription UNREGISTER_BASE = new CommandDescription(new UnregisterCommand(), new ArrayList<String>() {
             {
                 add("unregister");
                 add("unreg");
             }
         }, "Unregistration command", "Command to unregister using AuthMeReloaded.", null);
-        UNREGISTER_BASE.setCommandPermissions(PlayerPermission.UNREGISTER, CommandPermissions.DefaultPermission.ALLOWED);
+        UNREGISTER_BASE.setCommandPermissions(PlayerPermission.UNREGISTER, ALLOWED);
         UNREGISTER_BASE.addArgument(new CommandArgumentDescription("password", "Password", false));
 
         // Register the help command
@@ -356,13 +359,13 @@ public final class CommandInitializer {
 
         // Register the base changepassword command
         final CommandDescription CHANGE_PASSWORD_BASE = new CommandDescription(
-            new fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand(), new ArrayList<String>() {
+            new ChangePasswordCommand(), new ArrayList<String>() {
             {
                 add("changepassword");
                 add("changepass");
             }
         }, "Change password command", "Command to change your password using AuthMeReloaded.", null);
-        CHANGE_PASSWORD_BASE.setCommandPermissions(PlayerPermission.CHANGE_PASSWORD, CommandPermissions.DefaultPermission.ALLOWED);
+        CHANGE_PASSWORD_BASE.setCommandPermissions(PlayerPermission.CHANGE_PASSWORD, ALLOWED);
         CHANGE_PASSWORD_BASE.addArgument(new CommandArgumentDescription("password", "Password", false));
         CHANGE_PASSWORD_BASE.addArgument(new CommandArgumentDescription("verifyPassword", "Verify password", false));
 
@@ -392,7 +395,7 @@ public final class CommandInitializer {
                 add("addmail");
             }
         }, "Add E-mail", "Add an new E-Mail address to your account.", EMAIL_BASE);
-        addEmailCommand.setCommandPermissions(PlayerPermission.ADD_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
+        addEmailCommand.setCommandPermissions(PlayerPermission.ADD_EMAIL, ALLOWED);
         addEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
         addEmailCommand.addArgument(new CommandArgumentDescription("verifyEmail", "Email address verification", false));
 
@@ -404,7 +407,7 @@ public final class CommandInitializer {
                 add("changemail");
             }
         }, "Change E-mail", "Change an E-Mail address of your account.", EMAIL_BASE);
-        changeEmailCommand.setCommandPermissions(PlayerPermission.CHANGE_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
+        changeEmailCommand.setCommandPermissions(PlayerPermission.CHANGE_EMAIL, ALLOWED);
         changeEmailCommand.addArgument(new CommandArgumentDescription("oldEmail", "Old email address", false));
         changeEmailCommand.addArgument(new CommandArgumentDescription("newEmail", "New email address", false));
 
@@ -417,7 +420,7 @@ public final class CommandInitializer {
                 add("recovermail");
             }
         }, "Recover using E-mail", "Recover your account using an E-mail address.", EMAIL_BASE);
-        recoverEmailCommand.setCommandPermissions(PlayerPermission.RECOVER_EMAIL, CommandPermissions.DefaultPermission.ALLOWED);
+        recoverEmailCommand.setCommandPermissions(PlayerPermission.RECOVER_EMAIL, ALLOWED);
         recoverEmailCommand.addArgument(new CommandArgumentDescription("email", "Email address", false));
 
         // Register the base captcha command
@@ -427,7 +430,7 @@ public final class CommandInitializer {
                 add("capt");
             }
         }, "Captcha command", "Captcha command for AuthMeReloaded.", null);
-        CAPTCHA_BASE.setCommandPermissions(PlayerPermission.CAPTCHA, CommandPermissions.DefaultPermission.ALLOWED);
+        CAPTCHA_BASE.setCommandPermissions(PlayerPermission.CAPTCHA, ALLOWED);
         CAPTCHA_BASE.addArgument(new CommandArgumentDescription("captcha", "The captcha", false));
 
         // Register the help command

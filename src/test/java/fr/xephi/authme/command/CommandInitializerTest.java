@@ -1,5 +1,7 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
@@ -8,6 +10,7 @@ import org.junit.Test;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static fr.xephi.authme.command.CommandPermissions.DefaultPermission.OP_ONLY;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -221,6 +224,42 @@ public class CommandInitializerTest {
 
         // when/then
         walkThroughCommands(commands, noArgumentForParentChecker);
+    }
+
+    /**
+     * Test that commands defined with the OP_ONLY default permission have at least one admin permission node.
+     */
+    @Test
+    public void shouldNotHavePlayerPermissionIfDefaultsToOpOnly() {
+        // given
+        BiConsumer adminPermissionChecker = new BiConsumer() {
+            // The only exception to this check is the force login command, which should default to OP_ONLY
+            // but semantically it is a player permission
+            final List<String> forceLoginLabels = Arrays.asList("forcelogin", "login");
+
+            @Override
+            public void accept(CommandDescription command, int depth) {
+                CommandPermissions permissions = command.getCommandPermissions();
+                if (permissions != null && OP_ONLY.equals(permissions.getDefaultPermission())) {
+                    if (!hasAdminNode(permissions) && !command.getLabels().equals(forceLoginLabels)) {
+                        fail("The command with labels " + command.getLabels() + " has OP_ONLY default "
+                            + "permission but no permission node on admin level");
+                    }
+                }
+            }
+
+            private boolean hasAdminNode(CommandPermissions permissions) {
+                for (PermissionNode node : permissions.getPermissionNodes()) {
+                    if (node instanceof AdminPermission) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+
+        // when/then
+        walkThroughCommands(commands, adminPermissionChecker);
     }
 
 

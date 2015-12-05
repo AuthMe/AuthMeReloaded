@@ -15,8 +15,9 @@ import org.bukkit.command.CommandSender;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * Admin command to register a user.
  */
-public class RegisterCommand extends ExecutableCommand {
+public class RegisterAdminCommand extends ExecutableCommand {
 
     /**
      * Execute the command.
