@@ -14,6 +14,8 @@ import org.bukkit.entity.Player;
 
 import java.util.concurrent.ConcurrentHashMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  */
 public class LimboCache {
@@ -117,7 +119,8 @@ public class LimboCache {
      * @param name String
      */
     public void deleteLimboPlayer(String name) {
-        cache.remove(name);
+        checkNotNull(name);
+        cache.remove(name.toLowerCase());
     }
 
     /**
@@ -128,7 +131,8 @@ public class LimboCache {
      * @return LimboPlayer
      */
     public LimboPlayer getLimboPlayer(String name) {
-        return cache.get(name);
+        checkNotNull(name);
+        return cache.get(name.toLowerCase());
     }
 
     /**
@@ -139,7 +143,8 @@ public class LimboCache {
      * @return boolean
      */
     public boolean hasLimboPlayer(String name) {
-        return cache.containsKey(name);
+        checkNotNull(name);
+        return cache.containsKey(name.toLowerCase());
     }
 
     /**
@@ -148,9 +153,8 @@ public class LimboCache {
      * @param player Player
      */
     public void updateLimboPlayer(Player player) {
-        if (this.hasLimboPlayer(player.getName().toLowerCase())) {
-            this.deleteLimboPlayer(player.getName().toLowerCase());
-        }
+        checkNotNull(player);
+        deleteLimboPlayer(player.getName().toLowerCase());
         addLimboPlayer(player);
     }
 

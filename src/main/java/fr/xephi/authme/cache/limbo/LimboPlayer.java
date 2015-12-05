@@ -108,8 +108,9 @@ public class LimboPlayer {
      * @param i BukkitTask
      */
     public void setTimeoutTaskId(BukkitTask i) {
-        if (this.timeoutTaskId != null)
+        if (this.timeoutTaskId != null) {
             this.timeoutTaskId.cancel();
+        }
         this.timeoutTaskId = i;
     }
 
@@ -128,9 +129,25 @@ public class LimboPlayer {
      * @param messageTaskId BukkitTask
      */
     public void setMessageTaskId(BukkitTask messageTaskId) {
-        if (this.messageTaskId != null)
+        if (this.messageTaskId != null) {
             this.messageTaskId.cancel();
+        }
         this.messageTaskId = messageTaskId;
+    }
+
+    /**
+     * Method clearTask.
+     *
+     */
+    public void clearTask() {
+        if (messageTaskId != null) {
+            messageTaskId.cancel();
+        }
+        messageTaskId = null;
+        if (timeoutTaskId != null) {
+            timeoutTaskId.cancel();
+        }
+        timeoutTaskId = null;
     }
 
     /**

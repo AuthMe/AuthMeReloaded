@@ -50,31 +50,14 @@ public class AsynchronousJoin {
     }
 
     public void process() {
-        if (AuthMePlayerListener.gameMode.containsKey(name))
-            AuthMePlayerListener.gameMode.remove(name);
-        AuthMePlayerListener.gameMode.putIfAbsent(name, player.getGameMode());
-
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
+        if (Utils.isUnrestricted(player)) {
             return;
         }
+
+        AuthMePlayerListener.gameMode.put(name, player.getGameMode());
 
         if (plugin.ess != null && Settings.disableSocialSpy) {
             plugin.ess.getUser(player).setSocialSpyEnabled(false);
-        }
-
-        if (!plugin.canConnect()) {
-            final GameMode gM = AuthMePlayerListener.gameMode.get(name);
-            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                    player.setGameMode(gM);
-                    player.kickPlayer("Server is loading, please wait before joining!");
-                }
-
-            });
-            return;
         }
 
         final String ip = plugin.getIP(player);
@@ -253,8 +236,11 @@ public class AsynchronousJoin {
                 ? m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE)
                 : m.retrieve(MessageKey.REGISTER_MESSAGE);
         }
-        BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
-        LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
+        if (LimboCache.getInstance().getLimboPlayer(name) != null)
+        {
+            BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
+            LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
+        }
     }
 
     private boolean needFirstSpawn() {

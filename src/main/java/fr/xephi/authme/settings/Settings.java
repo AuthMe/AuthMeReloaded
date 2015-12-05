@@ -8,7 +8,11 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+
 import java.io.*;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -23,6 +27,7 @@ public final class Settings {
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
     public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
+    public static final File EMAIL_FILE = new File(PLUGIN_FOLDER, "email.html");
     public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
     public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
     // This is not an option!
@@ -105,6 +110,11 @@ public final class Settings {
         configFile = (YamlConfiguration) plugin.getConfig();
     }
 
+    /**
+     * Method reload.
+     *
+     * @throws Exception
+     */
     public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
         boolean exist = SETTINGS_FILE.exists();
@@ -179,7 +189,12 @@ public final class Settings {
         getMySQLColumnRealName = configFile.getString("DataSource.mySQLRealName", "realname");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
-        getUnrestrictedName = configFile.getStringList("settings.unrestrictions.UnrestrictedName");
+
+        getUnrestrictedName = new ArrayList<>();
+        for (String name : configFile.getStringList("settings.unrestrictions.UnrestrictedName")) {
+            getUnrestrictedName.add(name.toLowerCase());
+        }
+
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
         getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
 
@@ -221,7 +236,7 @@ public final class Settings {
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
         getMailSubject = configFile.getString("Email.mailSubject", "Your new AuthMe Password");
-        getMailText = configFile.getString("Email.mailText", "Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword");
+        getMailText = loadEmailText();
         emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
@@ -285,11 +300,49 @@ public final class Settings {
 
     }
 
-    public static void setValue(String key, Object value) {
+    private static String loadEmailText() {
+    	if (!EMAIL_FILE.exists())
+    		saveDefaultEmailText();
+    	StringBuilder str = new StringBuilder();
+    	try {
+    		BufferedReader in = new BufferedReader(new FileReader(EMAIL_FILE));
+    		String s;
+    		while ((s = in.readLine()) != null)
+    			str.append(s);
+    		in.close();
+    	} catch(IOException e)
+    	{
+    	}
+    	return str.toString();
+	}
+
+	private static void saveDefaultEmailText() {
+		InputStream file = plugin.getResource("email.html");
+		StringBuilder str = new StringBuilder();
+		try {
+			BufferedReader in = new BufferedReader(new InputStreamReader(file, Charset.forName("utf-8")));
+			String s;
+			while ((s = in.readLine()) != null)
+				str.append(s);
+			in.close();
+			Files.touch(EMAIL_FILE);
+			Files.write(str.toString(), EMAIL_FILE, Charsets.UTF_8);
+		}
+		catch(Exception e)
+		{
+		}
+	}
+
+	public static void setValue(String key, Object value) {
         instance.set(key, value);
         save();
     }
 
+    /**
+     * Method getPasswordHash.
+     *
+     * @return HashAlgorithm
+     */
     private static HashAlgorithm getPasswordHash() {
         String key = "settings.security.passwordHash";
         try {
@@ -300,6 +353,11 @@ public final class Settings {
         }
     }
 
+    /**
+     * Method getDataSource.
+     *
+     * @return DataSourceType
+     */
     private static DataSourceType getDataSource() {
         String key = "DataSource.backend";
         try {
@@ -353,6 +411,13 @@ public final class Settings {
         }
     }
 
+    /**
+     * Method checkLang.
+     *
+     * @param lang String
+     *
+     * @return String
+     */
     public static String checkLang(String lang) {
         if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
             ConsoleLogger.info("Set Language to: " + lang);
@@ -366,6 +431,11 @@ public final class Settings {
         return "en";
     }
 
+    /**
+     * Method switchAntiBotMod.
+     *
+     * @param mode boolean
+     */
     public static void switchAntiBotMod(boolean mode) {
         if (mode) {
             isKickNonRegisteredEnabled = true;
@@ -407,6 +477,13 @@ public final class Settings {
         }
     }
 
+    /**
+     * Method isEmailCorrect.
+     *
+     * @param email String
+     *
+     * @return boolean
+     */
     public static boolean isEmailCorrect(String email) {
         if (!email.contains("@"))
             return false;
@@ -636,6 +713,12 @@ public final class Settings {
             changes = true;
         }
 
+        if (contains("Email.mailText"))
+        {
+        	set("Email.mailText", null);
+        	ConsoleLogger.showError("Remove Email.mailText from config, we now use the email.html file");
+        }
+
         if (changes) {
             plugin.getLogger().warning("Merged new Config Options - I'm not an error, please don't report me");
             plugin.getLogger().warning("Please check your config.yml file for new configs!");
@@ -653,7 +736,7 @@ public final class Settings {
 
     /**
      * Saves current configuration (plus defaults) to disk.
-     * <p/>
+     * <p>
      * If defaults and configuration are empty, saves blank file.
      *
      * @return True if saved successfully

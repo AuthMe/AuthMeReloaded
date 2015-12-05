@@ -55,7 +55,7 @@ public class RegisterCommand extends ExecutableCommand {
         }
         if (commandArguments.getCount() > 1 && Settings.getEnablePasswordVerifier) {
             if (!commandArguments.get(0).equals(commandArguments.get(1))) {
-                m.send(player, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+                m.send(player, MessageKey.PASSWORD_MATCH_ERROR);
                 return true;
             }
         }
