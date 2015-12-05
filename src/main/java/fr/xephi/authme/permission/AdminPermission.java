@@ -8,97 +8,102 @@ public enum AdminPermission implements PermissionNode {
     /**
      * Administrator command to register a new user.
      */
-    REGISTER("authme.command.admin.register"),
+    REGISTER("authme.admin.register"),
 
     /**
      * Administrator command to unregister an existing user.
      */
-    UNREGISTER("authme.command.admin.unregister"),
+    UNREGISTER("authme.admin.unregister"),
 
     /**
      * Administrator command to force-login an existing user.
      */
-    FORCE_LOGIN("authme.command.admin.forcelogin"),
+    FORCE_LOGIN("authme.admin.forcelogin"),
 
     /**
      * Administrator command to change the password of a user.
      */
-    CHANGE_PASSWORD("authme.command.admin.changepassword"),
+    CHANGE_PASSWORD("authme.admin.changepassword"),
 
     /**
-     * Administrator command to see the last login date and time of an user.
+     * Administrator command to see the last login date and time of a user.
      */
-    LAST_LOGIN("authme.command.admin.lastlogin"),
+    LAST_LOGIN("authme.admin.lastlogin"),
 
     /**
-     * Administrator command to see all accounts associated with an user.
+     * Administrator command to see all accounts associated with a user.
      */
-    ACCOUNTS("authme.command.admin.accounts"),
+    ACCOUNTS("authme.admin.accounts"),
 
     /**
-     * Administrator command to get the email address of an user, if set.
+     * Administrator command to get the email address of a user, if set.
      */
-    GET_EMAIL("authme.command.admin.getemail"),
+    GET_EMAIL("authme.admin.getemail"),
 
     /**
-     * Administrator command to set or change the email adress of an user.
+     * Administrator command to set or change the email address of a user.
      */
-    CHANGE_EMAIL("authme.command.admin.changemail"),
+    CHANGE_EMAIL("authme.admin.changemail"),
 
     /**
-     * Administrator command to get the last known IP of an user.
+     * Administrator command to get the last known IP of a user.
      */
-    GET_IP("authme.command.admin.getip"),
+    GET_IP("authme.admin.getip"),
 
     /**
      * Administrator command to teleport to the AuthMe spawn.
      */
-    SPAWN("authme.command.admin.spawn"),
+    SPAWN("authme.admin.spawn"),
 
     /**
      * Administrator command to set the AuthMe spawn.
      */
-    SET_SPAWN("authme.command.admin.setspawn"),
+    SET_SPAWN("authme.admin.setspawn"),
 
     /**
      * Administrator command to teleport to the first AuthMe spawn.
      */
-    FIRST_SPAWN("authme.command.admin.firstspawn"),
+    FIRST_SPAWN("authme.admin.firstspawn"),
 
     /**
      * Administrator command to set the first AuthMe spawn.
      */
-    SET_FIRST_SPAWN("authme.command.admin.setfirstspawn"),
+    SET_FIRST_SPAWN("authme.admin.setfirstspawn"),
 
     /**
      * Administrator command to purge old user data.
      */
-    PURGE("authme.command.admin.purge"),
+    PURGE("authme.admin.purge"),
 
     /**
-     * Administrator command to purge the last position of an user.
+     * Administrator command to purge the last position of a user.
      */
-    PURGE_LAST_POSITION("authme.command.admin.purgelastpos"),
+    PURGE_LAST_POSITION("authme.admin.purgelastpos"),
 
     /**
      * Administrator command to purge all data associated with banned players.
      */
-    PURGE_BANNED_PLAYERS("authme.command.admin.purgebannedplayers"),
+    PURGE_BANNED_PLAYERS("authme.admin.purgebannedplayers"),
 
     /**
      * Administrator command to toggle the AntiBot protection status.
      */
-    SWITCH_ANTIBOT("authme.command.admin.switchantibot"),
+    SWITCH_ANTIBOT("authme.admin.switchantibot"),
 
     /**
      * Administrator command to convert old or other data to AuthMe data.
      */
-    CONVERTER("authme.command.admin.converter"),
+    CONVERTER("authme.admin.converter"),
 
     /**
      * Administrator command to reload the plugin configuration.
      */
-    RELOAD("authme.command.admin.reload");
+    RELOAD("authme.admin.reload"),
+
+	/**
+	 * Give access to all admin commands.
+	 */
+	ALL("authme.admin.*");
 
     /**
      * Permission node.
@@ -107,7 +112,8 @@ public enum AdminPermission implements PermissionNode {
 
     /**
      * Get the permission node.
-     * @return
+     *
+     * @return Permission node.
      */
     @Override
     public String getNode() {
