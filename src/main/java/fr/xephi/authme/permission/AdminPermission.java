@@ -103,22 +103,12 @@ public enum AdminPermission implements PermissionNode {
 	/**
 	 * Give access to all admin commands.
 	 */
-	ALL("authme.admin.*");
+	ADMIN_ALL("authme.admin.*");
 
     /**
-     * Permission node.
+     * The permission node.
      */
     private String node;
-
-    /**
-     * Get the permission node.
-     *
-     * @return Permission node.
-     */
-    @Override
-    public String getNode() {
-        return node;
-    }
 
     /**
      * Constructor.
@@ -127,5 +117,15 @@ public enum AdminPermission implements PermissionNode {
      */
     AdminPermission(String node) {
         this.node = node;
+    }
+
+    @Override
+    public String getNode() {
+        return node;
+    }
+
+    @Override
+    public PermissionNode getWildcardNode() {
+        return ADMIN_ALL;
     }
 }

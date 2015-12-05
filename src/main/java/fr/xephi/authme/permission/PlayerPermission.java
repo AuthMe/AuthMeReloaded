@@ -83,22 +83,12 @@ public enum PlayerPermission implements PermissionNode {
 	/**
 	 * Permission to use all player (non-admin) commands.
 	 */
-	ALL_COMMANDS("authme.player.*");
+	PLAYER_ALL("authme.player.*");
 
     /**
-     * Permission node.
+     * The permission node.
      */
     private String node;
-
-    /**
-     * Get the permission node.
-     *
-     * @return Permission node.
-     */
-    @Override
-    public String getNode() {
-        return node;
-    }
 
     /**
      * Constructor.
@@ -107,5 +97,15 @@ public enum PlayerPermission implements PermissionNode {
      */
     PlayerPermission(String node) {
         this.node = node;
+    }
+
+    @Override
+    public String getNode() {
+        return node;
+    }
+
+    @Override
+    public PermissionNode getWildcardNode() {
+        return PLAYER_ALL;
     }
 }
