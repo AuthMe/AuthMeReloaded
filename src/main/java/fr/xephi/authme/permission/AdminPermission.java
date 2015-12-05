@@ -98,7 +98,12 @@ public enum AdminPermission implements PermissionNode {
     /**
      * Administrator command to reload the plugin configuration.
      */
-    RELOAD("authme.command.admin.reload");
+    RELOAD("authme.command.admin.reload"),
+
+	/**
+	 * Give access to all admin commands
+	 */
+	ALL("authme.command.admin.*");
 
     /**
      * Permission node.
