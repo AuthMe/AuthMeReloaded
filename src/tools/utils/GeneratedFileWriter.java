@@ -1,61 +1,47 @@
 package utils;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStreamWriter;
-import java.util.Date;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Map;
 
 /**
  * Utility class for writing a generated file with a timestamp.
  */
 public final class GeneratedFileWriter {
 
+    private final static Charset CHARSET = Charset.forName("utf-8");
+
     private GeneratedFileWriter() {
     }
 
-    public static void createGeneratedFile(File file, String contents, CommentType commentFormat) {
-        validateFile(file);
+    public static void generateFileFromTemplate(String templateFile, String destinationFile, Map<String, Object> tags) {
+        String template = readFromFile(templateFile);
+        String result = TagReplacer.applyReplacements(template, tags);
 
-        try (OutputStreamWriter osw = new OutputStreamWriter(new FileOutputStream(file))) {
-            osw.write(generateComment(commentFormat));
-            osw.write(contents);
+        writeToFile(destinationFile, result);
+    }
+
+    private static void writeToFile(String outputFile, String contents) {
+        try {
+            Files.write(Paths.get(outputFile), contents.getBytes());
         } catch (IOException e) {
-            throw new RuntimeException("Could not write to file '" + file.getName() + "'", e);
+            throw new RuntimeException("Failed to write to file '" + outputFile + "'", e);
         }
     }
 
-    public static void createGeneratedFile(String fileName, String contents, CommentType commentFormat) {
-        createGeneratedFile(new File(fileName), contents, commentFormat);
-    }
-
-    private static String generateComment(CommentType commentFormat) {
-        String comment = "Auto-generated file, generated on " + new Date() + "\n\n";
-        switch (commentFormat) {
-            case JAVA:
-                return "// " + comment;
-            case YML:
-                return "# " + comment;
-            default:
-                throw new RuntimeException("Unknown comment format '" + commentFormat + "'");
+    public static String readFromFile(String file) {
+        try {
+            return new String(Files.readAllBytes(Paths.get(file)), CHARSET);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read from file '" + file + "'", e);
         }
     }
 
-    private static void validateFile(File file) {
-        if (!file.exists()) {
-            System.out.println("File '" + file.getName() + "' doesn't exist; attempting to create it");
-            try {
-                boolean success = file.createNewFile();
-                if (!success) {
-                    throw new RuntimeException("Failed to create file '" + file.getName() + "'");
-                }
-            } catch (IOException e) {
-                throw new RuntimeException("Could not create file '" + file.getName() + "'", e);
-            }
-        }
-        if (!file.canWrite()) {
-            throw new RuntimeException("File '" + file.getName() + "' is not writable");
-        }
+    public static String readFromToolsFile(String file) {
+        return readFromFile(ToolsConstants.TOOLS_SOURCE_ROOT + file);
     }
+
 
 }

@@ -1,4 +1,4 @@
-package permissionstree;
+package permissions;
 
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
