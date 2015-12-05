@@ -1,6 +1,5 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.command.CommandPermissions.DefaultPermission;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.executable.authme.AccountsCommand;
 import fr.xephi.authme.command.executable.authme.AuthMeCommand;
@@ -38,8 +37,8 @@ import fr.xephi.authme.util.Wrapper;
 
 import java.util.*;
 
-import static fr.xephi.authme.command.CommandPermissions.DefaultPermission.ALLOWED;
-import static fr.xephi.authme.command.CommandPermissions.DefaultPermission.OP_ONLY;
+import static fr.xephi.authme.permission.DefaultPermission.ALLOWED;
+import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 
 /**
  * Initializes all available AuthMe commands.

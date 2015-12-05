@@ -1,5 +1,6 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -555,16 +556,6 @@ public class CommandDescription {
         return this.permissions;
     }
 
-    /**
-     * Set the command permissions.
-     *
-     * @param permissionNode    The permission node required.
-     * @param defaultPermission The default permission.
-     */
-    public void setCommandPermissions(PermissionNode permissionNode, CommandPermissions.DefaultPermission defaultPermission) {
-        this.permissions = new CommandPermissions(permissionNode, defaultPermission);
-    }
-
     public static CommandBuilder builder() {
         return new CommandBuilder();
     }
@@ -643,7 +634,7 @@ public class CommandDescription {
             return this;
         }
 
-        public CommandBuilder permissions(CommandPermissions.DefaultPermission defaultPermission,
+        public CommandBuilder permissions(DefaultPermission defaultPermission,
                                           PermissionNode... permissionNodes) {
             this.permissions = new CommandPermissions(asMutableList(permissionNodes), defaultPermission);
             return this;
