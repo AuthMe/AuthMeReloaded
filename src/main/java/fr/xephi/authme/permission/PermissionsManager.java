@@ -328,7 +328,8 @@ public class PermissionsManager implements PermissionsService {
     }
 
     public boolean hasPermission(Player player, CommandDescription command) {
-        if (CollectionUtils.isEmpty(command.getCommandPermissions().getPermissionNodes())) {
+        if (command.getCommandPermissions() == null
+            || CollectionUtils.isEmpty(command.getCommandPermissions().getPermissionNodes())) {
             return true;
         }
 
