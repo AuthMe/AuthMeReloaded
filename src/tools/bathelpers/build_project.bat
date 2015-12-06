@@ -3,4 +3,4 @@ if "%jarfile%" == "" (
   call setvars.bat
 )
 
-mvn clean install -f "%pomfile%"
+mvn clean install -f "%pomfile%" -B
