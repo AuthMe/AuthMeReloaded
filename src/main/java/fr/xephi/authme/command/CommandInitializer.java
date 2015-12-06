@@ -285,9 +285,9 @@ public final class CommandInitializer {
 
         // Register the reload command
         CommandDescription reloadCommand = CommandDescription.builder()
-        		.executableCommand(new PurgeLastPositionCommand())
+        		.executableCommand(new ReloadCommand())
         		.parent(AUTHME_BASE)
-        		.labels("reload", "reload")
+        		.labels("reload", "rld")
         		.description("Reload plugin")
         		.detailedDescription("Reload the AutheMeReloaded plugin.")
         		.permissions(OP_ONLY, AdminPermission.RELOAD)
@@ -321,7 +321,6 @@ public final class CommandInitializer {
         		.labels(helpCommandLabels)
         		.description("View Help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded login commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -342,7 +341,6 @@ public final class CommandInitializer {
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded logout commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -365,7 +363,6 @@ public final class CommandInitializer {
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded register commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -387,7 +384,6 @@ public final class CommandInitializer {
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded unregister commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -410,7 +406,6 @@ public final class CommandInitializer {
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded changepassword commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -421,7 +416,6 @@ public final class CommandInitializer {
         		.labels("email", "mail")
         		.description("Email command")
         		.detailedDescription("The AuthMeReloaded Email command base.")
-        		.permissions(ALLOWED)
         		.build();
 
         // Register the help command
@@ -431,7 +425,6 @@ public final class CommandInitializer {
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded email commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -489,7 +482,6 @@ public final class CommandInitializer {
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded captcha commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -511,7 +503,6 @@ public final class CommandInitializer {
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded converter commands.")
-        		.permissions(OP_ONLY)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
