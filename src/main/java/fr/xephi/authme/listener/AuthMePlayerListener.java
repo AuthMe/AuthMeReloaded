@@ -28,7 +28,24 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -241,7 +258,12 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+        // Get the permissions manager
+        PermissionsManager permsMan = plugin.getPermissionsManager();
+        final Player player = event.getPlayer();
+
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL
+            && permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
             int playersOnline = Utils.getOnlinePlayers().size();
             if (playersOnline > plugin.getServer().getMaxPlayers()) {
                 event.allow();
@@ -262,10 +284,6 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        // Get the permissions manager
-        PermissionsManager permsMan = plugin.getPermissionsManager();
-
-        final Player player = event.getPlayer();
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
             event.setResult(PlayerLoginEvent.Result.KICK_FULL);
