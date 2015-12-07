@@ -1,6 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionNode;
 import org.bukkit.command.CommandSender;
@@ -25,18 +26,6 @@ public class CommandPermissions {
     /**
      * Constructor.
      *
-     * @param permissionNode    The permission node required to execute a command.
-     * @param defaultPermission The default permission if the permission nodes couldn't be used.
-     */
-    public CommandPermissions(PermissionNode permissionNode, DefaultPermission defaultPermission) {
-        this.permissionNodes = new ArrayList<>();
-        this.permissionNodes.add(permissionNode);
-        this.defaultPermission = defaultPermission;
-    }
-
-    /**
-     * Constructor.
-     *
      * @param permissionNodes   The permission nodes required to execute a command.
      * @param defaultPermission The default permission if the permission nodes couldn't be used.
      */
@@ -54,16 +43,6 @@ public class CommandPermissions {
         return this.permissionNodes;
     }
 
-
-    /**
-     * Get the number of permission nodes set.
-     *
-     * @return Permission node count.
-     */
-    public int getPermissionNodeCount() {
-        return this.permissionNodes.size();
-    }
-
     /**
      * Check whether this command requires any permission to be executed. This is based on the getPermission() method.
      *
@@ -73,31 +52,28 @@ public class CommandPermissions {
      */
     public boolean hasPermission(CommandSender sender) {
         // Make sure any permission node is set
-        if (getPermissionNodeCount() == 0)
+        if (permissionNodes.isEmpty()) {
             return true;
+        }
 
-        // Get the default permission
+        PermissionsManager permissionsManager = AuthMe.getInstance().getPermissionsManager();
         final boolean defaultPermission = getDefaultPermissionCommandSender(sender);
 
         // Make sure the command sender is a player, if not use the default
-        if (!(sender instanceof Player))
+        if (!(sender instanceof Player)) {
             return defaultPermission;
+        }
 
         // Get the player instance
         Player player = (Player) sender;
 
         // Get the permissions manager, and make sure it's instance is valid
-        PermissionsManager permissionsManager = AuthMe.getInstance().getPermissionsManager();
+
         if (permissionsManager == null)
             return false;
 
         // Check whether the player has permission, return the result
-        for (PermissionNode node : this.permissionNodes) {
-            if (!permissionsManager.hasPermission(player, node, defaultPermission)) {
-                return false;
-            }
-        }
-        return true;
+        return permissionsManager.hasPermission(player, this.permissionNodes, defaultPermission);
     }
 
     /**
@@ -109,14 +85,6 @@ public class CommandPermissions {
         return this.defaultPermission;
     }
 
-    /**
-     * Set the default permission used if the permission nodes couldn't be used.
-     *
-     * @param defaultPermission The default permission.
-     */
-    public void setDefaultPermission(DefaultPermission defaultPermission) {
-        this.defaultPermission = defaultPermission;
-    }
 
     /**
      * Get the default permission for a specified command sender.
@@ -137,13 +105,5 @@ public class CommandPermissions {
             default:
                 return false;
         }
-    }
-
-    /**
-     */
-    public enum DefaultPermission {
-        NOT_ALLOWED,
-        OP_ONLY,
-        ALLOWED
     }
 }

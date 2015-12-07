@@ -18,7 +18,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  * Admin command for changing a player's password.
  */
-public class ChangePasswordCommand extends ExecutableCommand {
+public class ChangePasswordAdminCommand extends ExecutableCommand {
 
     @Override
     public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {

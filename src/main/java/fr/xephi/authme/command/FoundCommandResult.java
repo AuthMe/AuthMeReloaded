@@ -62,26 +62,12 @@ public class FoundCommandResult {
     }
 
     /**
-     * Set the command description.
-     *
-     * @param commandDescription The command description.
-     */
-    public void setCommandDescription(CommandDescription commandDescription) {
-        this.commandDescription = commandDescription;
-    }
-
-    /**
      * Check whether the command is executable.
      *
      * @return True if the command is executable, false otherwise.
      */
     public boolean isExecutable() {
-        // Make sure the command description is valid
-        if (this.commandDescription == null)
-            return false;
-
-        // Check whether the command is executable, return the result
-        return this.commandDescription.isExecutable();
+        return commandDescription != null;
     }
 
     /**
@@ -153,10 +139,11 @@ public class FoundCommandResult {
      */
     public double getDifference() {
         // Get the difference through the command found
-        if (this.commandDescription != null)
+        if (this.commandDescription != null) {
             return this.commandDescription.getCommandDifference(this.queryReference);
+        }
 
         // Get the difference from the query reference
-        return this.queryReference.getDifference(commandReference, true);
+        return CommandUtils.getDifference(queryReference.getList(), commandReference.getList(), true);
     }
 }

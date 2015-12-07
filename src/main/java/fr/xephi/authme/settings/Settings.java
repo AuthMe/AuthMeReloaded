@@ -73,7 +73,7 @@ public final class Settings {
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
-        customAttributes, generateImage, isRemoveSpeedEnabled;
+        customAttributes, generateImage, isRemoveSpeedEnabled, preventOtherCase;
     public static String helpHeader, getNickRegex, getUnloggedinGroup, getMySQLHost,
         getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
         getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
@@ -294,6 +294,7 @@ public final class Settings {
         forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
         generateImage = configFile.getBoolean("Email.generateImage", false);
+        preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
 
         // Load the welcome message
         getWelcomeMessage();
@@ -711,6 +712,12 @@ public final class Settings {
         if (!contains("DataSource.mySQLRealName")) {
             set("DataSource.mySQLRealName", "realname");
             changes = true;
+        }
+
+        if (!contains("settings.preventOtherCase"))
+        {
+        	set("settings.preventOtherCase", false);
+        	changes = true;
         }
 
         if (contains("Email.mailText"))

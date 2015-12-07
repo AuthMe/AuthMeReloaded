@@ -2,13 +2,14 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
@@ -28,104 +29,70 @@ public class CommandHandler {
      */
     private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
 
+    private final Set<CommandDescription> commands;
+
     /**
-     * Process a command.
+     * Create a command handler.
+     *
+     * @param commands The collection of available AuthMe commands
+     */
+    public CommandHandler(Set<CommandDescription> commands) {
+        this.commands = commands;
+    }
+
+    /**
+     * Map a command that was invoked to the proper {@link CommandDescription} or return a useful error
+     * message upon failure.
      *
      * @param sender             The command sender (Bukkit).
-     * @param bukkitCommand      The command (Bukkit).
      * @param bukkitCommandLabel The command label (Bukkit).
      * @param bukkitArgs         The command arguments (Bukkit).
      *
      * @return True if the command was executed, false otherwise.
      */
-    // TODO ljacqu 20151129: Rename onCommand() method to something not suggesting it is auto-invoked by an event
-    public boolean onCommand(CommandSender sender, Command bukkitCommand, String bukkitCommandLabel, String[] bukkitArgs) {
+    public boolean processCommand(CommandSender sender, String bukkitCommandLabel, String[] bukkitArgs) {
         List<String> commandArgs = skipEmptyArguments(bukkitArgs);
+        // Add the Bukkit command label to the front so we get a list like [authme, register, pass, passConfirm]
+        commandArgs.add(0, bukkitCommandLabel);
 
-        // Make sure the command isn't empty (does this happen?)
-        CommandParts commandReference = new CommandParts(bukkitCommandLabel, commandArgs);
-        if (commandReference.getCount() == 0)
-            return false;
+        // TODO: remove commandParts
+        CommandParts commandReference = new CommandParts(commandArgs);
 
         // Get a suitable command for this reference, and make sure it isn't null
         FoundCommandResult result = findCommand(commandReference);
         if (result == null) {
+            // TODO ljacqu 20151204: Log more information to the console (bukkitCommandLabel)
             sender.sendMessage(ChatColor.DARK_RED + "Failed to parse " + AuthMe.getPluginName() + " command!");
             return false;
         }
 
-        // Get the base command
-        String baseCommand = commandReference.get(0);
+
+        String baseCommand = commandArgs.get(0);
 
         // Make sure the difference between the command reference and the actual command isn't too big
         final double commandDifference = result.getDifference();
-        if (commandDifference > ASSUME_COMMAND_THRESHOLD) {
-            // Show the unknown command warning
-            sender.sendMessage(ChatColor.DARK_RED + "Unknown command!");
+        if (commandDifference <= ASSUME_COMMAND_THRESHOLD) {
 
-            // Show a command suggestion if available and the difference isn't too big
-            if (commandDifference < SUGGEST_COMMAND_THRESHOLD)
-                if (result.getCommandDescription() != null)
-                    sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/" + result.getCommandDescription().getCommandReference(commandReference) + ChatColor.YELLOW + "?");
+            // Show a message when the command handler is assuming a command
+            if (commandDifference > 0) {
+                sendCommandAssumptionMessage(sender, result, commandReference);
+            }
 
-            // Show the help command
-            sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + baseCommand + " help" + ChatColor.YELLOW + " to view help.");
-            return true;
+            if (!result.hasPermission(sender)) {
+                sender.sendMessage(ChatColor.DARK_RED + "You don't have permission to use this command!");
+            } else if (!result.hasProperArguments()) {
+                sendImproperArgumentsMessage(sender, result, commandReference, baseCommand);
+            } else {
+                return result.executeCommand(sender);
+            }
+        } else {
+            sendUnknownCommandMessage(sender, commandDifference, result, baseCommand);
         }
-
-        // Show a message when the command handler is assuming a command
-        if (commandDifference > 0) {
-            // Get the suggested command
-            CommandParts suggestedCommandParts = new CommandParts(result.getCommandDescription().getCommandReference(commandReference));
-
-            // Show the suggested command
-            sender.sendMessage(ChatColor.DARK_RED + "Unknown command, assuming " + ChatColor.GOLD + "/" + suggestedCommandParts +
-                ChatColor.DARK_RED + "!");
-        }
-
-        // Make sure the command is executable
-        if (!result.isExecutable()) {
-            // Get the command reference
-            CommandParts helpCommandReference = new CommandParts(result.getCommandReference().getRange(1));
-
-            // Show the unknown command warning
-            sender.sendMessage(ChatColor.DARK_RED + "Invalid command!");
-
-            // Show the help command
-            sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + baseCommand + " help " + helpCommandReference + ChatColor.YELLOW + " to view help.");
-            return true;
-        }
-
-        // Make sure the command sender has permission
-        if (!result.hasPermission(sender)) {
-            // Show the no permissions warning
-            sender.sendMessage(ChatColor.DARK_RED + "You don't have permission to use this command!");
-            return true;
-        }
-
-        // Make sure the command sender has permission
-        if (!result.hasProperArguments()) {
-            // Get the command and the suggested command reference
-            CommandParts suggestedCommandReference = new CommandParts(result.getCommandDescription().getCommandReference(commandReference));
-            CommandParts helpCommandReference = new CommandParts(suggestedCommandReference.getRange(1));
-
-            // Show the invalid arguments warning
-            sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
-
-            // Show the command argument help
-            HelpProvider.showHelp(sender, commandReference, suggestedCommandReference, true, false, true, false, false, false);
-
-            // Show the command to use for detailed help
-            sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/" + baseCommand + " help " + helpCommandReference);
-            return true;
-        }
-
-        // Execute the command if it's suitable
-        return result.executeCommand(sender);
+        return true;
     }
 
     /**
-     * Skips all entries of the given array that are simply whitespace.
+     * Skip all entries of the given array that are simply whitespace.
      *
      * @param args The array to process
      * @return List of the items that are not empty
@@ -162,10 +129,7 @@ public class CommandHandler {
         if (queryReference.getCount() <= 0)
             return null;
 
-        // TODO ljacqu 20151129: If base commands are only used in here (or in the future CommandHandler after changes),
-        // it might make sense to make the CommandInitializer package-private and to return its result into this class
-        // instead of regularly fetching the list of base commands from the other class.
-        for (CommandDescription commandDescription : CommandInitializer.getBaseCommands()) {
+        for (CommandDescription commandDescription : commands) {
             // Check whether there's a command description available for the
             // current command
             if (!commandDescription.isSuitableLabel(queryReference))
@@ -186,7 +150,7 @@ public class CommandHandler {
      *
      * @return The command found, or null.
      */
-    public CommandDescription findCommand(List<String> commandParts) {
+    private CommandDescription findCommand(List<String> commandParts) {
         // Make sure the command reference is valid
         if (commandParts.isEmpty()) {
             return null;
@@ -211,10 +175,63 @@ public class CommandHandler {
             return null;
         }
         for (CommandDescription command : commands) {
-            if (command.getLabels().contains(label)) {
+            if (command.getLabels().contains(label)) { // TODO ljacqu should be case-insensitive
                 return command;
             }
         }
         return null;
+    }
+
+    /**
+     * Show an "unknown command" to the user and suggests an existing command if its similarity is within
+     * the defined threshold.
+     *
+     * @param sender The command sender
+     * @param commandDifference The difference between the invoked command and the existing one
+     * @param result The command that was found during the mapping process
+     * @param baseCommand The base command (TODO: This is probably already in FoundCommandResult)
+     */
+    private static void sendUnknownCommandMessage(CommandSender sender, double commandDifference,
+                                                  FoundCommandResult result, String baseCommand) {
+        CommandParts commandReference = result.getCommandReference();
+        sender.sendMessage(ChatColor.DARK_RED + "Unknown command!");
+
+
+        // Show a command suggestion if available and the difference isn't too big
+        if (commandDifference < SUGGEST_COMMAND_THRESHOLD && result.getCommandDescription() != null) {
+            sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/"
+                + result.getCommandDescription().getCommandReference(commandReference) + ChatColor.YELLOW + "?");
+        }
+
+        sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + baseCommand + " help"
+            + ChatColor.YELLOW + " to view help.");
+    }
+
+    private static void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result,
+                                                     CommandParts commandReference, String baseCommand) {
+        // Get the command and the suggested command reference
+        List<String> suggestedCommandReference =
+            result.getCommandDescription().getCommandReference(commandReference).getList();
+        List<String> helpCommandReference = CollectionUtils.getRange(suggestedCommandReference, 1);
+
+        // Show the invalid arguments warning
+        sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
+
+        // Show the command argument help
+        HelpProvider.showHelp(sender, commandReference, new CommandParts(suggestedCommandReference),
+            true, false, true, false, false, false);
+
+        // Show the command to use for detailed help
+        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/" + baseCommand
+            + " help " + CommandUtils.labelsToString(helpCommandReference));
+    }
+
+    private static void sendCommandAssumptionMessage(CommandSender sender, FoundCommandResult result,
+                                                     CommandParts commandReference) {
+        List<String> assumedCommandParts =
+            result.getCommandDescription().getCommandReference(commandReference).getList();
+
+        sender.sendMessage(ChatColor.DARK_RED + "Unknown command, assuming " + ChatColor.GOLD + "/"
+            + CommandUtils.labelsToString(assumedCommandParts) + ChatColor.DARK_RED + "!");
     }
 }

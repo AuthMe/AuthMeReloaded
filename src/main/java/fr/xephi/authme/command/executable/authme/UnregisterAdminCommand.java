@@ -21,8 +21,9 @@ import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
+ * Admin command to unregister a player.
  */
-public class UnregisterCommand extends ExecutableCommand {
+public class UnregisterAdminCommand extends ExecutableCommand {
 
     /**
      * Execute the command.

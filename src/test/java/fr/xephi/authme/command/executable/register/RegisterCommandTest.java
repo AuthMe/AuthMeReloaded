@@ -14,6 +14,8 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
@@ -48,7 +50,7 @@ public class RegisterCommandTest {
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts());
+        command.executeCommand(sender, newParts(), newParts());
 
         // then
         verify(sender).sendMessage(messageCaptor.capture());
@@ -63,7 +65,7 @@ public class RegisterCommandTest {
         RegisterCommand command = new RegisterCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts());
+        command.executeCommand(sender, newParts(), newParts());
 
         // then
         verify(messagesMock).send(sender, MessageKey.USAGE_REGISTER);
@@ -77,9 +79,13 @@ public class RegisterCommandTest {
         RegisterCommand command = new RegisterCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts("password"));
+        command.executeCommand(sender, newParts(), new CommandParts("password"));
 
         // then
         verify(managementMock).performRegister(sender, "password", "");
+    }
+
+    private static CommandParts newParts() {
+        return new CommandParts(new ArrayList<String>());
     }
 }

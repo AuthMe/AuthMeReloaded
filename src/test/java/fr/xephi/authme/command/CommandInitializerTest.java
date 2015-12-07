@@ -1,11 +1,15 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -13,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -30,7 +35,7 @@ public class CommandInitializerTest {
      */
     private static int MAX_ALLOWED_DEPTH = 1;
 
-    private static List<CommandDescription> commands;
+    private static Set<CommandDescription> commands;
 
     @BeforeClass
     public static void initializeCommandManager() {
@@ -228,15 +233,51 @@ public class CommandInitializerTest {
         walkThroughCommands(commands, noArgumentForParentChecker);
     }
 
+    /**
+     * Test that commands defined with the OP_ONLY default permission have at least one admin permission node.
+     */
+    @Test
+    public void shouldNotHavePlayerPermissionIfDefaultsToOpOnly() {
+        // given
+        BiConsumer adminPermissionChecker = new BiConsumer() {
+            // The only exception to this check is the force login command, which should default to OP_ONLY
+            // but semantically it is a player permission
+            final List<String> forceLoginLabels = Arrays.asList("forcelogin", "login");
+
+            @Override
+            public void accept(CommandDescription command, int depth) {
+                CommandPermissions permissions = command.getCommandPermissions();
+                if (permissions != null && OP_ONLY.equals(permissions.getDefaultPermission())) {
+                    if (!hasAdminNode(permissions) && !command.getLabels().equals(forceLoginLabels)) {
+                        fail("The command with labels " + command.getLabels() + " has OP_ONLY default "
+                            + "permission but no permission node on admin level");
+                    }
+                }
+            }
+
+            private boolean hasAdminNode(CommandPermissions permissions) {
+                for (PermissionNode node : permissions.getPermissionNodes()) {
+                    if (node instanceof AdminPermission) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        };
+
+        // when/then
+        walkThroughCommands(commands, adminPermissionChecker);
+    }
+
 
     // ------------
     // Helper methods
     // ------------
-    private static void walkThroughCommands(List<CommandDescription> commands, BiConsumer consumer) {
+    private static void walkThroughCommands(Collection<CommandDescription> commands, BiConsumer consumer) {
         walkThroughCommands(commands, consumer, 0);
     }
 
-    private static void walkThroughCommands(List<CommandDescription> commands, BiConsumer consumer, int depth) {
+    private static void walkThroughCommands(Collection<CommandDescription> commands, BiConsumer consumer, int depth) {
         for (CommandDescription command : commands) {
             consumer.accept(command, depth);
             if (command.hasChildren()) {
@@ -259,12 +300,12 @@ public class CommandInitializerTest {
     }
 
     /**
-     * Get the absolute label that a command defines. Note: Assumes that only the passed command might have
+     * Get the absolute binding that a command defines. Note: Assumes that only the passed command can have
      * multiple labels; only considering the first label for all of the command's parents.
      *
-     * @param command The command to verify
+     * @param command The command to process
      *
-     * @return The full command binding
+     * @return List of all bindings that lead to the command
      */
     private static List<String> getAbsoluteLabels(CommandDescription command) {
         String parentPath = "";

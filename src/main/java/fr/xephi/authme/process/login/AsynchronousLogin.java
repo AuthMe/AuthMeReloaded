@@ -80,15 +80,12 @@ public class AsynchronousLogin {
                 plugin.captcha.remove(name);
                 plugin.captcha.putIfAbsent(name, i);
             }
-            if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
-                plugin.cap.put(name, rdm.nextString());
+            if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
+                plugin.cap.putIfAbsent(name, rdm.nextString());
                 for (String s : m.retrieve(MessageKey.USAGE_CAPTCHA)) {
                     player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
                 }
                 return true;
-            } else if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
-                plugin.captcha.remove(name);
-                plugin.cap.remove(name);
             }
         }
         return false;
@@ -134,6 +131,13 @@ public class AsynchronousLogin {
         if (!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
             m.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
             return null;
+        }
+
+        if (Settings.preventOtherCase && !player.getName().equals(pAuth.getRealName()))
+        {
+        	// TODO: Add a message like : MessageKey.INVALID_NAME_CASE
+        	m.send(player, MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
+        	return null;
         }
         AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
         Bukkit.getServer().getPluginManager().callEvent(event);
