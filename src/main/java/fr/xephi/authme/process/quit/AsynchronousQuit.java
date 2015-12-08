@@ -47,7 +47,7 @@ public class AsynchronousQuit {
     public void process() {
         if (player == null)
             return;
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
+        if (Utils.isUnrestricted(player)) {
             return;
         }
 

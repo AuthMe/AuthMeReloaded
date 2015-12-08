@@ -70,7 +70,6 @@ public class AuthMePlayerListener implements Listener {
         }
 
         final Player player = event.getPlayer();
-
         if (Utils.checkAuth(player)) {
             for (Player p : Utils.getOnlinePlayers()) {
                 if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
@@ -81,6 +80,11 @@ public class AuthMePlayerListener implements Listener {
         }
 
         event.setCancelled(true);
+        sendLoginRegisterMSG(player);
+    }
+
+    // TODO: new name
+    private void sendLoginRegisterMSG(final Player player) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
@@ -110,6 +114,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         event.setCancelled(true);
+        sendLoginRegisterMSG(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -186,17 +191,22 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getPlayer() == null || Utils.isNPC(event.getPlayer())) {
+        final Player player = event.getPlayer();
+        if (player == null) {
             return;
         }
 
-        final Player player = event.getPlayer();
+        /* IMPOSSIBLE!!!! TODO: check this!
+        if(Utils.isNPC(player)) {
+            return;
+        }
+        */
+
         String name = player.getName().toLowerCase();
         String joinMsg = event.getJoinMessage();
-        boolean delay = Settings.delayJoinLeaveMessages && joinMsg != null;
 
         // Remove the join message while the player isn't logging in
-        if (delay) {
+        if (Settings.delayJoinLeaveMessages && joinMsg != null) {
             event.setJoinMessage(null);
             joinMessage.put(name, joinMsg);
         }
@@ -254,13 +264,13 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        if (event.getPlayer() == null || Utils.isUnrestricted(event.getPlayer())) {
+        final Player player = event.getPlayer();
+        if (player == null || Utils.isUnrestricted(player)) {
             return;
         }
 
         // Get the permissions manager
         PermissionsManager permsMan = plugin.getPermissionsManager();
-        final Player player = event.getPlayer();
 
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL
             && permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
@@ -329,11 +339,11 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (event.getPlayer() == null) {
+        Player player = event.getPlayer();
+
+        if (player == null) {
             return;
         }
-
-        Player player = event.getPlayer();
 
         if (Settings.delayJoinLeaveMessages && !Utils.checkAuth(player)) {
             event.setQuitMessage(null);
@@ -344,7 +354,9 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
-        if (event.getPlayer() == null) {
+        Player player = event.getPlayer();
+
+        if (player == null) {
             return;
         }
 
@@ -354,13 +366,15 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        Player player = event.getPlayer();
         plugin.getManagement().performQuit(player, true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (Utils.checkAuth(event.getPlayer())) {
+        Player player = event.getPlayer();
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
         }
         event.setCancelled(true);
@@ -368,7 +382,10 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (Utils.checkAuth(event.getPlayer())) {
+        Player player = event.getPlayer();
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
         }
         event.setCancelled(true);
@@ -376,7 +393,10 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
-        if (Utils.checkAuth(event.getPlayer())) {
+        Player player = event.getPlayer();
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
         }
         event.setCancelled(true);
@@ -385,7 +405,9 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
-        if (Utils.checkAuth(player)) {
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
         }
         event.setCancelled(true);
@@ -410,6 +432,10 @@ public class AuthMePlayerListener implements Listener {
             return;
         if (Utils.checkAuth((Player) event.getWhoClicked()))
             return;
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC((Player) event.getWhoClicked()))
+            return;
         event.setCancelled(true);
     }
 
@@ -422,12 +448,22 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth((Player) damager)) {
             return;
         }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC((Player) damager)) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
         if (Utils.checkAuth(event.getPlayer())) {
+            return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
             return;
         }
         event.setCancelled(true);
@@ -438,12 +474,22 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
         if (Utils.checkAuth(event.getPlayer())) {
+            return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
             return;
         }
         event.setCancelled(true);
@@ -454,12 +500,22 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
         if (Utils.checkAuth(event.getPlayer())) {
+            return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
             return;
         }
 
@@ -481,6 +537,11 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
+
         Player player = event.getPlayer();
         if (plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)) {
             return;
@@ -499,12 +560,22 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerFish(PlayerFishEvent event) {
         if (Utils.checkAuth(event.getPlayer())) {
+            return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
             return;
         }
         event.setCancelled(true);
