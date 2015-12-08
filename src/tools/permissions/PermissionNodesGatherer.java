@@ -3,12 +3,9 @@ package permissions;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.util.StringUtils;
+import utils.FileUtils;
+import utils.ToolsConstants;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
@@ -22,10 +19,6 @@ import java.util.regex.Pattern;
  * Gatherer to generate up-to-date lists of the AuthMe permission nodes.
  */
 public class PermissionNodesGatherer {
-
-    /** The folder in which the implementations of {@link PermissionNode} reside. */
-    private static final String PERMISSION_NODE_SOURCE_FOLDER =
-        "src/main/java/fr/xephi/authme/permission/";
 
     /**
      * Regular expression that should match the JavaDoc comment above an enum, <i>including</i>
@@ -100,14 +93,8 @@ public class PermissionNodesGatherer {
      * @return Source code of the file
      */
     private static <T extends Enum<T> & PermissionNode> String getSourceForClass(Class<T> clazz) {
-        String classFile = PERMISSION_NODE_SOURCE_FOLDER + clazz.getSimpleName() + ".java";
-        Charset cs = Charset.forName("utf-8");
-        try {
-            return StringUtils.join("\n",
-                Files.readAllLines(Paths.get(classFile), cs));
-        } catch (IOException e) {
-            throw new RuntimeException("Failed to get the source for class '" + clazz.getSimpleName() + "'");
-        }
+        String classFile = ToolsConstants.MAIN_SOURCE_ROOT + clazz.getName().replace(".", "/") + ".java";
+        return FileUtils.readFromFile(classFile);
     }
 
 }

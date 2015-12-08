@@ -7,13 +7,13 @@ import java.nio.file.Paths;
 import java.util.Map;
 
 /**
- * Utility class for writing a generated file with a timestamp.
+ * Utility class for reading from and writing to files.
  */
-public final class GeneratedFileWriter {
+public final class FileUtils {
 
     private final static Charset CHARSET = Charset.forName("utf-8");
 
-    private GeneratedFileWriter() {
+    private FileUtils() {
     }
 
     public static void generateFileFromTemplate(String templateFile, String destinationFile, Map<String, Object> tags) {
@@ -42,6 +42,5 @@ public final class GeneratedFileWriter {
     public static String readFromToolsFile(String file) {
         return readFromFile(ToolsConstants.TOOLS_SOURCE_ROOT + file);
     }
-
 
 }
