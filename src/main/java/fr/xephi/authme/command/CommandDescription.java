@@ -58,25 +58,6 @@ public class CommandDescription {
     private CommandPermissions permissions;
 
     /**
-     * Constructor.
-     *
-     * @param executableCommand   The executable command, or null.
-     * @param labels              List of command labels.
-     * @param description         Command description.
-     * @param detailedDescription Detailed comment description.
-     * @param parent              Parent command.
-     */
-    @Deprecated
-    public CommandDescription(ExecutableCommand executableCommand, List<String> labels, String description, String detailedDescription, CommandDescription parent) {
-        setExecutableCommand(executableCommand);
-        this.labels = labels;
-        this.description = description;
-        this.detailedDescription = detailedDescription;
-        setParent(parent);
-        this.arguments = new ArrayList<>();
-    }
-
-    /**
      * Private constructor. Use {@link CommandDescription#builder()} to create instances of this class.
      * <p />
      * Note for developers: Instances should be created with {@link CommandDescription#createInstance} to be properly

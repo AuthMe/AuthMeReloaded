@@ -80,15 +80,12 @@ public class AsynchronousLogin {
                 plugin.captcha.remove(name);
                 plugin.captcha.putIfAbsent(name, i);
             }
-            if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
-                plugin.cap.put(name, rdm.nextString());
+            if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
+                plugin.cap.putIfAbsent(name, rdm.nextString());
                 for (String s : m.retrieve(MessageKey.USAGE_CAPTCHA)) {
                     player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
                 }
                 return true;
-            } else if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
-                plugin.captcha.remove(name);
-                plugin.cap.remove(name);
             }
         }
         return false;

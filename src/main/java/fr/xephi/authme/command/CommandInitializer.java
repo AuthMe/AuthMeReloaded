@@ -184,7 +184,6 @@ public final class CommandInitializer {
         		.withArgument("player", "Player Name", false)
         		.build();
 
-
         // Register the spawn command
         CommandDescription.builder()
         		.executableCommand(new SpawnCommand())
@@ -216,7 +215,6 @@ public final class CommandInitializer {
         		.permissions(OP_ONLY, AdminPermission.FIRST_SPAWN)
         		.build();
 
-
         // Register the setfirstspawn command
         CommandDescription.builder()
         		.executableCommand(new SetFirstSpawnCommand())
@@ -242,7 +240,8 @@ public final class CommandInitializer {
         CommandDescription.builder()
         		.executableCommand(new PurgeLastPositionCommand())
         		.parent(AUTHME_BASE)
-        		.labels("resetpos", "purgelastposition", "purgelastpos", "resetposition", "resetlastposition", "resetlastpos")
+        		.labels("resetpos", "purgelastposition", "purgelastpos", "resetposition",
+                    "resetlastposition", "resetlastpos")
         		.description("Purge player's last position")
         		.detailedDescription("Purge the last know position of the specified player.")
         		.permissions(OP_ONLY, AdminPermission.PURGE_LAST_POSITION)
@@ -250,7 +249,7 @@ public final class CommandInitializer {
         		.build();
 
         // Register the purgebannedplayers command
-        CommandDescription purgeBannedPlayersCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new PurgeBannedPlayersCommand())
         		.parent(AUTHME_BASE)
         		.labels("purgebannedplayers", "purgebannedplayer", "deletebannedplayers", "deletebannedplayer")
@@ -260,7 +259,7 @@ public final class CommandInitializer {
         		.build();
 
         // Register the switchantibot command
-        CommandDescription switchAntiBotCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new SwitchAntiBotCommand())
         		.parent(AUTHME_BASE)
         		.labels("switchantibot", "toggleantibot", "antibot")
@@ -270,26 +269,13 @@ public final class CommandInitializer {
         		.withArgument("mode", "ON / OFF", true)
         		.build();
 
-        // // Register the resetname command
-        // CommandDescription resetNameCommand = new CommandDescription(
-        // new ResetNameCommand(),
-        // new ArrayList<String>() {{
-        // add("resetname");
-        // add("resetnames");
-        // }},
-        // "Reset name",
-        // "Reset name",
-        // authMeCommand);
-        // resetNameCommand.setCommandPermissions("authme.admin.resetname",
-        // CommandPermissions.DefaultPermission.OP_ONLY);
-
         // Register the reload command
-        CommandDescription reloadCommand = CommandDescription.builder()
-        		.executableCommand(new PurgeLastPositionCommand())
+        CommandDescription.builder()
+        		.executableCommand(new ReloadCommand())
         		.parent(AUTHME_BASE)
-        		.labels("reload", "reload")
+        		.labels("reload", "rld")
         		.description("Reload plugin")
-        		.detailedDescription("Reload the AutheMeReloaded plugin.")
+        		.detailedDescription("Reload the AuthMeReloaded plugin.")
         		.permissions(OP_ONLY, AdminPermission.RELOAD)
         		.build();
 
@@ -315,13 +301,12 @@ public final class CommandInitializer {
             .build();
 
         // Register the help command
-        CommandDescription loginHelpCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(helpCommandExecutable)
         		.parent(LOGIN_BASE)
         		.labels(helpCommandLabels)
         		.description("View Help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded login commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -336,13 +321,12 @@ public final class CommandInitializer {
         		.build();
 
         // Register the help command
-        CommandDescription logoutHelpCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(helpCommandExecutable)
         		.parent(LOGOUT_BASE)
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded logout commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -359,13 +343,12 @@ public final class CommandInitializer {
             .build();
 
         // Register the help command
-        CommandDescription registerHelpCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(helpCommandExecutable)
         		.parent(REGISTER_BASE)
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded register commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -381,13 +364,12 @@ public final class CommandInitializer {
         		.build();
 
         // Register the help command
-        CommandDescription unregisterHelpCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(helpCommandExecutable)
         		.parent(UNREGISTER_BASE)
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded unregister commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -404,13 +386,12 @@ public final class CommandInitializer {
         		.build();
 
         // Register the help command
-        CommandDescription changePasswordHelpCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(helpCommandExecutable)
         		.parent(CHANGE_PASSWORD_BASE)
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded changepassword commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -421,39 +402,37 @@ public final class CommandInitializer {
         		.labels("email", "mail")
         		.description("Email command")
         		.detailedDescription("The AuthMeReloaded Email command base.")
-        		.permissions(ALLOWED)
         		.build();
 
         // Register the help command
-        CommandDescription emailHelpCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(helpCommandExecutable)
         		.parent(EMAIL_BASE)
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded email commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
         // Register the add command
-        CommandDescription addEmailCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new AddEmailCommand())
         		.parent(EMAIL_BASE)
         		.labels("add", "addemail", "addmail")
         		.description("Add Email")
-        		.detailedDescription("Add a new Email address to your account.")
+        		.detailedDescription("Add a new email address to your account.")
         		.permissions(ALLOWED, PlayerPermission.ADD_EMAIL)
         		.withArgument("email", "Email address", false)
         		.withArgument("verifyEmail", "Email address verification", false)
         		.build();
 
         // Register the change command
-        CommandDescription changeEmailCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new ChangeEmailCommand())
         		.parent(EMAIL_BASE)
         		.labels("change", "changeemail", "changemail")
         		.description("Change Email")
-        		.detailedDescription("Change an Email address of your account.")
+        		.detailedDescription("Change an email address of your account.")
         		.permissions(ALLOWED, PlayerPermission.CHANGE_EMAIL)
         		.withArgument("oldEmail", "Old email address", false)
         		.withArgument("newEmail", "New email address", false)
@@ -461,12 +440,13 @@ public final class CommandInitializer {
 
 
         // Register the recover command
-        CommandDescription recoverEmailCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(new RecoverEmailCommand())
         		.parent(EMAIL_BASE)
         		.labels("recover", "recovery", "recoveremail", "recovermail")
         		.description("Recover password using Email")
-        		.detailedDescription("Recover your account using an Email address by sending a mail containing a new password.")
+        		.detailedDescription("Recover your account using an Email address by sending a mail containing " +
+                    "a new password.")
         		.permissions(ALLOWED, PlayerPermission.RECOVER_EMAIL)
         		.withArgument("email", "Email address", false)
         		.build();
@@ -477,19 +457,18 @@ public final class CommandInitializer {
         		.parent(null)
         		.labels("captcha", "capt")
         		.description("Captcha Command")
-        		.detailedDescription("Captcha command for AuthMeRelaoded.")
+        		.detailedDescription("Captcha command for AuthMeReloaded.")
         		.permissions(ALLOWED, PlayerPermission.CAPTCHA)
         		.withArgument("captcha", "The Captcha", false)
         		.build();
 
         // Register the help command
-        CommandDescription captchaHelpCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(helpCommandExecutable)
         		.parent(CAPTCHA_BASE)
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded captcha commands.")
-        		.permissions(ALLOWED)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
@@ -499,19 +478,19 @@ public final class CommandInitializer {
         		.parent(null)
         		.labels("converter", "convert", "conv")
         		.description("Converter Command")
-        		.detailedDescription("Converter command for AuthMeRelaoded.")
+        		.detailedDescription("Converter command for AuthMeReloaded.")
         		.permissions(OP_ONLY, AdminPermission.CONVERTER)
-        		.withArgument("job", "Conversion job: flattosql / flattosqlite /| xauth / crazylogin / rakamak / royalauth / vauth / sqltoflat", false)
+        		.withArgument("job", "Conversion job: flattosql / flattosqlite /| xauth / crazylogin / rakamak / " +
+                    "royalauth / vauth / sqltoflat", false)
         		.build();
 
         // Register the help command
-        CommandDescription converterHelpCommand = CommandDescription.builder()
+        CommandDescription.builder()
         		.executableCommand(helpCommandExecutable)
         		.parent(CONVERTER_BASE)
         		.labels(helpCommandLabels)
         		.description("View help")
         		.detailedDescription("View detailed help pages about AuthMeReloaded converter commands.")
-        		.permissions(OP_ONLY)
         		.withArgument("query", "The command or query to view help for.", true)
         		.build();
 
