@@ -9,10 +9,10 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.UserPermission;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
@@ -28,7 +28,24 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerLoginEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -53,8 +70,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         final Player player = event.getPlayer();
-
-        if(Utils.checkAuth(player)) {
+        if (Utils.checkAuth(player)) {
             for (Player p : Utils.getOnlinePlayers()) {
                 if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
                     event.getRecipients().remove(p); // TODO: it should be configurable
@@ -64,6 +80,11 @@ public class AuthMePlayerListener implements Listener {
         }
 
         event.setCancelled(true);
+        sendLoginRegisterMSG(player);
+    }
+
+    // TODO: new name
+    private void sendLoginRegisterMSG(final Player player) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
@@ -93,6 +114,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         event.setCancelled(true);
+        sendLoginRegisterMSG(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -167,20 +189,26 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getPlayer() == null || Utils.isNPC(event.getPlayer())) {
+        final Player player = event.getPlayer();
+        if (player == null) {
             return;
         }
 
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-        final String joinMsg = event.getJoinMessage();
-        final boolean delay = Settings.delayJoinLeaveMessages && joinMsg != null;
+        /* IMPOSSIBLE!!!! TODO: check this!
+        if(Utils.isNPC(player)) {
+            return;
+        }
+        */
+
+        String name = player.getName().toLowerCase();
+        String joinMsg = event.getJoinMessage();
 
         // Remove the join message while the player isn't logging in
-        if (delay) {
+        if (Settings.delayJoinLeaveMessages && joinMsg != null) {
             event.setJoinMessage(null);
+            joinMessage.put(name, joinMsg);
         }
 
         // Shedule login task so works after the prelogin
@@ -188,9 +216,6 @@ public class AuthMePlayerListener implements Listener {
         Bukkit.getScheduler().runTask(plugin, new Runnable() {
             @Override
             public void run() {
-                if (delay) {
-                    joinMessage.put(name, joinMsg);
-                }
                 plugin.getManagement().performJoin(player);
             }
         });
@@ -198,38 +223,57 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
+        if (!plugin.canConnect()) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage("Server is loading, please wait before joining!");
+            return;
+        }
+
+        if (Settings.enableProtection) {
+            String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            if (!Settings.countriesBlacklist.isEmpty() && Settings.countriesBlacklist.contains(countryCode)) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
+            }
+            if (!Settings.countries.isEmpty() && !Settings.countries.contains(countryCode)) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
+            }
+        }
+
         final String name = event.getName().toLowerCase();
         final Player player = Utils.getPlayer(name);
-        if (player == null || Utils.isNPC(player)) {
+        if (player == null) {
             return;
         }
 
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
-        if (Settings.isForceSingleSessionEnabled && player.isOnline()) {
-            event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_OTHER, m.getString("same_nick"));
-            if (LimboCache.getInstance().hasLimboPlayer(name))
-                Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-                        if (limbo != null && PlayerCache.getInstance().isAuthenticated(name)) {
-                            Utils.addNormal(player, limbo.getGroup());
-                            LimboCache.getInstance().deleteLimboPlayer(name);
-                        }
-                    }
-                });
+        if (Settings.isForceSingleSessionEnabled) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR));
+            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+            if (limbo != null && PlayerCache.getInstance().isAuthenticated(name)) {
+                Utils.addNormal(player, limbo.getGroup());
+                LimboCache.getInstance().deleteLimboPlayer(name);
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
-        if (event.getPlayer() == null) {
+        final Player player = event.getPlayer();
+        if (player == null || Utils.isUnrestricted(player)) {
             return;
         }
 
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+        // Get the permissions manager
+        PermissionsManager permsMan = plugin.getPermissionsManager();
+
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL
+            && permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
             int playersOnline = Utils.getOnlinePlayers().size();
             if (playersOnline > plugin.getServer().getMaxPlayers()) {
                 event.allow();
@@ -250,45 +294,19 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        // Get the permissions manager
-        PermissionsManager permsMan = plugin.getPermissionsManager();
-
-        final Player player = event.getPlayer();
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, UserPermission.IS_VIP)) {
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
             event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-            return;
-        }
-
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
             return;
         }
 
         final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
 
-        if (!Settings.countriesBlacklist.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
-            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-            if (Settings.countriesBlacklist.contains(code)) {
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
-
-        if (Settings.enableProtection && !Settings.countries.isEmpty() && !isAuthAvailable && !permsMan.hasPermission(player, UserPermission.BYPASS_ANTIBOT)) {
-            String code = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-            if (!Settings.countries.contains(code)) {
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
-
         // TODO: Add message to the messages file!!!
         if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
             if (Settings.antiBotInAction) {
-                event.setKickMessage("AntiBot service in action! You actually need to be registered!");
+                event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
                 event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
                 return;
             } else {
@@ -321,61 +339,77 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (event.getPlayer() == null) {
+        Player player = event.getPlayer();
+
+        if (player == null) {
             return;
         }
 
-        Player player = event.getPlayer();
-
-        if (!Utils.checkAuth(player) && Settings.delayJoinLeaveMessages) {
+        if (Settings.delayJoinLeaveMessages && !Utils.checkAuth(player)) {
             event.setQuitMessage(null);
         }
 
-        plugin.management.performQuit(player, false);
+        plugin.getManagement().performQuit(player, false);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerKick(PlayerKickEvent event) {
-        if (event.getPlayer() == null) {
+        Player player = event.getPlayer();
+
+        if (player == null) {
             return;
         }
 
-        if ((!Settings.isForceSingleSessionEnabled) && (event.getReason().contains(m.getString("same_nick")))) {
+        if ((!Settings.isForceSingleSessionEnabled)
+            && (event.getReason().equals(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR)))) {
             event.setCancelled(true);
             return;
         }
 
-        Player player = event.getPlayer();
-        plugin.management.performQuit(player, true);
+        plugin.getManagement().performQuit(player, true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        Player player = event.getPlayer();
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        Player player = event.getPlayer();
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
-        if (Utils.checkAuth(player))
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
+        }
         event.setCancelled(true);
 
         /*
@@ -383,7 +417,6 @@ public class AuthMePlayerListener implements Listener {
          * real, cause no packet is send to server by client for the main inv
          */
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
             @Override
             public void run() {
                 player.closeInventory();
@@ -399,6 +432,10 @@ public class AuthMePlayerListener implements Listener {
             return;
         if (Utils.checkAuth((Player) event.getWhoClicked()))
             return;
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC((Player) event.getWhoClicked()))
+            return;
         event.setCancelled(true);
     }
 
@@ -408,50 +445,85 @@ public class AuthMePlayerListener implements Listener {
         if (!(damager instanceof Player)) {
             return;
         }
-        if (Utils.checkAuth((Player) damager))
+        if (Utils.checkAuth((Player) damager)) {
             return;
+        }
 
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC((Player) damager)) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
-        if (Utils.checkAuth(event.getPlayer()))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
+
+        Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
         Location spawn = plugin.getSpawnLocation(player);
         if (Settings.isSaveQuitLocationEnabled && plugin.database.isAuthAvailable(name)) {
-            final PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName(), player.getName());
+            PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName(), player.getName());
             plugin.database.updateQuitLoc(auth);
         }
         if (spawn != null && spawn.getWorld() != null) {
@@ -461,13 +533,19 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
+        if (Utils.checkAuth(event.getPlayer())) {
+            return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
+
         Player player = event.getPlayer();
-        if (player == null)
+        if (plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)) {
             return;
-        if (plugin.getPermissionsManager().hasPermission(player, UserPermission.BYPASS_FORCE_SURVIVAL))
-            return;
-        if (Utils.checkAuth(player))
-            return;
+        }
 
         String name = player.getName().toLowerCase();
         if (causeByAuthMe.containsKey(name)) {
@@ -479,17 +557,27 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerShear(PlayerShearEntityEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerFish(PlayerFishEvent event) {
-        Player player = event.getPlayer();
-        if (player == null || Utils.checkAuth(player))
+        if (Utils.checkAuth(event.getPlayer())) {
             return;
+        }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 

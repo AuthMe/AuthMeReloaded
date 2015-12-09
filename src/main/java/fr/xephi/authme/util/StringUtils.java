@@ -13,8 +13,6 @@ import java.util.Arrays;
  */
 public final class StringUtils {
 
-    public static final String newline = System.getProperty("line.separator");
-
     private StringUtils() {
         // Utility class
     }
@@ -29,8 +27,9 @@ public final class StringUtils {
      */
     public static double getDifference(String first, String second) {
         // Make sure the strings are valid.
-        if (first == null || second == null)
+        if (first == null || second == null) {
             return 1.0;
+        }
 
         // Create a string similarity service instance, to allow comparison
         StringSimilarityService service = new StringSimilarityServiceImpl(new LevenshteinDistanceStrategy());

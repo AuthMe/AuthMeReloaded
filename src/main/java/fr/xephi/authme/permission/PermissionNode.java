@@ -5,7 +5,18 @@ package fr.xephi.authme.permission;
  */
 public interface PermissionNode {
 
-    /** Return the node of the permission, e.g. "authme.unregister". */
+    /**
+     * Return the node of the permission, e.g. "authme.player.unregister".
+     *
+     * @return The name of the permission node
+     */
     String getNode();
+
+    /**
+     * Return the wildcard node that also grants the permission.
+     *
+     * @return The wildcard permission node (e.g. "authme.player.*")
+     */
+    PermissionNode getWildcardNode();
 
 }

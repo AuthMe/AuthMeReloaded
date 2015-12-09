@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.util.ArrayList;
+
 import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -38,7 +40,7 @@ public class LoginCommandTest {
         LoginCommand command = new LoginCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts());
+        command.executeCommand(sender, newParts(), newParts());
 
         // then
         Mockito.verify(managementMock, never()).performLogin(any(Player.class), anyString(), anyBoolean());
@@ -51,7 +53,7 @@ public class LoginCommandTest {
         LoginCommand command = new LoginCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts("password"));
+        command.executeCommand(sender, newParts(), new CommandParts("password"));
 
         // then
         Mockito.verify(managementMock).performLogin(eq(sender), eq("password"), eq(false));
@@ -64,11 +66,15 @@ public class LoginCommandTest {
         LoginCommand command = new LoginCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(), new CommandParts());
+        command.executeCommand(sender, newParts(), newParts());
 
         // then
         // TODO ljacqu 20151121: May make sense to handle null password in LoginCommand instead of forwarding the call
         String password = null;
         Mockito.verify(managementMock).performLogin(eq(sender), eq(password), eq(false));
+    }
+    
+    private static CommandParts newParts() {
+        return new CommandParts(new ArrayList<String>());
     }
 }

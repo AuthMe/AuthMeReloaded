@@ -2,7 +2,6 @@ package fr.xephi.authme;
 
 import com.google.common.base.Throwables;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Wrapper;
 
 import java.io.IOException;
@@ -17,8 +16,10 @@ import java.util.Date;
  */
 public final class ConsoleLogger {
 
+    private static final String NEW_LINE = System.getProperty("line.separator");
+    private static final DateFormat DATE_FORMAT = new SimpleDateFormat("[MM-dd HH:mm:ss]");
+
     private static Wrapper wrapper = Wrapper.getInstance();
-    private static final DateFormat df = new SimpleDateFormat("[MM-dd HH:mm:ss]");
 
     private ConsoleLogger() {
         // Service class
@@ -57,11 +58,11 @@ public final class ConsoleLogger {
      */
     private static void writeLog(String message) {
         String dateTime;
-        synchronized (df) {
-            dateTime = df.format(new Date());
+        synchronized (DATE_FORMAT) {
+            dateTime = DATE_FORMAT.format(new Date());
         }
         try {
-            Files.write(Settings.LOG_FILE.toPath(), (dateTime + ": " + message + StringUtils.newline).getBytes(),
+            Files.write(Settings.LOG_FILE.toPath(), (dateTime + ": " + message + NEW_LINE).getBytes(),
                 StandardOpenOption.APPEND,
                 StandardOpenOption.CREATE);
         } catch (IOException ignored) {
@@ -77,6 +78,6 @@ public final class ConsoleLogger {
         if (!Settings.useLogging) {
             return;
         }
-        writeLog("" + Throwables.getStackTraceAsString(ex));
+        writeLog(Throwables.getStackTraceAsString(ex));
     }
 }

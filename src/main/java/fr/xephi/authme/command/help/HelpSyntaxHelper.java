@@ -3,6 +3,8 @@ package fr.xephi.authme.command.help;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandUtils;
+import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 
@@ -35,8 +37,8 @@ public final class HelpSyntaxHelper {
 
         // Get the help command reference, and the command label
         CommandParts helpCommandReference = commandDescription.getCommandReference(commandReference);
-        final String parentCommand = new CommandParts(
-            helpCommandReference.getRange(0, helpCommandReference.getCount() - 1)).toString();
+        final String parentCommand = CommandUtils.labelsToString(
+            CollectionUtils.getRange(helpCommandReference.getList(), 0, helpCommandReference.getCount() - 1));
 
         // Check whether the alternative label should be used
         String commandLabel;
@@ -59,11 +61,6 @@ public final class HelpSyntaxHelper {
         // Add each command argument
         for (CommandArgumentDescription arg : commandDescription.getArguments()) {
             sb.append(ChatColor.ITALIC).append(formatArgument(arg));
-        }
-
-        // Add some dots if the command allows unlimited arguments
-        if (commandDescription.getMaximumArguments() < 0) {
-            sb.append(ChatColor.ITALIC).append(" ...");
         }
 
         // Return the build command syntax

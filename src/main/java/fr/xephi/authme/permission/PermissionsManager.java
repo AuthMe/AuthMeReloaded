@@ -5,11 +5,14 @@ import com.nijiko.permissions.PermissionHandler;
 import com.nijikokun.bukkit.Permissions.Permissions;
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.CalculableType;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.util.CollectionUtils;
 import net.milkbowl.vault.permission.Permission;
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Server;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -38,7 +41,7 @@ import java.util.logging.Logger;
  * @author Tim Visée, http://timvisee.com
  * @version 0.2.1
  */
-public class PermissionsManager {
+public class PermissionsManager implements PermissionsService {
 
     /**
      * Vault instance.
@@ -100,8 +103,8 @@ public class PermissionsManager {
      *
      * @return The name of the permissions system used.
      */
-    public String getUsedPermissionsSystemType() {
-        return this.permsType.getName();
+    public PermissionsSystemType getSystem() {
+        return permsType;
     }
 
     /**
@@ -295,35 +298,7 @@ public class PermissionsManager {
         }
     }
 
-    /**
-     * Get the logger instance.
-     *
-     * @return Logger instance.
-     */
-    public Logger getLogger() {
-        return this.log;
-    }
 
-    /**
-     * Set the logger instance.
-     *
-     * @param log Logger instance.
-     */
-    public void setLogger(Logger log) {
-        this.log = log;
-    }
-
-    /**
-     * Check if the player has permission. If no permissions system is used, the player has to be OP.
-     *
-     * @param player    The player.
-     * @param permsNode Permissions node.
-     *
-     * @return True if the player has permission.
-     */
-    public boolean hasPermission(Player player, String permsNode) {
-        return hasPermission(player, permsNode, player.isOp());
-    }
 
     /**
      * Check if the player has permission for the given permissions node. If no permissions system is used,
@@ -339,7 +314,42 @@ public class PermissionsManager {
     }
 
     public boolean hasPermission(Player player, PermissionNode permissionNode, boolean def) {
-        return hasPermission(player, permissionNode.getNode(), def);
+        return hasPermission(player, permissionNode.getNode(), def)
+            || hasPermission(player, permissionNode.getWildcardNode().getNode(), def);
+    }
+
+    public boolean hasPermission(Player player, Iterable<PermissionNode> nodes, boolean def) {
+        for (PermissionNode node : nodes) {
+            if (!hasPermission(player, node, def)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public boolean hasPermission(Player player, CommandDescription command) {
+        if (command.getCommandPermissions() == null
+            || CollectionUtils.isEmpty(command.getCommandPermissions().getPermissionNodes())) {
+            return true;
+        }
+
+        DefaultPermission defaultPermission = command.getCommandPermissions().getDefaultPermission();
+        boolean def = evaluateDefaultPermission(defaultPermission, player);
+        return hasPermission(player, command.getCommandPermissions().getPermissionNodes(), def);
+    }
+
+    public static boolean evaluateDefaultPermission(DefaultPermission defaultPermission, CommandSender sender) {
+        switch (defaultPermission) {
+            case ALLOWED:
+                return true;
+
+            case OP_ONLY:
+                return sender.isOp();
+
+            case NOT_ALLOWED:
+            default:
+                return false;
+        }
     }
 
     /**
@@ -351,7 +361,7 @@ public class PermissionsManager {
      *
      * @return True if the player has permission.
      */
-    public boolean hasPermission(Player player, String permsNode, boolean def) {
+    private boolean hasPermission(Player player, String permsNode, boolean def) {
         // If no permissions system is used, return the default value
         if (!isEnabled())
             return def;
@@ -914,34 +924,5 @@ public class PermissionsManager {
         return removeGroups(player, groupNames);
     }
 
-    private enum PermissionsSystemType {
-        NONE("None"),
-        PERMISSIONS_EX("PermissionsEx"),
-        PERMISSIONS_BUKKIT("Permissions Bukkit"),
-        B_PERMISSIONS("bPermissions"),
-        ESSENTIALS_GROUP_MANAGER("Essentials Group Manager"),
-        Z_PERMISSIONS("zPermissions"),
-        VAULT("Vault"),
-        PERMISSIONS("Permissions");
 
-        public final String name;
-
-        /**
-         * Constructor for PermissionsSystemType.
-         *
-         * @param name String
-         */
-        PermissionsSystemType(String name) {
-            this.name = name;
-        }
-
-        /**
-         * Method getName.
-         *
-         * @return String
-         */
-        public String getName() {
-            return this.name;
-        }
-    }
 }

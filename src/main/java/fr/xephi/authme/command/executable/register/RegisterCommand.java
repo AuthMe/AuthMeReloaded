@@ -5,8 +5,8 @@ import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.command.CommandSender;
@@ -55,7 +55,7 @@ public class RegisterCommand extends ExecutableCommand {
         }
         if (commandArguments.getCount() > 1 && Settings.getEnablePasswordVerifier) {
             if (!commandArguments.get(0).equals(commandArguments.get(1))) {
-                m.send(player, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+                m.send(player, MessageKey.PASSWORD_MATCH_ERROR);
                 return true;
             }
         }

@@ -6,8 +6,8 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -15,8 +15,9 @@ import org.bukkit.command.CommandSender;
 import java.security.NoSuchAlgorithmException;
 
 /**
+ * Admin command to register a user.
  */
-public class RegisterCommand extends ExecutableCommand {
+public class RegisterAdminCommand extends ExecutableCommand {
 
     /**
      * Execute the command.
@@ -42,8 +43,12 @@ public class RegisterCommand extends ExecutableCommand {
         final String playerPassLowerCase = playerPass.toLowerCase();
 
         // Command logic
-        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where") || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify") || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select") || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null") || !playerPassLowerCase.matches(Settings.getPassRegex)) {
-            m.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where")
+            || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify")
+            || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
+            || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
+            || !playerPassLowerCase.matches(Settings.getPassRegex)) {
+            m.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
             return true;
         }
         if (playerPassLowerCase.equalsIgnoreCase(playerName)) {

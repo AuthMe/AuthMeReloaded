@@ -259,6 +259,9 @@ settings:
     delayJoinLeaveMessages: true
     # Do we need to add potion effect Blinding before login/register ?
     applyBlindEffect: false
+    # Do we need to prevent people to login without another case ?
+    # Xephi is registered, also Xephi can login, but not XEPHI/xephi/XePhI
+    preventOtherCase: false
 ExternalBoardOptions:
     # MySQL column for the salt , needed for some forum/cms support
     mySQLColumnSalt: ''
@@ -388,12 +391,14 @@ Protection:
     # Enable some servers protection ( country based login, antibot )
     enableProtection: false
     # Countries allowed to join the server and register, see http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/ for countries' codes
+    # PLEASE USE QUOTES!
     countries:
-    - US
-    - GB
+    - 'US'
+    - 'GB'
     # Countries blacklisted automatically ( without any needed to enable protection )
+    # PLEASE USE QUOTES!
     countriesBlacklist:
-    - A1
+    - 'A1'
     # Do we need to enable automatic antibot system?
     enableAntiBot: false
     # Max number of player allowed to login in 5 secs before enable AntiBot system automatically

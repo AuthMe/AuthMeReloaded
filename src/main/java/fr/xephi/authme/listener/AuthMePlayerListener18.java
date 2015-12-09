@@ -32,6 +32,11 @@ public class AuthMePlayerListener18 implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
+
+        // TODO: npc status can be used to bypass security!!!
+        if (Utils.isNPC(event.getPlayer())) {
+            return;
+        }
         event.setCancelled(true);
     }
 

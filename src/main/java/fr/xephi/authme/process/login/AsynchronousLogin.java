@@ -8,11 +8,11 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.permission.UserPermission;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.settings.MessageKey;
-import fr.xephi.authme.settings.Messages;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.util.Utils;
@@ -80,15 +80,12 @@ public class AsynchronousLogin {
                 plugin.captcha.remove(name);
                 plugin.captcha.putIfAbsent(name, i);
             }
-            if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
-                plugin.cap.put(name, rdm.nextString());
+            if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
+                plugin.cap.putIfAbsent(name, rdm.nextString());
                 for (String s : m.retrieve(MessageKey.USAGE_CAPTCHA)) {
                     player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
                 }
                 return true;
-            } else if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) >= Settings.maxLoginTry) {
-                plugin.captcha.remove(name);
-                plugin.cap.remove(name);
             }
         }
         return false;
@@ -120,7 +117,7 @@ public class AsynchronousLogin {
             }
             return null;
         }
-        if (Settings.getMaxLoginPerIp > 0 && !plugin.getPermissionsManager().hasPermission(player, UserPermission.ALLOW_MULTIPLE_ACCOUNTS) && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
+        if (Settings.getMaxLoginPerIp > 0 && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS) && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
             if (plugin.isLoggedIp(name, getIP())) {
                 m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
                 return null;
@@ -134,6 +131,13 @@ public class AsynchronousLogin {
         if (!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
             m.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
             return null;
+        }
+
+        if (Settings.preventOtherCase && !player.getName().equals(pAuth.getRealName()))
+        {
+        	// TODO: Add a message like : MessageKey.INVALID_NAME_CASE
+        	m.send(player, MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
+        	return null;
         }
         AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
         Bukkit.getServer().getPluginManager().callEvent(event);
@@ -268,7 +272,7 @@ public class AsynchronousLogin {
          * uuidaccounts + "."; } }
          */
         for (Player player : Utils.getOnlinePlayers()) {
-            if (plugin.getPermissionsManager().hasPermission(player, UserPermission.SEE_OTHER_ACCOUNTS)) {
+            if (plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OTHER_ACCOUNTS)) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
                 player.sendMessage(message.toString());
                 // player.sendMessage(uuidaccounts.replace("%size%",
