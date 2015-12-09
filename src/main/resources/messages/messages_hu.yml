@@ -1,57 +1,57 @@
-reg_only: Csak regisztrált játékosoknak! Jelentkezni a yndicraft@freemail.hu e-mail címen lehet
-usage_unreg: '&cHasználat: /unregister jelszó'
-registered: '&aSikeres regisztráció. Üdvözöllek!'
-user_regged: '&cJátékosnév már regisztrálva'
-login_msg: '&cKérlek jelentkezz be: "/login jelszó"'
-not_logged_in: '&cNem vagy bejelentkezve!'
-logout: '&cSikeresen kijelentkeztél'
-usage_log: '&cBejelentkezés: /login jelszó'
-unknown_user: User is not in database
-reg_voluntarily: Regisztrálhatod beceneved a szerveren a következö parancsal "/register jelszó jelszó"
-reg_disabled: '&cRegisztráció letiltva'
-no_perm: '&cNincs engedélyed'
-usage_reg: '&cHasználat: /register jelszó jelszóújra'
-password_error_nick: '&fYou can''t use your name as password'
-password_error_unsafe: '&fYou can''t use unsafe passwords'
-unregistered: '&cRegisztráció sikeresen törölve!'
-same_nick: Ezen a játékosnéven már játszanak
-valid_session: '&cSession login'
-pwd_changed: '&cJelszó cserélve!'
-reload: Beálítások és adatbázis újratöltve!
-timeout: Bejelentkezési idötúllépés
-error: Hiba lépett fel; Lépj kapcsolatba a tulajjal'
-logged_in: '&cMár be vagy jelentkezve!'
-login: '&aSikeresen Beléptél! Üdvözöllek!!!'
-wrong_pwd: '&4Hibás jelszó'
-user_unknown: '&cJátékosnév nem regisztrált'
-reg_msg: '&cKérlek Regisztrálj: "/register jelszó jelszóújra"'
-reg_email_msg: '&cPlease register with "/register <email> <confirmEmail>"'
-unsafe_spawn: A kilépési helyzeted nem biztonságos, teleportálás a kezdö Spawnra.
-max_reg: Csak egy karakterrel Registrálhatsz!!!
-password_error: A jelszó nem illik össze
-invalid_session: Session Dataes doesnt corrispond Plaese wait the end of session
-pass_len: A jelszavad nem éri el a minimális hosszat
-vb_nonActiv: Your Account isent Activated yet check your Emails!
-usage_changepassword: 'használat: /changepassword régiJelszó újJelszó'
-name_len: '&cYour nickname is too Short or too long'
-regex: '&cYour nickname contains illegal characters. Allowed chars: REG_EX'
 add_email: '&cPlease add your email with : /email add yourEmail confirmEmail'
-recovery_email: '&cForgot your password? Please use /email recovery <yourEmail>'
-usage_captcha: '&cUsage: /captcha <theCaptcha>'
-wrong_captcha: '&cWrong Captcha, please use : /captcha THE_CAPTCHA'
-valid_captcha: '&cYour captcha is valid !'
+antibot_auto_disabled: '[AuthMe] AntiBotMod automatically disabled after %m Minutes, hope invasion stopped'
+antibot_auto_enabled: '[AuthMe] AntiBotMod automatically enabled due to massive connections!'
+country_banned: 'Your country is banned from this server'
+email_added: '[AuthMe] Email Added !'
+email_changed: '[AuthMe] Email Change !'
+email_confirm: '[AuthMe] Confirm your Email !'
+email_invalid: '[AuthMe] Invalid Email'
+email_send: '[AuthMe] Recovery Email Send !'
+error: Hiba lépett fel; Lépj kapcsolatba a tulajjal'
+invalid_session: Session Dataes doesnt corrispond Plaese wait the end of session
 kick_forvip: '&cA VIP Player join the full server!'
 kick_fullserver: '&cThe server is actually full, Sorry!'
+logged_in: '&cMár be vagy jelentkezve!'
+login: '&aSikeresen Beléptél! Üdvözöllek!!!'
+login_msg: '&cKérlek jelentkezz be: "/login jelszó"'
+logout: '&cSikeresen kijelentkeztél'
+max_reg: Csak egy karakterrel Registrálhatsz!!!
+name_len: '&cYour nickname is too Short or too long'
+new_email_invalid: '[AuthMe] New email invalid!'
+no_perm: '&cNincs engedélyed'
+not_logged_in: '&cNem vagy bejelentkezve!'
+old_email_invalid: '[AuthMe] Old email invalid!'
+pass_len: A jelszavad nem éri el a minimális hosszat
+password_error: A jelszó nem illik össze
+password_error_nick: '&fYou can''t use your name as password'
+password_error_unsafe: '&fYou can''t use unsafe passwords'
+pwd_changed: '&cJelszó cserélve!'
+recovery_email: '&cForgot your password? Please use /email recovery <yourEmail>'
+reg_disabled: '&cRegisztráció letiltva'
+reg_email_msg: '&cPlease register with "/register <email> <confirmEmail>"'
+regex: '&cYour nickname contains illegal characters. Allowed chars: REG_EX'
+registered: '&aSikeres regisztráció. Üdvözöllek!'
+reg_msg: '&cKérlek Regisztrálj: "/register jelszó jelszóújra"'
+reg_only: Csak regisztrált játékosoknak! Jelentkezni a yndicraft@freemail.hu e-mail címen lehet
+reg_voluntarily: Regisztrálhatod beceneved a szerveren a következö parancsal "/register jelszó jelszó"
+reload: Beálítások és adatbázis újratöltve!
+same_nick: Ezen a játékosnéven már játszanak
+timeout: Bejelentkezési idötúllépés
+unknown_user: User is not in database
+unregistered: '&cRegisztráció sikeresen törölve!'
+unsafe_spawn: A kilépési helyzeted nem biztonságos, teleportálás a kezdö Spawnra.
+usage_captcha: '&cUsage: /captcha <theCaptcha>'
+usage_changepassword: 'használat: /changepassword régiJelszó újJelszó'
 usage_email_add: '&fUsage: /email add <email> <confirmEmail> '
 usage_email_change: '&fUsage: /email change <oldEmail> <newEmail> '
 usage_email_recovery: '&fUsage: /email recovery <Email>'
-new_email_invalid: '[AuthMe] New email invalid!'
-old_email_invalid: '[AuthMe] Old email invalid!'
-email_invalid: '[AuthMe] Invalid Email'
-email_added: '[AuthMe] Email Added !'
-email_confirm: '[AuthMe] Confirm your Email !'
-email_changed: '[AuthMe] Email Change !'
-email_send: '[AuthMe] Recovery Email Send !'
-country_banned: 'Your country is banned from this server'
-antibot_auto_enabled: '[AuthMe] AntiBotMod automatically enabled due to massive connections!'
-antibot_auto_disabled: '[AuthMe] AntiBotMod automatically disabled after %m Minutes, hope invasion stopped'
+usage_log: '&cBejelentkezés: /login jelszó'
+usage_reg: '&cHasználat: /register jelszó jelszóújra'
+usage_unreg: '&cHasználat: /unregister jelszó'
+user_regged: '&cJátékosnév már regisztrálva'
+user_unknown: '&cJátékosnév nem regisztrált'
+valid_captcha: '&cYour captcha is valid !'
+valid_session: '&cSession login'
+vb_nonActiv: Your Account isent Activated yet check your Emails!
+wrong_captcha: '&cWrong Captcha, please use : /captcha THE_CAPTCHA'
+wrong_pwd: '&4Hibás jelszó'
