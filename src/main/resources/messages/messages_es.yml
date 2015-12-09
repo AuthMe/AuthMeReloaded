@@ -36,7 +36,6 @@ reg_only: '&f¡Sólo para jugadores registrados! Por favor visita http://www.exa
 reg_voluntarily: '&fRegístrate con: "/register Contraseña ConfirmarContraseña"'
 reload: '&fLa configuración y la base de datos han sido recargados'
 same_nick: '&fYa hay un usuario con ese nick conectado (posible error)'
-# This file must be in ANSI if win, or UTF-8 if linux.
 timeout: '&fTiempo de espera para inicio de sesión excedido'
 unknown_user: '&fEl usuario no está en la base de datos'
 unregistered: '&c¡Cuenta eliminada del registro!'

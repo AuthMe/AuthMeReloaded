@@ -37,7 +37,6 @@ reg_voluntarily: '&fVous venez d''arriver? faites un "/register motdepasse confi
 reload: '&fConfiguration et BDD relancé avec succès'
 same_nick: '&fUne personne ayant ce même pseudo joue déjà..'
 timeout: '&fVous avez été expulsé car vous êtes trop lent pour vous enregistrer !'
-# Traduction par: André
 unknown_user: '&fUtilisateur non enregistré'
 unregistered: '&cCe compte a été supprimé!'
 unsafe_spawn: '&fTéléportation dans un endroit sûr'

@@ -1,5 +1,3 @@
-
-#   02.02.2013 - 4:35 AM - Thanks for use   #
 add_email: '&cPridaj svoj e-mail príkazom "/email add email zopakujEmail"'
 antibot_auto_disabled: '[AuthMe] AntiBotMod automatically disabled after %m Minutes, hope invasion stopped'
 antibot_auto_enabled: '[AuthMe] AntiBotMod automatically enabled due to massive connections!'
@@ -38,7 +36,6 @@ reg_only: '&fVstup iba pre registrovanych! Navstiv http://example.com pre regist
 reg_voluntarily: '&fZaregistruj sa pomocou príkazu "/register heslo zopakujHeslo"'
 reload: '&fKonfigurácia a databáza bola obnovená'
 same_nick: '&fHrác s tymto nickom uz hrá!'
-#         Slovak translate by Judzi         #
 timeout: '&fVyprsal cas na prihlásenie'
 unknown_user: '&fHrac nie je v databázi'
 unregistered: '&cUcet bol vymazany!'
@@ -58,4 +55,3 @@ valid_session: '&cZapamätané prihlásenie'
 vb_nonActiv: '&fUcet nie je aktivny. Prezri si svoj e-mail!'
 wrong_captcha: '&cWrong Captcha, please use : /captcha THE_CAPTCHA'
 wrong_pwd: '&cZadal si zlé heslo'
-#     www.judzi.eu | judzi@cs-gaming.eu     #
