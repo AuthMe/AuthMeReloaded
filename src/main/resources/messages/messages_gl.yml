@@ -1,8 +1,7 @@
 unknown_user: '&fO usuario non está na base de datos'
 unsafe_spawn: '&fA localización dende a que saíches era insegura, teletransportándote ao spawn do mundo'
 not_logged_in: '&cNon te identificaches!'
-reg_voluntarily: '&fPodes rexistrar o teu nome no servidor co comando
-  "/register <contrasinal> <confirmarContrasinal>"'
+reg_voluntarily: '&fPodes rexistrar o teu nome no servidor co comando "/register <contrasinal> <confirmarContrasinal>"'
 usage_log: '&cUso: /login <contrasinal>'
 wrong_pwd: '&cContrasinal equivocado'
 unregistered: '&cFeito! Xa non estás rexistrado!'
@@ -55,5 +54,4 @@ email_changed: '[AuthMe] Cambiouse o correo!'
 email_send: '[AuthMe] Enviouse o correo de confirmación!'
 country_banned: 'O teu país está bloqueado neste servidor'
 antibot_auto_enabled: '[AuthMe] AntiBotMod conectouse automáticamente debido a conexións masivas!'
-antibot_auto_disabled: '[AuthMe] AntiBotMod  desactivouse automáticamente despois de %m minutos,
-  esperemos que a invasión se detivera'
+antibot_auto_disabled: '[AuthMe] AntiBotMod  desactivouse automáticamente despois de %m minutos,&n  esperemos que a invasión se detivera'

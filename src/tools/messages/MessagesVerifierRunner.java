@@ -68,8 +68,6 @@ public final class MessagesVerifierRunner {
     private static void verifyFile(MessageFileVerifier verifier) {
         Map<String, Boolean> missingKeys = verifier.getMissingKeys();
         if (missingKeys.isEmpty()) {
-            System.out.println("  No missing keys");
-        } else {
             System.out.println("  Missing keys: " + missingKeys.keySet());
         }
 
@@ -81,9 +79,7 @@ public final class MessagesVerifierRunner {
 
     private static void verifyFileAndAddKeys(MessageFileVerifier verifier, Map<String, String> defaultMessages) {
         Map<String, Boolean> missingKeys = verifier.getMissingKeys();
-        if (missingKeys.isEmpty()) {
-            System.out.println("  No missing keys");
-        } else {
+        if (!missingKeys.isEmpty()) {
             verifier.addMissingKeys(defaultMessages);
             missingKeys = verifier.getMissingKeys();
             List<String> addedKeys = getKeysWithValue(Boolean.TRUE, missingKeys);
@@ -132,7 +128,7 @@ public final class MessagesVerifierRunner {
     }
 
     private static List<File> getMessagesFiles() {
-        final Pattern messageFilePattern = Pattern.compile("messages_[a-z]{2,3}\\.yml");
+        final Pattern messageFilePattern = Pattern.compile("messages_[a-z]{2,7}\\.yml");
         File folder = new File(MESSAGES_FOLDER);
         File[] files = folder.listFiles();
         if (files == null) {
