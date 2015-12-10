@@ -15,9 +15,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
