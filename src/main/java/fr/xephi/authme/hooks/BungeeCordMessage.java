@@ -46,7 +46,7 @@ public class BungeeCordMessage implements PluginMessageListener {
             // Put the IP (only the ip not the port) in the hashMap
             plugin.realIp.put(player.getName().toLowerCase(), ip);
         }
-        if (subChannel.equals("Forward"))
+        if (subChannel.equals("Forward") || subChannel.equalsIgnoreCase("AuthMe"))
         {
             short len = in.readShort();
             byte[] data = new byte[len];
