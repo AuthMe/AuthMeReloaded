@@ -48,7 +48,12 @@ public class BungeeCordMessage implements PluginMessageListener {
         }
         if (subChannel.equals("Forward"))
         {
-        	String str = in.readUTF();
+            short len = in.readShort();
+            byte[] data = new byte[len];
+            in.readFully(data);
+
+            //bytearray to string
+            String str = new String(data);
         	if (!str.startsWith("AuthMe"))
         		return;
         	String[] args = str.split(";");
