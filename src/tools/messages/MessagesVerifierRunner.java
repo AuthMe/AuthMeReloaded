@@ -17,7 +17,7 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 
 /**
- * TODO: ljacqu write JavaDoc
+ * Entry point of the messages verifier.
  */
 public final class MessagesVerifierRunner {
 
@@ -28,6 +28,7 @@ public final class MessagesVerifierRunner {
     }
 
     public static void main(String[] args) {
+        // Prompt user for options
         Scanner scanner = new Scanner(System.in);
         System.out.println("Check a specific file only?");
         System.out.println("- Empty line will check all files in the resources messages folder (default)");
@@ -38,6 +39,7 @@ public final class MessagesVerifierRunner {
         boolean addMissingKeys = "y".equals(scanner.nextLine());
         scanner.close();
 
+        // Set up needed objects
         Map<String, String> defaultMessages = null;
         if (addMissingKeys) {
             defaultMessages = constructDefaultMessages();
@@ -49,11 +51,9 @@ public final class MessagesVerifierRunner {
         } else {
             File customFile = new File(inputFile.replace(SOURCES_TAG, MESSAGES_FOLDER));
             messageFiles = Collections.singletonList(customFile);
-            if (messageFiles.isEmpty()) {
-                throw new RuntimeException("Error getting message files: list of files is empty");
-            }
         }
 
+        // Verify the given files
         for (File file : messageFiles) {
             System.out.println("Verifying '" + file.getName() + "'");
             MessageFileVerifier verifier = new MessageFileVerifier(file.getAbsolutePath());
@@ -111,11 +111,11 @@ public final class MessagesVerifierRunner {
             if (line.startsWith("#") || line.trim().isEmpty()) {
                 continue;
             }
-            if (line.indexOf(':') == -1) {
+            if (line.indexOf(':') == -1 || line.indexOf(':') == line.length() - 1) {
                 System.out.println("Warning! Unknown format in default messages file for line '" + line + "'");
             } else {
                 String key = line.substring(0, line.indexOf(':'));
-                messages.put(key, line.substring(line.indexOf(':') + 1)); // fixme: may throw exception
+                messages.put(key, line.substring(line.indexOf(':') + 1));
             }
         }
         return messages;
@@ -144,6 +144,9 @@ public final class MessagesVerifierRunner {
             if (messageFilePattern.matcher(file.getName()).matches()) {
                 messageFiles.add(file);
             }
+        }
+        if (messageFiles.isEmpty()) {
+            throw new RuntimeException("Error getting message files: list of files is empty");
         }
         return messageFiles;
     }

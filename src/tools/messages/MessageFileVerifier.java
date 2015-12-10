@@ -23,30 +23,43 @@ public class MessageFileVerifier {
     // Map with the missing key and a boolean indicating whether or not it was added to the file by this object
     private final Map<String, Boolean> missingKeys = new HashMap<>();
 
+    /**
+     * Create a verifier that verifies the given messages file.
+     *
+     * @param messagesFile The messages file to process
+     */
     public MessageFileVerifier(String messagesFile) {
         this.messagesFile = messagesFile;
-        analyze();
+        verifyKeys();
     }
 
+    /**
+     * Return the list of unknown keys, i.e. the list of keys present in the file that are not
+     * part of the {@link MessageKey} enum.
+     *
+     * @return List of unknown keys
+     */
     public Set<String> getUnknownKeys() {
         return unknownKeys;
     }
 
+    /**
+     * Return the list of missing keys, i.e. all keys that are part of {@link MessageKey} but absent
+     * in the messages file.
+     *
+     * @return The list of missing keys in the file
+     */
     public Map<String, Boolean> getMissingKeys() {
         return missingKeys;
     }
 
-    private void analyze() {
-        findMissingKeys();
-    }
-
-    private void findMissingKeys() {
+    private void verifyKeys() {
         Set<String> messageKeys = getAllMessageKeys();
         List<String> fileLines = FileUtils.readLinesFromFile(messagesFile);
         for (String line : fileLines) {
             // Skip comments and empty lines
             if (!line.startsWith("#") && !line.trim().isEmpty()) {
-                verifyKeyInFile(line, messageKeys);
+                processKeyInFile(line, messageKeys);
             }
         }
 
@@ -56,7 +69,7 @@ public class MessageFileVerifier {
         }
     }
 
-    private void verifyKeyInFile(String line, Set<String> messageKeys) {
+    private void processKeyInFile(String line, Set<String> messageKeys) {
         if (line.indexOf(':') == -1) {
             System.out.println("Skipping line in unknown format: '" + line + "'");
             return;
@@ -70,17 +83,16 @@ public class MessageFileVerifier {
         }
     }
 
+    /**
+     * Add missing keys to the file with the provided default (English) message.
+     *
+     * @param defaultMessages The collection of default messages
+     */
     public void addMissingKeys(Map<String, String> defaultMessages) {
         List<String> keysToAdd = new ArrayList<>();
-
         for (Map.Entry<String, Boolean> entry : missingKeys.entrySet()) {
-            if (Boolean.FALSE.equals(entry.getValue())) {
-                String defaultMessage = defaultMessages.get(entry.getKey());
-                if (defaultMessage == null) {
-                    System.out.println("Error: Key '" + entry.getKey() + "' not present in default messages");
-                } else {
-                    keysToAdd.add(entry.getKey());
-                }
+            if (Boolean.FALSE.equals(entry.getValue()) && defaultMessages.get(entry.getKey()) != null) {
+                keysToAdd.add(entry.getKey());
             }
         }
 
