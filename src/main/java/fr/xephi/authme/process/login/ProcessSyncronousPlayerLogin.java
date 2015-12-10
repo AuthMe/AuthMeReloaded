@@ -24,6 +24,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+
 /**
  */
 public class ProcessSyncronousPlayerLogin implements Runnable {
@@ -118,8 +121,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     }
 
     protected void sendBungeeMessage() {
-    	ByteArrayOutputStream b = new ByteArrayOutputStream();
-    	DataOutputStream out = new DataOutputStream(b);
+    	ByteArrayDataOutput out = ByteStreams.newDataOutput();
     	try {
     		String str = "AuthMe;login;" + name;
     		out.writeUTF("Forward");
@@ -127,7 +129,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     		out.writeUTF("AuthMe");
     		out.writeShort(str.length());
     		out.writeUTF(str);
-    		player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
+    		player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     	} catch (Exception e)
     	{}
     }
