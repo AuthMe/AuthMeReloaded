@@ -46,7 +46,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
     	ByteArrayOutputStream b = new ByteArrayOutputStream();
     	DataOutputStream out = new DataOutputStream(b);
     	try {
-    		String str = "AuthMe;login;" + name;
+    		String str = "AuthMe;logout;" + name;
     		out.writeUTF("Forward");
     		out.writeUTF("ALL");
     		out.writeUTF("AuthMe");
