@@ -21,7 +21,7 @@ import static java.lang.String.format;
  */
 public final class MessagesVerifierRunner {
 
-    public static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
+    private static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
     private static final String SOURCES_TAG = "{msgdir}";
 
     private MessagesVerifierRunner() {
@@ -63,11 +63,15 @@ public final class MessagesVerifierRunner {
                 verifyFile(verifier);
             }
         }
+
+        if (messageFiles.size() > 1) {
+            System.out.println("Checked " + messageFiles.size() + " files");
+        }
     }
 
     private static void verifyFile(MessageFileVerifier verifier) {
         Map<String, Boolean> missingKeys = verifier.getMissingKeys();
-        if (missingKeys.isEmpty()) {
+        if (!missingKeys.isEmpty()) {
             System.out.println("  Missing keys: " + missingKeys.keySet());
         }
 
@@ -83,7 +87,7 @@ public final class MessagesVerifierRunner {
             verifier.addMissingKeys(defaultMessages);
             missingKeys = verifier.getMissingKeys();
             List<String> addedKeys = getKeysWithValue(Boolean.TRUE, missingKeys);
-            System.out.println("Could add missing keys " + addedKeys);
+            System.out.println("  Added missing keys " + addedKeys);
 
             List<String> unsuccessfulKeys = getKeysWithValue(Boolean.FALSE, missingKeys);
             if (!unsuccessfulKeys.isEmpty()) {
