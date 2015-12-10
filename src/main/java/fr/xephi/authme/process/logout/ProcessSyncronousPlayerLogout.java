@@ -9,6 +9,10 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -36,6 +40,21 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         this.player = player;
         this.plugin = plugin;
         this.name = player.getName().toLowerCase();
+    }
+
+    protected void sendBungeeMessage() {
+    	ByteArrayOutputStream b = new ByteArrayOutputStream();
+    	DataOutputStream out = new DataOutputStream(b);
+    	try {
+    		String str = "AuthMe;login;" + name;
+    		out.writeUTF("Forward");
+    		out.writeUTF("ALL");
+    		out.writeUTF("AuthMe");
+    		out.writeShort(str.length());
+    		out.writeUTF(str);
+    		player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
+    	} catch (Exception e)
+    	{}
     }
 
     /**
@@ -76,6 +95,8 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         }
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
+        if (Settings.bungee)
+        	sendBungeeMessage();
         m.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");
     }

@@ -3,6 +3,9 @@ package fr.xephi.authme.hooks;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -42,6 +45,30 @@ public class BungeeCordMessage implements PluginMessageListener {
             String ip = in.readUTF();
             // Put the IP (only the ip not the port) in the hashMap
             plugin.realIp.put(player.getName().toLowerCase(), ip);
+        }
+        if (subChannel.equals("Forward"))
+        {
+        	String str = in.readUTF();
+        	if (!str.startsWith("AuthMe"))
+        		return;
+        	String[] args = str.split(";");
+        	try {
+        		String name = args[2];
+        		PlayerAuth auth = plugin.database.getAuth(name);
+        		if (auth == null)
+        			return;
+            	if (args[1].equalsIgnoreCase("login"))
+            	{
+            		PlayerCache.getInstance().addPlayer(auth);
+            		plugin.database.setLogged(name);
+            	}
+            	else if (args[1].equalsIgnoreCase("logout"))
+            	{
+            		PlayerCache.getInstance().removePlayer(name);
+            		plugin.database.setUnlogged(name);
+            	}
+        	} catch (Exception e)
+        	{}
         }
     }
 
