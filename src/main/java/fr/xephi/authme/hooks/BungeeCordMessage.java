@@ -3,6 +3,7 @@ package fr.xephi.authme.hooks;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
@@ -66,11 +67,13 @@ public class BungeeCordMessage implements PluginMessageListener {
             	{
             		PlayerCache.getInstance().addPlayer(auth);
             		plugin.database.setLogged(name);
+            		ConsoleLogger.info("Player " + auth.getNickname() + " has logged in from one of your server!");
             	}
             	else if (args[1].equalsIgnoreCase("logout"))
             	{
             		PlayerCache.getInstance().removePlayer(name);
             		plugin.database.setUnlogged(name);
+            		ConsoleLogger.info("Player " + auth.getNickname() + " has logged out from one of your server!");
             	}
         	} catch (Exception e)
         	{}
