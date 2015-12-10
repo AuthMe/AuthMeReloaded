@@ -56,3 +56,4 @@ email_exists: '[AuthMe] An email already exists on your account. You can change 
 country_banned: 'Ulken bu serverdan banlandi !'
 antibot_auto_enabled: '[AuthMe] AntiBotMode otomatik olarak etkinlestirildi!'
 antibot_auto_disabled: '[AuthMe] AntiBotMode %m dakika sonra otomatik olarak isgal yuzundan devredisi birakildi'
+kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'

@@ -55,3 +55,5 @@ email_send: '[AuthMe] Лист для відновлення надіслано 
 country_banned: 'Сервер не доступний для вашої країни | Your country is banned from this server'
 antibot_auto_enabled: '[AuthMe] AntiBotMod автоматично увімкнений (забагато одначасних з`єднань)!'
 antibot_auto_disabled: '[AuthMe] AntiBotMod автоматично вимкнувся, сподіваємось атака зупинена'
+kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
