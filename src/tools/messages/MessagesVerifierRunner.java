@@ -1,40 +1,110 @@
 package messages;
 
+import fr.xephi.authme.util.StringUtils;
 import utils.FileUtils;
+import utils.ToolsConstants;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
+
+import static java.lang.String.format;
 
 /**
  * TODO: ljacqu write JavaDoc
  */
 public final class MessagesVerifierRunner {
 
+    public static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
+    private static final String SOURCES_TAG = "{msgdir}";
+
     private MessagesVerifierRunner() {
     }
 
     public static void main(String[] args) {
-        final Map<String, String> defaultMessages = constructDefaultMessages();
-        final List<File> messagesFiles = getMessagesFiles();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Check a specific file only?");
+        System.out.println("- Empty line will check all files in the resources messages folder (default)");
+        System.out.println(format("- %s will be replaced to the messages folder %s", SOURCES_TAG, MESSAGES_FOLDER));
+        String inputFile = scanner.nextLine();
 
-        if (messagesFiles.isEmpty()) {
-            throw new RuntimeException("Error getting messages file: list of files is empty");
+        System.out.println("Add any missing keys to files? ['y' = yes]");
+        boolean addMissingKeys = "y".equals(scanner.nextLine());
+        scanner.close();
+
+        Map<String, String> defaultMessages = null;
+        if (addMissingKeys) {
+            defaultMessages = constructDefaultMessages();
         }
 
-        for (File file : messagesFiles) {
+        List<File> messageFiles;
+        if (StringUtils.isEmpty(inputFile)) {
+            messageFiles = getMessagesFiles();
+        } else {
+            File customFile = new File(inputFile.replace(SOURCES_TAG, MESSAGES_FOLDER));
+            messageFiles = Collections.singletonList(customFile);
+            if (messageFiles.isEmpty()) {
+                throw new RuntimeException("Error getting message files: list of files is empty");
+            }
+        }
+
+        for (File file : messageFiles) {
             System.out.println("Verifying '" + file.getName() + "'");
-            MessageFileVerifier messageFileVerifier = new MessageFileVerifier(defaultMessages, file.getAbsolutePath());
-            messageFileVerifier.verify(false);
-            System.out.println();
+            MessageFileVerifier verifier = new MessageFileVerifier(file.getAbsolutePath());
+            if (addMissingKeys) {
+                verifyFileAndAddKeys(verifier, defaultMessages);
+            } else {
+                verifyFile(verifier);
+            }
+        }
+    }
+
+    private static void verifyFile(MessageFileVerifier verifier) {
+        Map<String, Boolean> missingKeys = verifier.getMissingKeys();
+        if (missingKeys.isEmpty()) {
+            System.out.println("  No missing keys");
+        } else {
+            System.out.println("  Missing keys: " + missingKeys.keySet());
+        }
+
+        Set<String> unknownKeys = verifier.getUnknownKeys();
+        if (!unknownKeys.isEmpty()) {
+            System.out.println("  Unknown keys: " + unknownKeys);
+        }
+    }
+
+    private static void verifyFileAndAddKeys(MessageFileVerifier verifier, Map<String, String> defaultMessages) {
+        Map<String, Boolean> missingKeys = verifier.getMissingKeys();
+        if (missingKeys.isEmpty()) {
+            System.out.println("  No missing keys");
+        } else {
+            verifier.addMissingKeys(defaultMessages);
+            missingKeys = verifier.getMissingKeys();
+            List<String> addedKeys = getKeysWithValue(Boolean.TRUE, missingKeys);
+            System.out.println("Could add missing keys " + addedKeys);
+
+            List<String> unsuccessfulKeys = getKeysWithValue(Boolean.FALSE, missingKeys);
+            if (!unsuccessfulKeys.isEmpty()) {
+                System.out.println("  Warning! Could not add all missing keys (problem with loading " +
+                    "default messages?)");
+                System.out.println("  Could not add keys " + unsuccessfulKeys);
+            }
+        }
+
+        Set<String> unknownKeys = verifier.getUnknownKeys();
+        if (!unknownKeys.isEmpty()) {
+            System.out.println("  Unknown keys: " + unknownKeys);
         }
     }
 
     private static Map<String, String> constructDefaultMessages() {
-        String defaultMessagesFile = MessageFileVerifier.MESSAGES_FOLDER + "messages_en.yml";
+        String defaultMessagesFile = MESSAGES_FOLDER + "messages_en.yml";
         List<String> lines = FileUtils.readLinesFromFile(defaultMessagesFile);
         Map<String, String> messages = new HashMap<>(lines.size());
         for (String line : lines) {
@@ -51,9 +121,19 @@ public final class MessagesVerifierRunner {
         return messages;
     }
 
+    private static <K, V> List<K> getKeysWithValue(V value, Map<K, V> map) {
+        List<K> result = new ArrayList<>();
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            if (value.equals(entry.getValue())) {
+                result.add(entry.getKey());
+            }
+        }
+        return result;
+    }
+
     private static List<File> getMessagesFiles() {
         final Pattern messageFilePattern = Pattern.compile("messages_[a-z]{2,3}\\.yml");
-        File folder = new File(MessageFileVerifier.MESSAGES_FOLDER);
+        File folder = new File(MESSAGES_FOLDER);
         File[] files = folder.listFiles();
         if (files == null) {
             throw new RuntimeException("Could not read files from folder '" + folder.getName() + "'");

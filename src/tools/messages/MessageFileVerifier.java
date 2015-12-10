@@ -2,47 +2,61 @@ package messages;
 
 import fr.xephi.authme.output.MessageKey;
 import utils.FileUtils;
-import utils.ToolsConstants;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Verifies that a message file has all keys as given in {@link MessageKey}.
+ * Verifies a message file's keys to ensure that it is in sync with {@link MessageKey}, i.e. that the file contains
+ * all keys and that it doesn't have any unknown ones.
  */
 public class MessageFileVerifier {
 
-    public static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
-    private static final String NEW_LINE = "\n";
+    private static final char NEW_LINE = '\n';
 
     private final String messagesFile;
-    private final Map<String, String> defaultMessages;
+    private final Set<String> unknownKeys = new HashSet<>();
+    // Map with the missing key and a boolean indicating whether or not it was added to the file by this object
+    private final Map<String, Boolean> missingKeys = new HashMap<>();
 
-    public MessageFileVerifier(Map<String, String> defaultMessages, String messagesFile) {
+    public MessageFileVerifier(String messagesFile) {
         this.messagesFile = messagesFile;
-        this.defaultMessages = defaultMessages;
+        analyze();
     }
 
-    public void verify(boolean addMissingKeys) {
+    public Set<String> getUnknownKeys() {
+        return unknownKeys;
+    }
+
+    public Map<String, Boolean> getMissingKeys() {
+        return missingKeys;
+    }
+
+    private void analyze() {
+        findMissingKeys();
+    }
+
+    private void findMissingKeys() {
         Set<String> messageKeys = getAllMessageKeys();
         List<String> fileLines = FileUtils.readLinesFromFile(messagesFile);
         for (String line : fileLines) {
             // Skip comments and empty lines
             if (!line.startsWith("#") && !line.trim().isEmpty()) {
-                handleMessagesLine(line, messageKeys);
+                verifyKeyInFile(line, messageKeys);
             }
         }
 
-        if (messageKeys.isEmpty()) {
-            System.out.println("Found all message keys");
-        } else {
-            handleMissingKeys(messageKeys, addMissingKeys);
+        // All keys that remain are keys that are absent in the file
+        for (String missingKey : messageKeys) {
+            missingKeys.put(missingKey, false);
         }
     }
 
-    private void handleMessagesLine(String line, Set<String> messageKeys) {
+    private void verifyKeyInFile(String line, Set<String> messageKeys) {
         if (line.indexOf(':') == -1) {
             System.out.println("Skipping line in unknown format: '" + line + "'");
             return;
@@ -52,20 +66,38 @@ public class MessageFileVerifier {
         if (messageKeys.contains(key)) {
             messageKeys.remove(key);
         } else {
-            System.out.println("Warning: Unknown key '" + key + "' for line '" + line + "'");
+            unknownKeys.add(key);
         }
     }
 
-    private void handleMissingKeys(Set<String> missingKeys, boolean addMissingKeys) {
-        for (String key : missingKeys) {
-            if (addMissingKeys) {
-                String defaultMessage = defaultMessages.get(key);
-                FileUtils.appendToFile(messagesFile, NEW_LINE + key + ":" + defaultMessage);
-                System.out.println("Added missing key '" + key + "' to file");
-            } else {
-                System.out.println("Error: Missing key '" + key + "'");
+    public void addMissingKeys(Map<String, String> defaultMessages) {
+        List<String> keysToAdd = new ArrayList<>();
+
+        for (Map.Entry<String, Boolean> entry : missingKeys.entrySet()) {
+            if (Boolean.FALSE.equals(entry.getValue())) {
+                String defaultMessage = defaultMessages.get(entry.getKey());
+                if (defaultMessage == null) {
+                    System.out.println("Error: Key '" + entry.getKey() + "' not present in default messages");
+                } else {
+                    keysToAdd.add(entry.getKey());
+                }
             }
         }
+
+        // Very ugly way of verifying if the last char in the file is a new line, in which case we won't start by
+        // adding a new line to the file. It's grossly inefficient but with the scale of the messages file it's fine
+        String fileContents = FileUtils.readFromFile(messagesFile);
+        String contentsToAdd = "";
+        if (fileContents.charAt(fileContents.length() - 1) == NEW_LINE) {
+            contentsToAdd += NEW_LINE;
+        }
+
+        // We know that all keys in keysToAdd are safe to retrieve and add
+        for (String keyToAdd : keysToAdd) {
+            contentsToAdd += keyToAdd + ":" + defaultMessages.get(keyToAdd) + NEW_LINE;
+            missingKeys.put(keyToAdd, true);
+        }
+        FileUtils.appendToFile(messagesFile, contentsToAdd);
     }
 
     private static Set<String> getAllMessageKeys() {
