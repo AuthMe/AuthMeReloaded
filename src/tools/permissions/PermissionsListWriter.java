@@ -25,8 +25,8 @@ public class PermissionsListWriter {
 
         boolean writeToFile = false;
         if (includeDescription) {
-            System.out.println("Write to file? [Enter 'n' for console output]");
-            writeToFile = !matches("n", scanner);
+            System.out.println("Write to file? [Enter 'y' for yes]");
+            writeToFile = matches("y", scanner);
         }
         scanner.close();
 

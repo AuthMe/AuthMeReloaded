@@ -16,7 +16,7 @@ import java.util.Set;
  */
 public class MessageFileVerifier {
 
-    private static final char NEW_LINE = '\n';
+    private static final String NEW_LINE = "\n";
 
     private final String messagesFile;
     private final Set<String> unknownKeys = new HashSet<>();
@@ -96,20 +96,13 @@ public class MessageFileVerifier {
             }
         }
 
-        // Very ugly way of verifying if the last char in the file is a new line, in which case we won't start by
-        // adding a new line to the file. It's grossly inefficient but with the scale of the messages file it's fine
-        String fileContents = FileUtils.readFromFile(messagesFile);
-        String contentsToAdd = "";
-        if (fileContents.charAt(fileContents.length() - 1) == NEW_LINE) {
-            contentsToAdd += NEW_LINE;
-        }
-
-        // We know that all keys in keysToAdd are safe to retrieve and add
+        // We know that all keys in keysToAdd are safe to retrieve and write
+        StringBuilder sb = new StringBuilder(NEW_LINE);
         for (String keyToAdd : keysToAdd) {
-            contentsToAdd += keyToAdd + ":" + defaultMessages.get(keyToAdd) + NEW_LINE;
+            sb.append(keyToAdd).append(":").append(defaultMessages.get(keyToAdd)).append(NEW_LINE);
             missingKeys.put(keyToAdd, true);
         }
-        FileUtils.appendToFile(messagesFile, contentsToAdd);
+        FileUtils.appendToFile(messagesFile, sb.toString());
     }
 
     private static Set<String> getAllMessageKeys() {
