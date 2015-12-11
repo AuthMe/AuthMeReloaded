@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static com.google.common.base.Objects.firstNonNull;
+import static java.util.Arrays.asList;
 
 /**
  * Command description - defines which labels ("names") will lead to a command and points to the
@@ -31,15 +32,15 @@ public class CommandDescription {
      */
     private List<String> labels;
     /**
-     * Command description.
+     * Short description of the command.
      */
     private String description;
     /**
-     * Detailed description of the command.
+     * Detailed description of what the command does.
      */
     private String detailedDescription;
     /**
-     * The executable command instance.
+     * The executable command instance described by this object.
      */
     private ExecutableCommand executableCommand;
     /**
@@ -55,7 +56,7 @@ public class CommandDescription {
      */
     private List<CommandArgumentDescription> arguments;
     /**
-     * Defines the command permissions.
+     * Command permissions required to execute this command.
      */
     private CommandPermissions permissions;
 
@@ -106,9 +107,10 @@ public class CommandDescription {
     }
 
     /**
-     * Get all relative command labels.
+     * Get all relative labels of this command. For example, if this object describes "/authme register" and
+     * "/authme r", then "r" and "register" are the relative labels, whereas "authme" is the label of the parent.
      *
-     * @return All relative labels labels.
+     * @return All relative labels.
      */
     public List<String> getLabels() {
         return this.labels;
@@ -117,9 +119,9 @@ public class CommandDescription {
     /**
      * Check whether this command description has a specific command.
      *
-     * @param commandLabel Command to check for.
+     * @param commandLabel The label to check for.
      *
-     * @return True if this command label equals to the param command.
+     * @return {@code true} if this command contains the given label, {@code false} otherwise.
      */
     public boolean hasLabel(String commandLabel) {
         for (String label : labels) {
@@ -131,25 +133,25 @@ public class CommandDescription {
     }
 
     /**
-     * Get the executable command.
+     * Return the {@link ExecutableCommand} instance defined by the command description.
      *
-     * @return The executable command.
+     * @return The executable command object.
      */
     public ExecutableCommand getExecutableCommand() {
-        return this.executableCommand;
+        return executableCommand;
     }
 
     /**
-     * Get the parent command if this command description has a parent.
+     * Return the parent.
      *
-     * @return Parent command, or null
+     * @return The parent command, or null for base commands.
      */
     public CommandDescription getParent() {
-        return this.parent;
+        return parent;
     }
 
     /**
-     * Get all command children.
+     * Return all command children.
      *
      * @return Command children.
      */
@@ -159,7 +161,7 @@ public class CommandDescription {
 
 
     /**
-     * Get all command arguments.
+     * Return all arguments the command takes.
      *
      * @return Command arguments.
      */
@@ -168,16 +170,7 @@ public class CommandDescription {
     }
 
     /**
-     * Check whether this command has any arguments.
-     *
-     * @return True if this command has any arguments.
-     */
-    public boolean hasArguments() {
-        return !getArguments().isEmpty();
-    }
-
-    /**
-     * Get the command description.
+     * Return a short description of the command.
      *
      * @return Command description.
      */
@@ -186,9 +179,9 @@ public class CommandDescription {
     }
 
     /**
-     * Get the command detailed description.
+     * Return a detailed description of the command.
      *
-     * @return Command detailed description.
+     * @return Detailed description.
      */
     public String getDetailedDescription() {
         return detailedDescription;
@@ -196,14 +189,19 @@ public class CommandDescription {
 
 
     /**
-     * Get the command permissions. Return null if the command doesn't require any permission.
+     * Return the permissions required to execute the command.
      *
-     * @return The command permissions.
+     * @return The command permissions, or null if none are required to execute the command.
      */
     public CommandPermissions getCommandPermissions() {
         return this.permissions;
     }
 
+    /**
+     * Return a builder instance to create a new command description.
+     *
+     * @return The builder
+     */
     public static CommandBuilder builder() {
         return new CommandBuilder();
     }
@@ -221,12 +219,11 @@ public class CommandDescription {
         private CommandPermissions permissions;
 
         /**
-         * Build a CommandDescription from the builder or throw an exception if mandatory
-         * fields have not been set.
+         * Build a CommandDescription from the builder or throw an exception if a mandatory
+         * field has not been set.
          *
          * @return The generated CommandDescription object
          */
-        // TODO ljacqu 20151206 Move validation to the create instance method
         public CommandDescription build() {
             return createInstance(
                 getOrThrow(labels, "labels"),
@@ -245,7 +242,7 @@ public class CommandDescription {
         }
 
         public CommandBuilder labels(String... labels) {
-            return labels(asMutableList(labels));
+            return labels(asList(labels));
         }
 
         public CommandBuilder description(String description) {
@@ -274,7 +271,7 @@ public class CommandDescription {
          *
          * @param label The label of the argument (single word name of the argument)
          * @param description The description of the argument
-         * @param isOptional True if the argument is option, false if it is mandatory
+         * @param isOptional True if the argument is optional, false if it is mandatory
          *
          * @return The builder
          */
@@ -291,7 +288,7 @@ public class CommandDescription {
 
         @SafeVarargs
         private static <T> List<T> asMutableList(T... items) {
-            return new ArrayList<>(Arrays.asList(items));
+            return new ArrayList<>(asList(items));
         }
 
         private static <T> T getOrThrow(T element, String elementName) {

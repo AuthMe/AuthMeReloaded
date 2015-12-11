@@ -1,6 +1,6 @@
 package fr.xephi.authme.command;
 
-import org.bukkit.command.CommandSender;
+import java.util.List;
 
 /**
  */
@@ -9,47 +9,39 @@ public class FoundCommandResult {
     /**
      * The command description instance.
      */
-    private CommandDescription commandDescription;
-    /**
-     * The command reference.
-     */
-    private final CommandParts commandReference;
+    private final CommandDescription commandDescription;
     /**
      * The command arguments.
      */
-    private final CommandParts commandArguments;
+    private final List<String> arguments;
     /**
-     * The original search query reference.
+     * The labels used to invoke the command. This may be different for the same {@link ExecutableCommand} instance
+     * if multiple labels have been defined, e.g. "/authme register" and "/authme reg".
      */
-    private final CommandParts queryReference;
+    private final List<String> labels;
+
+    private final double difference;
+
+    private final ResultStatus resultStatus;
 
     /**
      * Constructor.
      *
      * @param commandDescription The command description.
-     * @param commandReference   The command reference.
-     * @param commandArguments   The command arguments.
-     * @param queryReference     The original query reference.
+     * @param arguments          The command arguments.
+     * @param labels             The original query reference.
      */
-    public FoundCommandResult(CommandDescription commandDescription, CommandParts commandReference, CommandParts commandArguments, CommandParts queryReference) {
+    public FoundCommandResult(CommandDescription commandDescription, List<String> arguments, List<String> labels,
+                              double difference, ResultStatus resultStatus) {
         this.commandDescription = commandDescription;
-        this.commandReference = commandReference;
-        this.commandArguments = commandArguments;
-        this.queryReference = queryReference;
+        this.arguments = arguments;
+        this.labels = labels;
+        this.difference = difference;
+        this.resultStatus = resultStatus;
     }
 
-    /**
-     * Check whether the command was suitable.
-     *
-     * @return True if the command was suitable, false otherwise.
-     */
-    public boolean hasProperArguments() {
-        // Make sure the command description is set
-        if (this.commandDescription == null)
-            return false;
-
-        // Get and return the result
-        return getCommandDescription().getSuitableArgumentsDifference(this.queryReference) == 0;
+    public FoundCommandResult(CommandDescription commandDescription, List<String> arguments, List<String> labels) {
+        this(commandDescription, arguments, labels, 0.0, ResultStatus.SUCCESS);
     }
 
     /**
@@ -61,66 +53,14 @@ public class FoundCommandResult {
         return this.commandDescription;
     }
 
-    /**
-     * Check whether the command is executable.
-     *
-     * @return True if the command is executable, false otherwise.
-     */
-    public boolean isExecutable() {
-        return commandDescription != null;
-    }
-
-    /**
-     * Execute the command.
-     *
-     * @param sender The command sender that executed the command.
-     *
-     * @return True on success, false on failure.
-     */
-    public boolean executeCommand(CommandSender sender) {
-        // Make sure the command description is valid
-        if (this.commandDescription == null)
-            return false;
-
-        // Execute the command
-        return this.commandDescription.execute(sender, this.commandReference, this.commandArguments);
-    }
-
-    /**
-     * Check whether a command sender has permission to execute the command.
-     *
-     * @param sender The command sender.
-     *
-     * @return True if the command sender has permission, false otherwise.
-     */
-    public boolean hasPermission(CommandSender sender) {
-        if (commandDescription == null) {
-            return false;
-        } else if (commandDescription.getCommandPermissions() == null) {
-            return true;
-        }
-
-        // TODO: Move permissions check to the permission package; command package should not define permission-checking
-        // API
-        return commandDescription.getCommandPermissions().hasPermission(sender);
-    }
-
-    /**
-     * Get the command reference.
-     *
-     * @return The command reference.
-     */
-    public CommandParts getCommandReference() {
-        return this.commandReference;
-    }
 
     /**
      * Get the command arguments.
      *
      * @return The command arguments.
      */
-    public CommandParts getCommandArguments() {
-        return this.commandArguments;
+    public List<String> getArguments() {
+        return this.arguments;
     }
 
     /**
@@ -128,22 +68,26 @@ public class FoundCommandResult {
      *
      * @return Original query reference.
      */
-    public CommandParts getQueryReference() {
-        return this.queryReference;
+    public List<String> getLabels() {
+        return this.labels;
     }
 
-    /**
-     * Get the difference value between the original query and the result reference.
-     *
-     * @return The difference value.
-     */
     public double getDifference() {
-        // Get the difference through the command found
-        if (this.commandDescription != null) {
-            return this.commandDescription.getCommandDifference(this.queryReference);
-        }
+        return difference;
+    }
 
-        // Get the difference from the query reference
-        return CommandUtils.getDifference(queryReference.getList(), commandReference.getList(), true);
+    public ResultStatus getResultStatus() {
+        return resultStatus;
+    }
+
+    public enum ResultStatus {
+
+        SUCCESS,
+
+        INCORRECT_ARGUMENTS,
+
+        UNKNOWN_LABEL,
+
+        MISSING_BASE_COMMAND
     }
 }

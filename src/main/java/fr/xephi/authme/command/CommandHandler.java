@@ -6,6 +6,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -56,22 +57,30 @@ public class CommandHandler {
         FoundCommandResult result = mapPartsToCommand(parts);
         switch (result.getResultStatus()) {
             case SUCCESS:
-                // Check perms + process
+                executeCommandIfAllowed(sender, result.getCommandDescription(), result.getArguments());
                 break;
             case MISSING_BASE_COMMAND:
                 sender.sendMessage(ChatColor.DARK_RED + "Failed to parse " + AuthMe.getPluginName() + " command!");
                 return false;
             case INCORRECT_ARGUMENTS:
-                // sendImproperArgumentsMessage(sender, result);
+                sendImproperArgumentsMessage(sender, result);
                 break;
             case UNKNOWN_LABEL:
-                // sendUnknownCommandMessage(sender);
+                sendUnknownCommandMessage(sender, result);
                 break;
             default:
                 throw new RuntimeException("Unknown result '" + result.getResultStatus() + "'");
         }
 
         return true;
+    }
+
+    private void executeCommandIfAllowed(CommandSender sender, CommandDescription command, List<String> arguments) {
+        if (permissionsManager.hasPermission(sender, command)) {
+            command.getExecutableCommand().executeCommand(sender, arguments);
+        } else {
+            sendPermissionDeniedError(sender);
+        }
     }
 
     /**
@@ -81,7 +90,7 @@ public class CommandHandler {
      * @return List of the items that are not empty
      */
     private static List<String> skipEmptyArguments(String[] args) {
-        List<String> cleanArguments = new ArrayList<>(args.length);
+        List<String> cleanArguments = new ArrayList<>();
         for (String argument : args) {
             if (!StringUtils.isEmpty(argument)) {
                 cleanArguments.add(argument);
@@ -90,16 +99,14 @@ public class CommandHandler {
         return cleanArguments;
     }
 
-
     /**
      * Show an "unknown command" to the user and suggests an existing command if its similarity is within
      * the defined threshold.
      *
      * @param sender The command sender
      * @param result The command that was found during the mapping process
-     * @param baseCommand The base command
      */
-    private static void sendUnknownCommandMessage(CommandSender sender, FoundCommandResult result, String baseCommand) {
+    private static void sendUnknownCommandMessage(CommandSender sender, FoundCommandResult result) {
         sender.sendMessage(ChatColor.DARK_RED + "Unknown command!");
 
         // Show a command suggestion if available and the difference isn't too big
@@ -109,27 +116,29 @@ public class CommandHandler {
             // TODO: Define a proper string representation of command description
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + baseCommand + " help"
-            + ChatColor.YELLOW + " to view help.");
+        sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + result.getLabels().get(0)
+            + " help" + ChatColor.YELLOW + " to view help.");
     }
 
-    private static void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result,
-                                                     CommandParts commandReference, String baseCommand) {
-        // Get the command and the suggested command reference
-        // FIXME List<String> suggestedCommandReference =
-        //    result.getCommandDescription().getCommandReference(commandReference).getList();
-        // List<String> helpCommandReference = CollectionUtils.getRange(suggestedCommandReference, 1);
-
-        // Show the invalid arguments warning
-        sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
+    private void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result) {
+        CommandDescription command = result.getCommandDescription();
+        if (!permissionsManager.hasPermission(sender, command)) {
+            sendPermissionDeniedError(sender);
+            return;
+        }
 
         // Show the command argument help
-        // HelpProvider.showHelp(sender, commandReference, new CommandParts(suggestedCommandReference),
-        //    true, false, true, false, false, false);
+        sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
+        // TODO: Define showHelp(CommandSender, CommandDescription, List<String>, boolean, boolean, ...)
+        List<String> labels = result.getLabels();
+        HelpProvider.showHelp(sender, command, labels, true, false, true, false, false, false);
+        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/" + labels.get(0)
+            + " help " + CommandUtils.labelsToString(labels.subList(1, labels.size())));
+    }
 
-        // Show the command to use for detailed help
-        // sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/" + baseCommand
-        //    + " help " + CommandUtils.labelsToString(helpCommandReference));
+    // TODO ljacqu 20151212: Remove me once I am a MessageKey
+    private void sendPermissionDeniedError(CommandSender sender) {
+        sender.sendMessage(ChatColor.DARK_RED + "You don't have permission to use this command!");
     }
 
     public FoundCommandResult mapPartsToCommand(final List<String> parts) {
@@ -144,64 +153,50 @@ public class CommandHandler {
 
         // Prefer labels: /register help goes to "Help command", not "Register command" with argument 'help'
         List<String> remaining = parts.subList(1, parts.size());
-        CommandDescription childCommand = returnSuitableChild(base, remaining);
+        CommandDescription childCommand = getSuitableChild(base, remaining);
         if (childCommand != null) {
             return new FoundCommandResult(childCommand, parts.subList(2, parts.size()), parts.subList(0, 2));
         } else if (isSuitableArgumentCount(base, remaining.size())) {
             return new FoundCommandResult(base, parts.subList(1, parts.size()), parts.subList(0, 1));
         }
 
-        // TODO: return getCommandWithSmallestDifference()
-        return null;
-
+        return getCommandWithSmallestDifference(base, parts);
     }
 
-    // TODO: Return FoundCommandDescription immediately
-    private CommandDescription getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
+    private FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
         final String label = parts.get(0);
         final int argumentCount = parts.size() - 1;
 
         double minDifference = Double.POSITIVE_INFINITY;
         CommandDescription closestCommand = null;
         for (CommandDescription child : base.getChildren()) {
-            double argumentDifference = getArgumentCountDifference(child, argumentCount);
             double labelDifference = getLabelDifference(child, label);
+            double argumentDifference = getArgumentCountDifference(child, argumentCount);
             // Weigh argument difference less
-            double difference = labelDifference + argumentCount / 2;
+            double difference = labelDifference + argumentDifference / 2;
             if (difference < minDifference) {
                 minDifference = difference;
                 closestCommand = child;
             }
         }
-        return closestCommand;
+        // TODO: Return the full list of labels and arguments
+        // TODO: Also compare the base command and suggest it if it's the most similar
+        return new FoundCommandResult(
+            closestCommand, null, null, minDifference, FoundCommandResult.ResultStatus.UNKNOWN_LABEL);
     }
 
-    private static boolean isSuitableArgumentCount(CommandDescription command, int argumentCount) {
-        int minArgs = CommandUtils.getMinNumberOfArguments(command);
-        int maxArgs = CommandUtils.getMaxNumberOfArguments(command);
-
-        return argumentCount >= minArgs && argumentCount <= maxArgs;
-    }
-
-    private static double getLabelDifference(CommandDescription command, String givenLabel) {
-        double minDifference = Double.POSITIVE_INFINITY;
-        for (String commandLabel : command.getLabels()) {
-            double difference = StringUtils.getDifference(commandLabel, givenLabel);
-            if (difference < minDifference) {
-                minDifference = difference;
+    private CommandDescription getBaseCommand(String label) {
+        String baseLabel = label.toLowerCase();
+        for (CommandDescription command : baseCommands) {
+            if (command.hasLabel(baseLabel)) {
+                return command;
             }
         }
-        return minDifference;
-    }
-
-    private static int getArgumentCountDifference(CommandDescription commandDescription, int givenArgumentsCount) {
-        return Math.min(
-            Math.abs(givenArgumentsCount - CommandUtils.getMinNumberOfArguments(commandDescription)),
-            Math.abs(givenArgumentsCount - CommandUtils.getMaxNumberOfArguments(commandDescription)));
+        return null;
     }
 
     // Is the given command a suitable match for the given parts? parts is for example [changepassword, newpw, newpw]
-    public CommandDescription returnSuitableChild(CommandDescription baseCommand, List<String> parts) {
+    private CommandDescription getSuitableChild(CommandDescription baseCommand, List<String> parts) {
         if (CollectionUtils.isEmpty(parts)) {
             return null;
         }
@@ -217,14 +212,28 @@ public class CommandHandler {
         return null;
     }
 
-    private CommandDescription getBaseCommand(String label) {
-        String baseLabel = label.toLowerCase();
-        for (CommandDescription command : baseCommands) {
-            if (command.hasLabel(baseLabel)) {
-                return command;
+    private static boolean isSuitableArgumentCount(CommandDescription command, int argumentCount) {
+        int minArgs = CommandUtils.getMinNumberOfArguments(command);
+        int maxArgs = CommandUtils.getMaxNumberOfArguments(command);
+
+        return argumentCount >= minArgs && argumentCount <= maxArgs;
+    }
+
+    private static int getArgumentCountDifference(CommandDescription commandDescription, int givenArgumentsCount) {
+        return Math.min(
+            Math.abs(givenArgumentsCount - CommandUtils.getMinNumberOfArguments(commandDescription)),
+            Math.abs(givenArgumentsCount - CommandUtils.getMaxNumberOfArguments(commandDescription)));
+    }
+
+    private static double getLabelDifference(CommandDescription command, String givenLabel) {
+        double minDifference = Double.POSITIVE_INFINITY;
+        for (String commandLabel : command.getLabels()) {
+            double difference = StringUtils.getDifference(commandLabel, givenLabel);
+            if (difference < minDifference) {
+                minDifference = difference;
             }
         }
-        return null;
+        return minDifference;
     }
 
 }

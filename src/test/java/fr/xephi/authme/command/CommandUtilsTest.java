@@ -4,22 +4,23 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 /**
- * Test for {@link CommandParts}.
+ * Test for {@link CommandUtils}.
  */
-public class CommandPartsTest {
+public class CommandUtilsTest {
 
     @Test
     public void shouldPrintPartsForStringRepresentation() {
         // given
-        CommandParts parts = new CommandParts(Arrays.asList("some", "parts", "for", "test"));
+        Iterable<String> parts = Arrays.asList("some", "parts", "for", "test");
 
         // when
-        String str = parts.toString();
+        String str = CommandUtils.labelsToString(parts);
 
         // then
         assertThat(str, equalTo("some parts for test"));
@@ -28,10 +29,10 @@ public class CommandPartsTest {
     @Test
     public void shouldPrintEmptyStringForNoArguments() {
         // given
-        CommandParts parts = new CommandParts(Collections.EMPTY_LIST);
+        List<String> parts = Collections.EMPTY_LIST;
 
         // when
-        String str = parts.toString();
+        String str = CommandUtils.labelsToString(parts);
 
         // then
         assertThat(str, equalTo(""));
