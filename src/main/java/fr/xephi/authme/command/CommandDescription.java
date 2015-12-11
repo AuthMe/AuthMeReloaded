@@ -13,6 +13,8 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import static com.google.common.base.Objects.firstNonNull;
+
 /**
  * Command description - defines which labels ("names") will lead to a command and points to the
  * {@link ExecutableCommand} implementation that executes the logic of the command.
@@ -99,38 +101,8 @@ public class CommandDescription {
         return instance;
     }
 
-    /**
-     * Get the label most similar to the reference. The first label will be returned if no reference was supplied.
-     *
-     * @param reference The command reference.
-     *
-     * @return The most similar label, or the first label. An empty label will be returned if no label was set.
-     */
-    public String getLabel(CommandParts reference) {
-        // Ensure there's any item in the command list
-        if (this.labels.size() == 0)
-            return "";
-
-        // Return the first label if we can't use the reference
-        if (reference == null)
-            return this.labels.get(0);
-
-        // Get the correct label from the reference
-        String preferred = reference.get(getParentCount());
-
-        // Check whether the preferred label is in the label list
-        double currentDifference = -1;
-        String currentLabel = this.labels.get(0);
-        for (String entry : this.labels) {
-            double entryDifference = StringUtils.getDifference(entry, preferred);
-            if (entryDifference < currentDifference || currentDifference < 0) {
-                currentDifference = entryDifference;
-                currentLabel = entry;
-            }
-        }
-
-        // Return the most similar label
-        return currentLabel;
+    private void addChild(CommandDescription command) {
+        children.add(command);
     }
 
     /**
@@ -150,89 +122,12 @@ public class CommandDescription {
      * @return True if this command label equals to the param command.
      */
     public boolean hasLabel(String commandLabel) {
-        for (String label : this.labels) {
+        for (String label : labels) {
             if (label.equalsIgnoreCase(commandLabel)) {
                 return true;
             }
         }
         return false;
-    }
-
-    /**
-     * Check whether this command label is applicable with a command reference. This doesn't check if the parent
-     * are suitable too.
-     *
-     * @param commandReference The command reference.
-     *
-     * @return True if the command reference is suitable to this command label, false otherwise.
-     */
-    public boolean isSuitableLabel(CommandParts commandReference) {
-        // Get the parent count
-        //getParent() = getParent().getParentCount() + 1
-        String element = commandReference.get(getParentCount());
-
-        // Check whether this command description has this command label
-        for (String label : labels) {
-            if (label.equalsIgnoreCase(element)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Get the command reference.
-     *
-     * @param reference The reference to use as template, which is used to choose the most similar reference.
-     *
-     * @return Command reference.
-     */
-    public CommandParts getCommandReference(CommandParts reference) {
-        // Build the reference
-        List<String> referenceList = new ArrayList<>();
-
-        // Check whether this command has a parent, if so, add the absolute parent command
-        if (getParent() != null) {
-            referenceList.addAll(getParent().getCommandReference(reference).getList());
-        }
-
-        // Get the current label
-        referenceList.add(getLabel(reference));
-
-        // Return the reference
-        return new CommandParts(referenceList);
-    }
-
-    /**
-     * Get the difference between this command and another command reference.
-     *
-     * @param other The other command reference.
-     *
-     * @return The command difference. Zero if there's no difference. A negative number on error.
-     */
-    public double getCommandDifference(CommandParts other) {
-        return getCommandDifference(other, false);
-    }
-
-    /**
-     * Get the difference between this command and another command reference.
-     *
-     * @param other       The other command reference.
-     * @param fullCompare True to fully compare both command references.
-     *
-     * @return The command difference. Zero if there's no difference. A negative number on error.
-     */
-    public double getCommandDifference(CommandParts other, boolean fullCompare) {
-        // Make sure the reference is valid
-        if (other == null)
-            return -1;
-
-        // Get the command reference
-        CommandParts reference = getCommandReference(other);
-
-        // Compare the two references, return the result
-        return CommandUtils.getDifference(reference.getList(),
-            CollectionUtils.getRange(other.getList(), 0, reference.getList().size()), fullCompare);
     }
 
     /**
@@ -245,81 +140,12 @@ public class CommandDescription {
     }
 
     /**
-     * Set the executable command.
-     *
-     * @param executableCommand The executable command.
-     */
-    public void setExecutableCommand(ExecutableCommand executableCommand) {
-        this.executableCommand = executableCommand;
-    }
-
-    /**
-     * Execute the command, if possible.
-     *
-     * @param sender           The command sender that triggered the execution of this command.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True on success, false on failure.
-     */
-    public boolean execute(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Execute the command, return the result
-        return getExecutableCommand().executeCommand(sender, commandReference, commandArguments);
-    }
-
-    /**
      * Get the parent command if this command description has a parent.
      *
      * @return Parent command, or null
      */
     public CommandDescription getParent() {
         return this.parent;
-    }
-
-    /**
-     * Get the number of parent this description has.
-     *
-     * @return The number of parents.
-     */
-    public int getParentCount() {
-        // Check whether the this description has a parent
-        if (!hasParent())
-            return 0;
-
-        // Get the parent count of the parent, return the result
-        return getParent().getParentCount() + 1;
-    }
-
-    /**
-     * Set the parent command.
-     *
-     * @param parent Parent command.
-     *
-     * @return True on success, false on failure.
-     */
-    public boolean setParent(CommandDescription parent) {
-        // Make sure the parent is different
-        if (this.parent == parent)
-            return true;
-
-        // Set the parent
-        this.parent = parent;
-
-        // Make sure the parent isn't null
-        if (parent == null)
-            return true;
-
-        // Add this description as a child to the parent
-        return parent.addChild(this);
-    }
-
-    /**
-     * Check whether the plugin description has a parent command.
-     *
-     * @return True if the description has a parent command, false otherwise.
-     */
-    public boolean hasParent() {
-        return this.parent != null;
     }
 
     /**
@@ -331,70 +157,6 @@ public class CommandDescription {
         return this.children;
     }
 
-    /**
-     * Add a child to the command description.
-     *
-     * @param commandDescription The child to add.
-     *
-     * @return True on success, false on failure.
-     */
-    public boolean addChild(CommandDescription commandDescription) {
-        // Make sure the description is valid
-        if (commandDescription == null)
-            return false;
-
-        // Make sure the child doesn't exist already
-        if (isChild(commandDescription))
-            return true;
-
-        // The command description to add as a child
-        if (!this.children.add(commandDescription))
-            return false;
-
-        // Set this description as parent on the child
-        return commandDescription.setParent(this);
-    }
-
-    /**
-     * Check whether this command has any child labels.
-     *
-     * @return True if this command has any child labels.
-     */
-    public boolean hasChildren() {
-        return (this.children.size() != 0);
-    }
-
-    /**
-     * Check if this command description has a specific child.
-     *
-     * @param commandDescription The command description to check for.
-     *
-     * @return True if this command description has the specific child, false otherwise.
-     */
-    public boolean isChild(CommandDescription commandDescription) {
-        // Make sure the description is valid
-        if (commandDescription == null)
-            return false;
-
-        // Check whether this child exists, return the result
-        return this.children.contains(commandDescription);
-    }
-
-    /**
-     * Add an argument.
-     *
-     * @param argument The argument to add.
-     *
-     * @return True if succeed, false if failed.
-     */
-    public boolean addArgument(CommandArgumentDescription argument) {
-        // Make sure the argument is valid
-        if (argument == null)
-            return false;
-
-        // Add the argument, return the result
-        return this.arguments.add(argument);
-    }
 
     /**
      * Get all command arguments.
@@ -432,104 +194,6 @@ public class CommandDescription {
         return detailedDescription;
     }
 
-    /**
-     * Find the best suitable command for a query reference.
-     *
-     * @param queryReference The query reference to find a command for.
-     *
-     * @return The command found, or null.
-     */
-    public FoundCommandResult findCommand(final CommandParts queryReference) {
-        // Make sure the command reference is valid
-        List<String> queryRef = queryReference.getList();
-        if (queryRef.isEmpty()) {
-            return null;
-        }
-
-        // Check whether this description is for the last element in the command reference, if so return the current command
-        if (queryRef.size() <= getParentCount() + 1) {
-            return new FoundCommandResult(
-                this,
-                getCommandReference(queryReference),
-                new CommandParts(new ArrayList<String>()),
-                queryReference);
-        }
-
-        // Get the new command reference and arguments
-        CommandParts newReference = new CommandParts(CollectionUtils.getRange(queryReference.getList(), 0, getParentCount() + 1));
-        CommandParts newArguments = new CommandParts(CollectionUtils.getRange(queryReference.getList(), getParentCount() + 1));
-
-        // Handle the child's, if this command has any
-        if (getChildren().size() > 0) {
-            // Get a new instance of the child's list, and sort them by their difference in comparison to the query reference
-            List<CommandDescription> commandChildren = new ArrayList<>(getChildren());
-            Collections.sort(commandChildren, new Comparator<CommandDescription>() {
-                @Override
-                public int compare(CommandDescription o1, CommandDescription o2) {
-                    return Double.compare(
-                        o1.getCommandDifference(queryReference),
-                        o2.getCommandDifference(queryReference));
-                }
-            });
-
-            // Get the difference of the first child in the list
-            double firstChildDifference = commandChildren.get(0).getCommandDifference(queryReference, true);
-
-            // Check if the reference perfectly suits the arguments of the current command if it doesn't perfectly suits a child command
-            if (firstChildDifference > 0.0)
-                if (getSuitableArgumentsDifference(queryReference) == 0)
-                    return new FoundCommandResult(this, newReference, newArguments, queryReference);
-
-            // Loop through each child
-            for (CommandDescription child : commandChildren) {
-                // Get the best suitable command
-                FoundCommandResult result = child.findCommand(queryReference);
-                if (result != null)
-                    return result;
-            }
-        }
-
-        // Check if the remaining command reference elements fit the arguments for this command
-        if (getSuitableArgumentsDifference(queryReference) >= 0)
-            return new FoundCommandResult(this, newReference, newArguments, queryReference);
-
-        // No command found, return null
-        return null;
-    }
-
-    /**
-     * Check if the remaining command reference elements are suitable with arguments of the current command description,
-     * and get the difference in argument count.
-     *
-     * @param commandReference The command reference.
-     *
-     * @return The difference in argument count between the reference and the actual command.
-     */
-    public int getSuitableArgumentsDifference(CommandParts commandReference) {
-        // Make sure the command reference is valid
-        List<String> labels = commandReference.getList();
-        if (labels.isEmpty()) {
-            return -1;
-        }
-
-        // Get the remaining command reference element count
-        int remainingElementCount = labels.size() - getParentCount() - 1;
-
-        // Check if there are too few arguments
-        int minArguments = CommandUtils.getMinNumberOfArguments(this);
-        if (minArguments > remainingElementCount) {
-            return Math.abs(minArguments - remainingElementCount);
-        }
-
-        // Check if there are too many arguments
-        int maxArguments = CommandUtils.getMaxNumberOfArguments(this);
-        if (maxArguments >= 0 && maxArguments < remainingElementCount) {
-            return Math.abs(remainingElementCount - maxArguments);
-        }
-
-        // The argument count is the same
-        return 0;
-    }
 
     /**
      * Get the command permissions. Return null if the command doesn't require any permission.
@@ -562,6 +226,7 @@ public class CommandDescription {
          *
          * @return The generated CommandDescription object
          */
+        // TODO ljacqu 20151206 Move validation to the create instance method
         public CommandDescription build() {
             return createInstance(
                 getOrThrow(labels, "labels"),
@@ -570,7 +235,7 @@ public class CommandDescription {
                 getOrThrow(executableCommand, "executableCommand"),
                 firstNonNull(parent, null),
                 arguments,
-                firstNonNull(permissions, null)
+                permissions
             );
         }
 
@@ -627,10 +292,6 @@ public class CommandDescription {
         @SafeVarargs
         private static <T> List<T> asMutableList(T... items) {
             return new ArrayList<>(Arrays.asList(items));
-        }
-
-        private static <T> T firstNonNull(T first, T second) {
-            return first != null ? first : second;
         }
 
         private static <T> T getOrThrow(T element, String elementName) {
