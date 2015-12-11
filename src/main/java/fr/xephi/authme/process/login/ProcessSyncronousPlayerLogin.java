@@ -1,5 +1,7 @@
 package fr.xephi.authme.process.login;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -14,15 +16,11 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
-
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 /**
  */
@@ -118,17 +116,12 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     }
 
     protected void sendBungeeMessage() {
-    	ByteArrayDataOutput out = ByteStreams.newDataOutput();
-    	try {
-    		String str = "AuthMe;login;" + name;
-    		out.writeUTF("Forward");
-    		out.writeUTF("ALL");
-    		out.writeUTF("AuthMe");
-    		out.writeShort(str.length());
-    		out.writeUTF(str);
-    		player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-    	} catch (Exception e)
-    	{}
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("AuthMe");
+        out.writeUTF("login;" + name);
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
     /**
@@ -205,7 +198,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
         player.saveData();
         if (Settings.bungee)
-        	sendBungeeMessage();
+            sendBungeeMessage();
         // Login is finish, display welcome message
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {

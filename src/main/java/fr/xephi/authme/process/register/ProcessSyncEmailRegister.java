@@ -64,8 +64,9 @@ public class ProcessSyncEmailRegister implements Runnable {
         }
 
         player.saveData();
-        if (!Settings.noConsoleSpam)
+        if (!Settings.noConsoleSpam) {
             ConsoleLogger.info(player.getName() + " registered " + plugin.getIP(player));
+        }
     }
 
 }

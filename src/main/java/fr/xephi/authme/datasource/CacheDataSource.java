@@ -49,6 +49,10 @@ public class CacheDataSource implements DataSource {
         });
     }
 
+    public void addAuthToCache(PlayerAuth auth) {
+        cache.put(auth.getNickname().toLowerCase(), auth);
+    }
+
     /**
      * Method isAuthAvailable.
      *

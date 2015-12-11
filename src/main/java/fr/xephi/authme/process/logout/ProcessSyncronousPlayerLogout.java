@@ -1,5 +1,7 @@
 package fr.xephi.authme.process.logout;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -9,16 +11,12 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
-
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 /**
  */
@@ -43,17 +41,12 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
     }
 
     protected void sendBungeeMessage() {
-    	ByteArrayDataOutput out = ByteStreams.newDataOutput();
-    	try {
-    		String str = "AuthMe;logout;" + name;
-    		out.writeUTF("Forward");
-    		out.writeUTF("ALL");
-    		out.writeUTF("AuthMe");
-    		out.writeShort(str.length());
-    		out.writeUTF(str);
-    		player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-    	} catch (Exception e)
-    	{}
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("AuthMe");
+        out.writeUTF("logout;" + name);
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
     /**
@@ -95,7 +88,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
         if (Settings.bungee)
-        	sendBungeeMessage();
+            sendBungeeMessage();
         m.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");
     }
