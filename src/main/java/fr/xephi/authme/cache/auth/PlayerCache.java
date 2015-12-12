@@ -40,8 +40,7 @@ public class PlayerCache {
      * @param auth PlayerAuth
      */
     public void updatePlayer(PlayerAuth auth) {
-        cache.remove(auth.getNickname().toLowerCase());
-        cache.put(auth.getNickname().toLowerCase(), auth);
+        cache.put(auth.getNickname(), auth);
     }
 
     /**
@@ -87,7 +86,7 @@ public class PlayerCache {
     /**
      * Method getCache.
      *
-     * @return ConcurrentHashMap<String,PlayerAuth>
+     * @return ConcurrentHashMap
      */
     public ConcurrentHashMap<String, PlayerAuth> getCache() {
         return this.cache;

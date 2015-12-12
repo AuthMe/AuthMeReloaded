@@ -655,6 +655,7 @@ public class MySQL implements DataSource {
             while (rs.next()) {
                 list.add(rs.getString(columnName));
             }
+            rs.close();
             sql = "DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<" + until;
             st.executeUpdate(sql);
             st.close();
@@ -915,11 +916,10 @@ public class MySQL implements DataSource {
      *
      * @return List
      *
-     * @throws SQLException
      * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
      */
     @Override
-    public synchronized List<String> getAllAuthsByEmail(String email) throws SQLException {
+    public synchronized List<String> getAllAuthsByEmail(String email){
         List<String> countEmail = new ArrayList<>();
         try (Connection con = getConnection()) {
             String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE " + columnEmail + "=?;";
@@ -931,8 +931,11 @@ public class MySQL implements DataSource {
             }
             rs.close();
             pst.close();
-            return countEmail;
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
+        return countEmail;
     }
 
     /**
