@@ -3,6 +3,9 @@ package fr.xephi.authme.datasource;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.cache.RemovalListener;
+import com.google.common.cache.RemovalListeners;
+import com.google.common.cache.RemovalNotification;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
@@ -30,6 +33,15 @@ public class CacheDataSource implements DataSource {
         this.exec = Executors.newCachedThreadPool();
         cachedAuths = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
+            .removalListener(RemovalListeners.asynchronous(new RemovalListener<String, PlayerAuth>() {
+                @Override
+                public void onRemoval(RemovalNotification<String, PlayerAuth> removalNotification) {
+                    String name = removalNotification.getKey();
+                    if (PlayerCache.getInstance().isAuthenticated(name)) {
+                        cachedAuths.getUnchecked(name);
+                    }
+                }
+            }, exec))
             .build(
                 new CacheLoader<String, PlayerAuth>() {
                     public PlayerAuth load(String key) {
