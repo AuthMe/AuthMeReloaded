@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.ChatColor;
@@ -10,40 +9,29 @@ import org.bukkit.command.CommandSender;
 import java.util.Calendar;
 import java.util.List;
 
-/**
- */
 public class PurgeCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // AuthMe plugin instance
         AuthMe plugin = AuthMe.getInstance();
 
         // Get the days parameter
-        String daysStr = commandArguments.get(0);
+        String daysStr = arguments.get(0);
 
         // Convert the days string to an integer value, and make sure it's valid
         int days;
         try {
-            days = Integer.valueOf(daysStr);
-        } catch (Exception ex) {
+            days = Integer.parseInt(daysStr);
+        } catch (NumberFormatException ex) {
             sender.sendMessage(ChatColor.RED + "The value you've entered is invalid!");
-            return true;
+            return;
         }
 
         // Validate the value
         if (days < 30) {
             sender.sendMessage(ChatColor.RED + "You can only purge data older than 30 days");
-            return true;
+            return;
         }
 
         // Create a calender instance to determine the date
@@ -69,6 +57,5 @@ public class PurgeCommand extends ExecutableCommand {
 
         // Show a status message
         sender.sendMessage(ChatColor.GREEN + "[AuthMe] Database has been purged correctly");
-        return true;
     }
 }

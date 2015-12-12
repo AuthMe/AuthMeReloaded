@@ -2,15 +2,10 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
-import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.google.common.base.Objects.firstNonNull;

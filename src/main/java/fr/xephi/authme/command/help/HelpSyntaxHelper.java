@@ -73,8 +73,8 @@ public final class HelpSyntaxHelper {
 
     private static String formatArgument(CommandArgumentDescription argument) {
         if (argument.isOptional()) {
-            return " [" + argument.getLabel() + "]";
+            return " [" + argument.getName() + "]";
         }
-        return " <" + argument.getLabel() + ">";
+        return " <" + argument.getName() + ">";
     }
 }

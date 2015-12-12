@@ -3,7 +3,6 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -12,25 +11,13 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-/**
- */
 public class PurgeLastPositionCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
-    public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         final AuthMe plugin = AuthMe.getInstance();
         final Messages m = plugin.getMessages();
 
-        List<String> arguments = commandArguments.getList();
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
         // Get the player
@@ -42,7 +29,7 @@ public class PurgeLastPositionCommand extends ExecutableCommand {
             PlayerAuth auth = plugin.database.getAuth(playerNameLowerCase);
             if (auth == null) {
                 m.send(sender, MessageKey.UNKNOWN_USER);
-                return true;
+                return;
             }
 
             // Set the last position
@@ -61,6 +48,5 @@ public class PurgeLastPositionCommand extends ExecutableCommand {
             if (sender instanceof Player)
                 sender.sendMessage("An error occurred while trying to reset location or player do not exist, please see logs");
         }
-        return true;
     }
 }

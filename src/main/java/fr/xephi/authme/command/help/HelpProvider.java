@@ -29,6 +29,13 @@ public class HelpProvider {
         showHelp(sender, reference, helpQuery, true, true, true, true, true, true);
     }
 
+    public static void showHelp(CommandSender sender, CommandParts reference, CommandParts helpQuery,
+                                boolean showCommand, boolean showDescription, boolean showArguments,
+                                boolean showPermissions, boolean showAlternatives, boolean showCommands) {
+        showHelp(sender, reference.getList(), helpQuery.getList(), showCommand, showDescription, showArguments,
+            showPermissions, showAlternatives, showCommands);
+    }
+
     /**
      * Show help for a specific command.
      *
@@ -42,7 +49,9 @@ public class HelpProvider {
      * @param showAlternatives True to show the command alternatives.
      * @param showCommands     True to show the child commands.
      */
-    public static void showHelp(CommandSender sender, CommandParts reference, CommandParts helpQuery, boolean showCommand, boolean showDescription, boolean showArguments, boolean showPermissions, boolean showAlternatives, boolean showCommands) {
+    public static void showHelp(CommandSender sender, List<String> reference, List<String> helpQuery,
+                                boolean showCommand, boolean showDescription, boolean showArguments,
+                                boolean showPermissions, boolean showAlternatives, boolean showCommands) {
         // Find the command for this help query, one with and one without a prefixed base command
         FoundCommandResult result = AuthMe.getInstance().getCommandHandler().findCommand(new CommandParts(helpQuery.getList()));
 
@@ -77,7 +86,7 @@ public class HelpProvider {
         }
 
         // Get the proper command reference to use for the help page
-        CommandParts commandReference = command.getCommandReference(result.getQueryReference());
+        CommandParts commandReference = command.getCommandReference(result.getLabels());
 
         // Get the base command
         String baseCommand = commandReference.get(0);

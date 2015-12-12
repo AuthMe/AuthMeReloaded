@@ -6,7 +6,6 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -152,11 +151,11 @@ public class CommandHandler {
         }
 
         // Prefer labels: /register help goes to "Help command", not "Register command" with argument 'help'
-        List<String> remaining = parts.subList(1, parts.size());
-        CommandDescription childCommand = getSuitableChild(base, remaining);
+        List<String> remainingParts = parts.subList(1, parts.size());
+        CommandDescription childCommand = getSuitableChild(base, remainingParts);
         if (childCommand != null) {
             return new FoundCommandResult(childCommand, parts.subList(2, parts.size()), parts.subList(0, 2));
-        } else if (isSuitableArgumentCount(base, remaining.size())) {
+        } else if (hasSuitableArgumentCount(base, remainingParts.size())) {
             return new FoundCommandResult(base, parts.subList(1, parts.size()), parts.subList(0, 1));
         }
 
@@ -165,22 +164,17 @@ public class CommandHandler {
 
     private FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
         final String label = parts.get(0);
-        final int argumentCount = parts.size() - 1;
 
         double minDifference = Double.POSITIVE_INFINITY;
         CommandDescription closestCommand = null;
         for (CommandDescription child : base.getChildren()) {
-            double labelDifference = getLabelDifference(child, label);
-            double argumentDifference = getArgumentCountDifference(child, argumentCount);
-            // Weigh argument difference less
-            double difference = labelDifference + argumentDifference / 2;
+            double difference = getLabelDifference(child, label);
             if (difference < minDifference) {
                 minDifference = difference;
                 closestCommand = child;
             }
         }
         // TODO: Return the full list of labels and arguments
-        // TODO: Also compare the base command and suggest it if it's the most similar
         return new FoundCommandResult(
             closestCommand, null, null, minDifference, FoundCommandResult.ResultStatus.UNKNOWN_LABEL);
     }
@@ -195,7 +189,16 @@ public class CommandHandler {
         return null;
     }
 
-    // Is the given command a suitable match for the given parts? parts is for example [changepassword, newpw, newpw]
+    /**
+     * Return a child from a base command if the label and the argument count match.
+     *
+     * @param baseCommand The base command whose children should be checked
+     * @param parts The command parts received from the invocation; the first item is the potential label and any
+     *              other items are command arguments. The first initial part that led to the base command should not
+     *              be present.
+     *
+     * @return A command if there was a complete match (including proper argument count), null otherwise
+     */
     private CommandDescription getSuitableChild(CommandDescription baseCommand, List<String> parts) {
         if (CollectionUtils.isEmpty(parts)) {
             return null;
@@ -205,24 +208,18 @@ public class CommandHandler {
         final int argumentCount = parts.size() - 1;
 
         for (CommandDescription child : baseCommand.getChildren()) {
-            if (child.hasLabel(label) && isSuitableArgumentCount(child, argumentCount)) {
+            if (child.hasLabel(label) && hasSuitableArgumentCount(child, argumentCount)) {
                 return child;
             }
         }
         return null;
     }
 
-    private static boolean isSuitableArgumentCount(CommandDescription command, int argumentCount) {
+    private static boolean hasSuitableArgumentCount(CommandDescription command, int argumentCount) {
         int minArgs = CommandUtils.getMinNumberOfArguments(command);
         int maxArgs = CommandUtils.getMaxNumberOfArguments(command);
 
         return argumentCount >= minArgs && argumentCount <= maxArgs;
-    }
-
-    private static int getArgumentCountDifference(CommandDescription commandDescription, int givenArgumentsCount) {
-        return Math.min(
-            Math.abs(givenArgumentsCount - CommandUtils.getMinNumberOfArguments(commandDescription)),
-            Math.abs(givenArgumentsCount - CommandUtils.getMaxNumberOfArguments(commandDescription)));
     }
 
     private static double getLabelDifference(CommandDescription command, String givenLabel) {

@@ -69,7 +69,7 @@ public class HelpPrinter {
         for (CommandArgumentDescription arg : command.getArguments()) {
             // Create a string builder to build the syntax in
             StringBuilder argString = new StringBuilder();
-            argString.append(" " + ChatColor.YELLOW + ChatColor.ITALIC + arg.getLabel() + " : " + ChatColor.WHITE + arg.getDescription());
+            argString.append(" " + ChatColor.YELLOW + ChatColor.ITALIC + arg.getName() + " : " + ChatColor.WHITE + arg.getDescription());
 
             // Suffix a note if the command is optional
             if (arg.isOptional())

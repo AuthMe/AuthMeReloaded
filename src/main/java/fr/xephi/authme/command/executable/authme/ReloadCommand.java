@@ -1,10 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
-//import org.bukkit.ChatColor;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -12,21 +9,12 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Profiler;
 import org.bukkit.command.CommandSender;
 
-/**
- */
+import java.util.List;
+
 public class ReloadCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // Profile the reload process
         Profiler p = new Profiler(true);
 
@@ -48,7 +36,6 @@ public class ReloadCommand extends ExecutableCommand {
             ConsoleLogger.showError("Fatal error occurred! AuthMe instance ABORTED!");
             ConsoleLogger.writeStackTrace(e);
             plugin.stopOrUnload();
-            return false;
         }
 
         // Show a status message
@@ -57,6 +44,5 @@ public class ReloadCommand extends ExecutableCommand {
 
         // AuthMeReloaded reloaded, show a status message
         // sender.sendMessage(ChatColor.GREEN + "AuthMeReloaded has been reloaded successfully, took " + p.getTimeFormatted() + "!");
-        return true;
     }
 }

@@ -3,7 +3,6 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -12,21 +11,17 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-/**
- */
 public class AccountsCommand extends ExecutableCommand {
 
     @Override
-    public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         final AuthMe plugin = AuthMe.getInstance();
         final Messages m = plugin.getMessages();
-
-        List<String> arguments = commandArguments.getList();
 
         // Get the player query
         String playerQuery = sender.getName();
         if (arguments.size() >= 1)
-            playerQuery = commandArguments.get(0);
+            playerQuery = arguments.get(0);
         final String playerQueryFinal = playerQuery;
 
         // Command logic
@@ -70,7 +65,7 @@ public class AccountsCommand extends ExecutableCommand {
                     sender.sendMessage(message.toString());
                 }
             });
-            return true;
+            return;
         } else {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
@@ -108,7 +103,6 @@ public class AccountsCommand extends ExecutableCommand {
                     sender.sendMessage(message.toString());
                 }
             });
-            return true;
         }
     }
 }

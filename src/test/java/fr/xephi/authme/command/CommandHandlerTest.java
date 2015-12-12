@@ -1,6 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.permission.DefaultPermission;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.CommandSender;
@@ -21,7 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
@@ -35,6 +36,7 @@ public class CommandHandlerTest {
 
     private static Set<CommandDescription> commands;
     private static CommandHandler handler;
+    private static PermissionsManager permissionsManagerMock;
 
     @BeforeClass
     public static void setUpCommandHandler() {
@@ -47,7 +49,8 @@ public class CommandHandlerTest {
 
         CommandDescription testBase = createCommand(null, null, singletonList("test"), newArgument("test", true));
         commands = new HashSet<>(asList(authMeBase, testBase));
-        handler = new CommandHandler(commands);
+        permissionsManagerMock = mock(PermissionsManager.class);
+        handler = new CommandHandler(commands, permissionsManagerMock);
     }
 
     @Test
@@ -65,8 +68,7 @@ public class CommandHandlerTest {
         // then
         final CommandDescription loginCmd = getChildWithLabel("login", getCommandWithLabel("authme", commands));
         verify(sender, never()).sendMessage(anyString());
-        verify(loginCmd.getExecutableCommand()).executeCommand(
-            eq(sender), any(CommandParts.class), any(CommandParts.class));
+        verify(loginCmd.getExecutableCommand()).executeCommand(eq(sender), anyListOf(String.class));
     }
 
     @Test
@@ -98,7 +100,7 @@ public class CommandHandlerTest {
 
         if (arguments != null && arguments.length > 0) {
             for (CommandArgumentDescription argument : arguments) {
-                command.withArgument(argument.getLabel(), "Test description", argument.isOptional());
+                command.withArgument(argument.getName(), "Test description", argument.isOptional());
             }
         }
 

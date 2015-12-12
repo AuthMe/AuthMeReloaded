@@ -4,16 +4,16 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 /**
  * Admin command for changing a player's password.
@@ -21,14 +21,13 @@ import java.security.NoSuchAlgorithmException;
 public class ChangePasswordAdminCommand extends ExecutableCommand {
 
     @Override
-    public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         final AuthMe plugin = AuthMe.getInstance();
-        // Messages instance
         final Messages m = plugin.getMessages();
 
         // Get the player and password
-        String playerName = commandArguments.get(0);
-        final String playerPass = commandArguments.get(1);
+        String playerName = arguments.get(0);
+        final String playerPass = arguments.get(1);
 
         // Validate the password
         String playerPassLowerCase = playerPass.toLowerCase();
@@ -38,20 +37,20 @@ public class ChangePasswordAdminCommand extends ExecutableCommand {
             || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
             || !playerPassLowerCase.matches(Settings.getPassRegex)) {
             m.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
-            return true;
+            return;
         }
         if (playerPassLowerCase.equalsIgnoreCase(playerName)) {
             m.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-            return true;
+            return;
         }
         if (playerPassLowerCase.length() < Settings.getPasswordMinLen
                 || playerPassLowerCase.length() > Settings.passwordMaxLength) {
             m.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-            return true;
+            return;
         }
         if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(playerPassLowerCase)) {
             m.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
-            return true;
+            return;
         }
         // Set the password
         final String playerNameLowerCase = playerName.toLowerCase();
@@ -90,6 +89,5 @@ public class ChangePasswordAdminCommand extends ExecutableCommand {
             }
 
         });
-        return true;
     }
 }

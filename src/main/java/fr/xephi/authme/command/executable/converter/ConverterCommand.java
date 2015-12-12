@@ -1,29 +1,27 @@
 package fr.xephi.authme.command.executable.converter;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.converter.*;
+import fr.xephi.authme.converter.Converter;
+import fr.xephi.authme.converter.CrazyLoginConverter;
+import fr.xephi.authme.converter.FlatToSql;
+import fr.xephi.authme.converter.FlatToSqlite;
+import fr.xephi.authme.converter.RakamakConverter;
+import fr.xephi.authme.converter.RoyalAuthConverter;
+import fr.xephi.authme.converter.SqlToFlat;
+import fr.xephi.authme.converter.vAuthConverter;
+import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-/**
- */
+import java.util.List;
+
 public class ConverterCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(CommandSender sender, List<String> arguments) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 
@@ -31,40 +29,40 @@ public class ConverterCommand extends ExecutableCommand {
         final Messages m = plugin.getMessages();
 
         // Get the conversion job
-        String job = commandArguments.get(0);
+        String job = arguments.get(0);
 
         // Determine the job type
         ConvertType jobType = ConvertType.fromName(job);
         if (jobType == null) {
             m.send(sender, MessageKey.ERROR);
-            return true;
+            return;
         }
 
         // Get the proper converter instance
         Converter converter = null;
         switch (jobType) {
-            case ftsql:
+            case FTSQL:
                 converter = new FlatToSql();
                 break;
-            case ftsqlite:
+            case FTSQLITE:
                 converter = new FlatToSqlite(sender);
                 break;
-            case xauth:
+            case XAUTH:
                 converter = new xAuthConverter(plugin, sender);
                 break;
-            case crazylogin:
+            case CRAZYLOGIN:
                 converter = new CrazyLoginConverter(plugin, sender);
                 break;
-            case rakamak:
+            case RAKAMAK:
                 converter = new RakamakConverter(plugin, sender);
                 break;
-            case royalauth:
+            case ROYALAUTH:
                 converter = new RoyalAuthConverter(plugin);
                 break;
-            case vauth:
+            case VAUTH:
                 converter = new vAuthConverter(plugin, sender);
                 break;
-            case sqltoflat:
+            case SQLTOFLAT:
                 converter = new SqlToFlat(plugin, sender);
                 break;
             default:
@@ -76,52 +74,33 @@ public class ConverterCommand extends ExecutableCommand {
 
         // Show a status message
         sender.sendMessage("[AuthMe] Successfully converted from " + jobType.getName());
-        return true;
     }
 
-    /**
-     */
     public enum ConvertType {
-        ftsql("flattosql"),
-        ftsqlite("flattosqlite"),
-        xauth("xauth"),
-        crazylogin("crazylogin"),
-        rakamak("rakamak"),
-        royalauth("royalauth"),
-        vauth("vauth"),
-        sqltoflat("sqltoflat");
+        FTSQL("flattosql"),
+        FTSQLITE("flattosqlite"),
+        XAUTH("xauth"),
+        CRAZYLOGIN("crazylogin"),
+        RAKAMAK("rakamak"),
+        ROYALAUTH("royalauth"),
+        VAUTH("vauth"),
+        SQLTOFLAT("sqltoflat");
 
         final String name;
 
-        /**
-         * Constructor for ConvertType.
-         *
-         * @param name String
-         */
         ConvertType(String name) {
             this.name = name;
         }
 
-        /**
-         * Method fromName.
-         *
-         * @param name String
-         *
-         * @return ConvertType
-         */
         public static ConvertType fromName(String name) {
             for (ConvertType type : ConvertType.values()) {
-                if (type.getName().equalsIgnoreCase(name))
+                if (type.getName().equalsIgnoreCase(name)) {
                     return type;
+                }
             }
             return null;
         }
 
-        /**
-         * Method getName.
-         *
-         * @return String
-         */
         String getName() {
             return this.name;
         }
