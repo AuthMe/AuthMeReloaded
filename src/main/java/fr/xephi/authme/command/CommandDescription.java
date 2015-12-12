@@ -2,13 +2,13 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
-import static com.google.common.base.Objects.firstNonNull;
+import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Arrays.asList;
 
 /**
@@ -220,15 +220,14 @@ public class CommandDescription {
          * @return The generated CommandDescription object
          */
         public CommandDescription build() {
-            return createInstance(
-                getOrThrow(labels, "labels"),
-                firstNonNull(description, ""),
-                firstNonNull(detailedDescription, ""),
-                getOrThrow(executableCommand, "executableCommand"),
-                firstNonNull(parent, null),
-                arguments,
-                permissions
-            );
+            checkArgument(!CollectionUtils.isEmpty(labels), "Labels may not be empty");
+            checkArgument(!StringUtils.isEmpty(description), "Description may not be empty");
+            checkArgument(!StringUtils.isEmpty(detailedDescription), "Detailed description may not be empty");
+            checkArgument(executableCommand != null, "Executable command must be set");
+            // parents and permissions may be null; arguments may be empty
+
+            return createInstance(labels, description, detailedDescription, executableCommand,
+                                  parent, arguments, permissions);
         }
 
         public CommandBuilder labels(List<String> labels) {
@@ -277,33 +276,9 @@ public class CommandDescription {
 
         public CommandBuilder permissions(DefaultPermission defaultPermission,
                                           PermissionNode... permissionNodes) {
-            this.permissions = new CommandPermissions(asMutableList(permissionNodes), defaultPermission);
+            this.permissions = new CommandPermissions(asList(permissionNodes), defaultPermission);
             return this;
         }
-
-        @SafeVarargs
-        private static <T> List<T> asMutableList(T... items) {
-            return new ArrayList<>(asList(items));
-        }
-
-        private static <T> T getOrThrow(T element, String elementName) {
-            if (!isEmpty(element)) {
-                return element;
-            }
-            throw new RuntimeException("The element '" + elementName + "' may not be empty in CommandDescription");
-        }
-
-        private static <T> boolean isEmpty(T element) {
-            if (element == null) {
-                return true;
-            } else if (element instanceof Collection<?>) {
-                return ((Collection<?>) element).isEmpty();
-            } else if (element instanceof String) {
-                return StringUtils.isEmpty((String) element);
-            }
-            return false;
-        }
-
     }
 
 }
