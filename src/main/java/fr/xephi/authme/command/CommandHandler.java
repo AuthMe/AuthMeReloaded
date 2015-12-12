@@ -128,11 +128,15 @@ public class CommandHandler {
 
         // Show the command argument help
         sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
-        // TODO: Define showHelp(CommandSender, CommandDescription, List<String>, boolean, boolean, ...)
+        List<String> lines = HelpProvider.printHelp(result, HelpProvider.SHOW_ARGUMENTS);
+        for (String line : lines) {
+            sender.sendMessage(line);
+        }
+
         List<String> labels = result.getLabels();
-        HelpProvider.showHelp(sender, command, labels, true, false, true, false, false, false);
-        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/" + labels.get(0)
-            + " help " + CommandUtils.labelsToString(labels.subList(1, labels.size())));
+        String childLabel = labels.size() >= 2 ? labels.get(1) : "";
+        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE
+            + "/" + labels.get(0) + " help " + childLabel);
     }
 
     // TODO ljacqu 20151212: Remove me once I am a MessageKey

@@ -65,7 +65,7 @@ public class CommandDescription {
     }
 
     /**
-     * Create an instance for internal use.
+     * Create an instance.
      *
      * @param labels              List of command labels.
      * @param description         Command description.
@@ -108,7 +108,7 @@ public class CommandDescription {
      * @return All relative labels.
      */
     public List<String> getLabels() {
-        return this.labels;
+        return labels;
     }
 
     /**
@@ -146,14 +146,25 @@ public class CommandDescription {
     }
 
     /**
+     * Return the number of parents that precede the command description.
+     *
+     * @return The number of parents, e.g. for "/authme abc def" the parent count is 2 ("/authme abc", "/authme")
+     */
+    public int getParentCount() {
+        if (parent == null) {
+            return 0;
+        }
+        return parent.getParentCount() + 1;
+    }
+
+    /**
      * Return all command children.
      *
      * @return Command children.
      */
     public List<CommandDescription> getChildren() {
-        return this.children;
+        return children;
     }
-
 
     /**
      * Return all arguments the command takes.
@@ -161,7 +172,7 @@ public class CommandDescription {
      * @return Command arguments.
      */
     public List<CommandArgumentDescription> getArguments() {
-        return this.arguments;
+        return arguments;
     }
 
     /**
@@ -182,14 +193,13 @@ public class CommandDescription {
         return detailedDescription;
     }
 
-
     /**
      * Return the permissions required to execute the command.
      *
      * @return The command permissions, or null if none are required to execute the command.
      */
     public CommandPermissions getCommandPermissions() {
-        return this.permissions;
+        return permissions;
     }
 
     /**
