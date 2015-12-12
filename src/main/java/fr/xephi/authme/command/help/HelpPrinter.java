@@ -102,7 +102,7 @@ public class HelpPrinter {
             if (sender instanceof Player)
                 nodePermission = AuthMe.getInstance().getPermissionsManager().hasPermission((Player) sender, node);
             final String nodePermsString = ChatColor.GRAY + (nodePermission ? ChatColor.ITALIC + " (Permission!)" : ChatColor.ITALIC + " (No Permission!)");
-            sender.sendMessage(" " + ChatColor.YELLOW + ChatColor.ITALIC + node + nodePermsString);
+            sender.sendMessage(" " + ChatColor.YELLOW + ChatColor.ITALIC + node.getNode() + nodePermsString);
         }
 
         // Print the default permission
