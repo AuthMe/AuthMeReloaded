@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -21,7 +22,7 @@ public class CacheDataSource implements DataSource {
 
     private final DataSource source;
     private final ExecutorService exec;
-    private final LoadingCache<String, PlayerAuth> cachedAuths;
+    private final LoadingCache<String, Optional<PlayerAuth>> cachedAuths;
 
     /**
      * Constructor for CacheDataSource.
@@ -33,9 +34,9 @@ public class CacheDataSource implements DataSource {
         this.exec = Executors.newCachedThreadPool();
         cachedAuths = CacheBuilder.newBuilder()
             .expireAfterWrite(5, TimeUnit.MINUTES)
-            .removalListener(RemovalListeners.asynchronous(new RemovalListener<String, PlayerAuth>() {
+            .removalListener(RemovalListeners.asynchronous(new RemovalListener<String, Optional<PlayerAuth>>() {
                 @Override
-                public void onRemoval(RemovalNotification<String, PlayerAuth> removalNotification) {
+                public void onRemoval(RemovalNotification<String, Optional<PlayerAuth>> removalNotification) {
                     String name = removalNotification.getKey();
                     if (PlayerCache.getInstance().isAuthenticated(name)) {
                         cachedAuths.getUnchecked(name);
@@ -43,9 +44,9 @@ public class CacheDataSource implements DataSource {
                 }
             }, exec))
             .build(
-                new CacheLoader<String, PlayerAuth>() {
-                    public PlayerAuth load(String key) {
-                        return source.getAuth(key);
+                new CacheLoader<String, Optional<PlayerAuth>>() {
+                    public Optional<PlayerAuth> load(String key) {
+                        return Optional.fromNullable(source.getAuth(key));
                     }
                 });
     }
@@ -76,7 +77,7 @@ public class CacheDataSource implements DataSource {
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         user = user.toLowerCase();
-        return cachedAuths.getUnchecked(user);
+        return cachedAuths.getUnchecked(user).orNull();
     }
 
     /**
@@ -178,9 +179,9 @@ public class CacheDataSource implements DataSource {
     public int purgeDatabase(long until) {
         int cleared = source.purgeDatabase(until);
         if (cleared > 0) {
-            for (PlayerAuth auth : cachedAuths.asMap().values()) {
-                if (auth != null && auth.getLastLogin() < until) {
-                    cachedAuths.invalidate(auth.getNickname());
+            for (Optional<PlayerAuth> auth : cachedAuths.asMap().values()) {
+                if (auth.isPresent() && auth.get().getLastLogin() < until) {
+                    cachedAuths.invalidate(auth.get().getNickname());
                 }
             }
         }
