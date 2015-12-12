@@ -24,8 +24,11 @@ import static java.lang.String.format;
  */
 public final class VerifyMessagesTask implements ToolTask {
 
+    /** The folder containing the message files. */
     private static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
+    /** Pattern of the message file names. */
     private static final Pattern MESSAGE_FILE_PATTERN = Pattern.compile("messages_[a-z]{2,7}\\.yml");
+    /** Tag that is replaced to the messages folder in user input. */
     private static final String SOURCES_TAG = "{msgdir}";
 
     @Override
