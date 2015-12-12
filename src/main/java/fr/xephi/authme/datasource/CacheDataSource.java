@@ -1,18 +1,16 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.AuthMe;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.util.Utils;
-import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  */
@@ -20,37 +18,24 @@ public class CacheDataSource implements DataSource {
 
     private final DataSource source;
     private final ExecutorService exec;
-    private final ConcurrentHashMap<String, PlayerAuth> cache = new ConcurrentHashMap<>();
+    private final LoadingCache<String, PlayerAuth> cachedAuths;
 
     /**
      * Constructor for CacheDataSource.
      *
-     * @param pl  AuthMe
      * @param src DataSource
      */
-    public CacheDataSource(final AuthMe pl, DataSource src) {
+    public CacheDataSource(DataSource src) {
         this.source = src;
         this.exec = Executors.newCachedThreadPool();
-        pl.setCanConnect(false);
-
-        /*
-         * We need to load all players in cache ... It will took more time to
-         * load the server, but it will be much easier to check for an
-         * isAuthAvailable !
-         */
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                for (PlayerAuth auth : source.getAllAuths()) {
-                    cache.put(auth.getNickname().toLowerCase(), auth);
-                }
-                pl.setCanConnect(true);
-            }
-        });
-    }
-
-    public void addAuthToCache(PlayerAuth auth) {
-        cache.put(auth.getNickname().toLowerCase(), auth);
+        cachedAuths = CacheBuilder.newBuilder()
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build(
+                new CacheLoader<String, PlayerAuth>() {
+                    public PlayerAuth load(String key) {
+                        return source.getAuth(key);
+                    }
+                });
     }
 
     /**
@@ -58,11 +43,13 @@ public class CacheDataSource implements DataSource {
      *
      * @param user String
      *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
+     * @return boolean
+     *
+     * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
      */
     @Override
     public synchronized boolean isAuthAvailable(String user) {
-        return cache.containsKey(user.toLowerCase());
+        return getAuth(user) != null;
     }
 
     /**
@@ -70,15 +57,14 @@ public class CacheDataSource implements DataSource {
      *
      * @param user String
      *
-     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
+     * @return PlayerAuth
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
      */
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         user = user.toLowerCase();
-        if (cache.containsKey(user)) {
-            return cache.get(user);
-        }
-        return null;
+        return cachedAuths.getUnchecked(user);
     }
 
     /**
@@ -86,20 +72,17 @@ public class CacheDataSource implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
+     * @return boolean
+     *
+     * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
      */
     @Override
-    public synchronized boolean saveAuth(final PlayerAuth auth) {
-        cache.put(auth.getNickname(), auth);
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (!source.saveAuth(auth)) {
-                    cache.remove(auth.getNickname());
-                }
-            }
-        });
-        return true;
+    public synchronized boolean saveAuth(PlayerAuth auth) {
+        boolean result = source.saveAuth(auth);
+        if (result) {
+            cachedAuths.refresh(auth.getNickname());
+        }
+        return result;
     }
 
     /**
@@ -107,26 +90,17 @@ public class CacheDataSource implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
+     * @return boolean
+     *
+     * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
      */
     @Override
-    public synchronized boolean updatePassword(final PlayerAuth auth) {
-        if (!cache.containsKey(auth.getNickname())) {
-            return false;
+    public synchronized boolean updatePassword(PlayerAuth auth) {
+        boolean result = source.updatePassword(auth);
+        if (result) {
+            cachedAuths.refresh(auth.getNickname());
         }
-        final String oldHash = cache.get(auth.getNickname()).getHash();
-        cache.get(auth.getNickname()).setHash(auth.getHash());
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (!source.updatePassword(auth)) {
-                    if (cache.containsKey(auth.getNickname())) {
-                        cache.get(auth.getNickname()).setHash(oldHash);
-                    }
-                }
-            }
-        });
-        return true;
+        return result;
     }
 
     /**
@@ -134,35 +108,17 @@ public class CacheDataSource implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
+     * @return boolean
+     *
+     * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
      */
     @Override
-    public boolean updateSession(final PlayerAuth auth) {
-        if (!cache.containsKey(auth.getNickname())) {
-            return false;
+    public boolean updateSession(PlayerAuth auth) {
+        boolean result = source.updateSession(auth);
+        if (result) {
+            cachedAuths.refresh(auth.getNickname());
         }
-        PlayerAuth cachedAuth = cache.get(auth.getNickname());
-        final String oldIp = cachedAuth.getIp();
-        final long oldLastLogin = cachedAuth.getLastLogin();
-        final String oldRealName = cachedAuth.getRealName();
-
-        cachedAuth.setIp(auth.getIp());
-        cachedAuth.setLastLogin(auth.getLastLogin());
-        cachedAuth.setRealName(auth.getRealName());
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (!source.updateSession(auth)) {
-                    if (cache.containsKey(auth.getNickname())) {
-                        PlayerAuth cachedAuth = cache.get(auth.getNickname());
-                        cachedAuth.setIp(oldIp);
-                        cachedAuth.setLastLogin(oldLastLogin);
-                        cachedAuth.setRealName(oldRealName);
-                    }
-                }
-            }
-        });
-        return true;
+        return result;
     }
 
     /**
@@ -170,38 +126,17 @@ public class CacheDataSource implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
+     * @return boolean
+     *
+     * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
      */
     @Override
     public boolean updateQuitLoc(final PlayerAuth auth) {
-        if (!cache.containsKey(auth.getNickname())) {
-            return false;
+        boolean result = source.updateSession(auth);
+        if (result) {
+            cachedAuths.refresh(auth.getNickname());
         }
-        final PlayerAuth cachedAuth = cache.get(auth.getNickname());
-        final double oldX = cachedAuth.getQuitLocX();
-        final double oldY = cachedAuth.getQuitLocY();
-        final double oldZ = cachedAuth.getQuitLocZ();
-        final String oldWorld = cachedAuth.getWorld();
-
-        cachedAuth.setQuitLocX(auth.getQuitLocX());
-        cachedAuth.setQuitLocY(auth.getQuitLocY());
-        cachedAuth.setQuitLocZ(auth.getQuitLocZ());
-        cachedAuth.setWorld(auth.getWorld());
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (!source.updateQuitLoc(auth)) {
-                    if (cache.containsKey(auth.getNickname())) {
-                        PlayerAuth cachedAuth = cache.get(auth.getNickname());
-                        cachedAuth.setQuitLocX(oldX);
-                        cachedAuth.setQuitLocY(oldY);
-                        cachedAuth.setQuitLocZ(oldZ);
-                        cachedAuth.setWorld(oldWorld);
-                    }
-                }
-            }
-        });
-        return true;
+        return result;
     }
 
     /**
@@ -209,17 +144,13 @@ public class CacheDataSource implements DataSource {
      *
      * @param ip String
      *
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
+     * @return int
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getIps(String)
      */
     @Override
     public int getIps(String ip) {
-        int count = 0;
-        for (Map.Entry<String, PlayerAuth> p : cache.entrySet()) {
-            if (p.getValue().getIp().equals(ip)) {
-                count++;
-            }
-        }
-        return count;
+        return source.getIps(ip);
     }
 
     /**
@@ -227,15 +158,17 @@ public class CacheDataSource implements DataSource {
      *
      * @param until long
      *
-     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
+     * @return int
+     *
+     * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
      */
     @Override
     public int purgeDatabase(long until) {
         int cleared = source.purgeDatabase(until);
         if (cleared > 0) {
-            for (PlayerAuth auth : cache.values()) {
-                if (auth.getLastLogin() < until) {
-                    cache.remove(auth.getNickname());
+            for (PlayerAuth auth : cachedAuths.asMap().values()) {
+                if (auth != null && auth.getLastLogin() < until) {
+                    cachedAuths.invalidate(auth.getNickname());
                 }
             }
         }
@@ -247,17 +180,15 @@ public class CacheDataSource implements DataSource {
      *
      * @param until long
      *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
+     * @return List
+     *
+     * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
      */
     @Override
     public List<String> autoPurgeDatabase(long until) {
         List<String> cleared = source.autoPurgeDatabase(until);
-        if (cleared.size() > 0) {
-            for (PlayerAuth auth : cache.values()) {
-                if (auth.getLastLogin() < until) {
-                    cache.remove(auth.getNickname());
-                }
-            }
+        for (String name : cleared) {
+            cachedAuths.invalidate(name);
         }
         return cleared;
     }
@@ -265,24 +196,20 @@ public class CacheDataSource implements DataSource {
     /**
      * Method removeAuth.
      *
-     * @param username String
+     * @param name String
      *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
+     * @return boolean
+     *
+     * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
      */
     @Override
-    public synchronized boolean removeAuth(String username) {
-        final String user = username.toLowerCase();
-        final PlayerAuth auth = cache.get(user);
-        cache.remove(user);
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (!source.removeAuth(user)) {
-                    cache.put(user, auth);
-                }
-            }
-        });
-        return true;
+    public synchronized boolean removeAuth(String name) {
+        name = name.toLowerCase();
+        boolean result = source.removeAuth(name);
+        if (result) {
+            cachedAuths.invalidate(name);
+        }
+        return result;
     }
 
     /**
@@ -302,19 +229,12 @@ public class CacheDataSource implements DataSource {
      * @see fr.xephi.authme.datasource.DataSource#reload()
      */
     @Override
-    public void reload() {
+    public void reload() { // unused method
         exec.execute(new Runnable() {
             @Override
             public void run() {
-                cache.clear();
                 source.reload();
-                for (Player player : Utils.getOnlinePlayers()) {
-                    String user = player.getName().toLowerCase();
-                    if (PlayerCache.getInstance().isAuthenticated(user)) {
-                        PlayerAuth auth = source.getAuth(user);
-                        cache.put(user, auth);
-                    }
-                }
+                cachedAuths.invalidateAll();
             }
         });
     }
@@ -324,19 +244,17 @@ public class CacheDataSource implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
+     * @return boolean
+     *
+     * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
      */
     @Override
     public synchronized boolean updateEmail(final PlayerAuth auth) {
-        try {
-            return exec.submit(new Callable<Boolean>() {
-                public Boolean call() {
-                    return source.updateEmail(auth);
-                }
-            }).get();
-        } catch (Exception e) {
-            return false;
+        boolean result = source.updateEmail(auth);
+        if (result) {
+            cachedAuths.refresh(auth.getNickname());
         }
+        return result;
     }
 
     /**
@@ -344,27 +262,17 @@ public class CacheDataSource implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
+     * @return boolean
+     *
+     * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
      */
     @Override
     public synchronized boolean updateSalt(final PlayerAuth auth) {
-        if (!cache.containsKey(auth.getNickname())) {
-            return false;
+        boolean result = source.updateSalt(auth);
+        if (result) {
+            cachedAuths.refresh(auth.getNickname());
         }
-        PlayerAuth cachedAuth = cache.get(auth.getNickname());
-        final String oldSalt = cachedAuth.getSalt();
-        cachedAuth.setSalt(auth.getSalt());
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                if (!source.updateSalt(auth)) {
-                    if (cache.containsKey(auth.getNickname())) {
-                        cache.get(auth.getNickname()).setSalt(oldSalt);
-                    }
-                }
-            }
-        });
-        return true;
+        return result;
     }
 
     /**
@@ -372,17 +280,13 @@ public class CacheDataSource implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
+     * @return List
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
      */
     @Override
     public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
-        List<String> result = new ArrayList<>();
-        for (Map.Entry<String, PlayerAuth> stringPlayerAuthEntry : cache.entrySet()) {
-            PlayerAuth p = stringPlayerAuthEntry.getValue();
-            if (p.getIp().equals(auth.getIp()))
-                result.add(p.getNickname());
-        }
-        return result;
+        return source.getAllAuthsByName(auth);
     }
 
     /**
@@ -390,15 +294,13 @@ public class CacheDataSource implements DataSource {
      *
      * @param ip String
      *
-     * @return List<String> * @throws Exception * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
+     * @return List
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
      */
     @Override
-    public synchronized List<String> getAllAuthsByIp(final String ip) throws Exception {
-        return exec.submit(new Callable<List<String>>() {
-            public List<String> call() throws Exception {
-                return source.getAllAuthsByIp(ip);
-            }
-        }).get();
+    public synchronized List<String> getAllAuthsByIp(final String ip) {
+        return source.getAllAuthsByIp(ip);
     }
 
     /**
@@ -406,15 +308,13 @@ public class CacheDataSource implements DataSource {
      *
      * @param email String
      *
-     * @return List<String> * @throws Exception * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
+     * @return List
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
      */
     @Override
-    public synchronized List<String> getAllAuthsByEmail(final String email) throws Exception {
-        return exec.submit(new Callable<List<String>>() {
-            public List<String> call() throws Exception {
-                return source.getAllAuthsByEmail(email);
-            }
-        }).get();
+    public synchronized List<String> getAllAuthsByEmail(final String email) {
+        return source.getAllAuthsByEmail(email);
     }
 
     /**
@@ -422,7 +322,7 @@ public class CacheDataSource implements DataSource {
      *
      * @param banned List<String>
      *
-     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
+     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List)
      */
     @Override
     public synchronized void purgeBanned(final List<String> banned) {
@@ -430,11 +330,7 @@ public class CacheDataSource implements DataSource {
             @Override
             public void run() {
                 source.purgeBanned(banned);
-                for (PlayerAuth auth : cache.values()) {
-                    if (banned.contains(auth.getNickname())) {
-                        cache.remove(auth.getNickname());
-                    }
-                }
+                cachedAuths.invalidateAll(banned);
             }
         });
     }
@@ -442,7 +338,9 @@ public class CacheDataSource implements DataSource {
     /**
      * Method getType.
      *
-     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType()
+     * @return DataSourceType
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getType()
      */
     @Override
     public DataSourceType getType() {
@@ -454,12 +352,13 @@ public class CacheDataSource implements DataSource {
      *
      * @param user String
      *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
+     * @return boolean
+     *
+     * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
      */
     @Override
     public boolean isLogged(String user) {
-        user = user.toLowerCase();
-        return PlayerCache.getInstance().getCache().containsKey(user);
+        return PlayerCache.getInstance().isAuthenticated(user);
     }
 
     /**
@@ -507,6 +406,7 @@ public class CacheDataSource implements DataSource {
             @Override
             public void run() {
                 source.purgeLogged();
+                cachedAuths.invalidateAll();
             }
         });
     }
@@ -514,11 +414,13 @@ public class CacheDataSource implements DataSource {
     /**
      * Method getAccountsRegistered.
      *
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
+     * @return int
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
      */
     @Override
     public int getAccountsRegistered() {
-        return cache.size();
+        return source.getAccountsRegistered();
     }
 
     /**
@@ -531,14 +433,11 @@ public class CacheDataSource implements DataSource {
      */
     @Override
     public void updateName(final String oldOne, final String newOne) {
-        if (cache.containsKey(oldOne)) {
-            cache.put(newOne, cache.get(oldOne));
-            cache.remove(oldOne);
-        }
         exec.execute(new Runnable() {
             @Override
             public void run() {
                 source.updateName(oldOne, newOne);
+                cachedAuths.invalidate(oldOne);
             }
         });
     }
@@ -546,17 +445,21 @@ public class CacheDataSource implements DataSource {
     /**
      * Method getAllAuths.
      *
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
+     * @return List
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
      */
     @Override
     public List<PlayerAuth> getAllAuths() {
-        return new ArrayList<>(cache.values());
+        return source.getAllAuths();
     }
 
     /**
      * Method getLoggedPlayers.
      *
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
+     * @return List
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
      */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {

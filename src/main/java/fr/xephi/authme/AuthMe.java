@@ -603,7 +603,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         if (Settings.isCachingEnabled) {
-            database = new CacheDataSource(this, database);
+            database = new CacheDataSource(database);
         }
 
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {

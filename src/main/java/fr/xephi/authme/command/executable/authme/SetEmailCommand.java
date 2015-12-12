@@ -24,16 +24,16 @@ public class SetEmailCommand extends ExecutableCommand {
      * @return True if the command was executed successfully, false otherwise.
      */
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
         // AuthMe plugin instance
-        AuthMe plugin = AuthMe.getInstance();
+        final AuthMe plugin = AuthMe.getInstance();
 
         // Messages instance
-        Messages m = plugin.getMessages();
+        final Messages m = plugin.getMessages();
 
         // Get the player name and email address
-        String playerName = commandArguments.get(0);
-        String playerEmail = commandArguments.get(1);
+        final String playerName = commandArguments.get(0);
+        final String playerEmail = commandArguments.get(1);
 
         // Validate the email address
         if (!Settings.isEmailCorrect(playerEmail)) {
@@ -41,26 +41,34 @@ public class SetEmailCommand extends ExecutableCommand {
             return true;
         }
 
-        // Validate the user
-        PlayerAuth auth = plugin.database.getAuth(playerName.toLowerCase());
-        if (auth == null) {
-            m.send(sender, MessageKey.UNKNOWN_USER);
-            return true;
-        }
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                // Validate the user
+                PlayerAuth auth = plugin.database.getAuth(playerName);
+                if (auth == null) {
+                    m.send(sender, MessageKey.UNKNOWN_USER);
+                    return;
+                }
 
-        // Set the email address
-        auth.setEmail(playerEmail);
-        if (!plugin.database.updateEmail(auth)) {
-            m.send(sender, MessageKey.ERROR);
-            return true;
-        }
+                // Set the email address
 
-        // Update the player cache
-        if (PlayerCache.getInstance().getAuth(playerName.toLowerCase()) != null)
-            PlayerCache.getInstance().updatePlayer(auth);
+                auth.setEmail(playerEmail);
+                if (!plugin.database.updateEmail(auth)) {
+                    m.send(sender, MessageKey.ERROR);
+                    return;
+                }
 
-        // Show a status message
-        m.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
+                // Update the player cache
+                if (PlayerCache.getInstance().getAuth(playerName) != null) {
+                    PlayerCache.getInstance().updatePlayer(auth);
+                }
+
+                // Show a status message
+                m.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
+
+            }
+        });
         return true;
     }
 }

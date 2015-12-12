@@ -194,7 +194,7 @@ public class PlayerAuth {
         this.setHash(auth.getHash());
         this.setIp(auth.getIp());
         this.setLastLogin(auth.getLastLogin());
-        this.setName(auth.getNickname());
+        this.setNickname(auth.getNickname());
         this.setQuitLocX(auth.getQuitLocX());
         this.setQuitLocY(auth.getQuitLocY());
         this.setQuitLocZ(auth.getQuitLocZ());
@@ -204,11 +204,11 @@ public class PlayerAuth {
     }
 
     /**
-     * Method setName.
+     * Method setNickname.
      *
      * @param nickname String
      */
-    public void setName(String nickname) {
+    public void setNickname(String nickname) {
         this.nickname = nickname.toLowerCase();
     }
 
@@ -522,7 +522,7 @@ public class PlayerAuth {
 
         public PlayerAuth build() {
             return new PlayerAuth(
-                checkNotNull(name).toLowerCase(),
+                checkNotNull(name),
                 nullToEmpty(hash),
                 nullToEmpty(salt),
                 groupId,

@@ -6,7 +6,13 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Settings;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -564,7 +570,7 @@ public class FlatFile implements DataSource {
         BufferedReader br = null;
         try {
             br = new BufferedReader(new FileReader(source));
-            String line = "";
+            String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equals(auth.getNickname())) {
@@ -721,7 +727,7 @@ public class FlatFile implements DataSource {
      *
      * @param banned List<String>
      *
-     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
+     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List)
      */
     @Override
     public void purgeBanned(List<String> banned) {
@@ -856,7 +862,7 @@ public class FlatFile implements DataSource {
     @Override
     public void updateName(String oldOne, String newOne) {
         PlayerAuth auth = this.getAuth(oldOne);
-        auth.setName(newOne);
+        auth.setNickname(newOne);
         this.saveAuth(auth);
         this.removeAuth(oldOne);
     }
