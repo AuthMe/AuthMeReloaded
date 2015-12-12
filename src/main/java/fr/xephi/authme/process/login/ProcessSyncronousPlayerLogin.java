@@ -1,5 +1,7 @@
 package fr.xephi.authme.process.login;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -113,6 +115,15 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         }
     }
 
+    protected void sendBungeeMessage() {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("AuthMe");
+        out.writeUTF("login;" + name);
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+    }
+
     /**
      * Method run.
      *
@@ -186,7 +197,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         // The Login event now fires (as intended) after everything is processed
         Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
         player.saveData();
-
+        if (Settings.bungee)
+            sendBungeeMessage();
         // Login is finish, display welcome message
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {

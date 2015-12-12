@@ -3,6 +3,10 @@ package fr.xephi.authme.hooks;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.CacheDataSource;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -31,8 +35,7 @@ public class BungeeCordMessage implements PluginMessageListener {
      * @see org.bukkit.plugin.messaging.PluginMessageListener#onPluginMessageReceived(String, Player, byte[])
      */
     @Override
-    public void onPluginMessageReceived(String channel, Player player,
-                                        byte[] message) {
+    public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (!channel.equals("BungeeCord")) {
             return;
         }
@@ -42,6 +45,29 @@ public class BungeeCordMessage implements PluginMessageListener {
             String ip = in.readUTF();
             // Put the IP (only the ip not the port) in the hashMap
             plugin.realIp.put(player.getName().toLowerCase(), ip);
+        }
+        if (subChannel.equalsIgnoreCase("AuthMe")) {
+            String str = in.readUTF();
+            String[] args = str.split(";");
+            String name = args[1];
+            PlayerAuth auth = plugin.database.getAuth(name);
+            if (auth == null) {
+                return;
+            }
+            if ("login".equals(args[0])) {
+                PlayerCache.getInstance().updatePlayer(auth);
+                plugin.database.setLogged(name);
+                ConsoleLogger.info("Player " + auth.getNickname() + " has logged in from one of your server!");
+            } else if ("logout".equals(args[0])) {
+                PlayerCache.getInstance().removePlayer(name);
+                plugin.database.setUnlogged(name);
+                ConsoleLogger.info("Player " + auth.getNickname() + " has logged out from one of your server!");
+            } else if ("register".equals(args[0])) {
+                if (plugin.database instanceof CacheDataSource) {
+                    ((CacheDataSource)plugin.database).addAuthToCache(auth);
+                }
+                ConsoleLogger.info("Player " + auth.getNickname() + " has registered out from one of your server!");
+            }
         }
     }
 

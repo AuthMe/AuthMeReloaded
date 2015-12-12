@@ -1,5 +1,7 @@
 package fr.xephi.authme.process.logout;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -36,6 +38,15 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         this.player = player;
         this.plugin = plugin;
         this.name = player.getName().toLowerCase();
+    }
+
+    protected void sendBungeeMessage() {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("AuthMe");
+        out.writeUTF("logout;" + name);
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
     /**
@@ -76,6 +87,8 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         }
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
+        if (Settings.bungee)
+            sendBungeeMessage();
         m.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");
     }

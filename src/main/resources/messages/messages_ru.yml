@@ -1,4 +1,4 @@
-﻿unknown_user: '&fПользователь не найден в Базе Данных'
+unknown_user: '&fПользователь не найден в Базе Данных'
 unsafe_spawn: '&eВаше расположение перед выходом было опасным - вы перенесены на спавн'
 not_logged_in: '&c&lВы еще не вошли!'
 reg_voluntarily: '&aЧтобы зарегистрироваться введите: &e&l/reg ПАРОЛЬ ПОВТОР_ПАРОЛЯ'
@@ -55,3 +55,5 @@ email_send: '[AuthMe] Письмо с инструкциями для восст
 country_banned: 'Вход с IP-адресов вашей страны воспрещен на этом сервере'
 antibot_auto_enabled: '&a[AuthMe] AntiBot-режим автоматически включен из-за большого количества входов!'
 antibot_auto_disabled: '&a[AuthMe] AntiBot-режим автоматичски отключен после %m мин. Надеюсь атака закончилась'
+kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'

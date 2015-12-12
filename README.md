@@ -3,7 +3,7 @@
 <hr>
 
 ####Development history:
-[![Guava AuthMe History Video](http://img.youtube.com/vi/hJRzNfYyd9k/hqdefault.jpg)](https://www.youtube.com/watch?v=hJRzNfYyd9k)
+[![Gource AuthMe History Video](http://img.youtube.com/vi/hJRzNfYyd9k/hqdefault.jpg)](https://www.youtube.com/watch?v=hJRzNfYyd9k)
 
 #####Development tools:
 
@@ -54,12 +54,12 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 #####"The best authentication plugin for the Bukkit/Spigot API!"
 
-<p>Prevent username stealing on your server! Full compatible with UUIDs and Craftbukkit/Spigot 1.8.X!<br>
-Use it to secure your Offline mode server or to incrase your Online mode server's protection!</p>
+<p>Prevent username stealing on your server! Fully compatible with UUIDs and Craftbukkit/Spigot 1.8.X!<br>
+Use it to secure your Offline mode server or to increase your Online mode server's protection!</p>
 
 <p>AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>
-typing commands or use the inventory. It can also kick players with uncommon long or short player names or kick players from banned countries.</p>
-<p>With the Session Login feature you don't have to execute the authentication command everytime you connect to the server! Each command and every feature can be enabled or disabled from our well structured configuration file.</p>
+typing commands or using the inventory. It can also kick players with uncommonly long or short player names or kick players from banned countries.</p>
+<p>With the Session Login feature you don't have to execute the authentication command every time you connect to the server! Each command and every feature can be enabled or disabled from our well structured configuration file.</p>
 <p>You can also create your own translation file and, if you want, you can share it with us! :)</p>
 
 ####Features:
@@ -76,7 +76,7 @@ typing commands or use the inventory. It can also kick players with uncommon lon
   <li>Supported password encryption algorithms: MD5, SHA1, SHA256, <a href="https://github.com/CypherX/xAuth/wiki/Password-Hashing">xAuth</a>, <a href="http://en.wikipedia.org/wiki/Whirlpool_(cryptography)">Whirlpool</a></li>
   <li>Supported alternative registration methods:<br>
   <ul>
-    <li>PHPBB, VBullettin: MD5VB - PHPBB</li>
+    <li>PHPBB, VBulletin: MD5VB - PHPBB</li>
     <li>MyBB: MYBB</li>
     <li>IPB3: IPB3</li>
     <li>PhpFusion: PHPFUSION</li>
@@ -96,7 +96,7 @@ typing commands or use the inventory. It can also kick players with uncommon lon
   <li>Protect player's inventory until a correct Authentication</li>
   <li>Saves the quit location of the player</li>
   <li>Automatic database Backup</li>
-  <li>Avariable languages: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr (feel free to send new translations)</li>
+  <li>Available languages: en, de, br, cz, pl, fr, uk, ru, hu, sk, es, fi, zhtw, zhhk, zhcn, lt, it, ko, pt, nl, gl, bg, eu, tr, vn (feel free to send new translations)</li>
   <li>Built-in Deprecated FlatFile (auths.db) to SQL (authme.sql) converter!</li>
   <li><strong>Import your old database from other plugins like Rakamak, xAuth, CrazyLogin, RoyalAuth and vAuth!</strong></li>
 </ul>
@@ -108,15 +108,14 @@ typing commands or use the inventory. It can also kick players with uncommon lon
 ####Commands
 <a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/command/">Command list and usage</a>
 ####Permissions
-<ul><li>authme.player.* - for all user command
-</li><li>authme.admin.* - for all admin command
-</li><li>authme.* - for all user and admin command
+<ul><li>authme.player.* - for all user commands
+</li><li>authme.admin.* - for all admin commands
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/permissions/">List of all single permissions</a>
 </li></ul>
 ####How To
 <ul><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-install-and-initial-configuration/">How to Install and Setup</a>
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-xauth/">How to import database from xAuth</a>
-</li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/">WebSite Integration</a>
+</li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/">Website Integration</a>
 </li><li><a href="https://raw.githubusercontent.com/Xephi/AuthMeReloaded/master/src/main/resources/config.yml">Click here for an example of the Config file</a>
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/">How to convert from Rakamak</a>
 </li><li>Convert from FlatFile (auths.db but not the sqlite one ) to MySQL: /converter

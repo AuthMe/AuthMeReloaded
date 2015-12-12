@@ -4,16 +4,18 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
 import java.util.Map;
 
 /**
- * Utility class for writing a generated file with a timestamp.
+ * Utility class for reading from and writing to files.
  */
-public final class GeneratedFileWriter {
+public final class FileUtils {
 
     private final static Charset CHARSET = Charset.forName("utf-8");
 
-    private GeneratedFileWriter() {
+    private FileUtils() {
     }
 
     public static void generateFileFromTemplate(String templateFile, String destinationFile, Map<String, Object> tags) {
@@ -31,6 +33,14 @@ public final class GeneratedFileWriter {
         }
     }
 
+    public static void appendToFile(String outputFile, String contents) {
+        try {
+            Files.write(Paths.get(outputFile), contents.getBytes(), StandardOpenOption.APPEND);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to append to file '" + outputFile + "'", e);
+        }
+    }
+
     public static String readFromFile(String file) {
         try {
             return new String(Files.readAllBytes(Paths.get(file)), CHARSET);
@@ -39,9 +49,16 @@ public final class GeneratedFileWriter {
         }
     }
 
+    public static List<String> readLinesFromFile(String file) {
+        try {
+            return Files.readAllLines(Paths.get(file), CHARSET);
+        } catch (IOException e) {
+            throw new RuntimeException("Could not read from file '" + file + "'", e);
+        }
+    }
+
     public static String readFromToolsFile(String file) {
         return readFromFile(ToolsConstants.TOOLS_SOURCE_ROOT + file);
     }
-
 
 }

@@ -50,6 +50,7 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
+ * Listener class for player's events
  */
 public class AuthMePlayerListener implements Listener {
 
@@ -195,12 +196,6 @@ public class AuthMePlayerListener implements Listener {
         if (player == null) {
             return;
         }
-
-        /* IMPOSSIBLE!!!! TODO: check this!
-        if(Utils.isNPC(player)) {
-            return;
-        }
-        */
 
         String name = player.getName().toLowerCase();
         String joinMsg = event.getJoinMessage();
@@ -369,11 +364,16 @@ public class AuthMePlayerListener implements Listener {
         plugin.getManagement().performQuit(player, true);
     }
 
+    /*
+     * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+     * TODO: npc status can be used to bypass security!!!
+     * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+     */
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         Player player = event.getPlayer();
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
         }
@@ -384,7 +384,6 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         Player player = event.getPlayer();
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
         }
@@ -395,7 +394,6 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
         Player player = event.getPlayer();
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
         }
@@ -406,7 +404,6 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.checkAuth(player) || Utils.isNPC(player)) {
             return;
         }
@@ -432,8 +429,6 @@ public class AuthMePlayerListener implements Listener {
             return;
         if (Utils.checkAuth((Player) event.getWhoClicked()))
             return;
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC((Player) event.getWhoClicked()))
             return;
         event.setCancelled(true);
@@ -448,8 +443,6 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth((Player) damager)) {
             return;
         }
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC((Player) damager)) {
             return;
         }
@@ -461,8 +454,6 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(event.getPlayer())) {
             return;
         }
@@ -474,8 +465,6 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(event.getPlayer())) {
             return;
         }
@@ -487,8 +476,6 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(event.getPlayer())) {
             return;
         }
@@ -500,8 +487,6 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(event.getPlayer())) {
             return;
         }
@@ -513,8 +498,6 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(event.getPlayer())) {
             return;
         }
@@ -536,8 +519,6 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(event.getPlayer())) {
             return;
         }
@@ -560,8 +541,6 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(event.getPlayer())) {
             return;
         }
@@ -573,12 +552,9 @@ public class AuthMePlayerListener implements Listener {
         if (Utils.checkAuth(event.getPlayer())) {
             return;
         }
-
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(event.getPlayer())) {
             return;
         }
         event.setCancelled(true);
     }
-
 }

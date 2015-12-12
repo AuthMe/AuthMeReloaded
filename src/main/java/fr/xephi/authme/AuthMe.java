@@ -13,10 +13,20 @@ import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.converter.Converter;
 import fr.xephi.authme.converter.ForceFlatToSqlite;
-import fr.xephi.authme.datasource.*;
+import fr.xephi.authme.datasource.CacheDataSource;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.FlatFile;
+import fr.xephi.authme.datasource.MySQL;
+import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.EssSpawn;
-import fr.xephi.authme.listener.*;
+import fr.xephi.authme.listener.AuthMeBlockListener;
+import fr.xephi.authme.listener.AuthMeEntityListener;
+import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
+import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.AuthMePlayerListener16;
+import fr.xephi.authme.listener.AuthMePlayerListener18;
+import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
@@ -25,7 +35,9 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.*;
+import fr.xephi.authme.settings.OtherAccounts;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
@@ -577,20 +589,19 @@ public class AuthMe extends JavaPlugin {
 
         if (isSQLite) {
             server.getScheduler().runTaskAsynchronously(this, new Runnable() {
-
                 @Override
                 public void run() {
                     int accounts = database.getAccountsRegistered();
-                    if (accounts >= 4000)
-                        ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH " + accounts + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE UPGRADE TO MYSQL!!");
+                    if (accounts >= 4000) {
+                        ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH "
+                            + accounts + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE UPGRADE TO MYSQL!!");
+                    }
                 }
             });
         }
 
         if (Settings.isCachingEnabled) {
             database = new CacheDataSource(this, database);
-        } else {
-            database = new DatabaseCalls(database);
         }
 
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
@@ -919,14 +930,14 @@ public class AuthMe extends JavaPlugin {
         String realIP = player.getAddress().getAddress().getHostAddress();
         String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
         sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress())
-                   .replace("%PORT%", "" + player.getAddress().getPort());
+            .replace("%PORT%", "" + player.getAddress().getPort());
         try {
             URL url = new URL(sUrl);
             URLConnection urlCon = url.openConnection();
             try (BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()))) {
                 String inputLine = in.readLine();
                 if (!StringUtils.isEmpty(inputLine) && !inputLine.equalsIgnoreCase("error")
-                        && !inputLine.contains("error")) {
+                    && !inputLine.contains("error")) {
                     realIP = inputLine;
                 }
             } catch (IOException e) {
