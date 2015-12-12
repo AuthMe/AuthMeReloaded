@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.captcha;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;

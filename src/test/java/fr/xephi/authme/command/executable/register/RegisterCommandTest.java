@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.register;
 
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;

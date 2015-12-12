@@ -1,5 +1,6 @@
 package fr.xephi.authme.command;
 
+import com.google.common.collect.ImmutableSet;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.executable.authme.AccountsCommand;
 import fr.xephi.authme.command.executable.authme.AuthMeCommand;
@@ -37,6 +38,7 @@ import fr.xephi.authme.util.Wrapper;
 
 import java.util.*;
 
+import static com.google.common.collect.Sets.newHashSet;
 import static fr.xephi.authme.permission.DefaultPermission.ALLOWED;
 import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 
@@ -495,7 +497,7 @@ public final class CommandInitializer {
         		.build();
 
         // Add the base commands to the commands array
-        baseCommands = new HashSet<>(Arrays.asList(
+        baseCommands = ImmutableSet.of(
             AUTHME_BASE,
             LOGIN_BASE,
             LOGOUT_BASE,
@@ -504,6 +506,6 @@ public final class CommandInitializer {
             CHANGE_PASSWORD_BASE,
             EMAIL_BASE,
             CAPTCHA_BASE,
-            CONVERTER_BASE));
+            CONVERTER_BASE);
     }
 }

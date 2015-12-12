@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.help;
 
 import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.command.executable.authme.RegisterAdminCommand;
 import org.junit.Test;

@@ -12,7 +12,6 @@ import org.bukkit.entity.Player;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.CollectionUtils;

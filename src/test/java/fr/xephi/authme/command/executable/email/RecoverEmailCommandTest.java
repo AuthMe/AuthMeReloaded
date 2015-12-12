@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.email;
 
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;

@@ -2,7 +2,6 @@ package fr.xephi.authme.command.help;
 
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
