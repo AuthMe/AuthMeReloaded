@@ -2,13 +2,11 @@ package messages;
 
 import fr.xephi.authme.util.StringUtils;
 import utils.FileUtils;
-import utils.TaskOption;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -37,9 +35,14 @@ public final class VerifyMessagesTask implements ToolTask {
     }
 
     @Override
-    public void execute(Map<String, String> options) {
-        String inputFile = options.get("custom.file");
-        boolean addMissingKeys = options.get("add.missing.keys").equals("y");
+    public void execute(Scanner scanner) {
+        System.out.println("Check a specific file only?");
+        System.out.println("- Empty line will check all files in the resources messages folder (default)");
+        System.out.println(format("- %s will be replaced to the messages folder %s", SOURCES_TAG, MESSAGES_FOLDER));
+        String inputFile = scanner.nextLine();
+
+        System.out.println("Add any missing keys to files? ['y' = yes]");
+        boolean addMissingKeys = "y".equals(scanner.nextLine());
 
         // Set up needed objects
         Map<String, String> defaultMessages = null;
@@ -69,18 +72,6 @@ public final class VerifyMessagesTask implements ToolTask {
         if (messageFiles.size() > 1) {
             System.out.println("Checked " + messageFiles.size() + " files");
         }
-    }
-
-    @Override
-    public Iterable<TaskOption> getOptions() {
-        String customFileDescription = StringUtils.join(System.getProperty("line.separator"),
-            "Check a specific file only? (optional - enter custom filename)",
-            "- Empty line will check all files in the resources messages folder",
-            format("- %s will be replaced to the messages folder %s", SOURCES_TAG, MESSAGES_FOLDER));
-
-        return Arrays.asList(
-            new TaskOption("custom.file", customFileDescription, "", null),
-            new TaskOption("add.missing.keys", "Add missing keys to files? [y/n]", "n", "y", "n"));
     }
 
     private static void verifyFile(MessageFileVerifier verifier) {

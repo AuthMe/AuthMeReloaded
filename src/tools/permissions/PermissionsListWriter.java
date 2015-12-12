@@ -3,12 +3,11 @@ package permissions;
 import utils.ANewMap;
 import utils.FileUtils;
 import utils.TagReplacer;
-import utils.TaskOption;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
-import java.util.Arrays;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Set;
 
 /**
@@ -25,10 +24,16 @@ public class PermissionsListWriter implements ToolTask {
     }
 
     @Override
-    public void execute(Map<String, String> options) {
+    public void execute(Scanner scanner) {
         // Ask if result should be written to file
-        boolean includeDescription = options.get("include.description").equals("y");
-        boolean writeToFile = options.get("write.to.file").equals("y");
+        System.out.println("Include description? [Enter 'n' for no]");
+        boolean includeDescription = !matches("n", scanner);
+
+        boolean writeToFile = false;
+        if (includeDescription) {
+            System.out.println("Write to file? [Enter 'y' for yes]");
+            writeToFile = matches("y", scanner);
+        }
 
         if (!includeDescription) {
             outputSimpleList();
@@ -37,13 +42,6 @@ public class PermissionsListWriter implements ToolTask {
         } else {
             System.out.println(generatePermissionsList());
         }
-    }
-
-    @Override
-    public Iterable<TaskOption> getOptions() {
-        return Arrays.asList(
-            new TaskOption("include.description", "Include description? [y/n]", "y", "y", "n"),
-            new TaskOption("write.to.file", "Write to file? [y/n]", "n", "y", "n"));
     }
 
     private static void generateAndWriteFile() {
@@ -81,6 +79,11 @@ public class PermissionsListWriter implements ToolTask {
         }
         System.out.println();
         System.out.println("Total: " + nodes.size());
+    }
+
+    private static boolean matches(String answer, Scanner sc) {
+        String userInput = sc.nextLine();
+        return answer.equalsIgnoreCase(userInput);
     }
 
 }

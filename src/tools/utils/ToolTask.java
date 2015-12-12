@@ -1,6 +1,6 @@
 package utils;
 
-import java.util.Map;
+import java.util.Scanner;
 
 /**
  * Common interface for tool tasks. Note that the implementing tasks are instantiated
@@ -8,10 +8,18 @@ import java.util.Map;
  */
 public interface ToolTask {
 
-    void execute(Map<String, String> options);
-
+    /**
+     * Return the name of the task.
+     *
+     * @return Name of the task
+     */
     String getTaskName();
 
-    Iterable<TaskOption> getOptions();
+    /**
+     * Execute the task.
+     *
+     * @param scanner Scanner to prompt the user with for options. Do not close it.
+     */
+    void execute(Scanner scanner);
 
 }

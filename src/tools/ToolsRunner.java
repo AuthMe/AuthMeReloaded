@@ -1,5 +1,3 @@
-import utils.ScannerHelper;
-import utils.TaskOption;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
@@ -38,29 +36,11 @@ public final class ToolsRunner {
         ToolTask task = tasks.get(inputTask);
 
         if (task != null) {
-            executeTask(task, scanner);
+            task.execute(scanner);
         } else {
             System.out.println("Unknown task");
         }
         scanner.close();
-    }
-
-    /**
-     * Execute the given tool task after prompting the user for the required options.
-     *
-     * @param task The task to run
-     * @param scanner The scanner instance
-     */
-    private static void executeTask(ToolTask task, Scanner scanner) {
-        Iterable<TaskOption> options = task.getOptions();
-        Map<String, String> inputOptions = new HashMap<>();
-        for (TaskOption option : options) {
-            System.out.println(option.getDescription());
-            String input = ScannerHelper.getAnswer(option.getDefaultOption(), scanner, option.getOptions());
-            inputOptions.put(option.getName(), input);
-        }
-
-        task.execute(inputOptions);
     }
 
     private static void listAllTasks(Map<String, ToolTask> taskCollection) {
