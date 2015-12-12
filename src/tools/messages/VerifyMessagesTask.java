@@ -2,10 +2,13 @@ package messages;
 
 import fr.xephi.authme.util.StringUtils;
 import utils.FileUtils;
+import utils.TaskOption;
+import utils.ToolTask;
 import utils.ToolsConstants;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -17,27 +20,23 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 
 /**
- * Entry point of the messages verifier.
+ * Task to verify the keys in the messages files.
  */
-public final class MessagesVerifierRunner {
+public final class VerifyMessagesTask implements ToolTask {
 
     private static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
+    private static final Pattern MESSAGE_FILE_PATTERN = Pattern.compile("messages_[a-z]{2,7}\\.yml");
     private static final String SOURCES_TAG = "{msgdir}";
 
-    private MessagesVerifierRunner() {
+    @Override
+    public String getTaskName() {
+        return "verifyMessages";
     }
 
-    public static void main(String[] args) {
-        // Prompt user for options
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Check a specific file only?");
-        System.out.println("- Empty line will check all files in the resources messages folder (default)");
-        System.out.println(format("- %s will be replaced to the messages folder %s", SOURCES_TAG, MESSAGES_FOLDER));
-        String inputFile = scanner.nextLine();
-
-        System.out.println("Add any missing keys to files? ['y' = yes]");
-        boolean addMissingKeys = "y".equals(scanner.nextLine());
-        scanner.close();
+    @Override
+    public void execute(Map<String, String> options) {
+        String inputFile = options.get("custom.file");
+        boolean addMissingKeys = options.get("add.missing.keys").equals("y");
 
         // Set up needed objects
         Map<String, String> defaultMessages = null;
@@ -67,6 +66,18 @@ public final class MessagesVerifierRunner {
         if (messageFiles.size() > 1) {
             System.out.println("Checked " + messageFiles.size() + " files");
         }
+    }
+
+    @Override
+    public Iterable<TaskOption> getOptions() {
+        String customFileDescription = StringUtils.join(System.getProperty("line.separator"),
+            "Check a specific file only? (optional - enter custom filename)",
+            "- Empty line will check all files in the resources messages folder",
+            format("- %s will be replaced to the messages folder %s", SOURCES_TAG, MESSAGES_FOLDER));
+
+        return Arrays.asList(
+            new TaskOption("custom.file", customFileDescription, "", null),
+            new TaskOption("add.missing.keys", "Add missing keys to files? [y/n]", "n", "y", "n"));
     }
 
     private static void verifyFile(MessageFileVerifier verifier) {
@@ -132,7 +143,6 @@ public final class MessagesVerifierRunner {
     }
 
     private static List<File> getMessagesFiles() {
-        final Pattern messageFilePattern = Pattern.compile("messages_[a-z]{2,7}\\.yml");
         File folder = new File(MESSAGES_FOLDER);
         File[] files = folder.listFiles();
         if (files == null) {
@@ -141,7 +151,7 @@ public final class MessagesVerifierRunner {
 
         List<File> messageFiles = new ArrayList<>();
         for (File file : files) {
-            if (messageFilePattern.matcher(file.getName()).matches()) {
+            if (MESSAGE_FILE_PATTERN.matcher(file.getName()).matches()) {
                 messageFiles.add(file);
             }
         }
