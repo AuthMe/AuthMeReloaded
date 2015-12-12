@@ -49,25 +49,32 @@ public class BungeeCordMessage implements PluginMessageListener {
         if (subChannel.equalsIgnoreCase("AuthMe")) {
             String str = in.readUTF();
             String[] args = str.split(";");
-            String name = args[1];
-            PlayerAuth auth = plugin.database.getAuth(name);
-            if (auth == null) {
-                return;
-            }
-            if ("login".equals(args[0])) {
-                PlayerCache.getInstance().updatePlayer(auth);
-                plugin.database.setLogged(name);
-                ConsoleLogger.info("Player " + auth.getNickname() + " has logged in from one of your server!");
-            } else if ("logout".equals(args[0])) {
-                PlayerCache.getInstance().removePlayer(name);
-                plugin.database.setUnlogged(name);
-                ConsoleLogger.info("Player " + auth.getNickname() + " has logged out from one of your server!");
-            } else if ("register".equals(args[0])) {
-                if (plugin.database instanceof CacheDataSource) {
-                    ((CacheDataSource)plugin.database).addAuthToCache(auth);
+            final String act = args[0];
+            final String name = args[1];
+            plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+                @Override
+                public void run() {
+                    PlayerAuth auth = plugin.database.getAuth(name);
+                    if (auth == null) {
+                        return;
+                    }
+                    if ("login".equals(act)) {
+                        PlayerCache.getInstance().updatePlayer(auth);
+                        plugin.database.setLogged(name);
+                        ConsoleLogger.info("Player " + auth.getNickname()
+                            + " has logged in from one of your server!");
+                    } else if ("logout".equals(act)) {
+                        PlayerCache.getInstance().removePlayer(name);
+                        plugin.database.setUnlogged(name);
+                        ConsoleLogger.info("Player " + auth.getNickname()
+                            + " has logged out from one of your server!");
+                    } else if ("register".equals(act)) {
+                        ConsoleLogger.info("Player " + auth.getNickname()
+                            + " has registered out from one of your server!");
+                    }
+
                 }
-                ConsoleLogger.info("Player " + auth.getNickname() + " has registered out from one of your server!");
-            }
+            });
         }
     }
 
