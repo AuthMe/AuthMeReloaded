@@ -80,10 +80,6 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         if (!Settings.isMovementAllowed) {
             player.setAllowFlight(true);
             player.setFlying(true);
-            if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-                player.setFlySpeed(0.0f);
-                player.setWalkSpeed(0.0f);
-            }
         }
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
