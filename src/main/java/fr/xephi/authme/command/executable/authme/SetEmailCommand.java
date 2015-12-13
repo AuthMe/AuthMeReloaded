@@ -14,7 +14,7 @@ import java.util.List;
 public class SetEmailCommand extends ExecutableCommand {
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 
@@ -59,6 +59,5 @@ public class SetEmailCommand extends ExecutableCommand {
 
             }
         });
-        return true;
     }
 }

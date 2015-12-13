@@ -178,7 +178,8 @@ public class CommandHandler {
                 closestCommand = child;
             }
         }
-        // TODO: Return the full list of labels and arguments
+        // FIXME: Return the full list of labels and arguments
+        // FIXME: Return INVALID_ARGUMENTS instead of UNKNOWN_LABEL when more accurate
         return new FoundCommandResult(
             closestCommand, null, null, minDifference, FoundCommandResult.ResultStatus.UNKNOWN_LABEL);
     }

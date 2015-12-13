@@ -3,6 +3,18 @@ package fr.xephi.authme.command;
 import java.util.List;
 
 /**
+ * Result of a command mapping by {@link CommandHandler}. An object of this class represents a successful mapping
+ * as well as erroneous ones, as communicated with {@link ResultStatus}.
+ * <p />
+ * Fields other than {@link ResultStatus} are available depending, among other factors, on the status:
+ * <ul>
+ *   <li>{@link ResultStatus#SUCCESS} entails that mapping the input to a command was successful. Therefore,
+ *       the command description, labels and arguments are set. The difference is 0.0.</li>
+ *   <li>{@link ResultStatus#INCORRECT_ARGUMENTS}</li>
+ *   <li>{@link ResultStatus#UNKNOWN_LABEL}</li>
+ *   <li>{@link ResultStatus#MISSING_BASE_COMMAND} should never occur. Any other fields may not be present and any
+ *       processing of the object should be aborted.</li>
+ * </ul>
  */
 public class FoundCommandResult {
 

@@ -40,7 +40,7 @@ public class ChangeEmailCommandTest {
         ChangeEmailCommand command = new ChangeEmailCommand();
 
         // when
-        command.executeCommand(sender, newParts(), newParts());
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
         verify(authMeMock, never()).getManagement();
@@ -53,15 +53,11 @@ public class ChangeEmailCommandTest {
         ChangeEmailCommand command = new ChangeEmailCommand();
 
         // when
-        command.executeCommand(sender, newParts(),
-                new CommandParts(Arrays.asList("new.mail@example.org", "old_mail@example.org")));
+        command.executeCommand(sender, Arrays.asList("new.mail@example.org", "old_mail@example.org"));
 
         // then
         verify(authMeMock).getManagement();
         verify(managementMock).performChangeEmail(sender, "new.mail@example.org", "old_mail@example.org");
     }
 
-    private static CommandParts newParts() {
-        return new CommandParts(new ArrayList<String>());
-    }
 }

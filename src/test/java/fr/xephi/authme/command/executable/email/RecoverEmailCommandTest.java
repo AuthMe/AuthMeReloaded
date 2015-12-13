@@ -8,7 +8,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import java.util.Collections;
+import java.util.ArrayList;
 
 /**
  * Test for {@link RecoverEmailCommand}.
@@ -28,7 +28,7 @@ public class RecoverEmailCommandTest {
         RecoverEmailCommand command = new RecoverEmailCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(Collections.EMPTY_LIST), new CommandParts(Collections.EMPTY_LIST));
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
     }

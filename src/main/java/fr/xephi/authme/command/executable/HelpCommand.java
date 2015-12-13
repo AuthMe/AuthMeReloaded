@@ -1,28 +1,54 @@
 package fr.xephi.authme.command.executable;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandHandler;
+import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.permission.PermissionsManager;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-/**
- */
+import static fr.xephi.authme.command.FoundCommandResult.ResultStatus.*;
+
 public class HelpCommand extends ExecutableCommand {
 
+    // Convention: arguments is not the actual invoked arguments but the command that was invoked,
+    // e.g. "/authme help register" would typically be arguments = [register], but here we pass [authme, register]
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Check whether quick help should be shown
-        List<String> arguments = commandArguments.getList();
+    public void executeCommand(CommandSender sender, List<String> arguments) {
+        // TODO #306 ljacqu 20151213: Get command handler from non-static context
+        CommandHandler commandHandler = AuthMe.getInstance().getCommandHandler();
+        FoundCommandResult foundCommandResult = commandHandler.mapPartsToCommand(arguments);
 
-        // Set the proper command arguments for the quick help and show it
-        if (arguments.isEmpty()) {
-            commandArguments = new CommandParts(commandReference.get(0));
-            HelpProvider.showHelp(sender, commandReference, commandArguments, false, false, false, false, false, true);
-        } else {
-            HelpProvider.showHelp(sender, commandReference, commandArguments);
+        // TODO ljacqu 20151213: This is essentially the same logic as in CommandHandler and we'd like to have the same
+        // messages. Maybe we can have another method in CommandHandler where the end command isn't executed upon
+        // success.
+        FoundCommandResult.ResultStatus resultStatus = foundCommandResult.getResultStatus();
+        if (MISSING_BASE_COMMAND.equals(resultStatus)) {
+            sender.sendMessage(ChatColor.DARK_RED + "Could not get base command");
+            return;
+        } else if (INCORRECT_ARGUMENTS.equals(resultStatus) || UNKNOWN_LABEL.equals(resultStatus)) {
+            if (foundCommandResult.getCommandDescription() != null) {
+                sender.sendMessage(ChatColor.DARK_RED + "Unknown command");
+                return;
+            } else {
+                sender.sendMessage(ChatColor.GOLD + "Assuming " + ChatColor.WHITE + "/"
+                    + CommandUtils.labelsToString(foundCommandResult.getCommandDescription().getLabels()));
+            }
         }
 
-        return true;
+        PermissionsManager permissionsManager = AuthMe.getInstance().getPermissionsManager();
+        List<String> lines = arguments.size() == 1
+            ? HelpProvider.printHelp(foundCommandResult, HelpProvider.SHOW_CHILDREN)
+            : HelpProvider.printHelp(foundCommandResult, sender, permissionsManager, HelpProvider.ALL_OPTIONS);
+        for (String line : lines) {
+            sender.sendMessage(line);
+        }
+
     }
+
 }
