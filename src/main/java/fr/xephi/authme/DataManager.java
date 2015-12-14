@@ -203,7 +203,7 @@ public class DataManager {
             } catch (Exception ignored) {
             }
         }
-        ConsoleLogger.info("AutoPurgeDatabase : Removed " + i + " permissions");
+        ConsoleLogger.info("AutoPurgeDatabase : Removed " + i + "permissions");
 
         /*int i = 0;
         for (String name : cleared) {

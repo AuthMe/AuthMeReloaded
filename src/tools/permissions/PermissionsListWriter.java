@@ -47,7 +47,7 @@ public class PermissionsListWriter implements ToolTask {
     private static void generateAndWriteFile() {
         final String permissionsTagValue = generatePermissionsList();
 
-        Map<String, Object> tags = ANewMap.<String, Object>with("permissions", permissionsTagValue).build();
+        Map<String, String> tags = ANewMap.with("permissions", permissionsTagValue).build();
         FileUtils.generateFileFromTemplate(
             ToolsConstants.TOOLS_SOURCE_ROOT + "permissions/permission_nodes.tpl.md", PERMISSIONS_OUTPUT_FILE, tags);
         System.out.println("Wrote to '" + PERMISSIONS_OUTPUT_FILE + "'");
@@ -62,8 +62,8 @@ public class PermissionsListWriter implements ToolTask {
         StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<String, String> entry : permissions.entrySet()) {
-            Map<String, Object> tags = ANewMap.<String, Object>
-                with("node", entry.getKey())
+            Map<String, String> tags = ANewMap
+                .with("node", entry.getKey())
                 .and("description", entry.getValue())
                 .build();
             sb.append(TagReplacer.applyReplacements(template, tags));
