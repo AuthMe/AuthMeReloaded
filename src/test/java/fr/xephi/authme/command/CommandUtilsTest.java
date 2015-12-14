@@ -49,4 +49,56 @@ public class CommandUtilsTest {
         // then
         assertThat(commandPath, equalTo("/authme help"));
     }
+
+
+    // ------
+    // min / max arguments
+    // ------
+    @Test
+    public void shouldComputeMinAndMaxOnEmptyCommand() {
+        // given
+        CommandDescription command = getBuilderForArgsTest().build();
+
+        // when / then
+        checkArgumentCount(command, 0, 0);
+    }
+
+    @Test
+    public void shouldComputeMinAndMaxOnCommandWithMandatoryArgs() {
+        // given
+        CommandDescription command = getBuilderForArgsTest()
+            .withArgument("Test", "Arg description", false)
+            .withArgument("Test22", "Arg description 2", false)
+            .build();
+
+        // when / then
+        checkArgumentCount(command, 2, 2);
+    }
+
+    @Test
+    public void shouldComputeMinAndMaxOnCommandIncludingOptionalArgs() {
+        // given
+        CommandDescription command = getBuilderForArgsTest()
+            .withArgument("arg1", "Arg description", false)
+            .withArgument("arg2", "Arg description 2", true)
+            .withArgument("arg3", "Arg description 3", true)
+            .build();
+
+        // when / then
+        checkArgumentCount(command, 1, 3);
+    }
+
+
+    private static void checkArgumentCount(CommandDescription command, int expectedMin, int expectedMax) {
+        assertThat(CommandUtils.getMinNumberOfArguments(command), equalTo(expectedMin));
+        assertThat(CommandUtils.getMaxNumberOfArguments(command), equalTo(expectedMax));
+    }
+
+    private static CommandDescription.CommandBuilder getBuilderForArgsTest() {
+        return CommandDescription.builder()
+            .labels("authme", "auth")
+            .description("Base")
+            .detailedDescription("Test base command.")
+            .executableCommand(mock(ExecutableCommand.class));
+    }
 }
