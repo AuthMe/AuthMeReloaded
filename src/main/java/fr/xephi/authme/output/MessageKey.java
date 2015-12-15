@@ -79,7 +79,7 @@ public enum MessageKey {
 
     INVALID_NAME_LENGTH("name_len"),
 
-    INVALID_NAME_CHARACTERS("regex"),
+    INVALID_NAME_CHARACTERS("regex", "REG_EX"),
 
     ADD_EMAIL_MESSAGE("add_email"),
 
@@ -87,7 +87,7 @@ public enum MessageKey {
 
     USAGE_CAPTCHA("usage_captcha"),
 
-    CAPTCHA_WRONG_ERROR("wrong_captcha"),
+    CAPTCHA_WRONG_ERROR("wrong_captcha", "THE_CAPTCHA"),
 
     CAPTCHA_SUCCESS("valid_captcha"),
 
@@ -119,16 +119,32 @@ public enum MessageKey {
 
     ANTIBOT_AUTO_ENABLED_MESSAGE("antibot_auto_enabled"),
 
-    ANTIBOT_AUTO_DISABLED_MESSAGE("antibot_auto_disabled");
+    ANTIBOT_AUTO_DISABLED_MESSAGE("antibot_auto_disabled", "%m");
 
 
     private String key;
+    private String[] tags;
 
-    MessageKey(String key) {
+    MessageKey(String key, String... tags) {
         this.key = key;
+        this.tags = tags;
     }
 
+    /**
+     * Return the key used in the messages file.
+     *
+     * @return The key
+     */
     public String getKey() {
         return key;
+    }
+
+    /**
+     * Return a list of tags (texts) that are replaced with actual content in AuthMe.
+     *
+     * @return List of tags
+     */
+    public String[] getTags() {
+        return tags;
     }
 }

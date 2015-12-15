@@ -1,11 +1,15 @@
 package messages;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import fr.xephi.authme.output.MessageKey;
 import utils.FileUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +26,7 @@ public class MessageFileVerifier {
     private final Set<String> unknownKeys = new HashSet<>();
     // Map with the missing key and a boolean indicating whether or not it was added to the file by this object
     private final Map<String, Boolean> missingKeys = new HashMap<>();
+    private final Multimap<String, String> missingTags = HashMultimap.create();
 
     /**
      * Create a verifier that verifies the given messages file.
@@ -53,8 +58,17 @@ public class MessageFileVerifier {
         return missingKeys;
     }
 
+    /**
+     * Return the collection of tags the message key defines that aren't present in the read line.
+     *
+     * @return Collection of missing tags per message key. Key = message key, value = missing tag.
+     */
+    public Multimap<String, String> getMissingTags() {
+        return missingTags;
+    }
+
     private void verifyKeys() {
-        Set<String> messageKeys = getAllMessageKeys();
+        List<MessageKey> messageKeys = getAllMessageKeys();
         List<String> fileLines = FileUtils.readLinesFromFile(messagesFile);
         for (String line : fileLines) {
             // Skip comments and empty lines
@@ -64,22 +78,38 @@ public class MessageFileVerifier {
         }
 
         // All keys that remain are keys that are absent in the file
-        for (String missingKey : messageKeys) {
-            missingKeys.put(missingKey, false);
+        for (MessageKey missingKey : messageKeys) {
+            missingKeys.put(missingKey.getKey(), false);
         }
     }
 
-    private void processKeyInFile(String line, Set<String> messageKeys) {
+    private void processKeyInFile(String line, List<MessageKey> messageKeys) {
         if (line.indexOf(':') == -1) {
             System.out.println("Skipping line in unknown format: '" + line + "'");
             return;
         }
 
-        final String key = line.substring(0, line.indexOf(':'));
-        if (messageKeys.contains(key)) {
-            messageKeys.remove(key);
-        } else {
-            unknownKeys.add(key);
+        final String readKey = line.substring(0, line.indexOf(':'));
+        boolean foundKey = false;
+        for (Iterator<MessageKey> it = messageKeys.iterator(); it.hasNext(); ) {
+            MessageKey messageKey = it.next();
+            if (messageKey.getKey().equals(readKey)) {
+                checkTagsInMessage(readKey, line.substring(line.indexOf(':')), messageKey.getTags());
+                it.remove();
+                foundKey = true;
+                break;
+            }
+        }
+        if (!foundKey) {
+            unknownKeys.add(readKey);
+        }
+    }
+
+    private void checkTagsInMessage(String key, String message, String[] tags) {
+        for (String tag : tags) {
+            if (!message.contains(tag)) {
+                missingTags.put(key, tag);
+            }
         }
     }
 
@@ -105,11 +135,7 @@ public class MessageFileVerifier {
         FileUtils.appendToFile(messagesFile, sb.toString());
     }
 
-    private static Set<String> getAllMessageKeys() {
-        Set<String> messageKeys = new HashSet<>(MessageKey.values().length);
-        for (MessageKey key : MessageKey.values()) {
-            messageKeys.add(key.getKey());
-        }
-        return messageKeys;
+    private static List<MessageKey> getAllMessageKeys() {
+        return new ArrayList<>(Arrays.asList(MessageKey.values()));
     }
 }
