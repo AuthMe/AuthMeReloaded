@@ -141,8 +141,10 @@ public class AsyncRegister {
             return;
         }
         if (!Settings.forceRegLogin) {
-            PlayerCache.getInstance().addPlayer(auth);
-            database.setLogged(name);
+            //PlayerCache.getInstance().addPlayer(auth);
+            //database.setLogged(name);
+            // TODO: check this...
+            plugin.getManagement().performLogin(player, "dontneed", true);
         }
         plugin.otherAccounts.addPlayer(player.getUniqueId());
         ProcessSyncPasswordRegister sync = new ProcessSyncPasswordRegister(player, plugin);
