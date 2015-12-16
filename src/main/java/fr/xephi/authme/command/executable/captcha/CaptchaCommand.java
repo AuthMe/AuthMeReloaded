@@ -58,9 +58,7 @@ public class CaptchaCommand extends ExecutableCommand {
             plugin.cap.remove(playerNameLowerCase);
             String randStr = new RandomString(Settings.captchaLength).nextString();
             plugin.cap.put(playerNameLowerCase, randStr);
-            for (String s : m.retrieve(MessageKey.CAPTCHA_WRONG_ERROR)) {
-                player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(playerNameLowerCase)));
-            }
+            m.send(player, MessageKey.CAPTCHA_WRONG_ERROR, plugin.cap.get(playerNameLowerCase));
             return true;
         }
 

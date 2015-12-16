@@ -57,20 +57,10 @@ public class AsynchronousLogin {
         this.database = data;
     }
 
-    /**
-     * Method getIP.
-     *
-     * @return String
-     */
     protected String getIP() {
         return plugin.getIP(player);
     }
 
-    /**
-     * Method needsCaptcha.
-     *
-     * @return boolean
-     */
     protected boolean needsCaptcha() {
         if (Settings.useCaptcha) {
             if (!plugin.captcha.containsKey(name)) {
@@ -82,9 +72,7 @@ public class AsynchronousLogin {
             }
             if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
                 plugin.cap.putIfAbsent(name, rdm.nextString());
-                for (String s : m.retrieve(MessageKey.USAGE_CAPTCHA)) {
-                    player.sendMessage(s.replace("THE_CAPTCHA", plugin.cap.get(name)).replace("<theCaptcha>", plugin.cap.get(name)));
-                }
+                m.send(player, MessageKey.USAGE_CAPTCHA, plugin.cap.get(name));
                 return true;
             }
         }
@@ -230,12 +218,6 @@ public class AsynchronousLogin {
         }
     }
 
-    /**
-     * Method displayOtherAccounts.
-     *
-     * @param auth PlayerAuth
-     * @param p    Player
-     */
     public void displayOtherAccounts(PlayerAuth auth, Player p) {
         if (!Settings.displayOtherAccounts) {
             return;
