@@ -5,6 +5,7 @@ import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -267,6 +268,42 @@ public class CommandInitializerTest {
 
         // when/then
         walkThroughCommands(commands, adminPermissionChecker);
+    }
+
+    /**
+     * Tests that multiple CommandDescription instances pointing to the same ExecutableCommand use the same
+     * count of arguments.
+     */
+    @Test
+    @Ignore // TODO #306 ljacqu 20151214: Un-ignore this test and fix the offending command
+    public void shouldPointToSameExecutableCommandWithConsistentArgumentCount() {
+        // given
+        final Map<Class<? extends ExecutableCommand>, Integer> mandatoryArguments = new HashMap<>();
+        final Map<Class<? extends ExecutableCommand>, Integer> totalArguments = new HashMap<>();
+
+        BiConsumer argChecker = new BiConsumer() {
+            @Override
+            public void accept(CommandDescription command, int depth) {
+                testCollectionForCommand(command, CommandUtils.getMinNumberOfArguments(command), mandatoryArguments);
+                testCollectionForCommand(command, CommandUtils.getMaxNumberOfArguments(command), totalArguments);
+            }
+            private void testCollectionForCommand(CommandDescription command, int argCount,
+                                                  Map<Class<? extends ExecutableCommand>, Integer> collection) {
+                final Class<? extends ExecutableCommand> clazz = command.getExecutableCommand().getClass();
+                Integer existingCount = collection.get(clazz);
+                if (existingCount != null) {
+                    String commandDescription = "Command with label '" + command.getLabels().get(0) + "' and parent '"
+                        + (command.getParent() != null ? command.getLabels().get(0) : "null") + "' ";
+                    assertThat(commandDescription + "should point to " + clazz + " with arguments consistent to others",
+                        argCount, equalTo(existingCount));
+                } else {
+                    collection.put(clazz, argCount);
+                }
+            }
+        };
+
+        // when / then
+        walkThroughCommands(commands, argChecker);
     }
 
 

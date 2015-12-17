@@ -1,6 +1,11 @@
 package fr.xephi.authme.command;
 
+import com.google.common.collect.Lists;
+import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class CommandUtils {
 
@@ -23,10 +28,20 @@ public final class CommandUtils {
      * the items ["authme", "register", "player"] it will return "authme register player".
      *
      * @param labels The labels to format
+     *
      * @return The space-separated labels
      */
     public static String labelsToString(Iterable<String> labels) {
         return StringUtils.join(" ", labels);
     }
 
+    public static String constructCommandPath(CommandDescription command) {
+        List<String> labels = new ArrayList<>();
+        CommandDescription currentCommand = command;
+        while (currentCommand != null) {
+            labels.add(currentCommand.getLabels().get(0));
+            currentCommand = currentCommand.getParent();
+        }
+        return "/" + labelsToString(Lists.reverse(labels));
+    }
 }

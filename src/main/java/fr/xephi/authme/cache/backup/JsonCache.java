@@ -5,7 +5,6 @@ import com.google.common.io.Files;
 import com.google.gson.*;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -109,7 +108,7 @@ public class JsonCache {
         }
         File file = new File(cacheDir, path);
         if (file.exists()) {
-            Utils.purgeDirectory(file);
+            purgeDirectory(file);
             if (!file.delete()) {
                 ConsoleLogger.showError("Failed to remove" + player.getName() + "cache.");
             }
@@ -191,6 +190,27 @@ public class JsonCache {
             jsonObject.addProperty("flying", dataFileCache.isFlying());
 
             return jsonObject;
+        }
+    }
+
+    /**
+     * Delete a given directory and all its content.
+     *
+     * @param directory The directory to remove
+     */
+    private static void purgeDirectory(File directory) {
+        if (!directory.isDirectory()) {
+            return;
+        }
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File target : files) {
+            if (target.isDirectory()) {
+                purgeDirectory(target);
+            }
+            target.delete();
         }
     }
 

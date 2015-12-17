@@ -1,5 +1,6 @@
 package messages;
 
+import com.google.common.collect.Multimap;
 import fr.xephi.authme.util.StringUtils;
 import utils.FileUtils;
 import utils.ToolTask;
@@ -84,6 +85,11 @@ public final class VerifyMessagesTask implements ToolTask {
         if (!unknownKeys.isEmpty()) {
             System.out.println("  Unknown keys: " + unknownKeys);
         }
+
+        Multimap<String, String> missingTags = verifier.getMissingTags();
+        for (Map.Entry<String, String> entry : missingTags.entries()) {
+            System.out.println("  Missing tag '" + entry.getValue() + "' in entry with key '" + entry.getKey() + "'");
+        }
     }
 
     private static void verifyFileAndAddKeys(MessageFileVerifier verifier, Map<String, String> defaultMessages) {
@@ -105,6 +111,11 @@ public final class VerifyMessagesTask implements ToolTask {
         Set<String> unknownKeys = verifier.getUnknownKeys();
         if (!unknownKeys.isEmpty()) {
             System.out.println("  Unknown keys: " + unknownKeys);
+        }
+
+        Multimap<String, String> missingTags = verifier.getMissingTags();
+        for (Map.Entry<String, String> entry : missingTags.entries()) {
+            System.out.println("  Missing tag '" + entry.getValue() + "' in entry with key '" + entry.getKey() + "'");
         }
     }
 

@@ -229,7 +229,7 @@ public class AuthMePlayerListener implements Listener {
         if (auth != null && !auth.getRealName().equals("Player") && !auth.getRealName().equals(event.getName())) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage("You should join using username: " + ChatColor.AQUA + auth.getRealName() +
-                ChatColor.RESET + "\nnot :" + ChatColor.RED + event.getName()); // TODO: write a better message
+                ChatColor.RESET + "\nnot: " + ChatColor.RED + event.getName()); // TODO: write a better message
             return;
         }
 
@@ -288,7 +288,7 @@ public class AuthMePlayerListener implements Listener {
                     pl.kickPlayer(m.retrieveSingle(MessageKey.KICK_FOR_VIP));
                     event.allow();
                 } else {
-                    ConsoleLogger.info("The player " + event.getPlayer().getName() + " tryed to join, but the server was full");
+                    ConsoleLogger.info("The player " + event.getPlayer().getName() + " tried to join, but the server was full");
                     event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
                     event.setResult(PlayerLoginEvent.Result.KICK_FULL);
                 }

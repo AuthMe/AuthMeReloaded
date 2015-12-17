@@ -18,10 +18,9 @@ public final class FileUtils {
     private FileUtils() {
     }
 
-    public static void generateFileFromTemplate(String templateFile, String destinationFile, Map<String, Object> tags) {
+    public static void generateFileFromTemplate(String templateFile, String destinationFile, Map<String, String> tags) {
         String template = readFromFile(templateFile);
         String result = TagReplacer.applyReplacements(template, tags);
-
         writeToFile(destinationFile, result);
     }
 

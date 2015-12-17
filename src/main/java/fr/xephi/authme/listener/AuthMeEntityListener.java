@@ -36,6 +36,7 @@ public class AuthMeEntityListener implements Listener {
         }
     }
 
+    // TODO: npc status can be used to bypass security!!!
     /**
      * Method onEntityDamage.
      *
@@ -53,7 +54,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(player)) {
             return;
         }
@@ -78,7 +78,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC((Player) entity)) {
             return;
         }
@@ -104,7 +103,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(player)) {
             return;
         }
@@ -128,7 +126,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC((Player) entity)) {
             return;
         }
@@ -152,7 +149,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC((Player) entity)) {
             return;
         }
@@ -177,7 +173,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC((Player) entity)) {
             return;
         }
@@ -201,7 +196,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC((Player) entity)) {
             return;
         }
@@ -210,7 +204,6 @@ public class AuthMeEntityListener implements Listener {
     }
 
     // TODO: Need to check this, player can't throw snowball but the item is taken.
-
     /**
      * Method onProjectileLaunch.
      *
@@ -245,7 +238,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(player)) {
             return;
         }
@@ -270,7 +262,6 @@ public class AuthMeEntityListener implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(player)) {
             return;
         }

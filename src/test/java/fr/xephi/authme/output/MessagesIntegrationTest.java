@@ -2,9 +2,11 @@ package fr.xephi.authme.output;
 
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
 
 import java.io.File;
@@ -14,6 +16,8 @@ import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -136,5 +140,59 @@ public class MessagesIntegrationTest {
         for (String line : lines) {
             verify(player).sendMessage(line);
         }
+    }
+
+    @Test
+    public void shouldSendMessageToPlayerWithTagReplacement() {
+        // given
+        MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
+        CommandSender sender = Mockito.mock(CommandSender.class);
+
+        // when
+        messages.send(sender, key, "1234");
+
+        // then
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(sender, times(1)).sendMessage(captor.capture());
+        String message = captor.getValue();
+        assertThat(message, equalTo("Use /captcha 1234 to solve the captcha"));
+    }
+
+    @Test
+    public void shouldNotThrowForKeyWithNoTagReplacements() {
+        // given
+        MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
+        CommandSender sender = mock(CommandSender.class);
+
+        // when
+        messages.send(sender, key);
+
+        // then
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(sender, times(1)).sendMessage(captor.capture());
+        String message = captor.getValue();
+        assertThat(message, equalTo("Use /captcha THE_CAPTCHA to solve the captcha"));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowForInvalidReplacementCount() {
+        // given
+        MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
+
+        // when
+        messages.send(mock(CommandSender.class), key, "rep", "rep2");
+
+        // then - expect exception
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowForReplacementsOnKeyWithNoTags() {
+        // given
+        MessageKey key = MessageKey.UNKNOWN_USER;
+
+        // when
+        messages.send(mock(CommandSender.class), key, "Replacement");
+
+        // then - expect exception
     }
 }

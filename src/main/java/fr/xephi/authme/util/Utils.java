@@ -15,7 +15,6 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -204,27 +203,6 @@ public final class Utils {
     public static void forceGM(Player player) {
         if (!plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)) {
             player.setGameMode(GameMode.SURVIVAL);
-        }
-    }
-
-    /**
-     * Delete a given directory and all his content.
-     *
-     * @param directory File
-     */
-    public static void purgeDirectory(File directory) {
-        if (!directory.isDirectory()) {
-            return;
-        }
-        File[] files = directory.listFiles();
-        if (files == null) {
-            return;
-        }
-        for (File target : files) {
-            if (target.isDirectory()) {
-                purgeDirectory(target);
-            }
-            target.delete();
         }
     }
 
