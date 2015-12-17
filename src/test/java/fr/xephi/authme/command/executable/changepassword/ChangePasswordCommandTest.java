@@ -72,7 +72,7 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, Collections.singletonList("pass"));
+        command.executeCommand(sender, Arrays.asList("pass", "pass"));
 
         // then
         verify(messagesMock).send(sender, MessageKey.NOT_LOGGED_IN);

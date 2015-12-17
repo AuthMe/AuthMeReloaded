@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.help;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandPermissions;
@@ -62,12 +63,11 @@ public final class HelpProvider {
         lines.add(ChatColor.GOLD + "==========[ " + Settings.helpHeader + " HELP ]==========");
 
         CommandDescription command = foundCommand.getCommandDescription();
-        // TODO ljacqu 20151212: Remove immutability once class is stable. We don't want mutability but the overhead
-        // isn't worth it either. This is just a temporary safeguard during development
         List<String> labels = ImmutableList.copyOf(foundCommand.getLabels());
+        List<String> correctLabels = ImmutableList.copyOf(filterCorrectLabels(command, labels));
 
         if (!hasFlag(HIDE_COMMAND, options)) {
-            printCommand(command, labels, lines); // FIXME: Pass `correctLabels` and not `labels`
+            printCommand(command, correctLabels, lines);
         }
         if (hasFlag(SHOW_LONG_DESCRIPTION, options)) {
             printDetailedDescription(command, lines);
@@ -79,7 +79,7 @@ public final class HelpProvider {
             printPermissions(command, sender, permissionsManager, lines);
         }
         if (hasFlag(SHOW_ALTERNATIVES, options)) {
-            printAlternatives(command, labels, lines);
+            printAlternatives(command, correctLabels, lines);
         }
         if (hasFlag(SHOW_CHILDREN, options)) {
             printChildren(command, labels, lines);
@@ -89,19 +89,8 @@ public final class HelpProvider {
     }
 
     private static void printCommand(CommandDescription command, List<String> correctLabels, List<String> lines) {
-        // Ensure that we have all labels to go to the command
-        int requiredLabels = command.getParentCount() + 1;
-        List<String> givenLabels = new ArrayList<>(correctLabels);
-        // Only case this is possible: givenLabels.size() == 1 && requiredLabels == 2,
-        // since command.getParentCount() never exceeds 1 in AuthMe
-        // FIXME: Might be smart to put this logic outside and to pass it as `correctLabels`? We will need this at a few
-        // places annotated with a FIXME
-        if (givenLabels.size() < requiredLabels) {
-            givenLabels.add(command.getLabels().get(0));
-        }
-
         // FIXME: Create highlight logic to mark arguments and the 2nd label as yellow
-        String syntaxLine = "/" + CommandUtils.labelsToString(givenLabels);
+        String syntaxLine = "/" + CommandUtils.labelsToString(correctLabels);
         for (CommandArgumentDescription argument : command.getArguments()) {
             syntaxLine += " " + formatArgument(argument);
         }
@@ -132,19 +121,14 @@ public final class HelpProvider {
         }
     }
 
-    // FIXME: labels is currently assumed to be only the ones leading to the given command, but we have scenarios where
-    // we're guessing the command, so the final label isn't any existing one
-    private static void printAlternatives(CommandDescription command, List<String> labels, List<String> lines) {
+    private static void printAlternatives(CommandDescription command, List<String> correctLabels, List<String> lines) {
         if (command.getLabels().size() <= 1) {
             return;
         }
 
-        // Print the header
         lines.add(ChatColor.GOLD + "Alternatives:");
-
         // Get the label used
-        // fixme this is not correct if help is triggered by incorrect number of arguments
-        final String usedLabel = labels.get(labels.size() - 1);
+        final String usedLabel = correctLabels.get(correctLabels.size() - 1);
 
         // Create a list of alternatives
         List<String> alternatives = new ArrayList<>();
@@ -169,11 +153,11 @@ public final class HelpProvider {
         for (String alternative : alternatives) {
             // fixme add highlight functionality (see commented old line)
             // sender.sendMessage(" " + _HelpSyntaxHelper.getCommandSyntax(command, commandReference, alternative, true));
-            lines.add(" " + CommandUtils.labelsToString(labels) + " " + alternative);
+            lines.add(" " + CommandUtils.labelsToString(correctLabels) + " " + alternative);
         }
     }
 
-    public static void printPermissions(CommandDescription command, CommandSender sender,
+    private static void printPermissions(CommandDescription command, CommandSender sender,
                                         PermissionsManager permissionsManager, List<String> lines) {
         CommandPermissions permissions = command.getCommandPermissions();
         if (permissions == null || CollectionUtils.isEmpty(permissions.getPermissionNodes())) {
@@ -220,6 +204,7 @@ public final class HelpProvider {
         }
     }
 
+    /** Format a command argument with the proper type of brackets. */
     private static String formatArgument(CommandArgumentDescription argument) {
         if (argument.isOptional()) {
             return " [" + argument.getName() + "]";
@@ -229,6 +214,28 @@ public final class HelpProvider {
 
     private static boolean hasFlag(int flag, int options) {
         return (flag & options) != 0;
+    }
+
+    private static List<String> filterCorrectLabels(CommandDescription command, List<String> labels) {
+        List<CommandDescription> commands = new ArrayList<>(command.getParentCount() + 1);
+        CommandDescription currentCommand = command;
+        while (currentCommand != null) {
+            commands.add(command);
+            currentCommand = currentCommand.getParent();
+        }
+        commands = Lists.reverse(commands);
+
+        List<String> correctLabels = new ArrayList<>();
+        boolean foundIncorrectLabel = false;
+        for (int i = 0; i < commands.size(); ++i) {
+            if (!foundIncorrectLabel && i < labels.size() && commands.get(i).hasLabel(labels.get(i))) {
+                correctLabels.add(labels.get(i));
+            } else {
+                foundIncorrectLabel = true;
+                correctLabels.add(commands.get(i).getLabels().get(0));
+            }
+        }
+        return correctLabels;
     }
 
 }

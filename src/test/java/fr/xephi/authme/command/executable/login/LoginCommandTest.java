@@ -59,19 +59,4 @@ public class LoginCommandTest {
         Mockito.verify(managementMock).performLogin(eq(sender), eq("password"), eq(false));
     }
 
-    @Test
-    public void shouldHandleMissingPassword() {
-        // given
-        Player sender = mock(Player.class);
-        LoginCommand command = new LoginCommand();
-
-        // when
-        command.executeCommand(sender, new ArrayList<String>());
-
-        // then
-        // TODO ljacqu 20151121: May make sense to handle null password in LoginCommand instead of forwarding the call
-        String password = null;
-        Mockito.verify(managementMock).performLogin(eq(sender), eq(password), eq(false));
-    }
-
 }

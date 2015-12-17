@@ -10,9 +10,11 @@ import java.util.List;
  * <ul>
  *   <li>{@link ResultStatus#SUCCESS} entails that mapping the input to a command was successful. Therefore,
  *       the command description, labels and arguments are set. The difference is 0.0.</li>
- *   <li>{@link ResultStatus#INCORRECT_ARGUMENTS}</li>
- *   <li>{@link ResultStatus#UNKNOWN_LABEL}</li>
- *   <li>{@link ResultStatus#MISSING_BASE_COMMAND} should never occur. Any other fields may not be present and any
+ *   <li>{@link ResultStatus#INCORRECT_ARGUMENTS}: The received parts could be mapped to a command but the argument
+ *       count doesn't match. Guarantees that the command description field is not null; difference is 0.0</li>
+ *   <li>{@link ResultStatus#UNKNOWN_LABEL}: The labels could not be mapped to a command. The command description may
+ *       be set to the most similar command, or it may be null. Difference is above 0.0.</li>
+ *   <li>{@link ResultStatus#MISSING_BASE_COMMAND} should never occur. All other fields may be null and any further
  *       processing of the object should be aborted.</li>
  * </ul>
  */
@@ -56,30 +58,14 @@ public class FoundCommandResult {
         this(commandDescription, arguments, labels, 0.0, ResultStatus.SUCCESS);
     }
 
-    /**
-     * Get the command description.
-     *
-     * @return Command description.
-     */
     public CommandDescription getCommandDescription() {
         return this.commandDescription;
     }
 
-
-    /**
-     * Get the command arguments.
-     *
-     * @return The command arguments.
-     */
     public List<String> getArguments() {
         return this.arguments;
     }
 
-    /**
-     * Get the original query reference.
-     *
-     * @return Original query reference.
-     */
     public List<String> getLabels() {
         return this.labels;
     }

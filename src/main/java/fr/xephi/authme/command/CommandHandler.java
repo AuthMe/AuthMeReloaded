@@ -12,6 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static fr.xephi.authme.command.FoundCommandResult.ResultStatus.INCORRECT_ARGUMENTS;
+import static fr.xephi.authme.command.FoundCommandResult.ResultStatus.MISSING_BASE_COMMAND;
+import static fr.xephi.authme.command.FoundCommandResult.ResultStatus.UNKNOWN_LABEL;
+
 /**
  * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
  * or to display help messages for unknown invocations.
@@ -41,7 +45,7 @@ public class CommandHandler {
      * Map a command that was invoked to the proper {@link CommandDescription} or return a useful error
      * message upon failure.
      *
-     * @param sender             The command sender (Bukkit).
+     * @param sender             The command sender.
      * @param bukkitCommandLabel The command label (Bukkit).
      * @param bukkitArgs         The command arguments (Bukkit).
      *
@@ -74,6 +78,13 @@ public class CommandHandler {
         return true;
     }
 
+    /**
+     * Check a command's permissions and execute it with the given arguments if the check succeeds.
+     *
+     * @param sender The command sender
+     * @param command The command to process
+     * @param arguments The arguments to pass to the command
+     */
     private void executeCommandIfAllowed(CommandSender sender, CommandDescription command, List<String> arguments) {
         if (permissionsManager.hasPermission(sender, command)) {
             command.getExecutableCommand().executeCommand(sender, arguments);
@@ -112,7 +123,7 @@ public class CommandHandler {
         if (result.getDifference() < SUGGEST_COMMAND_THRESHOLD && result.getCommandDescription() != null) {
             sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/"
                 + result.getCommandDescription() + ChatColor.YELLOW + "?");
-            // TODO: Define a proper string representation of command description
+            // FIXME: Define a proper string representation of command description
         }
 
         sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + result.getLabels().get(0)
@@ -144,14 +155,20 @@ public class CommandHandler {
         sender.sendMessage(ChatColor.DARK_RED + "You don't have permission to use this command!");
     }
 
+    /**
+     * Map incoming command parts to a command. This processes all parts and distinguishes the labels from arguments.
+     *
+     * @param parts The parts to map to commands and arguments
+     * @return The generated {@link FoundCommandResult}
+     */
     public FoundCommandResult mapPartsToCommand(final List<String> parts) {
         if (CollectionUtils.isEmpty(parts)) {
-            return new FoundCommandResult(null, parts, null, 0.0, FoundCommandResult.ResultStatus.MISSING_BASE_COMMAND);
+            return new FoundCommandResult(null, parts, null, 0.0, MISSING_BASE_COMMAND);
         }
 
         CommandDescription base = getBaseCommand(parts.get(0));
         if (base == null) {
-            return new FoundCommandResult(null, parts, null, 0.0, FoundCommandResult.ResultStatus.MISSING_BASE_COMMAND);
+            return new FoundCommandResult(null, parts, null, 0.0, MISSING_BASE_COMMAND);
         }
 
         // Prefer labels: /register help goes to "Help command", not "Register command" with argument 'help'
@@ -167,21 +184,31 @@ public class CommandHandler {
     }
 
     private FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
-        final String label = parts.get(0);
-
+        final String childLabel = parts.size() >= 2 ? parts.get(1) : null;
         double minDifference = Double.POSITIVE_INFINITY;
         CommandDescription closestCommand = null;
-        for (CommandDescription child : base.getChildren()) {
-            double difference = getLabelDifference(child, label);
-            if (difference < minDifference) {
-                minDifference = difference;
-                closestCommand = child;
+
+        if (childLabel != null) {
+            for (CommandDescription child : base.getChildren()) {
+                double difference = getLabelDifference(child, childLabel);
+                if (difference < minDifference) {
+                    minDifference = difference;
+                    closestCommand = child;
+                }
             }
         }
-        // FIXME: Return the full list of labels and arguments
-        // FIXME: Return INVALID_ARGUMENTS instead of UNKNOWN_LABEL when more accurate
-        return new FoundCommandResult(
-            closestCommand, null, null, minDifference, FoundCommandResult.ResultStatus.UNKNOWN_LABEL);
+
+        // base command may have no children or no child label was present
+        if (closestCommand == null) {
+            return new FoundCommandResult(null, null, parts, minDifference, UNKNOWN_LABEL);
+        }
+
+        FoundCommandResult.ResultStatus status = (minDifference == 0.0) ? INCORRECT_ARGUMENTS : UNKNOWN_LABEL;
+        final int partsSize = parts.size();
+        List<String> labels = parts.subList(0, Math.min(closestCommand.getParentCount() + 1, partsSize));
+        List<String> arguments = parts.subList(Math.min(partsSize - 1, labels.size()), partsSize);
+
+        return new FoundCommandResult(closestCommand, labels, arguments, minDifference, status);
     }
 
     private CommandDescription getBaseCommand(String label) {

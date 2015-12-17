@@ -441,13 +441,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Set up the command handler.
-     */
-    private void setupCommandHandler(PermissionsManager permissionsManager) {
-        this.commandHandler = new CommandHandler(CommandInitializer.getBaseCommands(), permissionsManager);
-    }
-
-    /**
      * Load the plugin's settings.
      *
      * @return True on success, false on failure.

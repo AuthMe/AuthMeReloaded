@@ -150,6 +150,7 @@ public class CommandDescription {
      *
      * @return The number of parents, e.g. for "/authme abc def" the parent count is 2 ("/authme abc", "/authme")
      */
+    // TODO ljacqu 20151217: If we always use `getParentCount() + 1` rewrite this method to a `getLabelCount()`
     public int getParentCount() {
         if (parent == null) {
             return 0;
