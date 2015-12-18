@@ -53,7 +53,7 @@ public class CommandHandlerTest {
 
         // then
         assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("login", "authme")));
-        assertThat(result.getResultStatus(), equalTo(FoundCommandResult.ResultStatus.SUCCESS));
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.SUCCESS));
         assertThat(result.getArguments(), contains("test1"));
         assertThat(result.getDifference(), equalTo(0.0));
     }
@@ -68,7 +68,7 @@ public class CommandHandlerTest {
 
         // then
         assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("register", "authme")));
-        assertThat(result.getResultStatus(), equalTo(FoundCommandResult.ResultStatus.SUCCESS));
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.SUCCESS));
         assertThat(result.getArguments(), contains("arg1", "arg2"));
         assertThat(result.getDifference(), equalTo(0.0));
     }
@@ -83,7 +83,21 @@ public class CommandHandlerTest {
 
         // then
         assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("register", "authme")));
-        assertThat(result.getResultStatus(), equalTo(FoundCommandResult.ResultStatus.INCORRECT_ARGUMENTS));
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.INCORRECT_ARGUMENTS));
+        assertThat(result.getDifference(), equalTo(0.0));
+    }
+
+    @Test
+    public void shouldRejectCommandWithTooFewArguments() {
+        // given
+        List<String> parts = Arrays.asList("authme", "Reg");
+
+        // when
+        FoundCommandResult result = handler.mapPartsToCommand(parts);
+
+        // then
+        assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("register", "authme")));
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.INCORRECT_ARGUMENTS));
         assertThat(result.getDifference(), equalTo(0.0));
     }
 
@@ -97,7 +111,7 @@ public class CommandHandlerTest {
 
         // then
         assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("register", "authme")));
-        assertThat(result.getResultStatus(), equalTo(FoundCommandResult.ResultStatus.UNKNOWN_LABEL));
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.UNKNOWN_LABEL));
         assertThat(result.getDifference() < 0.75, equalTo(true));
     }
 
@@ -112,7 +126,7 @@ public class CommandHandlerTest {
 
         // then
         assertThat(result.getCommandDescription(), not(nullValue()));
-        assertThat(result.getResultStatus(), equalTo(FoundCommandResult.ResultStatus.UNKNOWN_LABEL));
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.UNKNOWN_LABEL));
         assertThat(result.getDifference() > 0.75, equalTo(true));
     }
 

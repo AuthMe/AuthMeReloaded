@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.help;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import fr.xephi.authme.command.CommandArgumentDescription;
@@ -216,11 +217,12 @@ public final class HelpProvider {
         return (flag & options) != 0;
     }
 
-    private static List<String> filterCorrectLabels(CommandDescription command, List<String> labels) {
+    @VisibleForTesting
+    protected static List<String> filterCorrectLabels(CommandDescription command, List<String> labels) {
         List<CommandDescription> commands = new ArrayList<>(command.getParentCount() + 1);
         CommandDescription currentCommand = command;
         while (currentCommand != null) {
-            commands.add(command);
+            commands.add(currentCommand);
             currentCommand = currentCommand.getParent();
         }
         commands = Lists.reverse(commands);

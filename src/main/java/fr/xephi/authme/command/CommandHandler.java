@@ -12,9 +12,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import static fr.xephi.authme.command.FoundCommandResult.ResultStatus.INCORRECT_ARGUMENTS;
-import static fr.xephi.authme.command.FoundCommandResult.ResultStatus.MISSING_BASE_COMMAND;
-import static fr.xephi.authme.command.FoundCommandResult.ResultStatus.UNKNOWN_LABEL;
+import static fr.xephi.authme.command.FoundResultStatus.INCORRECT_ARGUMENTS;
+import static fr.xephi.authme.command.FoundResultStatus.MISSING_BASE_COMMAND;
+import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 
 /**
  * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
@@ -121,9 +121,8 @@ public class CommandHandler {
 
         // Show a command suggestion if available and the difference isn't too big
         if (result.getDifference() < SUGGEST_COMMAND_THRESHOLD && result.getCommandDescription() != null) {
-            sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/"
-                + result.getCommandDescription() + ChatColor.YELLOW + "?");
-            // FIXME: Define a proper string representation of command description
+            sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD
+                + CommandUtils.constructCommandPath(result.getCommandDescription()) + ChatColor.YELLOW + "?");
         }
 
         sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + result.getLabels().get(0)
@@ -175,9 +174,9 @@ public class CommandHandler {
         List<String> remainingParts = parts.subList(1, parts.size());
         CommandDescription childCommand = getSuitableChild(base, remainingParts);
         if (childCommand != null) {
-            return new FoundCommandResult(childCommand, parts.subList(2, parts.size()), parts.subList(0, 2));
+            return new FoundCommandResult(childCommand, parts.subList(0, 2), parts.subList(2, parts.size()));
         } else if (hasSuitableArgumentCount(base, remainingParts.size())) {
-            return new FoundCommandResult(base, parts.subList(1, parts.size()), parts.subList(0, 1));
+            return new FoundCommandResult(base, parts.subList(0, 1), parts.subList(1, parts.size()));
         }
 
         return getCommandWithSmallestDifference(base, parts);
@@ -200,13 +199,15 @@ public class CommandHandler {
 
         // base command may have no children or no child label was present
         if (closestCommand == null) {
-            return new FoundCommandResult(null, null, parts, minDifference, UNKNOWN_LABEL);
+            return new FoundCommandResult(null, parts, null, minDifference, UNKNOWN_LABEL);
         }
 
-        FoundCommandResult.ResultStatus status = (minDifference == 0.0) ? INCORRECT_ARGUMENTS : UNKNOWN_LABEL;
+        FoundResultStatus status = (minDifference == 0.0) ? INCORRECT_ARGUMENTS : UNKNOWN_LABEL;
         final int partsSize = parts.size();
         List<String> labels = parts.subList(0, Math.min(closestCommand.getParentCount() + 1, partsSize));
-        List<String> arguments = parts.subList(Math.min(partsSize - 1, labels.size()), partsSize);
+        List<String> arguments = (labels.size() == partsSize)
+            ? new ArrayList<String>()
+            : parts.subList(labels.size(), partsSize);
 
         return new FoundCommandResult(closestCommand, labels, arguments, minDifference, status);
     }

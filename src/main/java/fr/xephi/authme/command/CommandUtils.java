@@ -1,7 +1,6 @@
 package fr.xephi.authme.command;
 
 import com.google.common.collect.Lists;
-import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 
 import java.util.ArrayList;
@@ -25,7 +24,7 @@ public final class CommandUtils {
 
     /**
      * Provide a textual representation of a list of labels to show it as a command. For example, a list containing
-     * the items ["authme", "register", "player"] it will return "authme register player".
+     * the items ["authme", "register", "player"] will return "authme register player".
      *
      * @param labels The labels to format
      *
