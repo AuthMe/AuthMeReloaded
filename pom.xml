@@ -92,6 +92,14 @@
             </resource>
             <resource>
                 <targetPath>.</targetPath>
+                <filtering>true</filtering>
+                <directory>src/main/resources/</directory>
+                <includes>
+                    <include>email.html</include>
+                </includes>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
                 <filtering>false</filtering>
                 <directory>src/main/resources/</directory>
                 <includes>
