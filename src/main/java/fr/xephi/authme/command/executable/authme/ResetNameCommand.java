@@ -4,13 +4,13 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
 /**
  */
+// TODO: remove if not used
 public class ResetNameCommand extends ExecutableCommand {
 
     /**
@@ -28,7 +28,7 @@ public class ResetNameCommand extends ExecutableCommand {
         final AuthMe plugin = AuthMe.getInstance();
 
         // Command logic
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
                 List<PlayerAuth> authentications = plugin.database.getAllAuths();

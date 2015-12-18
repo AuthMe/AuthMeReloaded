@@ -10,9 +10,9 @@ import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.task.MessageTask;
@@ -78,9 +78,9 @@ public class AsynchronousJoin {
             return;
         }
         if (Settings.getMaxJoinPerIp > 0
-                && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
-                && !ip.equalsIgnoreCase("127.0.0.1")
-                && !ip.equalsIgnoreCase("localhost")) {
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !ip.equalsIgnoreCase("127.0.0.1")
+            && !ip.equalsIgnoreCase("localhost")) {
             if (plugin.hasJoinedIp(player.getName(), ip)) {
                 sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -203,10 +203,6 @@ public class AsynchronousJoin {
                 if (Settings.applyBlindEffect) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
                 }
-                if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-                    player.setWalkSpeed(0.0f);
-                    player.setFlySpeed(0.0f);
-                }
             }
 
         });
@@ -236,8 +232,7 @@ public class AsynchronousJoin {
                 ? m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE)
                 : m.retrieve(MessageKey.REGISTER_MESSAGE);
         }
-        if (LimboCache.getInstance().getLimboPlayer(name) != null)
-        {
+        if (LimboCache.getInstance().getLimboPlayer(name) != null) {
             BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
             LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
         }

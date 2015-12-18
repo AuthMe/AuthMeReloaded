@@ -3,6 +3,11 @@ package fr.xephi.authme.cache.auth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
+import static com.google.common.base.Objects.firstNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Strings.nullToEmpty;
+
+
 /**
  */
 public class PlayerAuth {
@@ -189,7 +194,7 @@ public class PlayerAuth {
         this.setHash(auth.getHash());
         this.setIp(auth.getIp());
         this.setLastLogin(auth.getLastLogin());
-        this.setName(auth.getNickname());
+        this.setNickname(auth.getNickname());
         this.setQuitLocX(auth.getQuitLocX());
         this.setQuitLocY(auth.getQuitLocY());
         this.setQuitLocZ(auth.getQuitLocZ());
@@ -199,11 +204,11 @@ public class PlayerAuth {
     }
 
     /**
-     * Method setName.
+     * Method setNickname.
      *
      * @param nickname String
      */
-    public void setName(String nickname) {
+    public void setNickname(String nickname) {
         this.nickname = nickname.toLowerCase();
     }
 
@@ -461,7 +466,7 @@ public class PlayerAuth {
      * @return String
      */
     public String serialize() {
-        StringBuilder str = new StringBuilder();
+        StringBuffer str = new StringBuffer();
         char d = ';';
         str.append(this.nickname).append(d);
         str.append(this.realName).append(d);
@@ -503,34 +508,35 @@ public class PlayerAuth {
 
     public static final class Builder {
         private String name;
-        private String realName = "Player";
-        private String hash = "";
-        private String salt = "";
-        private String ip = "127.0.0.1";
-        private String world = "world";
+        private String realName;
+        private String hash;
+        private String salt;
+        private String ip;
+        private String world;
+        private String email;
+        private int groupId = -1;
         private double x = 0.0f;
         private double y = 0.0f;
         private double z = 0.0f;
         private long lastLogin = System.currentTimeMillis();
-        private int groupId = -1;
-        private String email = "your@email.com";
 
         public PlayerAuth build() {
             return new PlayerAuth(
-                name,
-                hash,
-                salt,
+                checkNotNull(name),
+                nullToEmpty(hash),
+                nullToEmpty(salt),
                 groupId,
-                ip,
+                firstNonNull(ip, "127.0.0.1"),
                 lastLogin,
-                x, y, z, world,
-                email,
-                realName
+                x, y, z,
+                firstNonNull(world, "world"),
+                firstNonNull(email, "your@email.com"),
+                firstNonNull(realName, "Player")
             );
         }
 
         public Builder name(String name) {
-            this.name = name.toLowerCase();
+            this.name = name;
             return this;
         }
 

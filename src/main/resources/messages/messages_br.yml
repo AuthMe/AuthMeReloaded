@@ -56,3 +56,4 @@ email_exists: '[AuthMe] Um email já existe na sua conta. Você pode mudalo usan
 country_banned: 'O seu pais é banido desse servidor'
 antibot_auto_enabled: '[AuthMe] AntiBotMod ativado automaticamente devido a um aumento anormal de tentativas de ligação!'
 antibot_auto_disabled: '[AuthMe] AntiBotMod desactivado automaticamente após %m minutos, esperamos que a invasão tenha parado'
+kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'

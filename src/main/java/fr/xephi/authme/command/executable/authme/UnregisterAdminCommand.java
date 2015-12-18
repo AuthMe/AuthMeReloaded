@@ -12,7 +12,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -59,7 +58,7 @@ public class UnregisterAdminCommand extends ExecutableCommand {
         }
 
         // Unregister the player
-        Player target = Bukkit.getPlayer(playerNameLowerCase);
+        Player target = Utils.getPlayer(playerNameLowerCase);
         PlayerCache.getInstance().removePlayer(playerNameLowerCase);
         Utils.setGroup(target, Utils.GroupType.UNREGISTERED);
         if (target != null && target.isOnline()) {
@@ -75,11 +74,9 @@ public class UnregisterAdminCommand extends ExecutableCommand {
             LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTaskId(
                 scheduler.runTaskAsynchronously(plugin,
                     new MessageTask(plugin, playerNameLowerCase, m.retrieve(MessageKey.REGISTER_MESSAGE), interval)));
-            if (Settings.applyBlindEffect)
-                target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
-            if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-                target.setWalkSpeed(0.0f);
-                target.setFlySpeed(0.0f);
+            if (Settings.applyBlindEffect) {
+                target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,
+                    Settings.getRegistrationTimeout * 20, 2));
             }
             m.send(target, MessageKey.UNREGISTERED_SUCCESS);
 

@@ -114,7 +114,7 @@ public interface DataSource {
      *
      * @return List<String> * @throws Exception
      */
-    List<String> getAllAuthsByIp(String ip) throws Exception;
+    List<String> getAllAuthsByIp(String ip);
 
     /**
      * Method getAllAuthsByEmail.
@@ -123,7 +123,7 @@ public interface DataSource {
      *
      * @return List<String> * @throws Exception
      */
-    List<String> getAllAuthsByEmail(String email) throws Exception;
+    List<String> getAllAuthsByEmail(String email);
 
     /**
      * Method updateEmail.

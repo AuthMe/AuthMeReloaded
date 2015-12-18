@@ -1,5 +1,7 @@
 package fr.xephi.authme.process.login;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -96,6 +98,13 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         }
     }
 
+    protected void restoreSpeedEffects() {
+        if (Settings.isRemoveSpeedEnabled) {
+            player.setWalkSpeed(0.2F);
+            player.setFlySpeed(0.1F);
+        }
+    }
+
     protected void restoreInventory() {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         pm.callEvent(event);
@@ -113,6 +122,15 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         }
     }
 
+    protected void sendBungeeMessage() {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("AuthMe");
+        out.writeUTF("login;" + name);
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+    }
+
     /**
      * Method run.
      *
@@ -122,7 +140,6 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     public void run() {
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
-
             // Restore Op state and Permission Group
             restoreOpState();
             Utils.setGroup(player, GroupType.LOGGEDIN);
@@ -150,7 +167,6 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             }
 
             restoreFlyghtState();
-
             if (Settings.protectInventoryBeforeLogInEnabled) {
                 restoreInventory();
             }
@@ -174,19 +190,16 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             AuthMePlayerListener.joinMessage.remove(name);
         }
 
+        restoreSpeedEffects();
         if (Settings.applyBlindEffect) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
-        }
-
-        if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-            player.setWalkSpeed(0.2f);
-            player.setFlySpeed(0.1f);
         }
 
         // The Login event now fires (as intended) after everything is processed
         Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
         player.saveData();
-
+        if (Settings.bungee)
+            sendBungeeMessage();
         // Login is finish, display welcome message
         if (Settings.useWelcomeMessage)
             if (Settings.broadcastWelcomeMessage) {

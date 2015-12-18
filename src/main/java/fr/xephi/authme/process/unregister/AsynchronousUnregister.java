@@ -104,10 +104,6 @@ public class AsynchronousUnregister {
                 if (Settings.applyBlindEffect) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
                 }
-                if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-                    player.setWalkSpeed(0.0f);
-                    player.setFlySpeed(0.0f);
-                }
                 m.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                 Utils.teleportToSpawn(player);

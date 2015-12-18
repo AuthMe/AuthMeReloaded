@@ -2,6 +2,8 @@ package fr.xephi.authme;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
+
+import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.bukkit.Bukkit;
 
@@ -81,8 +83,14 @@ public class SendMailSSL {
                             ConsoleLogger.showError("Unable to send new password as image! Using normal text! Dest: " + mail);
                         }
                     }
-                    email.setHtmlMsg(content);
-                    email.setTextMsg(content);
+                    try {
+                        email.setHtmlMsg(content);
+                        email.setTextMsg(content);
+                    } catch (EmailException e)
+                    {
+                    	ConsoleLogger.showError("Your email.html config contains some error and cannot be send!");
+                    	return;
+                    }
                     try {
                         email.send();
                     } catch (Exception e) {

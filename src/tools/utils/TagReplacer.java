@@ -1,5 +1,7 @@
 package utils;
 
+import fr.xephi.authme.util.StringUtils;
+
 import java.util.Date;
 import java.util.Map;
 
@@ -21,10 +23,15 @@ public class TagReplacer {
      *  any occurrences of "{foo}" to "bar".
      * @return The filled template
      */
-    public static String applyReplacements(String template, Map<String, Object> tags) {
+    public static String applyReplacements(String template, Map<String, String> tags) {
         String result = template;
-        for (Map.Entry<String, Object> tagRule : tags.entrySet()) {
-            result = result.replace("{" + tagRule.getKey() + "}", tagRule.getValue().toString());
+        for (Map.Entry<String, String> tagRule : tags.entrySet()) {
+            final String name = tagRule.getKey();
+            final String value = tagRule.getValue();
+
+            String replacement = StringUtils.isEmpty(value) ? "" : "\\1";
+            result = result.replaceAll("\\[" + name + "\\](.*?)\\[/" + name + "\\]", replacement);
+            result = result.replace("{" + tagRule.getKey() + "}", tagRule.getValue());
         }
 
         return applyReplacements(result);

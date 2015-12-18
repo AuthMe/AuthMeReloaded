@@ -1,5 +1,7 @@
 package fr.xephi.authme.process.register;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -21,7 +23,7 @@ import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
-public class ProcessSyncronousPasswordRegister implements Runnable {
+public class ProcessSyncPasswordRegister implements Runnable {
 
     protected final Player player;
     protected final String name;
@@ -29,16 +31,25 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
     private final Messages m;
 
     /**
-     * Constructor for ProcessSyncronousPasswordRegister.
+     * Constructor for ProcessSyncPasswordRegister.
      *
      * @param player Player
      * @param plugin AuthMe
      */
-    public ProcessSyncronousPasswordRegister(Player player, AuthMe plugin) {
+    public ProcessSyncPasswordRegister(Player player, AuthMe plugin) {
         this.m = plugin.getMessages();
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.plugin = plugin;
+    }
+
+    private void sendBungeeMessage() {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Forward");
+        out.writeUTF("ALL");
+        out.writeUTF("AuthMe");
+        out.writeUTF("register;" + name);
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
     private void forceCommands() {
@@ -117,11 +128,6 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
 
-        if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-            player.setWalkSpeed(0.0f);
-            player.setFlySpeed(0.0f);
-        }
-
         // The LoginEvent now fires (as intended) after everything is processed
         plugin.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
         player.saveData();
@@ -153,6 +159,10 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
                     player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
+        }
+
+        if (Settings.bungee) {
+            sendBungeeMessage();
         }
 
         // Register is now finish , we can force all commands

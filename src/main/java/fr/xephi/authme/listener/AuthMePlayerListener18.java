@@ -22,6 +22,7 @@ public class AuthMePlayerListener18 implements Listener {
         this.plugin = plugin;
     }
 
+    // TODO: npc status can be used to bypass security!!!
     /**
      * Method onPlayerInteractAtEntity.
      *
@@ -33,7 +34,6 @@ public class AuthMePlayerListener18 implements Listener {
             return;
         }
 
-        // TODO: npc status can be used to bypass security!!!
         if (Utils.isNPC(event.getPlayer())) {
             return;
         }
