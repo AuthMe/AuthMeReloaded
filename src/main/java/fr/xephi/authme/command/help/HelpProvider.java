@@ -1,12 +1,16 @@
 package fr.xephi.authme.command.help;
 
-import fr.xephi.authme.AuthMe;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.ImmutableList;
+import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.FoundCommandResult;
+import fr.xephi.authme.permission.DefaultPermission;
+import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
-
 import fr.xephi.authme.util.CollectionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -14,120 +18,182 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Arrays.asList;
+import static java.util.Collections.singletonList;
+
 /**
+ * Help syntax generator for AuthMe commands.
  */
-public class HelpProvider {
+public final class HelpProvider {
 
-    /**
-     * Show help for a specific command.
-     *
-     * @param sender    The command sender the help needs to be shown to.
-     * @param reference The command reference to the help command.
-     * @param helpQuery The query to show help for.
-     */
-    public static void showHelp(CommandSender sender, CommandParts reference, CommandParts helpQuery) {
-        showHelp(sender, reference, helpQuery, true, true, true, true, true, true);
+    // --- Bit flags ---
+    /** Set to <i>not</i> show the command. */
+    public static final int HIDE_COMMAND          = 0x001;
+    /** Set to show the detailed description of a command. */
+    public static final int SHOW_LONG_DESCRIPTION = 0x002;
+    /** Set to include the arguments the command takes. */
+    public static final int SHOW_ARGUMENTS        = 0x004;
+    /** Set to show the permissions required to execute the command. */
+    public static final int SHOW_PERMISSIONS      = 0x008;
+    /** Set to show alternative labels for the command. */
+    public static final int SHOW_ALTERNATIVES     = 0x010;
+    /** Set to show the child commands of the command. */
+    public static final int SHOW_CHILDREN         = 0x020;
+
+    /** Shortcut for setting all options apart from {@link HelpProvider#HIDE_COMMAND}. */
+    public static final int ALL_OPTIONS = ~HIDE_COMMAND;
+
+    private HelpProvider() {
     }
 
-    /**
-     * Show help for a specific command.
-     *
-     * @param sender           The command sender the help needs to be shown to.
-     * @param reference        The command reference to the help command.
-     * @param helpQuery        The query to show help for.
-     * @param showCommand      True to show the command.
-     * @param showDescription  True to show the command description, both the short and detailed description.
-     * @param showArguments    True to show the command argument help.
-     * @param showPermissions  True to show the command permission help.
-     * @param showAlternatives True to show the command alternatives.
-     * @param showCommands     True to show the child commands.
-     */
-    public static void showHelp(CommandSender sender, CommandParts reference, CommandParts helpQuery, boolean showCommand, boolean showDescription, boolean showArguments, boolean showPermissions, boolean showAlternatives, boolean showCommands) {
-        // Find the command for this help query, one with and one without a prefixed base command
-        FoundCommandResult result = AuthMe.getInstance().getCommandHandler().findCommand(new CommandParts(helpQuery.getList()));
+    public static List<String> printHelp(FoundCommandResult foundCommand, int options) {
+        return printHelp(foundCommand, null, null, options);
+    }
 
-        // TODO ljacqu 20151204 Fix me to nicer code
-        List<String> parts = new ArrayList<>(helpQuery.getList());
-        parts.add(0, reference.get(0));
-        CommandParts commandReferenceOther = new CommandParts(parts);
-
-        FoundCommandResult resultOther = AuthMe.getInstance().getCommandHandler().findCommand(commandReferenceOther);
-        if (resultOther != null) {
-            if (result == null)
-                result = resultOther;
-
-            else if (result.getDifference() > resultOther.getDifference())
-                result = resultOther;
+    // sender and permissions manager may be null if SHOW_PERMISSIONS is not set
+    public static List<String> printHelp(FoundCommandResult foundCommand, CommandSender sender,
+                                         PermissionsManager permissionsManager, int options) {
+        if (foundCommand.getCommandDescription() == null) {
+            return singletonList(ChatColor.DARK_RED + "Failed to retrieve any help information!");
         }
 
-        // Make sure a result was found
-        if (result == null) {
-            // Show a warning message
-            sender.sendMessage(ChatColor.DARK_RED + "" + ChatColor.ITALIC + helpQuery);
-            sender.sendMessage(ChatColor.DARK_RED + "Couldn't show any help information for this help query.");
+        List<String> lines = new ArrayList<>();
+        lines.add(ChatColor.GOLD + "==========[ " + Settings.helpHeader + " HELP ]==========");
+
+        CommandDescription command = foundCommand.getCommandDescription();
+        List<String> labels = ImmutableList.copyOf(foundCommand.getLabels());
+        List<String> correctLabels = ImmutableList.copyOf(filterCorrectLabels(command, labels));
+
+        if (!hasFlag(HIDE_COMMAND, options)) {
+            lines.add(ChatColor.GOLD + "Command: " + CommandSyntaxHelper.getSyntax(command, correctLabels));
+        }
+        if (hasFlag(SHOW_LONG_DESCRIPTION, options)) {
+            printDetailedDescription(command, lines);
+        }
+        if (hasFlag(SHOW_ARGUMENTS, options)) {
+            printArguments(command, lines);
+        }
+        if (hasFlag(SHOW_PERMISSIONS, options) && sender != null && permissionsManager != null) {
+            printPermissions(command, sender, permissionsManager, lines);
+        }
+        if (hasFlag(SHOW_ALTERNATIVES, options)) {
+            printAlternatives(command, correctLabels, lines);
+        }
+        if (hasFlag(SHOW_CHILDREN, options)) {
+            printChildren(command, labels, lines);
+        }
+
+        return lines;
+    }
+
+    private static void printDetailedDescription(CommandDescription command, List<String> lines) {
+        lines.add(ChatColor.GOLD + "Short Description: " + ChatColor.WHITE + command.getDescription());
+        lines.add(ChatColor.GOLD + "Detailed Description:");
+        lines.add(ChatColor.WHITE + " " + command.getDetailedDescription());
+    }
+
+    private static void printArguments(CommandDescription command, List<String> lines) {
+        if (command.getArguments().isEmpty()) {
             return;
         }
 
-        // Get the command description, and make sure it's valid
-        CommandDescription command = result.getCommandDescription();
-        if (command == null) {
-            // Show a warning message
-            sender.sendMessage(ChatColor.DARK_RED + "Failed to retrieve any help information!");
-            return;
-        }
+        lines.add(ChatColor.GOLD + "Arguments:");
+        for (CommandArgumentDescription argument : command.getArguments()) {
+            StringBuilder argString = new StringBuilder();
+            argString.append(" ").append(ChatColor.YELLOW).append(ChatColor.ITALIC).append(argument.getName())
+                .append(": ").append(ChatColor.WHITE).append(argument.getDescription());
 
-        // Get the proper command reference to use for the help page
-        CommandParts commandReference = command.getCommandReference(result.getQueryReference());
-
-        // Get the base command
-        String baseCommand = commandReference.get(0);
-
-        // Make sure the difference between the command reference and the actual command isn't too big
-        final double commandDifference = result.getDifference();
-        if (commandDifference > 0.20) {
-            // Show the unknown command warning
-            sender.sendMessage(ChatColor.DARK_RED + "No help found for '" + helpQuery + "'!");
-
-            // Show a command suggestion if available and the difference isn't too big
-            if (commandDifference < 0.75 && result.getCommandDescription() != null) {
-                // Get the suggested command
-                List<String> suggestedCommandParts = CollectionUtils.getRange(
-                    result.getCommandDescription().getCommandReference(commandReference).getList(), 1);
-                sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/" + baseCommand
-                    + " help " + CommandUtils.labelsToString(suggestedCommandParts) + ChatColor.YELLOW + "?");
+            if (argument.isOptional()) {
+                argString.append(ChatColor.GRAY).append(ChatColor.ITALIC).append(" (Optional)");
             }
+            lines.add(argString.toString());
+        }
+    }
 
-            // Show the help command
-            sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + baseCommand + " help" + ChatColor.YELLOW + " to view help.");
+    private static void printAlternatives(CommandDescription command, List<String> correctLabels, List<String> lines) {
+        // TODO ljacqu 20151219: Need to show alternatives for base labels too? E.g. /r for /register
+        if (command.getLabels().size() <= 1) {
             return;
         }
 
-        // Show a message when the command handler is assuming a command
-        if (commandDifference > 0) {
-            // Get the suggested command
-            List<String> suggestedCommandParts = CollectionUtils.getRange(
-                result.getCommandDescription().getCommandReference(commandReference).getList(), 1);
+        lines.add(ChatColor.GOLD + "Alternatives:");
+        // Get the label used
+        final String parentLabel = correctLabels.get(0);
+        final String childLabel = correctLabels.get(1);
 
-            // Show the suggested command
-            sender.sendMessage(ChatColor.DARK_RED + "No help found, assuming '" + ChatColor.GOLD
-                + CommandUtils.labelsToString(suggestedCommandParts) + ChatColor.DARK_RED + "'!");
+        // Create a list of alternatives
+        for (String entry : command.getLabels()) {
+            if (!entry.equalsIgnoreCase(childLabel)) {
+                lines.add(" " + CommandSyntaxHelper.getSyntax(command, asList(parentLabel, entry)));
+            }
+        }
+    }
+
+    private static void printPermissions(CommandDescription command, CommandSender sender,
+                                        PermissionsManager permissionsManager, List<String> lines) {
+        CommandPermissions permissions = command.getCommandPermissions();
+        if (permissions == null || CollectionUtils.isEmpty(permissions.getPermissionNodes())) {
+            return;
+        }
+        lines.add(ChatColor.GOLD + "Permissions:");
+
+        for (PermissionNode node : permissions.getPermissionNodes()) {
+            boolean hasPermission = permissionsManager.hasPermission(sender, node);
+            final String nodePermsString = "" + ChatColor.GRAY + ChatColor.ITALIC
+                + (hasPermission ? " (You have permission)" : " (No permission)");
+            lines.add(" " + ChatColor.YELLOW + ChatColor.ITALIC + node.getNode() + nodePermsString);
         }
 
-        // Print the help header
-        sender.sendMessage(ChatColor.GOLD + "==========[ " + Settings.helpHeader.toUpperCase() + " HELP ]==========");
+        // Addendum to the line to specify whether the sender has permission or not when default is OP_ONLY
+        final DefaultPermission defaultPermission = permissions.getDefaultPermission();
+        String addendum = "";
+        if (DefaultPermission.OP_ONLY.equals(defaultPermission)) {
+            addendum = PermissionsManager.evaluateDefaultPermission(defaultPermission, sender)
+                ? " (You have permission)"
+                : " (No permission)";
+        }
+        lines.add(ChatColor.GOLD + "Default: " + ChatColor.GRAY + ChatColor.ITALIC
+            + defaultPermission.getTitle() + addendum);
 
-        // Print the command help information
-        if (showCommand)
-            HelpPrinter.printCommand(sender, command, commandReference);
-        if (showDescription)
-            HelpPrinter.printCommandDescription(sender, command);
-        if (showArguments)
-            HelpPrinter.printArguments(sender, command);
-        if (showPermissions)
-            HelpPrinter.printPermissions(sender, command);
-        if (showAlternatives)
-            HelpPrinter.printAlternatives(sender, command, commandReference);
-        if (showCommands)
-            HelpPrinter.printChildren(sender, command, commandReference);
+        // Evaluate if the sender has permission to the command
+        if (permissionsManager.hasPermission(sender, command)) {
+            lines.add(ChatColor.GOLD + " Result: " + ChatColor.GREEN + ChatColor.ITALIC + "You have permission");
+        } else {
+            lines.add(ChatColor.GOLD + " Result: " + ChatColor.DARK_RED + ChatColor.ITALIC + "No permission");
+        }
     }
+
+    private static void printChildren(CommandDescription command, List<String> parentLabels, List<String> lines) {
+        if (command.getChildren().isEmpty()) {
+            return;
+        }
+
+        lines.add(ChatColor.GOLD + "Commands:");
+        String parentCommandPath = CommandUtils.labelsToString(parentLabels);
+        for (CommandDescription child : command.getChildren()) {
+            lines.add(" /" + parentCommandPath + " " + child.getLabels().get(0)
+                + ChatColor.GRAY + ChatColor.ITALIC + ": " + child.getDescription());
+        }
+    }
+
+    private static boolean hasFlag(int flag, int options) {
+        return (flag & options) != 0;
+    }
+
+    @VisibleForTesting
+    protected static List<String> filterCorrectLabels(CommandDescription command, List<String> labels) {
+        List<CommandDescription> commands = CommandUtils.constructParentList(command);
+        List<String> correctLabels = new ArrayList<>();
+        boolean foundIncorrectLabel = false;
+        for (int i = 0; i < commands.size(); ++i) {
+            if (!foundIncorrectLabel && i < labels.size() && commands.get(i).hasLabel(labels.get(i))) {
+                correctLabels.add(labels.get(i));
+            } else {
+                foundIncorrectLabel = true;
+                correctLabels.add(commands.get(i).getLabels().get(0));
+            }
+        }
+        return correctLabels;
+    }
+
 }

@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
@@ -41,7 +40,7 @@ public class AddEmailCommandTest {
         AddEmailCommand command = new AddEmailCommand();
 
         // when
-        command.executeCommand(sender, newParts(), newParts());
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
         verify(authMeMock, never()).getManagement();
@@ -54,15 +53,11 @@ public class AddEmailCommandTest {
         AddEmailCommand command = new AddEmailCommand();
 
         // when
-        command.executeCommand(sender, newParts(),
-                new CommandParts(Arrays.asList("mail@example", "other_example")));
+        command.executeCommand(sender, Arrays.asList("mail@example", "other_example"));
 
         // then
         verify(authMeMock).getManagement();
         verify(managementMock).performAddEmail(sender, "mail@example", "other_example");
     }
 
-    private static CommandParts newParts() {
-        return new CommandParts(new ArrayList<String>());
-    }
 }

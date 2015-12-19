@@ -4,7 +4,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -19,22 +18,16 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.List;
+
 /**
  * Admin command to unregister a player.
  */
 public class UnregisterAdminCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
+
     @Override
-    public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 
@@ -42,19 +35,19 @@ public class UnregisterAdminCommand extends ExecutableCommand {
         final Messages m = plugin.getMessages();
 
         // Get the player name
-        String playerName = commandArguments.get(0);
+        String playerName = arguments.get(0);
         String playerNameLowerCase = playerName.toLowerCase();
 
         // Make sure the user is valid
         if (!plugin.database.isAuthAvailable(playerNameLowerCase)) {
             m.send(sender, MessageKey.UNKNOWN_USER);
-            return true;
+            return;
         }
 
         // Remove the player
         if (!plugin.database.removeAuth(playerNameLowerCase)) {
             m.send(sender, MessageKey.ERROR);
-            return true;
+            return;
         }
 
         // Unregister the player
@@ -85,6 +78,5 @@ public class UnregisterAdminCommand extends ExecutableCommand {
         // Show a status message
         m.send(sender, MessageKey.UNREGISTERED_SUCCESS);
         ConsoleLogger.info(playerName + " unregistered");
-        return true;
     }
 }

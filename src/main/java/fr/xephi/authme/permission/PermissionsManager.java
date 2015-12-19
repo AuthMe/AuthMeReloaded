@@ -280,19 +280,24 @@ public class PermissionsManager implements PermissionsService {
 
 
     /**
-     * Check if the player has permission for the given permissions node. If no permissions system is used,
-     * the player has to be OP in order to have the permission.
+     * Check if the command sender has permission for the given permissions node. If no permissions system is used or
+     * if the sender is not a player (e.g. console user), the player has to be OP in order to have the permission.
      *
-     * @param player    The player.
+     * @param sender         The command sender.
      * @param permissionNode The permissions node to verify.
      *
-     * @return True if the player has the permission, false otherwise.
+     * @return True if the sender has the permission, false otherwise.
      */
-    public boolean hasPermission(Player player, PermissionNode permissionNode) {
-        return hasPermission(player, permissionNode, player.isOp());
+    public boolean hasPermission(CommandSender sender, PermissionNode permissionNode) {
+        return hasPermission(sender, permissionNode, sender.isOp());
     }
 
-    public boolean hasPermission(Player player, PermissionNode permissionNode, boolean def) {
+    public boolean hasPermission(CommandSender sender, PermissionNode permissionNode, boolean def) {
+        if (!(sender instanceof Player)) {
+            return def;
+        }
+
+        Player player = (Player) sender;
         return hasPermission(player, permissionNode.getNode(), def)
             || hasPermission(player, permissionNode.getWildcardNode().getNode(), def);
     }
@@ -306,15 +311,17 @@ public class PermissionsManager implements PermissionsService {
         return true;
     }
 
-    public boolean hasPermission(Player player, CommandDescription command) {
+    public boolean hasPermission(CommandSender sender, CommandDescription command) {
         if (command.getCommandPermissions() == null
             || CollectionUtils.isEmpty(command.getCommandPermissions().getPermissionNodes())) {
             return true;
         }
 
         DefaultPermission defaultPermission = command.getCommandPermissions().getDefaultPermission();
-        boolean def = evaluateDefaultPermission(defaultPermission, player);
-        return hasPermission(player, command.getCommandPermissions().getPermissionNodes(), def);
+        boolean def = evaluateDefaultPermission(defaultPermission, sender);
+        return (sender instanceof Player)
+            ? hasPermission((Player) sender, command.getCommandPermissions().getPermissionNodes(), def)
+            : def;
     }
 
     public static boolean evaluateDefaultPermission(DefaultPermission defaultPermission, CommandSender sender) {

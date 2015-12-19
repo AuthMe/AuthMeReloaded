@@ -226,11 +226,9 @@ public class AuthMe extends JavaPlugin {
         plugin = this;
         setupConstants();
 
-        // Set up the permissions manager
-        setupPermissionsManager();
-
-        // Set up and initialize the command handler
-        setupCommandHandler();
+        // Set up the permissions manager and command handler
+        permsMan = initializePermissionsManager();
+        commandHandler = new CommandHandler(CommandInitializer.getBaseCommands(), permsMan);
 
         // Set up the module manager
         setupModuleManager();
@@ -443,13 +441,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Set up the command handler.
-     */
-    private void setupCommandHandler() {
-        this.commandHandler = new CommandHandler(CommandInitializer.getBaseCommands());
-    }
-
-    /**
      * Load the plugin's settings.
      *
      * @return True on success, false on failure.
@@ -617,9 +608,10 @@ public class AuthMe extends JavaPlugin {
     /**
      * Set up the permissions manager.
      */
-    public void setupPermissionsManager() {
-        this.permsMan = new PermissionsManager(Bukkit.getServer(), this, getLogger());
-        this.permsMan.setup();
+    private PermissionsManager initializePermissionsManager() {
+        PermissionsManager manager = new PermissionsManager(Bukkit.getServer(), this, getLogger());
+        manager.setup();
+        return manager;
     }
 
     /**

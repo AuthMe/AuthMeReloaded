@@ -3,33 +3,24 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.List;
 
 /**
  * Admin command to register a user.
  */
 public class RegisterAdminCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
-    public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 
@@ -37,8 +28,8 @@ public class RegisterAdminCommand extends ExecutableCommand {
         final Messages m = plugin.getMessages();
 
         // Get the player name and password
-        final String playerName = commandArguments.get(0);
-        final String playerPass = commandArguments.get(1);
+        final String playerName = arguments.get(0);
+        final String playerPass = arguments.get(1);
         final String playerNameLowerCase = playerName.toLowerCase();
         final String playerPassLowerCase = playerPass.toLowerCase();
 
@@ -49,20 +40,20 @@ public class RegisterAdminCommand extends ExecutableCommand {
             || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
             || !playerPassLowerCase.matches(Settings.getPassRegex)) {
             m.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
-            return true;
+            return;
         }
         if (playerPassLowerCase.equalsIgnoreCase(playerName)) {
             m.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-            return true;
+            return;
         }
         if (playerPassLowerCase.length() < Settings.getPasswordMinLen || playerPassLowerCase.length() > Settings.passwordMaxLength) {
             m.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-            return true;
+            return;
         }
         if (!Settings.unsafePasswords.isEmpty()) {
             if (Settings.unsafePasswords.contains(playerPassLowerCase)) {
                 m.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
-                return true;
+                return;
             }
         }
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
@@ -95,6 +86,5 @@ public class RegisterAdminCommand extends ExecutableCommand {
 
             }
         });
-        return true;
     }
 }

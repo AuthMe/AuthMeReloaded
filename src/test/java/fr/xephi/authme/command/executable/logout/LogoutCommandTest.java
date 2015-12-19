@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.logout;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
@@ -13,6 +12,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
@@ -42,7 +42,7 @@ public class LogoutCommandTest {
         LogoutCommand command = new LogoutCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(new ArrayList<String>()), new CommandParts(new ArrayList<String>()));
+        command.executeCommand(sender, new ArrayList<String>());
 
         // then
         Mockito.verify(managementMock, never()).performLogout(any(Player.class));
@@ -55,7 +55,7 @@ public class LogoutCommandTest {
         LogoutCommand command = new LogoutCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(new ArrayList<String>()), new CommandParts("password"));
+        command.executeCommand(sender, Collections.singletonList("password"));
 
         // then
         Mockito.verify(managementMock).performLogout(sender);

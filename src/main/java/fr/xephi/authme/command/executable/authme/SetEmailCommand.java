@@ -3,28 +3,18 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.command.CommandParts;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 
-/**
- */
+import java.util.List;
+
 public class SetEmailCommand extends ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
-    public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 
@@ -32,13 +22,13 @@ public class SetEmailCommand extends ExecutableCommand {
         final Messages m = plugin.getMessages();
 
         // Get the player name and email address
-        final String playerName = commandArguments.get(0);
-        final String playerEmail = commandArguments.get(1);
+        final String playerName = arguments.get(0);
+        final String playerEmail = arguments.get(1);
 
         // Validate the email address
         if (!Settings.isEmailCorrect(playerEmail)) {
             m.send(sender, MessageKey.INVALID_EMAIL);
-            return true;
+            return;
         }
 
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
@@ -69,6 +59,5 @@ public class SetEmailCommand extends ExecutableCommand {
 
             }
         });
-        return true;
     }
 }
