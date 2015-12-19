@@ -29,13 +29,11 @@ public class FoundCommandResult {
      * if multiple labels have been defined, e.g. "/authme register" and "/authme reg".
      */
     private final List<String> labels;
-    /**
-     * The command arguments.
-     */
+    /** The command arguments. */
     private final List<String> arguments;
-
+    /** The difference between the matched command and the supplied labels. */
     private final double difference;
-
+    /** The status of the result (see class description). */
     private final FoundResultStatus resultStatus;
 
     /**
@@ -44,6 +42,8 @@ public class FoundCommandResult {
      * @param commandDescription The command description.
      * @param labels             The labels used to access the command.
      * @param arguments          The command arguments.
+     * @param difference         The difference between the supplied labels and the matched command.
+     * @param resultStatus       The status of the result.
      */
     public FoundCommandResult(CommandDescription commandDescription, List<String> labels, List<String> arguments,
                               double difference, FoundResultStatus resultStatus) {
@@ -54,6 +54,13 @@ public class FoundCommandResult {
         this.resultStatus = resultStatus;
     }
 
+    /**
+     * Constructor for a fully successfully matched command.
+     *
+     * @param commandDescription The matched command description.
+     * @param labels             The labels used to access the command.
+     * @param arguments          The command arguments.
+     */
     public FoundCommandResult(CommandDescription commandDescription, List<String> labels, List<String> arguments) {
         this(commandDescription, labels, arguments, 0.0, FoundResultStatus.SUCCESS);
     }

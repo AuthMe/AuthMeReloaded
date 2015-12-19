@@ -29,6 +29,9 @@ public class CommandHandler {
      */
     private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
 
+    /**
+     * The class of the help command, to which the base label should also be passed in the arguments.
+     */
     private static final Class<? extends ExecutableCommand> HELP_COMMAND_CLASS = HelpCommand.class;
 
     private final Set<CommandDescription> baseCommands;
@@ -58,9 +61,8 @@ public class CommandHandler {
         // Add the Bukkit command label to the front so we get a list like [authme, register, bobby, mysecret]
         List<String> parts = skipEmptyArguments(bukkitArgs);
         parts.add(0, bukkitCommandLabel);
-
-        // Get the base command of the result, e.g. authme for [authme, register, bobby, mysecret]
         FoundCommandResult result = mapPartsToCommand(parts);
+
         switch (result.getResultStatus()) {
             case SUCCESS:
                 executeCommandIfAllowed(sender, result.getCommandDescription(), result.getArguments());
@@ -75,7 +77,7 @@ public class CommandHandler {
                 sendUnknownCommandMessage(sender, result);
                 break;
             default:
-                throw new RuntimeException("Unknown result '" + result.getResultStatus() + "'");
+                throw new IllegalStateException("Unknown result '" + result.getResultStatus() + "'");
         }
 
         return true;
@@ -191,8 +193,7 @@ public class CommandHandler {
     private FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
         // Return the base command with incorrect arg count error if we only have one part
         if (parts.size() <= 1) {
-            return new FoundCommandResult(
-                base, parts, new ArrayList<String>(), 0.0, FoundResultStatus.INCORRECT_ARGUMENTS);
+            return new FoundCommandResult(base, parts, new ArrayList<String>(), 0.0, INCORRECT_ARGUMENTS);
         }
 
         final String childLabel = parts.get(1);
@@ -207,9 +208,10 @@ public class CommandHandler {
             }
         }
 
-        // base command may have no children or no child label was present
+        // base command may have no children, in which case we return the base command with incorrect arguments error
         if (closestCommand == null) {
-            return new FoundCommandResult(null, parts, null, minDifference, UNKNOWN_LABEL);
+            return new FoundCommandResult(
+                base, parts.subList(0, 1), parts.subList(1, parts.size()), 0.0, INCORRECT_ARGUMENTS);
         }
 
         FoundResultStatus status = (minDifference == 0.0) ? INCORRECT_ARGUMENTS : UNKNOWN_LABEL;
@@ -260,7 +262,7 @@ public class CommandHandler {
 
     private static void transformResultForHelp(FoundCommandResult result) {
         if (result.getCommandDescription() != null
-            && HELP_COMMAND_CLASS.equals(result.getCommandDescription().getExecutableCommand().getClass())) {
+            && HELP_COMMAND_CLASS.isAssignableFrom(result.getCommandDescription().getExecutableCommand().getClass())) {
             // For "/authme help register" we have labels = [authme, help] and arguments = [register]
             // But for the help command we want labels = [authme, help] and arguments = [authme, register],
             // so we can use the arguments as the labels to the command to show help for
