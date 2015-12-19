@@ -12,15 +12,13 @@ import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.CollectionUtils;
-import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 
 /**
@@ -67,7 +65,7 @@ public final class HelpProvider {
         List<String> correctLabels = ImmutableList.copyOf(filterCorrectLabels(command, labels));
 
         if (!hasFlag(HIDE_COMMAND, options)) {
-            printCommand(command, correctLabels, lines);
+            lines.add(ChatColor.GOLD + "Command: " + CommandSyntaxHelper.getSyntax(command, correctLabels));
         }
         if (hasFlag(SHOW_LONG_DESCRIPTION, options)) {
             printDetailedDescription(command, lines);
@@ -88,15 +86,6 @@ public final class HelpProvider {
         return lines;
     }
 
-    private static void printCommand(CommandDescription command, List<String> correctLabels, List<String> lines) {
-        // FIXME: Create highlight logic to mark arguments and the 2nd label as yellow
-        String syntaxLine = "/" + CommandUtils.labelsToString(correctLabels);
-        for (CommandArgumentDescription argument : command.getArguments()) {
-            syntaxLine += " " + formatArgument(argument);
-        }
-        lines.add(syntaxLine);
-    }
-
     private static void printDetailedDescription(CommandDescription command, List<String> lines) {
         lines.add(ChatColor.GOLD + "Short Description: " + ChatColor.WHITE + command.getDescription());
         lines.add(ChatColor.GOLD + "Detailed Description:");
@@ -104,7 +93,7 @@ public final class HelpProvider {
     }
 
     private static void printArguments(CommandDescription command, List<String> lines) {
-        if (!command.getArguments().isEmpty()) {
+        if (command.getArguments().isEmpty()) {
             return;
         }
 
@@ -122,38 +111,21 @@ public final class HelpProvider {
     }
 
     private static void printAlternatives(CommandDescription command, List<String> correctLabels, List<String> lines) {
+        // TODO ljacqu 20151219: Need to show alternatives for base labels too? E.g. /r for /register
         if (command.getLabels().size() <= 1) {
             return;
         }
 
         lines.add(ChatColor.GOLD + "Alternatives:");
         // Get the label used
-        final String usedLabel = correctLabels.get(correctLabels.size() - 1);
+        final String parentLabel = correctLabels.get(0);
+        final String childLabel = correctLabels.get(1);
 
         // Create a list of alternatives
-        List<String> alternatives = new ArrayList<>();
         for (String entry : command.getLabels()) {
-            if (!entry.equalsIgnoreCase(usedLabel)) {
-                alternatives.add(entry);
+            if (!entry.equalsIgnoreCase(childLabel)) {
+                lines.add(" " + CommandSyntaxHelper.getSyntax(command, asList(parentLabel, entry)));
             }
-        }
-
-        // Sort the alternatives
-        Collections.sort(alternatives, new Comparator<String>() {
-            // TODO ljacqu 20151212: This computes the difference each time anew. It might make sense to compute the
-            // difference once and to store it in some map-like structure (Guava has some interesting ones)
-            @Override
-            public int compare(String o1, String o2) {
-                return Double.compare(StringUtils.getDifference(usedLabel, o1),
-                    StringUtils.getDifference(usedLabel, o2));
-            }
-        });
-
-        // Print each alternative with proper syntax
-        for (String alternative : alternatives) {
-            // fixme add highlight functionality (see commented old line)
-            // sender.sendMessage(" " + _HelpSyntaxHelper.getCommandSyntax(command, commandReference, alternative, true));
-            lines.add(" " + CommandUtils.labelsToString(correctLabels) + " " + alternative);
         }
     }
 
@@ -199,17 +171,9 @@ public final class HelpProvider {
         lines.add(ChatColor.GOLD + "Commands:");
         String parentCommandPath = CommandUtils.labelsToString(parentLabels);
         for (CommandDescription child : command.getChildren()) {
-            lines.add(" " + parentCommandPath + child.getLabels().get(0)
+            lines.add(" /" + parentCommandPath + " " + child.getLabels().get(0)
                 + ChatColor.GRAY + ChatColor.ITALIC + ": " + child.getDescription());
         }
-    }
-
-    /** Format a command argument with the proper type of brackets. */
-    private static String formatArgument(CommandArgumentDescription argument) {
-        if (argument.isOptional()) {
-            return "[" + argument.getName() + "]";
-        }
-        return "<" + argument.getName() + ">";
     }
 
     private static boolean hasFlag(int flag, int options) {

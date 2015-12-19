@@ -189,17 +189,21 @@ public class CommandHandler {
     }
 
     private FoundCommandResult getCommandWithSmallestDifference(CommandDescription base, List<String> parts) {
-        final String childLabel = parts.size() >= 2 ? parts.get(1) : null;
+        // Return the base command with incorrect arg count error if we only have one part
+        if (parts.size() <= 1) {
+            return new FoundCommandResult(
+                base, parts, new ArrayList<String>(), 0.0, FoundResultStatus.INCORRECT_ARGUMENTS);
+        }
+
+        final String childLabel = parts.get(1);
         double minDifference = Double.POSITIVE_INFINITY;
         CommandDescription closestCommand = null;
 
-        if (childLabel != null) {
-            for (CommandDescription child : base.getChildren()) {
-                double difference = getLabelDifference(child, childLabel);
-                if (difference < minDifference) {
-                    minDifference = difference;
-                    closestCommand = child;
-                }
+        for (CommandDescription child : base.getChildren()) {
+            double difference = getLabelDifference(child, childLabel);
+            if (difference < minDifference) {
+                minDifference = difference;
+                closestCommand = child;
             }
         }
 
