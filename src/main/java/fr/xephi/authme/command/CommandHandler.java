@@ -181,8 +181,7 @@ public class CommandHandler {
         if (childCommand != null) {
             FoundCommandResult result = new FoundCommandResult(
                 childCommand, parts.subList(0, 2), parts.subList(2, parts.size()));
-            transformResultForHelp(result);
-            return result;
+            return transformResultForHelp(result);
         } else if (hasSuitableArgumentCount(base, remainingParts.size())) {
             return new FoundCommandResult(base, parts.subList(0, 1), parts.subList(1, parts.size()));
         }
@@ -260,15 +259,18 @@ public class CommandHandler {
         return null;
     }
 
-    private static void transformResultForHelp(FoundCommandResult result) {
+    private static FoundCommandResult transformResultForHelp(FoundCommandResult result) {
         if (result.getCommandDescription() != null
             && HELP_COMMAND_CLASS.isAssignableFrom(result.getCommandDescription().getExecutableCommand().getClass())) {
             // For "/authme help register" we have labels = [authme, help] and arguments = [register]
             // But for the help command we want labels = [authme, help] and arguments = [authme, register],
             // so we can use the arguments as the labels to the command to show help for
-            final String baseLabel = result.getLabels().get(0);
-            result.getArguments().add(0, baseLabel);
+            List<String> arguments = new ArrayList<>(result.getArguments());
+            arguments.add(0, result.getLabels().get(0));
+            return new FoundCommandResult(result.getCommandDescription(), result.getLabels(),
+                arguments, result.getDifference(), result.getResultStatus());
         }
+        return result;
     }
 
     private static boolean hasSuitableArgumentCount(CommandDescription command, int argumentCount) {
