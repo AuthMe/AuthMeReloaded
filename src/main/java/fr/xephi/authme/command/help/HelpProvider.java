@@ -2,7 +2,6 @@ package fr.xephi.authme.command.help;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandPermissions;
@@ -208,9 +207,9 @@ public final class HelpProvider {
     /** Format a command argument with the proper type of brackets. */
     private static String formatArgument(CommandArgumentDescription argument) {
         if (argument.isOptional()) {
-            return " [" + argument.getName() + "]";
+            return "[" + argument.getName() + "]";
         }
-        return " <" + argument.getName() + ">";
+        return "<" + argument.getName() + ">";
     }
 
     private static boolean hasFlag(int flag, int options) {
@@ -219,14 +218,7 @@ public final class HelpProvider {
 
     @VisibleForTesting
     protected static List<String> filterCorrectLabels(CommandDescription command, List<String> labels) {
-        List<CommandDescription> commands = new ArrayList<>(command.getParentCount() + 1);
-        CommandDescription currentCommand = command;
-        while (currentCommand != null) {
-            commands.add(currentCommand);
-            currentCommand = currentCommand.getParent();
-        }
-        commands = Lists.reverse(commands);
-
+        List<CommandDescription> commands = CommandUtils.constructParentList(command);
         List<String> correctLabels = new ArrayList<>();
         boolean foundIncorrectLabel = false;
         for (int i = 0; i < commands.size(); ++i) {

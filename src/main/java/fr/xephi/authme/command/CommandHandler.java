@@ -1,6 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.CollectionUtils;
@@ -27,6 +28,8 @@ public class CommandHandler {
      * ask the player whether he meant the similar command.
      */
     private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
+
+    private static final Class<? extends ExecutableCommand> HELP_COMMAND_CLASS = HelpCommand.class;
 
     private final Set<CommandDescription> baseCommands;
     private final PermissionsManager permissionsManager;
@@ -174,7 +177,10 @@ public class CommandHandler {
         List<String> remainingParts = parts.subList(1, parts.size());
         CommandDescription childCommand = getSuitableChild(base, remainingParts);
         if (childCommand != null) {
-            return new FoundCommandResult(childCommand, parts.subList(0, 2), parts.subList(2, parts.size()));
+            FoundCommandResult result = new FoundCommandResult(
+                childCommand, parts.subList(0, 2), parts.subList(2, parts.size()));
+            transformResultForHelp(result);
+            return result;
         } else if (hasSuitableArgumentCount(base, remainingParts.size())) {
             return new FoundCommandResult(base, parts.subList(0, 1), parts.subList(1, parts.size()));
         }
@@ -246,6 +252,17 @@ public class CommandHandler {
             }
         }
         return null;
+    }
+
+    private static void transformResultForHelp(FoundCommandResult result) {
+        if (result.getCommandDescription() != null
+            && HELP_COMMAND_CLASS.equals(result.getCommandDescription().getExecutableCommand().getClass())) {
+            // For "/authme help register" we have labels = [authme, help] and arguments = [register]
+            // But for the help command we want labels = [authme, help] and arguments = [authme, register],
+            // so we can use the arguments as the labels to the command to show help for
+            final String baseLabel = result.getLabels().get(0);
+            result.getArguments().add(0, baseLabel);
+        }
     }
 
     private static boolean hasSuitableArgumentCount(CommandDescription command, int argumentCount) {

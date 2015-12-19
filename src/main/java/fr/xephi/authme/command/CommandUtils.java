@@ -35,12 +35,22 @@ public final class CommandUtils {
     }
 
     public static String constructCommandPath(CommandDescription command) {
-        List<String> labels = new ArrayList<>();
+        StringBuilder sb = new StringBuilder();
+        String prefix = "/";
+        for (CommandDescription ancestor : constructParentList(command)) {
+            sb.append(prefix).append(ancestor.getLabels().get(0));
+            prefix = " ";
+        }
+        return sb.toString();
+    }
+
+    public static List<CommandDescription> constructParentList(CommandDescription command) {
+        List<CommandDescription> commands = new ArrayList<>();
         CommandDescription currentCommand = command;
         while (currentCommand != null) {
-            labels.add(currentCommand.getLabels().get(0));
+            commands.add(currentCommand);
             currentCommand = currentCommand.getParent();
         }
-        return "/" + labelsToString(Lists.reverse(labels));
+        return Lists.reverse(commands);
     }
 }
