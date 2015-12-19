@@ -98,6 +98,13 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         }
     }
 
+    protected void restoreSpeedEffects() {
+        if (Settings.isRemoveSpeedEnabled) {
+            player.setWalkSpeed(0.2F);
+            player.setFlySpeed(0.1F);
+        }
+    }
+
     protected void restoreInventory() {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         pm.callEvent(event);
@@ -133,7 +140,6 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     public void run() {
         // Limbo contains the State of the Player before /login
         if (limbo != null) {
-
             // Restore Op state and Permission Group
             restoreOpState();
             Utils.setGroup(player, GroupType.LOGGEDIN);
@@ -161,7 +167,6 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             }
 
             restoreFlyghtState();
-
             if (Settings.protectInventoryBeforeLogInEnabled) {
                 restoreInventory();
             }
@@ -185,6 +190,7 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
             AuthMePlayerListener.joinMessage.remove(name);
         }
 
+        restoreSpeedEffects();
         if (Settings.applyBlindEffect) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }

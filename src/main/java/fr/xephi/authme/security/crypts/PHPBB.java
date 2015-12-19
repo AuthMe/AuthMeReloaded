@@ -11,19 +11,11 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * @author stefano
- * @version $Revision: 1.0 $
  */
 public class PHPBB implements EncryptionMethod {
 
-    private final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    /**
-     * Method md5.
-     *
-     * @param data String
-     *
-     * @return String
-     */
     public static String md5(String data) {
         try {
             byte[] bytes = data.getBytes("ISO-8859-1");
@@ -35,14 +27,7 @@ public class PHPBB implements EncryptionMethod {
         }
     }
 
-    /**
-     * Method hexToInt.
-     *
-     * @param ch char
-     *
-     * @return int
-     */
-    static int hexToInt(char ch) {
+    private static int hexToInt(char ch) {
         if (ch >= '0' && ch <= '9')
             return ch - '0';
         ch = Character.toUpperCase(ch);
@@ -51,13 +36,6 @@ public class PHPBB implements EncryptionMethod {
         throw new IllegalArgumentException("Not a hex character: " + ch);
     }
 
-    /**
-     * Method bytes2hex.
-     *
-     * @param bytes byte[]
-     *
-     * @return String
-     */
     private static String bytes2hex(byte[] bytes) {
         StringBuilder r = new StringBuilder(32);
         for (byte b : bytes) {
@@ -69,14 +47,7 @@ public class PHPBB implements EncryptionMethod {
         return r.toString();
     }
 
-    /**
-     * Method pack.
-     *
-     * @param hex String
-     *
-     * @return String
-     */
-    static String pack(String hex) {
+    private static String pack(String hex) {
         StringBuilder buf = new StringBuilder();
         for (int i = 0; i < hex.length(); i += 2) {
             char c1 = hex.charAt(i);
@@ -87,14 +58,6 @@ public class PHPBB implements EncryptionMethod {
         return buf.toString();
     }
 
-    /**
-     * Method phpbb_hash.
-     *
-     * @param password String
-     * @param salt     String
-     *
-     * @return String
-     */
     public String phpbb_hash(String password, String salt) {
         String random_state = salt;
         StringBuilder random = new StringBuilder();
@@ -110,27 +73,10 @@ public class PHPBB implements EncryptionMethod {
         return md5(password);
     }
 
-    /**
-     * Method _hash_gensalt_private.
-     *
-     * @param input  String
-     * @param itoa64 String
-     *
-     * @return String
-     */
     private String _hash_gensalt_private(String input, String itoa64) {
         return _hash_gensalt_private(input, itoa64, 6);
     }
 
-    /**
-     * Method _hash_gensalt_private.
-     *
-     * @param input                String
-     * @param itoa64               String
-     * @param iteration_count_log2 int
-     *
-     * @return String
-     */
     private String _hash_gensalt_private(String input, String itoa64,
                                          int iteration_count_log2) {
         if (iteration_count_log2 < 4 || iteration_count_log2 > 31) {
@@ -142,14 +88,6 @@ public class PHPBB implements EncryptionMethod {
         return output;
     }
 
-    /**
-     * Encode hash
-     *
-     * @param input String
-     * @param count int
-     *
-     * @return String
-     */
     private String _hash_encode64(String input, int count) {
         StringBuilder output = new StringBuilder();
         int i = 0;
@@ -171,14 +109,6 @@ public class PHPBB implements EncryptionMethod {
         return output.toString();
     }
 
-    /**
-     * Method _hash_crypt_private.
-     *
-     * @param password String
-     * @param setting  String
-     *
-     * @return String
-     */
     String _hash_crypt_private(String password, String setting) {
         String output = "*";
         if (!setting.substring(0, 3).equals("$H$"))
@@ -200,44 +130,18 @@ public class PHPBB implements EncryptionMethod {
         return output;
     }
 
-    /**
-     * Method phpbb_check_hash.
-     *
-     * @param password String
-     * @param hash     String
-     *
-     * @return boolean
-     */
     public boolean phpbb_check_hash(String password, String hash) {
         if (hash.length() == 34)
             return _hash_crypt_private(password, hash).equals(hash);
         else return md5(password).equals(hash);
     }
 
-    /**
-     * Method getHash.
-     *
-     * @param password String
-     * @param salt     String
-     * @param name     String
-     *
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
     @Override
     public String getHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         return phpbb_hash(password, salt);
     }
 
-    /**
-     * Method comparePassword.
-     *
-     * @param hash       String
-     * @param password   String
-     * @param playerName String
-     *
-     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {

@@ -8,13 +8,6 @@ import java.security.NoSuchAlgorithmException;
  */
 public class JOOMLA implements EncryptionMethod {
 
-    /**
-     * Method getMD5.
-     *
-     * @param message String
-     *
-     * @return String * @throws NoSuchAlgorithmException
-     */
     private static String getMD5(String message)
         throws NoSuchAlgorithmException {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
@@ -24,30 +17,12 @@ public class JOOMLA implements EncryptionMethod {
         return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
     }
 
-    /**
-     * Method getHash.
-     *
-     * @param password String
-     * @param salt     String
-     * @param name     String
-     *
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
     @Override
     public String getHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         return getMD5(password + salt) + ":" + salt;
     }
 
-    /**
-     * Method comparePassword.
-     *
-     * @param hash       String
-     * @param password   String
-     * @param playerName String
-     *
-     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {

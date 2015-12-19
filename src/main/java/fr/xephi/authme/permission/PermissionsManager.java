@@ -1,8 +1,5 @@
 package fr.xephi.authme.permission;
 
-import com.nijiko.permissions.Group;
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.CalculableType;
 import fr.xephi.authme.command.CommandDescription;
@@ -67,10 +64,6 @@ public class PermissionsManager implements PermissionsService {
      * Essentials group manager instance.
      */
     private GroupManager groupManagerPerms;
-    /**
-     * Permissions manager instance for the legacy permissions system.
-     */
-    private PermissionHandler defaultPerms;
     /**
      * zPermissions service instance.
      */
@@ -211,20 +204,6 @@ public class PermissionsManager implements PermissionsService {
         } catch (Exception ex) {
             // An error occurred, show a warning message
             System.out.println("[" + plugin.getName() + "] Error while hooking into Vault Permissions!");
-        }
-
-        // Permissions, check if it's available
-        try {
-            Plugin testPerms = pm.getPlugin("Permissions");
-            if (testPerms != null) {
-                permsType = PermissionsSystemType.PERMISSIONS;
-                this.defaultPerms = ((Permissions) testPerms).getHandler();
-                System.out.println("[" + plugin.getName() + "] Hooked into Permissions!");
-                return PermissionsSystemType.PERMISSIONS;
-            }
-        } catch (Exception ex) {
-            // An error occurred, show a warning message
-            System.out.println("[" + plugin.getName() + "] Error while hooking into Permissions!");
         }
 
         // No recognized permissions system found
@@ -405,10 +384,6 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return vaultPerms.has(player, permsNode);
 
-            case PERMISSIONS:
-                // Permissions
-                return this.defaultPerms.has(player, permsNode);
-
             case NONE:
                 // Not hooked into any permissions system, return default
                 return def;
@@ -499,18 +474,6 @@ public class PermissionsManager implements PermissionsService {
             case VAULT:
                 // Vault
                 return Arrays.asList(vaultPerms.getPlayerGroups(player));
-
-            case PERMISSIONS:
-                // Permissions
-                // Create a list to put the groups in
-                List<String> groups = new ArrayList<>();
-
-                // Get the groups and add each to the list
-                for (Group group : this.defaultPerms.getGroups(player.getName()))
-                    groups.add(group.getName());
-
-                // Return the groups
-                return groups;
 
             case NONE:
                 // Not hooked into any permissions system, return an empty list
@@ -618,10 +581,6 @@ public class PermissionsManager implements PermissionsService {
             case VAULT:
                 // Vault
                 return vaultPerms.playerInGroup(player, groupName);
-
-            case PERMISSIONS:
-                // Permissions
-                return this.defaultPerms.inGroup(player.getWorld().getName(), player.getName(), groupName);
 
             case NONE:
                 // Not hooked into any permissions system, return an empty list

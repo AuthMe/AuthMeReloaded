@@ -359,14 +359,6 @@ public class BCRYPT implements EncryptionMethod {
         return matched;
     }
 
-    /**
-     * Method getDoubleHash.
-     *
-     * @param text String
-     * @param salt String
-     *
-     * @return String
-     */
     public static String getDoubleHash(String text, String salt) {
         String hash = hashpw(text, salt);
         return hashpw(text, hash);
@@ -514,30 +506,12 @@ public class BCRYPT implements EncryptionMethod {
         return ret;
     }
 
-    /**
-     * Method getHash.
-     *
-     * @param password String
-     * @param salt     String
-     * @param name     String
-     *
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
     @Override
     public String getHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         return hashpw(password, salt);
     }
 
-    /**
-     * Method comparePassword.
-     *
-     * @param hash       String
-     * @param password   String
-     * @param playerName String
-     *
-     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {

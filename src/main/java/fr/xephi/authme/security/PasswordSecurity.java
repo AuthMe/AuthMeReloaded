@@ -21,13 +21,6 @@ public class PasswordSecurity {
     public static final HashMap<String, String> userSalt = new HashMap<>();
     private static final SecureRandom rnd = new SecureRandom();
 
-    /**
-     * Method createSalt.
-     *
-     * @param length int
-     *
-     * @return String * @throws NoSuchAlgorithmException
-     */
     public static String createSalt(int length)
         throws NoSuchAlgorithmException {
         byte[] msg = new byte[40];
@@ -38,15 +31,6 @@ public class PasswordSecurity {
         return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest)).substring(0, length);
     }
 
-    /**
-     * Method getHash.
-     *
-     * @param alg        HashAlgorithm
-     * @param password   String
-     * @param playerName String
-     *
-     * @return String * @throws NoSuchAlgorithmException
-     */
     public static String getHash(HashAlgorithm alg, String password,
                                  String playerName) throws NoSuchAlgorithmException {
         EncryptionMethod method;
@@ -55,7 +39,7 @@ public class PasswordSecurity {
                 method = (EncryptionMethod) alg.getclasse().newInstance();
             else method = null;
         } catch (InstantiationException | IllegalAccessException e) {
-            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
+            throw new NoSuchAlgorithmException("Problem with hash algorithm '" + alg + "'", e);
         }
         String salt = "";
         switch (alg) {
@@ -142,15 +126,6 @@ public class PasswordSecurity {
         return method.getHash(password, salt, playerName);
     }
 
-    /**
-     * Method comparePasswordWithHash.
-     *
-     * @param password   String
-     * @param hash       String
-     * @param playerName String
-     *
-     * @return boolean * @throws NoSuchAlgorithmException
-     */
     public static boolean comparePasswordWithHash(String password, String hash,
                                                   String playerName) throws NoSuchAlgorithmException {
         HashAlgorithm algorithm = Settings.getPasswordHash;
@@ -181,15 +156,6 @@ public class PasswordSecurity {
         return false;
     }
 
-    /**
-     * Method compareWithAllEncryptionMethod.
-     *
-     * @param password   String
-     * @param hash       String
-     * @param playerName String
-     *
-     * @return boolean * @throws NoSuchAlgorithmException
-     */
     private static boolean compareWithAllEncryptionMethod(String password,
                                                           String hash, String playerName) {
         for (HashAlgorithm algo : HashAlgorithm.values()) {

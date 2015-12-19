@@ -40,17 +40,12 @@ public enum HashAlgorithm {
     /**
      * Constructor for HashAlgorithm.
      *
-     * @param classe Class<?>
+     * @param classe The class of the hash implementation.
      */
     HashAlgorithm(Class<?> classe) {
         this.classe = classe;
     }
 
-    /**
-     * Method getclasse.
-     *
-     * @return Class<?>
-     */
     public Class<?> getclasse() {
         return classe;
     }

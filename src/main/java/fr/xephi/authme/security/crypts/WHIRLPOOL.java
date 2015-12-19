@@ -164,13 +164,6 @@ public class WHIRLPOOL implements EncryptionMethod {
     public WHIRLPOOL() {
     }
 
-    /**
-     * Method display.
-     *
-     * @param array byte[]
-     *
-     * @return String
-     */
     protected static String display(byte[] array) {
         char[] val = new char[2 * array.length];
         String hex = "0123456789ABCDEF";
@@ -377,7 +370,6 @@ public class WHIRLPOOL implements EncryptionMethod {
      * Delivers string input data to the hashing algorithm.
      *
      * @param source plaintext data to hash (ASCII text string).
-     *               <p/>
      *               This method maintains the invariant: bufferBits < 512
      */
     public void NESSIEadd(String source) {
@@ -409,15 +401,6 @@ public class WHIRLPOOL implements EncryptionMethod {
         return display(digest);
     }
 
-    /**
-     * Method comparePassword.
-     *
-     * @param hash       String
-     * @param password   String
-     * @param playerName String
-     *
-     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
