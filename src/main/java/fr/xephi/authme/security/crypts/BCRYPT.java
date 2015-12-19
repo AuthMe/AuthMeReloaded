@@ -150,7 +150,8 @@ public class BCRYPT implements EncryptionMethod {
      * @param s       the string to decode
      * @param maxolen the maximum number of bytes to decode
      *
-     * @return an array containing the decoded bytes * @throws IllegalArgumentException if maxolen is invalid * @throws IllegalArgumentException
+     * @return an array containing the decoded bytes
+     * @throws IllegalArgumentException if maxolen is invalid
      */
     private static byte[] decode_base64(String s, int maxolen)
         throws IllegalArgumentException {

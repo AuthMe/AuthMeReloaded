@@ -36,7 +36,7 @@ public class PasswordSecurity {
         EncryptionMethod method;
         try {
             if (alg != HashAlgorithm.CUSTOM)
-                method = (EncryptionMethod) alg.getclasse().newInstance();
+                method = alg.getClazz().newInstance();
             else method = null;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new NoSuchAlgorithmException("Problem with hash algorithm '" + alg + "'", e);
@@ -131,10 +131,11 @@ public class PasswordSecurity {
         HashAlgorithm algorithm = Settings.getPasswordHash;
         EncryptionMethod method;
         try {
-            if (algorithm != HashAlgorithm.CUSTOM)
-                method = (EncryptionMethod) algorithm.getclasse().newInstance();
-            else
+            if (algorithm != HashAlgorithm.CUSTOM) {
+                method = algorithm.getClazz().newInstance();
+            } else {
                 method = null;
+            }
 
             PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
             Bukkit.getPluginManager().callEvent(event);
@@ -161,7 +162,7 @@ public class PasswordSecurity {
         for (HashAlgorithm algo : HashAlgorithm.values()) {
             if (algo != HashAlgorithm.CUSTOM) {
                 try {
-                    EncryptionMethod method = (EncryptionMethod) algo.getclasse().newInstance();
+                    EncryptionMethod method = algo.getClazz().newInstance();
                     if (method.comparePassword(hash, password, playerName)) {
                         PlayerAuth nAuth = AuthMe.getInstance().database.getAuth(playerName);
                         if (nAuth != null) {

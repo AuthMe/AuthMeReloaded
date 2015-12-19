@@ -1,6 +1,6 @@
 package fr.xephi.authme.security;
 
-import org.apache.commons.lang.ObjectUtils.Null;
+import fr.xephi.authme.security.crypts.EncryptionMethod;
 
 /**
  */
@@ -33,21 +33,21 @@ public enum HashAlgorithm {
     CRAZYCRYPT1(fr.xephi.authme.security.crypts.CRAZYCRYPT1.class),
     BCRYPT2Y(fr.xephi.authme.security.crypts.BCRYPT2Y.class),
     SALTEDSHA512(fr.xephi.authme.security.crypts.SALTEDSHA512.class),
-    CUSTOM(Null.class);
+    CUSTOM(null);
 
-    final Class<?> classe;
+    final Class<? extends EncryptionMethod> clazz;
 
     /**
      * Constructor for HashAlgorithm.
      *
-     * @param classe The class of the hash implementation.
+     * @param clazz The class of the hash implementation.
      */
-    HashAlgorithm(Class<?> classe) {
-        this.classe = classe;
+    HashAlgorithm(Class<? extends EncryptionMethod> clazz) {
+        this.clazz = clazz;
     }
 
-    public Class<?> getclasse() {
-        return classe;
+    public Class<? extends EncryptionMethod> getClazz() {
+        return clazz;
     }
 
 }
