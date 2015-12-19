@@ -125,7 +125,7 @@ public class CommandHandler {
         sender.sendMessage(ChatColor.DARK_RED + "Unknown command!");
 
         // Show a command suggestion if available and the difference isn't too big
-        if (result.getDifference() < SUGGEST_COMMAND_THRESHOLD && result.getCommandDescription() != null) {
+        if (result.getDifference() <= SUGGEST_COMMAND_THRESHOLD && result.getCommandDescription() != null) {
             sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD
                 + CommandUtils.constructCommandPath(result.getCommandDescription()) + ChatColor.YELLOW + "?");
         }
@@ -215,7 +215,7 @@ public class CommandHandler {
 
         FoundResultStatus status = (minDifference == 0.0) ? INCORRECT_ARGUMENTS : UNKNOWN_LABEL;
         final int partsSize = parts.size();
-        List<String> labels = parts.subList(0, Math.min(closestCommand.getParentCount() + 1, partsSize));
+        List<String> labels = parts.subList(0, Math.min(closestCommand.getLabelCount(), partsSize));
         List<String> arguments = (labels.size() == partsSize)
             ? new ArrayList<String>()
             : parts.subList(labels.size(), partsSize);

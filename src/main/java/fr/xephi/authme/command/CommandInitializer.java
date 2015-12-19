@@ -34,7 +34,6 @@ import fr.xephi.authme.command.executable.register.RegisterCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.util.Wrapper;
 
 import java.util.Arrays;
 import java.util.List;
@@ -56,7 +55,6 @@ public final class CommandInitializer {
 
     public static Set<CommandDescription> getBaseCommands() {
         if (baseCommands == null) {
-            Wrapper.getInstance().getLogger().info("Initializing AuthMe commands");
             initializeCommands();
         }
         return baseCommands;
@@ -287,8 +285,8 @@ public final class CommandInitializer {
             .parent(AUTHME_BASE)
             .labels("version", "ver", "v", "about", "info")
             .description("Version info")
-            .detailedDescription("Show detailed information about the installed AuthMeReloaded version, and shows the "
-                + "developers, contributors, license and other information.")
+            .detailedDescription("Show detailed information about the installed AuthMeReloaded version, the "
+                + "developers, contributors, and license.")
             .executableCommand(new VersionCommand())
             .build();
 

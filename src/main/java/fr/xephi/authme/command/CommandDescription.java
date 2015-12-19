@@ -146,16 +146,15 @@ public class CommandDescription {
     }
 
     /**
-     * Return the number of parents that precede the command description.
+     * Return the number of labels necessary to get to this command. This corresponds to the number of parents + 1.
      *
-     * @return The number of parents, e.g. for "/authme abc def" the parent count is 2 ("/authme abc", "/authme")
+     * @return The number of labels, e.g. for "/authme abc def" the label count is 3
      */
-    // TODO ljacqu 20151217: If we always use `getParentCount() + 1` rewrite this method to a `getLabelCount()`
-    public int getParentCount() {
+    public int getLabelCount() {
         if (parent == null) {
-            return 0;
+            return 1;
         }
-        return parent.getParentCount() + 1;
+        return parent.getLabelCount() + 1;
     }
 
     /**
