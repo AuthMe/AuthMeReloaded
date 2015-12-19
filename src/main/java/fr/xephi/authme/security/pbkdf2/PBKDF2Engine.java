@@ -159,28 +159,15 @@ public class PBKDF2Engine implements PBKDF2 {
         }
     }
 
-    /**
-     * Method deriveKey.
-     *
-     * @param inputPassword String
-     *
-     * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String)
-     */
+    @Override
     public byte[] deriveKey(String inputPassword) {
         return deriveKey(inputPassword, 0);
     }
 
-    /**
-     * Method deriveKey.
-     *
-     * @param inputPassword String
-     * @param dkLen         int
-     *
-     * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PBKDF2#deriveKey(String, int)
-     */
+    @Override
     public byte[] deriveKey(String inputPassword, int dkLen) {
         byte[] r = null;
-        byte P[] = null;
+        byte[] P = null;
         String charset = parameters.getHashCharset();
         if (inputPassword == null) {
             inputPassword = "";
@@ -202,13 +189,7 @@ public class PBKDF2Engine implements PBKDF2 {
         return r;
     }
 
-    /**
-     * Method verifyKey.
-     *
-     * @param inputPassword String
-     *
-     * @return boolean * @see fr.xephi.authme.security.pbkdf2.PBKDF2#verifyKey(String)
-     */
+    @Override
     public boolean verifyKey(String inputPassword) {
         byte[] referenceKey = getParameters().getDerivedKey();
         if (referenceKey == null || referenceKey.length == 0) {
@@ -240,22 +221,12 @@ public class PBKDF2Engine implements PBKDF2 {
         prf.init(P);
     }
 
-    /**
-     * Method getPseudoRandomFunction.
-     *
-     * @return PRF * @see fr.xephi.authme.security.pbkdf2.PBKDF2#getPseudoRandomFunction()
-     */
+    @Override
     public PRF getPseudoRandomFunction() {
         return prf;
     }
 
-    /**
-     * Method setPseudoRandomFunction.
-     *
-     * @param prf PRF
-     *
-     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setPseudoRandomFunction(PRF)
-     */
+    @Override
     public void setPseudoRandomFunction(PRF prf) {
         this.prf = prf;
     }
@@ -369,22 +340,12 @@ public class PBKDF2Engine implements PBKDF2 {
         dest[offset + 3] = (byte) (i);
     }
 
-    /**
-     * Method getParameters.
-     *
-     * @return PBKDF2Parameters * @see fr.xephi.authme.security.pbkdf2.PBKDF2#getParameters()
-     */
+    @Override
     public PBKDF2Parameters getParameters() {
         return parameters;
     }
 
-    /**
-     * Method setParameters.
-     *
-     * @param parameters PBKDF2Parameters
-     *
-     * @see fr.xephi.authme.security.pbkdf2.PBKDF2#setParameters(PBKDF2Parameters)
-     */
+    @Override
     public void setParameters(PBKDF2Parameters parameters) {
         this.parameters = parameters;
     }

@@ -11,11 +11,6 @@ public class CRAZYCRYPT1 implements EncryptionMethod {
     private static final char[] CRYPTCHARS = new char[]{'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
     protected final Charset charset = Charset.forName("UTF-8");
 
-    /**
-     * Method byteArrayToHexString.
-     *
-     * @param args byte[]String * @return String
-     */
 
     public static String byteArrayToHexString(final byte... args) {
         final char[] chars = new char[args.length * 2];
@@ -26,15 +21,6 @@ public class CRAZYCRYPT1 implements EncryptionMethod {
         return new String(chars);
     }
 
-    /**
-     * Method getHash.
-     *
-     * @param password String
-     * @param salt     String
-     * @param name     String
-     *
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
     @Override
     public String getHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
@@ -47,14 +33,6 @@ public class CRAZYCRYPT1 implements EncryptionMethod {
             return null;
         }
     }
-
-    /**
-     * Method comparePassword.
-     *
-     * @param hash       String
-     * @param password   String
-     * @param playerName Stringooleaneptiontring) * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
 
     @Override
     public boolean comparePassword(String hash, String password,

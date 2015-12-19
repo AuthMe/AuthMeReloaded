@@ -13,9 +13,6 @@ import java.security.NoSuchAlgorithmException;
  * <p>
  * The comparePassword is called when we need to match password (/login usually)
  * </p>
- *
- * @author Gabriele
- * @version $Revision: 1.0 $
  */
 public interface EncryptionMethod {
 
@@ -25,7 +22,7 @@ public interface EncryptionMethod {
      *                 etc... for customs methods)
      * @param name     String
      *
-     * @return Hashing password * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
+     * @return Hashing password
      */
     String getHash(String password, String salt, String name)
         throws NoSuchAlgorithmException;
@@ -35,7 +32,7 @@ public interface EncryptionMethod {
      * @param password
      * @param playerName
      *
-     * @return true if password match, false else * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
+     * @return true if password match, false else
      */
     boolean comparePassword(String hash, String password, String playerName)
         throws NoSuchAlgorithmException;

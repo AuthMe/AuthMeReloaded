@@ -99,92 +99,42 @@ public class PBKDF2Parameters {
         this.derivedKey = derivedKey;
     }
 
-    /**
-     * Method getIterationCount.
-     *
-     * @return int
-     */
     public int getIterationCount() {
         return iterationCount;
     }
 
-    /**
-     * Method setIterationCount.
-     *
-     * @param iterationCount int
-     */
     public void setIterationCount(int iterationCount) {
         this.iterationCount = iterationCount;
     }
 
-    /**
-     * Method getSalt.
-     *
-     * @return byte[]
-     */
     public byte[] getSalt() {
         return salt;
     }
 
-    /**
-     * Method setSalt.
-     *
-     * @param salt byte[]
-     */
     public void setSalt(byte[] salt) {
         this.salt = salt;
     }
 
-    /**
-     * Method getDerivedKey.
-     *
-     * @return byte[]
-     */
     public byte[] getDerivedKey() {
         return derivedKey;
     }
 
-    /**
-     * Method setDerivedKey.
-     *
-     * @param derivedKey byte[]
-     */
     public void setDerivedKey(byte[] derivedKey) {
         this.derivedKey = derivedKey;
     }
 
-    /**
-     * Method getHashAlgorithm.
-     *
-     * @return String
-     */
     public String getHashAlgorithm() {
         return hashAlgorithm;
     }
 
-    /**
-     * Method setHashAlgorithm.
-     *
-     * @param hashAlgorithm String
-     */
     public void setHashAlgorithm(String hashAlgorithm) {
         this.hashAlgorithm = hashAlgorithm;
     }
 
-    /**
-     * Method getHashCharset.
-     *
-     * @return String
-     */
     public String getHashCharset() {
         return hashCharset;
     }
 
-    /**
-     * Method setHashCharset.
-     *
-     * @param hashCharset String
-     */
     public void setHashCharset(String hashCharset) {
         this.hashCharset = hashCharset;
     }
