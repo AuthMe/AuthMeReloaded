@@ -66,17 +66,28 @@ public abstract class AbstractEncryptionMethodTest {
         }
     }
 
-    static void generateHashes(EncryptionMethod method) {
-        System.out.println("AbstractEncryptionMethodTest.testGivenPasswords(method,");
+    // @org.junit.Test public void a() { AbstractEncryptionMethodTest.generateTest(); }
+    // TODO #364: Remove this method
+    static void generateTest(EncryptionMethod method) {
+        String className = method.getClass().getSimpleName();
+        System.out.println("public class " + className + "Test extends AbstractEncryptionMethodTest {");
+        System.out.println("\tpublic " + className + "Test() {");
+        System.out.println("\t\tsuper(new " + className + "(),");
+
+        String delim = ",  ";
         for (String password : GIVEN_PASSWORDS) {
+            if (password.equals(GIVEN_PASSWORDS[GIVEN_PASSWORDS.length - 1])) {
+                delim = "); ";
+            }
             try {
-                System.out.println("\t\"" + method.getHash(password, getSalt(method), "USERNAME")
-                    + "\", // " + password);
+                System.out.println("\t\t\"" + method.getHash(password, getSalt(method), "USERNAME")
+                    + "\"" + delim + "// " + password);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException("Could not generate hash", e);
             }
         }
-        System.out.println(");");
+        System.out.println("\t}");
+        System.out.println("}");
     }
 
     // TODO #358: Remove this method and use the new salt method on the interface
@@ -84,12 +95,16 @@ public abstract class AbstractEncryptionMethodTest {
         try {
             if (method instanceof BCRYPT) {
                 return BCRYPT.gensalt();
-            } else if (method instanceof MD5) {
+            } else if (method instanceof MD5 || method instanceof WORDPRESS) {
                 return "";
             } else if (method instanceof JOOMLA) {
                 return PasswordSecurity.createSalt(32);
-            } else if (method instanceof SHA256) {
+            } else if (method instanceof SHA256 || method instanceof PHPBB) {
                 return PasswordSecurity.createSalt(16);
+            } else if (method instanceof WBB3) {
+                return PasswordSecurity.createSalt(40);
+            } else if (method instanceof XAUTH) {
+                return PasswordSecurity.createSalt(12);
             }
         } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);
