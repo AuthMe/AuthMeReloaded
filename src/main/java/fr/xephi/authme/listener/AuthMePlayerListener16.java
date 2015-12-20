@@ -13,31 +13,15 @@ public class AuthMePlayerListener16 implements Listener {
 
     public final AuthMe plugin;
 
-    /**
-     * Constructor for AuthMePlayerListener16.
-     *
-     * @param plugin AuthMe
-     */
     public AuthMePlayerListener16(AuthMe plugin) {
         this.plugin = plugin;
     }
 
-    // TODO: npc status can be used to bypass security!!!
-    /**
-     * Method onPlayerEditBook.
-     *
-     * @param event PlayerEditBookEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerEditBook(PlayerEditBookEvent event) {
-        if (Utils.checkAuth(event.getPlayer())) {
-            return;
+        if (ListenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        if (Utils.isNPC(event.getPlayer())) {
-            return;
-        }
-        event.setCancelled(true);
     }
 
 }

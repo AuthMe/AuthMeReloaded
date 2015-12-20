@@ -2,7 +2,6 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.util.Utils;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -14,6 +13,8 @@ import org.bukkit.projectiles.ProjectileSource;
 
 import java.lang.reflect.Method;
 
+import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
+
 /**
  */
 public class AuthMeEntityListener implements Listener {
@@ -22,11 +23,6 @@ public class AuthMeEntityListener implements Listener {
     private static boolean shooterIsProjectileSource;
     public final AuthMe instance;
 
-    /**
-     * Constructor for AuthMeEntityListener.
-     *
-     * @param instance AuthMe
-     */
     public AuthMeEntityListener(AuthMe instance) {
         this.instance = instance;
         try {
@@ -36,179 +32,61 @@ public class AuthMeEntityListener implements Listener {
         }
     }
 
-    // TODO: npc status can be used to bypass security!!!
-    /**
-     * Method onEntityDamage.
-     *
-     * @param event EntityDamageEvent
-     */
+    // TODO #360: npc status can be used to bypass security!!!
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
-        Entity entity = event.getEntity();
-        if (entity == null || !(entity instanceof Player)) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.getEntity().setFireTicks(0);
+            event.setDamage(0);
+            event.setCancelled(true);
         }
-
-        Player player = (Player) entity;
-        if (Utils.checkAuth(player) ) {
-            return;
-        }
-
-        if (Utils.isNPC(player)) {
-            return;
-        }
-        player.setFireTicks(0);
-        event.setDamage(0);
-        event.setCancelled(true);
     }
 
-    /**
-     * Method onEntityTarget.
-     *
-     * @param event EntityTargetEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityTarget(EntityTargetEvent event) {
-        Entity entity = event.getTarget();
-        if (entity == null || !(entity instanceof Player)) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setTarget(null);
+            event.setCancelled(true);
         }
-
-        if (Utils.checkAuth((Player) entity)) {
-            return;
-        }
-
-        if (Utils.isNPC((Player) entity)) {
-            return;
-        }
-
-        event.setTarget(null);
-        event.setCancelled(true);
     }
 
-    /**
-     * Method onDmg.
-     *
-     * @param event EntityDamageByEntityEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onDamage(EntityDamageByEntityEvent event) {
-        Entity entity = event.getDamager();
-        if (entity == null || !(entity instanceof Player)) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        Player player = (Player) entity;
-        if (Utils.checkAuth(player)) {
-            return;
-        }
-
-        if (Utils.isNPC(player)) {
-            return;
-        }
-
-        event.setCancelled(true);
     }
 
-    /**
-     * Method onFoodLevelChange.
-     *
-     * @param event FoodLevelChangeEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onFoodLevelChange(FoodLevelChangeEvent event) {
-        Entity entity = event.getEntity();
-        if (entity == null || !(entity instanceof Player)) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        if (Utils.checkAuth((Player) entity)) {
-            return;
-        }
-
-        if (Utils.isNPC((Player) entity)) {
-            return;
-        }
-
-        event.setCancelled(true);
     }
 
-    /**
-     * Method entityRegainHealthEvent.
-     *
-     * @param event EntityRegainHealthEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void entityRegainHealthEvent(EntityRegainHealthEvent event) {
-        Entity entity = event.getEntity();
-        if (entity == null || !(entity instanceof Player)) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setAmount(0);
+            event.setCancelled(true);
         }
-
-        if (Utils.checkAuth((Player) entity)) {
-            return;
-        }
-
-        if (Utils.isNPC((Player) entity)) {
-            return;
-        }
-
-        event.setAmount(0);
-        event.setCancelled(true);
     }
 
-    /**
-     * Method onEntityInteract.
-     *
-     * @param event EntityInteractEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onEntityInteract(EntityInteractEvent event) {
-        Entity entity = event.getEntity();
-        if (entity == null || !(entity instanceof Player)) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        if (Utils.checkAuth((Player) entity)) {
-            return;
-        }
-
-        if (Utils.isNPC((Player) entity)) {
-            return;
-        }
-
-        event.setCancelled(true);
     }
 
-    /**
-     * Method onLowestEntityInteract.
-     *
-     * @param event EntityInteractEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onLowestEntityInteract(EntityInteractEvent event) {
-        Entity entity = event.getEntity();
-        if (entity == null || !(entity instanceof Player)) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        if (Utils.checkAuth((Player) entity)) {
-            return;
-        }
-
-        if (Utils.isNPC((Player) entity)) {
-            return;
-        }
-
-        event.setCancelled(true);
     }
 
     // TODO: Need to check this, player can't throw snowball but the item is taken.
-    /**
-     * Method onProjectileLaunch.
-     *
-     * @param event ProjectileLaunchEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity() == null) {
@@ -224,6 +102,7 @@ public class AuthMeEntityListener implements Listener {
             }
             player = (Player) shooter;
         } else {
+            // TODO ljacqu 20151220: Invoking getShooter() with null but method isn't static
             try {
                 if (getShooter == null) {
                     getShooter = Projectile.class.getMethod("getShooter");
@@ -245,28 +124,11 @@ public class AuthMeEntityListener implements Listener {
         event.setCancelled(true);
     }
 
-    /**
-     * Method onShoot.
-     *
-     * @param event EntityShootBowEvent
-     */
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onShoot(EntityShootBowEvent event) {
-        Entity entity = event.getEntity();
-        if (entity == null || !(entity instanceof Player)) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        Player player = (Player) entity;
-        if (Utils.checkAuth(player)) {
-            return;
-        }
-
-        if (Utils.isNPC(player)) {
-            return;
-        }
-
-        event.setCancelled(true);
     }
 
 }

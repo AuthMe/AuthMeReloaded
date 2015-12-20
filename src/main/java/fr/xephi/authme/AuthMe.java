@@ -107,10 +107,6 @@ public class AuthMe extends JavaPlugin {
     public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
 
-    // If cache is enabled, prevent any connection before the players data caching is completed.
-    // TODO: Move somewhere
-    private boolean canConnect = true;
-
     private CommandHandler commandHandler = null;
     private PermissionsManager permsMan = null;
     private Settings settings;
@@ -168,36 +164,8 @@ public class AuthMe extends JavaPlugin {
      *
      * @return Messages
      */
-
     public Messages getMessages() {
         return messages;
-    }
-
-    /**
-     * Set the Messages instance.
-     *
-     * @param m Messages
-     */
-    public void setMessages(Messages m) {
-        this.messages = m;
-    }
-
-    /**
-     * Returns if players are allowed to join the server.
-     *
-     * @return boolean
-     */
-    public boolean canConnect() {
-        return canConnect;
-    }
-
-    /**
-     * Define if players are allowed to join the server.
-     *
-     * @param canConnect boolean
-     */
-    public void setCanConnect(boolean canConnect) {
-        this.canConnect = canConnect;
     }
 
     // Get version and build number of the plugin
