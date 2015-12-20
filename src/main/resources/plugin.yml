@@ -7,7 +7,6 @@ version: ${project.version}-b${buildNumber}
 softdepend:
     - Vault
     - PermissionsBukkit
-    - Permissions
     - PermissionsEX
     - EssentialsGroupManager
     - Multiverse-Core
