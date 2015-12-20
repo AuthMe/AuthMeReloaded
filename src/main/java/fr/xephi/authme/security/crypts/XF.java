@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 public class XF implements EncryptionMethod {
 
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         return getSha256(getSha256(password) + regmatch("\"salt\";.:..:\"(.*)\";.:.:\"hashFunc\"", salt));
     }

@@ -3,36 +3,31 @@ package fr.xephi.authme.security.crypts;
 import java.security.NoSuchAlgorithmException;
 
 /**
- * <p>
- * Public interface for Custom Password encryption method
- * </p>
- * <p>
- * The getHash function is called when we need to crypt the password (/register
- * usually)
- * </p>
- * <p>
- * The comparePassword is called when we need to match password (/login usually)
- * </p>
+ * Public interface for custom password encryption methods.
  */
 public interface EncryptionMethod {
 
     /**
-     * @param password
-     * @param salt     (can be an other data like playerName;salt , playerName,
-     *                 etc... for customs methods)
-     * @param name     String
+     * Hash the given password with the given salt for the given player.
      *
-     * @return Hashing password
+     * @param password The clear-text password to hash
+     * @param salt     The salt to add to the hash
+     * @param name     The player's name (sometimes required for storing the salt separately in the database)
+     *
+     * @return The hashed password
      */
-    String getHash(String password, String salt, String name)
+    String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException;
 
     /**
-     * @param hash
-     * @param password
-     * @param playerName
+     * Check whether a given hash matches the clear-text password.
      *
-     * @return true if password match, false else
+     * @param hash       The hash to verify
+     * @param password   The clear-text password to verify the hash against
+     * @param playerName The player name to do the check for (sometimes required for retrieving
+     *                   the salt from the database)
+     *
+     * @return True if the password matches, false otherwise
      */
     boolean comparePassword(String hash, String password, String playerName)
         throws NoSuchAlgorithmException;

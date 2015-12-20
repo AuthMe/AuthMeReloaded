@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 public class BCRYPT2Y implements EncryptionMethod {
 
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         if (salt.length() == 22)
             salt = "$2y$10$" + salt;
@@ -20,7 +20,7 @@ public class BCRYPT2Y implements EncryptionMethod {
         String ok = hash.substring(0, 29);
         if (ok.length() != 29)
             return false;
-        return hash.equals(getHash(password, ok, playerName));
+        return hash.equals(computeHash(password, ok, playerName));
     }
 
 }

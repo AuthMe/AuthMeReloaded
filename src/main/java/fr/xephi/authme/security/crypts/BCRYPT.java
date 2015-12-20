@@ -508,7 +508,7 @@ public class BCRYPT implements EncryptionMethod {
     }
 
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         return hashpw(password, salt);
     }

@@ -18,7 +18,7 @@ public class SHA256 implements EncryptionMethod {
     }
 
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         return "$SHA$" + salt + "$" + getSHA256(getSHA256(password) + salt);
     }
@@ -27,7 +27,7 @@ public class SHA256 implements EncryptionMethod {
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
         String[] line = hash.split("\\$");
-        return hash.equals(getHash(password, line[2], ""));
+        return hash.equals(computeHash(password, line[2], ""));
     }
 
 }

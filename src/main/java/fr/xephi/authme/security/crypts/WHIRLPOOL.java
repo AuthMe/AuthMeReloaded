@@ -382,17 +382,8 @@ public class WHIRLPOOL implements EncryptionMethod {
         }
     }
 
-    /**
-     * Method getHash.
-     *
-     * @param password String
-     * @param salt     String
-     * @param name     String
-     *
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         byte[] digest = new byte[DIGESTBYTES];
         NESSIEinit();
@@ -404,6 +395,6 @@ public class WHIRLPOOL implements EncryptionMethod {
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
-        return hash.equals(getHash(password, "", ""));
+        return hash.equals(computeHash(password, "", ""));
     }
 }

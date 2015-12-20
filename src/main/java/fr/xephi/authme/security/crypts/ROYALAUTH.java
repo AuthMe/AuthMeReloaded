@@ -8,7 +8,7 @@ import java.security.NoSuchAlgorithmException;
 public class ROYALAUTH implements EncryptionMethod {
 
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         for (int i = 0; i < 25; i++)
             password = hash(password, salt);
@@ -29,7 +29,7 @@ public class ROYALAUTH implements EncryptionMethod {
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
-        return hash.equalsIgnoreCase(getHash(password, "", ""));
+        return hash.equalsIgnoreCase(computeHash(password, "", ""));
     }
 
 }

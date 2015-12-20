@@ -20,7 +20,7 @@ public class SALTED2MD5 implements EncryptionMethod {
     }
 
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         return getMD5(getMD5(password) + salt);
     }

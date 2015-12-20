@@ -20,7 +20,7 @@ public class SALTEDSHA512 implements EncryptionMethod {
     }
 
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         return getSHA512(password + salt);
     }
@@ -29,6 +29,6 @@ public class SALTEDSHA512 implements EncryptionMethod {
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
         String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-        return hash.equals(getHash(password, salt, ""));
+        return hash.equals(computeHash(password, salt, ""));
     }
 }

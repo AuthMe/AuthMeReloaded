@@ -49,7 +49,7 @@ public abstract class AbstractEncryptionMethodTest {
     public void testPasswordEquality() {
         for (String password : INTERNAL_PASSWORDS) {
             try {
-                String hash = method.getHash(password, getSalt(method), USERNAME);
+                String hash = method.computeHash(password, getSalt(method), USERNAME);
                 assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
                     method.comparePassword(hash, password, USERNAME));
                 if (!password.equals(password.toLowerCase())) {
@@ -70,8 +70,9 @@ public abstract class AbstractEncryptionMethodTest {
     // TODO #364: Remove this method
     static void generateTest(EncryptionMethod method) {
         String className = method.getClass().getSimpleName();
+        System.out.println("/**\n * Test for {@link " + className + "}.\n */");
         System.out.println("public class " + className + "Test extends AbstractEncryptionMethodTest {");
-        System.out.println("\tpublic " + className + "Test() {");
+        System.out.println("\n\tpublic " + className + "Test() {");
         System.out.println("\t\tsuper(new " + className + "(),");
 
         String delim = ",  ";
@@ -80,14 +81,14 @@ public abstract class AbstractEncryptionMethodTest {
                 delim = "); ";
             }
             try {
-                System.out.println("\t\t\"" + method.getHash(password, getSalt(method), "USERNAME")
+                System.out.println("\t\t\"" + method.computeHash(password, getSalt(method), USERNAME)
                     + "\"" + delim + "// " + password);
             } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException("Could not generate hash", e);
             }
         }
         System.out.println("\t}");
-        System.out.println("}");
+        System.out.println("\n}");
     }
 
     // TODO #358: Remove this method and use the new salt method on the interface
@@ -95,16 +96,22 @@ public abstract class AbstractEncryptionMethodTest {
         try {
             if (method instanceof BCRYPT) {
                 return BCRYPT.gensalt();
-            } else if (method instanceof MD5 || method instanceof WORDPRESS) {
+            } else if (method instanceof MD5 || method instanceof WORDPRESS || method instanceof SMF
+                || method instanceof SHA512 || method instanceof SHA1 || method instanceof ROYALAUTH
+                || method instanceof DOUBLEMD5) {
                 return "";
-            } else if (method instanceof JOOMLA) {
+            } else if (method instanceof JOOMLA || method instanceof SALTEDSHA512) {
                 return PasswordSecurity.createSalt(32);
-            } else if (method instanceof SHA256 || method instanceof PHPBB) {
+            } else if (method instanceof SHA256 || method instanceof PHPBB || method instanceof WHIRLPOOL
+                || method instanceof MD5VB || method instanceof BCRYPT2Y) {
                 return PasswordSecurity.createSalt(16);
             } else if (method instanceof WBB3) {
                 return PasswordSecurity.createSalt(40);
-            } else if (method instanceof XAUTH) {
+            } else if (method instanceof XAUTH || method instanceof CryptPBKDF2Django
+                || method instanceof CryptPBKDF2) {
                 return PasswordSecurity.createSalt(12);
+            } else if (method instanceof WBB4) {
+                return BCRYPT.gensalt(8);
             }
         } catch (NoSuchAlgorithmException e) {
                 throw new RuntimeException(e);

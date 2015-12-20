@@ -18,7 +18,7 @@ public class MD5 implements EncryptionMethod {
     }
 
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         return getMD5(password);
     }
@@ -26,6 +26,6 @@ public class MD5 implements EncryptionMethod {
     @Override
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
-        return hash.equals(getHash(password, "", ""));
+        return hash.equals(computeHash(password, "", ""));
     }
 }

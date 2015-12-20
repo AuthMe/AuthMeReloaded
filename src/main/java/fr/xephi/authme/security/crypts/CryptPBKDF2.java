@@ -11,7 +11,7 @@ import java.util.Arrays;
 public class CryptPBKDF2 implements EncryptionMethod {
 
     @Override
-    public String getHash(String password, String salt, String name)
+    public String computeHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
         String result = "pbkdf2_sha256$10000$" + salt + "$";
         PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), 10000);
