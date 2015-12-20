@@ -2,7 +2,6 @@ package fr.xephi.authme.permission;
 
 import fr.xephi.authme.command.CommandDescription;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Interface for dealing with permissions.

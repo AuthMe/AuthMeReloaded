@@ -417,11 +417,6 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return vaultPerms.hasGroupSupport();
 
-            case PERMISSIONS:
-                // Legacy permissions
-                // FIXME: Supported by plugin, but addGroup and removeGroup haven't been implemented correctly yet!
-                return false;
-
             case NONE:
                 // Not hooked into any permissions system, return false
                 return false;
@@ -502,7 +497,6 @@ public class PermissionsManager implements PermissionsService {
             case PERMISSIONS_EX:
             case PERMISSIONS_BUKKIT:
             case B_PERMISSIONS:
-            case PERMISSIONS: // FIXME: Is this correct for PERMISSIONS?
                 // Get the groups of the player
                 List<String> groups = getGroups(player);
 
@@ -639,11 +633,6 @@ public class PermissionsManager implements PermissionsService {
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
 
-            case PERMISSIONS:
-                // Permissions
-                // FIXME: Add this method!
-                //return this.defaultPerms.group
-
             case NONE:
                 // Not hooked into any permissions system, return false
                 return false;
@@ -724,11 +713,6 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 vaultPerms.playerRemoveGroup(player, groupName);
                 return true;
-
-            case PERMISSIONS:
-                // Permissions
-                // FIXME: Add this method!
-                //return this.defaultPerms.group
 
             case NONE:
                 // Not hooked into any permissions system, return false
@@ -818,11 +802,6 @@ public class PermissionsManager implements PermissionsService {
                 removeAllGroups(player);
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
-
-            case PERMISSIONS:
-                // Permissions
-                // FIXME: Add this method!
-                //return this.defaultPerms.group
 
             case NONE:
                 // Not hooked into any permissions system, return false
