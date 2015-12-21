@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import org.bukkit.command.CommandSender;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.datasource.SQLite;
@@ -35,7 +36,7 @@ public class SqliteToSql implements Converter {
 			}
 		} catch (Exception e) {
 			sender.sendMessage(plugin.getMessages().retrieve(MessageKey.ERROR));
-			e.printStackTrace();
+			ConsoleLogger.showError(e.getMessage());
 		}
 	}
 
