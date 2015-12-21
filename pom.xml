@@ -438,10 +438,15 @@
         <!-- GroupManager plugin -->
         <dependency>
             <groupId>org.anjocaido</groupId>
-            <artifactId>groupmanager</artifactId>
-            <version>2.13.1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/EssentialsGroupManager-2.13.1.jar</systemPath>
+            <artifactId>groupmanagerx</artifactId>
+            <version>2.2-SNAPSHOT</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- bPermissions plugin -->
