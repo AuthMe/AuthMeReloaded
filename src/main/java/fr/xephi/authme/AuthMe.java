@@ -857,6 +857,7 @@ public class AuthMe extends JavaPlugin {
      * @param player The player to process.
      *
      */
+    @Deprecated
     public void getVerygamesIp(final Player player)
     {
     	final String name = player.getName().toLowerCase();
@@ -872,6 +873,8 @@ public class AuthMe extends JavaPlugin {
 		        try {
 		            URL url = new URL(sUrl);
 		            URLConnection urlCon = url.openConnection();
+		            urlCon.setConnectTimeout(5000);
+		            urlCon.setReadTimeout(5000);
 		            try (BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()))) {
 		                String inputLine = in.readLine();
 		                if (!StringUtils.isEmpty(inputLine) && !inputLine.equalsIgnoreCase("error")
