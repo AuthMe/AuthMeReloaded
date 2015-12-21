@@ -130,12 +130,13 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerHighChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
-
+/*
+ * We cannot modify this event on monitor
     @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
     public void onPlayerChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
-
+*/
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
         handleChat(event);
@@ -151,7 +152,7 @@ public class AuthMePlayerListener implements Listener {
         handleChat(event);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent event) {
         if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0) {
             return;
@@ -337,7 +338,7 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
@@ -352,7 +353,7 @@ public class AuthMePlayerListener implements Listener {
         plugin.getManagement().performQuit(player, false);
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerKick(PlayerKickEvent event) {
         Player player = event.getPlayer();
 
