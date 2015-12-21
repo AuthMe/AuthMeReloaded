@@ -9,6 +9,7 @@ import fr.xephi.authme.converter.FlatToSqlite;
 import fr.xephi.authme.converter.RakamakConverter;
 import fr.xephi.authme.converter.RoyalAuthConverter;
 import fr.xephi.authme.converter.SqlToFlat;
+import fr.xephi.authme.converter.SqliteToSql;
 import fr.xephi.authme.converter.vAuthConverter;
 import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.output.MessageKey;
@@ -65,6 +66,9 @@ public class ConverterCommand extends ExecutableCommand {
             case SQLTOFLAT:
                 converter = new SqlToFlat(plugin, sender);
                 break;
+            case SQLITETOSQL:
+            	converter = new SqliteToSql(plugin, sender);
+            	break;
             default:
                 break;
         }
@@ -84,7 +88,8 @@ public class ConverterCommand extends ExecutableCommand {
         RAKAMAK("rakamak"),
         ROYALAUTH("royalauth"),
         VAUTH("vauth"),
-        SQLTOFLAT("sqltoflat");
+        SQLTOFLAT("sqltoflat"),
+        SQLITETOSQL("sqlitetosql");
 
         final String name;
 
