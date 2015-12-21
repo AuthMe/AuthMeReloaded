@@ -200,8 +200,8 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         player.saveData();
         if (Settings.bungee)
             sendBungeeMessage();
-        // Login is finish, display welcome message
-        if (Settings.useWelcomeMessage)
+        // Login is finish, display welcome message if we use email registration
+        if (Settings.useWelcomeMessage && Settings.emailRegistration)
             if (Settings.broadcastWelcomeMessage) {
                 for (String s : Settings.welcomeMsg) {
                     Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));

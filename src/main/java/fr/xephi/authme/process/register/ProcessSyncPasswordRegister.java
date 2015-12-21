@@ -142,12 +142,6 @@ public class ProcessSyncPasswordRegister implements Runnable {
             return;
         }
 
-        // Request Login after Registration
-        if (Settings.forceRegLogin) {
-            forceLogin(player);
-            return;
-        }
-
         // Register is finish and player is logged, display welcome message
         if (Settings.useWelcomeMessage) {
             if (Settings.broadcastWelcomeMessage) {
@@ -159,6 +153,12 @@ public class ProcessSyncPasswordRegister implements Runnable {
                     player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
+        }
+
+        // Request Login after Registration
+        if (Settings.forceRegLogin) {
+            forceLogin(player);
+            return;
         }
 
         if (Settings.bungee) {
