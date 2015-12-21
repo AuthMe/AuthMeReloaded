@@ -32,7 +32,6 @@ public class SendMailSSL {
     }
 
     public void main(final PlayerAuth auth, final String newPass) {
-        final int port = Settings.getMailPort;
         final String mailText = replaceMailTags(Settings.getMailText, plugin, auth, newPass);
         Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
@@ -42,7 +41,6 @@ public class SendMailSSL {
                 HtmlEmail email;
                 try {
                     email = initializeMail(auth);
-                    setPropertiesForPort(port, email);
                 } catch (EmailException e) {
                     ConsoleLogger.showError("Failed to create email with the given settings: "
                         + StringUtils.formatException(e));
@@ -87,16 +85,17 @@ public class SendMailSSL {
 
     private static HtmlEmail initializeMail(PlayerAuth auth) throws EmailException {
         String senderName;
-        if (Settings.getmailSenderName == null || Settings.getmailSenderName.isEmpty()) {
+        if (StringUtils.isEmpty(Settings.getmailSenderName)) {
             senderName = Settings.getmailAccount;
         } else {
             senderName = Settings.getmailSenderName;
         }
         String senderMail = Settings.getmailAccount;
         String mailPassword = Settings.getmailPassword;
+        int port = Settings.getMailPort;
 
         HtmlEmail email = new HtmlEmail();
-        email.setSmtpPort(Settings.getMailPort);
+        email.setSmtpPort(port);
         email.setHostName(Settings.getmailSMTP);
         email.addTo(auth.getEmail());
         email.setFrom(senderMail, senderName);
@@ -105,6 +104,8 @@ public class SendMailSSL {
             String password = !Settings.emailOauth2Token.isEmpty() ? "" : mailPassword;
             email.setAuthenticator(new DefaultAuthenticator(senderMail, password));
         }
+
+        setPropertiesForPort(email, port);
         return email;
     }
 
@@ -133,7 +134,7 @@ public class SendMailSSL {
             .replace("<generatedpass />", newPass);
     }
 
-    private static void setPropertiesForPort(int port, HtmlEmail email) throws EmailException {
+    private static void setPropertiesForPort(HtmlEmail email, int port) throws EmailException {
         switch (port) {
             case 587:
                 email.setStartTLSEnabled(true);
