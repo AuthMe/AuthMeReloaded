@@ -2,13 +2,16 @@ package fr.xephi.authme.listener;
 
 import com.google.common.collect.Sets;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.junit.Test;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
@@ -41,6 +44,27 @@ public final class ListenerConsistencyTest {
         }
     }
 
+    // #367: Event listeners with EventPriority.MONITOR should not change events
+    @Test
+    public void shouldNotHaveMonitorLevelEventHandlers() {
+        for (Class<?> listener : LISTENERS) {
+            verifyListenerIsNotUsingMonitorPriority(listener);
+        }
+    }
+
+    @Test
+    public void shouldNotHaveMultipleHandlersForSameEvent() {
+        Set<String> events = new HashSet<>();
+        for (Class<?> listener : LISTENERS) {
+            for (Method method : listener.getDeclaredMethods()) {
+                if (events.contains(method.getName())) {
+                    fail("More than one method '" + method.getName() + "' exists (e.g. class: " + listener + ")");
+                }
+                events.add(method.getName());
+            }
+        }
+    }
+
     private static void checkCanceledAttribute(Class<?> listenerClass) {
         final String clazz = listenerClass.getSimpleName();
         Method[] methods = listenerClass.getDeclaredMethods();
@@ -63,6 +87,17 @@ public final class ListenerConsistencyTest {
         for (Method method : methods) {
             if (isTestableMethod(method) && !method.isAnnotationPresent(EventHandler.class)) {
                 fail("Expected @EventHandler annotation on non-private method " + clazz + "#" + method.getName());
+            }
+        }
+    }
+
+    private static void verifyListenerIsNotUsingMonitorPriority(Class<?> listenerClass) {
+        final String clazz = listenerClass.getSimpleName();
+        for (Method method : listenerClass.getDeclaredMethods()) {
+            if (isTestableMethod(method) && method.isAnnotationPresent(EventHandler.class)) {
+                EventHandler eventHandlerAnnotation = method.getAnnotation(EventHandler.class);
+                assertThat("Method " + clazz + "#" + method.getName() + " does not use EventPriority.MONITOR",
+                    eventHandlerAnnotation.priority(), not(equalTo(EventPriority.MONITOR)));
             }
         }
     }
