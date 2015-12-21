@@ -3,6 +3,7 @@ package fr.xephi.authme;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
 
+import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.bukkit.Bukkit;
@@ -64,9 +65,21 @@ public class SendMailSSL {
                     email.addTo(mail);
                     email.setFrom(acc, sender);
                     email.setSubject(subject);
-                    email.setAuthentication(acc, password);
-                    email.setStartTLSEnabled(true);
-                    email.setStartTLSRequired(true);
+                    if (acc != null && !acc.isEmpty() && password != null && !password.isEmpty())
+                    	email.setAuthenticator(new DefaultAuthenticator(acc, password));
+                    switch (port) {
+                    case 587:
+                    case 25:
+                    	email.setStartTLSEnabled(true);
+                    	break;
+                    case 465:
+                    	email.setSSLOnConnect(true);
+                    	break;
+                    default:
+                    	email.setStartTLSEnabled(true);
+                    	email.setSSLOnConnect(true);
+                    	break;
+                    }
                     email.setSSLCheckServerIdentity(true);
                     String content = mailText;
                     // Generate an image ?
