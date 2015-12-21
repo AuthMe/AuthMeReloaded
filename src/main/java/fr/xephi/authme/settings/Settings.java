@@ -93,7 +93,7 @@ public final class Settings {
         getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
         getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
         spawnPriority, crazyloginFileName, getPassRegex,
-        getMySQLColumnRealName;
+        getMySQLColumnRealName, emailOauth2Token;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
         getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
@@ -302,6 +302,7 @@ public final class Settings {
         generateImage = configFile.getBoolean("Email.generateImage", false);
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
         kickPlayersBeforeStoping = configFile.getBoolean("Security.stop.kickPlayersBeforeStoping", true);
+        emailOauth2Token = configFile.getString("Email.emailOauth2Token", "");
 
         // Load the welcome message
         getWelcomeMessage();
@@ -733,6 +734,9 @@ public final class Settings {
         	set("Security.stop.kickPlayersBeforeStoping", true);
         	changes = true;
         }
+
+        if (!contains("Email.emailOauth2Token"))
+        	set("Email.emailOauth2Token", "");
 
         if (changes) {
             plugin.getLogger().warning("Merged new Config Options - I'm not an error, please don't report me");

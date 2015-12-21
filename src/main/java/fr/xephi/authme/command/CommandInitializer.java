@@ -479,7 +479,7 @@ public final class CommandInitializer {
             .description("Converter Command")
             .detailedDescription("Converter command for AuthMeReloaded.")
             .withArgument("job", "Conversion job: flattosql / flattosqlite /| xauth / crazylogin / rakamak / " +
-                "royalauth / vauth / sqltoflat", false)
+                "royalauth / vauth / sqltoflat / sqlitetosql", false)
             .permissions(OP_ONLY, AdminPermission.CONVERTER)
             .executableCommand(new ConverterCommand())
             .build();

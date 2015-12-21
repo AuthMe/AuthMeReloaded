@@ -1,5 +1,8 @@
-package fr.xephi.authme;
+package fr.xephi.authme.mail;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.ImageGenerator;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
 
@@ -8,10 +11,16 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.bukkit.Bukkit;
 
+import com.sun.mail.smtp.SMTPTransport;
+
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
+import javax.mail.Transport;
+
 import java.io.File;
+import java.security.Provider;
+import java.security.Security;
 
 /**
  * @author Xephi59
@@ -66,21 +75,36 @@ public class SendMailSSL {
                     email.setFrom(acc, sender);
                     email.setSubject(subject);
                     if (acc != null && !acc.isEmpty() && password != null && !password.isEmpty())
-                    	email.setAuthenticator(new DefaultAuthenticator(acc, password));
+                    	email.setAuthenticator(new DefaultAuthenticator(acc, !Settings.emailOauth2Token.isEmpty() ? "" : password));
                     switch (port) {
-                    case 587:
-                    case 25:
-                    	email.setStartTLSEnabled(true);
-                    	break;
-                    case 465:
-                    	email.setSSLOnConnect(true);
-                    	break;
-                    default:
-                    	email.setStartTLSEnabled(true);
-                    	email.setSSLOnConnect(true);
-                    	break;
+                    	case 587:
+                    		email.setStartTLSEnabled(true);
+                    		email.setStartTLSRequired(true);
+                    		if (!Settings.emailOauth2Token.isEmpty())
+                    		{
+                    			if (Security.getProvider("Google OAuth2 Provider") == null)
+                    				Security.addProvider(new OAuth2Provider());
+                    			email.getMailSession().getProperties().setProperty("mail.smtp.starttls.enable", "true");
+                    			email.getMailSession().getProperties().setProperty("mail.smtp.starttls.required", "true");
+                    			email.getMailSession().getProperties().setProperty("mail.smtp.sasl.enable", "true");
+                    			email.getMailSession().getProperties().setProperty("mail.smtp.sasl.mechanisms", "XOAUTH2");
+                    			email.getMailSession().getProperties().setProperty(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, password);
+                    		}
+                    		break;
+                    	case 25:
+                    		email.setStartTLSEnabled(true);
+                            email.setSSLCheckServerIdentity(true);
+                    		break;
+                    	case 465:
+                    		email.setSSLOnConnect(true);
+                            email.setSSLCheckServerIdentity(true);
+                    		break;
+                    	default:
+                    		email.setStartTLSEnabled(true);
+                    		email.setSSLOnConnect(true);
+                            email.setSSLCheckServerIdentity(true);
+                    		break;
                     }
-                    email.setSSLCheckServerIdentity(true);
                     String content = mailText;
                     // Generate an image ?
                     File file = null;
@@ -105,7 +129,12 @@ public class SendMailSSL {
                     	return;
                     }
                     try {
-                        email.send();
+                        if (!Settings.emailOauth2Token.isEmpty())
+                        {
+                        	SMTPTransport.send(email.getMimeMessage(), acc, "");
+                        }
+                        else
+                        	SMTPTransport.send(email.getMimeMessage());
                     } catch (Exception e) {
                         ConsoleLogger.showError("Fail to send a mail to " + mail + " cause " + e.getLocalizedMessage());
                     }

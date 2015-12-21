@@ -33,11 +33,7 @@ public class SqliteToSql implements Converter {
 			{
 				plugin.database.saveAuth(auth);
 			}
-			sender.sendMessage("Convert command has finished !");
-		} catch (ClassNotFoundException e) {
-			sender.sendMessage(plugin.getMessages().retrieve(MessageKey.ERROR));
-			e.printStackTrace();
-		} catch (SQLException e) {
+		} catch (Exception e) {
 			sender.sendMessage(plugin.getMessages().retrieve(MessageKey.ERROR));
 			e.printStackTrace();
 		}
