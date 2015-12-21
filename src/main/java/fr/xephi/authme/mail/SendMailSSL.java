@@ -129,12 +129,7 @@ public class SendMailSSL {
                     	return;
                     }
                     try {
-                        if (!Settings.emailOauth2Token.isEmpty())
-                        {
-                        	SMTPTransport.send(email.getMimeMessage(), acc, "");
-                        }
-                        else
-                        	SMTPTransport.send(email.getMimeMessage());
+                    	email.send();
                     } catch (Exception e) {
                         ConsoleLogger.showError("Fail to send a mail to " + mail + " cause " + e.getLocalizedMessage());
                     }
