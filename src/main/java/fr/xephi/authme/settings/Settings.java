@@ -731,7 +731,7 @@ public final class Settings {
 
         if (!contains("Security.stop.kickPlayersBeforeStoping")) {
         	set("Security.stop.kickPlayersBeforeStoping", true);
-        	changed = true;
+        	changes = true;
         }
 
         if (changes) {
