@@ -9,15 +9,16 @@ public class AuthMeServerStop extends Thread {
 
 	private AuthMe plugin;
 
-	public AuthMeServerStop(AuthMe plugin)
-	{
+	public AuthMeServerStop(AuthMe plugin) {
 		this.plugin = plugin;
 	}
 
     public void run() {
     	// TODO: add a MessageKey
-    	if (Settings.kickPlayersBeforeStoping)
-    		for (Player p : plugin.getServer().getOnlinePlayers())
-    			p.kickPlayer("Server is restarting");
+    	if (Settings.kickPlayersBeforeStopping) {
+            for (Player p : plugin.getServer().getOnlinePlayers()) {
+                p.kickPlayer("Server is restarting");
+            }
+        }
     }
 }

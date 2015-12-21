@@ -6,6 +6,7 @@ import fr.xephi.authme.ImageGenerator;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
 
+import fr.xephi.authme.util.StringUtils;
 import org.apache.commons.mail.DefaultAuthenticator;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
@@ -15,130 +16,153 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
 import java.io.File;
+import java.io.IOException;
 import java.security.Security;
+import java.util.Properties;
 
 /**
  * @author Xephi59
- * @version $Revision: 1.0 $
  */
 public class SendMailSSL {
 
-    public final AuthMe plugin;
+    private final AuthMe plugin;
 
-    /**
-     * Constructor for SendMailSSL.
-     *
-     * @param plugin AuthMe
-     */
     public SendMailSSL(AuthMe plugin) {
         this.plugin = plugin;
     }
 
-    /**
-     * Method main.
-     *
-     * @param auth    PlayerAuth
-     * @param newPass String
-     */
     public void main(final PlayerAuth auth, final String newPass) {
-        String senderName;
+        final int port = Settings.getMailPort;
+        final String mailText = replaceMailTags(Settings.getMailText, plugin, auth, newPass);
+        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
+            @Override
+            public void run() {
+                Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+                HtmlEmail email;
+                try {
+                    email = initializeMail(auth);
+                    setPropertiesForPort(port, email);
+                } catch (EmailException e) {
+                    ConsoleLogger.showError("Failed to create email with the given settings: "
+                        + StringUtils.formatException(e));
+                    return;
+                }
+
+                String content = mailText;
+                // Generate an image?
+                File file = null;
+                if (Settings.generateImage) {
+                    try {
+                        file = generateImage(auth, plugin, newPass);
+                        content = embedImageIntoEmailContent(file, email, content);
+                    } catch (IOException | EmailException e) {
+                        ConsoleLogger.showError("Unable to send new password as image for email "
+                            + auth.getEmail() + ": " + StringUtils.formatException(e));
+                    }
+                }
+
+                sendEmail(content, email);
+                if (file != null) {
+                    file.delete();
+                }
+            }
+
+        });
+    }
+
+    private static File generateImage(PlayerAuth auth, AuthMe plugin, String newPass) throws IOException {
+        ImageGenerator gen = new ImageGenerator(newPass);
+        File file = new File(plugin.getDataFolder() + File.separator + auth.getNickname() + "_new_pass.jpg");
+        ImageIO.write(gen.generateImage(), "jpg", file);
+        return file;
+    }
+
+    private static String embedImageIntoEmailContent(File image, HtmlEmail email, String content)
+        throws EmailException {
+        DataSource source = new FileDataSource(image);
+        String tag = email.embed(source, image.getName());
+        return content.replace("<image />", "<img src=\"cid:" + tag + "\">");
+    }
+
+    private static HtmlEmail initializeMail(PlayerAuth auth) throws EmailException {
+        String senderName;
         if (Settings.getmailSenderName == null || Settings.getmailSenderName.isEmpty()) {
             senderName = Settings.getmailAccount;
         } else {
             senderName = Settings.getmailSenderName;
         }
+        String senderMail = Settings.getmailAccount;
+        String mailPassword = Settings.getmailPassword;
 
-        final String sender = senderName;
-        final int port = Settings.getMailPort;
-        final String acc = Settings.getmailAccount;
-        final String subject = Settings.getMailSubject;
-        final String smtp = Settings.getmailSMTP;
-        final String password = Settings.getmailPassword;
-        final String mailText = Settings.getMailText.replace("<playername />", auth.getNickname()).replace("<servername />", plugin.getServer().getServerName()).replace("<generatedpass />", newPass);
-        final String mail = auth.getEmail();
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        HtmlEmail email = new HtmlEmail();
+        email.setSmtpPort(Settings.getMailPort);
+        email.setHostName(Settings.getmailSMTP);
+        email.addTo(auth.getEmail());
+        email.setFrom(senderMail, senderName);
+        email.setSubject(Settings.getMailSubject);
+        if (!StringUtils.isEmpty(senderMail) && !StringUtils.isEmpty(mailPassword)) {
+            String password = !Settings.emailOauth2Token.isEmpty() ? "" : mailPassword;
+            email.setAuthenticator(new DefaultAuthenticator(senderMail, password));
+        }
+        return email;
+    }
 
-            @Override
-            public void run() {
-                try {
-                    Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
-                    HtmlEmail email = new HtmlEmail();
-                    email.setSmtpPort(port);
-                    email.setHostName(smtp);
-                    email.addTo(mail);
-                    email.setFrom(acc, sender);
-                    email.setSubject(subject);
-                    if (acc != null && !acc.isEmpty() && password != null && !password.isEmpty())
-                    	email.setAuthenticator(new DefaultAuthenticator(acc, !Settings.emailOauth2Token.isEmpty() ? "" : password));
-                    switch (port) {
-                    	case 587:
-                    		email.setStartTLSEnabled(true);
-                    		email.setStartTLSRequired(true);
-                    		if (!Settings.emailOauth2Token.isEmpty())
-                    		{
-                    			if (Security.getProvider("Google OAuth2 Provider") == null)
-                    				Security.addProvider(new OAuth2Provider());
-                    			email.getMailSession().getProperties().setProperty("mail.smtp.starttls.enable", "true");
-                    			email.getMailSession().getProperties().setProperty("mail.smtp.starttls.required", "true");
-                    			email.getMailSession().getProperties().setProperty("mail.smtp.sasl.enable", "true");
-                    			email.getMailSession().getProperties().setProperty("mail.smtp.sasl.mechanisms", "XOAUTH2");
-                    			email.getMailSession().getProperties().setProperty(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, password);
-                    		}
-                    		break;
-                    	case 25:
-                    		email.setStartTLSEnabled(true);
-                            email.setSSLCheckServerIdentity(true);
-                    		break;
-                    	case 465:
-                    		email.setSSLOnConnect(true);
-                            email.setSSLCheckServerIdentity(true);
-                    		break;
-                    	default:
-                    		email.setStartTLSEnabled(true);
-                    		email.setSSLOnConnect(true);
-                            email.setSSLCheckServerIdentity(true);
-                    		break;
-                    }
-                    String content = mailText;
-                    // Generate an image ?
-                    File file = null;
-                    if (Settings.generateImage) {
-                        try {
-                            ImageGenerator gen = new ImageGenerator(newPass);
-                            file = new File(plugin.getDataFolder() + File.separator + auth.getNickname() + "_new_pass.jpg");
-                            ImageIO.write(gen.generateImage(), "jpg", file);
-                            DataSource source = new FileDataSource(file);
-                            String tag = email.embed(source, auth.getNickname() + "_new_pass.jpg");
-                            content = content.replace("%image%", "<img src=\"cid:" + tag + "\">");
-                        } catch (Exception e) {
-                            ConsoleLogger.showError("Unable to send new password as image! Using normal text! Dest: " + mail);
-                        }
-                    }
-                    try {
-                        email.setHtmlMsg(content);
-                        email.setTextMsg(content);
-                    } catch (EmailException e)
-                    {
-                    	ConsoleLogger.showError("Your email.html config contains some error and cannot be send!");
-                    	return;
-                    }
-                    try {
-                    	email.send();
-                    } catch (Exception e) {
-                        ConsoleLogger.showError("Fail to send a mail to " + mail + " cause " + e.getLocalizedMessage());
-                    }
-                    if (file != null)
-                        //noinspection ResultOfMethodCallIgnored
-                        file.delete();
+    private static boolean sendEmail(String content, HtmlEmail email) {
+        try {
+            email.setHtmlMsg(content);
+            email.setTextMsg(content);
+        } catch (EmailException e) {
+            ConsoleLogger.showError("Your email.html config contains an error and cannot be sent: "
+                + StringUtils.formatException(e));
+            return false;
+        }
+        try {
+            email.send();
+            return true;
+        } catch (EmailException e) {
+            ConsoleLogger.showError("Failed to send a mail to " + email.getToAddresses() + ": " + e.getMessage());
+            return false;
+        }
+    }
 
-                } catch (Exception e) {
-                    // Print the stack trace
-                    e.printStackTrace();
-                    ConsoleLogger.showError("Some error occurred while trying to send a email to " + mail);
+    private static String replaceMailTags(String mailText, AuthMe plugin, PlayerAuth auth, String newPass) {
+        return mailText
+            .replace("<playername />", auth.getNickname())
+            .replace("<servername />", plugin.getServer().getServerName())
+            .replace("<generatedpass />", newPass);
+    }
+
+    private static void setPropertiesForPort(int port, HtmlEmail email) throws EmailException {
+        switch (port) {
+            case 587:
+                email.setStartTLSEnabled(true);
+                email.setStartTLSRequired(true);
+                if (!Settings.emailOauth2Token.isEmpty()) {
+                    if (Security.getProvider("Google OAuth2 Provider") == null) {
+                        Security.addProvider(new OAuth2Provider());
+                    }
+
+                    Properties mailProperties = email.getMailSession().getProperties();
+                    mailProperties.setProperty("mail.smtp.starttls.enable", "true");
+                    mailProperties.setProperty("mail.smtp.starttls.required", "true");
+                    mailProperties.setProperty("mail.smtp.sasl.enable", "true");
+                    mailProperties.setProperty("mail.smtp.sasl.mechanisms", "XOAUTH2");
+                    mailProperties.setProperty(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, Settings.getmailPassword);
                 }
-            }
-
-        });
+                break;
+            case 25:
+                email.setStartTLSEnabled(true);
+                email.setSSLCheckServerIdentity(true);
+                break;
+            case 465:
+                email.setSSLOnConnect(true);
+                email.setSSLCheckServerIdentity(true);
+                break;
+            default:
+                email.setStartTLSEnabled(true);
+                email.setSSLOnConnect(true);
+                email.setSSLCheckServerIdentity(true);
+        }
     }
 }

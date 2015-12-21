@@ -79,7 +79,7 @@ public final class Settings {
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
-        kickPlayersBeforeStoping,
+        kickPlayersBeforeStopping,
         customAttributes, generateImage, isRemoveSpeedEnabled, preventOtherCase;
     public static String helpHeader, getNickRegex, getUnloggedinGroup, getMySQLHost,
         getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
@@ -301,7 +301,7 @@ public final class Settings {
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
         generateImage = configFile.getBoolean("Email.generateImage", false);
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
-        kickPlayersBeforeStoping = configFile.getBoolean("Security.stop.kickPlayersBeforeStoping", true);
+        kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
         emailOauth2Token = configFile.getString("Email.emailOauth2Token", "");
 
         // Load the welcome message
@@ -730,8 +730,8 @@ public final class Settings {
             ConsoleLogger.showError("Remove Email.mailText from config, we now use the email.html file");
         }
 
-        if (!contains("Security.stop.kickPlayersBeforeStoping")) {
-        	set("Security.stop.kickPlayersBeforeStoping", true);
+        if (!contains("Security.stop.kickPlayersBeforeStopping")) {
+        	set("Security.stop.kickPlayersBeforeStopping", true);
         	changes = true;
         }
 
