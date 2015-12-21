@@ -130,13 +130,7 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerHighChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
-/*
- * We cannot modify this event on monitor
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-*/
+
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
         handleChat(event);

@@ -11,15 +11,10 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.bukkit.Bukkit;
 
-import com.sun.mail.smtp.SMTPTransport;
-
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.imageio.ImageIO;
-import javax.mail.Transport;
-
 import java.io.File;
-import java.security.Provider;
 import java.security.Security;
 
 /**

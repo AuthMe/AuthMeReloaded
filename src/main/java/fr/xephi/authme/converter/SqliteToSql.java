@@ -1,7 +1,5 @@
 package fr.xephi.authme.converter;
 
-import java.sql.SQLException;
-
 import org.bukkit.command.CommandSender;
 
 import fr.xephi.authme.AuthMe;

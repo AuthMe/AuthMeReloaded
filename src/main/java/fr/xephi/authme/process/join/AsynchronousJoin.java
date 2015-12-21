@@ -196,6 +196,10 @@ public class AsynchronousJoin {
                     player.setAllowFlight(true);
                     player.setFlying(true);
                 }
+                if (Settings.isRemoveSpeedEnabled) {
+                    player.setFlySpeed(0.0f);
+                    player.setWalkSpeed(0.0f);
+                }
                 player.setNoDamageTicks(timeOut);
                 if (Settings.useEssentialsMotd) {
                     player.performCommand("motd");
