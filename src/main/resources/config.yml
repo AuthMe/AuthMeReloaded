@@ -316,6 +316,10 @@ Security:
         maxLoginTry: 5
         # Captcha length
         captchaLength: 5
+    stop:
+        # Kick players before stoping the server, that allow us to save position of players, and all needed
+        # informations correctly without any corruption.
+        kickPlayersBeforeStoping: true
 Converter:
     Rakamak:
         # Rakamak file name

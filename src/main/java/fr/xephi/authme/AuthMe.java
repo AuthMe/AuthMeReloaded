@@ -27,6 +27,7 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
+import fr.xephi.authme.listener.AuthMeServerStop;
 import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
@@ -287,6 +288,13 @@ public class AuthMe extends JavaPlugin {
 
         // Show settings warnings
         showSettingsWarnings();
+
+        // Register a server shutdown hook
+        try {
+            Runtime.getRuntime().addShutdownHook(new AuthMeServerStop(this));
+        } catch (Exception e){
+        	e.printStackTrace();
+        }
 
         // Sponsor messages
         ConsoleLogger.info("AuthMe hooks perfectly with the VeryGames server hosting!");
