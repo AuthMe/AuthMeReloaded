@@ -210,6 +210,9 @@ public class AuthMePlayerListener implements Listener {
             joinMessage.put(name, joinMsg);
         }
 
+        if (Settings.checkVeryGames)
+        	plugin.getVerygamesIp(player);
+
         // Shedule login task so works after the prelogin
         // (Fix found by Koolaid5000)
         Bukkit.getScheduler().runTask(plugin, new Runnable() {

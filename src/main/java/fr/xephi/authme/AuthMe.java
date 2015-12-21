@@ -851,16 +851,50 @@ public class AuthMe extends JavaPlugin {
         return message;
     }
 
-    public String getIP(Player player) {
-        String name = player.getName().toLowerCase();
+    /**
+     * Gets a player's real IP through VeryGames method.
+     *
+     * @param player The player to process.
+     *
+     */
+    public void getVerygamesIp(final Player player)
+    {
+    	final String name = player.getName().toLowerCase();
+    	Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
+			@Override
+			public void run() {
+			        String realIP = player.getAddress().getAddress().getHostAddress();
+			        String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
+			        sUrl = sUrl.replace("%IP%", realIP)
+			            .replace("%PORT%", "" + player.getAddress().getPort());
+			        try {
+			            URL url = new URL(sUrl);
+			            URLConnection urlCon = url.openConnection();
+			            try (BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()))) {
+			                String inputLine = in.readLine();
+			                if (!StringUtils.isEmpty(inputLine) && !inputLine.equalsIgnoreCase("error")
+			                    && !inputLine.contains("error")) {
+			                    realIP = inputLine;
+			                }
+			            } catch (IOException e) {
+			                ConsoleLogger.showError("Could not read from Very Games API - " + StringUtils.formatException(e));
+			            }
+			        } catch (IOException e) {
+			            ConsoleLogger.showError("Could not fetch Very Games API with URL '" + sUrl + "' - "
+			                + StringUtils.formatException(e));
+			        }
+			        if (realIp.containsKey(name))
+			        	realIp.remove(name);
+			        realIp.putIfAbsent(name, realIP);
+			}
+    	});
+    }
+
+    public String getIP(final Player player) {
+        final String name = player.getName().toLowerCase();
         String ip = player.getAddress().getAddress().getHostAddress();
-        if (Settings.bungee) {
-            if (realIp.containsKey(name))
-                ip = realIp.get(name);
-        }
-        if (Settings.checkVeryGames)
-            if (getVeryGamesIp(player) != null)
-                ip = getVeryGamesIp(player);
+        if (realIp.containsKey(name))
+            ip = realIp.get(name);
         return ip;
     }
 
@@ -884,39 +918,6 @@ public class AuthMe extends JavaPlugin {
 
     public ModuleManager getModuleManager() {
         return moduleManager;
-    }
-
-    /**
-     * Gets a player's real IP through VeryGames method.
-     *
-     * @param player The player to process.
-     *
-     * @return The real IP of the player.
-     */
-    // TODO: Cache the result or run it async, it can cause trouble if verygames server isn't responding.
-    @Deprecated
-    public String getVeryGamesIp(Player player) {
-        String realIP = player.getAddress().getAddress().getHostAddress();
-        String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
-        sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress())
-            .replace("%PORT%", "" + player.getAddress().getPort());
-        try {
-            URL url = new URL(sUrl);
-            URLConnection urlCon = url.openConnection();
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()))) {
-                String inputLine = in.readLine();
-                if (!StringUtils.isEmpty(inputLine) && !inputLine.equalsIgnoreCase("error")
-                    && !inputLine.contains("error")) {
-                    realIP = inputLine;
-                }
-            } catch (IOException e) {
-                ConsoleLogger.showError("Could not read from Very Games API - " + StringUtils.formatException(e));
-            }
-        } catch (IOException e) {
-            ConsoleLogger.showError("Could not fetch Very Games API with URL '" + sUrl + "' - "
-                + StringUtils.formatException(e));
-        }
-        return realIP;
     }
 
     public CommandHandler getCommandHandler() {
