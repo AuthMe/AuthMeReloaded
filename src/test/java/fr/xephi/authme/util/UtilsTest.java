@@ -3,9 +3,8 @@ package fr.xephi.authme.util;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.GameMode;
+
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -48,35 +47,6 @@ public class UtilsTest {
 
         permissionsManagerMock = mock(PermissionsManager.class);
         when(authMeMock.getPermissionsManager()).thenReturn(permissionsManagerMock);
-    }
-
-    @Test
-    public void shouldForceSurvivalGameMode() {
-        // given
-        Player player = mock(Player.class);
-        given(permissionsManagerMock.hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)).willReturn(false);
-
-        // when
-        Utils.forceGM(player);
-
-        // then
-        verify(authMeMock).getPermissionsManager();
-        verify(player).setGameMode(GameMode.SURVIVAL);
-    }
-
-    @Test
-    public void shouldNotForceGameModeForUserWithBypassPermission() {
-        // given
-        Player player = mock(Player.class);
-        given(permissionsManagerMock.hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)).willReturn(true);
-
-        // when
-        Utils.forceGM(player);
-
-        // then
-        verify(authMeMock).getPermissionsManager();
-        verify(permissionsManagerMock).hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL);
-        verify(player, never()).setGameMode(any(GameMode.class));
     }
 
     @Test

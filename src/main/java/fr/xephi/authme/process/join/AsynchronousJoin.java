@@ -20,7 +20,6 @@ import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -54,26 +53,21 @@ public class AsynchronousJoin {
             return;
         }
 
-        AuthMePlayerListener.gameMode.put(name, player.getGameMode());
-
         if (plugin.ess != null && Settings.disableSocialSpy) {
             plugin.ess.getUser(player).setSocialSpyEnabled(false);
         }
 
         final String ip = plugin.getIP(player);
         if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
-            final GameMode gM = AuthMePlayerListener.gameMode.get(name);
             sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                 @Override
                 public void run() {
                     AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                    player.setGameMode(gM);
                     player.kickPlayer("You are not the Owner of this account, please try another name!");
                     if (Settings.banUnsafeIp)
                         plugin.getServer().banIP(ip);
                 }
-
             });
             return;
         }
@@ -96,18 +90,6 @@ public class AsynchronousJoin {
         final Location spawnLoc = plugin.getSpawnLocation(player);
         final boolean isAuthAvailable = database.isAuthAvailable(name);
         if (isAuthAvailable) {
-            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                        Utils.forceGM(player);
-                    }
-
-                });
-            }
-
             if (!Settings.noTeleport) {
                 if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                     sched.scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -145,17 +127,6 @@ public class AsynchronousJoin {
             }
 
         } else {
-            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                        Utils.forceGM(player);
-                    }
-
-                });
-            }
             if (!Settings.unRegisteredGroup.isEmpty()) {
                 Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
             }
@@ -197,10 +168,6 @@ public class AsynchronousJoin {
             @Override
             public void run() {
                 player.setOp(false);
-                if (!Settings.isMovementAllowed) {
-                    player.setAllowFlight(true);
-                    player.setFlying(true);
-                }
                 if (Settings.isRemoveSpeedEnabled) {
                     player.setFlySpeed(0.0f);
                     player.setWalkSpeed(0.0f);
@@ -222,7 +189,7 @@ public class AsynchronousJoin {
             }
 
         });
-        
+
         int msgInterval = Settings.getWarnMessageInterval;
         if (timeOut > 0) {
             BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
