@@ -1,24 +1,25 @@
 package fr.xephi.authme.mail;
 
+import java.io.File;
+import java.io.IOException;
+import java.security.Security;
+import java.util.Properties;
+
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
+import javax.imageio.ImageIO;
+import javax.mail.Session;
+
+import org.apache.commons.mail.EmailException;
+import org.apache.commons.mail.HtmlEmail;
+import org.bukkit.Bukkit;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.ImageGenerator;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.Settings;
-
 import fr.xephi.authme.util.StringUtils;
-import org.apache.commons.mail.DefaultAuthenticator;
-import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
-import org.bukkit.Bukkit;
-
-import javax.activation.DataSource;
-import javax.activation.FileDataSource;
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
-import java.security.Security;
-import java.util.Properties;
 
 /**
  * @author Xephi59
@@ -42,8 +43,7 @@ public class SendMailSSL {
                 try {
                     email = initializeMail(auth);
                 } catch (EmailException e) {
-                    ConsoleLogger.showError("Failed to create email with the given settings: "
-                        + StringUtils.formatException(e));
+                    ConsoleLogger.showError("Failed to create email with the given settings: " + StringUtils.formatException(e));
                     return;
                 }
 
@@ -55,8 +55,7 @@ public class SendMailSSL {
                         file = generateImage(auth, plugin, newPass);
                         content = embedImageIntoEmailContent(file, email, content);
                     } catch (IOException | EmailException e) {
-                        ConsoleLogger.showError("Unable to send new password as image for email "
-                            + auth.getEmail() + ": " + StringUtils.formatException(e));
+                        ConsoleLogger.showError("Unable to send new password as image for email " + auth.getEmail() + ": " + StringUtils.formatException(e));
                     }
                 }
 
@@ -69,21 +68,23 @@ public class SendMailSSL {
         });
     }
 
-    private static File generateImage(PlayerAuth auth, AuthMe plugin, String newPass) throws IOException {
+    private static File generateImage(PlayerAuth auth, AuthMe plugin,
+            String newPass) throws IOException {
         ImageGenerator gen = new ImageGenerator(newPass);
         File file = new File(plugin.getDataFolder() + File.separator + auth.getNickname() + "_new_pass.jpg");
         ImageIO.write(gen.generateImage(), "jpg", file);
         return file;
     }
 
-    private static String embedImageIntoEmailContent(File image, HtmlEmail email, String content)
-        throws EmailException {
+    private static String embedImageIntoEmailContent(File image,
+            HtmlEmail email, String content) throws EmailException {
         DataSource source = new FileDataSource(image);
         String tag = email.embed(source, image.getName());
         return content.replace("<image />", "<img src=\"cid:" + tag + "\">");
     }
 
-    private static HtmlEmail initializeMail(PlayerAuth auth) throws EmailException {
+    private static HtmlEmail initializeMail(PlayerAuth auth)
+            throws EmailException {
         String senderName;
         if (StringUtils.isEmpty(Settings.getmailSenderName)) {
             senderName = Settings.getmailAccount;
@@ -100,10 +101,7 @@ public class SendMailSSL {
         email.addTo(auth.getEmail());
         email.setFrom(senderMail, senderName);
         email.setSubject(Settings.getMailSubject);
-        if (!StringUtils.isEmpty(senderMail) && !StringUtils.isEmpty(mailPassword)) {
-            String password = !Settings.emailOauth2Token.isEmpty() ? "" : mailPassword;
-            email.setAuthenticator(new DefaultAuthenticator(senderMail, password));
-        }
+        email.setAuthentication(senderMail, mailPassword);
 
         setPropertiesForPort(email, port);
         return email;
@@ -114,8 +112,7 @@ public class SendMailSSL {
             email.setHtmlMsg(content);
             email.setTextMsg(content);
         } catch (EmailException e) {
-            ConsoleLogger.showError("Your email.html config contains an error and cannot be sent: "
-                + StringUtils.formatException(e));
+            ConsoleLogger.showError("Your email.html config contains an error and cannot be sent: " + StringUtils.formatException(e));
             return false;
         }
         try {
@@ -127,29 +124,32 @@ public class SendMailSSL {
         }
     }
 
-    private static String replaceMailTags(String mailText, AuthMe plugin, PlayerAuth auth, String newPass) {
-        return mailText
-            .replace("<playername />", auth.getNickname())
-            .replace("<servername />", plugin.getServer().getServerName())
-            .replace("<generatedpass />", newPass);
+    private static String replaceMailTags(String mailText, AuthMe plugin,
+            PlayerAuth auth, String newPass) {
+        return mailText.replace("<playername />", auth.getNickname()).replace("<servername />", plugin.getServer().getServerName()).replace("<generatedpass />", newPass);
     }
 
-    private static void setPropertiesForPort(HtmlEmail email, int port) throws EmailException {
+    private static void setPropertiesForPort(HtmlEmail email, int port)
+            throws EmailException {
         switch (port) {
             case 587:
-                email.setStartTLSEnabled(true);
-                email.setStartTLSRequired(true);
                 if (!Settings.emailOauth2Token.isEmpty()) {
                     if (Security.getProvider("Google OAuth2 Provider") == null) {
                         Security.addProvider(new OAuth2Provider());
                     }
-
                     Properties mailProperties = email.getMailSession().getProperties();
-                    mailProperties.setProperty("mail.smtp.starttls.enable", "true");
-                    mailProperties.setProperty("mail.smtp.starttls.required", "true");
+                    mailProperties.setProperty("mail.smtp.ssl.enable", "true");
+                    mailProperties.setProperty("mail.smtp.auth.mechanisms", "XOAUTH2");
                     mailProperties.setProperty("mail.smtp.sasl.enable", "true");
                     mailProperties.setProperty("mail.smtp.sasl.mechanisms", "XOAUTH2");
-                    mailProperties.setProperty(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, Settings.getmailPassword);
+                    mailProperties.setProperty("mail.smtp.auth.login.disable", "true");
+                    mailProperties.setProperty("mail.smtp.auth.plain.disable", "true");
+                    mailProperties.setProperty(OAuth2SaslClientFactory.OAUTH_TOKEN_PROP, Settings.emailOauth2Token);
+                    email.setMailSession(Session.getInstance(mailProperties));
+                } else {
+                    email.setStartTLSEnabled(true);
+                    email.setStartTLSRequired(true);
+                    email.setTLS(true);
                 }
                 break;
             case 25:
@@ -157,8 +157,8 @@ public class SendMailSSL {
                 email.setSSLCheckServerIdentity(true);
                 break;
             case 465:
-                email.setSSLOnConnect(true);
-                email.setSSLCheckServerIdentity(true);
+                email.setSslSmtpPort("" + port);
+                email.setSSL(true);
                 break;
             default:
                 email.setStartTLSEnabled(true);
