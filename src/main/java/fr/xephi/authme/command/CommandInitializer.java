@@ -380,8 +380,8 @@ public final class CommandInitializer {
             .labels("changepassword", "changepass", "cp")
             .description("Change password Command")
             .detailedDescription("Command to change your password using AuthMeReloaded.")
-            .withArgument("password", "Password", false)
-            .withArgument("verifyPassword", "Verify password.", false)
+            .withArgument("oldPassword", "Old Password", false)
+            .withArgument("newPassword", "New Password.", false)
             .permissions(ALLOWED, PlayerPermission.CHANGE_PASSWORD)
             .executableCommand(new ChangePasswordCommand())
             .build();
