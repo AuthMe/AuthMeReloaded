@@ -76,39 +76,21 @@ import java.util.logging.Logger;
  */
 public class AuthMe extends JavaPlugin {
 
-    /**
-     * Defines the name of the plugin.
-     */
+    // Defines the name of the plugin.
     private static final String PLUGIN_NAME = "AuthMeReloaded";
 
+    // Default version and build number values;
     private static String pluginVersion = "N/D";
     private static String pluginBuildNumber = "Unknown";
 
+    /* 
+     * Private Instances
+     * TODO: should we set every instance to null as initial status?
+     */
     private static AuthMe plugin;
     private static Server server;
     private static Wrapper wrapper = Wrapper.getInstance();
-
     private Management management;
-    public NewAPI api;
-    public SendMailSSL mail;
-    public DataManager dataManager;
-    public DataSource database;
-    public OtherAccounts otherAccounts;
-    public Location essentialsSpawn;
-
-    // Hooks TODO: Move into modules
-    public Essentials ess;
-    public MultiverseCore multiverse;
-    public CombatTagPlus combatTagPlus;
-    public AuthMeInventoryPacketAdapter inventoryProtector;
-
-    // Data maps and stuff
-    // TODO: Move into a manager
-    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
-
     private CommandHandler commandHandler = null;
     private PermissionsManager permsMan = null;
     private Settings settings;
@@ -116,9 +98,34 @@ public class AuthMe extends JavaPlugin {
     private JsonCache playerBackup;
     private ModuleManager moduleManager;
 
+    // Public Instances
+    public NewAPI api;
+    public SendMailSSL mail;
+    public DataManager dataManager;
+    public DataSource database;
+    public OtherAccounts otherAccounts;
+    public Location essentialsSpawn;
+
+    /*
+     * Plugin Hooks
+     * TODO: Move into modules
+     */
+    public Essentials ess;
+    public MultiverseCore multiverse;
+    public CombatTagPlus combatTagPlus;
+    public AuthMeInventoryPacketAdapter inventoryProtector;
+
+    /*
+     *  Maps and stuff
+     *  TODO: Clean up and Move into a manager
+     */
+    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
+
     /**
-     * Returns the plugin's instance.
-     *
+     * Get the plugin's instance.
      * @return AuthMe
      */
     public static AuthMe getInstance() {
@@ -127,52 +134,46 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Get the plugin's name.
-     *
-     * @return Plugin name.
+     * @return The plugin's name.
      */
     public static String getPluginName() {
         return PLUGIN_NAME;
     }
 
     /**
-     * Get the current installed AuthMeReloaded version name.
-     *
-     * @return The version name of the currently installed AuthMeReloaded instance.
+     * Get the plugin's version.
+     * @return The plugin's version.
      */
     public static String getPluginVersion() {
         return pluginVersion;
     }
 
     /**
-     * Get the current installed AuthMeReloaded version code.
-     *
-     * @return The version code of the currently installed AuthMeReloaded instance.
+     * Get the plugin's build number.
+     * @return The plugin's build number.
      */
     public static String getPluginBuildNumber() {
         return pluginBuildNumber;
     }
 
     /**
-     * Returns the plugin's Settings.
-     *
-     * @return Settings
+     * Get the plugin's Settings.
+     * @return Plugin's settings.
      */
     public Settings getSettings() {
         return settings;
     }
 
     /**
-     * Returns the Messages instance.
-     *
-     * @return Messages
+     * Get the Messages instance.
+     * @return Plugin's messages.
      */
     public Messages getMessages() {
         return messages;
     }
 
     // Get version and build number of the plugin
-    // TODO: enhance this
-    private void setupConstants() {
+    private void setPluginInfos() {
         String versionRaw = this.getDescription().getVersion();
         int index = versionRaw.lastIndexOf("-");
         if (index != -1) {
@@ -186,7 +187,6 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Method called when the server enables the plugin.
-     *
      * @see org.bukkit.plugin.Plugin#onEnable()
      */
     @Override
@@ -194,7 +194,7 @@ public class AuthMe extends JavaPlugin {
         // Set various instances
         server = getServer();
         plugin = this;
-        setupConstants();
+        setPluginInfos();
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
@@ -491,9 +491,6 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    // Show the exception message and stop/unload the server/plugin as defined
-    // in the configuration
-
     /**
      * Method onDisable.
      *
@@ -523,8 +520,6 @@ public class AuthMe extends JavaPlugin {
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
     }
-
-    // Initialize and setup the database
 
     // Stop/unload the server/plugin as defined in the configuration
     public void stopOrUnload() {
