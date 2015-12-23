@@ -49,6 +49,7 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
+import org.bukkit.GameMode;
 
 /**
  * Listener class for player's events
@@ -190,6 +191,11 @@ public class AuthMePlayerListener implements Listener {
         final Player player = event.getPlayer();
         if (player == null) {
             return;
+        }
+
+        if (Settings.isForceSurvivalModeEnabled
+                && !player.hasPermission(PlayerPermission.BYPASS_FORCE_SURVIVAL.getNode())) {
+            player.setGameMode(GameMode.SURVIVAL);
         }
 
         String name = player.getName().toLowerCase();

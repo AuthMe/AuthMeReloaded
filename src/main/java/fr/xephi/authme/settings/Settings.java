@@ -65,7 +65,7 @@ public final class Settings {
         isSessionsEnabled, isAllowRestrictedIp,
         isMovementAllowed, isKickNonRegisteredEnabled,
         isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
-        isSaveQuitLocationEnabled,
+        isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
         isCachingEnabled,
         isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
         protectInventoryBeforeLogInEnabled, isBackupActivated,

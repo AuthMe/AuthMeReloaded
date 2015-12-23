@@ -152,6 +152,9 @@ settings:
         noTeleport: false
         # Regex syntax for allowed Chars in passwords.
         allowedPasswordCharacters: '[\x21-\x7E]*'
+    GameMode:
+        # ForceSurvivalMode to player when join ?
+        ForceSurvivalMode: false
     security:
         # minimum Length of password
         minPasswordLength: 5
