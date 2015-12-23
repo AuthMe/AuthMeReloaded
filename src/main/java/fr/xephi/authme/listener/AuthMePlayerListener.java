@@ -18,7 +18,6 @@ import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -35,7 +34,6 @@ import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -51,13 +49,13 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
+import org.bukkit.GameMode;
 
 /**
  * Listener class for player's events
  */
 public class AuthMePlayerListener implements Listener {
 
-    public static final ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
     public final AuthMe plugin;
@@ -193,6 +191,11 @@ public class AuthMePlayerListener implements Listener {
         final Player player = event.getPlayer();
         if (player == null) {
             return;
+        }
+
+        if (Settings.isForceSurvivalModeEnabled
+                && !player.hasPermission(PlayerPermission.BYPASS_FORCE_SURVIVAL.getNode())) {
+            player.setGameMode(GameMode.SURVIVAL);
         }
 
         String name = player.getName().toLowerCase();
@@ -491,25 +494,6 @@ public class AuthMePlayerListener implements Listener {
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);
         }
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
-        if (!shouldCancelEvent(event)) {
-            return;
-        }
-
-        Player player = event.getPlayer();
-        if (plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)) {
-            return;
-        }
-
-        String name = player.getName().toLowerCase();
-        if (causeByAuthMe.containsKey(name)) {
-            causeByAuthMe.remove(name);
-            return;
-        }
-        event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)

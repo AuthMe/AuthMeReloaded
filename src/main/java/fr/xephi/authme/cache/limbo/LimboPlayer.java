@@ -1,6 +1,5 @@
 package fr.xephi.authme.cache.limbo;
 
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -12,29 +11,23 @@ public class LimboPlayer {
     private Location loc = null;
     private BukkitTask timeoutTaskId = null;
     private BukkitTask messageTaskId = null;
-    private GameMode gameMode = GameMode.SURVIVAL;
     private boolean operator = false;
     private String group = "";
-    private boolean flying = false;
 
     /**
      * Constructor for LimboPlayer.
      *
      * @param name     String
      * @param loc      Location
-     * @param gameMode GameMode
      * @param operator boolean
      * @param group    String
-     * @param flying   boolean
      */
-    public LimboPlayer(String name, Location loc, GameMode gameMode,
-                       boolean operator, String group, boolean flying) {
+    public LimboPlayer(String name, Location loc,
+                       boolean operator, String group) {
         this.name = name;
         this.loc = loc;
-        this.gameMode = gameMode;
         this.operator = operator;
         this.group = group;
-        this.flying = flying;
     }
 
     /**
@@ -64,15 +57,6 @@ public class LimboPlayer {
      */
     public Location getLoc() {
         return loc;
-    }
-
-    /**
-     * Method getGameMode.
-     *
-     * @return GameMode
-     */
-    public GameMode getGameMode() {
-        return gameMode;
     }
 
     /**
@@ -148,14 +132,5 @@ public class LimboPlayer {
             timeoutTaskId.cancel();
         }
         timeoutTaskId = null;
-    }
-
-    /**
-     * Method isFlying.
-     *
-     * @return boolean
-     */
-    public boolean isFlying() {
-        return flying;
     }
 }

@@ -155,11 +155,6 @@ settings:
     GameMode:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false
-        # if player join with CreativeMode and ForceSurvivalMode: true
-        # inventory will be wipped
-        ResetInventoryIfCreative: false
-        # Do we need to force the survival mode ONLY after /login process?
-        ForceOnlyAfterLogin: false
     security:
         # minimum Length of password
         minPasswordLength: 5

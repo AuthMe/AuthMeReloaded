@@ -35,8 +35,6 @@ public abstract class AbstractEncryptionMethodTest {
     }
 
     @Test
-    @Ignore
-    // TODO #375 Fix and unignore tests
     public void testGivenPasswords() {
         for (String password : GIVEN_PASSWORDS) {
             try {

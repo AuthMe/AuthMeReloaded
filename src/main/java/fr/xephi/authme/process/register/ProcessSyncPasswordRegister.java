@@ -15,7 +15,6 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
@@ -96,7 +95,6 @@ public class ProcessSyncPasswordRegister implements Runnable {
     public void run() {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (limbo != null) {
-            player.setGameMode(limbo.getGameMode());
             Utils.teleportToSpawn(player);
 
             if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
@@ -118,10 +116,6 @@ public class ProcessSyncPasswordRegister implements Runnable {
 
         if (!Settings.getmailAccount.isEmpty()) {
             m.send(player, MessageKey.ADD_EMAIL_MESSAGE);
-        }
-        if (player.getGameMode() != GameMode.CREATIVE && !Settings.isMovementAllowed) {
-            player.setAllowFlight(false);
-            player.setFlying(false);
         }
 
         if (Settings.applyBlindEffect) {

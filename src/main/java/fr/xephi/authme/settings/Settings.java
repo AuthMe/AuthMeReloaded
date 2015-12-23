@@ -66,14 +66,14 @@ public final class Settings {
         isMovementAllowed, isKickNonRegisteredEnabled,
         isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
         isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
-        isResetInventoryIfCreative, isCachingEnabled,
-        isKickOnWrongPasswordEnabled, getEnablePasswordVerifier,
+        isCachingEnabled,
+        isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
         protectInventoryBeforeLogInEnabled, isBackupActivated,
         isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
         rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
         useCaptcha, emailRegistration, multiverse, bungee,
         banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-        disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
+        disableSocialSpy, useEssentialsMotd, usePurge,
         purgePlayerDat, purgeEssentialsFile, supportOldPassword,
         purgeLimitedCreative, purgeAntiXray, purgePermissions,
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
@@ -168,8 +168,6 @@ public final class Settings {
         isForceSingleSessionEnabled = configFile.getBoolean("settings.restrictions.ForceSingleSession", true);
         isForceSpawnLocOnJoinEnabled = configFile.getBoolean("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
         isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
-        isForceSurvivalModeEnabled = configFile.getBoolean("settings.GameMode.ForceSurvivalMode", false);
-        isResetInventoryIfCreative = configFile.getBoolean("settings.GameMode.ResetInventoryIfCreative", false);
         getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp", 1);
         getPasswordHash = getPasswordHash();
         getUnloggedinGroup = configFile.getString("settings.security.unLoggedinGroup", "unLoggedInGroup");
@@ -202,7 +200,7 @@ public final class Settings {
         }
 
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
-        getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
+        enablePasswordConfirmation = configFile.getBoolean("settings.restrictions.enablePasswordConfirmation", true);
 
         protectInventoryBeforeLogInEnabled = configFile.getBoolean("settings.restrictions.ProtectInventoryBeforeLogIn", true);
         plugin.checkProtocolLib();
@@ -255,7 +253,6 @@ public final class Settings {
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
-        forceOnlyAfterLogin = configFile.getBoolean("settings.GameMode.ForceOnlyAfterLogin", false);
         useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
         usePurge = configFile.getBoolean("Purge.useAutoPurge", false);
         purgeDelay = configFile.getInt("Purge.daysBeforeRemovePlayer", 60);
@@ -579,6 +576,14 @@ public final class Settings {
         }
         if (!contains("settings.useWelcomeMessage")) {
             set("settings.useWelcomeMessage", true);
+            changes = true;
+        }
+        if (!contains("settings.restrictions.enablePasswordConfirmation")) {
+            set("settings.restrictions.enablePasswordConfirmation", true);
+            changes = true;
+        }
+        if (contains("settings.restrictions.enablePasswordVerifier")) {
+            set("settings.restrictions.enablePasswordVerifier", null);
             changes = true;
         }
         if (!contains("settings.security.unsafePasswords")) {

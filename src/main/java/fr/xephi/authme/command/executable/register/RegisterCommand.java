@@ -30,7 +30,7 @@ public class RegisterCommand implements ExecutableCommand {
 
         // Make sure the command arguments are valid
         final Player player = (Player) sender;
-        if (arguments.isEmpty() || (Settings.getEnablePasswordVerifier && arguments.size() < 2)) {
+        if (arguments.isEmpty() || (Settings.enablePasswordConfirmation && arguments.size() < 2)) {
             m.send(player, MessageKey.USAGE_REGISTER);
             return;
         }
@@ -50,7 +50,7 @@ public class RegisterCommand implements ExecutableCommand {
             management.performRegister(player, thePass, email);
             return;
         }
-        if (arguments.size() > 1 && Settings.getEnablePasswordVerifier) {
+        if (arguments.size() > 1 && Settings.enablePasswordConfirmation) {
             if (!arguments.get(0).equals(arguments.get(1))) {
                 m.send(player, MessageKey.PASSWORD_MATCH_ERROR);
                 return;

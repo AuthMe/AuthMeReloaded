@@ -7,7 +7,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
-import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
@@ -204,9 +203,6 @@ public class AsynchronousLogin {
 
                     @Override
                     public void run() {
-                        if (AuthMePlayerListener.gameMode != null && AuthMePlayerListener.gameMode.containsKey(name)) {
-                            player.setGameMode(AuthMePlayerListener.gameMode.get(name));
-                        }
                         player.kickPlayer(m.retrieveSingle(MessageKey.WRONG_PASSWORD));
                     }
                 });
