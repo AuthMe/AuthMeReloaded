@@ -338,7 +338,7 @@ public final class CommandInitializer {
             .description("Registration command")
             .detailedDescription("Command to register using AuthMeReloaded.")
             .withArgument("password", "Password", false)
-            .withArgument("verifyPassword", "Verify password", false)
+            .withArgument("verifyPassword", "Verify password", true)
             .permissions(ALLOWED, PlayerPermission.REGISTER)
             .executableCommand(new RegisterCommand())
             .build();
