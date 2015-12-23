@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -11,10 +12,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class PurgeLastPositionCommand extends ExecutableCommand {
+public class PurgeLastPositionCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
         final AuthMe plugin = AuthMe.getInstance();
         final Messages m = plugin.getMessages();
 

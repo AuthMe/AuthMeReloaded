@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
@@ -13,6 +14,7 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -40,7 +42,7 @@ public class AddEmailCommandTest {
         AddEmailCommand command = new AddEmailCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
 
         // then
         verify(authMeMock, never()).getManagement();
@@ -53,7 +55,7 @@ public class AddEmailCommandTest {
         AddEmailCommand command = new AddEmailCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList("mail@example", "other_example"));
+        command.executeCommand(sender, Arrays.asList("mail@example", "other_example"),  mock(CommandService.class));
 
         // then
         verify(authMeMock).getManagement();

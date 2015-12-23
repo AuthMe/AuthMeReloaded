@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.email;
 
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -9,6 +10,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link RecoverEmailCommand}.
@@ -28,7 +31,7 @@ public class RecoverEmailCommandTest {
         RecoverEmailCommand command = new RecoverEmailCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
 
         // then
     }

@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.register;
 
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -50,7 +51,7 @@ public class RegisterCommandTest {
         ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
 
         // then
         verify(sender).sendMessage(messageCaptor.capture());
@@ -65,7 +66,7 @@ public class RegisterCommandTest {
         RegisterCommand command = new RegisterCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
 
         // then
         verify(messagesMock).send(sender, MessageKey.USAGE_REGISTER);
@@ -79,7 +80,7 @@ public class RegisterCommandTest {
         RegisterCommand command = new RegisterCommand();
 
         // when
-        command.executeCommand(sender, Collections.singletonList("password"));
+        command.executeCommand(sender, Collections.singletonList("password"), mock(CommandService.class));
 
         // then
         verify(managementMock).performRegister(sender, "password", "");

@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
@@ -10,10 +11,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class VersionCommand extends ExecutableCommand {
+public class VersionCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments) {
+    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // Show some version info
         sender.sendMessage(ChatColor.GOLD + "==========[ " + Settings.helpHeader.toUpperCase() + " ABOUT ]==========");
         sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.getPluginName() + " v" + AuthMe.getPluginVersion() + ChatColor.GRAY + " (build: " + AuthMe.getPluginBuildNumber() + ")");

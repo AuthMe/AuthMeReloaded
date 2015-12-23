@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -17,10 +18,10 @@ import org.bukkit.entity.Player;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-public class RecoverEmailCommand extends ExecutableCommand {
+public class RecoverEmailCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments) {
+    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // Make sure the current command executor is a player
         if (!(sender instanceof Player)) {
             return;

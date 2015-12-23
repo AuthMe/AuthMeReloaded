@@ -1,5 +1,6 @@
 package fr.xephi.authme.command.executable.login;
 
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
@@ -40,7 +41,7 @@ public class LoginCommandTest {
         LoginCommand command = new LoginCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
 
         // then
         Mockito.verify(managementMock, never()).performLogin(any(Player.class), anyString(), anyBoolean());
@@ -53,7 +54,7 @@ public class LoginCommandTest {
         LoginCommand command = new LoginCommand();
 
         // when
-        command.executeCommand(sender, Collections.singletonList("password"));
+        command.executeCommand(sender, Collections.singletonList("password"), mock(CommandService.class));
 
         // then
         Mockito.verify(managementMock).performLogin(eq(sender), eq("password"), eq(false));

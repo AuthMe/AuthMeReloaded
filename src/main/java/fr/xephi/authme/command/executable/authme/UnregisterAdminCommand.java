@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -23,11 +24,11 @@ import java.util.List;
 /**
  * Admin command to unregister a player.
  */
-public class UnregisterAdminCommand extends ExecutableCommand {
+public class UnregisterAdminCommand implements ExecutableCommand {
 
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 

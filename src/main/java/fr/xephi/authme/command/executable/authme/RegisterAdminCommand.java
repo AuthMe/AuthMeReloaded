@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -17,10 +18,10 @@ import java.util.List;
 /**
  * Admin command to register a user.
  */
-public class RegisterAdminCommand extends ExecutableCommand {
+public class RegisterAdminCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 

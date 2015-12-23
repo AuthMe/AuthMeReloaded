@@ -41,7 +41,7 @@ public class CommandInitializerTest {
     @BeforeClass
     public static void initializeCommandManager() {
         WrapperMock.createInstance();
-        commands = CommandInitializer.getBaseCommands();
+        commands = CommandInitializer.buildCommands();
     }
 
     @Test

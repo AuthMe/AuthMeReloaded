@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.changepassword;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -59,7 +60,7 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
 
         // then
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
@@ -72,7 +73,7 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList("pass", "pass"));
+        command.executeCommand(sender, Arrays.asList("pass", "pass"), mock(CommandService.class));
 
         // then
         verify(messagesMock).send(sender, MessageKey.NOT_LOGGED_IN);
@@ -86,7 +87,7 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList("old123", "!pass"));
+        command.executeCommand(sender, Arrays.asList("old123", "!pass"), mock(CommandService.class));
 
         // then
         verify(messagesMock).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
@@ -101,7 +102,7 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList("old_", "Tester"));
+        command.executeCommand(sender, Arrays.asList("old_", "Tester"), mock(CommandService.class));
 
         // then
         verify(messagesMock).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
@@ -116,7 +117,7 @@ public class ChangePasswordCommandTest {
         Settings.passwordMaxLength = 3;
 
         // when
-        command.executeCommand(sender, Arrays.asList("12", "test"));
+        command.executeCommand(sender, Arrays.asList("12", "test"), mock(CommandService.class));
 
         // then
         verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
@@ -131,7 +132,7 @@ public class ChangePasswordCommandTest {
         Settings.getPasswordMinLen = 7;
 
         // when
-        command.executeCommand(sender, Arrays.asList("oldverylongpassword", "tester"));
+        command.executeCommand(sender, Arrays.asList("oldverylongpassword", "tester"), mock(CommandService.class));
 
         // then
         verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
@@ -146,7 +147,7 @@ public class ChangePasswordCommandTest {
         Settings.unsafePasswords = asList("test", "abc123");
 
         // when
-        command.executeCommand(sender, Arrays.asList("oldpw", "abc123"));
+        command.executeCommand(sender, Arrays.asList("oldpw", "abc123"), mock(CommandService.class));
 
         // then
         verify(messagesMock).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
@@ -160,7 +161,7 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList("abc123", "abc123"));
+        command.executeCommand(sender, Arrays.asList("abc123", "abc123"), mock(CommandService.class));
 
         // then
         verify(messagesMock, never()).send(eq(sender), any(MessageKey.class));

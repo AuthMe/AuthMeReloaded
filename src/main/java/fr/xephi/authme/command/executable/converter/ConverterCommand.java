@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.converter;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.converter.Converter;
 import fr.xephi.authme.converter.CrazyLoginConverter;
@@ -19,10 +20,10 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
-public class ConverterCommand extends ExecutableCommand {
+public class ConverterCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments) {
+    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 

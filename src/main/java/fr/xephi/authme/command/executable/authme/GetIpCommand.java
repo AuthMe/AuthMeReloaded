@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -8,10 +9,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class GetIpCommand extends ExecutableCommand {
+public class GetIpCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments) {
+    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         final AuthMe plugin = AuthMe.getInstance();
 
         // Get the player query

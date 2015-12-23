@@ -1,6 +1,7 @@
 package fr.xephi.authme.command.executable.captcha;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +43,7 @@ public class CaptchaCommandTest {
         ExecutableCommand command = new CaptchaCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>());
+        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
 
         // then
         assertThat(wrapperMock.wasMockCalled(AuthMe.class), equalTo(false));
@@ -56,7 +58,7 @@ public class CaptchaCommandTest {
         ExecutableCommand command = new CaptchaCommand();
 
         // when
-        command.executeCommand(player, new ArrayList<String>());
+        command.executeCommand(player, new ArrayList<String>(),  mock(CommandService.class));
 
         // then
         verify(wrapperMock.getMessages()).send(player, MessageKey.USAGE_LOGIN);
