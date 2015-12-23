@@ -128,7 +128,7 @@ settings:
         # Enable double check of password when you register
         # when it's true, registration require that kind of command:
         # /register <password> <confirmPassword>
-        enablePasswordVerifier: true
+        enablePasswordConfirmation: true
         # Should we protect the player inventory before logging in?
         ProtectInventoryBeforeLogIn: true
         # Should we display all other accounts from a player when he joins?
