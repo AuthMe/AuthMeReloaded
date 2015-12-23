@@ -1,23 +1,17 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerPermission;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static com.google.common.collect.Sets.newHashSet;
+import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -26,15 +20,10 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
-import static org.hamcrest.Matchers.stringContainsInOrder;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyListOf;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link CommandMapper}.
@@ -47,25 +36,7 @@ public class CommandMapperTest {
 
     @BeforeClass
     public static void setUpCommandHandler() {
-        // Register /authme
-        CommandDescription authMeBase = createCommand(null, null, singletonList("authme"));
-        // Register /authme login <password>
-        createCommand(PlayerPermission.LOGIN, authMeBase, singletonList("login"), newArgument("password", false));
-        // Register /authme register <password> <confirmation>, alias: /authme reg
-        createCommand(PlayerPermission.LOGIN, authMeBase, asList("register", "reg"),
-            newArgument("password", false), newArgument("confirmation", false));
-
-        // Register /email [player]
-        CommandDescription emailBase = createCommand(null, null, singletonList("email"));
-        // Register /email helptest -- use only to test for help command arguments special case
-        CommandDescription.builder().parent(emailBase).labels("helptest").executableCommand(mock(HelpCommand.class))
-            .description("test").detailedDescription("Test.").withArgument("Query", "", false).build();
-
-        // Register /unregister <player>, alias: /unreg
-        CommandDescription unregisterBase = createCommand(null, null, asList("unregister", "unreg"),
-            newArgument("player", false));
-
-        commands = newHashSet(authMeBase, emailBase, unregisterBase);
+        commands = TestCommandsUtil.generateCommands();
     }
 
     @Before
@@ -88,7 +59,7 @@ public class CommandMapperTest {
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
 
         // then
-        assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("login", "authme")));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "authme", "login")));
         assertThat(result.getResultStatus(), equalTo(FoundResultStatus.SUCCESS));
         assertThat(result.getArguments(), contains("test1"));
         assertThat(result.getDifference(), equalTo(0.0));
@@ -107,7 +78,7 @@ public class CommandMapperTest {
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
 
         // then
-        assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("register", "authme")));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "authme", "register")));
         assertThat(result.getResultStatus(), equalTo(FoundResultStatus.SUCCESS));
         assertThat(result.getLabels(), equalTo(parts.subList(0, 2)));
         assertThat(result.getArguments(), contains("arg1", "arg2"));
@@ -125,7 +96,7 @@ public class CommandMapperTest {
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
 
         // then
-        assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("register", "authme")));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "authme", "register")));
         assertThat(result.getResultStatus(), equalTo(FoundResultStatus.INCORRECT_ARGUMENTS));
         assertThat(result.getDifference(), equalTo(0.0));
         assertThat(result.getLabels(), equalTo(parts.subList(0, 2)));
@@ -143,7 +114,7 @@ public class CommandMapperTest {
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
 
         // then
-        assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("register", "authme")));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "authme", "register")));
         assertThat(result.getResultStatus(), equalTo(FoundResultStatus.INCORRECT_ARGUMENTS));
         assertThat(result.getDifference(), equalTo(0.0));
         assertThat(result.getLabels(), equalTo(parts));
@@ -161,7 +132,7 @@ public class CommandMapperTest {
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
 
         // then
-        assertThat(result.getCommandDescription(), equalTo(getChildWithLabel("register", "authme")));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "authme", "register")));
         assertThat(result.getResultStatus(), equalTo(FoundResultStatus.UNKNOWN_LABEL));
         assertThat(result.getDifference() < 0.75, equalTo(true));
         assertThat(result.getLabels(), equalTo(parts.subList(0, 2)));
@@ -199,7 +170,7 @@ public class CommandMapperTest {
 
         // then
         assertThat(result.getResultStatus(), equalTo(FoundResultStatus.INCORRECT_ARGUMENTS));
-        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel("unregister", commands)));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "unregister")));
         assertThat(result.getDifference(), equalTo(0.0));
         assertThat(result.getArguments(), empty());
         assertThat(result.getLabels(), equalTo(parts));
@@ -242,7 +213,7 @@ public class CommandMapperTest {
 
         // then
         assertThat(result.getResultStatus(), equalTo(FoundResultStatus.SUCCESS));
-        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel("unregister", commands)));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "unregister")));
         assertThat(result.getDifference(), equalTo(0.0));
         assertThat(result.getArguments(), contains("player1"));
         assertThat(result.getLabels(), contains("Unreg"));
@@ -260,151 +231,28 @@ public class CommandMapperTest {
 
         // then
         assertThat(result.getResultStatus(), equalTo(FoundResultStatus.INCORRECT_ARGUMENTS));
-        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel("unregister", commands)));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "unregister")));
         assertThat(result.getDifference(), equalTo(0.0));
         assertThat(result.getArguments(), contains("player1", "wrongArg"));
         assertThat(result.getLabels(), contains("unregistER"));
     }
 
-    // ----------
-    // processCommand() tests
-    // ----------
     @Test
-    @Ignore
-    public void shouldCallMappedCommandWithArgs() {
-        // given
-        String bukkitLabel = "Authme";
-        String[] bukkitArgs = {"Login", "myPass"};
-        CommandSender sender = mock(CommandSender.class);
-
-        CommandDescription command = getChildWithLabel("login", "authme");
-        given(permissionsManagerMock.hasPermission(sender, command)).willReturn(true);
-
-        // when
-        // FIXME #306 Move to CommandHandler test
-        // mapper.processCommand(sender, bukkitLabel, bukkitArgs);
-
-        // then
-        ArgumentCaptor<List> argsCaptor = ArgumentCaptor.forClass(List.class);
-        verify(command.getExecutableCommand())
-            .executeCommand(eq(sender), argsCaptor.capture(), any(CommandService.class));
-        List<String> argument = argsCaptor.getValue();
-        assertThat(argument, contains("myPass"));
-        // Ensure that no error message was issued to the command sender
-        verify(sender, never()).sendMessage(anyString());
-    }
-
-    @Test
-    @Ignore
-    public void shouldNotCallExecutableCommandIfNoPermission() {
-        // given
-        String bukkitLabel = "unreg";
-        String[] bukkitArgs = {"testPlayer"};
-        CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(any(CommandSender.class), any(CommandDescription.class)))
-            .willReturn(false);
-
-        // when
-        // FIXME #306 Move to CommandHandler test
-        // mapper.processCommand(sender, bukkitLabel, bukkitArgs);
-
-        // then
-        CommandDescription command = getCommandWithLabel("unregister", commands);
-        verify(permissionsManagerMock).hasPermission(sender, command);
-        verify(command.getExecutableCommand(), never())
-            .executeCommand(any(CommandSender.class), anyListOf(String.class), any(CommandService.class));
-
-        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
-        verify(sender).sendMessage(messageCaptor.capture());
-        String message = messageCaptor.getValue();
-        assertThat(message, stringContainsInOrder("You don't have permission"));
-    }
-
-    @Test
-    @Ignore
-    public void shouldStripWhitespace() {
-        // given
-        String bukkitLabel = "AuthMe";
-        String[] bukkitArgs = {" ", "", "LOGIN", "  ", "testArg", " "};
-        CommandSender sender = mock(CommandSender.class);
-
-        CommandDescription command = getChildWithLabel("login", "authme");
-        given(permissionsManagerMock.hasPermission(sender, command)).willReturn(true);
-
-        // when
-        // FIXME #306 Move to CommandHandler test
-        // mapper.processCommand(sender, bukkitLabel, bukkitArgs);
-
-        // then
-        ArgumentCaptor<List> argsCaptor = ArgumentCaptor.forClass(List.class);
-        verify(command.getExecutableCommand())
-            .executeCommand(eq(sender), argsCaptor.capture(), any(CommandService.class));
-        List<String> arguments = argsCaptor.getValue();
-        assertThat(arguments, contains("testArg"));
-        verify(sender, never()).sendMessage(anyString());
-    }
-
-    @Test
-    @Ignore
     public void shouldPassCommandPathAsArgumentsToHelpCommand() {
         // given
-        String bukkitLabel = "email";
-        String[] bukkitArgs = {"helptest", "arg1"};
+        List<String> parts = asList("email", "helptest", "arg1");
         CommandSender sender = mock(CommandSender.class);
-
-        CommandDescription command = getChildWithLabel("helptest", "email");
-        given(permissionsManagerMock.hasPermission(sender, command)).willReturn(true);
+        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
-        // FIXME #306 Move to CommandHandler test
-        // mapper.processCommand(sender, bukkitLabel, bukkitArgs);
+        FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
 
         // then
-        ArgumentCaptor<List> argsCaptor = ArgumentCaptor.forClass(List.class);
-        verify(command.getExecutableCommand())
-            .executeCommand(eq(sender), argsCaptor.capture(), any(CommandService.class));
-        List<String> arguments = argsCaptor.getValue();
-        assertThat(arguments, contains("email", "arg1"));
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.SUCCESS));
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "email", "helptest")));
+        assertThat(result.getLabels(), contains("email", "helptest"));
+        assertThat(result.getArguments(), contains("email", "arg1"));
+        assertThat(result.getDifference(), equalTo(0.0));
     }
 
-
-    // ----------
-    // Helper methods
-    // ----------
-    private static CommandDescription createCommand(PlayerPermission permission, CommandDescription parent,
-                                                    List<String> labels, CommandArgumentDescription... arguments) {
-        CommandDescription.CommandBuilder command = CommandDescription.builder()
-            .labels(labels)
-            .parent(parent)
-            .permissions(DefaultPermission.OP_ONLY, permission)
-            .description(labels.get(0))
-            .detailedDescription("'" + labels.get(0) + "' test command")
-            .executableCommand(mock(ExecutableCommand.class));
-
-        if (arguments != null && arguments.length > 0) {
-            for (CommandArgumentDescription argument : arguments) {
-                command.withArgument(argument.getName(), "Test description", argument.isOptional());
-            }
-        }
-
-        return command.build();
-    }
-
-    private static CommandArgumentDescription newArgument(String label, boolean isOptional) {
-        return new CommandArgumentDescription(label, "Test description", isOptional);
-    }
-
-    private static CommandDescription getChildWithLabel(String childLabel, String parentLabel) {
-        CommandDescription parent = getCommandWithLabel(parentLabel, commands);
-        return getCommandWithLabel(childLabel, parent.getChildren());
-    }
-
-    private static CommandDescription getCommandWithLabel(String label, Collection<CommandDescription> commands) {
-        for (CommandDescription child : commands) {
-            if (child.hasLabel(label)) {
-                return child;
-            }
-        }
-        throw new RuntimeException("Could not find command with label '" + label + "'");
-    }
 }
