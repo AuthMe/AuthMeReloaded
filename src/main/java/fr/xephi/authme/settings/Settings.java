@@ -67,7 +67,7 @@ public final class Settings {
         isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
         isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
         isResetInventoryIfCreative, isCachingEnabled,
-        isKickOnWrongPasswordEnabled, getEnablePasswordVerifier,
+        isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
         protectInventoryBeforeLogInEnabled, isBackupActivated,
         isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
         rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
@@ -202,7 +202,7 @@ public final class Settings {
         }
 
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
-        getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
+        enablePasswordConfirmation = configFile.getBoolean("settings.restrictions.enablePasswordConfirmation", true);
 
         protectInventoryBeforeLogInEnabled = configFile.getBoolean("settings.restrictions.ProtectInventoryBeforeLogIn", true);
         plugin.checkProtocolLib();
@@ -579,6 +579,14 @@ public final class Settings {
         }
         if (!contains("settings.useWelcomeMessage")) {
             set("settings.useWelcomeMessage", true);
+            changes = true;
+        }
+        if (!contains("settings.restrictions.enablePasswordConfirmation")) {
+            set("settings.restrictions.enablePasswordConfirmation", true);
+            changes = true;
+        }
+        if (contains("settings.restrictions.enablePasswordVerifier")) {
+            set("settings.restrictions.enablePasswordVerifier", null);
             changes = true;
         }
         if (!contains("settings.security.unsafePasswords")) {
