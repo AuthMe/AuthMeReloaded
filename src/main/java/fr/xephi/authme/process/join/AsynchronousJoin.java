@@ -212,7 +212,7 @@ public class AsynchronousJoin {
                 if (Settings.applyBlindEffect) {
                     int blindTimeOut;
                     // Allow infinite blindness effect
-                    if(timeOut < 0) {
+                    if(timeOut <= 0) {
                         blindTimeOut = 99999;
                     } else {
                         blindTimeOut = timeOut;
