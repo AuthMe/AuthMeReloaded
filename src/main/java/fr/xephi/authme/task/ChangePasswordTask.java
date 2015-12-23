@@ -10,6 +10,9 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -40,7 +43,7 @@ public class ChangePasswordTask implements Runnable {
     public void run() {
         Messages m = plugin.getMessages();
         try {
-            String name = player.getName().toLowerCase();
+            final String name = player.getName().toLowerCase();
             String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, newPassword, name);
             PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
             if (PasswordSecurity.comparePasswordWithHash(oldPassword, auth.getHash(), player.getName())) {
@@ -58,6 +61,23 @@ public class ChangePasswordTask implements Runnable {
                 PlayerCache.getInstance().updatePlayer(auth);
                 m.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
                 ConsoleLogger.info(player.getName() + " changed his password");
+                if (Settings.bungee)
+                {
+                	final String hash = auth.getHash();
+                	final String salt = auth.getSalt();
+                    plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
+
+    					@Override
+    					public void run() {
+    					        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+    					        out.writeUTF("Forward");
+    					        out.writeUTF("ALL");
+    					        out.writeUTF("AuthMe");
+    					        out.writeUTF("changepassword;" + name + ";" + hash + ";" + salt);
+    					        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+    					}
+                    });
+                }
             } else {
                 m.send(player, MessageKey.WRONG_PASSWORD);
             }

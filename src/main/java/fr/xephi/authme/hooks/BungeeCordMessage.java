@@ -47,7 +47,7 @@ public class BungeeCordMessage implements PluginMessageListener {
         }
         if (subChannel.equalsIgnoreCase("AuthMe")) {
             String str = in.readUTF();
-            String[] args = str.split(";");
+            final String[] args = str.split(";");
             final String act = args[0];
             final String name = args[1];
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
@@ -70,6 +70,14 @@ public class BungeeCordMessage implements PluginMessageListener {
                     } else if ("register".equals(act)) {
                         ConsoleLogger.info("Player " + auth.getNickname()
                             + " has registered out from one of your server!");
+                    }
+                    else if ("changepassword".equals(act)) {
+                    	final String password = args[2];
+                    	auth.setHash(password);
+                    	if (args.length == 4)
+                    		auth.setSalt(args[3]);
+                    	PlayerCache.getInstance().updatePlayer(auth);
+                    	plugin.database.updatePassword(auth);
                     }
 
                 }
