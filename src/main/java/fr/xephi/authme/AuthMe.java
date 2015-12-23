@@ -83,10 +83,7 @@ public class AuthMe extends JavaPlugin {
     private static String pluginVersion = "N/D";
     private static String pluginBuildNumber = "Unknown";
 
-    /* 
-     * Private Instances
-     * TODO: should we set every instance to null as initial status?
-     */
+    // Private Instances
     private static AuthMe plugin;
     private static Server server;
     private static Wrapper wrapper = Wrapper.getInstance();
@@ -194,6 +191,7 @@ public class AuthMe extends JavaPlugin {
         // Set various instances
         server = getServer();
         plugin = this;
+
         setPluginInfos();
 
         // Set up the permissions manager and command handler
