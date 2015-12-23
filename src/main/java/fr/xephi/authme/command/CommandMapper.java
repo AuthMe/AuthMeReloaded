@@ -38,12 +38,14 @@ public class CommandMapper {
     private final Set<CommandDescription> baseCommands;
     private final Messages messages;
     private final PermissionsManager permissionsManager;
+    private final HelpProvider helpProvider;
 
     public CommandMapper(Set<CommandDescription> baseCommands, Messages messages,
-                         PermissionsManager permissionsManager) {
+                         PermissionsManager permissionsManager, HelpProvider helpProvider) {
         this.baseCommands = baseCommands;
         this.messages = messages;
         this.permissionsManager = permissionsManager;
+        this.helpProvider = helpProvider;
     }
 
     public void outputStandardError(CommandSender sender, FoundCommandResult result) {
@@ -97,7 +99,7 @@ public class CommandMapper {
 
         // Show the command argument help
         sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
-        List<String> lines = HelpProvider.printHelp(result, HelpProvider.SHOW_ARGUMENTS);
+        List<String> lines = helpProvider.printHelp(sender, result, HelpProvider.SHOW_ARGUMENTS);
         for (String line : lines) {
             sender.sendMessage(line);
         }

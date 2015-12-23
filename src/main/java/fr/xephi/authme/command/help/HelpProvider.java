@@ -49,28 +49,16 @@ public class HelpProvider {
         this.permissionsManager = permissionsManager;
     }
 
-    public static List<String> printHelp(FoundCommandResult foundCommand, int options) {
-        return printHelp(foundCommand, null, null, options);
-    }
-
     public List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
-        // FIXME don't overload and pass to the static method
-        // FIXME remove the static methods altogether
-        return printHelp(result, sender, permissionsManager, options);
-    }
-
-    // sender and permissions manager may be null if SHOW_PERMISSIONS is not set
-    public static List<String> printHelp(FoundCommandResult foundCommand, CommandSender sender,
-                                         PermissionsManager permissionsManager, int options) {
-        if (foundCommand.getCommandDescription() == null) {
+        if (result.getCommandDescription() == null) {
             return singletonList(ChatColor.DARK_RED + "Failed to retrieve any help information!");
         }
 
         List<String> lines = new ArrayList<>();
         lines.add(ChatColor.GOLD + "==========[ " + Settings.helpHeader + " HELP ]==========");
 
-        CommandDescription command = foundCommand.getCommandDescription();
-        List<String> labels = ImmutableList.copyOf(foundCommand.getLabels());
+        CommandDescription command = result.getCommandDescription();
+        List<String> labels = ImmutableList.copyOf(result.getLabels());
         List<String> correctLabels = ImmutableList.copyOf(filterCorrectLabels(command, labels));
 
         if (!hasFlag(HIDE_COMMAND, options)) {

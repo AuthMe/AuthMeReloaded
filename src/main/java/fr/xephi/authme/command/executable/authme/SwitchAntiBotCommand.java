@@ -3,11 +3,17 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.command.FoundCommandResult;
+import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import java.util.Arrays;
 import java.util.List;
 
+/**
+ * Display or change the status of the antibot mod.
+ */
 public class SwitchAntiBotCommand implements ExecutableCommand {
 
     @Override
@@ -25,16 +31,12 @@ public class SwitchAntiBotCommand implements ExecutableCommand {
             sender.sendMessage("[AuthMe] AntiBot Manual Override: enabled!");
         } else if ("OFF".equalsIgnoreCase(newState)) {
             AntiBot.overrideAntiBotStatus(false);
-            sender.sendMessage("[AuthMe] AntiBotMod Manual Override: disabled!");
+            sender.sendMessage("[AuthMe] AntiBot Manual Override: disabled!");
         } else {
             sender.sendMessage(ChatColor.DARK_RED + "Invalid AntiBot mode!");
-            // FIXME #306: Restore help showing logic
-            /*
-            CommandHandler commandHandler = AuthMe.getInstance().getCommandHandler();
-            FoundCommandResult foundCommandResult =
-                commandHandler.mapPartsToCommand(Arrays.asList("authme", "antibot"));
-            HelpProvider.printHelp(foundCommandResult, HelpProvider.SHOW_ARGUMENTS);
-            sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/authme help antibot");*/
+            FoundCommandResult result = commandService.mapPartsToCommand(sender, Arrays.asList("authme", "antibot"));
+            commandService.outputHelp(sender, result, HelpProvider.SHOW_ARGUMENTS);
+            sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/authme help antibot");
         }
     }
 }

@@ -275,7 +275,6 @@ public class CommandInitializerTest {
      * count of arguments.
      */
     @Test
-    @Ignore // TODO #306 ljacqu 20151214: Un-ignore this test and fix the offending command
     public void shouldPointToSameExecutableCommandWithConsistentArgumentCount() {
         // given
         final Map<Class<? extends ExecutableCommand>, Integer> mandatoryArguments = new HashMap<>();

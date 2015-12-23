@@ -199,6 +199,13 @@ public class AuthMe extends JavaPlugin {
 
         setPluginInfos();
 
+        // Load settings and custom configurations, if it fails, stop the server due to security reasons.
+        if (loadSettings()) {
+            server.shutdown();
+            setEnabled(false);
+            return;
+        }
+
         // Set up messages
         messages = Messages.getInstance();
 
@@ -208,13 +215,6 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the module manager
         setupModuleManager();
-
-        // Load settings and custom configurations, if it fails, stop the server due to security reasons.
-        if (loadSettings()) {
-            server.shutdown();
-            setEnabled(false);
-            return;
-        }
 
         // Setup otherAccounts file
         this.otherAccounts = OtherAccounts.getInstance();
@@ -412,7 +412,7 @@ public class AuthMe extends JavaPlugin {
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager);
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
-        CommandMapper mapper = new CommandMapper(baseCommands, messages, permissionsManager);
+        CommandMapper mapper = new CommandMapper(baseCommands, messages, permissionsManager, helpProvider);
         CommandService commandService = new CommandService(this, mapper, helpProvider, messages);
         return new CommandHandler(commandService);
     }
