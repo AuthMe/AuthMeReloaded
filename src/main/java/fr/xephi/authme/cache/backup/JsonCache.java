@@ -154,7 +154,6 @@ public class JsonCache {
             JsonElement e;
             String group = null;
             boolean operator = false;
-            boolean flying = false;
 
             if ((e = jsonObject.get("group")) != null) {
                 group = e.getAsString();
@@ -162,11 +161,8 @@ public class JsonCache {
             if ((e = jsonObject.get("operator")) != null) {
                 operator = e.getAsBoolean();
             }
-            if ((e = jsonObject.get("flying")) != null) {
-                flying = e.getAsBoolean();
-            }
 
-            return new DataFileCache(group, operator, flying);
+            return new DataFileCache(group, operator);
         }
     }
 
@@ -187,7 +183,6 @@ public class JsonCache {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("group", dataFileCache.getGroup());
             jsonObject.addProperty("operator", dataFileCache.getOperator());
-            jsonObject.addProperty("flying", dataFileCache.isFlying());
 
             return jsonObject;
         }

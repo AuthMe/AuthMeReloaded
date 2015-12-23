@@ -77,10 +77,6 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         if (Settings.applyBlindEffect)
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
         player.setOp(false);
-        if (!Settings.isMovementAllowed) {
-            player.setAllowFlight(true);
-            player.setFlying(true);
-        }
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
         if (Settings.bungee)

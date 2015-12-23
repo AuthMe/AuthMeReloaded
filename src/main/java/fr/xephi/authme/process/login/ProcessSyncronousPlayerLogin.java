@@ -67,16 +67,6 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
         player.setOp(limbo.getOperator());
     }
 
-    protected void restoreFlyghtState() {
-        if (Settings.isForceSurvivalModeEnabled) {
-            player.setAllowFlight(false);
-            player.setFlying(false);
-            return;
-        }
-        player.setAllowFlight(limbo.isFlying());
-        player.setFlying(limbo.isFlying());
-    }
-
     protected void packQuitLocation() {
         Utils.packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
     }
@@ -160,13 +150,6 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
                 }
             }
 
-            if (Settings.isForceSurvivalModeEnabled && Settings.forceOnlyAfterLogin) {
-                Utils.forceGM(player);
-            } else {
-                player.setGameMode(limbo.getGameMode());
-            }
-
-            restoreFlyghtState();
             if (Settings.protectInventoryBeforeLogInEnabled) {
                 restoreInventory();
             }
