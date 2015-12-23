@@ -24,7 +24,7 @@ import static java.util.Collections.singletonList;
 /**
  * Help syntax generator for AuthMe commands.
  */
-public final class HelpProvider {
+public class HelpProvider {
 
     // --- Bit flags ---
     /** Set to <i>not</i> show the command. */
@@ -43,11 +43,20 @@ public final class HelpProvider {
     /** Shortcut for setting all options apart from {@link HelpProvider#HIDE_COMMAND}. */
     public static final int ALL_OPTIONS = ~HIDE_COMMAND;
 
-    private HelpProvider() {
+    private final PermissionsManager permissionsManager;
+
+    public HelpProvider(PermissionsManager permissionsManager) {
+        this.permissionsManager = permissionsManager;
     }
 
     public static List<String> printHelp(FoundCommandResult foundCommand, int options) {
         return printHelp(foundCommand, null, null, options);
+    }
+
+    public List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
+        // FIXME don't overload and pass to the static method
+        // FIXME remove the static methods altogether
+        return printHelp(result, sender, permissionsManager, options);
     }
 
     // sender and permissions manager may be null if SHOW_PERMISSIONS is not set

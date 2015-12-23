@@ -14,6 +14,8 @@ import java.util.List;
  *       count doesn't match. Guarantees that the command description field is not null; difference is 0.0</li>
  *   <li>{@link FoundResultStatus#UNKNOWN_LABEL}: The labels could not be mapped to a command. The command description
  *       may be set to the most similar command, or it may be null. Difference is above 0.0.</li>
+ *   <li>{@link FoundResultStatus#NO_PERMISSION}: The command could be matched properly but the sender does not have
+ *       permission to execute it.</li>
  *   <li>{@link FoundResultStatus#MISSING_BASE_COMMAND} should never occur. All other fields may be null and any further
  *       processing of the object should be aborted.</li>
  * </ul>
@@ -52,17 +54,6 @@ public class FoundCommandResult {
         this.arguments = arguments;
         this.difference = difference;
         this.resultStatus = resultStatus;
-    }
-
-    /**
-     * Constructor for a fully successfully matched command.
-     *
-     * @param commandDescription The matched command description.
-     * @param labels             The labels used to access the command.
-     * @param arguments          The command arguments.
-     */
-    public FoundCommandResult(CommandDescription commandDescription, List<String> labels, List<String> arguments) {
-        this(commandDescription, labels, arguments, 0.0, FoundResultStatus.SUCCESS);
     }
 
     public CommandDescription getCommandDescription() {

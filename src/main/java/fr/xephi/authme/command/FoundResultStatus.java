@@ -11,6 +11,8 @@ public enum FoundResultStatus {
 
     UNKNOWN_LABEL,
 
+    NO_PERMISSION,
+
     MISSING_BASE_COMMAND
 
 }

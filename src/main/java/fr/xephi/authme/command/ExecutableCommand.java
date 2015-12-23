@@ -7,13 +7,15 @@ import java.util.List;
 /**
  * Base class for AuthMe commands that can be executed.
  */
-public abstract class ExecutableCommand {
+public interface ExecutableCommand {
 
     /**
      * Execute the command with the given arguments.
      *
-     * @param sender    The command sender.
-     * @param arguments The arguments.
+     * @param sender         The command sender.
+     * @param arguments      The arguments.
+     * @param commandService The command service.
      */
-    public abstract void executeCommand(CommandSender sender, List<String> arguments);
+    void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService);
+
 }

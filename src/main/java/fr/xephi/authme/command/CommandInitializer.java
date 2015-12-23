@@ -27,6 +27,7 @@ import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
 import fr.xephi.authme.command.executable.converter.ConverterCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
+import fr.xephi.authme.command.executable.email.EmailBaseCommand;
 import fr.xephi.authme.command.executable.email.RecoverEmailCommand;
 import fr.xephi.authme.command.executable.login.LoginCommand;
 import fr.xephi.authme.command.executable.logout.LogoutCommand;
@@ -36,6 +37,7 @@ import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -47,40 +49,17 @@ import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
  */
 public final class CommandInitializer {
 
-    private static Set<CommandDescription> baseCommands;
-
     private CommandInitializer() {
         // Helper class
     }
 
-    public static Set<CommandDescription> getBaseCommands() {
-        if (baseCommands == null) {
-            initializeCommands();
-        }
-        return baseCommands;
-    }
-
-    private static void initializeCommands() {
-        // Create a list of help command labels
-        final List<String> helpCommandLabels = Arrays.asList("help", "hlp", "h", "sos", "?");
-        final ExecutableCommand helpCommandExecutable = new HelpCommand();
-
+    public static Set<CommandDescription> buildCommands() {
         // Register the base AuthMe Reloaded command
         final CommandDescription AUTHME_BASE = CommandDescription.builder()
             .labels("authme")
             .description("Main command")
             .detailedDescription("The main AuthMeReloaded command. The root for all admin commands.")
             .executableCommand(new AuthMeCommand())
-            .build();
-
-        // Register the help command
-        CommandDescription.builder()
-            .parent(AUTHME_BASE)
-            .labels(helpCommandLabels)
-            .description("View help")
-            .detailedDescription("View detailed help pages about AuthMeReloaded commands.")
-            .withArgument("query", "The command or query to view help for.", true)
-            .executableCommand(helpCommandExecutable)
             .build();
 
         // Register the register command
@@ -301,16 +280,6 @@ public final class CommandInitializer {
             .executableCommand(new LoginCommand())
             .build();
 
-        // Register the help command
-        CommandDescription.builder()
-            .parent(LOGIN_BASE)
-            .labels(helpCommandLabels)
-            .description("View Help")
-            .detailedDescription("View detailed help pages about AuthMeReloaded login commands.")
-            .withArgument("query", "The command or query to view help for.", true)
-            .executableCommand(helpCommandExecutable)
-            .build();
-
         // Register the base logout command
         CommandDescription LOGOUT_BASE = CommandDescription.builder()
             .parent(null)
@@ -319,16 +288,6 @@ public final class CommandInitializer {
             .detailedDescription("Command to logout using AuthMeReloaded.")
             .permissions(ALLOWED, PlayerPermission.LOGOUT)
             .executableCommand(new LogoutCommand())
-            .build();
-
-        // Register the help command
-        CommandDescription.builder()
-            .parent(LOGOUT_BASE)
-            .labels(helpCommandLabels)
-            .description("View help")
-            .detailedDescription("View detailed help pages about AuthMeReloaded logout commands.")
-            .withArgument("query", "The command or query to view help for.", true)
-            .executableCommand(helpCommandExecutable)
             .build();
 
         // Register the base register command
@@ -343,16 +302,6 @@ public final class CommandInitializer {
             .executableCommand(new RegisterCommand())
             .build();
 
-        // Register the help command
-        CommandDescription.builder()
-            .parent(REGISTER_BASE)
-            .labels(helpCommandLabels)
-            .description("View help")
-            .detailedDescription("View detailed help pages about AuthMeReloaded register commands.")
-            .withArgument("query", "The command or query to view help for.", true)
-            .executableCommand(helpCommandExecutable)
-            .build();
-
         // Register the base unregister command
         CommandDescription UNREGISTER_BASE = CommandDescription.builder()
             .parent(null)
@@ -362,16 +311,6 @@ public final class CommandInitializer {
             .withArgument("password", "Password", false)
             .permissions(ALLOWED, PlayerPermission.UNREGISTER)
             .executableCommand(new UnregisterCommand())
-            .build();
-
-        // Register the help command
-        CommandDescription.builder()
-            .parent(UNREGISTER_BASE)
-            .labels(helpCommandLabels)
-            .description("View help")
-            .detailedDescription("View detailed help pages about AuthMeReloaded unregister commands.")
-            .withArgument("query", "The command or query to view help for.", true)
-            .executableCommand(helpCommandExecutable)
             .build();
 
         // Register the base changepassword command
@@ -386,33 +325,13 @@ public final class CommandInitializer {
             .executableCommand(new ChangePasswordCommand())
             .build();
 
-        // Register the help command
-        CommandDescription.builder()
-            .parent(CHANGE_PASSWORD_BASE)
-            .labels(helpCommandLabels)
-            .description("View help")
-            .detailedDescription("View detailed help pages about AuthMeReloaded changepassword commands.")
-            .withArgument("query", "The command or query to view help for.", true)
-            .executableCommand(helpCommandExecutable)
-            .build();
-
         // Register the base Email command
         CommandDescription EMAIL_BASE = CommandDescription.builder()
             .parent(null)
             .labels("email", "mail")
             .description("Email command")
             .detailedDescription("The AuthMeReloaded Email command base.")
-            .executableCommand(helpCommandExecutable)
-            .build();
-
-        // Register the help command
-        CommandDescription.builder()
-            .parent(EMAIL_BASE)
-            .labels(helpCommandLabels)
-            .description("View help")
-            .detailedDescription("View detailed help pages about AuthMeReloaded email commands.")
-            .withArgument("query", "The command or query to view help for.", true)
-            .executableCommand(helpCommandExecutable)
+            .executableCommand(new EmailBaseCommand())
             .build();
 
         // Register the add command
@@ -462,16 +381,6 @@ public final class CommandInitializer {
             .executableCommand(new CaptchaCommand())
             .build();
 
-        // Register the help command
-        CommandDescription.builder()
-            .parent(CAPTCHA_BASE)
-            .labels(helpCommandLabels)
-            .description("View help")
-            .detailedDescription("View detailed help pages about AuthMeReloaded captcha commands.")
-            .withArgument("query", "The command or query to view help for.", true)
-            .executableCommand(helpCommandExecutable)
-            .build();
-
         // Register the base converter command
         CommandDescription CONVERTER_BASE = CommandDescription.builder()
             .parent(null)
@@ -484,18 +393,7 @@ public final class CommandInitializer {
             .executableCommand(new ConverterCommand())
             .build();
 
-        // Register the help command
-        CommandDescription.builder()
-            .parent(CONVERTER_BASE)
-            .labels(helpCommandLabels)
-            .description("View help")
-            .detailedDescription("View detailed help pages about AuthMeReloaded converter commands.")
-            .withArgument("query", "The command or query to view help for.", true)
-            .executableCommand(helpCommandExecutable)
-            .build();
-
-        // Add the base commands to the commands array
-        baseCommands = ImmutableSet.of(
+        Set<CommandDescription> baseCommands = ImmutableSet.of(
             AUTHME_BASE,
             LOGIN_BASE,
             LOGOUT_BASE,
@@ -505,5 +403,29 @@ public final class CommandInitializer {
             EMAIL_BASE,
             CAPTCHA_BASE,
             CONVERTER_BASE);
+
+        setHelpOnAllBases(baseCommands);
+        return baseCommands;
+    }
+
+    /**
+     * Set the help command on all base commands, e.g. to register /authme help or /register help.
+     *
+     * @param commands The list of base commands to register a help child command on
+     */
+    private static void setHelpOnAllBases(Collection<CommandDescription> commands) {
+        final HelpCommand helpCommandExecutable = new HelpCommand();
+        final List<String> helpCommandLabels = Arrays.asList("help", "hlp", "h", "sos", "?");
+
+        for (CommandDescription base : commands) {
+            CommandDescription.builder()
+                .parent(base)
+                .labels(helpCommandLabels)
+                .description("View help")
+                .detailedDescription("View detailed help for /" + base.getLabels().get(0) + " commands.")
+                .withArgument("query", "The command or query to view help for.", true)
+                .executableCommand(helpCommandExecutable)
+                .build();
+        }
     }
 }

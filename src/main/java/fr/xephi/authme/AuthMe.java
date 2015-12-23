@@ -9,8 +9,12 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.command.CommandInitializer;
+import fr.xephi.authme.command.CommandMapper;
+import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.converter.Converter;
 import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.CacheDataSource;
@@ -68,6 +72,7 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
@@ -196,9 +201,12 @@ public class AuthMe extends JavaPlugin {
         plugin = this;
         setupConstants();
 
+        // Set up messages
+        messages = Messages.getInstance();
+
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        commandHandler = new CommandHandler(CommandInitializer.getBaseCommands(), permsMan);
+        commandHandler = initializeCommandHandler(permsMan, messages);
 
         // Set up the module manager
         setupModuleManager();
@@ -213,8 +221,6 @@ public class AuthMe extends JavaPlugin {
         // Setup otherAccounts file
         this.otherAccounts = OtherAccounts.getInstance();
 
-        // Setup messages
-        this.messages = Messages.getInstance();
 
         // Set up Metrics
         setupMetrics();
@@ -403,6 +409,14 @@ public class AuthMe extends JavaPlugin {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
         }
+    }
+
+    private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages) {
+        HelpProvider helpProvider = new HelpProvider(permissionsManager);
+        Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
+        CommandMapper mapper = new CommandMapper(baseCommands, messages, permissionsManager);
+        CommandService commandService = new CommandService(this, mapper, helpProvider, messages);
+        return new CommandHandler(commandService);
     }
 
     /**
@@ -924,10 +938,6 @@ public class AuthMe extends JavaPlugin {
 
     public ModuleManager getModuleManager() {
         return moduleManager;
-    }
-
-    public CommandHandler getCommandHandler() {
-        return this.commandHandler;
     }
 
     /**
