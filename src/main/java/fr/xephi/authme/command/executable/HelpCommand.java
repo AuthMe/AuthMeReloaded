@@ -43,8 +43,9 @@ public class HelpCommand extends ExecutableCommand {
             }
         }
 
+        int mappedCommandLevel = foundCommandResult.getCommandDescription().getLabelCount();
         PermissionsManager permissionsManager = Wrapper.getInstance().getAuthMe().getPermissionsManager();
-        List<String> lines = arguments.size() == 1
+        List<String> lines = (mappedCommandLevel == 1)
             ? HelpProvider.printHelp(foundCommandResult, HelpProvider.SHOW_CHILDREN)
             : HelpProvider.printHelp(foundCommandResult, sender, permissionsManager, HelpProvider.ALL_OPTIONS);
         for (String line : lines) {
