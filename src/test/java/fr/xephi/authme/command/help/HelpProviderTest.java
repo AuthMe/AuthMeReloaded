@@ -1,15 +1,38 @@
 package fr.xephi.authme.command.help;
 
 import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.command.FoundCommandResult;
+import fr.xephi.authme.command.FoundResultStatus;
+import fr.xephi.authme.command.TestCommandsUtil;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.WrapperMock;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
+import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
+import static fr.xephi.authme.command.help.HelpProvider.ALL_OPTIONS;
+import static fr.xephi.authme.command.help.HelpProvider.HIDE_COMMAND;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_ALTERNATIVES;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_ARGUMENTS;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_CHILDREN;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_LONG_DESCRIPTION;
+import static fr.xephi.authme.command.help.HelpProvider.SHOW_PERMISSIONS;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -17,49 +40,292 @@ import static org.mockito.Mockito.mock;
  */
 public class HelpProviderTest {
 
-    private static CommandDescription parent;
-    private static CommandDescription child;
+    private HelpProvider helpProvider;
+    private PermissionsManager permissionsManager;
+    private CommandSender sender;
+    private static Set<CommandDescription> commands;
 
     @BeforeClass
     public static void setUpCommands() {
-        parent = CommandDescription.builder()
-            .executableCommand(mock(ExecutableCommand.class))
-            .labels("base", "b")
-            .description("Parent")
-            .detailedDescription("Test base command.")
-            .build();
-        child = CommandDescription.builder()
-            .executableCommand(mock(ExecutableCommand.class))
-            .parent(parent)
-            .labels("child", "c")
-            .description("Child")
-            .detailedDescription("Child test command.")
-            .withArgument("Argument", "The argument", false)
-            .build();
+        WrapperMock.createInstance();
+        Settings.helpHeader = "Help";
+        commands = TestCommandsUtil.generateCommands();
+    }
+
+    @Before
+    public void setUpHelpProvider() {
+        permissionsManager = mock(PermissionsManager.class);
+        helpProvider = new HelpProvider(permissionsManager);
+        sender = mock(CommandSender.class);
+    }
+
+    @Test
+    public void shouldShowLongDescription() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme", "login");
+        FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, SHOW_LONG_DESCRIPTION);
+
+        // then
+        assertThat(lines, hasSize(5));
+        assertThat(lines.get(0), containsString(Settings.helpHeader + " HELP"));
+        assertThat(removeColors(lines.get(1)), containsString("Command: /authme login <password>"));
+        assertThat(removeColors(lines.get(2)), containsString("Short description: login cmd"));
+        assertThat(removeColors(lines.get(3)), equalTo("Detailed description:"));
+        assertThat(removeColors(lines.get(4)), containsString("'login' test command"));
+    }
+
+    @Test
+    public void shouldShowArguments() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme", "register");
+        FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+
+        // then
+        assertThat(lines, hasSize(4));
+        assertThat(lines.get(0), containsString(Settings.helpHeader + " HELP"));
+        assertThat(removeColors(lines.get(1)), equalTo("Arguments:"));
+        assertThat(removeColors(lines.get(2)), containsString("password: 'password' argument description"));
+        assertThat(removeColors(lines.get(3)), containsString("confirmation: 'confirmation' argument description"));
+    }
+
+    @Test
+    public void shouldShowSpecifyIfArgumentIsOptional() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "email");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("email"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+
+        // then
+        assertThat(lines, hasSize(3));
+        assertThat(removeColors(lines.get(2)), containsString("player: 'player' argument description (Optional)"));
+    }
+
+    /** Verifies that the "Arguments:" line is not shown if the command has no arguments. */
+    @Test
+    public void shouldNotShowAnythingIfCommandHasNoArguments() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ARGUMENTS);
+
+        // then
+        assertThat(lines, hasSize(1)); // only has the help banner
+    }
+
+    @Test
+    public void shouldShowAndEvaluatePermissions() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme", "login");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+        given(sender.isOp()).willReturn(true);
+        given(permissionsManager.hasPermission(sender, PlayerPermission.LOGIN)).willReturn(true);
+        given(permissionsManager.hasPermission(sender, command)).willReturn(true);
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+
+        // then
+        assertThat(lines, hasSize(5));
+        assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
+        assertThat(removeColors(lines.get(2)),
+            containsString(PlayerPermission.LOGIN.getNode() + " (You have permission)"));
+        assertThat(removeColors(lines.get(3)), containsString("Default: OP's only (You have permission)"));
+        assertThat(removeColors(lines.get(4)), containsString("Result: You have permission"));
+    }
+
+    @Test
+    public void shouldShowAndEvaluateForbiddenPermissions() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme", "login");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+        given(sender.isOp()).willReturn(false);
+        given(permissionsManager.hasPermission(sender, PlayerPermission.LOGIN)).willReturn(false);
+        given(permissionsManager.hasPermission(sender, command)).willReturn(false);
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+
+        // then
+        assertThat(lines, hasSize(5));
+        assertThat(removeColors(lines.get(1)), containsString("Permissions:"));
+        assertThat(removeColors(lines.get(2)),
+            containsString(PlayerPermission.LOGIN.getNode() + " (No permission)"));
+        assertThat(removeColors(lines.get(3)), containsString("Default: OP's only (No permission)"));
+        assertThat(removeColors(lines.get(4)), containsString("Result: No permission"));
+    }
+
+    @Test
+    public void shouldNotShowAnythingForEmptyPermissions() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+
+        // then
+        assertThat(lines, hasSize(1));
+    }
+
+    @Test
+    public void shouldNotShowAnythingForNullPermissionsOnCommand() {
+        // given
+        CommandDescription command = mock(CommandDescription.class);
+        given(command.getCommandPermissions()).willReturn(null);
+        given(command.getLabels()).willReturn(Collections.singletonList("test"));
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("test"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_PERMISSIONS);
+
+        // then
+        assertThat(lines, hasSize(1));
+    }
+
+    @Test
+    public void shouldShowAlternatives() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme", "register");
+        FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "reg"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
+
+        // then
+        assertThat(lines, hasSize(4));
+        assertThat(removeColors(lines.get(1)), containsString("Alternatives:"));
+        assertThat(removeColors(lines.get(2)), containsString("/authme register <password> <confirmation>"));
+        assertThat(removeColors(lines.get(3)), containsString("/authme r <password> <confirmation>"));
+    }
+
+    @Test
+    public void shouldNotShowAnythingIfHasNoAlternatives() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme", "login");
+        FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "login"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_ALTERNATIVES);
+
+        // then
+        assertThat(lines, hasSize(1));
+    }
+
+    @Test
+    public void shouldShowChildren() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
+
+        // then
+        assertThat(lines, hasSize(4));
+        assertThat(removeColors(lines.get(1)), containsString("Commands:"));
+        assertThat(removeColors(lines.get(2)), containsString("/authme login: login cmd"));
+        assertThat(removeColors(lines.get(3)), containsString("/authme register: register cmd"));
+    }
+
+    @Test
+    public void shouldNotShowCommandsTitleForCommandWithNoChildren() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme", "register");
+        FoundCommandResult result = newFoundResult(command, Collections.singletonList("authme"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, HIDE_COMMAND | SHOW_CHILDREN);
+
+        // then
+        assertThat(lines, hasSize(1));
+    }
+
+    @Test
+    public void shouldHandleUnboundFoundCommandResult() {
+        // given
+        FoundCommandResult result = new FoundCommandResult(null, Arrays.asList("authme", "test"),
+            Collections.EMPTY_LIST, 0.0, FoundResultStatus.UNKNOWN_LABEL);
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, ALL_OPTIONS);
+
+        // then
+        assertThat(lines, hasSize(1));
+        assertThat(lines.get(0), containsString("Failed to retrieve any help information"));
+    }
+
+    /**
+     * Since command parts may be mapped to a command description with labels that don't completely correspond to it,
+     * (e.g. suggest "register command" for /authme ragister), we need to check the labels and construct a correct list
+     */
+    @Test
+    public void shouldShowCommandSyntaxWithCorrectLabels() {
+        // given
+        CommandDescription command = getCommandWithLabel(commands, "authme", "register");
+        FoundCommandResult result = newFoundResult(command, Arrays.asList("authme", "ragister"));
+
+        // when
+        List<String> lines = helpProvider.printHelp(sender, result, 0);
+
+        // then
+        assertThat(lines, hasSize(2));
+        assertThat(lines.get(0), containsString(Settings.helpHeader + " HELP"));
+        assertThat(removeColors(lines.get(1)), containsString("Command: /authme register <password> <confirmation>"));
     }
 
     @Test
     public void shouldRetainCorrectLabels() {
         // given
-        List<String> labels = Arrays.asList("b", "child");
+        List<String> labels = Arrays.asList("authme", "reg");
+        CommandDescription command = getCommandWithLabel(commands, "authme", "register");
 
         // when
-        List<String> result = HelpProvider.filterCorrectLabels(child, labels);
+        List<String> result = HelpProvider.filterCorrectLabels(command, labels);
 
         // then
-        assertThat(result, contains("b", "child"));
+        assertThat(result, equalTo(labels));
     }
 
     @Test
     public void shouldReplaceIncorrectLabels() {
         // given
-        List<String> labels = Arrays.asList("base", "wrong");
+        List<String> labels = Arrays.asList("authme", "wrong");
+        CommandDescription command = getCommandWithLabel(commands, "authme", "register");
 
         // when
-        List<String> result = HelpProvider.filterCorrectLabels(child, labels);
+        List<String> result = HelpProvider.filterCorrectLabels(command, labels);
 
         // then
-        assertThat(result, contains("base", "child"));
+        assertThat(result, contains("authme", "register"));
+    }
+
+    /**
+     * Generate an instance of {@link FoundCommandResult} with the given command and labels. All other fields aren't
+     * retrieved by {@link HelpProvider} and so are initialized to default values for the tests.
+     *
+     * @param command The command description
+     * @param labels The labels of the command (as in a real use case, they do not have to be correct)
+     * @return The generated FoundCommandResult object
+     */
+    private static FoundCommandResult newFoundResult(CommandDescription command, List<String> labels) {
+        return new FoundCommandResult(command, labels, Collections.EMPTY_LIST, 0.0, FoundResultStatus.SUCCESS);
+    }
+
+    private static String removeColors(String str) {
+        for (ChatColor color : ChatColor.values()) {
+            str = str.replace(color.toString(), "");
+        }
+        return str;
     }
 
 }

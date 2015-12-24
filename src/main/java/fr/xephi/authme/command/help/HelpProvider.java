@@ -70,7 +70,7 @@ public class HelpProvider {
         if (hasFlag(SHOW_ARGUMENTS, options)) {
             printArguments(command, lines);
         }
-        if (hasFlag(SHOW_PERMISSIONS, options) && sender != null && permissionsManager != null) {
+        if (hasFlag(SHOW_PERMISSIONS, options) && sender != null) {
             printPermissions(command, sender, permissionsManager, lines);
         }
         if (hasFlag(SHOW_ALTERNATIVES, options)) {
@@ -84,8 +84,8 @@ public class HelpProvider {
     }
 
     private static void printDetailedDescription(CommandDescription command, List<String> lines) {
-        lines.add(ChatColor.GOLD + "Short Description: " + ChatColor.WHITE + command.getDescription());
-        lines.add(ChatColor.GOLD + "Detailed Description:");
+        lines.add(ChatColor.GOLD + "Short description: " + ChatColor.WHITE + command.getDescription());
+        lines.add(ChatColor.GOLD + "Detailed description:");
         lines.add(ChatColor.WHITE + " " + command.getDetailedDescription());
     }
 
@@ -95,8 +95,9 @@ public class HelpProvider {
         }
 
         lines.add(ChatColor.GOLD + "Arguments:");
+        StringBuilder argString = new StringBuilder();
         for (CommandArgumentDescription argument : command.getArguments()) {
-            StringBuilder argString = new StringBuilder();
+            argString.setLength(0);
             argString.append(" ").append(ChatColor.YELLOW).append(ChatColor.ITALIC).append(argument.getName())
                 .append(": ").append(ChatColor.WHITE).append(argument.getDescription());
 
@@ -129,6 +130,7 @@ public class HelpProvider {
     private static void printPermissions(CommandDescription command, CommandSender sender,
                                         PermissionsManager permissionsManager, List<String> lines) {
         CommandPermissions permissions = command.getCommandPermissions();
+        // TODO ljacqu 20151224: Isn't it possible to have a default permission but no permission nodes?
         if (permissions == null || CollectionUtils.isEmpty(permissions.getPermissionNodes())) {
             return;
         }
