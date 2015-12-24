@@ -96,6 +96,7 @@ public class SendMailSSL {
         int port = Settings.getMailPort;
 
         HtmlEmail email = new HtmlEmail();
+        email.setCharset(org.apache.commons.mail.EmailConstants.UTF_8);
         email.setSmtpPort(port);
         email.setHostName(Settings.getmailSMTP);
         email.addTo(auth.getEmail());
@@ -129,7 +130,8 @@ public class SendMailSSL {
         return mailText.replace("<playername />", auth.getNickname()).replace("<servername />", plugin.getServer().getServerName()).replace("<generatedpass />", newPass);
     }
 
-    private static void setPropertiesForPort(HtmlEmail email, int port)
+    @SuppressWarnings("deprecation")
+	private static void setPropertiesForPort(HtmlEmail email, int port)
             throws EmailException {
         switch (port) {
             case 587:
