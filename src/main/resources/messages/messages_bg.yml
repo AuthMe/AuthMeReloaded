@@ -37,7 +37,7 @@ name_len: '&cТвоя никнейм е твърде малък или голя�
 regex: '&cТвоя никнейм съдържа забранени знацхи. Позволените са: REG_EX'
 add_email: '&cМоля добави своя имейл с : /email add имейл имейл'
 recovery_email: '&cЗабравихте своята парола? Моля използвай /email recovery <имейл>'
-usage_captcha: '&cYou need to type a captcha, please type: /captcha <код>'
+usage_captcha: '&cYou need to type a captcha, please type: /captcha <theCaptcha>'
 wrong_captcha: '&cГрешен код, използвай : /captcha THE_CAPTCHA'
 valid_captcha: '&cТвоя код е валиден!'
 kick_forvip: '&cVIP влезе докато сървъра е пълен, ти беше изгонен!'
