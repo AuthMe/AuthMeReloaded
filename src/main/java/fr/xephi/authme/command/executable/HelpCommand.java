@@ -36,7 +36,7 @@ public class HelpCommand implements ExecutableCommand {
             }
         }
 
-        int mappedCommandLevel = foundCommandResult.getCommandDescription().getLabelCount();
+        int mappedCommandLevel = result.getCommandDescription().getLabelCount();
         if (mappedCommandLevel == 1) {
             commandService.outputHelp(sender, result, HelpProvider.SHOW_CHILDREN);
         } else {
