@@ -168,6 +168,7 @@ public final class Settings {
         isForceSingleSessionEnabled = configFile.getBoolean("settings.restrictions.ForceSingleSession", true);
         isForceSpawnLocOnJoinEnabled = configFile.getBoolean("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
         isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
+        isForceSurvivalModeEnabled = configFile.getBoolean("settings.GameMode.ForceSurvivalMode", false);
         getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp", 1);
         getPasswordHash = getPasswordHash();
         getUnloggedinGroup = configFile.getString("settings.security.unLoggedinGroup", "unLoggedInGroup");
