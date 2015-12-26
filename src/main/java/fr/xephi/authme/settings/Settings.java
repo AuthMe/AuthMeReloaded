@@ -1,15 +1,5 @@
 package fr.xephi.authme.settings;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSource.DataSourceType;
-import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.util.Wrapper;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,6 +14,18 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
+
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSource.DataSourceType;
+import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.util.Wrapper;
 
 /**
  */
@@ -93,7 +95,7 @@ public final class Settings {
         getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
         getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
         spawnPriority, crazyloginFileName, getPassRegex,
-        getMySQLColumnRealName, emailOauth2Token;
+        getMySQLColumnRealName, emailOauth2Token, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
         getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
@@ -301,6 +303,7 @@ public final class Settings {
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
         kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
         emailOauth2Token = configFile.getString("Email.emailOauth2Token", "");
+        sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
 
         // Load the welcome message
         getWelcomeMessage();
@@ -743,6 +746,12 @@ public final class Settings {
 
         if (!contains("Email.emailOauth2Token"))
         	set("Email.emailOauth2Token", "");
+        
+        if (!contains("Hook.sendPlayerTo"))
+        {
+            set("Hooks.sendPlayerTo", "");
+            changes = true;
+        }
 
         if (changes) {
             plugin.getLogger().warning("Merged new Config Options - I'm not an error, please don't report me");

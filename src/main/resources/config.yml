@@ -359,8 +359,10 @@ Email:
 Hooks:
     # Do we need to hook with multiverse for spawn checking?
     multiverse: true
-    # Do we need to hook with BungeeCord for get the real Player ip?
+    # Do we need to hook with BungeeCord ?
     bungeecord: false
+    # Send player to this BungeeCord server after register/login
+    sendPlayerTo: ''
     # Do we need to disable Essentials SocialSpy on join?
     disableSocialSpy: true
     # Do we need to force /motd Essentials command on join?

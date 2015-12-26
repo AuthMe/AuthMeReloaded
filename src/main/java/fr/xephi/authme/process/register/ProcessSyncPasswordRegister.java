@@ -1,7 +1,14 @@
 package fr.xephi.authme.process.register;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -14,11 +21,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
@@ -161,5 +163,16 @@ public class ProcessSyncPasswordRegister implements Runnable {
 
         // Register is now finish , we can force all commands
         forceCommands();
+        
+        sendTo();
+    }
+
+    private void sendTo() {
+        if (Settings.sendPlayerTo.isEmpty())
+            return;
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Connect");
+        out.writeUTF(Settings.sendPlayerTo);
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 }

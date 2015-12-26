@@ -6,9 +6,8 @@ import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.stringContainsInOrder;
+import static org.hamcrest.Matchers.greaterThan;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -119,18 +118,6 @@ public class StringUtilsTest {
 
         // then
         assertThat(result, equalTo("[MalformedURLException]: Unrecognized URL format"));
-    }
-
-    @Test
-    public void shouldPrintStackTrace() {
-        // given
-        MalformedURLException ex = new MalformedURLException("Unrecognized URL format");
-
-        // when
-        String result = StringUtils.getStackTrace(ex);
-
-        // then
-        assertThat(result, stringContainsInOrder(getClass().getName()));
     }
 
     @Test

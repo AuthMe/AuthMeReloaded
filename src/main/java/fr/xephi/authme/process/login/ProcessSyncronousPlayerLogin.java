@@ -1,7 +1,14 @@
 package fr.xephi.authme.process.login;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.potion.PotionEffectType;
+
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -16,11 +23,6 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.potion.PotionEffectType;
 
 /**
  */
@@ -197,6 +199,16 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
 
         // Login is now finish , we can force all commands
         forceCommands();
+        
+        sendTo();
     }
 
+    private void sendTo() {
+        if (Settings.sendPlayerTo.isEmpty())
+            return;
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("Connect");
+        out.writeUTF(Settings.sendPlayerTo);
+        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+    }
 }
