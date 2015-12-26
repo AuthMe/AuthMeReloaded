@@ -47,6 +47,10 @@ public class CommandService {
         messages.send(sender, messageKey);
     }
 
+    public void send(CommandSender sender, MessageKey messageKey, String... replacements) {
+        messages.send(sender, messageKey, replacements);
+    }
+
     /**
      * Map command parts to a command description.
      *

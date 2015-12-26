@@ -15,8 +15,6 @@ import com.google.common.io.ByteStreams;
 
 import java.security.NoSuchAlgorithmException;
 
-/**
- */
 public class ChangePasswordTask implements Runnable {
 
     private final AuthMe plugin;
@@ -24,14 +22,6 @@ public class ChangePasswordTask implements Runnable {
     private final String oldPassword;
     private final String newPassword;
 
-    /**
-     * Constructor for ChangePasswordTask.
-     *
-     * @param plugin      AuthMe
-     * @param player      Player
-     * @param oldPassword String
-     * @param newPassword String
-     */
     public ChangePasswordTask(AuthMe plugin, Player player, String oldPassword, String newPassword) {
         this.plugin = plugin;
         this.player = player;

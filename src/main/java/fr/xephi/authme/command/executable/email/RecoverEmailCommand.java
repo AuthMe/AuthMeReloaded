@@ -5,47 +5,36 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.command.PlayerCommand;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Wrapper;
-import org.bukkit.command.CommandSender;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.entity.Player;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
-public class RecoverEmailCommand implements ExecutableCommand {
+public class RecoverEmailCommand extends PlayerCommand {
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        // Make sure the current command executor is a player
-        if (!(sender instanceof Player)) {
-            return;
-        }
-
-        // Get the parameter values
+    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
         String playerMail = arguments.get(0);
-
-        // Get the player instance and name
-        final Player player = (Player) sender;
         final String playerName = player.getName();
 
         // Command logic
-        final Wrapper wrapper = Wrapper.getInstance();
-        final AuthMe plugin = wrapper.getAuthMe();
-        final Messages m = wrapper.getMessages();
+        final AuthMe plugin = AuthMe.getInstance();
 
         if (plugin.mail == null) {
-            m.send(player, MessageKey.ERROR);
+            commandService.send(player, MessageKey.ERROR);
             return;
         }
-        if (plugin.database.isAuthAvailable(playerName)) {
+        DataSource dataSource = commandService.getDataSource();
+        if (dataSource.isAuthAvailable(playerName)) {
             if (PlayerCache.getInstance().isAuthenticated(playerName)) {
-                m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+                commandService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
                 return;
             }
             try {
@@ -55,33 +44,32 @@ public class RecoverEmailCommand implements ExecutableCommand {
                 PlayerAuth auth;
                 if (PlayerCache.getInstance().isAuthenticated(playerName)) {
                     auth = PlayerCache.getInstance().getAuth(playerName);
-                } else if (plugin.database.isAuthAvailable(playerName)) {
-                    auth = plugin.database.getAuth(playerName);
+                } else if (dataSource.isAuthAvailable(playerName)) {
+                    auth = dataSource.getAuth(playerName);
                 } else {
-                    m.send(player, MessageKey.UNKNOWN_USER);
+                    commandService.send(player, MessageKey.UNKNOWN_USER);
                     return;
                 }
                 if (Settings.getmailAccount.equals("") || Settings.getmailAccount.isEmpty()) {
-                    m.send(player, MessageKey.ERROR);
+                    commandService.send(player, MessageKey.ERROR);
                     return;
                 }
 
                 if (!playerMail.equalsIgnoreCase(auth.getEmail()) || playerMail.equalsIgnoreCase("your@email.com")
                     || auth.getEmail().equalsIgnoreCase("your@email.com")) {
-                    m.send(player, MessageKey.INVALID_EMAIL);
+                    commandService.send(player, MessageKey.INVALID_EMAIL);
                     return;
                 }
                 auth.setHash(hashNew);
-                plugin.database.updatePassword(auth);
+                dataSource.updatePassword(auth);
                 plugin.mail.main(auth, thePass);
-                m.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
+                commandService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
             } catch (NoSuchAlgorithmException | NoClassDefFoundError ex) {
-                ex.printStackTrace();
-                ConsoleLogger.showError(ex.getMessage());
-                m.send(sender, MessageKey.ERROR);
+                ConsoleLogger.showError(StringUtils.formatException(ex));
+                commandService.send(player, MessageKey.ERROR);
             }
         } else {
-            m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+            commandService.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
         }
     }
 }

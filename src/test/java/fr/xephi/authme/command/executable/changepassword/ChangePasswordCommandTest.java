@@ -1,11 +1,9 @@
 package fr.xephi.authme.command.executable.changepassword;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.ChangePasswordTask;
 import fr.xephi.authme.util.WrapperMock;
@@ -37,14 +35,14 @@ import static org.mockito.Mockito.when;
 public class ChangePasswordCommandTest {
 
     private WrapperMock wrapperMock;
-    private Messages messagesMock;
     private PlayerCache cacheMock;
+    private CommandService commandService;
 
     @Before
     public void setUpMocks() {
         wrapperMock = WrapperMock.createInstance();
-        messagesMock = wrapperMock.getMessages();
         cacheMock = wrapperMock.getPlayerCache();
+        commandService = mock(CommandService.class);
 
         // Only allow passwords with alphanumerical characters for the test
         Settings.getPassRegex = "[a-zA-Z0-9]+";
@@ -60,7 +58,7 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
+        command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
@@ -73,10 +71,10 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList("pass", "pass"), mock(CommandService.class));
+        command.executeCommand(sender, Arrays.asList("pass", "pass"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.NOT_LOGGED_IN);
+        verify(commandService).send(sender, MessageKey.NOT_LOGGED_IN);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -87,10 +85,10 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList("old123", "!pass"), mock(CommandService.class));
+        command.executeCommand(sender, Arrays.asList("old123", "!pass"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
+        verify(commandService).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -102,10 +100,10 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList("old_", "Tester"), mock(CommandService.class));
+        command.executeCommand(sender, Arrays.asList("old_", "Tester"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+        verify(commandService).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -117,10 +115,10 @@ public class ChangePasswordCommandTest {
         Settings.passwordMaxLength = 3;
 
         // when
-        command.executeCommand(sender, Arrays.asList("12", "test"), mock(CommandService.class));
+        command.executeCommand(sender, Arrays.asList("12", "test"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
+        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -132,10 +130,10 @@ public class ChangePasswordCommandTest {
         Settings.getPasswordMinLen = 7;
 
         // when
-        command.executeCommand(sender, Arrays.asList("oldverylongpassword", "tester"), mock(CommandService.class));
+        command.executeCommand(sender, Arrays.asList("oldverylongpassword", "tester"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
+        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -147,10 +145,10 @@ public class ChangePasswordCommandTest {
         Settings.unsafePasswords = asList("test", "abc123");
 
         // when
-        command.executeCommand(sender, Arrays.asList("oldpw", "abc123"), mock(CommandService.class));
+        command.executeCommand(sender, Arrays.asList("oldpw", "abc123"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
+        verify(commandService).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -161,12 +159,12 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, Arrays.asList("abc123", "abc123"), mock(CommandService.class));
+        command.executeCommand(sender, Arrays.asList("abc123", "abc123"), commandService);
 
         // then
-        verify(messagesMock, never()).send(eq(sender), any(MessageKey.class));
+        verify(commandService, never()).send(eq(sender), any(MessageKey.class));
         ArgumentCaptor<ChangePasswordTask> taskCaptor = ArgumentCaptor.forClass(ChangePasswordTask.class);
-        verify(wrapperMock.getScheduler()).runTaskAsynchronously(any(AuthMe.class), taskCaptor.capture());
+        verify(commandService).runTaskAsynchronously(taskCaptor.capture());
         ChangePasswordTask task = taskCaptor.getValue();
         assertThat((String) ReflectionTestUtils.getFieldValue(ChangePasswordTask.class, task, "newPassword"),
             equalTo("abc123"));

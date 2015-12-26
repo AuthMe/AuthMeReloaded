@@ -1,9 +1,8 @@
 package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.process.Management;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
@@ -12,15 +11,13 @@ import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.containsString;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -30,17 +27,13 @@ import static org.mockito.Mockito.verify;
  */
 public class RegisterCommandTest {
 
-    private static Management managementMock;
-    private static Messages messagesMock;
+    private CommandService commandService;
 
     @Before
     public void initializeAuthMeMock() {
-        WrapperMock wrapper = WrapperMock.createInstance();
-        messagesMock = wrapper.getMessages();
-
+        WrapperMock.createInstance();
         Settings.captchaLength = 10;
-        managementMock = mock(Management.class);
-        Mockito.when(wrapper.getAuthMe().getManagement()).thenReturn(managementMock);
+        commandService = mock(CommandService.class);
     }
 
     @Test
@@ -48,15 +41,15 @@ public class RegisterCommandTest {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
         RegisterCommand command = new RegisterCommand();
-        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
+        command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
+        verify(commandService, never()).getManagement();
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
         verify(sender).sendMessage(messageCaptor.capture());
-        assertThat(messageCaptor.getValue().contains("Player Only!"), equalTo(true));
-        verify(managementMock, never()).performRegister(any(Player.class), anyString(), anyString());
+        assertThat(messageCaptor.getValue(), containsString("Player only!"));
     }
 
     @Test
@@ -66,11 +59,11 @@ public class RegisterCommandTest {
         RegisterCommand command = new RegisterCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
+        command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.USAGE_REGISTER);
-        verify(managementMock, never()).performRegister(any(Player.class), anyString(), anyString());
+        verify(commandService).send(sender, MessageKey.USAGE_REGISTER);
+        verify(commandService, never()).getManagement();
     }
 
     @Test
@@ -78,12 +71,14 @@ public class RegisterCommandTest {
         // given
         Player sender = mock(Player.class);
         RegisterCommand command = new RegisterCommand();
+        Management management = mock(Management.class);
+        given(commandService.getManagement()).willReturn(management);
 
         // when
-        command.executeCommand(sender, Collections.singletonList("password"), mock(CommandService.class));
+        command.executeCommand(sender, Collections.singletonList("password"), commandService);
 
         // then
-        verify(managementMock).performRegister(sender, "password", "");
+        verify(management).performRegister(sender, "password", "");
     }
 
 }

@@ -1,9 +1,7 @@
 package fr.xephi.authme.command.executable.email;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,25 +12,21 @@ import org.mockito.Mockito;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link AddEmailCommand}.
  */
 public class AddEmailCommandTest {
 
-    private AuthMe authMeMock;
-    private Management managementMock;
+    private CommandService commandService;
 
     @Before
     public void setUpMocks() {
-        WrapperMock wrapper = WrapperMock.createInstance();
-        authMeMock = wrapper.getAuthMe();
-        managementMock = Mockito.mock(Management.class);
-        when(authMeMock.getManagement()).thenReturn(managementMock);
+        commandService = mock(CommandService.class);
     }
 
     @Test
@@ -42,10 +36,10 @@ public class AddEmailCommandTest {
         AddEmailCommand command = new AddEmailCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
+        command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
-        verify(authMeMock, never()).getManagement();
+        verify(commandService, never()).getManagement();
     }
 
     @Test
@@ -53,13 +47,14 @@ public class AddEmailCommandTest {
         // given
         Player sender = Mockito.mock(Player.class);
         AddEmailCommand command = new AddEmailCommand();
+        Management management = mock(Management.class);
+        given(commandService.getManagement()).willReturn(management);
 
         // when
-        command.executeCommand(sender, Arrays.asList("mail@example", "other_example"),  mock(CommandService.class));
+        command.executeCommand(sender, Arrays.asList("mail@example", "other_example"), commandService);
 
         // then
-        verify(authMeMock).getManagement();
-        verify(managementMock).performAddEmail(sender, "mail@example", "other_example");
+        verify(management).performAddEmail(sender, "mail@example", "other_example");
     }
 
 }

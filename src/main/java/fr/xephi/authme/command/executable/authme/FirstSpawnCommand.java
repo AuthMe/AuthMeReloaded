@@ -2,25 +2,22 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.settings.Spawn;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class FirstSpawnCommand implements ExecutableCommand {
+public class FirstSpawnCommand extends PlayerCommand {
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
         // Make sure the command executor is a player
         try {
-            if (sender instanceof Player) {
-                if (Spawn.getInstance().getFirstSpawn() != null)
-                    ((Player) sender).teleport(Spawn.getInstance().getFirstSpawn());
-                else sender.sendMessage("[AuthMe] First spawn has failed, please try to define the first spawn");
+            if (Spawn.getInstance().getFirstSpawn() != null) {
+                player.teleport(Spawn.getInstance().getFirstSpawn());
             } else {
-                sender.sendMessage("[AuthMe] Please use that command in game");
+                player.sendMessage("[AuthMe] First spawn has failed, please try to define the first spawn");
             }
         } catch (NullPointerException ex) {
             // TODO ljacqu 20151119: Catching NullPointerException is never a good idea. Find what can cause one instead

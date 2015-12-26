@@ -16,8 +16,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
 public class xAuthToFlat {
 
     public final AuthMe instance;
@@ -36,11 +34,6 @@ public class xAuthToFlat {
         this.sender = sender;
     }
 
-    /**
-     * Method convert.
-     *
-     * @return boolean
-     */
     public boolean convert() {
         if (instance.getServer().getPluginManager().getPlugin("xAuth") == null) {
             sender.sendMessage("[AuthMe] xAuth plugin not found");
@@ -71,13 +64,6 @@ public class xAuthToFlat {
         return true;
     }
 
-    /**
-     * Method getIdPlayer.
-     *
-     * @param id int
-     *
-     * @return String
-     */
     public String getIdPlayer(int id) {
         String realPass = "";
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
@@ -100,11 +86,6 @@ public class xAuthToFlat {
         return realPass;
     }
 
-    /**
-     * Method getXAuthPlayers.
-     *
-     * @return List<Integer>
-     */
     public List<Integer> getXAuthPlayers() {
         List<Integer> xP = new ArrayList<>();
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
@@ -126,13 +107,6 @@ public class xAuthToFlat {
         return xP;
     }
 
-    /**
-     * Method getPassword.
-     *
-     * @param accountId int
-     *
-     * @return String
-     */
     public String getPassword(int accountId) {
         String realPass = "";
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();

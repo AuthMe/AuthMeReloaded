@@ -2,25 +2,21 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.settings.Spawn;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class SpawnCommand implements ExecutableCommand {
+public class SpawnCommand extends PlayerCommand {
 
     @Override
-    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        // Make sure the command executor is a player
+    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
         try {
-            if (sender instanceof Player) {
-                if (Spawn.getInstance().getSpawn() != null)
-                    ((Player) sender).teleport(Spawn.getInstance().getSpawn());
-                else sender.sendMessage("[AuthMe] Spawn has failed, please try to define the spawn");
+            if (Spawn.getInstance().getSpawn() != null) {
+                player.teleport(Spawn.getInstance().getSpawn());
             } else {
-                sender.sendMessage("[AuthMe] Please use the command in game");
+                player.sendMessage("[AuthMe] Spawn has failed, please try to define the spawn");
             }
         } catch (NullPointerException ex) {
             ConsoleLogger.showError(ex.getMessage());
