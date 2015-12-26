@@ -12,11 +12,14 @@ import utils.TagReplacer;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
 public class CommandPageCreater implements ToolTask {
+
+    private static final String OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "commands.md";
 
     @Override
     public String getTaskName() {
@@ -30,20 +33,33 @@ public class CommandPageCreater implements ToolTask {
             + "commands/command_entry.tpl.md");
 
         StringBuilder commandsResult = new StringBuilder();
-        for (CommandDescription command : baseCommands) {
+        addCommandsInfo(commandsResult, baseCommands, template, true);
+
+        FileUtils.generateFileFromTemplate(
+            ToolsConstants.TOOLS_SOURCE_ROOT + "commands/commands.tpl.md",
+            OUTPUT_FILE,
+            ANewMap.with("commands", commandsResult.toString()).build());
+        System.out.println("Wrote to '" + OUTPUT_FILE + "' with " + baseCommands.size() + " base commands.");
+    }
+
+    private static void addCommandsInfo(StringBuilder sb, Collection<CommandDescription> commands,
+                                        final String template, boolean addNewLine) {
+        for (CommandDescription command : commands) {
             Map<String, String> tags = ANewMap
                 .with("command", CommandUtils.constructCommandPath(command))
                 .and("description", command.getDetailedDescription())
                 .and("arguments", formatArguments(command.getArguments()))
                 .and("permissions", formatPermissions(command.getCommandPermissions()))
                 .build();
-            commandsResult.append(TagReplacer.applyReplacements(template, tags));
-        }
+            sb.append(TagReplacer.applyReplacements(template, tags));
 
-        FileUtils.generateFileFromTemplate(
-            ToolsConstants.TOOLS_SOURCE_ROOT + "commands/commands.tpl.md",
-            ToolsConstants.DOCS_FOLDER + "commands.md",
-            ANewMap.with("commands", commandsResult.toString()).build());
+            if (!command.getChildren().isEmpty()) {
+                addCommandsInfo(sb, command.getChildren(), template, false);
+            }
+            if (addNewLine) {
+                sb.append("\n\n");
+            }
+        }
     }
 
     private static String formatPermissions(CommandPermissions permissions) {
@@ -54,16 +70,16 @@ public class CommandPageCreater implements ToolTask {
         for (PermissionNode node : permissions.getPermissionNodes()) {
             result += node.getNode() + " ";
         }
-        return result;
+        return result.trim();
     }
 
     private static String formatArguments(Iterable<CommandArgumentDescription> arguments) {
         StringBuilder result = new StringBuilder();
         for (CommandArgumentDescription argument : arguments) {
             String argumentName = argument.isOptional()
-                ? "[" + argument.getDescription() + "]"
-                : "<" + argument.getDescription() + ">";
-            result.append(argumentName).append(" ");
+                ? "[" + argument.getName() + "]"
+                : "&lt;" + argument.getName() + ">";
+            result.append(" ").append(argumentName);
         }
         return result.toString();
     }
