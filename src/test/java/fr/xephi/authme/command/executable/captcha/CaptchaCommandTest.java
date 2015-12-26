@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -29,11 +30,13 @@ import static org.mockito.Mockito.when;
 public class CaptchaCommandTest {
 
     private WrapperMock wrapperMock;
+    private CommandService commandService;
 
     @Before
     public void setUpWrapperMock() {
         wrapperMock = WrapperMock.createInstance();
         Settings.useCaptcha = true;
+        commandService = mock(CommandService.class);
     }
 
     @Test
@@ -58,10 +61,10 @@ public class CaptchaCommandTest {
         ExecutableCommand command = new CaptchaCommand();
 
         // when
-        command.executeCommand(player, new ArrayList<String>(),  mock(CommandService.class));
+        command.executeCommand(player, Collections.singletonList("1234"), mock(CommandService.class));
 
         // then
-        verify(wrapperMock.getMessages()).send(player, MessageKey.USAGE_LOGIN);
+        verify(commandService).send(player, MessageKey.USAGE_LOGIN);
     }
 
     private static Player mockPlayerWithName(String name) {
