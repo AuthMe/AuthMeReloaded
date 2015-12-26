@@ -9,7 +9,7 @@ import fr.xephi.authme.settings.Settings;
 
 /**
  */
-public class ForceFlatToSqlite implements Converter {
+public class ForceFlatToSqlite {
 
     private final DataSource data;
 
@@ -28,8 +28,7 @@ public class ForceFlatToSqlite implements Converter {
      *
      * @see java.lang.Runnable#run()
      */
-    @Override
-    public void run() {
+    public DataSource run() {
         DataSource sqlite = null;
         try {
             sqlite = new SQLite();
@@ -40,10 +39,9 @@ public class ForceFlatToSqlite implements Converter {
             Settings.setValue("DataSource.backend", "sqlite");
             ConsoleLogger.info("Database successfully converted to sqlite !");
         } catch (Exception e) {
-            ConsoleLogger.showError("An error appeared while trying to convert flatfile to sqlite ...");
-        } finally {
-            if (sqlite != null)
-                sqlite.close();
+            ConsoleLogger.showError("An error occured while trying to convert flatfile to sqlite ...");
+            return null;
         }
+        return sqlite;
     }
 }
