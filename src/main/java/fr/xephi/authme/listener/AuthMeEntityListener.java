@@ -1,30 +1,31 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.EntityTargetEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
 import java.lang.reflect.Method;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 
-/**
- */
 public class AuthMeEntityListener implements Listener {
 
     private static Method getShooter;
     private static boolean shooterIsProjectileSource;
-    public final AuthMe instance;
 
-    public AuthMeEntityListener(AuthMe instance) {
-        this.instance = instance;
+    public AuthMeEntityListener() {
         try {
             Method m = Projectile.class.getDeclaredMethod("getShooter");
             shooterIsProjectileSource = m.getReturnType() != LivingEntity.class;
@@ -113,15 +114,9 @@ public class AuthMeEntityListener implements Listener {
             }
         }
 
-        if (Utils.checkAuth(player)) {
-            return;
+        if (ListenerService.shouldCancelEvent(player)) {
+            event.setCancelled(true);
         }
-
-        if (Utils.isNPC(player)) {
-            return;
-        }
-
-        event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)

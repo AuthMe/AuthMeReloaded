@@ -362,21 +362,21 @@ public class AuthMe extends JavaPlugin {
 
         // Register event listeners
         pluginManager.registerEvents(new AuthMePlayerListener(this), this);
-        pluginManager.registerEvents(new AuthMeBlockListener(this), this);
-        pluginManager.registerEvents(new AuthMeEntityListener(this), this);
+        pluginManager.registerEvents(new AuthMeBlockListener(), this);
+        pluginManager.registerEvents(new AuthMeEntityListener(), this);
         pluginManager.registerEvents(new AuthMeServerListener(this), this);
 
         // Try to register 1.6 player listeners
         try {
             Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
-            pluginManager.registerEvents(new AuthMePlayerListener16(this), this);
+            pluginManager.registerEvents(new AuthMePlayerListener16(), this);
         } catch (ClassNotFoundException ignore) {
         }
 
         // Try to register 1.8 player listeners
         try {
             Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
-            pluginManager.registerEvents(new AuthMePlayerListener18(this), this);
+            pluginManager.registerEvents(new AuthMePlayerListener18(), this);
         } catch (ClassNotFoundException ignore) {
         }
     }

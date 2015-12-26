@@ -27,7 +27,7 @@ final class ListenerService {
         }
 
         Player player = (Player) entity;
-        return !Utils.checkAuth(player) && !Utils.isNPC(player);
+        return shouldCancelEvent(player);
     }
 
     /**
@@ -38,6 +38,16 @@ final class ListenerService {
      */
     public static boolean shouldCancelEvent(PlayerEvent event) {
         Player player = event.getPlayer();
+        return shouldCancelEvent(player);
+    }
+
+    /**
+     * Return, based on the player associated with the event, whether or not the event should be canceled.
+     *
+     * @param player The player to verify
+     * @return True if the associated event should be canceled, false otherwise
+     */
+    public static boolean shouldCancelEvent(Player player) {
         return player != null && !Utils.checkAuth(player) && !Utils.isNPC(player);
     }
 

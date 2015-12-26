@@ -18,8 +18,8 @@ import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -49,7 +49,6 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
-import org.bukkit.GameMode;
 
 /**
  * Listener class for player's events
@@ -58,7 +57,7 @@ public class AuthMePlayerListener implements Listener {
 
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
-    public final AuthMe plugin;
+    private final AuthMe plugin;
     private final Messages m;
 
     public AuthMePlayerListener(AuthMe plugin) {
@@ -401,7 +400,7 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
 
-        if (Utils.checkAuth(player) || Utils.isNPC(player)) {
+        if (!ListenerService.shouldCancelEvent(player)) {
             return;
         }
         event.setCancelled(true);
@@ -433,17 +432,9 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerHitPlayerEvent(EntityDamageByEntityEvent event) {
-        Entity damager = event.getDamager();
-        if (!(damager instanceof Player)) {
-            return;
+        if (ListenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-        if (Utils.checkAuth((Player) damager)) {
-            return;
-        }
-        if (Utils.isNPC((Player) damager)) {
-            return;
-        }
-        event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -469,13 +460,10 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
-        if (Utils.checkAuth(event.getPlayer())) {
-            return;
+        Player player = event.getPlayer();
+        if (ListenerService.shouldCancelEvent(player)) {
+            event.setCancelled(true);
         }
-        if (Utils.isNPC(event.getPlayer())) {
-            return;
-        }
-        event.setCancelled(true);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
