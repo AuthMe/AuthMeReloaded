@@ -1,10 +1,5 @@
 package fr.xephi.authme.command.executable.converter;
 
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;

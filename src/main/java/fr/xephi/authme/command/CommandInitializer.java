@@ -1,14 +1,6 @@
 package fr.xephi.authme.command;
 
-import static fr.xephi.authme.permission.DefaultPermission.ALLOWED;
-import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
 import com.google.common.collect.ImmutableSet;
-
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.executable.authme.AccountsCommand;
 import fr.xephi.authme.command.executable.authme.AuthMeCommand;
@@ -43,6 +35,14 @@ import fr.xephi.authme.command.executable.register.RegisterCommand;
 import fr.xephi.authme.command.executable.unregister.UnregisterCommand;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
+
+import static fr.xephi.authme.permission.DefaultPermission.ALLOWED;
+import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 
 /**
  * Initializes all available AuthMe commands.
