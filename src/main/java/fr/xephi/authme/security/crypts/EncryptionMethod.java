@@ -32,4 +32,8 @@ public interface EncryptionMethod {
     boolean comparePassword(String hash, String password, String playerName)
         throws NoSuchAlgorithmException;
 
+    // String generateSalt();
+
+    // String computeHash(String password, String name);
+
 }

@@ -1,13 +1,18 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.security.crypts.description.Usage;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-/**
- */
+@Recommendation(Usage.OK)
+@HasSalt(value = SaltType.TEXT, length = 9)
 public class WORDPRESS implements EncryptionMethod {
 
     private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
@@ -102,18 +107,25 @@ public class WORDPRESS implements EncryptionMethod {
     }
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password, String salt, String name) {
         byte random[] = new byte[6];
-        this.randomGen.nextBytes(random);
+        randomGen.nextBytes(random);
         return crypt(password, gensaltPrivate(stringToUtf8(new String(random))));
     }
 
+    public String computeHash(String password, String name) {
+        return computeHash(password, null, null);
+    }
+
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
+    public boolean comparePassword(String hash, String password, String playerName) {
         String comparedHash = crypt(password, hash);
         return comparedHash.equals(hash);
+    }
+
+    public String generateSalt() {
+        // This hash uses a salt, but it is not exposed to the outside
+        return null;
     }
 
 }

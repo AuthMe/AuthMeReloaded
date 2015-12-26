@@ -13,8 +13,12 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Usage;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
+
 import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 /**
@@ -59,11 +63,13 @@ import java.security.SecureRandom;
  * @author Damien Miller
  * @version 0.2
  */
+@Recommendation(Usage.RECOMMENDED)
+@HasSalt(value = SaltType.TEXT, length = BCRYPT.BCRYPT_SALT_LEN)
 public class BCRYPT implements EncryptionMethod {
 
     // BCrypt parameters
     private static final int GENSALT_DEFAULT_LOG2_ROUNDS = 10;
-    private static final int BCRYPT_SALT_LEN = 16;
+    protected static final int BCRYPT_SALT_LEN = 16;
 
     // Blowfish parameters
     private static final int BLOWFISH_NUM_ROUNDS = 16;
@@ -508,14 +514,20 @@ public class BCRYPT implements EncryptionMethod {
     }
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password, String salt, String name) {
         return hashpw(password, salt);
     }
 
+    public String computeHash(String password, String name) {
+        return hashpw(password, generateSalt());
+    }
+
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
+    public boolean comparePassword(String hash, String password, String playerName) {
         return checkpw(password, hash);
+    }
+
+    public String generateSalt() {
+        return BCRYPT.gensalt();
     }
 }

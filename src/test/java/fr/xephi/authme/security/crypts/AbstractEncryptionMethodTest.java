@@ -134,7 +134,7 @@ public abstract class AbstractEncryptionMethodTest {
                 return BCRYPT.gensalt();
             } else if (method instanceof MD5 || method instanceof WORDPRESS || method instanceof SMF
                 || method instanceof SHA512 || method instanceof SHA1 || method instanceof ROYALAUTH
-                || method instanceof DOUBLEMD5) {
+                || method instanceof DOUBLEMD5 || method instanceof CRAZYCRYPT1) {
                 return "";
             } else if (method instanceof JOOMLA || method instanceof SALTEDSHA512) {
                 return PasswordSecurity.createSalt(32);

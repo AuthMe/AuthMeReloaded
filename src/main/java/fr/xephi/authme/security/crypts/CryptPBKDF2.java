@@ -1,13 +1,14 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-/**
- */
+@Recommendation(Usage.DOES_NOT_WORK)
 public class CryptPBKDF2 implements EncryptionMethod {
 
     @Override

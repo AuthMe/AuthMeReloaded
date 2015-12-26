@@ -1,9 +1,13 @@
 package fr.xephi.authme.security.crypts;
 
-import java.security.NoSuchAlgorithmException;
+import fr.xephi.authme.security.HashUtils;
+import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.security.crypts.description.Usage;
 
-/**
- */
+@Recommendation(Usage.RECOMMENDED)
+@HasSalt(value = SaltType.TEXT, length = 12)
 public class XAUTH implements EncryptionMethod {
 
     public static String getWhirlpool(String message) {
@@ -16,19 +20,25 @@ public class XAUTH implements EncryptionMethod {
     }
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password, String salt, String name) {
         String hash = getWhirlpool(salt + password).toLowerCase();
         int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
         return hash.substring(0, saltPos) + salt + hash.substring(saltPos);
     }
 
+    public String computeHash(String password, String name) {
+        return computeHash(password, generateSalt(), null);
+    }
+
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
+    public boolean comparePassword(String hash, String password, String playerName) {
         int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
         String salt = hash.substring(saltPos, saltPos + 12);
         return hash.equals(computeHash(password, salt, ""));
+    }
+
+    public String generateSalt() {
+        return HashUtils.generateSalt(12);
     }
 
 }
