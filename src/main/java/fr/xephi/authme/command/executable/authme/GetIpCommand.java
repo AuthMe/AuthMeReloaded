@@ -3,6 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,8 +19,7 @@ public class GetIpCommand implements ExecutableCommand {
         // Get the player query
         String playerName = (arguments.size() >= 1) ? arguments.get(0) : sender.getName();
 
-        // TODO ljacqu 20151212: Use the Utils function instead
-        Player player = Bukkit.getPlayer(playerName);
+        Player player = Utils.getPlayer(playerName);
         if (player == null) {
             sender.sendMessage("The player is not online");
             return;

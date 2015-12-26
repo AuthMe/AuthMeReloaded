@@ -20,39 +20,23 @@ public class LastLoginCommand implements ExecutableCommand {
         // Get the player
         String playerName = (arguments.size() >= 1) ? arguments.get(0) : sender.getName();
 
-        // Validate the player
-        AuthMe plugin = AuthMe.getInstance();
-        Messages m = plugin.getMessages();
-
-        PlayerAuth auth;
-        try {
-            auth = plugin.database.getAuth(playerName.toLowerCase());
-        } catch (NullPointerException e) {
-            m.send(sender, MessageKey.UNKNOWN_USER);
-            return;
-        }
+        PlayerAuth auth = commandService.getDataSource().getAuth(playerName.toLowerCase());
         if (auth == null) {
-            m.send(sender, MessageKey.USER_NOT_REGISTERED);
+            commandService.send(sender, MessageKey.USER_NOT_REGISTERED);
             return;
         }
 
         // Get the last login date
         long lastLogin = auth.getLastLogin();
+        final long diff = System.currentTimeMillis() - lastLogin;
+        final String lastLoginMessage = (int) (diff / 86400000) + " days " + (int) (diff / 3600000 % 24) + " hours "
+            + (int) (diff / 60000 % 60) + " mins " + (int) (diff / 1000 % 60) + " secs";
         Date date = new Date(lastLogin);
 
-        // Get the difference
-        final long diff = System.currentTimeMillis() - lastLogin;
-
-        // Build the message
-        final String msg = (int) (diff / 86400000) + " days " + (int) (diff / 3600000 % 24) + " hours "
-            + (int) (diff / 60000 % 60) + " mins " + (int) (diff / 1000 % 60) + " secs.";
-
-        // Get the player's last IP
-        String lastIP = auth.getIp();
-
         // Show the player status
-        sender.sendMessage("[AuthMe] " + playerName + " last login : " + date.toString());
-        sender.sendMessage("[AuthMe] The player " + auth.getNickname() + " is unlogged since " + msg);
-        sender.sendMessage("[AuthMe] Last Player's IP: " + lastIP);
+        sender.sendMessage("[AuthMe] " + playerName + " last login: " + date.toString());
+        sender.sendMessage("[AuthMe] The player " + auth.getNickname() + " last logged in "
+            + lastLoginMessage + " ago.");
+        sender.sendMessage("[AuthMe] Last Player's IP: " + auth.getIp());
     }
 }

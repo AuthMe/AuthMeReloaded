@@ -25,7 +25,7 @@ public class CommandPageCreater implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
-        final Set<CommandDescription> baseCommands = CommandInitializer.getBaseCommands();
+        final Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         final String template = FileUtils.readFromFile(ToolsConstants.TOOLS_SOURCE_ROOT
             + "commands/command_entry.tpl.md");
 

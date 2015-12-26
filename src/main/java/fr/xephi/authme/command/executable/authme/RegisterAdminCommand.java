@@ -1,12 +1,10 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
@@ -21,49 +19,43 @@ import java.util.List;
 public class RegisterAdminCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        final Messages m = plugin.getMessages();
-
+    public void executeCommand(final CommandSender sender, List<String> arguments,
+                               final CommandService commandService) {
         // Get the player name and password
-        final String playerName = arguments.get(0);
-        final String playerPass = arguments.get(1);
+        final String playerName = arguments.get(0).toLowerCase();
+        final String playerPass = arguments.get(1).toLowerCase();
         final String playerNameLowerCase = playerName.toLowerCase();
         final String playerPassLowerCase = playerPass.toLowerCase();
 
         // Command logic
+        // TODO #308: Remove the check for SQL keywords
         if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where")
             || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify")
             || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
             || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
             || !playerPassLowerCase.matches(Settings.getPassRegex)) {
-            m.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
+            commandService.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
             return;
         }
         if (playerPassLowerCase.equalsIgnoreCase(playerName)) {
-            m.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+            commandService.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
             return;
         }
         if (playerPassLowerCase.length() < Settings.getPasswordMinLen || playerPassLowerCase.length() > Settings.passwordMaxLength) {
-            m.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
+            commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
             return;
         }
-        if (!Settings.unsafePasswords.isEmpty()) {
-            if (Settings.unsafePasswords.contains(playerPassLowerCase)) {
-                m.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
-                return;
-            }
+        if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(playerPassLowerCase)) {
+            commandService.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
+            return;
         }
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-            @SuppressWarnings("deprecation")
+        commandService.runTaskAsynchronously(new Runnable() {
+
             @Override
             public void run() {
                 try {
-                    if (plugin.database.isAuthAvailable(playerNameLowerCase)) {
-                        m.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
+                    if (commandService.getDataSource().isAuthAvailable(playerNameLowerCase)) {
+                        commandService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
                         return;
                     }
                     String hash = PasswordSecurity.getHash(Settings.getPasswordHash, playerPass, playerNameLowerCase);
@@ -71,18 +63,18 @@ public class RegisterAdminCommand implements ExecutableCommand {
                     if (PasswordSecurity.userSalt.containsKey(playerNameLowerCase) && PasswordSecurity.userSalt.get(playerNameLowerCase) != null)
                         auth.setSalt(PasswordSecurity.userSalt.get(playerNameLowerCase));
                     else auth.setSalt("");
-                    if (!plugin.database.saveAuth(auth)) {
-                        m.send(sender, MessageKey.ERROR);
+                    if (!commandService.getDataSource().saveAuth(auth)) {
+                        commandService.send(sender, MessageKey.ERROR);
                         return;
                     }
-                    plugin.database.setUnlogged(playerNameLowerCase);
+                    commandService.getDataSource().setUnlogged(playerNameLowerCase);
                     if (Bukkit.getPlayerExact(playerName) != null)
                         Bukkit.getPlayerExact(playerName).kickPlayer("An admin just registered you, please log again");
-                    m.send(sender, MessageKey.REGISTER_SUCCESS);
+                    commandService.send(sender, MessageKey.REGISTER_SUCCESS);
                     ConsoleLogger.info(playerNameLowerCase + " registered");
                 } catch (NoSuchAlgorithmException ex) {
                     ConsoleLogger.showError(ex.getMessage());
-                    m.send(sender, MessageKey.ERROR);
+                    commandService.send(sender, MessageKey.ERROR);
                 }
 
             }

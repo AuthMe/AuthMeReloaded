@@ -1,12 +1,10 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 
@@ -15,38 +13,32 @@ import java.util.List;
 public class SetEmailCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        final Messages m = plugin.getMessages();
-
+    public void executeCommand(final CommandSender sender, List<String> arguments,
+                               final CommandService commandService) {
         // Get the player name and email address
         final String playerName = arguments.get(0);
         final String playerEmail = arguments.get(1);
 
         // Validate the email address
         if (!Settings.isEmailCorrect(playerEmail)) {
-            m.send(sender, MessageKey.INVALID_EMAIL);
+            commandService.send(sender, MessageKey.INVALID_EMAIL);
             return;
         }
 
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        commandService.runTaskAsynchronously(new Runnable() {
             @Override
             public void run() {
                 // Validate the user
-                PlayerAuth auth = plugin.database.getAuth(playerName);
+                PlayerAuth auth = commandService.getDataSource().getAuth(playerName);
                 if (auth == null) {
-                    m.send(sender, MessageKey.UNKNOWN_USER);
+                    commandService.send(sender, MessageKey.UNKNOWN_USER);
                     return;
                 }
 
                 // Set the email address
-
                 auth.setEmail(playerEmail);
-                if (!plugin.database.updateEmail(auth)) {
-                    m.send(sender, MessageKey.ERROR);
+                if (!commandService.getDataSource().updateEmail(auth)) {
+                    commandService.send(sender, MessageKey.ERROR);
                     return;
                 }
 
@@ -56,7 +48,7 @@ public class SetEmailCommand implements ExecutableCommand {
                 }
 
                 // Show a status message
-                m.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
+                commandService.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
 
             }
         });

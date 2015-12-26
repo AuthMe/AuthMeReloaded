@@ -16,17 +16,8 @@ public class ReloadCommand implements ExecutableCommand {
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        // Profile the reload process
-        Profiler p = new Profiler(true);
-
         // AuthMe plugin instance
         AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        Messages m = plugin.getMessages();
-
-        // Show a status message
-        // sender.sendMessage(ChatColor.YELLOW + "Reloading AuthMeReloaded...");
 
         try {
             Settings.reload();
@@ -34,16 +25,12 @@ public class ReloadCommand implements ExecutableCommand {
             plugin.getModuleManager().reloadModules();
             plugin.setupDatabase();
         } catch (Exception e) {
+            sender.sendMessage("Error occurred during reload of AuthMe: aborting");
             ConsoleLogger.showError("Fatal error occurred! AuthMe instance ABORTED!");
             ConsoleLogger.writeStackTrace(e);
             plugin.stopOrUnload();
         }
 
-        // Show a status message
-        // TODO: add the profiler result
-        m.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
-
-        // AuthMeReloaded reloaded, show a status message
-        // sender.sendMessage(ChatColor.GREEN + "AuthMeReloaded has been reloaded successfully, took " + p.getTimeFormatted() + "!");
+        commandService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
     }
 }

@@ -32,22 +32,19 @@ public class UnregisterAdminCommand implements ExecutableCommand {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 
-        // Messages instance
-        final Messages m = plugin.getMessages();
-
         // Get the player name
         String playerName = arguments.get(0);
         String playerNameLowerCase = playerName.toLowerCase();
 
         // Make sure the user is valid
-        if (!plugin.database.isAuthAvailable(playerNameLowerCase)) {
-            m.send(sender, MessageKey.UNKNOWN_USER);
+        if (!commandService.getDataSource().isAuthAvailable(playerNameLowerCase)) {
+            commandService.send(sender, MessageKey.UNKNOWN_USER);
             return;
         }
 
         // Remove the player
-        if (!plugin.database.removeAuth(playerNameLowerCase)) {
-            m.send(sender, MessageKey.ERROR);
+        if (!commandService.getDataSource().removeAuth(playerNameLowerCase)) {
+            commandService.send(sender, MessageKey.ERROR);
             return;
         }
 
@@ -67,17 +64,16 @@ public class UnregisterAdminCommand implements ExecutableCommand {
             }
             LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTaskId(
                 scheduler.runTaskAsynchronously(plugin,
-                    new MessageTask(plugin, playerNameLowerCase, m.retrieve(MessageKey.REGISTER_MESSAGE), interval)));
+                    new MessageTask(plugin, playerNameLowerCase, commandService.retrieveMessage(MessageKey.REGISTER_MESSAGE), interval)));
             if (Settings.applyBlindEffect) {
                 target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,
                     Settings.getRegistrationTimeout * 20, 2));
             }
-            m.send(target, MessageKey.UNREGISTERED_SUCCESS);
-
+            commandService.send(target, MessageKey.UNREGISTERED_SUCCESS);
         }
 
         // Show a status message
-        m.send(sender, MessageKey.UNREGISTERED_SUCCESS);
+        commandService.send(sender, MessageKey.UNREGISTERED_SUCCESS);
         ConsoleLogger.info(playerName + " unregistered");
     }
 }

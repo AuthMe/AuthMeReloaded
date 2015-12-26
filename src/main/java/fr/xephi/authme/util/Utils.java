@@ -247,14 +247,14 @@ public final class Utils {
         }
     }
 
-    @SuppressWarnings("deprecation")
     public static Player getPlayer(String name) {
         name = name.toLowerCase();
         return wrapper.getServer().getPlayer(name);
     }
 
     public static boolean isNPC(Player player) {
-        return player.hasMetadata("NPC") || plugin.combatTagPlus != null && plugin.combatTagPlus.getNpcPlayerHelper().isNpc(player);
+        return player.hasMetadata("NPC") || plugin.combatTagPlus != null
+            && plugin.combatTagPlus.getNpcPlayerHelper().isNpc(player);
     }
 
     public static void teleportToSpawn(Player player) {

@@ -6,6 +6,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -22,70 +23,70 @@ import java.util.List;
 public class ChangePasswordAdminCommand implements ExecutableCommand {
 
     @Override
-    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
-        final AuthMe plugin = AuthMe.getInstance();
-        final Messages m = plugin.getMessages();
-
+    public void executeCommand(final CommandSender sender, List<String> arguments,
+                               final CommandService commandService) {
         // Get the player and password
         String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);
 
         // Validate the password
         String playerPassLowerCase = playerPass.toLowerCase();
+        // TODO #308: Remove this check
         if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where")
             || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify")
             || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
             || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
             || !playerPassLowerCase.matches(Settings.getPassRegex)) {
-            m.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
+            commandService.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
             return;
         }
         if (playerPassLowerCase.equalsIgnoreCase(playerName)) {
-            m.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+            commandService.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
             return;
         }
         if (playerPassLowerCase.length() < Settings.getPasswordMinLen
                 || playerPassLowerCase.length() > Settings.passwordMaxLength) {
-            m.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
+            commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
             return;
         }
         if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(playerPassLowerCase)) {
-            m.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
+            commandService.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
             return;
         }
         // Set the password
         final String playerNameLowerCase = playerName.toLowerCase();
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        commandService.runTaskAsynchronously(new Runnable() {
 
             @Override
             public void run() {
+                DataSource dataSource = commandService.getDataSource();
                 String hash;
                 try {
                     hash = PasswordSecurity.getHash(Settings.getPasswordHash, playerPass, playerNameLowerCase);
                 } catch (NoSuchAlgorithmException e) {
-                    m.send(sender, MessageKey.ERROR);
+                    commandService.send(sender, MessageKey.ERROR);
                     return;
                 }
                 PlayerAuth auth = null;
                 if (PlayerCache.getInstance().isAuthenticated(playerNameLowerCase)) {
                     auth = PlayerCache.getInstance().getAuth(playerNameLowerCase);
-                } else if (plugin.database.isAuthAvailable(playerNameLowerCase)) {
-                    auth = plugin.database.getAuth(playerNameLowerCase);
+                } else if (dataSource.isAuthAvailable(playerNameLowerCase)) {
+                    auth = dataSource.getAuth(playerNameLowerCase);
                 }
                 if (auth == null) {
-                    m.send(sender, MessageKey.UNKNOWN_USER);
+                    commandService.send(sender, MessageKey.UNKNOWN_USER);
                     return;
                 }
                 auth.setHash(hash);
                 if (PasswordSecurity.userSalt.containsKey(playerNameLowerCase)) {
                     auth.setSalt(PasswordSecurity.userSalt.get(playerNameLowerCase));
-                    plugin.database.updateSalt(auth);
+                    commandService.getDataSource().updateSalt(auth);
                 }
-                if (!plugin.database.updatePassword(auth)) {
-                    m.send(sender, MessageKey.ERROR);
+                if (!dataSource.updatePassword(auth)) {
+                    commandService.send(sender, MessageKey.ERROR);
                     return;
                 }
-                sender.sendMessage("pwd_changed");
+                commandService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
                 ConsoleLogger.info(playerNameLowerCase + "'s password changed");
             }
 

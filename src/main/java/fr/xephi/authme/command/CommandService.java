@@ -5,6 +5,8 @@ import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.process.Management;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -98,6 +100,24 @@ public class CommandService {
         for (String line : lines) {
             sender.sendMessage(line);
         }
+    }
+
+    /**
+     * Returns the management instance of the plugin.
+     *
+     * @return The Management instance linked to the AuthMe instance
+     */
+    public Management getManagement() {
+        return authMe.getManagement();
+    }
+
+    public PermissionsManager getPermissionsManager() {
+        // TODO ljacqu 20151226: Might be nicer to pass the perm manager via constructor
+        return authMe.getPermissionsManager();
+    }
+
+    public String[] retrieveMessage(MessageKey key) {
+        return messages.retrieve(key);
     }
 
 }

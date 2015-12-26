@@ -41,7 +41,7 @@ public class PurgeCommand implements ExecutableCommand {
         long until = calendar.getTimeInMillis();
 
         // Purge the data, get the purged values
-        List<String> purged = plugin.database.autoPurgeDatabase(until);
+        List<String> purged = commandService.getDataSource().autoPurgeDatabase(until);
 
         // Show a status message
         sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");
