@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Dec 26 13:56:13 CET 2015. See commands/commands.tpl.md -->
+<!-- File auto-generated on Sat Dec 26 14:05:00 CET 2015. See commands/commands.tpl.md -->
 
 ## AuthMe Commands
 You can use the following commands to use the features of AuthMe. Mandatory arguments are marked with `< >`
@@ -44,33 +44,21 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/authme reload**: Reload the AuthMeReloaded plugin.
 <br />Requires `authme.admin.reload`
 - **/authme version**: Show detailed information about the installed AuthMeReloaded version, the developers, contributors, and license.
-
-
 - **/login** &lt;password>: Command to log in using AuthMeReloaded.
 <br />Requires `authme.player.login`
 - **/login help** [query]: View detailed help pages about AuthMeReloaded login commands.
-
-
 - **/logout**: Command to logout using AuthMeReloaded.
 <br />Requires `authme.player.logout`
 - **/logout help** [query]: View detailed help pages about AuthMeReloaded logout commands.
-
-
 - **/register** &lt;password> [verifyPassword]: Command to register using AuthMeReloaded.
 <br />Requires `authme.player.register`
 - **/register help** [query]: View detailed help pages about AuthMeReloaded register commands.
-
-
 - **/unreg** &lt;password>: Command to unregister using AuthMeReloaded.
 <br />Requires `authme.player.unregister`
 - **/unreg help** [query]: View detailed help pages about AuthMeReloaded unregister commands.
-
-
 - **/changepassword** &lt;oldPassword> &lt;newPassword>: Command to change your password using AuthMeReloaded.
 <br />Requires `authme.player.changepassword`
 - **/changepassword help** [query]: View detailed help pages about AuthMeReloaded changepassword commands.
-
-
 - **/email**: The AuthMeReloaded Email command base.
 - **/email help** [query]: View detailed help pages about AuthMeReloaded email commands.
 - **/email add** &lt;email> &lt;verifyEmail>: Add a new email address to your account.
@@ -79,13 +67,10 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 <br />Requires `authme.player.email.change`
 - **/email recover** &lt;email>: Recover your account using an Email address by sending a mail containing a new password.
 <br />Requires `authme.player.email.recover`
-
-
 - **/captcha** &lt;captcha>: Captcha command for AuthMeReloaded.
 <br />Requires `authme.player.captcha`
 - **/captcha help** [query]: View detailed help pages about AuthMeReloaded captcha commands.
-
-
 - **/converter** &lt;job>: Converter command for AuthMeReloaded.
 <br />Requires `authme.admin.converter`
 - **/converter help** [query]: View detailed help pages about AuthMeReloaded converter commands.
+

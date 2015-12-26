@@ -33,7 +33,7 @@ public class CommandPageCreater implements ToolTask {
             + "commands/command_entry.tpl.md");
 
         StringBuilder commandsResult = new StringBuilder();
-        addCommandsInfo(commandsResult, baseCommands, template, true);
+        addCommandsInfo(commandsResult, baseCommands, template);
 
         FileUtils.generateFileFromTemplate(
             ToolsConstants.TOOLS_SOURCE_ROOT + "commands/commands.tpl.md",
@@ -43,7 +43,7 @@ public class CommandPageCreater implements ToolTask {
     }
 
     private static void addCommandsInfo(StringBuilder sb, Collection<CommandDescription> commands,
-                                        final String template, boolean addNewLine) {
+                                        final String template) {
         for (CommandDescription command : commands) {
             Map<String, String> tags = ANewMap
                 .with("command", CommandUtils.constructCommandPath(command))
@@ -54,10 +54,7 @@ public class CommandPageCreater implements ToolTask {
             sb.append(TagReplacer.applyReplacements(template, tags));
 
             if (!command.getChildren().isEmpty()) {
-                addCommandsInfo(sb, command.getChildren(), template, false);
-            }
-            if (addNewLine) {
-                sb.append("\n\n");
+                addCommandsInfo(sb, command.getChildren(), template);
             }
         }
     }
