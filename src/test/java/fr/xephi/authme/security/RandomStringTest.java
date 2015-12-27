@@ -41,7 +41,6 @@ public class RandomStringTest {
                 result.length(), equalTo(length));
             assertThat("Result '" + result + "' should only have characters a-z, 0-9",
                 badChars.matcher(result).matches(), equalTo(false));
-            System.out.println(result);
         }
     }
 
