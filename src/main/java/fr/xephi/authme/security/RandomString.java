@@ -7,7 +7,7 @@ public final class RandomString {
 
     private static final char[] chars = new char[36];
     private static final Random RANDOM = new SecureRandom();
-    private static final int HEX_MAX_INDEX = 15;
+    private static final int HEX_MAX_INDEX = 16;
 
     static {
         for (int idx = 0; idx < 10; ++idx) {
