@@ -16,11 +16,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class xAuthToFlat {
+class xAuthToFlat {
 
-    public final AuthMe instance;
-    public final DataSource database;
-    public final CommandSender sender;
+    private final AuthMe instance;
+    private final DataSource database;
+    private final CommandSender sender;
 
     /**
      * Constructor for xAuthToFlat.
@@ -57,14 +57,14 @@ public class xAuthToFlat {
                     database.saveAuth(auth);
                 }
             }
-            sender.sendMessage("[AuthMe] Successfully convert from xAuth database");
+            sender.sendMessage("[AuthMe] Successfully converted from xAuth database");
         } catch (Exception e) {
             sender.sendMessage("[AuthMe] An error has been thrown while import xAuth database, the import hadn't fail but can be not complete ");
         }
         return true;
     }
 
-    public String getIdPlayer(int id) {
+    private String getIdPlayer(int id) {
         String realPass = "";
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
@@ -86,7 +86,7 @@ public class xAuthToFlat {
         return realPass;
     }
 
-    public List<Integer> getXAuthPlayers() {
+    private List<Integer> getXAuthPlayers() {
         List<Integer> xP = new ArrayList<>();
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;
@@ -107,7 +107,7 @@ public class xAuthToFlat {
         return xP;
     }
 
-    public String getPassword(int accountId) {
+    private String getPassword(int accountId) {
         String realPass = "";
         Connection conn = xAuth.getPlugin().getDatabaseController().getConnection();
         PreparedStatement ps = null;

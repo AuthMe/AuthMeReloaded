@@ -578,7 +578,7 @@ public class AuthMe extends JavaPlugin {
 
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
             ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, it will be changed to SQLite... Connection will be impossible until conversion is done!");
-            ForceFlatToSqlite converter = new ForceFlatToSqlite(database, this);
+            ForceFlatToSqlite converter = new ForceFlatToSqlite(database);
             DataSource source = converter.run();
             if (source != null) {
                 database = source;

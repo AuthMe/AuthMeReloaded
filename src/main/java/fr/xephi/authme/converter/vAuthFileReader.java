@@ -6,30 +6,24 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
 
 import java.io.File;
 import java.util.Scanner;
 import java.util.UUID;
 
-/**
- */
-public class vAuthFileReader {
+class vAuthFileReader {
 
-    public final AuthMe plugin;
-    public final DataSource database;
-    public final CommandSender sender;
+    private final AuthMe plugin;
+    private final DataSource database;
 
     /**
      * Constructor for vAuthFileReader.
      *
      * @param plugin AuthMe
-     * @param sender CommandSender
      */
-    public vAuthFileReader(AuthMe plugin, CommandSender sender) {
+    public vAuthFileReader(AuthMe plugin) {
         this.plugin = plugin;
         this.database = plugin.database;
-        this.sender = sender;
     }
 
     public void convert() {
@@ -68,13 +62,6 @@ public class vAuthFileReader {
         return s.length() > 8 && s.charAt(8) == '-';
     }
 
-    /**
-     * Method getName.
-     *
-     * @param uuid UUID
-     *
-     * @return String
-     */
     private String getName(UUID uuid) {
         try {
             for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {

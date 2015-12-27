@@ -8,28 +8,16 @@ import org.bukkit.OfflinePlayer;
 
 import java.io.File;
 
-/**
- */
 public class RoyalAuthConverter implements Converter {
 
-    public final AuthMe plugin;
+    private final AuthMe plugin;
     private final DataSource data;
 
-    /**
-     * Constructor for RoyalAuthConverter.
-     *
-     * @param plugin AuthMe
-     */
     public RoyalAuthConverter(AuthMe plugin) {
         this.plugin = plugin;
         this.data = plugin.database;
     }
 
-    /**
-     * Method run.
-     *
-     * @see java.lang.Runnable#run()
-     */
     @Override
     public void run() {
         for (OfflinePlayer o : plugin.getServer().getOfflinePlayers()) {
