@@ -11,7 +11,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-@Recommendation(Usage.OK)
+@Recommendation(Usage.ACCEPTABLE)
 @HasSalt(value = SaltType.TEXT, length = 9)
 public class WORDPRESS implements EncryptionMethod {
 

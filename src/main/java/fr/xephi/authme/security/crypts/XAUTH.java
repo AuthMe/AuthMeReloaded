@@ -1,6 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.HashUtils;
+import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
@@ -38,7 +38,7 @@ public class XAUTH implements EncryptionMethod {
     }
 
     public String generateSalt() {
-        return HashUtils.generateSalt(12);
+        return RandomString.generateHex(12);
     }
 
 }

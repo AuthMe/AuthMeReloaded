@@ -38,8 +38,7 @@ public class RecoverEmailCommand extends PlayerCommand {
                 return;
             }
             try {
-                RandomString rand = new RandomString(Settings.getRecoveryPassLength);
-                String thePass = rand.nextString();
+                String thePass = RandomString.generate(Settings.getRecoveryPassLength);
                 String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, thePass, playerName);
                 PlayerAuth auth;
                 if (PlayerCache.getInstance().isAuthenticated(playerName)) {

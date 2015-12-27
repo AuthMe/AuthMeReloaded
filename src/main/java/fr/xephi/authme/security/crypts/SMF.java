@@ -1,31 +1,30 @@
 package fr.xephi.authme.security.crypts;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import fr.xephi.authme.security.HashUtils;
+import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.security.crypts.description.Usage;
 
-/**
- */
+@Recommendation(Usage.DO_NOT_USE)
+@HasSalt(SaltType.USERNAME)
 public class SMF implements EncryptionMethod {
 
-    private static String getSHA1(String message)
-        throws NoSuchAlgorithmException {
-        MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-        sha1.reset();
-        sha1.update(message.getBytes());
-        byte[] digest = sha1.digest();
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
+    @Override
+    public String computeHash(String password, String salt, String name) {
+        return computeHash(password, name);
+    }
+
+    public String computeHash(String password, String name) {
+        return HashUtils.sha1(name.toLowerCase() + password);
     }
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
-        return getSHA1(name.toLowerCase() + password);
+    public boolean comparePassword(String hash, String password, String playerName) {
+        return hash.equals(computeHash(password, playerName));
     }
 
-    @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
-        return hash.equals(computeHash(password, null, playerName));
+    public String generateSalt() {
+        return null;
     }
 }

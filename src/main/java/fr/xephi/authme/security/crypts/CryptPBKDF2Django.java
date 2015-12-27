@@ -1,6 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.HashUtils;
+import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
@@ -10,7 +10,7 @@ import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
 
 import javax.xml.bind.DatatypeConverter;
 
-@Recommendation(Usage.OK)
+@Recommendation(Usage.ACCEPTABLE)
 @HasSalt(value = SaltType.TEXT, length = 12)
 public class CryptPBKDF2Django implements EncryptionMethod {
 
@@ -38,7 +38,7 @@ public class CryptPBKDF2Django implements EncryptionMethod {
     }
 
     public String generateSalt() {
-        return HashUtils.generateSalt(12);
+        return RandomString.generateHex(12);
     }
 
 }

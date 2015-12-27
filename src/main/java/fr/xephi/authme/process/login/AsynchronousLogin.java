@@ -26,12 +26,11 @@ import java.util.List;
  */
 public class AsynchronousLogin {
 
-    private static final RandomString rdm = new RandomString(Settings.captchaLength);
-    protected final Player player;
-    protected final String name;
-    protected final String realName;
-    protected final String password;
-    protected final boolean forceLogin;
+    private final Player player;
+    private final String name;
+    private final String realName;
+    private final String password;
+    private final boolean forceLogin;
     private final AuthMe plugin;
     private final DataSource database;
     private final Messages m;
@@ -70,7 +69,7 @@ public class AsynchronousLogin {
                 plugin.captcha.putIfAbsent(name, i);
             }
             if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
-                plugin.cap.putIfAbsent(name, rdm.nextString());
+                plugin.cap.putIfAbsent(name, RandomString.generate(Settings.captchaLength));
                 m.send(player, MessageKey.USAGE_CAPTCHA, plugin.cap.get(name));
                 return true;
             }

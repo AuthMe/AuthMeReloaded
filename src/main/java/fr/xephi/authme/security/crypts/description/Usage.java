@@ -9,7 +9,7 @@ public enum Usage {
     RECOMMENDED,
 
     /** There are safer algorithms that can be chosen but using the algorithm is generally OK. */
-    OK,
+    ACCEPTABLE,
 
     /** Hash algorithm is not recommended to be used. Use only if required by another system. */
     DO_NOT_USE,
