@@ -7,3 +7,7 @@ general:
 test:
   override:
     - mvn clean install -B
+
+test:
+    post:
+        - pip install codecov && codecov
