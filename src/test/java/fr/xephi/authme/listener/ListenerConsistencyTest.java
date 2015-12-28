@@ -24,7 +24,6 @@ public final class ListenerConsistencyTest {
         AuthMePlayerListener.class, AuthMePlayerListener16.class, AuthMePlayerListener18.class,
         AuthMeServerListener.class };
 
-    // TODO #368: Ensure that these exceptions are really intentional, if not fix them and remove them here
     private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet("AuthMePlayerListener#onPlayerJoin",
         "AuthMePlayerListener#onPreLogin", "AuthMePlayerListener#onPlayerLogin",
         "AuthMePlayerListener#onPlayerQuit", "AuthMeServerListener#onPluginDisable",
