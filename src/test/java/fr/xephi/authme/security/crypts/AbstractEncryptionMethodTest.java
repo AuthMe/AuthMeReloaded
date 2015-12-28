@@ -151,7 +151,6 @@ public abstract class AbstractEncryptionMethodTest {
         NewEncrMethod method1 = null;
         if (method instanceof NewEncrMethod) {
             method1 = (NewEncrMethod) method;
-            if (!method1.hasSeparateSalt()) method1 = null;
         }
 
 
@@ -161,9 +160,14 @@ public abstract class AbstractEncryptionMethodTest {
                 delim = "); ";
             }
             if (method1 != null) {
-                HashResult hashResult = method1.computeHash(password, USERNAME);
-                System.out.println(String.format("\t\tnew HashResult(\"%s\", \"%s\")%s// %s",
-                    hashResult.getHash(), hashResult.getSalt(), delim, password));
+                if (method1.hasSeparateSalt()) {
+                    HashResult hashResult = method1.computeHash(password, USERNAME);
+                    System.out.println(String.format("\t\tnew HashResult(\"%s\", \"%s\")%s// %s",
+                        hashResult.getHash(), hashResult.getSalt(), delim, password));
+                } else {
+                    System.out.println("\t\t\"" + method1.computeHash(password, USERNAME).getHash()
+                        + "\"" + delim + "// " + password);
+                }
             } else {
                 System.out.println("\t\t\"" + method.computeHash(password, null, USERNAME)
                     + "\"" + delim + "// " + password);
