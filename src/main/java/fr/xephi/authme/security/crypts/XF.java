@@ -11,23 +11,37 @@ import java.util.regex.Pattern;
 
 /**
  */
-public class XF implements EncryptionMethod {
+public class XF implements NewEncrMethod {
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password, String salt, String name) {
         return getSha256(getSha256(password) + regmatch("\"salt\";.:..:\"(.*)\";.:.:\"hashFunc\"", salt));
     }
 
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
+    public HashResult computeHash(String password, String name) {
+        String salt = generateSalt();
+        return new HashResult(computeHash(password, salt, null), salt);
+    }
+
+    @Override
+    public boolean comparePassword(String hash, String password, String playerName)  {
         String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
         return hash.equals(regmatch("\"hash\";.:..:\"(.*)\";.:.:\"salt\"", salt));
     }
 
-    private String getSha256(String password) throws NoSuchAlgorithmException {
-        MessageDigest md = MessageDigest.getInstance("SHA-256");
+    public boolean comparePassword(String hash, String password, String salt, String name) {
+        return hash.equals(regmatch("\"hash\";.:..:\"(.*)\";.:.:\"salt\"", salt));
+    }
+
+    private String getSha256(String password) {
+        MessageDigest md = null;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+        } catch (NoSuchAlgorithmException e) {
+            // TODO #358: Handle exception properly
+            throw new RuntimeException(e);
+        }
         md.update(password.getBytes());
         byte byteData[] = md.digest();
         StringBuilder sb = new StringBuilder();
@@ -43,6 +57,17 @@ public class XF implements EncryptionMethod {
             hexString.append(hex);
         }
         return hexString.toString();
+    }
+
+    @Override
+    public String generateSalt() {
+        // TODO #369: Find out what kind of salt format XF uses
+        return "";
+    }
+
+    @Override
+    public boolean hasSeparateSalt() {
+        return true;
     }
 
     private String regmatch(String pattern, String line) {

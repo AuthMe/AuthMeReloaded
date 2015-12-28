@@ -12,7 +12,7 @@ import java.security.MessageDigest;
 
 @Recommendation(Usage.DO_NOT_USE)
 @HasSalt(SaltType.USERNAME)
-public class CRAZYCRYPT1 implements EncryptionMethod {
+public class CRAZYCRYPT1 extends UsernameSaltMethod {
 
     private static final char[] CRYPTCHARS =
         {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f'};
@@ -28,23 +28,11 @@ public class CRAZYCRYPT1 implements EncryptionMethod {
     }
 
     @Override
-    public String computeHash(String password, String salt, String name) {
-        return computeHash(password, name);
-    }
-
-    public String computeHash(String password, String name) {
+    public HashResult computeHash(String password, String name) {
         final String text = "ÜÄaeut//&/=I " + password + "7421€547" + name + "__+IÄIH§%NK " + password;
         final MessageDigest md = HashUtils.getDigest(MessageDigestAlgorithm.SHA512);
         md.update(text.getBytes(charset), 0, text.length());
-        return byteArrayToHexString(md.digest());
+        return new HashResult(byteArrayToHexString(md.digest()));
     }
 
-    @Override
-    public boolean comparePassword(String hash, String password, String playerName) {
-        return hash.equals(computeHash(password, playerName));
-    }
-
-    public String generateSalt() {
-        return null;
-    }
 }

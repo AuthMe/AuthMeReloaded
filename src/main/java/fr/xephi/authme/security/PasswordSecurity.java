@@ -198,7 +198,7 @@ public class PasswordSecurity {
                 : algorithm.getClazz().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalStateException("Constructor for '" + algorithm.getClazz()
-                + "' could not be invoked. (Is it public with no arguments?)", e);
+                + "' could not be invoked. (Is there no default constructor?)", e);
         }
 
         PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);

@@ -7,14 +7,12 @@ import java.security.NoSuchAlgorithmException;
 public class WBB4 implements EncryptionMethod {
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password, String salt, String name) {
         return BCRYPT.getDoubleHash(password, salt);
     }
 
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
+    public boolean comparePassword(String hash, String password, String playerName) {
         return BCRYPT.checkpw(password, hash, 2);
     }
 

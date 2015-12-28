@@ -14,6 +14,10 @@ public class HashResult {
         this.hash = hash;
         this.salt = salt;
     }
+
+    public HashResult(String hash) {
+        this(hash, null);
+    }
     
     public String getHash() {
         return hash;

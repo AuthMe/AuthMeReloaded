@@ -1,9 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.PasswordSecurity;
 import org.junit.Test;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -11,6 +9,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * Test for implementations of {@link EncryptionMethod}.
@@ -98,15 +97,13 @@ public abstract class AbstractEncryptionMethodTest {
     }
 
     @Test
-    public void testPasswordEquality() throws NoSuchAlgorithmException {
-        // TODO #358: Remove "throws NoSuchAlgorithmException" on method declaration
+    public void testPasswordEquality() {
         // TODO #358: Remove instanceof and use this code always
         if (method instanceof NewEncrMethod) {
             NewEncrMethod method1 = (NewEncrMethod) method;
             for (String password : INTERNAL_PASSWORDS) {
-                HashResult result = method1.computeHash(password, USERNAME);
-                final String hash = result.getHash();
-                final String salt = result.getSalt();
+                final String salt = method1.generateSalt();
+                final String hash = method1.computeHash(password, salt, USERNAME);
 
                 // Check that the computeHash(password, salt, name) method has the same output for the returned salt
                 assertThat(hash, equalTo(method1.computeHash(password, salt, USERNAME)));
@@ -125,23 +122,7 @@ public abstract class AbstractEncryptionMethodTest {
             return;
         }
 
-        for (String password : INTERNAL_PASSWORDS) {
-            try {
-                String hash = method.computeHash(password, getSalt(method), USERNAME);
-                assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
-                    method.comparePassword(hash, password, USERNAME));
-                if (!password.equals(password.toLowerCase())) {
-                    assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
-                        method.comparePassword(hash, password.toLowerCase(), USERNAME));
-                }
-                if (!password.equals(password.toUpperCase())) {
-                    assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
-                        method.comparePassword(hash, password.toUpperCase(), USERNAME));
-                }
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalStateException("EncryptionMethod '" + method + "' threw exception", e);
-            }
-        }
+        fail("No longer supporting old EncryptionMethod implementations");
     }
 
     private boolean doesGivenHashMatch(String password, EncryptionMethod method) {
@@ -154,11 +135,8 @@ public abstract class AbstractEncryptionMethodTest {
         }
 
 
-        try {
-            return method.comparePassword(hashes.get(password), password, USERNAME);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("EncryptionMethod '" + method + "' threw exception", e);
-        }
+        // TODO #358: Remove line below
+        return method.comparePassword(hashes.get(password), password, USERNAME);
     }
 
     // @org.junit.Test public void a() { AbstractEncryptionMethodTest.generateTest(); }
@@ -170,45 +148,29 @@ public abstract class AbstractEncryptionMethodTest {
         System.out.println("\n\tpublic " + className + "Test() {");
         System.out.println("\t\tsuper(new " + className + "(),");
 
+        NewEncrMethod method1 = null;
+        if (method instanceof NewEncrMethod) {
+            method1 = (NewEncrMethod) method;
+            if (!method1.hasSeparateSalt()) method1 = null;
+        }
+
+
         String delim = ",  ";
         for (String password : GIVEN_PASSWORDS) {
             if (password.equals(GIVEN_PASSWORDS[GIVEN_PASSWORDS.length - 1])) {
                 delim = "); ";
             }
-            try {
-                System.out.println("\t\t\"" + method.computeHash(password, getSalt(method), USERNAME)
+            if (method1 != null) {
+                HashResult hashResult = method1.computeHash(password, USERNAME);
+                System.out.println(String.format("\t\tnew HashResult(\"%s\", \"%s\")%s// %s",
+                    hashResult.getHash(), hashResult.getSalt(), delim, password));
+            } else {
+                System.out.println("\t\t\"" + method.computeHash(password, null, USERNAME)
                     + "\"" + delim + "// " + password);
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalStateException("Could not generate hash", e);
             }
         }
         System.out.println("\t}");
         System.out.println("\n}");
-    }
-
-    // TODO #358: Remove this method and use the new salt method on the interface
-    private static String getSalt(EncryptionMethod method) {
-        if (method instanceof BCRYPT) {
-            return BCRYPT.gensalt();
-        } else if (method instanceof MD5 || method instanceof WORDPRESS || method instanceof SMF
-            || method instanceof SHA512 || method instanceof SHA1 || method instanceof ROYALAUTH
-            || method instanceof DOUBLEMD5 || method instanceof CRAZYCRYPT1) {
-            return "";
-        } else if (method instanceof JOOMLA || method instanceof SALTEDSHA512) {
-            return PasswordSecurity.createSalt(32);
-        } else if (method instanceof SHA256 || method instanceof PHPBB || method instanceof WHIRLPOOL
-            || method instanceof MD5VB || method instanceof BCRYPT2Y) {
-            return PasswordSecurity.createSalt(16);
-        } else if (method instanceof WBB3) {
-            return PasswordSecurity.createSalt(40);
-        } else if (method instanceof XAUTH || method instanceof CryptPBKDF2Django
-            || method instanceof CryptPBKDF2) {
-            return PasswordSecurity.createSalt(12);
-        } else if (method instanceof WBB4) {
-            return BCRYPT.gensalt(8);
-        }
-        System.out.println("Note: Cannot generate salt for unknown encryption method '" + method + "'");
-        return "";
     }
 
 }

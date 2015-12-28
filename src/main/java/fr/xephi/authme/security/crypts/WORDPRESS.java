@@ -13,7 +13,9 @@ import java.util.Arrays;
 
 @Recommendation(Usage.ACCEPTABLE)
 @HasSalt(value = SaltType.TEXT, length = 9)
-public class WORDPRESS implements EncryptionMethod {
+// Note ljacqu 20151228: Wordpress is actually a salted algorithm but salt generation is handled internally
+// and isn't exposed to the outside, so we treat it as an unsalted implementation
+public class WORDPRESS extends UnsaltedMethod {
 
     private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private final SecureRandom randomGen = new SecureRandom();
@@ -107,25 +109,16 @@ public class WORDPRESS implements EncryptionMethod {
     }
 
     @Override
-    public String computeHash(String password, String salt, String name) {
+    public String computeHash(String password) {
         byte random[] = new byte[6];
         randomGen.nextBytes(random);
         return crypt(password, gensaltPrivate(stringToUtf8(new String(random))));
     }
 
-    public String computeHash(String password, String name) {
-        return computeHash(password, null, null);
-    }
-
     @Override
-    public boolean comparePassword(String hash, String password, String playerName) {
+    public boolean comparePassword(String hash, String password, String salt, String name) {
         String comparedHash = crypt(password, hash);
         return comparedHash.equals(hash);
-    }
-
-    public String generateSalt() {
-        // This hash uses a salt, but it is not exposed to the outside
-        return null;
     }
 
 }

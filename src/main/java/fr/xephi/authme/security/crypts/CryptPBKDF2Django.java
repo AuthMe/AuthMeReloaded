@@ -1,18 +1,11 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.security.crypts.description.HasSalt;
-import fr.xephi.authme.security.crypts.description.Recommendation;
-import fr.xephi.authme.security.crypts.description.SaltType;
-import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
 
 import javax.xml.bind.DatatypeConverter;
 
-@Recommendation(Usage.ACCEPTABLE)
-@HasSalt(value = SaltType.TEXT, length = 12)
-public class CryptPBKDF2Django implements EncryptionMethod {
+public class CryptPBKDF2Django extends HexSaltedMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
@@ -23,12 +16,8 @@ public class CryptPBKDF2Django implements EncryptionMethod {
         return result + String.valueOf(DatatypeConverter.printBase64Binary(engine.deriveKey(password, 32)));
     }
 
-    public String computeHash(String password, String name) {
-        return computeHash(password, generateSalt(), null);
-    }
-
     @Override
-    public boolean comparePassword(String hash, String password, String playerName) {
+    public boolean comparePassword(String hash, String password, String unusedSalt, String unusedName) {
         String[] line = hash.split("\\$");
         String salt = line[2];
         byte[] derivedKey = DatatypeConverter.parseBase64Binary(line[3]);
@@ -37,8 +26,9 @@ public class CryptPBKDF2Django implements EncryptionMethod {
         return engine.verifyKey(password);
     }
 
-    public String generateSalt() {
-        return RandomString.generateHex(12);
+    @Override
+    public int getSaltLength() {
+        return 12;
     }
 
 }

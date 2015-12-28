@@ -1,9 +1,19 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.WrapperMock;
+import org.junit.Before;
+
 /**
  * Test for {@link BCRYPT}.
  */
 public class BcryptTest extends AbstractEncryptionMethodTest {
+
+    @Before
+    public void setUpSettings() {
+        WrapperMock.createInstance();
+        Settings.bCryptLog2Rounds = 8;
+    }
 
     public BcryptTest() {
         super(new BCRYPT(),

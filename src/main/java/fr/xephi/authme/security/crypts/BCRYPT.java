@@ -17,6 +17,7 @@ import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.settings.Settings;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
@@ -63,9 +64,9 @@ import java.security.SecureRandom;
  * @author Damien Miller
  * @version 0.2
  */
-@Recommendation(Usage.RECOMMENDED)
-@HasSalt(value = SaltType.TEXT, length = BCRYPT.BCRYPT_SALT_LEN)
-public class BCRYPT implements EncryptionMethod {
+@Recommendation(Usage.RECOMMENDED) // provided the salt length is >= 8
+@HasSalt(value = SaltType.TEXT) // length depends on Settings.bCryptLog2Rounds
+public class BCRYPT implements NewEncrMethod {
 
     // BCrypt parameters
     private static final int GENSALT_DEFAULT_LOG2_ROUNDS = 10;
@@ -518,8 +519,10 @@ public class BCRYPT implements EncryptionMethod {
         return hashpw(password, salt);
     }
 
-    public String computeHash(String password, String name) {
-        return hashpw(password, generateSalt());
+    @Override
+    public HashResult computeHash(String password, String name) {
+        String salt = generateSalt();
+        return new HashResult(hashpw(password, salt), salt);
     }
 
     @Override
@@ -527,7 +530,18 @@ public class BCRYPT implements EncryptionMethod {
         return checkpw(password, hash);
     }
 
+    @Override
+    public boolean comparePassword(String hash, String password, String salt, String name) {
+        return comparePassword(hash, password, name);
+    }
+
+    @Override
     public String generateSalt() {
-        return BCRYPT.gensalt();
+        return BCRYPT.gensalt(Settings.bCryptLog2Rounds);
+    }
+
+    @Override
+    public boolean hasSeparateSalt() {
+        return false;
     }
 }

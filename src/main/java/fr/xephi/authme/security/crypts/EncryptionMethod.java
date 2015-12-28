@@ -1,7 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import java.security.NoSuchAlgorithmException;
-
 /**
  * Public interface for custom password encryption methods.
  */
@@ -16,8 +14,7 @@ public interface EncryptionMethod {
      *
      * @return The hashed password
      */
-    String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException;
+    String computeHash(String password, String salt, String name);
 
     /**
      * Check whether a given hash matches the clear-text password.
@@ -30,7 +27,6 @@ public interface EncryptionMethod {
      * @return True if the password matches, false otherwise
      */
     @Deprecated
-    boolean comparePassword(String hash, String password, String playerName)
-        throws NoSuchAlgorithmException;
+    boolean comparePassword(String hash, String password, String playerName);
 
 }

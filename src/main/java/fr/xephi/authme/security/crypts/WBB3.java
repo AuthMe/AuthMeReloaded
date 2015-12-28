@@ -1,34 +1,19 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.security.RandomString;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import static fr.xephi.authme.security.HashUtils.sha1;
 
-/**
- */
-public class WBB3 implements EncryptionMethod {
+public class WBB3 extends SeparateSaltMethod {
 
-    private static String getSHA1(String message)
-        throws NoSuchAlgorithmException {
-        MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-        sha1.reset();
-        sha1.update(message.getBytes());
-        byte[] digest = sha1.digest();
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
+    @Override
+    public String computeHash(String password, String salt, String name) {
+        return sha1(salt.concat(sha1(salt.concat(sha1(password)))));
     }
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
-        return getSHA1(salt.concat(getSHA1(salt.concat(getSHA1(password)))));
+    public String generateSalt() {
+        return RandomString.generateHex(40);
     }
 
-    @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
-        String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-        return hash.equals(computeHash(password, salt, ""));
-    }
 }
