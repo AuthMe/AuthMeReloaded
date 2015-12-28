@@ -222,7 +222,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerAuth auth = plugin.database.getAuth(event.getName());
-        if (auth != null && !auth.getRealName().equals("Player") && !auth.getRealName().equals(event.getName())) {
+        if (auth != null && auth.getRealName() != null && !auth.getRealName().isEmpty() && !auth.getRealName().equals("Player") && !auth.getRealName().equals(event.getName())) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage("You should join using username: " + ChatColor.AQUA + auth.getRealName() +
                 ChatColor.RESET + "\nnot: " + ChatColor.RED + event.getName()); // TODO: write a better message
