@@ -3,6 +3,9 @@ package fr.xephi.authme.security;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 
 /**
+ * The list of hash algorithms supported by AuthMe. The implementing class must define a public
+ * constructor which takes either no arguments, or a DataSource object (when the salt is stored
+ * separately, writes to the database are necessary).
  */
 public enum HashAlgorithm {
 
@@ -36,7 +39,7 @@ public enum HashAlgorithm {
     SALTEDSHA512(fr.xephi.authme.security.crypts.SALTEDSHA512.class),
     CUSTOM(null);
 
-    final Class<? extends EncryptionMethod> clazz;
+    private final Class<? extends EncryptionMethod> clazz;
 
     /**
      * Constructor for HashAlgorithm.

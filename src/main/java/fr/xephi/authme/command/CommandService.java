@@ -88,8 +88,7 @@ public class CommandService {
      * @return The used data source
      */
     public DataSource getDataSource() {
-        // TODO ljacqu 20151222: Add getter for .database and rename the field to dataSource
-        return authMe.database;
+        return authMe.getDataSource();
     }
 
     /**

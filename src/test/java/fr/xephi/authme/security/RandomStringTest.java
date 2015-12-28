@@ -39,7 +39,7 @@ public class RandomStringTest {
             String result = RandomString.generateHex(length);
             assertThat("Result '" + result + "' should have length " + length,
                 result.length(), equalTo(length));
-            assertThat("Result '" + result + "' should only have characters a-z, 0-9",
+            assertThat("Result '" + result + "' should only have characters a-f, 0-9",
                 badChars.matcher(result).matches(), equalTo(false));
         }
     }

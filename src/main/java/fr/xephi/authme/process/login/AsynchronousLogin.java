@@ -119,8 +119,7 @@ public class AsynchronousLogin {
             return null;
         }
 
-        if (Settings.preventOtherCase && !player.getName().equals(pAuth.getRealName()))
-        {
+        if (Settings.preventOtherCase && !player.getName().equals(pAuth.getRealName())) {
         	// TODO: Add a message like : MessageKey.INVALID_NAME_CASE
         	m.send(player, MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
         	return null;

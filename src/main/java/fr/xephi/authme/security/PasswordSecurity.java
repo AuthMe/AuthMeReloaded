@@ -2,37 +2,37 @@ package fr.xephi.authme.security;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.security.crypts.BCRYPT;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
+import fr.xephi.authme.security.crypts.HashResult;
+import fr.xephi.authme.security.crypts.NewEncrMethod;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import java.util.HashMap;
 
 /**
  */
 public class PasswordSecurity {
 
+    @Deprecated
     public static final HashMap<String, String> userSalt = new HashMap<>();
-    private static final SecureRandom rnd = new SecureRandom();
+    private final DataSource dataSource;
 
-    public static String createSalt(int length)
-        throws NoSuchAlgorithmException {
-        byte[] msg = new byte[40];
-        rnd.nextBytes(msg);
-        MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-        sha1.reset();
-        byte[] digest = sha1.digest(msg);
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest)).substring(0, length);
+    public PasswordSecurity(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
-    public static String getHash(HashAlgorithm alg, String password,
-                                 String playerName) throws NoSuchAlgorithmException {
+    @Deprecated
+    public static String createSalt(int length) {
+        return RandomString.generateHex(length);
+    }
+
+    @Deprecated
+    public static String getHash(HashAlgorithm alg, String password, String playerName) throws NoSuchAlgorithmException {
         EncryptionMethod method;
         try {
             if (alg != HashAlgorithm.CUSTOM)
@@ -126,6 +126,7 @@ public class PasswordSecurity {
         return method.computeHash(password, salt, playerName);
     }
 
+    @Deprecated
     public static boolean comparePasswordWithHash(String password, String hash,
                                                   String playerName) throws NoSuchAlgorithmException {
         HashAlgorithm algorithm = Settings.getPasswordHash;
@@ -157,6 +158,55 @@ public class PasswordSecurity {
         return false;
     }
 
+    public HashResult computeHash(HashAlgorithm algorithm, String password, String playerName) {
+        EncryptionMethod method1 = initializeEncryptionMethod(algorithm, playerName);
+        // TODO #358: Remove this check:
+        NewEncrMethod method;
+        if (method1 instanceof NewEncrMethod) {
+            method = (NewEncrMethod) method1;
+        } else {
+            throw new RuntimeException("TODO #358: Class not yet extended with NewEncrMethod methods");
+        }
+
+        return method.computeHash(password, playerName);
+    }
+
+    public boolean comparePassword(HashAlgorithm algorithm, String hash, String password, String playerName) {
+        EncryptionMethod method1 = initializeEncryptionMethod(algorithm, playerName);
+        // TODO #358: Remove this check:
+        NewEncrMethod method;
+        if (method1 instanceof NewEncrMethod) {
+            method = (NewEncrMethod) method1;
+        } else {
+            throw new RuntimeException("TODO #358: Class not yet extended with NewEncrMethod methods");
+        }
+
+        String salt = null;
+        if (method.hasSeparateSalt()) {
+            PlayerAuth auth = dataSource.getAuth(playerName);
+            salt = (auth != null) ? auth.getSalt() : null;
+        }
+        return method.comparePassword(hash, password, salt, playerName);
+        // TODO #358: Add logic for Settings.supportOldPassword
+    }
+
+    private EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm, String playerName) {
+        EncryptionMethod method;
+        try {
+            method = HashAlgorithm.CUSTOM.equals(algorithm)
+                ? null
+                : algorithm.getClazz().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalStateException("Constructor for '" + algorithm.getClazz()
+                + "' could not be invoked. (Is it public with no arguments?)", e);
+        }
+
+        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
+        Bukkit.getPluginManager().callEvent(event);
+        return event.getMethod();
+    }
+
+    @Deprecated
     private static boolean compareWithAllEncryptionMethod(String password,
                                                           String hash, String playerName) {
         for (HashAlgorithm algo : HashAlgorithm.values()) {

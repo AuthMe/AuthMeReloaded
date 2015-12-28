@@ -29,11 +29,8 @@ public interface EncryptionMethod {
      *
      * @return True if the password matches, false otherwise
      */
+    @Deprecated
     boolean comparePassword(String hash, String password, String playerName)
         throws NoSuchAlgorithmException;
-
-    // String generateSalt();
-
-    // String computeHash(String password, String name);
 
 }

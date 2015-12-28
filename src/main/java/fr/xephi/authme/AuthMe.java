@@ -190,7 +190,6 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Method called when the server enables the plugin.
-     * @see org.bukkit.plugin.Plugin#onEnable()
      */
     @Override
     public void onEnable() {
@@ -504,11 +503,6 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    /**
-     * Method onDisable.
-     *
-     * @see org.bukkit.plugin.Plugin#onDisable()
-     */
     @Override
     public void onDisable() {
         // Save player data
@@ -537,16 +531,13 @@ public class AuthMe extends JavaPlugin {
     // Stop/unload the server/plugin as defined in the configuration
     public void stopOrUnload() {
         if (Settings.isStopEnabled) {
-            ConsoleLogger.showError("THE SERVER IS GOING TO SHUTDOWN AS DEFINED IN THE CONFIGURATION!");
+            ConsoleLogger.showError("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
             server.shutdown();
         } else {
             server.getPluginManager().disablePlugin(AuthMe.getInstance());
         }
     }
 
-    /**
-     * Method setupDatabase.
-     */
     public void setupDatabase() throws Exception {
         if (database != null)
             database.close();
@@ -713,8 +704,8 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Save Player Data
-    public void savePlayer(Player player) {
-        if ((Utils.isNPC(player)) || (Utils.isUnrestricted(player))) {
+    private void savePlayer(Player player) {
+        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
             return;
         }
         String name = player.getName().toLowerCase();
@@ -829,10 +820,10 @@ public class AuthMe extends JavaPlugin {
 
     // Return the AuthMe spawn point
     private Location getAuthMeSpawn(Player player) {
-        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null)) {
+        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore())
+            && (Spawn.getInstance().getFirstSpawn() != null)) {
             return Spawn.getInstance().getFirstSpawn();
-        }
-        if (Spawn.getInstance().getSpawn() != null) {
+        } else if (Spawn.getInstance().getSpawn() != null) {
             return Spawn.getInstance().getSpawn();
         }
         return player.getWorld().getSpawnLocation();
@@ -882,8 +873,7 @@ public class AuthMe extends JavaPlugin {
      *
      */
     @Deprecated
-    public void getVerygamesIp(final Player player)
-    {
+    public void getVerygamesIp(final Player player) {
     	final String name = player.getName().toLowerCase();
     	Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
 			@Override
@@ -977,6 +967,10 @@ public class AuthMe extends JavaPlugin {
      */
     public Management getManagement() {
         return management;
+    }
+
+    public DataSource getDataSource() {
+        return database;
     }
 
 }
