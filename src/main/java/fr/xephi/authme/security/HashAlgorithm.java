@@ -13,6 +13,7 @@ public enum HashAlgorithm {
     XAUTH(fr.xephi.authme.security.crypts.XAUTH.class),
     MD5VB(fr.xephi.authme.security.crypts.MD5VB.class),
     PHPBB(fr.xephi.authme.security.crypts.PHPBB.class),
+    @Deprecated
     PLAINTEXT(fr.xephi.authme.security.crypts.PLAINTEXT.class),
     MYBB(fr.xephi.authme.security.crypts.MYBB.class),
     IPB3(fr.xephi.authme.security.crypts.IPB3.class),
