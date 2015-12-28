@@ -12,7 +12,7 @@ import fr.xephi.authme.security.crypts.description.Usage;
  */
 @Recommendation(Usage.ACCEPTABLE)
 @HasSalt(SaltType.TEXT) // See saltLength() for length
-public abstract class HexSaltedMethod implements NewEncrMethod {
+public abstract class HexSaltedMethod implements EncryptionMethod {
 
     public abstract int getSaltLength();
 
@@ -27,12 +27,6 @@ public abstract class HexSaltedMethod implements NewEncrMethod {
 
     @Override
     public abstract boolean comparePassword(String hash, String password, String salt, String name);
-
-    @Override
-    @Deprecated
-    public boolean comparePassword(String hash, String password, String playerName) {
-        return false;
-    }
 
     @Override
     public String generateSalt() {

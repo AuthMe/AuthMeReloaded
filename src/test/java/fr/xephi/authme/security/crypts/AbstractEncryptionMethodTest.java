@@ -9,7 +9,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 /**
  * Test for implementations of {@link EncryptionMethod}.
@@ -98,45 +97,30 @@ public abstract class AbstractEncryptionMethodTest {
 
     @Test
     public void testPasswordEquality() {
-        // TODO #358: Remove instanceof and use this code always
-        if (method instanceof NewEncrMethod) {
-            NewEncrMethod method1 = (NewEncrMethod) method;
-            for (String password : INTERNAL_PASSWORDS) {
-                final String salt = method1.generateSalt();
-                final String hash = method1.computeHash(password, salt, USERNAME);
+        for (String password : INTERNAL_PASSWORDS) {
+            final String salt = method.generateSalt();
+            final String hash = method.computeHash(password, salt, USERNAME);
 
-                // Check that the computeHash(password, salt, name) method has the same output for the returned salt
-                assertThat(hash, equalTo(method1.computeHash(password, salt, USERNAME)));
+            // Check that the computeHash(password, salt, name) method has the same output for the returned salt
+            assertThat(hash, equalTo(method.computeHash(password, salt, USERNAME)));
 
-                assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
-                    method1.comparePassword(hash, password, salt, USERNAME));
-                if (!password.equals(password.toLowerCase())) {
-                    assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
-                        method1.comparePassword(hash, password.toLowerCase(), salt, USERNAME));
-                }
-                if (!password.equals(password.toUpperCase())) {
-                    assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
-                        method1.comparePassword(hash, password.toUpperCase(), salt, USERNAME));
-                }
+            assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
+                method.comparePassword(hash, password, salt, USERNAME));
+            if (!password.equals(password.toLowerCase())) {
+                assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
+                    method.comparePassword(hash, password.toLowerCase(), salt, USERNAME));
             }
-            return;
+            if (!password.equals(password.toUpperCase())) {
+                assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
+                    method.comparePassword(hash, password.toUpperCase(), salt, USERNAME));
+            }
         }
-
-        fail("No longer supporting old EncryptionMethod implementations");
     }
 
     private boolean doesGivenHashMatch(String password, EncryptionMethod method) {
-        // TODO #358: Remove casting checks and remove old code below
-        if (method instanceof NewEncrMethod) {
-            NewEncrMethod method1 = (NewEncrMethod) method;
-            String hash = hashes.get(password);
-            String salt = salts.get(password);
-            return method1.comparePassword(hash, password, salt, USERNAME);
-        }
-
-
-        // TODO #358: Remove line below
-        return method.comparePassword(hashes.get(password), password, USERNAME);
+        String hash = hashes.get(password);
+        String salt = salts.get(password);
+        return method.comparePassword(hash, password, salt, USERNAME);
     }
 
     // @org.junit.Test public void a() { AbstractEncryptionMethodTest.generateTest(); }
@@ -148,28 +132,18 @@ public abstract class AbstractEncryptionMethodTest {
         System.out.println("\n\tpublic " + className + "Test() {");
         System.out.println("\t\tsuper(new " + className + "(),");
 
-        NewEncrMethod method1 = null;
-        if (method instanceof NewEncrMethod) {
-            method1 = (NewEncrMethod) method;
-        }
-
-
         String delim = ",  ";
         for (String password : GIVEN_PASSWORDS) {
             if (password.equals(GIVEN_PASSWORDS[GIVEN_PASSWORDS.length - 1])) {
                 delim = "); ";
             }
-            if (method1 != null) {
-                if (method1.hasSeparateSalt()) {
-                    HashResult hashResult = method1.computeHash(password, USERNAME);
-                    System.out.println(String.format("\t\tnew HashResult(\"%s\", \"%s\")%s// %s",
-                        hashResult.getHash(), hashResult.getSalt(), delim, password));
-                } else {
-                    System.out.println("\t\t\"" + method1.computeHash(password, USERNAME).getHash()
-                        + "\"" + delim + "// " + password);
-                }
+
+            if (method.hasSeparateSalt()) {
+                HashResult hashResult = method.computeHash(password, USERNAME);
+                System.out.println(String.format("\t\tnew HashResult(\"%s\", \"%s\")%s// %s",
+                    hashResult.getHash(), hashResult.getSalt(), delim, password));
             } else {
-                System.out.println("\t\t\"" + method.computeHash(password, null, USERNAME)
+                System.out.println("\t\t\"" + method.computeHash(password, USERNAME).getHash()
                     + "\"" + delim + "// " + password);
             }
         }

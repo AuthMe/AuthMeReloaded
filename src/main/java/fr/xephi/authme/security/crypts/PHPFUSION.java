@@ -1,6 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.description.Recommendation;
@@ -9,13 +8,11 @@ import fr.xephi.authme.security.crypts.description.Usage;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 @Recommendation(Usage.DO_NOT_USE)
-public class PHPFUSION implements NewEncrMethod {
+public class PHPFUSION implements EncryptionMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
@@ -44,13 +41,6 @@ public class PHPFUSION implements NewEncrMethod {
     public HashResult computeHash(String password, String name) {
         String salt = generateSalt();
         return new HashResult(computeHash(password, salt, name), salt);
-    }
-
-    @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName)  {
-        String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-        return hash.equals(computeHash(password, salt, ""));
     }
 
     @Override

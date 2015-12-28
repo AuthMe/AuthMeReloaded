@@ -1,7 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.AuthMe;
-
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -11,7 +9,7 @@ import java.util.regex.Pattern;
 
 /**
  */
-public class XF implements NewEncrMethod {
+public class XF implements EncryptionMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
@@ -22,12 +20,6 @@ public class XF implements NewEncrMethod {
     public HashResult computeHash(String password, String name) {
         String salt = generateSalt();
         return new HashResult(computeHash(password, salt, null), salt);
-    }
-
-    @Override
-    public boolean comparePassword(String hash, String password, String playerName)  {
-        String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-        return hash.equals(regmatch("\"hash\";.:..:\"(.*)\";.:.:\"salt\"", salt));
     }
 
     public boolean comparePassword(String hash, String password, String salt, String name) {

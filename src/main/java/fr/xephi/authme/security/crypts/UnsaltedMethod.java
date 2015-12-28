@@ -10,7 +10,7 @@ import fr.xephi.authme.security.crypts.description.Usage;
  */
 @Recommendation(Usage.DO_NOT_USE)
 @HasSalt(SaltType.NONE)
-public abstract class UnsaltedMethod implements NewEncrMethod {
+public abstract class UnsaltedMethod implements EncryptionMethod {
 
     public abstract String computeHash(String password);
 
@@ -22,12 +22,6 @@ public abstract class UnsaltedMethod implements NewEncrMethod {
     @Override
     public String computeHash(String password, String salt, String name) {
         return computeHash(password);
-    }
-
-    @Override
-    @Deprecated
-    public boolean comparePassword(String hash, String password, String playerName) {
-        return false;
     }
 
     @Override

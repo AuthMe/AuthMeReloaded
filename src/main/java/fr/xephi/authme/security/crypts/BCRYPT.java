@@ -66,7 +66,7 @@ import java.security.SecureRandom;
  */
 @Recommendation(Usage.RECOMMENDED) // provided the salt length is >= 8
 @HasSalt(value = SaltType.TEXT) // length depends on Settings.bCryptLog2Rounds
-public class BCRYPT implements NewEncrMethod {
+public class BCRYPT implements EncryptionMethod {
 
     // BCrypt parameters
     private static final int GENSALT_DEFAULT_LOG2_ROUNDS = 10;
@@ -526,13 +526,8 @@ public class BCRYPT implements NewEncrMethod {
     }
 
     @Override
-    public boolean comparePassword(String hash, String password, String playerName) {
-        return checkpw(password, hash);
-    }
-
-    @Override
     public boolean comparePassword(String hash, String password, String salt, String name) {
-        return comparePassword(hash, password, name);
+        return checkpw(password, hash);
     }
 
     @Override

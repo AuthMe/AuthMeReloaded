@@ -1,22 +1,16 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import static fr.xephi.authme.security.HashUtils.md5;
 
 @Recommendation(Usage.DO_NOT_USE)
 @HasSalt(value = SaltType.TEXT, length = 5)
-public class IPB3 implements NewEncrMethod {
+public class IPB3 implements EncryptionMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
@@ -27,12 +21,6 @@ public class IPB3 implements NewEncrMethod {
     public HashResult computeHash(String password, String name) {
         String salt = generateSalt();
         return new HashResult(computeHash(password, salt, name), salt);
-    }
-
-    @Override
-    public boolean comparePassword(String hash, String password, String playerName) {
-        String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-        return hash.equals(computeHash(password, salt, playerName));
     }
 
     @Override

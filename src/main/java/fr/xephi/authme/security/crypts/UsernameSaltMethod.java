@@ -11,7 +11,7 @@ import fr.xephi.authme.security.crypts.description.Usage;
  */
 @Recommendation(Usage.DO_NOT_USE)
 @HasSalt(SaltType.USERNAME)
-public abstract class UsernameSaltMethod implements NewEncrMethod {
+public abstract class UsernameSaltMethod implements EncryptionMethod {
 
     @Override
     public abstract HashResult computeHash(String password, String name);
@@ -19,12 +19,6 @@ public abstract class UsernameSaltMethod implements NewEncrMethod {
     @Override
     public boolean comparePassword(String hash, String password, String salt, String name) {
         return hash.equals(computeHash(password, name).getHash());
-    }
-
-    @Override
-    @Deprecated
-    public boolean comparePassword(String hash, String password, String playerName) {
-        return false;
     }
 
     @Override

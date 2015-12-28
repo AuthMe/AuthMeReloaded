@@ -7,7 +7,6 @@ import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.security.crypts.BCRYPT;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashResult;
-import fr.xephi.authme.security.crypts.NewEncrMethod;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 
@@ -145,7 +144,18 @@ public class PasswordSecurity {
             if (method == null)
                 throw new NoSuchAlgorithmException("Unknown hash algorithm");
 
-            if (method.comparePassword(hash, password, playerName))
+            String salt = null;
+            if (method.hasSeparateSalt()) {
+                PlayerAuth auth = AuthMe.getInstance().getDataSource().getAuth(playerName);
+                if (auth == null) {
+                    // User is not in data source, so the result will invariably be wrong because an encryption
+                    // method with hasSeparateSalt() == true NEEDS the salt to evaluate the password
+                    return false;
+                }
+                salt = auth.getSalt();
+            }
+
+            if (method.comparePassword(hash, password, salt, playerName))
                 return true;
 
             if (Settings.supportOldPassword) {
@@ -159,32 +169,21 @@ public class PasswordSecurity {
     }
 
     public HashResult computeHash(HashAlgorithm algorithm, String password, String playerName) {
-        EncryptionMethod method1 = initializeEncryptionMethod(algorithm, playerName);
-        // TODO #358: Remove this check:
-        NewEncrMethod method;
-        if (method1 instanceof NewEncrMethod) {
-            method = (NewEncrMethod) method1;
-        } else {
-            throw new RuntimeException("TODO #358: Class not yet extended with NewEncrMethod methods");
-        }
-
+        EncryptionMethod method = initializeEncryptionMethod(algorithm, playerName);
         return method.computeHash(password, playerName);
     }
 
     public boolean comparePassword(HashAlgorithm algorithm, String hash, String password, String playerName) {
-        EncryptionMethod method1 = initializeEncryptionMethod(algorithm, playerName);
-        // TODO #358: Remove this check:
-        NewEncrMethod method;
-        if (method1 instanceof NewEncrMethod) {
-            method = (NewEncrMethod) method1;
-        } else {
-            throw new RuntimeException("TODO #358: Class not yet extended with NewEncrMethod methods");
-        }
-
+        EncryptionMethod method = initializeEncryptionMethod(algorithm, playerName);
         String salt = null;
         if (method.hasSeparateSalt()) {
             PlayerAuth auth = dataSource.getAuth(playerName);
-            salt = (auth != null) ? auth.getSalt() : null;
+            if (auth == null) {
+                // User is not in data source, so the result will invariably be wrong because an encryption
+                // method with hasSeparateSalt() == true NEEDS the salt to evaluate the password
+                return false;
+            }
+            salt = auth.getSalt();
         }
         return method.comparePassword(hash, password, salt, playerName);
         // TODO #358: Add logic for Settings.supportOldPassword
@@ -209,11 +208,19 @@ public class PasswordSecurity {
     @Deprecated
     private static boolean compareWithAllEncryptionMethod(String password,
                                                           String hash, String playerName) {
+        String salt;
+        PlayerAuth auth = AuthMe.getInstance().getDataSource().getAuth(playerName);
+        if (auth == null) {
+            salt = null;
+        } else {
+            salt = auth.getSalt();
+        }
+
         for (HashAlgorithm algo : HashAlgorithm.values()) {
             if (algo != HashAlgorithm.CUSTOM) {
                 try {
                     EncryptionMethod method = algo.getClazz().newInstance();
-                    if (method.comparePassword(hash, password, playerName)) {
+                    if (method.comparePassword(hash, password, salt, playerName)) {
                         PlayerAuth nAuth = AuthMe.getInstance().database.getAuth(playerName);
                         if (nAuth != null) {
                             nAuth.setHash(getHash(Settings.getPasswordHash, password, playerName));
