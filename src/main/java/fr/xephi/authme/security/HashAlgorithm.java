@@ -22,7 +22,6 @@ public enum HashAlgorithm {
     IPB3(fr.xephi.authme.security.crypts.IPB3.class),
     PHPFUSION(fr.xephi.authme.security.crypts.PHPFUSION.class),
     SMF(fr.xephi.authme.security.crypts.SMF.class),
-    XENFORO(fr.xephi.authme.security.crypts.XF.class),
     SALTED2MD5(fr.xephi.authme.security.crypts.SALTED2MD5.class),
     JOOMLA(fr.xephi.authme.security.crypts.JOOMLA.class),
     BCRYPT(fr.xephi.authme.security.crypts.BCRYPT.class),

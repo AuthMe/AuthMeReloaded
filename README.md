@@ -82,8 +82,6 @@ typing commands or using the inventory. It can also kick players with uncommonly
     <li>MyBB: MYBB</li>
     <li>IPB3: IPB3</li>
     <li>PhpFusion: PHPFUSION</li>
-    <li><del>Xenforo SHA1: XFSHA1</del> <strong>(Deprecated)</strong></li>
-    <li><del>Xenforo SHA256: XFSHA256</del> <strong>(Deprecated)</strong></li>
     <li>Joomla: JOOMLA</li>
     <li>WBB3: WBB3*</li>
     <li>SHA512: SHA512</li>
@@ -92,7 +90,7 @@ typing commands or using the inventory. It can also kick players with uncommonly
   </ul></li>
   <li>Custom MySQL tables/columns names (useful with forums databases)</li>
   <li><strong>Cached database queries!</strong></li>
-  <li><strong>Full compatible with Citizens2, CombatTag, CombatTagPlus and ChestShop!</strong></li>
+  <li><strong>Fully compatible with Citizens2, CombatTag, CombatTagPlus and ChestShop!</strong></li>
   <li>Compatible with Minecraft mods like <strong>BuildCraft or RedstoneCraft</strong></li>
   <li>Restricted users (associate a Username with an IP)</li>
   <li>Protect player's inventory until a correct Authentication</li>
@@ -120,7 +118,7 @@ typing commands or using the inventory. It can also kick players with uncommonly
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/">Website Integration</a>
 </li><li><a href="https://raw.githubusercontent.com/Xephi/AuthMeReloaded/master/src/main/resources/config.yml">Click here for an example of the Config file</a>
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/">How to convert from Rakamak</a>
-</li><li>Convert from FlatFile (auths.db but not the sqlite one ) to MySQL: /converter
+</li><li>Convert from FlatFile (auths.db but not the sqlite one) to MySQL: /converter
 </li></ul>
 <hr>
 
@@ -139,5 +137,5 @@ GameHosting.it is leader in Italy as Game Server Provider. With its own DataCent
 
 #####Credits
 <p>Team members: look at the <a href="https://github.com/AuthMe-Team/AuthMeReloaded/blob/master/team.txt">team.txt file</a>
-<p>Credit for old version of the plugin to: d4rkwarriors, fabe1337 , Whoami2 and pomo4ka</p>
+<p>Credit for old version of the plugin to: d4rkwarriors, fabe1337, Whoami2 and pomo4ka</p>
 <p>Thanks also to: AS1LV3RN1NJA, Hoeze and eprimex</p>
