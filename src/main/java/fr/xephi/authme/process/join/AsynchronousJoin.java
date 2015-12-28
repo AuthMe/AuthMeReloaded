@@ -58,7 +58,7 @@ public class AsynchronousJoin {
         }
 
         final String ip = plugin.getIP(player);
-        if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
+        if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip, player.getAddress().getHostName())) {
             sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                 @Override

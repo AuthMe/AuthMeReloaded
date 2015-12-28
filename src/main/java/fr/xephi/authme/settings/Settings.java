@@ -385,7 +385,7 @@ public final class Settings {
      *
      * @return boolean
      */
-    public static boolean getRestrictedIp(String name, String ip) {
+    public static boolean getRestrictedIp(String name, String ip, String domain) {
 
         Iterator<String> iterator = getRestrictedIp.iterator();
         boolean trueOnce = false;
@@ -396,8 +396,17 @@ public final class Settings {
             String testIp = args[1];
             if (testName.equalsIgnoreCase(name)) {
                 nameFound = true;
-                if (testIp.equalsIgnoreCase(ip)) {
-                    trueOnce = true;
+                if (ip != null)
+                {
+                    if (testIp.equalsIgnoreCase(ip)) {
+                        trueOnce = true;
+                    }
+                }
+                if (domain != null)
+                {
+                    if (testIp.equalsIgnoreCase(domain)) {
+                        trueOnce = true;
+                    }
                 }
             }
         }
@@ -746,7 +755,7 @@ public final class Settings {
 
         if (!contains("Email.emailOauth2Token"))
         	set("Email.emailOauth2Token", "");
-        
+
         if (!contains("Hook.sendPlayerTo"))
         {
             set("Hooks.sendPlayerTo", "");
