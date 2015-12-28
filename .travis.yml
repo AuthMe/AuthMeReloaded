@@ -10,12 +10,6 @@ cache:
 script:
   - mvn clean install -B && mvn clean -B
 
-before_install:
-  - pip install --user codecov
-
-after_success:
-  - codecov
-
 notifications:
   webhooks:
     urls:
