@@ -138,17 +138,18 @@ public class AsynchronousLogin {
 
         String hash = pAuth.getHash();
         String email = pAuth.getEmail();
-        boolean passwordVerified = true;
-        if (!forceLogin)
-            try {
-                passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, realName);
-            } catch (Exception ex) {
-                ConsoleLogger.showError(ex.getMessage());
-                m.send(player, MessageKey.ERROR);
-                return;
-            }
+        boolean passwordVerified = forceLogin || plugin.getPasswordSecurity().comparePassword(password, hash, realName);
+
         if (passwordVerified && player.isOnline()) {
-            PlayerAuth auth = new PlayerAuth(name, hash, getIP(), new Date().getTime(), email, realName);
+            PlayerAuth auth = PlayerAuth.builder()
+                .name(name)
+                .realName(realName)
+                .ip(getIP())
+                .lastLogin(new Date().getTime())
+                .email(email)
+                .hash(hash)
+                .salt(pAuth.getSalt())
+                .build();
             database.updateSession(auth);
 
             if (Settings.useCaptcha) {

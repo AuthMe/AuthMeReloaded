@@ -2,10 +2,12 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.security.PasswordSecurity;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -32,6 +34,7 @@ public class CommandServiceTest {
     private CommandMapper commandMapper;
     private HelpProvider helpProvider;
     private Messages messages;
+    private PasswordSecurity passwordSecurity;
     private CommandService commandService;
 
     @Before
@@ -40,7 +43,8 @@ public class CommandServiceTest {
         commandMapper = mock(CommandMapper.class);
         helpProvider = mock(HelpProvider.class);
         messages = mock(Messages.class);
-        commandService = new CommandService(authMe, commandMapper, helpProvider, messages);
+        passwordSecurity = mock(PasswordSecurity.class);
+        commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity);
     }
 
     @Test
@@ -110,9 +114,25 @@ public class CommandServiceTest {
     }
 
     @Test
-    @Ignore
     public void shouldGetDataSource() {
-        // TODO ljacqu 20151226: Cannot mock calls to fields
+        // given
+        DataSource dataSource = mock(DataSource.class);
+        given(authMe.getDataSource()).willReturn(dataSource);
+
+        // when
+        DataSource result = commandService.getDataSource();
+
+        // then
+        assertThat(result, equalTo(dataSource));
+    }
+
+    @Test
+    public void shouldGetPasswordSecurity() {
+        // given/when
+        PasswordSecurity passwordSecurity = commandService.getPasswordSecurity();
+
+        // then
+        assertThat(passwordSecurity, equalTo(this.passwordSecurity));
     }
 
     @Test

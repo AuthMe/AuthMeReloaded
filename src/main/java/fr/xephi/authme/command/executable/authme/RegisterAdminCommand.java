@@ -5,12 +5,11 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.HashResult;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -41,7 +40,8 @@ public class RegisterAdminCommand implements ExecutableCommand {
             commandService.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
             return;
         }
-        if (playerPassLowerCase.length() < Settings.getPasswordMinLen || playerPassLowerCase.length() > Settings.passwordMaxLength) {
+        if (playerPassLowerCase.length() < Settings.getPasswordMinLen
+            || playerPassLowerCase.length() > Settings.passwordMaxLength) {
             commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
             return;
         }
@@ -53,30 +53,30 @@ public class RegisterAdminCommand implements ExecutableCommand {
 
             @Override
             public void run() {
-                try {
-                    if (commandService.getDataSource().isAuthAvailable(playerNameLowerCase)) {
-                        commandService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
-                        return;
-                    }
-                    String hash = PasswordSecurity.getHash(Settings.getPasswordHash, playerPass, playerNameLowerCase);
-                    PlayerAuth auth = new PlayerAuth(playerNameLowerCase, hash, "192.168.0.1", 0L, "your@email.com", playerName);
-                    if (PasswordSecurity.userSalt.containsKey(playerNameLowerCase) && PasswordSecurity.userSalt.get(playerNameLowerCase) != null)
-                        auth.setSalt(PasswordSecurity.userSalt.get(playerNameLowerCase));
-                    else auth.setSalt("");
-                    if (!commandService.getDataSource().saveAuth(auth)) {
-                        commandService.send(sender, MessageKey.ERROR);
-                        return;
-                    }
-                    commandService.getDataSource().setUnlogged(playerNameLowerCase);
-                    if (Bukkit.getPlayerExact(playerName) != null)
-                        Bukkit.getPlayerExact(playerName).kickPlayer("An admin just registered you, please log again");
-                    commandService.send(sender, MessageKey.REGISTER_SUCCESS);
-                    ConsoleLogger.info(playerNameLowerCase + " registered");
-                } catch (NoSuchAlgorithmException ex) {
-                    ConsoleLogger.showError(ex.getMessage());
-                    commandService.send(sender, MessageKey.ERROR);
+                if (commandService.getDataSource().isAuthAvailable(playerNameLowerCase)) {
+                    commandService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
+                    return;
                 }
+                HashResult hashResult = commandService.getPasswordSecurity()
+                    .computeHash(playerPass, playerNameLowerCase);
+                PlayerAuth auth = PlayerAuth.builder()
+                    .name(playerNameLowerCase)
+                    .realName(playerName)
+                    .hash(hashResult.getHash())
+                    .salt(hashResult.getSalt())
+                    .build();
 
+                if (!commandService.getDataSource().saveAuth(auth)) {
+                    commandService.send(sender, MessageKey.ERROR);
+                    return;
+                }
+                commandService.getDataSource().setUnlogged(playerNameLowerCase);
+                if (Bukkit.getPlayerExact(playerName) != null) {
+                    Bukkit.getPlayerExact(playerName).kickPlayer("An admin just registered you, please log again");
+                } else {
+                    commandService.send(sender, MessageKey.REGISTER_SUCCESS);
+                    ConsoleLogger.info(playerName + " registered");
+                }
             }
         });
     }

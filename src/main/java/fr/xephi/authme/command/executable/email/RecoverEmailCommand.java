@@ -1,20 +1,18 @@
 package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.security.crypts.HashResult;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.entity.Player;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class RecoverEmailCommand extends PlayerCommand {
@@ -37,36 +35,33 @@ public class RecoverEmailCommand extends PlayerCommand {
                 commandService.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
                 return;
             }
-            try {
-                String thePass = RandomString.generate(Settings.getRecoveryPassLength);
-                String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, thePass, playerName);
-                PlayerAuth auth;
-                if (PlayerCache.getInstance().isAuthenticated(playerName)) {
-                    auth = PlayerCache.getInstance().getAuth(playerName);
-                } else if (dataSource.isAuthAvailable(playerName)) {
-                    auth = dataSource.getAuth(playerName);
-                } else {
-                    commandService.send(player, MessageKey.UNKNOWN_USER);
-                    return;
-                }
-                if (Settings.getmailAccount.equals("") || Settings.getmailAccount.isEmpty()) {
-                    commandService.send(player, MessageKey.ERROR);
-                    return;
-                }
 
-                if (!playerMail.equalsIgnoreCase(auth.getEmail()) || playerMail.equalsIgnoreCase("your@email.com")
-                    || auth.getEmail().equalsIgnoreCase("your@email.com")) {
-                    commandService.send(player, MessageKey.INVALID_EMAIL);
-                    return;
-                }
-                auth.setHash(hashNew);
-                dataSource.updatePassword(auth);
-                plugin.mail.main(auth, thePass);
-                commandService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
-            } catch (NoSuchAlgorithmException | NoClassDefFoundError ex) {
-                ConsoleLogger.showError(StringUtils.formatException(ex));
-                commandService.send(player, MessageKey.ERROR);
+            String thePass = RandomString.generate(Settings.getRecoveryPassLength);
+            HashResult hashNew = commandService.getPasswordSecurity().computeHash(thePass, playerName);
+            PlayerAuth auth;
+            if (PlayerCache.getInstance().isAuthenticated(playerName)) {
+                auth = PlayerCache.getInstance().getAuth(playerName);
+            } else if (dataSource.isAuthAvailable(playerName)) {
+                auth = dataSource.getAuth(playerName);
+            } else {
+                commandService.send(player, MessageKey.UNKNOWN_USER);
+                return;
             }
+            if (StringUtils.isEmpty(Settings.getmailAccount)) {
+                commandService.send(player, MessageKey.ERROR);
+                return;
+            }
+
+            if (!playerMail.equalsIgnoreCase(auth.getEmail()) || playerMail.equalsIgnoreCase("your@email.com")
+                || auth.getEmail().equalsIgnoreCase("your@email.com")) {
+                commandService.send(player, MessageKey.INVALID_EMAIL);
+                return;
+            }
+            auth.setHash(hashNew.getHash());
+            auth.setSalt(hashNew.getSalt());
+            dataSource.updatePassword(auth);
+            plugin.mail.main(auth, thePass);
+            commandService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);
         } else {
             commandService.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
         }

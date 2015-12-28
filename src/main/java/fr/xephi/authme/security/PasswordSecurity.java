@@ -4,7 +4,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
-import fr.xephi.authme.security.crypts.BCRYPT;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashResult;
 import fr.xephi.authme.settings.Settings;
@@ -20,9 +19,13 @@ public class PasswordSecurity {
     @Deprecated
     public static final HashMap<String, String> userSalt = new HashMap<>();
     private final DataSource dataSource;
+    private final HashAlgorithm algorithm;
+    private final boolean supportOldAlgorithm;
 
-    public PasswordSecurity(DataSource dataSource) {
+    public PasswordSecurity(DataSource dataSource, HashAlgorithm algorithm, boolean supportOldAlgorithm) {
         this.dataSource = dataSource;
+        this.algorithm = algorithm;
+        this.supportOldAlgorithm = supportOldAlgorithm;
     }
 
     @Deprecated
@@ -32,96 +35,7 @@ public class PasswordSecurity {
 
     @Deprecated
     public static String getHash(HashAlgorithm alg, String password, String playerName) throws NoSuchAlgorithmException {
-        EncryptionMethod method;
-        try {
-            if (alg != HashAlgorithm.CUSTOM)
-                method = alg.getClazz().newInstance();
-            else method = null;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new NoSuchAlgorithmException("Problem with hash algorithm '" + alg + "'", e);
-        }
-        String salt = "";
-        switch (alg) {
-            case SHA256:
-                salt = createSalt(16);
-                break;
-            case MD5VB:
-                salt = createSalt(16);
-                break;
-            case XAUTH:
-                salt = createSalt(12);
-                break;
-            case MYBB:
-                salt = createSalt(8);
-                userSalt.put(playerName, salt);
-                break;
-            case IPB3:
-                salt = createSalt(5);
-                userSalt.put(playerName, salt);
-                break;
-            case PHPFUSION:
-                salt = createSalt(12);
-                userSalt.put(playerName, salt);
-                break;
-            case SALTED2MD5:
-                salt = createSalt(Settings.saltLength);
-                userSalt.put(playerName, salt);
-                break;
-            case JOOMLA:
-                salt = createSalt(32);
-                userSalt.put(playerName, salt);
-                break;
-            case BCRYPT:
-                salt = BCRYPT.gensalt(Settings.bCryptLog2Rounds);
-                userSalt.put(playerName, salt);
-                break;
-            case WBB3:
-                salt = createSalt(40);
-                userSalt.put(playerName, salt);
-                break;
-            case WBB4:
-                salt = BCRYPT.gensalt(8);
-                userSalt.put(playerName, salt);
-                break;
-            case PBKDF2DJANGO:
-            case PBKDF2:
-                salt = createSalt(12);
-                userSalt.put(playerName, salt);
-                break;
-            case SMF:
-                return method.computeHash(password, null, playerName);
-            case PHPBB:
-                salt = createSalt(16);
-                userSalt.put(playerName, salt);
-                break;
-            case BCRYPT2Y:
-                salt = createSalt(16);
-                userSalt.put(playerName, salt);
-                break;
-            case SALTEDSHA512:
-                salt = createSalt(32);
-                userSalt.put(playerName, salt);
-                break;
-            case MD5:
-            case SHA1:
-            case WHIRLPOOL:
-            case PLAINTEXT:
-            case SHA512:
-            case ROYALAUTH:
-            case CRAZYCRYPT1:
-            case DOUBLEMD5:
-            case WORDPRESS:
-            case CUSTOM:
-                break;
-            default:
-                throw new NoSuchAlgorithmException("Unknown hash algorithm");
-        }
-        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
-        Bukkit.getPluginManager().callEvent(event);
-        method = event.getMethod();
-        if (method == null)
-            throw new NoSuchAlgorithmException("Unknown hash algorithm");
-        return method.computeHash(password, salt, playerName);
+        return "";
     }
 
     @Deprecated
@@ -167,9 +81,17 @@ public class PasswordSecurity {
         return false;
     }
 
+    public HashResult computeHash(String password, String playerName) {
+        return computeHash(algorithm, password, playerName);
+    }
+
     public HashResult computeHash(HashAlgorithm algorithm, String password, String playerName) {
         EncryptionMethod method = initializeEncryptionMethod(algorithm, playerName);
         return method.computeHash(password, playerName);
+    }
+
+    public boolean comparePassword(String hash, String password, String playerName) {
+        return comparePassword(algorithm, hash, password, playerName);
     }
 
     public boolean comparePassword(HashAlgorithm algorithm, String hash, String password, String playerName) {

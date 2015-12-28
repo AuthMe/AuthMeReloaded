@@ -7,6 +7,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.security.PasswordSecurity;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class CommandService {
     private final Messages messages;
     private final HelpProvider helpProvider;
     private final CommandMapper commandMapper;
+    private final PasswordSecurity passwordSecurity;
 
     /**
      * Constructor.
@@ -30,11 +32,13 @@ public class CommandService {
      * @param helpProvider Help provider
      * @param messages Messages instance
      */
-    public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages) {
+    public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
+                          PasswordSecurity passwordSecurity) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
         this.commandMapper = commandMapper;
+        this.passwordSecurity = passwordSecurity;
     }
 
     /**
@@ -89,6 +93,15 @@ public class CommandService {
      */
     public DataSource getDataSource() {
         return authMe.getDataSource();
+    }
+
+    /**
+     * Return the PasswordSecurity instance.
+     *
+     * @return The password security instance
+     */
+    public PasswordSecurity getPasswordSecurity() {
+        return passwordSecurity;
     }
 
     /**

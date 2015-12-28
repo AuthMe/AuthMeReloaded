@@ -42,6 +42,7 @@ import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.HashResult;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
@@ -100,6 +101,7 @@ public class AuthMe extends JavaPlugin {
     private Messages messages;
     private JsonCache playerBackup;
     private ModuleManager moduleManager;
+    private PasswordSecurity passwordSecurity;
 
     // Public Instances
     public NewAPI api;
@@ -206,12 +208,24 @@ public class AuthMe extends JavaPlugin {
             return;
         }
 
-        // Set up messages
+        // Set up messages & password security
         messages = Messages.getInstance();
+        passwordSecurity = new PasswordSecurity(getDataSource(), Settings.getPasswordHash, Settings.supportOldPassword);
+
+        // Connect to the database and setup tables
+        try {
+            setupDatabase();
+        } catch (Exception e) {
+            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.showError("Fatal error occurred during database connection! Authme initialization ABORTED!");
+            stopOrUnload();
+            return;
+        }
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        commandHandler = initializeCommandHandler(permsMan, messages);
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity);
 
         // Set up the module manager
         setupModuleManager();
@@ -253,16 +267,7 @@ public class AuthMe extends JavaPlugin {
         // Do a backup on start
         new PerformBackup(plugin).doBackup(PerformBackup.BackupCause.START);
 
-        // Connect to the database and setup tables
-        try {
-            setupDatabase();
-        } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError(e.getMessage());
-            ConsoleLogger.showError("Fatal error occurred during database connection! Authme initialization ABORTED!");
-            stopOrUnload();
-            return;
-        }
+
 
         // Setup the inventory backup
         playerBackup = new JsonCache();
@@ -409,11 +414,12 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages) {
+    private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
+                                                    PasswordSecurity passwordSecurity) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager);
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, messages, permissionsManager, helpProvider);
-        CommandService commandService = new CommandService(this, mapper, helpProvider, messages);
+        CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity);
         return new CommandHandler(commandService);
     }
 
@@ -563,14 +569,15 @@ public class AuthMe extends JavaPlugin {
                     int accounts = database.getAccountsRegistered();
                     if (accounts >= 4000) {
                         ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH "
-                            + accounts + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE UPGRADE TO MYSQL!!");
+                            + accounts + "+ ACCOUNTS; FOR BETTER PERFORMANCE, PLEASE UPGRADE TO MYSQL!!");
                     }
                 }
             });
         }
 
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
-            ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, it will be changed to SQLite... Connection will be impossible until conversion is done!");
+            ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, it will be changed " +
+                "to SQLite... Connection will be impossible until conversion is done!");
             ForceFlatToSqlite converter = new ForceFlatToSqlite(database);
             DataSource source = converter.run();
             if (source != null) {
@@ -579,12 +586,12 @@ public class AuthMe extends JavaPlugin {
         }
 
         // TODO: Move this to another place maybe ?
-        if (Settings.getPasswordHash == HashAlgorithm.PLAINTEXT)
-        {
-        	ConsoleLogger.showError("Your HashAlgorithm has been detected has plaintext and is now deprecrated, it will be changed and hashed now to AuthMe default hashing method");
-        	for (PlayerAuth auth : database.getAllAuths())
-        	{
-        		auth.setHash(PasswordSecurity.getHash(HashAlgorithm.SHA256, auth.getHash(), auth.getNickname()));
+        if (Settings.getPasswordHash == HashAlgorithm.PLAINTEXT) {
+        	ConsoleLogger.showError("Your HashAlgorithm has been detected as plaintext and is now deprecated; " +
+                "it will be changed and hashed now to the AuthMe default hashing method");
+        	for (PlayerAuth auth : database.getAllAuths()) {
+                HashResult hashResult = passwordSecurity.computeHash(HashAlgorithm.SHA256, auth.getHash(), auth.getNickname());
+                auth.setHash(hashResult.getHash());
         		database.updatePassword(auth);
         	}
         	Settings.setValue("settings.security.passwordHash", "SHA256");
@@ -971,6 +978,10 @@ public class AuthMe extends JavaPlugin {
 
     public DataSource getDataSource() {
         return database;
+    }
+
+    public PasswordSecurity getPasswordSecurity() {
+        return passwordSecurity;
     }
 
 }

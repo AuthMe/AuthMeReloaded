@@ -6,6 +6,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.HashResult;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 
@@ -13,7 +14,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
@@ -28,15 +28,12 @@ public class RakamakConverter implements Converter {
 
     public RakamakConverter(AuthMe instance, CommandSender sender) {
         this.instance = instance;
-        this.database = instance.database;
+        this.database = instance.getDataSource();
         this.sender = sender;
     }
 
-    public RakamakConverter getInstance() {
-        return this;
-    }
-
     @Override
+    // TODO ljacqu 20151229: Restructure this into smaller portions
     public void run() {
         HashAlgorithm hash = Settings.getPasswordHash;
         boolean useIP = Settings.rakamakUseIp;
@@ -45,7 +42,7 @@ public class RakamakConverter implements Converter {
         File source = new File(Settings.PLUGIN_FOLDER, fileName);
         File ipfiles = new File(Settings.PLUGIN_FOLDER, ipFileName);
         HashMap<String, String> playerIP = new HashMap<>();
-        HashMap<String, String> playerPSW = new HashMap<>();
+        HashMap<String, HashResult> playerPSW = new HashMap<>();
         try {
             BufferedReader users;
             BufferedReader ipFile;
@@ -61,30 +58,30 @@ public class RakamakConverter implements Converter {
                 }
             }
             ipFile.close();
+
             users = new BufferedReader(new FileReader(source));
+            PasswordSecurity passwordSecurity = instance.getPasswordSecurity();
             while ((line = users.readLine()) != null) {
                 if (line.contains("=")) {
                     String[] arguments = line.split("=");
-                    try {
-                        playerPSW.put(arguments[0], PasswordSecurity.getHash(hash, arguments[1], arguments[0]));
-                    } catch (NoSuchAlgorithmException e) {
-                        ConsoleLogger.showError(e.getMessage());
-                    }
+                    HashResult hashResult = passwordSecurity.computeHash(hash, arguments[1], arguments[0]);
+                    playerPSW.put(arguments[0], hashResult);
+
                 }
             }
             users.close();
-            for (Entry<String, String> m : playerPSW.entrySet()) {
+            for (Entry<String, HashResult> m : playerPSW.entrySet()) {
                 String playerName = m.getKey();
-                String psw = playerPSW.get(playerName);
-                String ip;
-                if (useIP) {
-                    ip = playerIP.get(playerName);
-                } else {
-                    ip = "127.0.0.1";
-                }
-                PlayerAuth auth = new PlayerAuth(playerName, psw, ip, System.currentTimeMillis(), playerName);
-                if (PasswordSecurity.userSalt.containsKey(playerName))
-                    auth.setSalt(PasswordSecurity.userSalt.get(playerName));
+                HashResult psw = playerPSW.get(playerName);
+                String ip = useIP ? playerIP.get(playerName) : "127.0.0.1";
+                PlayerAuth auth = PlayerAuth.builder()
+                    .name(playerName)
+                    .realName(playerName)
+                    .ip(ip)
+                    .hash(psw.getHash())
+                    .salt(psw.getSalt())
+                    .lastLogin(System.currentTimeMillis())
+                    .build();
                 database.saveAuth(auth);
             }
             ConsoleLogger.info("Rakamak database has been imported correctly");
