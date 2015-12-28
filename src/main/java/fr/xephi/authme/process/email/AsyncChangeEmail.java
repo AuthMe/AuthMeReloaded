@@ -80,8 +80,6 @@ public class AsyncChangeEmail {
                     return;
                 }
                 m.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
-                // TODO ljacqu 20151124: Did I really miss "email_defined" or is it not present in the 'en' messages?
-                // player.sendMessage(Arrays.toString(m.send("email_defined")) + auth.getEmail());
             } else {
                 if (plugin.database.isAuthAvailable(playerName)) {
                     m.send(player, MessageKey.LOGIN_MESSAGE);
