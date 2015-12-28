@@ -222,8 +222,8 @@ public final class CommandInitializer {
             .labels("resetpos", "purgelastposition", "purgelastpos", "resetposition",
                 "resetlastposition", "resetlastpos")
             .description("Purge player's last position")
-            .detailedDescription("Purge the last know position of the specified player.")
-            .withArgument("player", "Player name", false)
+            .detailedDescription("Purge the last know position of the specified player or all of them.")
+            .withArgument("player/*", "Player name or * for all players", false)
             .permissions(OP_ONLY, AdminPermission.PURGE_LAST_POSITION)
             .executableCommand(new PurgeLastPositionCommand())
             .build();

@@ -181,7 +181,6 @@ settings:
         # Example unLoggedinGroup: NotLogged
         unLoggedinGroup: unLoggedinGroup
         # possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB,
-        # PLAINTEXT ( unhashed password),
         # MYBB, IPB3, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,
         # DOUBLEMD5, PBKDF2, PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM(for developpers only)
         passwordHash: SHA256

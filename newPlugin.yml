@@ -111,7 +111,6 @@ permissions:
             authme.admin.accounts: true
             authme.admin.getemail: true
             authme.admin.getip: true
-            authme.admin.resetposition: true
             authme.admin.setspawn: true
             authme.admin.spawn: true
             authme.admin.setfirstspawn: true
@@ -156,9 +155,6 @@ permissions:
     authme.admin.getip:
         description: Get IP from a player (fake and real)
         default: false
-    authme.admin.resetposition:
-        description: Reset last position for a player
-        default: false
     authme.admin.setspawn:
         description: Set the AuthMe spawn point
         default: false
@@ -181,7 +177,7 @@ permissions:
         description: Purge banned players
         default: false
     authme.admin.purgelastpos:
-        description: Purge last pos of players
+        description: Purge last position of a player/players
         default: false
     authme.admin.converter:
         description: Allow the /authme converter command

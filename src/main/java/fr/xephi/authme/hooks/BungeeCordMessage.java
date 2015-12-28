@@ -70,8 +70,7 @@ public class BungeeCordMessage implements PluginMessageListener {
                     } else if ("register".equals(act)) {
                         ConsoleLogger.info("Player " + auth.getNickname()
                             + " has registered out from one of your server!");
-                    }
-                    else if ("changepassword".equals(act)) {
+                    } else if ("changepassword".equals(act)) {
                     	final String password = args[2];
                     	auth.setHash(password);
                     	if (args.length == 4)

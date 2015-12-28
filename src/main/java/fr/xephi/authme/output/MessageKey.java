@@ -85,7 +85,7 @@ public enum MessageKey {
 
     FORGOT_PASSWORD_MESSAGE("recovery_email"),
 
-    USAGE_CAPTCHA("usage_captcha"),
+    USAGE_CAPTCHA("usage_captcha", "<theCaptcha>"),
 
     CAPTCHA_WRONG_ERROR("wrong_captcha", "THE_CAPTCHA"),
 

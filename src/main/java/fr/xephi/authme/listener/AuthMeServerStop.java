@@ -16,9 +16,15 @@ public class AuthMeServerStop extends Thread {
     public void run() {
     	// TODO: add a MessageKey
     	if (Settings.kickPlayersBeforeStopping) {
-            for (Player p : plugin.getServer().getOnlinePlayers()) {
-                p.kickPlayer("Server is restarting");
-            }
+    		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable()
+    		{
+				@Override
+				public void run() {
+		            for (Player p : plugin.getServer().getOnlinePlayers()) {
+		                p.kickPlayer("Server is restarting");
+		            }
+				}
+    		});
         }
     }
 }
