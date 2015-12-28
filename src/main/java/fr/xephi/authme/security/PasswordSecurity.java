@@ -106,7 +106,6 @@ public class PasswordSecurity {
             case SHA1:
             case WHIRLPOOL:
             case PLAINTEXT:
-            case XENFORO:
             case SHA512:
             case ROYALAUTH:
             case CRAZYCRYPT1:
