@@ -57,7 +57,7 @@ public final class ListenerConsistencyTest {
         Set<String> events = new HashSet<>();
         for (Class<?> listener : LISTENERS) {
             for (Method method : listener.getDeclaredMethods()) {
-                if (events.contains(method.getName())) {
+                if (isTestableMethod(method) && events.contains(method.getName())) {
                     fail("More than one method '" + method.getName() + "' exists (e.g. class: " + listener + ")");
                 }
                 events.add(method.getName());
