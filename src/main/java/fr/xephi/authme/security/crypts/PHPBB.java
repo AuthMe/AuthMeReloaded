@@ -4,10 +4,10 @@
  */
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.security.HashUtils;
+import fr.xephi.authme.security.MessageDigestAlgorithm;
 
 import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 
 /**
@@ -20,10 +20,10 @@ public class PHPBB extends HexSaltedMethod {
     private static String md5(String data) {
         try {
             byte[] bytes = data.getBytes("ISO-8859-1");
-            MessageDigest md5er = MessageDigest.getInstance("MD5");
+            MessageDigest md5er = HashUtils.getDigest(MessageDigestAlgorithm.MD5);
             byte[] hash = md5er.digest(bytes);
             return bytes2hex(hash);
-        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -132,9 +132,10 @@ public class PHPBB extends HexSaltedMethod {
     }
 
     private boolean phpbb_check_hash(String password, String hash) {
-        if (hash.length() == 34)
+        if (hash.length() == 34) {
             return _hash_crypt_private(password, hash).equals(hash);
-        else return md5(password).equals(hash);
+        }
+        return md5(password).equals(hash);
     }
 
     @Override

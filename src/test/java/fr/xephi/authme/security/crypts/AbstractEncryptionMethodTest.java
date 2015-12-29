@@ -1,8 +1,11 @@
 package fr.xephi.authme.security.crypts;
 
+import com.google.common.collect.ImmutableList;
+import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import org.junit.Test;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -27,7 +30,8 @@ public abstract class AbstractEncryptionMethodTest {
      * List of passwords that are hashed at runtime and then tested against; this verifies that hashes that are
      * generated are valid.
      */
-    private static final String[] INTERNAL_PASSWORDS = {"test1234", "Ab_C73", "(!#&$~`_-Aa0", "Ûïé1&?+A"};
+    private static final List<String> INTERNAL_PASSWORDS =
+        ImmutableList.of("test1234", "Ab_C73", "(!#&$~`_-Aa0", "Ûïé1&?+A");
 
     /** The encryption method to test. */
     private EncryptionMethod method;
@@ -97,12 +101,19 @@ public abstract class AbstractEncryptionMethodTest {
 
     @Test
     public void testPasswordEquality() {
-        for (String password : INTERNAL_PASSWORDS) {
+        List<String> internalPasswords = method.getClass().isAnnotationPresent(AsciiRestricted.class)
+            ? INTERNAL_PASSWORDS.subList(0, INTERNAL_PASSWORDS.size() - 1)
+            : INTERNAL_PASSWORDS;
+
+        for (String password : internalPasswords) {
             final String salt = method.generateSalt();
             final String hash = method.computeHash(password, salt, USERNAME);
 
             // Check that the computeHash(password, salt, name) method has the same output for the returned salt
-            assertThat(hash, equalTo(method.computeHash(password, salt, USERNAME)));
+            if (testHashEqualityForSameSalt()) {
+                assertThat("Computing a hash with the same salt will generate the same hash",
+                    hash, equalTo(method.computeHash(password, salt, USERNAME)));
+            }
 
             assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
                 method.comparePassword(hash, password, salt, USERNAME));
@@ -149,6 +160,18 @@ public abstract class AbstractEncryptionMethodTest {
         }
         System.out.println("\t}");
         System.out.println("\n}");
+    }
+
+    /**
+     * Return whether an encryption algorithm should be tested that it generates the same
+     * hash for the same salt. If {@code true}, we call {@link EncryptionMethod#computeHash(String, String)}
+     * and verify that {@link EncryptionMethod#computeHash(String, String, String)} generates
+     * the same hash for the salt returned in the first call.
+     *
+     * @return Whether or not to test that the hash is the same for the same salt
+     */
+    protected boolean testHashEqualityForSameSalt() {
+        return true;
     }
 
 }

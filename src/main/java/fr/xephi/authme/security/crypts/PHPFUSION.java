@@ -2,6 +2,7 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.security.HashUtils;
 import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.Usage;
 
@@ -12,7 +13,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 @Recommendation(Usage.DO_NOT_USE)
-public class PHPFUSION implements EncryptionMethod {
+@AsciiRestricted
+public class PHPFUSION extends SeparateSaltMethod {
 
     @Override
     public String computeHash(String password, String salt, String name) {
@@ -38,24 +40,9 @@ public class PHPFUSION implements EncryptionMethod {
     }
 
     @Override
-    public HashResult computeHash(String password, String name) {
-        String salt = generateSalt();
-        return new HashResult(computeHash(password, salt, name), salt);
-    }
-
-    @Override
-    public boolean comparePassword(String hash, String password, String salt, String name) {
-        return hash.equals(computeHash(password, salt, name));
-    }
-
-    @Override
     public String generateSalt() {
         return RandomString.generateHex(12);
     }
 
-    @Override
-    public boolean hasSeparateSalt() {
-        return true;
-    }
 
 }

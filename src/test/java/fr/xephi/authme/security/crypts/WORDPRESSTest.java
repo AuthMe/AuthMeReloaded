@@ -1,12 +1,8 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Ignore;
-
 /**
  * Test for {@link WORDPRESS}.
  */
-@Ignore
-// TODO #364: Need to skip an assertion due to the "internal salt" of Wordpress
 public class WORDPRESSTest extends AbstractEncryptionMethodTest {
 
     public WORDPRESSTest() {
@@ -15,5 +11,11 @@ public class WORDPRESSTest extends AbstractEncryptionMethodTest {
             "$P$BjzPjjzPjjkRzvGGRTyYu0sNqcz6Ci0",  // PassWord1
             "$P$BjzPjjzPjrAOyB1V0WFdpisgCTFx.N/",  // &^%te$t?Pw@_
             "$P$BjzPjxxyjp2QdKcab/oTW8l/W0AgE21"); // âË_3(íù*
+    }
+
+    @Override
+    protected boolean testHashEqualityForSameSalt() {
+        // We need to skip the test because Wordpress uses an "internal salt" that is not exposed to the outside
+        return false;
     }
 }

@@ -1,12 +1,8 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Ignore;
-
 /**
  * Test for {@link CryptPBKDF2Django}.
  */
-@Ignore
-// TODO ljacqu 20151220: testPasswordEquality fails - password matches hash for uppercase password...?
 public class CryptPBKDF2DjangoTest extends AbstractEncryptionMethodTest {
 
     public CryptPBKDF2DjangoTest() {

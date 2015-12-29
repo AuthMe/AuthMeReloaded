@@ -1,12 +1,8 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Ignore;
-
 /**
  * Test for {@link PHPFUSION}.
  */
-@Ignore
-// TODO #364: Need to skip lowercase/uppercase password test for the non-ASCII one
 public class PHPFUSIONTest extends AbstractEncryptionMethodTest {
 
     public PHPFUSIONTest() {

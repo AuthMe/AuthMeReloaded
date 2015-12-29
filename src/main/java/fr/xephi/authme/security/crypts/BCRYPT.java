@@ -522,7 +522,7 @@ public class BCRYPT implements EncryptionMethod {
     @Override
     public HashResult computeHash(String password, String name) {
         String salt = generateSalt();
-        return new HashResult(hashpw(password, salt), salt);
+        return new HashResult(hashpw(password, salt), null);
     }
 
     @Override

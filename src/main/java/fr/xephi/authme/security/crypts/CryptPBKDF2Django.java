@@ -1,10 +1,12 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
 
 import javax.xml.bind.DatatypeConverter;
 
+@AsciiRestricted
 public class CryptPBKDF2Django extends HexSaltedMethod {
 
     @Override
