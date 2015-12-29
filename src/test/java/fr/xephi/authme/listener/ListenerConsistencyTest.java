@@ -24,7 +24,6 @@ public final class ListenerConsistencyTest {
         AuthMePlayerListener.class, AuthMePlayerListener16.class, AuthMePlayerListener18.class,
         AuthMeServerListener.class };
 
-    // TODO #368: Ensure that these exceptions are really intentional, if not fix them and remove them here
     private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet("AuthMePlayerListener#onPlayerJoin",
         "AuthMePlayerListener#onPreLogin", "AuthMePlayerListener#onPlayerLogin",
         "AuthMePlayerListener#onPlayerQuit", "AuthMeServerListener#onPluginDisable",
@@ -57,7 +56,7 @@ public final class ListenerConsistencyTest {
         Set<String> events = new HashSet<>();
         for (Class<?> listener : LISTENERS) {
             for (Method method : listener.getDeclaredMethods()) {
-                if (events.contains(method.getName())) {
+                if (isTestableMethod(method) && events.contains(method.getName())) {
                     fail("More than one method '" + method.getName() + "' exists (e.g. class: " + listener + ")");
                 }
                 events.add(method.getName());
@@ -103,9 +102,10 @@ public final class ListenerConsistencyTest {
     }
 
     private static boolean isTestableMethod(Method method) {
-        // A method like "access$000" is created by the compiler when a private member is being accessed by an inner
-        // class, so we need to ignore such methods
-        return !Modifier.isPrivate(method.getModifiers()) && !method.getName().startsWith("access$");
+        // Exclude any methods with "$" in it: jacoco creates a "$jacocoInit" method we want to ignore, and
+        // methods like "access$000" are created by the compiler when a private member is being accessed by an inner
+        // class, which is not of interest for us
+        return !Modifier.isPrivate(method.getModifiers()) && !method.getName().contains("$");
     }
 
 }
