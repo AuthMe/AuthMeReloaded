@@ -21,16 +21,14 @@ public class SqliteToSql implements Converter {
 
 	@Override
 	public void run() {
-		if (plugin.database.getType() != DataSourceType.MYSQL)
-		{
+		if (plugin.getDataSource().getType() != DataSourceType.MYSQL) {
 			sender.sendMessage("Please config your mySQL connection and re-run this command");
 			return;
 		}
 		try {
 			SQLite data = new SQLite();
-			for (PlayerAuth auth : data.getAllAuths())
-			{
-				plugin.database.saveAuth(auth);
+			for (PlayerAuth auth : data.getAllAuths()) {
+				plugin.getDataSource().saveAuth(auth);
 			}
 		} catch (Exception e) {
 			sender.sendMessage(plugin.getMessages().retrieve(MessageKey.ERROR));

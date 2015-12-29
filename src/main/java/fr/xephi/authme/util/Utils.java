@@ -143,13 +143,9 @@ public final class Utils {
             return true;
         }
 
-        if (!Settings.isForcedRegistrationEnabled) {
-            // TODO ljacqu 20151123: Use a getter to retrieve things from AuthMe
-            if (!plugin.database.isAuthAvailable(player.getName())) {
-                return true;
-            }
+        if (!Settings.isForcedRegistrationEnabled && !plugin.getDataSource().isAuthAvailable(player.getName())) {
+            return true;
         }
-
         return false;
     }
 
@@ -159,15 +155,6 @@ public final class Utils {
             && (Settings.getUnrestrictedName.contains(player.getName().toLowerCase()));
     }
 
-    /**
-     * Method packCoords.
-     *
-     * @param x  double
-     * @param y  double
-     * @param z  double
-     * @param w  String
-     * @param pl Player
-     */
     public static void packCoords(double x, double y, double z, String w, final Player pl) {
         World theWorld;
         if (w.equals("unavailableworld")) {

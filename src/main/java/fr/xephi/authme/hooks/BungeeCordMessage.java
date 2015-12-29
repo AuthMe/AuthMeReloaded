@@ -6,6 +6,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -24,15 +25,6 @@ public class BungeeCordMessage implements PluginMessageListener {
         this.plugin = plugin;
     }
 
-    /**
-     * Method onPluginMessageReceived.
-     *
-     * @param channel String
-     * @param player  Player
-     * @param message byte[]
-     *
-     * @see org.bukkit.plugin.messaging.PluginMessageListener#onPluginMessageReceived(String, Player, byte[])
-     */
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (!channel.equals("BungeeCord")) {
@@ -50,21 +42,22 @@ public class BungeeCordMessage implements PluginMessageListener {
             final String[] args = str.split(";");
             final String act = args[0];
             final String name = args[1];
+            final DataSource dataSource = plugin.getDataSource();
             plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
                 @Override
                 public void run() {
-                    PlayerAuth auth = plugin.database.getAuth(name);
+                    PlayerAuth auth = dataSource.getAuth(name);
                     if (auth == null) {
                         return;
                     }
                     if ("login".equals(act)) {
                         PlayerCache.getInstance().updatePlayer(auth);
-                        plugin.database.setLogged(name);
+                        dataSource.setLogged(name);
                         ConsoleLogger.info("Player " + auth.getNickname()
                             + " has logged in from one of your server!");
                     } else if ("logout".equals(act)) {
                         PlayerCache.getInstance().removePlayer(name);
-                        plugin.database.setUnlogged(name);
+                        dataSource.setUnlogged(name);
                         ConsoleLogger.info("Player " + auth.getNickname()
                             + " has logged out from one of your server!");
                     } else if ("register".equals(act)) {
@@ -73,10 +66,11 @@ public class BungeeCordMessage implements PluginMessageListener {
                     } else if ("changepassword".equals(act)) {
                     	final String password = args[2];
                     	auth.setHash(password);
-                    	if (args.length == 4)
-                    		auth.setSalt(args[3]);
+                    	if (args.length == 4) {
+                            auth.setSalt(args[3]);
+                        }
                     	PlayerCache.getInstance().updatePlayer(auth);
-                    	plugin.database.updatePassword(auth);
+                        dataSource.updatePassword(auth);
                     }
 
                 }

@@ -102,12 +102,12 @@ public class AuthMe extends JavaPlugin {
     private JsonCache playerBackup;
     private ModuleManager moduleManager;
     private PasswordSecurity passwordSecurity;
+    private DataSource database;
 
     // Public Instances
     public NewAPI api;
     public SendMailSSL mail;
     public DataManager dataManager;
-    public DataSource database;
     public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
 

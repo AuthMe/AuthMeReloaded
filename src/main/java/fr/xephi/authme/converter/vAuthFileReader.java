@@ -23,7 +23,7 @@ class vAuthFileReader {
      */
     public vAuthFileReader(AuthMe plugin) {
         this.plugin = plugin;
-        this.database = plugin.database;
+        this.database = plugin.getDataSource();
     }
 
     public void convert() {

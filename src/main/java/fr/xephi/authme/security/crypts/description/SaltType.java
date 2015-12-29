@@ -1,7 +1,7 @@
 package fr.xephi.authme.security.crypts.description;
 
 /**
- * The type of salt used by an encryption algorithms.
+ * The type of salt used by an encryption algorithm.
  */
 public enum SaltType {
 

@@ -89,7 +89,7 @@ public class AuthMePlayerListener implements Listener {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                if (plugin.database.isAuthAvailable(player.getName().toLowerCase())) {
+                if (plugin.getDataSource().isAuthAvailable(player.getName().toLowerCase())) {
                     m.send(player, MessageKey.LOGIN_MESSAGE);
                 } else {
                     if (Settings.emailRegistration) {
@@ -221,8 +221,9 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
-        PlayerAuth auth = plugin.database.getAuth(event.getName());
-        if (auth != null && auth.getRealName() != null && !auth.getRealName().isEmpty() && !auth.getRealName().equals("Player") && !auth.getRealName().equals(event.getName())) {
+        PlayerAuth auth = plugin.getDataSource().getAuth(event.getName());
+        if (auth != null && auth.getRealName() != null && !auth.getRealName().isEmpty() &&
+            !auth.getRealName().equals("Player") && !auth.getRealName().equals(event.getName())) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage("You should join using username: " + ChatColor.AQUA + auth.getRealName() +
                 ChatColor.RESET + "\nnot: " + ChatColor.RED + event.getName()); // TODO: write a better message
@@ -231,7 +232,7 @@ public class AuthMePlayerListener implements Listener {
 
         if (auth != null && auth.getRealName().equals("Player")) {
             auth.setRealName(event.getName());
-            plugin.database.saveAuth(auth);
+            plugin.getDataSource().saveAuth(auth);
         }
 
         if (auth == null && Settings.enableProtection) {
@@ -302,7 +303,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         final String name = player.getName().toLowerCase();
-        boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
+        boolean isAuthAvailable = plugin.getDataSource().isAuthAvailable(name);
 
         if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
             if (Settings.antiBotInAction) {
@@ -475,9 +476,16 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
         Location spawn = plugin.getSpawnLocation(player);
-        if (Settings.isSaveQuitLocationEnabled && plugin.database.isAuthAvailable(name)) {
-            PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName(), player.getName());
-            plugin.database.updateQuitLoc(auth);
+        if (Settings.isSaveQuitLocationEnabled && plugin.getDataSource().isAuthAvailable(name)) {
+            PlayerAuth auth = PlayerAuth.builder()
+                .name(name)
+                .realName(player.getName())
+                .locX(spawn.getX())
+                .locY(spawn.getY())
+                .locZ(spawn.getZ())
+                .locWorld(spawn.getWorld().getName())
+                .build();
+            plugin.getDataSource().updateQuitLoc(auth);
         }
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);

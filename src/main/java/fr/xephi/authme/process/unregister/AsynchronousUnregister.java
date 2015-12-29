@@ -6,7 +6,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -20,16 +19,12 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.security.NoSuchAlgorithmException;
-
-/**
- */
 public class AsynchronousUnregister {
 
-    protected final Player player;
-    protected final String name;
-    protected final String password;
-    protected final boolean force;
+    private final Player player;
+    private final String name;
+    private final String password;
+    private final boolean force;
     private final AuthMe plugin;
     private final Messages m;
     private final JsonCache playerCache;
@@ -52,18 +47,13 @@ public class AsynchronousUnregister {
         this.playerCache = new JsonCache();
     }
 
-    /**
-     * Method getIp.
-     *
-     * @return String
-     */
     protected String getIp() {
         return plugin.getIP(player);
     }
 
     public void process() {
         if (force || plugin.getPasswordSecurity().comparePassword(password, PlayerCache.getInstance().getAuth(name).getHash(), player.getName())) {
-            if (!plugin.database.removeAuth(name)) {
+            if (!plugin.getDataSource().removeAuth(name)) {
                 m.send(player, MessageKey.ERROR);
                 return;
             }

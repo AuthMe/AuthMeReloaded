@@ -40,7 +40,7 @@ public class AsyncChangeEmail {
 
             if (Settings.getmaxRegPerEmail > 0) {
                 if (!plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
-                    && plugin.database.getAllAuthsByEmail(newEmail).size() >= Settings.getmaxRegPerEmail) {
+                    && plugin.getDataSource().getAllAuthsByEmail(newEmail).size() >= Settings.getmaxRegPerEmail) {
                     m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
                     return;
                 }
@@ -68,7 +68,7 @@ public class AsyncChangeEmail {
                 }
                 String old = auth.getEmail();
                 auth.setEmail(newEmail);
-                if (!plugin.database.updateEmail(auth)) {
+                if (!plugin.getDataSource().updateEmail(auth)) {
                     m.send(player, MessageKey.ERROR);
                     auth.setEmail(old);
                     return;
@@ -81,7 +81,7 @@ public class AsyncChangeEmail {
                 }
                 m.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
             } else {
-                if (plugin.database.isAuthAvailable(playerName)) {
+                if (plugin.getDataSource().isAuthAvailable(playerName)) {
                     m.send(player, MessageKey.LOGIN_MESSAGE);
                 } else {
                     if (Settings.emailRegistration) {

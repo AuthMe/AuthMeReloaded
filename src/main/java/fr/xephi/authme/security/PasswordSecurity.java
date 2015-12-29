@@ -29,16 +29,6 @@ public class PasswordSecurity {
     }
 
     @Deprecated
-    public static String createSalt(int length) {
-        return RandomString.generateHex(length);
-    }
-
-    @Deprecated
-    public static String getHash(HashAlgorithm alg, String password, String playerName) throws NoSuchAlgorithmException {
-        return "";
-    }
-
-    @Deprecated
     public static boolean comparePasswordWithHash(String password, String hash,
                                                   String playerName) throws NoSuchAlgorithmException {
         HashAlgorithm algorithm = Settings.getPasswordHash;
@@ -142,12 +132,12 @@ public class PasswordSecurity {
                 try {
                     EncryptionMethod method = algo.getClazz().newInstance();
                     if (method.comparePassword(hash, password, salt, playerName)) {
-                        PlayerAuth nAuth = AuthMe.getInstance().database.getAuth(playerName);
+                        PlayerAuth nAuth = AuthMe.getInstance().getDataSource().getAuth(playerName);
                         if (nAuth != null) {
-                            nAuth.setHash(getHash(Settings.getPasswordHash, password, playerName));
+                           // nAuth.setHash(getHash(Settings.getPasswordHash, password, playerName));
                             nAuth.setSalt(userSalt.containsKey(playerName) ? userSalt.get(playerName) : "");
-                            AuthMe.getInstance().database.updatePassword(nAuth);
-                            AuthMe.getInstance().database.updateSalt(nAuth);
+                            AuthMe.getInstance().getDataSource().updatePassword(nAuth);
+                            AuthMe.getInstance().getDataSource().updateSalt(nAuth);
                         }
                         return true;
                     }
