@@ -164,7 +164,7 @@ public class SQLite implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            pst = getConnection().prepareStatement(new Query()
+            pst = getConnection().prepareStatement(new Query(this)
             		.select("*")
             		.from(tableName)
             		.addWhere("LOWER(" + columnName + ")=LOWER(?)", null)
@@ -194,7 +194,7 @@ public class SQLite implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            pst = getConnection().prepareStatement(new Query()
+            pst = getConnection().prepareStatement(new Query(this)
             		.select("*")
             		.from(tableName)
             		.addWhere("LOWER(" + columnName + ")=LOWER(?)", null)
@@ -272,7 +272,7 @@ public class SQLite implements DataSource {
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query()
+        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
          			.update()
          			.from(tableName)
          			.addUpdateSet(columnPassword + "=?")
@@ -302,7 +302,7 @@ public class SQLite implements DataSource {
     @Override
     public synchronized boolean updateSession(PlayerAuth auth) {
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query()
+        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
         			.update()
         			.from(tableName)
         			.addUpdateSet(columnIp + "=?")
@@ -336,7 +336,7 @@ public class SQLite implements DataSource {
     public synchronized int purgeDatabase(long until) {
         int result = 0;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query()
+        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
         			.delete()
         			.from(tableName)
         			.addWhere(columnLastLogin + "<?", null)
@@ -364,7 +364,7 @@ public class SQLite implements DataSource {
     public synchronized List<String> autoPurgeDatabase(long until) {
         List<String> list = new ArrayList<>();
         try {
-        	PreparedStatement st = getConnection().prepareStatement(new Query()
+        	PreparedStatement st = getConnection().prepareStatement(new Query(this)
         			.select(columnName)
         			.from(tableName)
         			.addWhere(columnLastLogin + "<" + until, null)
@@ -375,7 +375,7 @@ public class SQLite implements DataSource {
                 list.add(rs.getString(columnName));
             }
             rs.close();
-            st = getConnection().prepareStatement(new Query()
+            st = getConnection().prepareStatement(new Query(this)
             		.delete()
             		.from(tableName)
             		.addWhere(columnLastLogin + "<" + until, null)
@@ -424,7 +424,7 @@ public class SQLite implements DataSource {
     @Override
     public synchronized boolean updateQuitLoc(PlayerAuth auth) {
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query()
+        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
         			.update()
         			.from(tableName)
         			.addUpdateSet(lastlocX + "=?")
@@ -461,7 +461,7 @@ public class SQLite implements DataSource {
     public synchronized int getIps(String ip) {
         int countIp = 0;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query()
+        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
         			.select("COUNT(*)")
         			.from(tableName)
         			.addWhere(columnIp + "=?", null)
@@ -492,7 +492,7 @@ public class SQLite implements DataSource {
     @Override
     public synchronized boolean updateEmail(PlayerAuth auth) {
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query()
+            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnEmail + "=?")
@@ -525,7 +525,7 @@ public class SQLite implements DataSource {
             return false;
         }
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query()
+            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnSalt + "=?")
@@ -609,7 +609,7 @@ public class SQLite implements DataSource {
     public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
         List<String> result = new ArrayList<>();
         try (Connection con = getConnection()) {
-            PreparedStatement pst = getConnection().prepareStatement(new Query()
+            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.select(columnName)
             		.from(tableName)
             		.addWhere(columnIp + "=?", null)
@@ -641,7 +641,7 @@ public class SQLite implements DataSource {
     public synchronized List<String> getAllAuthsByIp(String ip) {
         List<String> result = new ArrayList<>();
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query()
+            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.select(columnName)
             		.from(tableName)
             		.addWhere(columnIp + "=?", null)
@@ -673,7 +673,7 @@ public class SQLite implements DataSource {
     public synchronized List<String> getAllAuthsByEmail(String email){
         List<String> countEmail = new ArrayList<>();
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query()
+            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.select(columnName)
             		.from(tableName)
             		.addWhere(columnEmail + "=?", null)
@@ -702,7 +702,7 @@ public class SQLite implements DataSource {
     @Override
     public synchronized void purgeBanned(List<String> banned) {
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query()
+        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
         			.delete()
         			.from(tableName)
         			.addWhere(columnName + "=?", null)
@@ -739,7 +739,7 @@ public class SQLite implements DataSource {
     public boolean isLogged(String user) {
         boolean isLogged = false;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query()
+        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
         			.select(columnLogged)
         			.from(tableName)
         			.addWhere(columnName + "=?", null)
@@ -765,7 +765,7 @@ public class SQLite implements DataSource {
     @Override
     public void setLogged(String user) {
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query()
+            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnLogged + "='1'")
@@ -790,7 +790,7 @@ public class SQLite implements DataSource {
     @Override
     public void setUnlogged(String user) {
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query()
+            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnLogged + "='0'")
@@ -813,7 +813,7 @@ public class SQLite implements DataSource {
     @Override
     public void purgeLogged() {
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query()
+            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnLogged + "='0'")
@@ -838,7 +838,7 @@ public class SQLite implements DataSource {
     public int getAccountsRegistered() {
         int result = 0;
         try {
-        	PreparedStatement st = getConnection().prepareStatement(new Query()
+        	PreparedStatement st = getConnection().prepareStatement(new Query(this)
         			.select("COUNT(*)")
         			.from(tableName)
         			.build()
@@ -867,7 +867,7 @@ public class SQLite implements DataSource {
     public void updateName(String oldOne, String newOne) {
         try (Connection con = getConnection()) {
             PreparedStatement pst =
-            		con.prepareStatement(new Query()
+            		con.prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnName + "=?")
@@ -894,7 +894,7 @@ public class SQLite implements DataSource {
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
         try {
-        	PreparedStatement st = getConnection().prepareStatement(new Query()
+        	PreparedStatement st = getConnection().prepareStatement(new Query(this)
             		.select("*")
             		.from(tableName)
             		.build()
