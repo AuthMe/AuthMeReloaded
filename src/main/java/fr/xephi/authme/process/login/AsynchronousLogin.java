@@ -8,7 +8,6 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -26,12 +25,11 @@ import java.util.List;
  */
 public class AsynchronousLogin {
 
-    private static final RandomString rdm = new RandomString(Settings.captchaLength);
-    protected final Player player;
-    protected final String name;
-    protected final String realName;
-    protected final String password;
-    protected final boolean forceLogin;
+    private final Player player;
+    private final String name;
+    private final String realName;
+    private final String password;
+    private final boolean forceLogin;
     private final AuthMe plugin;
     private final DataSource database;
     private final Messages m;
@@ -70,7 +68,7 @@ public class AsynchronousLogin {
                 plugin.captcha.putIfAbsent(name, i);
             }
             if (plugin.captcha.containsKey(name) && plugin.captcha.get(name) > Settings.maxLoginTry) {
-                plugin.cap.putIfAbsent(name, rdm.nextString());
+                plugin.cap.putIfAbsent(name, RandomString.generate(Settings.captchaLength));
                 m.send(player, MessageKey.USAGE_CAPTCHA, plugin.cap.get(name));
                 return true;
             }
@@ -120,8 +118,7 @@ public class AsynchronousLogin {
             return null;
         }
 
-        if (Settings.preventOtherCase && !player.getName().equals(pAuth.getRealName()))
-        {
+        if (Settings.preventOtherCase && !player.getName().equals(pAuth.getRealName())) {
         	// TODO: Add a message like : MessageKey.INVALID_NAME_CASE
         	m.send(player, MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
         	return null;
@@ -138,19 +135,19 @@ public class AsynchronousLogin {
         if (pAuth == null || needsCaptcha())
             return;
 
-        String hash = pAuth.getHash();
         String email = pAuth.getEmail();
-        boolean passwordVerified = true;
-        if (!forceLogin)
-            try {
-                passwordVerified = PasswordSecurity.comparePasswordWithHash(password, hash, realName);
-            } catch (Exception ex) {
-                ConsoleLogger.showError(ex.getMessage());
-                m.send(player, MessageKey.ERROR);
-                return;
-            }
+        boolean passwordVerified = forceLogin || plugin.getPasswordSecurity()
+            .comparePassword(password, pAuth.getPassword(), realName);
+
         if (passwordVerified && player.isOnline()) {
-            PlayerAuth auth = new PlayerAuth(name, hash, getIP(), new Date().getTime(), email, realName);
+            PlayerAuth auth = PlayerAuth.builder()
+                .name(name)
+                .realName(realName)
+                .ip(getIP())
+                .lastLogin(new Date().getTime())
+                .email(email)
+                .password(pAuth.getPassword())
+                .build();
             database.updateSession(auth);
 
             if (Settings.useCaptcha) {

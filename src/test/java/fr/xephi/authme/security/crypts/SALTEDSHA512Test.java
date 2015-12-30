@@ -1,20 +1,16 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Ignore;
-
 /**
  * Test for {@link SALTEDSHA512}.
  */
-@Ignore
-// TODO ljacqu 20151220: Currently cannot test because of closely coupled database call inside of class
 public class SALTEDSHA512Test extends AbstractEncryptionMethodTest {
 
     public SALTEDSHA512Test() {
         super(new SALTEDSHA512(),
-            "c8efe95e1ab02d9a0e7c7d11d4ac3cc068a8405b5810aac3a1b8b01927ab059563438131dc995156739daf74db40ffdc79b78f6aec9b2a468fe106b88c66c204",  // password
-            "74c61af1bcbb3293cdc0959c7323d50be28c167eddc7a1b7eb029e38263c2cfb6eb090f41370a65249752aa316fa851091c2bd8420302e87d383529beea735b4",  // PassWord1
-            "08eefcca4a17876441ebe61a02e8bc62cab7502dd87f8ec3b7f82edb2adace791b8dad31e74c5513cf99be502b732f5c5efffb239f4590d5c600d066a7037908",  // &^%te$t?Pw@_
-            "a122490c4c7c18ad665b5ac9617c948741468a787a2ba42c6fd2530ea1d7874681b8575ee9a8907c42ff65dac69e4ada2852789759c17d51865ca915b259a65a"); // âË_3(íù*
+            new EncryptedPassword("dea7a37cecf5384ae8e347fd1411efb51364b6ba1b328695de3b354612c1d7010807e8b7051c40f740e498490e1f133e2c2408327d13fbdd68e1b1f6d548e624", "29f8a3c52147f987fee7ba3e0fb311bd"),  // password
+            new EncryptedPassword("7c06225aac574d2dc7c81a2ed306637adf025715f52083e05bdab014faaa234e24a97d0e69ea0108dfa77cc9228e58be319ee677e679b5d1ad168d40e50a42f6", "8ea37b85d020b98f60c0fe9b8ec9296c"),  // PassWord1
+            new EncryptedPassword("55711adbe03c9616f3505f0d57077fdd528c32243eb6f9840c1a6ff9e553940d6b89790750ebd52ebda63ca793fbe9980d54057af40836820c648750fe22d49c", "9f58079631ef21d32b4710694f1f461b"),  // &^%te$t?Pw@_
+            new EncryptedPassword("29dc5be8702975ea4563ed3de5b145e2d2f1c37ae661bbe0d3e94d964402cf09d539d65f3b90ff6921ea3d40727f76fb38fb34d1e5c2d62238c4e0203efc372f", "048bb76168265d906f1fd1f81d0616a9")); // âË_3(íù*
     }
 
 }

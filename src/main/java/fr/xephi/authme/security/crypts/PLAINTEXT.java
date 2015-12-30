@@ -1,21 +1,11 @@
 package fr.xephi.authme.security.crypts;
 
-import java.security.NoSuchAlgorithmException;
-
-/**
- */
-public class PLAINTEXT implements EncryptionMethod {
+@Deprecated
+public class PLAINTEXT extends UnsaltedMethod {
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password) {
         return password;
-    }
-
-    @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
-        return hash.equals(password);
     }
 
 }

@@ -1,20 +1,16 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Ignore;
-
 /**
  * Test for {@link WBB3}.
  */
-@Ignore
-// TODO #364 ljacqu 20151220: Unignore test after fixing closely coupled DB dependency
 public class WBB3Test extends AbstractEncryptionMethodTest {
 
     public WBB3Test() {
         super(new WBB3(),
-            "ca426c4d20a82cd24c7bb07d94d69f3757e3d07d",  // password
-            "72d59d27674a3cace2600ff152ba8b46274e27e9",  // PassWord1
-            "23daf26602e52591156968a14c2a6592b5be4743",  // &^%te$t?Pw@_
-            "d3908efe4a15314066391dd8572883c70b16fd8a"); // âË_3(íù*
+            new EncryptedPassword("8df818ef7d56075ab2744f74b98ad68a375ccac4", "b7415b355492ea60314f259a35733a3092c03e3f"),  // password
+            new EncryptedPassword("106da5cf5df92cb845e12cf62cbdb5235b6dc693", "6110f19b2b52910dccf592a19c59126873f42e69"),  // PassWord1
+            new EncryptedPassword("940a9fb7acec0178c6691e8b3c14bd7d789078b1", "f9dd501ff3d1bf74904f9e89649e378429af56e7"),  // &^%te$t?Pw@_
+            new EncryptedPassword("0fa12e8d96c9e95f73aa91f3b76f8cdc815ec8a5", "736be8669f6159ddb2d5b47a3e6428cdb8b324de")); // âË_3(íù*
     }
 
 }

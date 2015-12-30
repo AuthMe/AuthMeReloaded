@@ -27,7 +27,7 @@ public class CrazyLoginConverter implements Converter {
      * @param sender   CommandSender
      */
     public CrazyLoginConverter(AuthMe instance, CommandSender sender) {
-        this.database = instance.database;
+        this.database = instance.getDataSource();
         this.sender = sender;
     }
 

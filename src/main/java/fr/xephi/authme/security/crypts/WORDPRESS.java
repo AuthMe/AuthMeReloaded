@@ -1,14 +1,22 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.security.crypts.description.Usage;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-/**
- */
-public class WORDPRESS implements EncryptionMethod {
+// TODO #391: Wordpress algorithm fails sometimes. Fix it and change the Recommendation to "ACCEPTABLE" if appropriate
+@Recommendation(Usage.DO_NOT_USE)
+@HasSalt(value = SaltType.TEXT, length = 9)
+// Note ljacqu 20151228: Wordpress is actually a salted algorithm but salt generation is handled internally
+// and isn't exposed to the outside, so we treat it as an unsalted implementation
+public class WORDPRESS extends UnsaltedMethod {
 
     private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
     private final SecureRandom randomGen = new SecureRandom();
@@ -102,16 +110,15 @@ public class WORDPRESS implements EncryptionMethod {
     }
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password) {
         byte random[] = new byte[6];
-        this.randomGen.nextBytes(random);
+        randomGen.nextBytes(random);
         return crypt(password, gensaltPrivate(stringToUtf8(new String(random))));
     }
 
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
+    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name) {
+        String hash = encryptedPassword.getHash();
         String comparedHash = crypt(password, hash);
         return comparedHash.equals(hash);
     }

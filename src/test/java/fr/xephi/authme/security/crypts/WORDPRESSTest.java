@@ -12,4 +12,10 @@ public class WORDPRESSTest extends AbstractEncryptionMethodTest {
             "$P$BjzPjjzPjrAOyB1V0WFdpisgCTFx.N/",  // &^%te$t?Pw@_
             "$P$BjzPjxxyjp2QdKcab/oTW8l/W0AgE21"); // âË_3(íù*
     }
+
+    @Override
+    protected boolean testHashEqualityForSameSalt() {
+        // We need to skip the test because Wordpress uses an "internal salt" that is not exposed to the outside
+        return false;
+    }
 }

@@ -15,7 +15,7 @@ public class RoyalAuthConverter implements Converter {
 
     public RoyalAuthConverter(AuthMe plugin) {
         this.plugin = plugin;
-        this.data = plugin.database;
+        this.data = plugin.getDataSource();
     }
 
     @Override

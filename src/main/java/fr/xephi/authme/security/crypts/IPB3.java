@@ -1,34 +1,25 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.security.crypts.description.Usage;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import static fr.xephi.authme.security.HashUtils.md5;
 
-/**
- */
-public class IPB3 implements EncryptionMethod {
+@Recommendation(Usage.DO_NOT_USE)
+@HasSalt(value = SaltType.TEXT, length = 5)
+public class IPB3 extends SeparateSaltMethod {
 
-    private static String getMD5(String message)
-        throws NoSuchAlgorithmException {
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
-        md5.reset();
-        md5.update(message.getBytes());
-        byte[] digest = md5.digest();
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
+    @Override
+    public String computeHash(String password, String salt, String name) {
+        return md5(md5(salt) + md5(password));
     }
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
-        return getMD5(getMD5(salt) + getMD5(password));
+    public String generateSalt() {
+        return RandomString.generateHex(5);
     }
 
-    @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
-        String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-        return hash.equals(computeHash(password, salt, playerName));
-    }
 }

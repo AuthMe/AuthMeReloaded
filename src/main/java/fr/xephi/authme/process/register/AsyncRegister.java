@@ -8,7 +8,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 
@@ -44,7 +44,10 @@ public class AsyncRegister {
         } else if (!Settings.isRegistrationEnabled) {
             m.send(player, MessageKey.REGISTRATION_DISABLED);
             return false;
-        } else if (passLow.contains("delete") || passLow.contains("where") || passLow.contains("insert") || passLow.contains("modify") || passLow.contains("from") || passLow.contains("select") || passLow.contains(";") || passLow.contains("null") || !passLow.matches(Settings.getPassRegex)) {
+        } else if (passLow.contains("delete") || passLow.contains("where") || passLow.contains("insert")
+            || passLow.contains("modify") || passLow.contains("from") || passLow.contains("select")
+            || passLow.contains(";") || passLow.contains("null") || !passLow.matches(Settings.getPassRegex)) {
+            // TODO #308: Remove check for SQL keywords
             m.send(player, MessageKey.PASSWORD_MATCH_ERROR);
             return false;
         } else if (passLow.equalsIgnoreCase(player.getName())) {
@@ -87,26 +90,21 @@ public class AsyncRegister {
         }
     }
 
-    private void emailRegister() throws Exception {
+    private void emailRegister() {
         if (Settings.getmaxRegPerEmail > 0
             && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
             && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
             m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
             return;
         }
-        final String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
-        final String salt = PasswordSecurity.userSalt.get(name);
+        final EncryptedPassword encryptedPassword = plugin.getPasswordSecurity().computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
-            .hash(hashNew)
+            .password(encryptedPassword)
             .ip(ip)
-            .locWorld(player.getLocation().getWorld().getName())
-            .locX(player.getLocation().getX())
-            .locY(player.getLocation().getY())
-            .locZ(player.getLocation().getZ())
+            .location(player.getLocation())
             .email(email)
-            .salt(salt != null ? salt : "")
             .build();
 
         if (!database.saveAuth(auth)) {
@@ -122,18 +120,13 @@ public class AsyncRegister {
     }
 
     private void passwordRegister() throws Exception {
-        final String hashNew = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
-        final String salt = PasswordSecurity.userSalt.get(name);
+        final EncryptedPassword encryptedPassword = plugin.getPasswordSecurity().computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
-            .hash(hashNew)
+            .password(encryptedPassword)
             .ip(ip)
-            .locWorld(player.getLocation().getWorld().getName())
-            .locX(player.getLocation().getX())
-            .locY(player.getLocation().getY())
-            .locZ(player.getLocation().getZ())
-            .salt(salt != null ? salt : "")
+            .location(player.getLocation())
             .build();
 
         if (!database.saveAuth(auth)) {

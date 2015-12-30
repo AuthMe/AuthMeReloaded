@@ -30,7 +30,7 @@ class xAuthToFlat {
      */
     public xAuthToFlat(AuthMe instance, CommandSender sender) {
         this.instance = instance;
-        this.database = instance.database;
+        this.database = instance.getDataSource();
         this.sender = sender;
     }
 

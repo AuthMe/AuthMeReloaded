@@ -4,25 +4,26 @@
  */
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.security.HashUtils;
+import fr.xephi.authme.security.MessageDigestAlgorithm;
+
 import java.io.UnsupportedEncodingException;
-import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * @author stefano
  */
-public class PHPBB implements EncryptionMethod {
+public class PHPBB extends HexSaltedMethod {
 
     private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-    public static String md5(String data) {
+    private static String md5(String data) {
         try {
             byte[] bytes = data.getBytes("ISO-8859-1");
-            MessageDigest md5er = MessageDigest.getInstance("MD5");
+            MessageDigest md5er = HashUtils.getDigest(MessageDigestAlgorithm.MD5);
             byte[] hash = md5er.digest(bytes);
             return bytes2hex(hash);
-        } catch (GeneralSecurityException | UnsupportedEncodingException e) {
+        } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
     }
@@ -58,7 +59,7 @@ public class PHPBB implements EncryptionMethod {
         return buf.toString();
     }
 
-    public String phpbb_hash(String password, String salt) {
+    private String phpbb_hash(String password, String salt) {
         String random_state = salt;
         StringBuilder random = new StringBuilder();
         int count = 6;
@@ -109,7 +110,7 @@ public class PHPBB implements EncryptionMethod {
         return output.toString();
     }
 
-    String _hash_crypt_private(String password, String setting) {
+    private String _hash_crypt_private(String password, String setting) {
         String output = "*";
         if (!setting.substring(0, 3).equals("$H$"))
             return output;
@@ -130,21 +131,26 @@ public class PHPBB implements EncryptionMethod {
         return output;
     }
 
-    public boolean phpbb_check_hash(String password, String hash) {
-        if (hash.length() == 34)
+    private boolean phpbb_check_hash(String password, String hash) {
+        if (hash.length() == 34) {
             return _hash_crypt_private(password, hash).equals(hash);
-        else return md5(password).equals(hash);
+        }
+        return md5(password).equals(hash);
     }
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password, String salt, String name) {
         return phpbb_hash(password, salt);
     }
 
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
-        return phpbb_check_hash(password, hash);
+    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name) {
+        return phpbb_check_hash(password, encryptedPassword.getHash());
     }
+
+    @Override
+    public int getSaltLength() {
+        return 16;
+    }
+
 }

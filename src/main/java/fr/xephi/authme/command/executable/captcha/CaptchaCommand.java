@@ -41,7 +41,7 @@ public class CaptchaCommand extends PlayerCommand {
 
         if (Settings.useCaptcha && !captcha.equals(plugin.cap.get(playerNameLowerCase))) {
             plugin.cap.remove(playerNameLowerCase);
-            String randStr = new RandomString(Settings.captchaLength).nextString();
+            String randStr = RandomString.generate(Settings.captchaLength);
             plugin.cap.put(playerNameLowerCase, randStr);
             commandService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, plugin.cap.get(playerNameLowerCase));
             return;

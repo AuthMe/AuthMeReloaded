@@ -1,26 +1,34 @@
 package fr.xephi.authme.security.crypts;
 
-import java.security.NoSuchAlgorithmException;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.Usage;
 
-/**
- */
-public class BCRYPT2Y implements EncryptionMethod {
+@Recommendation(Usage.RECOMMENDED)
+public class BCRYPT2Y extends HexSaltedMethod {
 
     @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
-        if (salt.length() == 22)
+    public String computeHash(String password, String salt, String name) {
+        if (salt.length() == 22) {
             salt = "$2y$10$" + salt;
-        return (BCRYPT.hashpw(password, salt));
+        }
+        return BCRYPT.hashpw(password, salt);
     }
 
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
-        String ok = hash.substring(0, 29);
-        if (ok.length() != 29)
+    public boolean comparePassword(String password, EncryptedPassword encrypted, String unusedName) {
+        String hash = encrypted.getHash();
+        if (hash.length() != 60) {
             return false;
-        return hash.equals(computeHash(password, ok, playerName));
+        }
+        // The salt is the first 29 characters of the hash
+
+        String salt = hash.substring(0, 29);
+        return hash.equals(computeHash(password, salt, null));
+    }
+
+    @Override
+    public int getSaltLength() {
+        return 22;
     }
 
 }

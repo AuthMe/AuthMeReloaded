@@ -1,13 +1,16 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.PasswordSecurity;
+import com.google.common.collect.ImmutableList;
+import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import org.junit.Test;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -27,30 +30,48 @@ public abstract class AbstractEncryptionMethodTest {
      * List of passwords that are hashed at runtime and then tested against; this verifies that hashes that are
      * generated are valid.
      */
-    private static final String[] INTERNAL_PASSWORDS = {"test1234", "Ab_C73", "(!#&$~`_-Aa0", "Ûïé1&?+A"};
+    private static final List<String> INTERNAL_PASSWORDS =
+        ImmutableList.of("test1234", "Ab_C73", "(!#&$~`_-Aa0", "Ûïé1&?+A");
 
     /** The encryption method to test. */
     private EncryptionMethod method;
     /** Map with the hashes against which the entries in GIVEN_PASSWORDS are tested. */
-    private Map<String, String> hashes;
+    private Map<String, EncryptedPassword> hashes;
 
     /**
      * Create a new test for the given encryption method.
      *
      * @param method The encryption method to test
-     * @param hash0  The pre-generated hash for the first {@link #GIVEN_PASSWORDS}
-     * @param hash1  The pre-generated hash for the second {@link #GIVEN_PASSWORDS}
-     * @param hash2  The pre-generated hash for the third {@link #GIVEN_PASSWORDS}
-     * @param hash3  The pre-generated hash for the fourth {@link #GIVEN_PASSWORDS}
+     * @param computedHashes The pre-generated hashes for the elements in {@link #GIVEN_PASSWORDS}
      */
-    public AbstractEncryptionMethodTest(EncryptionMethod method, String hash0, String hash1,
-                                        String hash2, String hash3) {
+    public AbstractEncryptionMethodTest(EncryptionMethod method, String... computedHashes) {
+        if (method.hasSeparateSalt()) {
+            throw new UnsupportedOperationException("Test must be initialized with EncryptedPassword objects if "
+                + "the salt is stored separately. Use the other constructor");
+        } else if (computedHashes.length != GIVEN_PASSWORDS.length) {
+            throw new UnsupportedOperationException("Expected " + GIVEN_PASSWORDS.length + " hashes");
+        }
         this.method = method;
+
         hashes = new HashMap<>();
-        hashes.put(GIVEN_PASSWORDS[0], hash0);
-        hashes.put(GIVEN_PASSWORDS[1], hash1);
-        hashes.put(GIVEN_PASSWORDS[2], hash2);
-        hashes.put(GIVEN_PASSWORDS[3], hash3);
+        for (int i = 0; i < GIVEN_PASSWORDS.length; ++i) {
+            hashes.put(GIVEN_PASSWORDS[i], new EncryptedPassword(computedHashes[i]));
+        }
+    }
+
+    public AbstractEncryptionMethodTest(EncryptionMethod method, EncryptedPassword result0, EncryptedPassword result1,
+                                        EncryptedPassword result2, EncryptedPassword result3) {
+        if (!method.hasSeparateSalt()) {
+            throw new UnsupportedOperationException("Salt is not stored separately, so test should be initialized"
+                + " with the password hashes only. Use the other constructor");
+        }
+        this.method = method;
+
+        hashes = new HashMap<>();
+        hashes.put(GIVEN_PASSWORDS[0], result0);
+        hashes.put(GIVEN_PASSWORDS[1], result1);
+        hashes.put(GIVEN_PASSWORDS[2], result2);
+        hashes.put(GIVEN_PASSWORDS[3], result3);
     }
 
     @Test
@@ -75,31 +96,36 @@ public abstract class AbstractEncryptionMethodTest {
 
     @Test
     public void testPasswordEquality() {
-        for (String password : INTERNAL_PASSWORDS) {
-            try {
-                String hash = method.computeHash(password, getSalt(method), USERNAME);
-                assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
-                    method.comparePassword(hash, password, USERNAME));
-                if (!password.equals(password.toLowerCase())) {
-                    assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
-                        method.comparePassword(hash, password.toLowerCase(), USERNAME));
-                }
-                if (!password.equals(password.toUpperCase())) {
-                    assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
-                        method.comparePassword(hash, password.toUpperCase(), USERNAME));
-                }
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalStateException("EncryptionMethod '" + method + "' threw exception", e);
+        List<String> internalPasswords = method.getClass().isAnnotationPresent(AsciiRestricted.class)
+            ? INTERNAL_PASSWORDS.subList(0, INTERNAL_PASSWORDS.size() - 1)
+            : INTERNAL_PASSWORDS;
+
+        for (String password : internalPasswords) {
+            final String salt = method.generateSalt();
+            final String hash = method.computeHash(password, salt, USERNAME);
+            EncryptedPassword encryptedPassword = new EncryptedPassword(hash, salt);
+
+            // Check that the computeHash(password, salt, name) method has the same output for the returned salt
+            if (testHashEqualityForSameSalt()) {
+                assertThat("Computing a hash with the same salt will generate the same hash",
+                    hash, equalTo(method.computeHash(password, salt, USERNAME)));
+            }
+
+            assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
+                method.comparePassword(password, encryptedPassword, USERNAME));
+            if (!password.equals(password.toLowerCase())) {
+                assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
+                    method.comparePassword(password.toLowerCase(), encryptedPassword, USERNAME));
+            }
+            if (!password.equals(password.toUpperCase())) {
+                assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
+                    method.comparePassword(password.toUpperCase(), encryptedPassword, USERNAME));
             }
         }
     }
 
     private boolean doesGivenHashMatch(String password, EncryptionMethod method) {
-        try {
-            return method.comparePassword(hashes.get(password), password, USERNAME);
-        } catch (NoSuchAlgorithmException e) {
-            throw new IllegalStateException("EncryptionMethod '" + method + "' threw exception", e);
-        }
+        return method.comparePassword(password, hashes.get(password), USERNAME);
     }
 
     // @org.junit.Test public void a() { AbstractEncryptionMethodTest.generateTest(); }
@@ -116,43 +142,30 @@ public abstract class AbstractEncryptionMethodTest {
             if (password.equals(GIVEN_PASSWORDS[GIVEN_PASSWORDS.length - 1])) {
                 delim = "); ";
             }
-            try {
-                System.out.println("\t\t\"" + method.computeHash(password, getSalt(method), USERNAME)
+
+            if (method.hasSeparateSalt()) {
+                EncryptedPassword encryptedPassword = method.computeHash(password, USERNAME);
+                System.out.println(String.format("\t\tnew EncryptedPassword(\"%s\", \"%s\")%s// %s",
+                    encryptedPassword.getHash(), encryptedPassword.getSalt(), delim, password));
+            } else {
+                System.out.println("\t\t\"" + method.computeHash(password, USERNAME).getHash()
                     + "\"" + delim + "// " + password);
-            } catch (NoSuchAlgorithmException e) {
-                throw new IllegalStateException("Could not generate hash", e);
             }
         }
         System.out.println("\t}");
         System.out.println("\n}");
     }
 
-    // TODO #358: Remove this method and use the new salt method on the interface
-    private static String getSalt(EncryptionMethod method) {
-        try {
-            if (method instanceof BCRYPT) {
-                return BCRYPT.gensalt();
-            } else if (method instanceof MD5 || method instanceof WORDPRESS || method instanceof SMF
-                || method instanceof SHA512 || method instanceof SHA1 || method instanceof ROYALAUTH
-                || method instanceof DOUBLEMD5) {
-                return "";
-            } else if (method instanceof JOOMLA || method instanceof SALTEDSHA512) {
-                return PasswordSecurity.createSalt(32);
-            } else if (method instanceof SHA256 || method instanceof PHPBB || method instanceof WHIRLPOOL
-                || method instanceof MD5VB || method instanceof BCRYPT2Y) {
-                return PasswordSecurity.createSalt(16);
-            } else if (method instanceof WBB3) {
-                return PasswordSecurity.createSalt(40);
-            } else if (method instanceof XAUTH || method instanceof CryptPBKDF2Django
-                || method instanceof CryptPBKDF2) {
-                return PasswordSecurity.createSalt(12);
-            } else if (method instanceof WBB4) {
-                return BCRYPT.gensalt(8);
-            }
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-        throw new IllegalStateException("Unknown EncryptionMethod for salt generation");
+    /**
+     * Return whether an encryption algorithm should be tested that it generates the same
+     * hash for the same salt. If {@code true}, we call {@link EncryptionMethod#computeHash(String, String)}
+     * and verify that {@link EncryptionMethod#computeHash(String, String, String)} generates
+     * the same hash for the salt returned in the first call.
+     *
+     * @return Whether or not to test that the hash is the same for the same salt
+     */
+    protected boolean testHashEqualityForSameSalt() {
+        return true;
     }
 
 }

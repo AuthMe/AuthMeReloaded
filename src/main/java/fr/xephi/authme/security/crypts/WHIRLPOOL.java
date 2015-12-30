@@ -59,12 +59,9 @@ package fr.xephi.authme.security.crypts;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-/**
- */
-public class WHIRLPOOL implements EncryptionMethod {
+public class WHIRLPOOL extends UnsaltedMethod {
 
     /**
      * The message digest size (in bits)
@@ -382,9 +379,7 @@ public class WHIRLPOOL implements EncryptionMethod {
         }
     }
 
-    @Override
-    public String computeHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password) {
         byte[] digest = new byte[DIGESTBYTES];
         NESSIEinit();
         NESSIEadd(password);
@@ -392,9 +387,4 @@ public class WHIRLPOOL implements EncryptionMethod {
         return display(digest);
     }
 
-    @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
-        return hash.equals(computeHash(password, "", ""));
-    }
 }

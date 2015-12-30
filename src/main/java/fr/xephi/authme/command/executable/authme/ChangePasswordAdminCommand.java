@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -8,13 +7,10 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 /**
@@ -60,13 +56,6 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
             @Override
             public void run() {
                 DataSource dataSource = commandService.getDataSource();
-                String hash;
-                try {
-                    hash = PasswordSecurity.getHash(Settings.getPasswordHash, playerPass, playerNameLowerCase);
-                } catch (NoSuchAlgorithmException e) {
-                    commandService.send(sender, MessageKey.ERROR);
-                    return;
-                }
                 PlayerAuth auth = null;
                 if (PlayerCache.getInstance().isAuthenticated(playerNameLowerCase)) {
                     auth = PlayerCache.getInstance().getAuth(playerNameLowerCase);
@@ -77,17 +66,17 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
                     commandService.send(sender, MessageKey.UNKNOWN_USER);
                     return;
                 }
-                auth.setHash(hash);
-                if (PasswordSecurity.userSalt.containsKey(playerNameLowerCase)) {
-                    auth.setSalt(PasswordSecurity.userSalt.get(playerNameLowerCase));
-                    commandService.getDataSource().updateSalt(auth);
-                }
+
+                // TODO #358: Do we always pass lowercase name?? In that case we need to do that in PasswordSecurity!
+                EncryptedPassword encryptedPassword = commandService.getPasswordSecurity().computeHash(playerPass, playerNameLowerCase);
+                auth.setPassword(encryptedPassword);
+
                 if (!dataSource.updatePassword(auth)) {
                     commandService.send(sender, MessageKey.ERROR);
-                    return;
+                } else {
+                    commandService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
+                    ConsoleLogger.info(playerNameLowerCase + "'s password changed");
                 }
-                commandService.send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
-                ConsoleLogger.info(playerNameLowerCase + "'s password changed");
             }
 
         });
