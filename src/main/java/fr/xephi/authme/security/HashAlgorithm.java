@@ -36,6 +36,7 @@ public enum HashAlgorithm {
     WHIRLPOOL(fr.xephi.authme.security.crypts.WHIRLPOOL.class),
     WORDPRESS(fr.xephi.authme.security.crypts.WORDPRESS.class),
     XAUTH(fr.xephi.authme.security.crypts.XAUTH.class),
+    XENFORO(fr.xephi.authme.security.crypts.XF.class),
     CUSTOM(null);
 
     private final Class<? extends EncryptionMethod> clazz;

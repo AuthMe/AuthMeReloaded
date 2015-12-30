@@ -257,6 +257,7 @@ public class MySQL implements DataSource {
             }
             String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
             int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
+            int id = rs.getInt(columnID);
             pAuth = PlayerAuth.builder()
                 .name(rs.getString(columnName))
                 .realName(rs.getString(columnRealName))
@@ -272,6 +273,17 @@ public class MySQL implements DataSource {
                 .build();
             rs.close();
             pst.close();
+            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
+                pst.setInt(1, id);
+                rs = pst.executeQuery();
+                if (rs.next()) {
+                    Blob blob = rs.getBlob("data");
+                    byte[] bytes = blob.getBytes(1, (int) blob.length());
+                    // TODO #137: Need to find out how the salt is loaded and need to pass it along to setHash()
+                    // pAuth.setPassword(new String(bytes));
+                }
+            }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             ConsoleLogger.writeStackTrace(ex);
@@ -452,6 +464,26 @@ public class MySQL implements DataSource {
                 }
                 rs.close();
                 pst.close();
+            } else if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                pst = con.prepareStatement("SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;");
+                pst.setString(1, auth.getNickname());
+                rs = pst.executeQuery();
+                if (rs.next()) {
+                    int id = rs.getInt(columnID);
+                    // Insert password in the correct table
+                    pst2 = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
+                    pst2.setInt(1, id);
+                    pst2.setString(2, "XenForo_Authentication_Core12");
+                    // TODO #137: Need to verify that the salt info is also being passed on...
+                    byte[] bytes = auth.getPassword().getHash().getBytes();
+                    Blob blob = con.createBlob();
+                    blob.setBytes(1, bytes);
+                    pst2.setBlob(3, blob);
+                    pst2.executeUpdate();
+                    pst2.close();
+                }
+                rs.close();
+                pst.close();
             }
             return true;
         } catch (SQLException ex) {
@@ -482,6 +514,35 @@ public class MySQL implements DataSource {
             }
             pst.executeUpdate();
             pst.close();
+            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                String sql = "SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;";
+                pst = con.prepareStatement(sql);
+                pst.setString(1, auth.getNickname());
+                ResultSet rs = pst.executeQuery();
+                if (rs.next()) {
+                    int id = rs.getInt(columnID);
+                    // Insert password in the correct table
+                    sql = "UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;";
+                    PreparedStatement pst2 = con.prepareStatement(sql);
+                    // TODO #137: What about the salt?
+                    byte[] bytes = auth.getPassword().getHash().getBytes();
+                    Blob blob = con.createBlob();
+                    blob.setBytes(1, bytes);
+                    pst2.setBlob(1, blob);
+                    pst2.setInt(2, id);
+                    pst2.executeUpdate();
+                    pst2.close();
+                    // ...
+                    sql = "UPDATE xf_user_authenticate SET scheme_class=? WHERE " + columnID + "=?;";
+                    pst2 = con.prepareStatement(sql);
+                    pst2.setString(1, "XenForo_Authentication_Core12");
+                    pst2.setInt(2, id);
+                    pst2.executeUpdate();
+                    pst2.close();
+                }
+                rs.close();
+                pst.close();
+            }
             return true;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -549,7 +610,24 @@ public class MySQL implements DataSource {
     public synchronized boolean removeAuth(String user) {
         user = user.toLowerCase();
         try (Connection con = getConnection()) {
-            PreparedStatement pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
+            String sql;
+            PreparedStatement pst;
+            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                sql = "SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;";
+                pst = con.prepareStatement(sql);
+                pst.setString(1, user);
+                ResultSet rs = pst.executeQuery();
+                if (rs.next()) {
+                    int id = rs.getInt(columnID);
+                    sql = "DELETE FROM xf_user_authenticate WHERE " + columnID + "=" + id;
+                    Statement st = con.createStatement();
+                    st.executeUpdate(sql);
+                    st.close();
+                }
+                rs.close();
+                pst.close();
+            }
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
             pst.setString(1, user);
             pst.executeUpdate();
             return true;
@@ -835,6 +913,18 @@ public class MySQL implements DataSource {
                     .groupId(group)
                     .build();
 
+                if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                    int id = rs.getInt(columnID);
+                    pst.setInt(1, id);
+                    ResultSet rs2 = pst.executeQuery();
+                    if (rs2.next()) {
+                        Blob blob = rs2.getBlob("data");
+                        byte[] bytes = blob.getBytes(1, (int) blob.length());
+                        // TODO #137: Need to pass the hash and the salt here
+                        // pAuth.setPassword(new String(bytes));
+                    }
+                    rs2.close();
+                }
                 auths.add(pAuth);
             }
             pst.close();
@@ -871,6 +961,18 @@ public class MySQL implements DataSource {
                     .groupId(group)
                     .build();
 
+                if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                    int id = rs.getInt(columnID);
+                    pst.setInt(1, id);
+                    ResultSet rs2 = pst.executeQuery();
+                    if (rs2.next()) {
+                        Blob blob = rs2.getBlob("data");
+                        byte[] bytes = blob.getBytes(1, (int) blob.length());
+                        // TODO #137: Need to pass the hash and the salt here
+                        // pAuth.setHash(new String(bytes));
+                    }
+                    rs2.close();
+                }
                 auths.add(pAuth);
             }
         } catch (Exception ex) {
