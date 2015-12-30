@@ -7,8 +7,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -931,9 +929,4 @@ public class FlatFile implements DataSource {
     public List<PlayerAuth> getLoggedPlayers() {
         return new ArrayList<>();
     }
-
-	@Override
-	public Connection getConnection() throws SQLException {
-		return null;
-	}
 }

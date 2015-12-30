@@ -10,8 +10,6 @@ import com.google.common.cache.RemovalNotification;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -480,9 +478,4 @@ public class CacheDataSource implements DataSource {
     public List<PlayerAuth> getLoggedPlayers() {
         return new ArrayList<>(PlayerCache.getInstance().getCache().values());
     }
-
-	@Override
-	public Connection getConnection() throws SQLException {
-		return source.getConnection();
-	}
 }

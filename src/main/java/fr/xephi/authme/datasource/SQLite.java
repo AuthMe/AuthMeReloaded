@@ -2,8 +2,6 @@ package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.queries.Query;
-import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 
 import java.sql.*;
@@ -74,23 +72,6 @@ public class SQLite implements DataSource {
         ConsoleLogger.info("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
 
-    }
-
-    private synchronized void reconnect() throws ClassNotFoundException, SQLException {
-        Class.forName("org.sqlite.JDBC");
-        this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
-    }
-
-    @Override
-    public synchronized Connection getConnection() throws SQLException
-    {
-    	if (this.con.isClosed())
-			try {
-				reconnect();
-			} catch (ClassNotFoundException e) {
-				ConsoleLogger.writeStackTrace(e);
-			}
-    	return this.con;
     }
 
     /**
@@ -164,12 +145,7 @@ public class SQLite implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            pst = getConnection().prepareStatement(new Query(this)
-            		.select("*")
-            		.from(tableName)
-            		.addWhere("LOWER(" + columnName + ")=LOWER(?)", null)
-            		.build()
-            		.getQuery());
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
             return rs.next();
@@ -194,12 +170,7 @@ public class SQLite implements DataSource {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            pst = getConnection().prepareStatement(new Query(this)
-            		.select("*")
-            		.from(tableName)
-            		.addWhere("LOWER(" + columnName + ")=LOWER(?)", null)
-            		.build()
-            		.getQuery());
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next()) {
@@ -271,14 +242,8 @@ public class SQLite implements DataSource {
      */
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
+        PreparedStatement pst = null;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-         			.update()
-         			.from(tableName)
-         			.addUpdateSet(columnPassword + "=?")
-         			.addWhere(columnName + "=?", null)
-         			.build()
-         			.getQuery());
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getHash());
             pst.setString(2, auth.getNickname());
@@ -286,6 +251,8 @@ public class SQLite implements DataSource {
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
+        } finally {
+            close(pst);
         }
         return true;
     }
@@ -295,32 +262,25 @@ public class SQLite implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
      */
     @Override
-    public synchronized boolean updateSession(PlayerAuth auth) {
+    public boolean updateSession(PlayerAuth auth) {
+        PreparedStatement pst = null;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-        			.update()
-        			.from(tableName)
-        			.addUpdateSet(columnIp + "=?")
-        			.addUpdateSet(columnLastLogin + "=?")
-        			.addUpdateSet(columnRealName + "=?")
-        			.addWhere(columnName + "=?", null)
-        			.build()
-        			.getQuery());
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=?, " + columnRealName + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
             pst.setString(3, auth.getRealName());
             pst.setString(4, auth.getNickname());
             pst.executeUpdate();
-            return true;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            return false;
+        } finally {
+            close(pst);
         }
-        return false;
+        return true;
     }
 
     /**
@@ -328,27 +288,22 @@ public class SQLite implements DataSource {
      *
      * @param until long
      *
-     * @return int
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
+     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
      */
     @Override
-    public synchronized int purgeDatabase(long until) {
-        int result = 0;
+    public int purgeDatabase(long until) {
+        PreparedStatement pst = null;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-        			.delete()
-        			.from(tableName)
-        			.addWhere(columnLastLogin + "<?", null)
-        			.build()
-        			.getQuery());
+
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
             pst.setLong(1, until);
-            result = pst.executeUpdate();
+            return pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return 0;
+        } finally {
+            close(pst);
         }
-        return result;
     }
 
     /**
@@ -356,37 +311,28 @@ public class SQLite implements DataSource {
      *
      * @param until long
      *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
      */
     @Override
-    public synchronized List<String> autoPurgeDatabase(long until) {
+    public List<String> autoPurgeDatabase(long until) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         List<String> list = new ArrayList<>();
         try {
-        	PreparedStatement st = getConnection().prepareStatement(new Query(this)
-        			.select(columnName)
-        			.from(tableName)
-        			.addWhere(columnLastLogin + "<" + until, null)
-        			.build()
-        			.getQuery());
-            ResultSet rs = st.executeQuery();
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
+            pst.setLong(1, until);
+            rs = pst.executeQuery();
             while (rs.next()) {
                 list.add(rs.getString(columnName));
             }
-            rs.close();
-            st = getConnection().prepareStatement(new Query(this)
-            		.delete()
-            		.from(tableName)
-            		.addWhere(columnLastLogin + "<" + until, null)
-            		.build()
-            		.getQuery());
-            st.executeUpdate();
+            return list;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return new ArrayList<>();
+        } finally {
+            close(rs);
+            close(pst);
         }
-        return list;
     }
 
     /**
@@ -417,35 +363,26 @@ public class SQLite implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
      */
     @Override
-    public synchronized boolean updateQuitLoc(PlayerAuth auth) {
+    public boolean updateQuitLoc(PlayerAuth auth) {
+        PreparedStatement pst = null;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-        			.update()
-        			.from(tableName)
-        			.addUpdateSet(lastlocX + "=?")
-        			.addUpdateSet(lastlocY + "=?")
-        			.addUpdateSet(lastlocZ + "=?")
-        			.addUpdateSet(lastlocWorld + "=?")
-        			.addWhere(columnName + "=?", null)
-        			.build()
-        			.getQuery());
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + "=?, " + lastlocY + "=?, " + lastlocZ + "=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
             pst.setDouble(3, auth.getQuitLocZ());
             pst.setString(4, auth.getWorld());
             pst.setString(5, auth.getNickname());
             pst.executeUpdate();
-            return true;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return false;
+        } finally {
+            close(pst);
         }
-        return false;
+        return true;
     }
 
     /**
@@ -453,31 +390,28 @@ public class SQLite implements DataSource {
      *
      * @param ip String
      *
-     * @return int
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getIps(String)
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
      */
     @Override
-    public synchronized int getIps(String ip) {
+    public int getIps(String ip) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         int countIp = 0;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-        			.select("COUNT(*)")
-        			.from(tableName)
-        			.addWhere(columnIp + "=?", null)
-        			.build()
-        			.getQuery());
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
-            ResultSet rs = pst.executeQuery();
+            rs = pst.executeQuery();
             while (rs.next()) {
-                countIp = rs.getInt(1);
+                countIp++;
             }
-            rs.close();
+            return countIp;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return 0;
+        } finally {
+            close(rs);
+            close(pst);
         }
-        return countIp;
     }
 
     /**
@@ -485,29 +419,23 @@ public class SQLite implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
      */
     @Override
-    public synchronized boolean updateEmail(PlayerAuth auth) {
+    public boolean updateEmail(PlayerAuth auth) {
+        PreparedStatement pst = null;
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-            		.update()
-            		.from(tableName)
-            		.addUpdateSet(columnEmail + "=?")
-            		.addWhere(columnName + "=?", null)
-            		.build()
-            		.getQuery());
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnEmail + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
-            return true;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return false;
+        } finally {
+            close(pst);
         }
-        return false;
+        return true;
     }
 
     /**
@@ -515,32 +443,26 @@ public class SQLite implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
+     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
      */
     @Override
-    public synchronized boolean updateSalt(PlayerAuth auth) {
+    public boolean updateSalt(PlayerAuth auth) {
         if (columnSalt.isEmpty()) {
             return false;
         }
+        PreparedStatement pst = null;
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-            		.update()
-            		.from(tableName)
-            		.addUpdateSet(columnSalt + "=?")
-            		.addWhere(columnName + "=?", null)
-            		.build()
-            		.getQuery());
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + "=? WHERE " + columnName + "=?;");
             pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
-            return true;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return false;
+        } finally {
+            close(pst);
         }
-        return false;
+        return true;
     }
 
     /**
@@ -601,30 +523,30 @@ public class SQLite implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
      */
     @Override
-    public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
-        List<String> result = new ArrayList<>();
-        try (Connection con = getConnection()) {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-            		.select(columnName)
-            		.from(tableName)
-            		.addWhere(columnIp + "='" + auth.getIp() + "'", null)
-            		.build()
-            		.getQuery());
-            ResultSet rs = pst.executeQuery();
+    public List<String> getAllAuthsByName(PlayerAuth auth) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        List<String> countIp = new ArrayList<>();
+        try {
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
+            pst.setString(1, auth.getIp());
+            rs = pst.executeQuery();
             while (rs.next()) {
-                result.add(rs.getString(columnName));
+                countIp.add(rs.getString(columnName));
             }
-            rs.close();
+            return countIp;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return new ArrayList<>();
+        } catch (NullPointerException npe) {
+            return new ArrayList<>();
+        } finally {
+            close(rs);
+            close(pst);
         }
-        return result;
     }
 
     /**
@@ -632,30 +554,30 @@ public class SQLite implements DataSource {
      *
      * @param ip String
      *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
      */
     @Override
-    public synchronized List<String> getAllAuthsByIp(String ip) {
-        List<String> result = new ArrayList<>();
+    public List<String> getAllAuthsByIp(String ip) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        List<String> countIp = new ArrayList<>();
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-            		.select(columnName)
-            		.from(tableName)
-            		.addWhere(columnIp + "='" + ip + "'", null)
-            		.build()
-            		.getQuery());
-            ResultSet rs = pst.executeQuery();
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
+            pst.setString(1, ip);
+            rs = pst.executeQuery();
             while (rs.next()) {
-                result.add(rs.getString(columnName));
+                countIp.add(rs.getString(columnName));
             }
-            rs.close();
+            return countIp;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return new ArrayList<>();
+        } catch (NullPointerException npe) {
+            return new ArrayList<>();
+        } finally {
+            close(rs);
+            close(pst);
         }
-        return result;
     }
 
     /**
@@ -663,30 +585,30 @@ public class SQLite implements DataSource {
      *
      * @param email String
      *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
+     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
      */
     @Override
-    public synchronized List<String> getAllAuthsByEmail(String email){
+    public List<String> getAllAuthsByEmail(String email) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         List<String> countEmail = new ArrayList<>();
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-            		.select(columnName)
-            		.from(tableName)
-            		.addWhere(columnEmail + "='" + email + "'", null)
-            		.build()
-            		.getQuery());
-            ResultSet rs = pst.executeQuery();
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
+            pst.setString(1, email);
+            rs = pst.executeQuery();
             while (rs.next()) {
                 countEmail.add(rs.getString(columnName));
             }
-            rs.close();
+            return countEmail;
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return new ArrayList<>();
+        } catch (NullPointerException npe) {
+            return new ArrayList<>();
+        } finally {
+            close(rs);
+            close(pst);
         }
-        return countEmail;
     }
 
     /**
@@ -694,24 +616,21 @@ public class SQLite implements DataSource {
      *
      * @param banned List<String>
      *
-     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List)
+     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
      */
     @Override
-    public synchronized void purgeBanned(List<String> banned) {
+    public void purgeBanned(List<String> banned) {
+        PreparedStatement pst = null;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-        			.delete()
-        			.from(tableName)
-        			.addWhere(columnName + "=?", null)
-        			.build()
-        			.getQuery());
             for (String name : banned) {
+                pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, name);
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+        } finally {
+            close(pst);
         }
     }
 
@@ -734,21 +653,22 @@ public class SQLite implements DataSource {
      */
     @Override
     public boolean isLogged(String user) {
-        boolean isLogged = false;
+        PreparedStatement pst = null;
+        ResultSet rs = null;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-        			.select(columnLogged)
-        			.from(tableName)
-        			.addWhere(columnName + "='" + user + "'", null)
-        			.build()
-        			.getQuery());
-            ResultSet rs = pst.executeQuery();
-            isLogged = rs.next() && (rs.getInt(columnLogged) == 1);
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=?;");
+            pst.setString(1, user);
+            rs = pst.executeQuery();
+            if (rs.next())
+                return (rs.getInt(columnLogged) == 1);
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return false;
+        } finally {
+            close(rs);
+            close(pst);
         }
-        return isLogged;
+        return false;
     }
 
     /**
@@ -760,18 +680,16 @@ public class SQLite implements DataSource {
      */
     @Override
     public void setLogged(String user) {
+        PreparedStatement pst = null;
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-            		.update()
-            		.from(tableName)
-            		.addUpdateSet(columnLogged + "='1'")
-            		.addWhere(columnName + "='" + user.toLowerCase() + "'", null)
-            		.build()
-            		.getQuery());
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
+            pst.setInt(1, 1);
+            pst.setString(2, user);
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+        } finally {
+            close(pst);
         }
     }
 
@@ -784,19 +702,18 @@ public class SQLite implements DataSource {
      */
     @Override
     public void setUnlogged(String user) {
-        try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-            		.update()
-            		.from(tableName)
-            		.addUpdateSet(columnLogged + "='0'")
-            		.addWhere(columnName + "='" + user.toLowerCase() + "'", null)
-            		.build()
-            		.getQuery());
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
-        }
+        PreparedStatement pst = null;
+        if (user != null)
+            try {
+                pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE LOWER(" + columnName + ")=?;");
+                pst.setInt(1, 0);
+                pst.setString(2, user);
+                pst.executeUpdate();
+            } catch (SQLException ex) {
+                ConsoleLogger.showError(ex.getMessage());
+            } finally {
+                close(pst);
+            }
     }
 
     /**
@@ -806,45 +723,40 @@ public class SQLite implements DataSource {
      */
     @Override
     public void purgeLogged() {
+        PreparedStatement pst = null;
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
-            		.update()
-            		.from(tableName)
-            		.addUpdateSet(columnLogged + "='0'")
-            		.addWhere(columnLogged + "='1'", null)
-            		.build()
-            		.getQuery());
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnLogged + "=? WHERE " + columnLogged + "=?;");
+            pst.setInt(1, 0);
+            pst.setInt(2, 1);
             pst.executeUpdate();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+        } finally {
+            close(pst);
         }
     }
 
     /**
      * Method getAccountsRegistered.
      *
-     * @return int
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
+     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
      */
     @Override
     public int getAccountsRegistered() {
         int result = 0;
+        PreparedStatement pst = null;
+        ResultSet rs;
         try {
-        	PreparedStatement st = getConnection().prepareStatement(new Query(this)
-        			.select("COUNT(*)")
-        			.from(tableName)
-        			.build()
-        			.getQuery());
-            ResultSet rs = st.executeQuery();
-            if (rs.next()) {
+            pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
+            rs = pst.executeQuery();
+            if (rs != null && rs.next()) {
                 result = rs.getInt(1);
             }
-            rs.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return result;
+        } finally {
+            close(pst);
         }
         return result;
     }
@@ -859,63 +771,50 @@ public class SQLite implements DataSource {
      */
     @Override
     public void updateName(String oldOne, String newOne) {
+        PreparedStatement pst = null;
         try {
-            PreparedStatement pst =
-            		getConnection().prepareStatement(new Query(this)
-            		.update()
-            		.from(tableName)
-            		.addUpdateSet(columnName + "='" + newOne + "'")
-            		.addWhere(columnName + "='" + oldOne + "'", null)
-            		.build()
-            		.getQuery());
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE " + columnName + "=?;");
+            pst.setString(1, newOne);
+            pst.setString(2, oldOne);
             pst.executeUpdate();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+        } finally {
+            close(pst);
         }
     }
 
     /**
      * Method getAllAuths.
      *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
+     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
      */
     @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
+        PreparedStatement pst = null;
+        ResultSet rs;
         try {
-        	PreparedStatement st = getConnection().prepareStatement(new Query(this)
-            		.select("*")
-            		.from(tableName)
-            		.build()
-            		.getQuery());
-            ResultSet rs = st
-            		.executeQuery();
+            pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
+            rs = pst.executeQuery();
             while (rs.next()) {
-                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : "";
-                int group = !salt.isEmpty() && !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
-                PlayerAuth pAuth = PlayerAuth.builder()
-                    .name(rs.getString(columnName))
-                    .realName(rs.getString(columnRealName))
-                    .hash(rs.getString(columnPassword))
-                    .lastLogin(rs.getLong(columnLastLogin))
-                    .ip(rs.getString(columnIp))
-                    .locWorld(rs.getString(lastlocWorld))
-                    .locX(rs.getDouble(lastlocX))
-                    .locY(rs.getDouble(lastlocY))
-                    .locZ(rs.getDouble(lastlocZ))
-                    .email(rs.getString(columnEmail))
-                    .salt(salt)
-                    .groupId(group)
-                    .build();
+                PlayerAuth pAuth;
+                if (rs.getString(columnIp).isEmpty()) {
+                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "127.0.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                } else {
+                    if (!columnSalt.isEmpty()) {
+                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                    } else {
+                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
+                    }
+                }
                 auths.add(pAuth);
             }
-            rs.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            return auths;
+        } finally {
+            close(pst);
         }
         return auths;
     }

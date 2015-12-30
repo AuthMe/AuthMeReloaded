@@ -2,8 +2,6 @@ package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -216,8 +214,6 @@ public interface DataSource {
      * @return List<PlayerAuth>
      */
     List<PlayerAuth> getLoggedPlayers();
-
-    Connection getConnection() throws SQLException;
 
     enum DataSourceType {
         MYSQL,
