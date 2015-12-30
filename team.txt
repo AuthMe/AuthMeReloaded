@@ -8,9 +8,6 @@ TimVisee - Developer
 games647 - Developer
 Gabriele C. (sgdc3) - Project Manager, Contributor
 
-AuthMeBridge staff:
-CryLegend - Main developer, We need to contact him!
-
 Retired staff:
 Maxetto - Ticket Manager, IT translator
 darkwarriors (d4rkwarriors) - Original AuthMeReloaded Author (Inactive)
