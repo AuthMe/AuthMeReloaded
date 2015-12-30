@@ -23,8 +23,7 @@ public class AuthMeTabCompletePacketAdapter extends PacketAdapter {
       if (event.getPacketType() == PacketType.Play.Client.TAB_COMPLETE) {
         try
         {
-          String message = ((String)event.getPacket().getSpecificModifier(String.class).read(0)).toLowerCase();
-          if ((message.startsWith("")) && (!message.contains("  ")) && !PlayerCache.getInstance().isAuthenticated(event.getPlayer().getName().toLowerCase())) {
+          if (!PlayerCache.getInstance().isAuthenticated(event.getPlayer().getName().toLowerCase())) {
             event.setCancelled(true);
           }
         }
