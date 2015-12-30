@@ -1,12 +1,7 @@
 package fr.xephi.authme.process.quit;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.settings.Settings;
-
 import org.bukkit.entity.Player;
-
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 /**
  */
@@ -33,15 +28,6 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
         this.needToChange = needToChange;
     }
 
-    protected void sendBungeeMessage() {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Forward");
-        out.writeUTF("ALL");
-        out.writeUTF("AuthMe");
-        out.writeUTF("logout;" + player.getName().toLowerCase());
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
-    }
-
     /**
      * Method run.
      *
@@ -56,7 +42,5 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
             player.getVehicle().eject();
         } catch (Exception ignored) {
         }
-        if (!Settings.isSessionsEnabled && Settings.bungee)
-        	sendBungeeMessage();
     }
 }
