@@ -1,6 +1,6 @@
 package fr.xephi.authme.cache.auth;
 
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.Location;
 
 import static com.google.common.base.Objects.firstNonNull;
@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class PlayerAuth {
 
     private String nickname;
-    private EncryptedPassword password;
+    private HashedPassword password;
     private String ip;
     private long lastLogin;
     private double x;
@@ -39,7 +39,7 @@ public class PlayerAuth {
      * @param realName  String
      */
     public PlayerAuth(String nickname, String ip, long lastLogin, String realName) {
-        this(nickname, new EncryptedPassword(""), -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
+        this(nickname, new HashedPassword(""), -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
     }
 
     /**
@@ -53,7 +53,7 @@ public class PlayerAuth {
      * @param realName String
      */
     public PlayerAuth(String nickname, double x, double y, double z, String world, String realName) {
-        this(nickname, new EncryptedPassword(""), -1, "127.0.0.1", System.currentTimeMillis(), x, y, z, world,
+        this(nickname, new HashedPassword(""), -1, "127.0.0.1", System.currentTimeMillis(), x, y, z, world,
             "your@email.com", realName);
     }
 
@@ -67,7 +67,7 @@ public class PlayerAuth {
      * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String realName) {
-        this(nickname, new EncryptedPassword(hash), -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
+        this(nickname, new HashedPassword(hash), -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
     }
 
     /**
@@ -81,7 +81,7 @@ public class PlayerAuth {
      * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String email, String realName) {
-        this(nickname, new EncryptedPassword(hash), -1, ip, lastLogin, 0, 0, 0, "world", email, realName);
+        this(nickname, new HashedPassword(hash), -1, ip, lastLogin, 0, 0, 0, "world", email, realName);
     }
 
     /**
@@ -95,7 +95,7 @@ public class PlayerAuth {
      * @param realName  String
      */
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, String realName) {
-        this(nickname, new EncryptedPassword(hash, salt), -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
+        this(nickname, new HashedPassword(hash, salt), -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
     }
 
     /**
@@ -114,7 +114,7 @@ public class PlayerAuth {
      */
     public PlayerAuth(String nickname, String hash, String ip, long lastLogin, double x, double y, double z,
                       String world, String email, String realName) {
-        this(nickname, new EncryptedPassword(hash), -1, ip, lastLogin, x, y, z, world, email, realName);
+        this(nickname, new HashedPassword(hash), -1, ip, lastLogin, x, y, z, world, email, realName);
     }
 
     /**
@@ -134,7 +134,7 @@ public class PlayerAuth {
      */
     public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, double x, double y,
                       double z, String world, String email, String realName) {
-        this(nickname, new EncryptedPassword(hash, salt), -1, ip, lastLogin,
+        this(nickname, new HashedPassword(hash, salt), -1, ip, lastLogin,
              x, y, z, world, email, realName);
     }
 
@@ -151,7 +151,7 @@ public class PlayerAuth {
      */
     public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip,
                       long lastLogin, String realName) {
-        this(nickname, new EncryptedPassword(hash, salt), groupId, ip, lastLogin,
+        this(nickname, new HashedPassword(hash, salt), groupId, ip, lastLogin,
              0, 0, 0, "world", "your@email.com", realName);
     }
 
@@ -170,7 +170,7 @@ public class PlayerAuth {
      * @param email     String
      * @param realName  String
      */
-    public PlayerAuth(String nickname, EncryptedPassword password, int groupId, String ip, long lastLogin,
+    public PlayerAuth(String nickname, HashedPassword password, int groupId, String ip, long lastLogin,
                       double x, double y, double z, String world, String email, String realName) {
         this.nickname = nickname.toLowerCase();
         this.password = password;
@@ -280,11 +280,11 @@ public class PlayerAuth {
         this.email = email;
     }
 
-    public EncryptedPassword getPassword() {
+    public HashedPassword getPassword() {
         return password;
     }
 
-    public void setPassword(EncryptedPassword password) {
+    public void setPassword(HashedPassword password) {
         this.password = password;
     }
 
@@ -347,7 +347,7 @@ public class PlayerAuth {
         this.realName = args[1];
         this.ip = args[2];
         this.email = args[3];
-        this.password = new EncryptedPassword(args[4], args[5]);
+        this.password = new HashedPassword(args[4], args[5]);
         this.groupId = Integer.parseInt(args[6]);
         this.lastLogin = Long.parseLong(args[7]);
         this.world = args[8];
@@ -363,7 +363,7 @@ public class PlayerAuth {
     public static final class Builder {
         private String name;
         private String realName;
-        private EncryptedPassword password;
+        private HashedPassword password;
         private String ip;
         private String world;
         private String email;
@@ -376,7 +376,7 @@ public class PlayerAuth {
         public PlayerAuth build() {
             return new PlayerAuth(
                 checkNotNull(name),
-                firstNonNull(password, new EncryptedPassword("")),
+                firstNonNull(password, new HashedPassword("")),
                 groupId,
                 firstNonNull(ip, "127.0.0.1"),
                 lastLogin,
@@ -397,13 +397,13 @@ public class PlayerAuth {
             return this;
         }
 
-        public Builder password(EncryptedPassword password) {
+        public Builder password(HashedPassword password) {
             this.password = password;
             return this;
         }
 
         public Builder password(String hash, String salt) {
-            return password(new EncryptedPassword(hash, salt));
+            return password(new HashedPassword(hash, salt));
         }
 
         public Builder ip(String ip) {

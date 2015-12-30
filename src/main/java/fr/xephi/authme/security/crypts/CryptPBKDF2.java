@@ -20,8 +20,8 @@ public class CryptPBKDF2 extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String unusedName) {
-        String[] line = encryptedPassword.getHash().split("\\$");
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String unusedName) {
+        String[] line = hashedPassword.getHash().split("\\$");
         String salt = line[2];
         String derivedKey = line[3];
         PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), 10000, derivedKey.getBytes());

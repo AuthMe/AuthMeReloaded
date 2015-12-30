@@ -10,8 +10,8 @@ public class MD5VB extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name) {
-        String hash = encryptedPassword.getHash();
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
+        String hash = hashedPassword.getHash();
         String[] line = hash.split("\\$");
         return line.length == 4 && hash.equals(computeHash(password, line[2], name));
     }

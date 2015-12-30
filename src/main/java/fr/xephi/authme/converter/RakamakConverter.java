@@ -6,7 +6,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 
@@ -42,7 +42,7 @@ public class RakamakConverter implements Converter {
         File source = new File(Settings.PLUGIN_FOLDER, fileName);
         File ipfiles = new File(Settings.PLUGIN_FOLDER, ipFileName);
         HashMap<String, String> playerIP = new HashMap<>();
-        HashMap<String, EncryptedPassword> playerPSW = new HashMap<>();
+        HashMap<String, HashedPassword> playerPSW = new HashMap<>();
         try {
             BufferedReader users;
             BufferedReader ipFile;
@@ -64,15 +64,15 @@ public class RakamakConverter implements Converter {
             while ((line = users.readLine()) != null) {
                 if (line.contains("=")) {
                     String[] arguments = line.split("=");
-                    EncryptedPassword encryptedPassword = passwordSecurity.computeHash(hash, arguments[1], arguments[0]);
-                    playerPSW.put(arguments[0], encryptedPassword);
+                    HashedPassword hashedPassword = passwordSecurity.computeHash(hash, arguments[1], arguments[0]);
+                    playerPSW.put(arguments[0], hashedPassword);
 
                 }
             }
             users.close();
-            for (Entry<String, EncryptedPassword> m : playerPSW.entrySet()) {
+            for (Entry<String, HashedPassword> m : playerPSW.entrySet()) {
                 String playerName = m.getKey();
-                EncryptedPassword psw = playerPSW.get(playerName);
+                HashedPassword psw = playerPSW.get(playerName);
                 String ip = useIP ? playerIP.get(playerName) : "127.0.0.1";
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerName)

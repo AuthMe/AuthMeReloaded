@@ -12,8 +12,8 @@ public class WBB4 extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String playerName) {
-        return BCRYPT.checkpw(password, encryptedPassword.getHash(), 2);
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
+        return BCRYPT.checkpw(password, hashedPassword.getHash(), 2);
     }
 
     @Override

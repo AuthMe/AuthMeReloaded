@@ -2,7 +2,7 @@ package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 
@@ -207,7 +207,7 @@ public class SQLite implements DataSource {
     public synchronized boolean saveAuth(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            EncryptedPassword password = auth.getPassword();
+            HashedPassword password = auth.getPassword();
             if (columnSalt.isEmpty()) {
                 if (!StringUtils.isEmpty(auth.getPassword().getSalt())) {
                     ConsoleLogger.showError("Warning! Detected hashed password with separate salt but the salt column "
@@ -253,7 +253,7 @@ public class SQLite implements DataSource {
     public synchronized boolean updatePassword(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            EncryptedPassword password = auth.getPassword();
+            HashedPassword password = auth.getPassword();
             boolean useSalt = !columnSalt.isEmpty();
             String sql = "UPDATE " + tableName + " SET " + columnPassword + " = ?"
                 + (useSalt ? ", " + columnSalt + " = ?" : "")

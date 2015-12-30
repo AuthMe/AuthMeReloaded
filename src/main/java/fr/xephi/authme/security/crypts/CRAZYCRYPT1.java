@@ -28,11 +28,11 @@ public class CRAZYCRYPT1 extends UsernameSaltMethod {
     }
 
     @Override
-    public EncryptedPassword computeHash(String password, String name) {
+    public HashedPassword computeHash(String password, String name) {
         final String text = "ÜÄaeut//&/=I " + password + "7421€547" + name + "__+IÄIH§%NK " + password;
         final MessageDigest md = HashUtils.getDigest(MessageDigestAlgorithm.SHA512);
         md.update(text.getBytes(charset), 0, text.length());
-        return new EncryptedPassword(byteArrayToHexString(md.digest()));
+        return new HashedPassword(byteArrayToHexString(md.digest()));
     }
 
 }

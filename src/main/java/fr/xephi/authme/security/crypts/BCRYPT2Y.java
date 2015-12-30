@@ -15,7 +15,7 @@ public class BCRYPT2Y extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String password, EncryptedPassword encrypted, String unusedName) {
+    public boolean comparePassword(String password, HashedPassword encrypted, String unusedName) {
         String hash = encrypted.getHash();
         if (hash.length() != 60) {
             return false;

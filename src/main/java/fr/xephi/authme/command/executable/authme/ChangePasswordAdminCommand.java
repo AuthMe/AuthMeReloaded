@@ -7,7 +7,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 
@@ -67,9 +67,9 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
                     return;
                 }
 
-                EncryptedPassword encryptedPassword = commandService.getPasswordSecurity()
+                HashedPassword hashedPassword = commandService.getPasswordSecurity()
                     .computeHash(playerPass, playerNameLowerCase);
-                auth.setPassword(encryptedPassword);
+                auth.setPassword(hashedPassword);
 
                 if (!dataSource.updatePassword(auth)) {
                     commandService.send(sender, MessageKey.ERROR);

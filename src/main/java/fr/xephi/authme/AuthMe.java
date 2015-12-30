@@ -43,7 +43,7 @@ import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
@@ -596,9 +596,9 @@ public class AuthMe extends JavaPlugin {
         	ConsoleLogger.showError("Your HashAlgorithm has been detected as plaintext and is now deprecated; " +
                 "it will be changed and hashed now to the AuthMe default hashing method");
         	for (PlayerAuth auth : database.getAllAuths()) {
-                EncryptedPassword encryptedPassword = passwordSecurity.computeHash(
+                HashedPassword hashedPassword = passwordSecurity.computeHash(
                     HashAlgorithm.SHA256, auth.getPassword().getHash(), auth.getNickname());
-                auth.setPassword(encryptedPassword);
+                auth.setPassword(hashedPassword);
         		database.updatePassword(auth);
         	}
         	Settings.setValue("settings.security.passwordHash", "SHA256");

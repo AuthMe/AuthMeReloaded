@@ -12,14 +12,14 @@ public abstract class SeparateSaltMethod implements EncryptionMethod {
     public abstract String generateSalt();
 
     @Override
-    public EncryptedPassword computeHash(String password, String name) {
+    public HashedPassword computeHash(String password, String name) {
         String salt = generateSalt();
-        return new EncryptedPassword(computeHash(password, salt, name), salt);
+        return new HashedPassword(computeHash(password, salt, name), salt);
     }
 
     @Override
-    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name) {
-        return encryptedPassword.getHash().equals(computeHash(password, encryptedPassword.getSalt(), null));
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
+        return hashedPassword.getHash().equals(computeHash(password, hashedPassword.getSalt(), null));
     }
 
     @Override

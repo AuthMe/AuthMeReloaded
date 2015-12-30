@@ -3,7 +3,7 @@ package fr.xephi.authme.security;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import org.bukkit.plugin.PluginManager;
 
@@ -25,11 +25,11 @@ public class PasswordSecurity {
         this.supportOldAlgorithm = supportOldAlgorithm;
     }
 
-    public EncryptedPassword computeHash(String password, String playerName) {
+    public HashedPassword computeHash(String password, String playerName) {
         return computeHash(algorithm, password, playerName);
     }
 
-    public EncryptedPassword computeHash(HashAlgorithm algorithm, String password, String playerName) {
+    public HashedPassword computeHash(HashAlgorithm algorithm, String password, String playerName) {
         String playerLowerCase = playerName.toLowerCase();
         EncryptionMethod method = initializeEncryptionMethod(algorithm, playerLowerCase);
         return method.computeHash(password, playerLowerCase);
@@ -44,18 +44,18 @@ public class PasswordSecurity {
         return false;
     }
 
-    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String playerName) {
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
         EncryptionMethod method = initializeEncryptionMethod(algorithm, playerName);
         // User is not in data source, so the result will invariably be wrong because an encryption
         // method with hasSeparateSalt() == true NEEDS the salt to evaluate the password
-        String salt = encryptedPassword.getSalt();
+        String salt = hashedPassword.getSalt();
         if (method.hasSeparateSalt() && salt == null) {
             return false;
         }
 
         String playerLowerCase = playerName.toLowerCase();
-        return method.comparePassword(password, encryptedPassword, playerLowerCase)
-            || supportOldAlgorithm && compareWithAllEncryptionMethods(password, encryptedPassword, playerLowerCase);
+        return method.comparePassword(password, hashedPassword, playerLowerCase)
+            || supportOldAlgorithm && compareWithAllEncryptionMethods(password, hashedPassword, playerLowerCase);
     }
 
     /**
@@ -64,16 +64,16 @@ public class PasswordSecurity {
      * will be hashed with the new encryption method and persisted.
      *
      * @param password          The clear-text password to check
-     * @param encryptedPassword The encrypted password to test the clear-text password against
+     * @param hashedPassword The encrypted password to test the clear-text password against
      * @param playerName        The name of the player
      * @return True if the
      */
-    private boolean compareWithAllEncryptionMethods(String password, EncryptedPassword encryptedPassword,
+    private boolean compareWithAllEncryptionMethods(String password, HashedPassword hashedPassword,
                                                     String playerName) {
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
                 EncryptionMethod method = initializeEncryptionMethodWithoutEvent(algorithm);
-                if (method != null && method.comparePassword(password, encryptedPassword, playerName)) {
+                if (method != null && method.comparePassword(password, hashedPassword, playerName)) {
                     hashPasswordForNewAlgorithm(password, playerName);
                     return true;
                 }
@@ -118,9 +118,9 @@ public class PasswordSecurity {
     private void hashPasswordForNewAlgorithm(String password, String playerName) {
         PlayerAuth auth = dataSource.getAuth(playerName);
         if (auth != null) {
-            EncryptedPassword encryptedPassword = initializeEncryptionMethod(algorithm, playerName)
+            HashedPassword hashedPassword = initializeEncryptionMethod(algorithm, playerName)
                 .computeHash(password, playerName);
-            auth.setPassword(encryptedPassword);
+            auth.setPassword(hashedPassword);
             dataSource.updatePassword(auth);
         }
     }

@@ -3,7 +3,7 @@ package fr.xephi.authme.security;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.JOOMLA;
 import fr.xephi.authme.security.crypts.PHPBB;
@@ -64,7 +64,7 @@ public class PasswordSecurityTest {
     @Test
     public void shouldReturnPasswordMatch() {
         // given
-        EncryptedPassword password = new EncryptedPassword("$TEST$10$SOME_HASH", null);
+        HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "Tester";
         // Calls to EncryptionMethod are always with the lower-case version of the name
         String playerLowerCase = playerName.toLowerCase();
@@ -89,7 +89,7 @@ public class PasswordSecurityTest {
     @Test
     public void shouldReturnPasswordMismatch() {
         // given
-        EncryptedPassword password = new EncryptedPassword("$TEST$10$SOME_HASH", null);
+        HashedPassword password = new HashedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "My_PLayer";
         String playerLowerCase = playerName.toLowerCase();
         String clearTextPass = "passw0Rd1";
@@ -126,24 +126,24 @@ public class PasswordSecurityTest {
         assertThat(result, equalTo(false));
         verify(dataSource).getAuth(playerName);
         verify(pluginManager, never()).callEvent(any(Event.class));
-        verify(method, never()).comparePassword(anyString(), any(EncryptedPassword.class), anyString());
+        verify(method, never()).comparePassword(anyString(), any(HashedPassword.class), anyString());
     }
 
     @Test
     public void shouldTryOtherMethodsForFailedPassword() {
         // given
         // BCRYPT hash for "Test"
-        EncryptedPassword password =
-            new EncryptedPassword("$2y$10$2e6d2193f43501c926e25elvWlPmWczmrfrnbZV0dUZGITjYjnkkW");
+        HashedPassword password =
+            new HashedPassword("$2y$10$2e6d2193f43501c926e25elvWlPmWczmrfrnbZV0dUZGITjYjnkkW");
         String playerName = "somePlayer";
         String playerLowerCase = playerName.toLowerCase();
         String clearTextPass = "Test";
         // MD5 hash for "Test"
-        EncryptedPassword newPassword = new EncryptedPassword("0cbc6611f5540bd0809a388dc95a615b");
+        HashedPassword newPassword = new HashedPassword("0cbc6611f5540bd0809a388dc95a615b");
 
         PlayerAuth auth = mock(PlayerAuth.class);
         doCallRealMethod().when(auth).getPassword();
-        doCallRealMethod().when(auth).setPassword(any(EncryptedPassword.class));
+        doCallRealMethod().when(auth).setPassword(any(HashedPassword.class));
         auth.setPassword(password);
         given(dataSource.getAuth(argThat(equalToIgnoringCase(playerName)))).willReturn(auth);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
@@ -174,15 +174,15 @@ public class PasswordSecurityTest {
         String password = "MyP@ssword";
         String username = "theUserInTest";
         String usernameLowerCase = username.toLowerCase();
-        EncryptedPassword encryptedPassword = new EncryptedPassword("$T$est#Hash", "__someSalt__");
-        given(method.computeHash(password, usernameLowerCase)).willReturn(encryptedPassword);
+        HashedPassword hashedPassword = new HashedPassword("$T$est#Hash", "__someSalt__");
+        given(method.computeHash(password, usernameLowerCase)).willReturn(hashedPassword);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.JOOMLA, pluginManager, true);
 
         // when
-        EncryptedPassword result = security.computeHash(password, username);
+        HashedPassword result = security.computeHash(password, username);
 
         // then
-        assertThat(result, equalTo(encryptedPassword));
+        assertThat(result, equalTo(hashedPassword));
         ArgumentCaptor<PasswordEncryptionEvent> captor = ArgumentCaptor.forClass(PasswordEncryptionEvent.class);
         verify(pluginManager).callEvent(captor.capture());
         PasswordEncryptionEvent event = captor.getValue();
@@ -195,15 +195,15 @@ public class PasswordSecurityTest {
         // given
         String password = "TopSecretPass#112525";
         String username = "someone12";
-        EncryptedPassword encryptedPassword = new EncryptedPassword("~T!est#Hash", "__someSalt__");
-        given(method.computeHash(password, username)).willReturn(encryptedPassword);
+        HashedPassword hashedPassword = new HashedPassword("~T!est#Hash", "__someSalt__");
+        given(method.computeHash(password, username)).willReturn(hashedPassword);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.JOOMLA, pluginManager, true);
 
         // when
-        EncryptedPassword result = security.computeHash(HashAlgorithm.PHPBB, password, username);
+        HashedPassword result = security.computeHash(HashAlgorithm.PHPBB, password, username);
 
         // then
-        assertThat(result, equalTo(encryptedPassword));
+        assertThat(result, equalTo(hashedPassword));
         ArgumentCaptor<PasswordEncryptionEvent> captor = ArgumentCaptor.forClass(PasswordEncryptionEvent.class);
         verify(pluginManager).callEvent(captor.capture());
         PasswordEncryptionEvent event = captor.getValue();
@@ -216,19 +216,19 @@ public class PasswordSecurityTest {
         // given
         String password = "?topSecretPass\\";
         String username = "someone12";
-        EncryptedPassword encryptedPassword = new EncryptedPassword("~T!est#Hash");
-        given(method.computeHash(password, username)).willReturn(encryptedPassword);
+        HashedPassword hashedPassword = new HashedPassword("~T!est#Hash");
+        given(method.computeHash(password, username)).willReturn(hashedPassword);
         given(method.hasSeparateSalt()).willReturn(true);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.XAUTH, pluginManager, true);
 
         // when
-        boolean result = security.comparePassword(password, encryptedPassword, username);
+        boolean result = security.comparePassword(password, hashedPassword, username);
 
         // then
         assertThat(result, equalTo(false));
         verify(dataSource, never()).getAuth(anyString());
         verify(pluginManager).callEvent(any(PasswordEncryptionEvent.class));
-        verify(method, never()).comparePassword(anyString(), any(EncryptedPassword.class), anyString());
+        verify(method, never()).comparePassword(anyString(), any(HashedPassword.class), anyString());
     }
 
 }

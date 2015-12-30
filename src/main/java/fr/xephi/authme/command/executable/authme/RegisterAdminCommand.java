@@ -5,7 +5,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -57,12 +57,12 @@ public class RegisterAdminCommand implements ExecutableCommand {
                     commandService.send(sender, MessageKey.NAME_ALREADY_REGISTERED);
                     return;
                 }
-                EncryptedPassword encryptedPassword = commandService.getPasswordSecurity()
+                HashedPassword hashedPassword = commandService.getPasswordSecurity()
                     .computeHash(playerPass, playerNameLowerCase);
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerNameLowerCase)
                     .realName(playerName)
-                    .password(encryptedPassword)
+                    .password(hashedPassword)
                     .build();
 
                 if (!commandService.getDataSource().saveAuth(auth)) {

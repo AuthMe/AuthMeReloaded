@@ -144,8 +144,8 @@ public class PHPBB extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name) {
-        return phpbb_check_hash(password, encryptedPassword.getHash());
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
+        return phpbb_check_hash(password, hashedPassword.getHash());
     }
 
     @Override

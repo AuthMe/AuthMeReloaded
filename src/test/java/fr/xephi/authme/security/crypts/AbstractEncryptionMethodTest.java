@@ -35,7 +35,7 @@ public abstract class AbstractEncryptionMethodTest {
     /** The encryption method to test. */
     private EncryptionMethod method;
     /** Map with the hashes against which the entries in GIVEN_PASSWORDS are tested. */
-    private Map<String, EncryptedPassword> hashes;
+    private Map<String, HashedPassword> hashes;
 
     /**
      * Create a new test for the given encryption method.
@@ -45,7 +45,7 @@ public abstract class AbstractEncryptionMethodTest {
      */
     public AbstractEncryptionMethodTest(EncryptionMethod method, String... computedHashes) {
         if (method.hasSeparateSalt()) {
-            throw new UnsupportedOperationException("Test must be initialized with EncryptedPassword objects if "
+            throw new UnsupportedOperationException("Test must be initialized with HashedPassword objects if "
                 + "the salt is stored separately. Use the other constructor");
         } else if (computedHashes.length != GIVEN_PASSWORDS.length) {
             throw new UnsupportedOperationException("Expected " + GIVEN_PASSWORDS.length + " hashes");
@@ -54,12 +54,12 @@ public abstract class AbstractEncryptionMethodTest {
 
         hashes = new HashMap<>();
         for (int i = 0; i < GIVEN_PASSWORDS.length; ++i) {
-            hashes.put(GIVEN_PASSWORDS[i], new EncryptedPassword(computedHashes[i]));
+            hashes.put(GIVEN_PASSWORDS[i], new HashedPassword(computedHashes[i]));
         }
     }
 
-    public AbstractEncryptionMethodTest(EncryptionMethod method, EncryptedPassword result0, EncryptedPassword result1,
-                                        EncryptedPassword result2, EncryptedPassword result3) {
+    public AbstractEncryptionMethodTest(EncryptionMethod method, HashedPassword result0, HashedPassword result1,
+                                        HashedPassword result2, HashedPassword result3) {
         if (!method.hasSeparateSalt()) {
             throw new UnsupportedOperationException("Salt is not stored separately, so test should be initialized"
                 + " with the password hashes only. Use the other constructor");
@@ -102,7 +102,7 @@ public abstract class AbstractEncryptionMethodTest {
         for (String password : internalPasswords) {
             final String salt = method.generateSalt();
             final String hash = method.computeHash(password, salt, USERNAME);
-            EncryptedPassword encryptedPassword = new EncryptedPassword(hash, salt);
+            HashedPassword hashedPassword = new HashedPassword(hash, salt);
 
             // Check that the computeHash(password, salt, name) method has the same output for the returned salt
             if (testHashEqualityForSameSalt()) {
@@ -111,14 +111,14 @@ public abstract class AbstractEncryptionMethodTest {
             }
 
             assertTrue("Generated hash for '" + password + "' should match password (hash = '" + hash + "')",
-                method.comparePassword(password, encryptedPassword, USERNAME));
+                method.comparePassword(password, hashedPassword, USERNAME));
             if (!password.equals(password.toLowerCase())) {
                 assertFalse("Lower-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toLowerCase(), encryptedPassword, USERNAME));
+                    method.comparePassword(password.toLowerCase(), hashedPassword, USERNAME));
             }
             if (!password.equals(password.toUpperCase())) {
                 assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
-                    method.comparePassword(password.toUpperCase(), encryptedPassword, USERNAME));
+                    method.comparePassword(password.toUpperCase(), hashedPassword, USERNAME));
             }
         }
     }
@@ -143,9 +143,9 @@ public abstract class AbstractEncryptionMethodTest {
             }
 
             if (method.hasSeparateSalt()) {
-                EncryptedPassword encryptedPassword = method.computeHash(password, USERNAME);
-                System.out.println(String.format("\t\tnew EncryptedPassword(\"%s\", \"%s\")%s// %s",
-                    encryptedPassword.getHash(), encryptedPassword.getSalt(), delim, password));
+                HashedPassword hashedPassword = method.computeHash(password, USERNAME);
+                System.out.println(String.format("\t\tnew HashedPassword(\"%s\", \"%s\")%s// %s",
+                    hashedPassword.getHash(), hashedPassword.getSalt(), delim, password));
             } else {
                 System.out.println("\t\t\"" + method.computeHash(password, USERNAME).getHash()
                     + "\"" + delim + "// " + password);

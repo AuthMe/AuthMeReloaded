@@ -14,11 +14,11 @@ import fr.xephi.authme.security.crypts.description.Usage;
 public abstract class UsernameSaltMethod implements EncryptionMethod {
 
     @Override
-    public abstract EncryptedPassword computeHash(String password, String name);
+    public abstract HashedPassword computeHash(String password, String name);
 
     @Override
-    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name) {
-        return encryptedPassword.getHash().equals(computeHash(password, name).getHash());
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
+        return hashedPassword.getHash().equals(computeHash(password, name).getHash());
     }
 
     @Override

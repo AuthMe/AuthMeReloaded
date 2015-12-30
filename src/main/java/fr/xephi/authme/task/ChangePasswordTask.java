@@ -9,7 +9,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 
@@ -35,8 +35,8 @@ public class ChangePasswordTask implements Runnable {
         final String name = player.getName().toLowerCase();
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
         if (passwordSecurity.comparePassword(oldPassword, auth.getPassword(), player.getName())) {
-            EncryptedPassword encryptedPassword = passwordSecurity.computeHash(newPassword, name);
-            auth.setPassword(encryptedPassword);
+            HashedPassword hashedPassword = passwordSecurity.computeHash(newPassword, name);
+            auth.setPassword(hashedPassword);
 
             if (!plugin.getDataSource().updatePassword(auth)) {
                 m.send(player, MessageKey.ERROR);
@@ -47,8 +47,8 @@ public class ChangePasswordTask implements Runnable {
             m.send(player, MessageKey.PASSWORD_CHANGED_SUCCESS);
             ConsoleLogger.info(player.getName() + " changed his password");
             if (Settings.bungee) {
-                final String hash = encryptedPassword.getHash();
-                final String salt = encryptedPassword.getSalt();
+                final String hash = hashedPassword.getHash();
+                final String salt = hashedPassword.getSalt();
                 plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable(){
 
                     @Override

@@ -4,7 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -134,13 +134,13 @@ public class API {
     @Deprecated
     public static boolean registerPlayer(String playerName, String password) {
         String name = playerName.toLowerCase();
-        EncryptedPassword encryptedPassword = passwordSecurity.computeHash(password, name);
+        HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
         if (isRegistered(name)) {
             return false;
         }
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
-            .password(encryptedPassword)
+            .password(hashedPassword)
             .lastLogin(0)
             .realName(playerName)
             .build();

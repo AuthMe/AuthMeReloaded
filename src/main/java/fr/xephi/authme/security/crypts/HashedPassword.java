@@ -3,7 +3,7 @@ package fr.xephi.authme.security.crypts;
 /**
  * The result of a hash computation. See {@link #salt} for details.
  */
-public class EncryptedPassword {
+public class HashedPassword {
     
     /** The generated hash. */
     private final String hash;
@@ -23,7 +23,7 @@ public class EncryptedPassword {
      * @param hash The computed hash
      * @param salt The generated salt
      */
-    public EncryptedPassword(String hash, String salt) {
+    public HashedPassword(String hash, String salt) {
         this.hash = hash;
         this.salt = salt;
     }
@@ -33,7 +33,7 @@ public class EncryptedPassword {
      *
      * @param hash The computed hash
      */
-    public EncryptedPassword(String hash) {
+    public HashedPassword(String hash) {
         this(hash, null);
     }
     

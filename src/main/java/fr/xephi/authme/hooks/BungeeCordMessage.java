@@ -7,7 +7,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.security.crypts.EncryptedPassword;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -67,7 +67,7 @@ public class BungeeCordMessage implements PluginMessageListener {
                     } else if ("changepassword".equals(act)) {
                     	final String password = args[2];
                         final String salt = args.length >= 4 ? args[3] : null;
-                    	auth.setPassword(new EncryptedPassword(password, salt));
+                    	auth.setPassword(new HashedPassword(password, salt));
                     	PlayerCache.getInstance().updatePlayer(auth);
                         dataSource.updatePassword(auth);
                     }
