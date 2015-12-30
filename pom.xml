@@ -259,6 +259,7 @@
                 <version>2.10.3</version>
                 <configuration>
                     <includePackageNames>fr.xephi.authme.api:*</includePackageNames>
+                    <excludePackageNames>fr.xephi.authme:*</excludePackageNames>
                 </configuration>
             </plugin>
         </plugins>

@@ -1,12 +1,11 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.permission.AdminPermission;
-import fr.xephi.authme.permission.PermissionNode;
-import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.WrapperMock;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,12 +17,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.WrapperMock;
 
 /**
  * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
