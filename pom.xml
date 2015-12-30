@@ -258,7 +258,8 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>2.10.3</version>
                 <configuration>
-                    <excludePackageNames>fr.xephi.authme.api.*:fr.xephi.authme.events.*</excludePackageNames>
+                    <excludePackageNames>fr.xephi.*</excludePackageNames>
+                    <includePackageNames>fr.xephi.authme.api:fr.xephi.authme.events</includePackageNames>
                 </configuration>
                 <executions>
 					<execution>
