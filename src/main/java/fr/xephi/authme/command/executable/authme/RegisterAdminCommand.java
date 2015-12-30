@@ -62,7 +62,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerNameLowerCase)
                     .realName(playerName)
-                    .hash(encryptedPassword)
+                    .password(encryptedPassword)
                     .build();
 
                 if (!commandService.getDataSource().saveAuth(auth)) {

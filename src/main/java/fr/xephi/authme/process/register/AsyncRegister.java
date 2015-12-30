@@ -101,12 +101,9 @@ public class AsyncRegister {
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
-            .hash(encryptedPassword)
+            .password(encryptedPassword)
             .ip(ip)
-            .locWorld(player.getLocation().getWorld().getName())
-            .locX(player.getLocation().getX())
-            .locY(player.getLocation().getY())
-            .locZ(player.getLocation().getZ())
+            .location(player.getLocation())
             .email(email)
             .build();
 
@@ -127,12 +124,9 @@ public class AsyncRegister {
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
-            .hash(encryptedPassword)
+            .password(encryptedPassword)
             .ip(ip)
-            .locWorld(player.getLocation().getWorld().getName())
-            .locX(player.getLocation().getX())
-            .locY(player.getLocation().getY())
-            .locZ(player.getLocation().getZ())
+            .location(player.getLocation())
             .build();
 
         if (!database.saveAuth(auth)) {

@@ -78,7 +78,7 @@ public class RakamakConverter implements Converter {
                     .name(playerName)
                     .realName(playerName)
                     .ip(ip)
-                    .hash(psw)
+                    .password(psw)
                     .lastLogin(System.currentTimeMillis())
                     .build();
                 database.saveAuth(auth);

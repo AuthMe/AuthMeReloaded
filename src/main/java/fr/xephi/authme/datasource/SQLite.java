@@ -816,7 +816,7 @@ public class SQLite implements DataSource {
             .name(row.getString(columnName))
             .email(row.getString(columnEmail))
             .realName(row.getString(columnRealName))
-            .hash(row.getString(columnPassword), salt)
+            .password(row.getString(columnPassword), salt)
             .lastLogin(row.getLong(columnLastLogin))
             .locX(row.getDouble(lastlocX))
             .locY(row.getDouble(lastlocY))

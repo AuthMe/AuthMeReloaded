@@ -155,7 +155,7 @@ public class NewAPI {
         }
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
-            .hash(result)
+            .password(result)
             .realName(playerName)
             .build();
         return plugin.getDataSource().saveAuth(auth);

@@ -146,7 +146,7 @@ public class AsynchronousLogin {
                 .ip(getIP())
                 .lastLogin(new Date().getTime())
                 .email(email)
-                .hash(pAuth.getPassword())
+                .password(pAuth.getPassword())
                 .build();
             database.updateSession(auth);
 

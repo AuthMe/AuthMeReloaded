@@ -140,7 +140,7 @@ public class API {
         }
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
-            .hash(encryptedPassword)
+            .password(encryptedPassword)
             .lastLogin(0)
             .realName(playerName)
             .build();

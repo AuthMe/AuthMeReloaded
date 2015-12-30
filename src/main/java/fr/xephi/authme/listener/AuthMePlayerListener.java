@@ -480,10 +480,7 @@ public class AuthMePlayerListener implements Listener {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
                 .realName(player.getName())
-                .locX(spawn.getX())
-                .locY(spawn.getY())
-                .locZ(spawn.getZ())
-                .locWorld(spawn.getWorld().getName())
+                .location(spawn)
                 .build();
             plugin.getDataSource().updateQuitLoc(auth);
         }

@@ -1,6 +1,7 @@
 package fr.xephi.authme.cache.auth;
 
 import fr.xephi.authme.security.crypts.EncryptedPassword;
+import org.bukkit.Location;
 
 import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -317,7 +318,7 @@ public class PlayerAuth {
             + " ! LastLogin : " + lastLogin
             + " ! LastPosition : " + x + "," + y + "," + z + "," + world
             + " ! Email : " + email
-            + " ! Hash : {" + password.getHash() + ", " + password.getSalt() + "}";
+            + " ! Password : {" + password.getHash() + ", " + password.getSalt() + "}";
     }
 
     /**
@@ -368,7 +369,7 @@ public class PlayerAuth {
     public static final class Builder {
         private String name;
         private String realName;
-        private EncryptedPassword hash;
+        private EncryptedPassword password;
         private String ip;
         private String world;
         private String email;
@@ -381,7 +382,7 @@ public class PlayerAuth {
         public PlayerAuth build() {
             return new PlayerAuth(
                 checkNotNull(name),
-                firstNonNull(hash, new EncryptedPassword("")),
+                firstNonNull(password, new EncryptedPassword("")),
                 groupId,
                 firstNonNull(ip, "127.0.0.1"),
                 lastLogin,
@@ -402,17 +403,25 @@ public class PlayerAuth {
             return this;
         }
 
-        public Builder hash(EncryptedPassword hash) {
-            this.hash = hash;
+        public Builder password(EncryptedPassword password) {
+            this.password = password;
             return this;
         }
 
-        public Builder hash(String hash, String salt) {
-            return hash(new EncryptedPassword(hash, salt));
+        public Builder password(String hash, String salt) {
+            return password(new EncryptedPassword(hash, salt));
         }
 
         public Builder ip(String ip) {
             this.ip = ip;
+            return this;
+        }
+
+        public Builder location(Location location) {
+            this.x = location.getX();
+            this.y = location.getY();
+            this.z = location.getZ();
+            this.world = location.getWorld().getName();
             return this;
         }
 
