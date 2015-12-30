@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    
+
     <groupId>fr.xephi</groupId>
     <artifactId>authme</artifactId>
     <version>5.2-SNAPSHOT</version>
@@ -124,38 +124,38 @@
             </testResource>
         </testResources>
 
-		<!-- Just to keep Eclipse compatibility... -->
-		<pluginManagement>
-		    <plugins>
-		        <plugin>
-		            <groupId>org.eclipse.m2e</groupId>
-		            <artifactId>lifecycle-mapping</artifactId>
-		            <version>1.0.0</version>
-		            <configuration>
-		                <lifecycleMappingMetadata>
-		                    <pluginExecutions>
-		                        <pluginExecution>
-		                            <pluginExecutionFilter>
-		                                <groupId>org.codehaus.mojo</groupId>
-		                                <artifactId>buildnumber-maven-plugin</artifactId>
-		                                <versionRange>[1.0,)</versionRange>
-		                                <goals>
-		                                    <goal>create-timestamp</goal>
-		                                </goals>
-		                            </pluginExecutionFilter>
-		                            <action>
-		                                <execute>
-		                                    <runOnConfiguration>true</runOnConfiguration>
-		                                    <runOnIncremental>true</runOnIncremental>
-		                                </execute>
-		                            </action>
-		                        </pluginExecution>
-		                    </pluginExecutions>
-		                </lifecycleMappingMetadata>
-		            </configuration>
-		        </plugin>
-		    </plugins>
-		</pluginManagement>
+      <!-- Just to keep Eclipse compatibility... -->
+      <pluginManagement>
+          <plugins>
+              <plugin>
+                  <groupId>org.eclipse.m2e</groupId>
+                  <artifactId>lifecycle-mapping</artifactId>
+                  <version>1.0.0</version>
+                  <configuration>
+                      <lifecycleMappingMetadata>
+                          <pluginExecutions>
+                              <pluginExecution>
+                                  <pluginExecutionFilter>
+                                      <groupId>org.codehaus.mojo</groupId>
+                                      <artifactId>buildnumber-maven-plugin</artifactId>
+                                      <versionRange>[1.0,)</versionRange>
+                                      <goals>
+                                          <goal>create-timestamp</goal>
+                                      </goals>
+                                  </pluginExecutionFilter>
+                                  <action>
+                                      <execute>
+                                          <runOnConfiguration>true</runOnConfiguration>
+                                          <runOnIncremental>true</runOnIncremental>
+                                      </execute>
+                                  </action>
+                              </pluginExecution>
+                          </pluginExecutions>
+                      </lifecycleMappingMetadata>
+                  </configuration>
+              </plugin>
+          </plugins>
+      </pluginManagement>
 
         <plugins>
             <plugin>
@@ -167,23 +167,24 @@
                     <target>${javaVersion}</target>
                 </configuration>
             </plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-			    <artifactId>buildnumber-maven-plugin</artifactId>
-			    <version>1.4</version>
-			    <configuration>
-			  		<timestampFormat>dd-MM-yy_HH-mm</timestampFormat>
-			    	<timestampPropertyName>build.time</timestampPropertyName>
-			    </configuration>
-			    <executions>
-			    	<execution>
-			        	<phase>generate-resources</phase>
-			            <goals>
-			       			<goal>create-timestamp</goal>
-			    		</goals>
-			    	</execution>
-			    </executions>
-			</plugin>
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>buildnumber-maven-plugin</artifactId>
+                <version>1.4</version>
+                <configuration>
+                    <timestampFormat>dd-MM-yy_HH-mm</timestampFormat>
+                    <timestampPropertyName>build.time</timestampPropertyName>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>create-timestamp</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
 
             <!-- TODO: we need also to relocate the other libs -->
             <plugin>
@@ -229,12 +230,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.eluder.coveralls</groupId>
-                <artifactId>coveralls-maven-plugin</artifactId>
-                <version>4.1.0</version>
-                <!-- Token is provided by mvn command -->
-            </plugin>
+
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -247,6 +243,23 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.eluder.coveralls</groupId>
+                <artifactId>coveralls-maven-plugin</artifactId>
+                <version>4.1.0</version>
+                <!-- Token is provided by mvn command -->
+            </plugin>
+
+            <!-- Javadocs settings -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.10.3</version>
+                <configuration>
+                    <includePackageNames>fr.xephi.authme.api:*</excludePackageNames>
+                </configuration>
             </plugin>
         </plugins>
     </build>
@@ -494,24 +507,24 @@
                     <artifactId>bukkit</artifactId>
                 </exclusion>
                 <exclusion>
-                	<groupId>com.sk89q</groupId>
-                	<artifactId>worldguard</artifactId>
+                   <groupId>com.sk89q</groupId>
+                   <artifactId>worldguard</artifactId>
                 </exclusion>
                 <exclusion>
-                	<groupId>com.sk89q</groupId>
-                	<artifactId>worldedit</artifactId>
+                   <groupId>com.sk89q</groupId>
+                   <artifactId>worldedit</artifactId>
                 </exclusion>
                 <exclusion>
                     <artifactId>VaultAPI</artifactId>
                     <groupId>net.milkbowl.vault</groupId>
                 </exclusion>
                 <exclusion>
-                	<artifactId>uuidprovider</artifactId>
-                	<groupId>net.kaikk.mc</groupId>
+                   <artifactId>uuidprovider</artifactId>
+                   <groupId>net.kaikk.mc</groupId>
                 </exclusion>
                 <exclusion>
-                	<artifactId>ToHPluginUtils</artifactId>
-                	<groupId>org.tyrannyofheaven.bukkit</groupId>
+                   <artifactId>ToHPluginUtils</artifactId>
+                   <groupId>org.tyrannyofheaven.bukkit</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -746,10 +759,10 @@
             <version>2.0.5-beta</version>
             <optional>true</optional>
             <exclusions>
-            	<exclusion>
-            		<artifactId>hamcrest-core</artifactId>
-            		<groupId>org.hamcrest</groupId>
-            	</exclusion>
+               <exclusion>
+                  <artifactId>hamcrest-core</artifactId>
+                  <groupId>org.hamcrest</groupId>
+               </exclusion>
             </exclusions>
         </dependency>
 
