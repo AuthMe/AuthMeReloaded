@@ -256,7 +256,7 @@ public class MySQL implements DataSource {
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         try (Connection con = getConnection()) {
-        	PreparedStatement pst = con.prepareStatement(new Query(this)
+        	PreparedStatement pst = con.prepareStatement(new Query()
         			.select(columnName)
         			.from(tableName)
         			.addWhere(columnName + "=?", null)
@@ -283,7 +283,7 @@ public class MySQL implements DataSource {
     public synchronized PlayerAuth getAuth(String user) {
         PlayerAuth pAuth;
         try (Connection con = getConnection()) {
-        	PreparedStatement pst = con.prepareStatement(new Query(this)
+        	PreparedStatement pst = con.prepareStatement(new Query()
         			.select("*")
         			.from(tableName)
         			.addWhere(columnName + "=?", null)
@@ -314,7 +314,7 @@ public class MySQL implements DataSource {
             rs.close();
             pst.close();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                pst = con.prepareStatement(new Query(this)
+                pst = con.prepareStatement(new Query()
             			.select("data")
             			.from("xf_user_authenticate")
             			.addWhere(columnID + "=?", null)
@@ -611,7 +611,7 @@ public class MySQL implements DataSource {
     @Override
     public synchronized boolean updateSession(PlayerAuth auth) {
         try(Connection con = getConnection())  {
-        	PreparedStatement pst = con.prepareStatement(new Query(this)
+        	PreparedStatement pst = con.prepareStatement(new Query()
         			.update()
         			.from(tableName)
         			.addUpdateSet(columnIp + "=?")
@@ -646,7 +646,7 @@ public class MySQL implements DataSource {
     public synchronized int purgeDatabase(long until) {
         int result = 0;
         try(Connection con = getConnection())  {
-        	PreparedStatement pst = con.prepareStatement(new Query(this)
+        	PreparedStatement pst = con.prepareStatement(new Query()
         			.delete()
         			.from(tableName)
         			.addWhere(columnLastLogin + "<?", null)
@@ -674,7 +674,7 @@ public class MySQL implements DataSource {
     public synchronized List<String> autoPurgeDatabase(long until) {
         List<String> list = new ArrayList<>();
         try(Connection con = getConnection())  {
-        	PreparedStatement st = con.prepareStatement(new Query(this)
+        	PreparedStatement st = con.prepareStatement(new Query()
         			.select(columnName)
         			.from(tableName)
         			.addWhere(columnLastLogin + "<" + until, null)
@@ -686,7 +686,7 @@ public class MySQL implements DataSource {
             }
             rs.close();
             st.close();
-            st = con.prepareStatement(new Query(this)
+            st = con.prepareStatement(new Query()
             		.delete()
             		.from(tableName)
             		.addWhere(columnLastLogin + "<" + until, null)
@@ -754,7 +754,7 @@ public class MySQL implements DataSource {
     @Override
     public synchronized boolean updateQuitLoc(PlayerAuth auth) {
         try(Connection con = getConnection())  {
-        	PreparedStatement pst = con.prepareStatement(new Query(this)
+        	PreparedStatement pst = con.prepareStatement(new Query()
         			.update()
         			.from(tableName)
         			.addUpdateSet(lastlocX + "=?")
@@ -792,7 +792,7 @@ public class MySQL implements DataSource {
     public synchronized int getIps(String ip) {
         int countIp = 0;
         try (Connection con = getConnection()) {
-        	PreparedStatement pst = con.prepareStatement(new Query(this)
+        	PreparedStatement pst = con.prepareStatement(new Query()
         			.select("COUNT(*)")
         			.from(tableName)
         			.addWhere(columnIp + "=?", null)
@@ -824,7 +824,7 @@ public class MySQL implements DataSource {
     @Override
     public synchronized boolean updateEmail(PlayerAuth auth) {
         try (Connection con = getConnection()) {
-            PreparedStatement pst = con.prepareStatement(new Query(this)
+            PreparedStatement pst = con.prepareStatement(new Query()
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnEmail + "=?")
@@ -858,7 +858,7 @@ public class MySQL implements DataSource {
             return false;
         }
         try (Connection con = getConnection()) {
-            PreparedStatement pst = con.prepareStatement(new Query(this)
+            PreparedStatement pst = con.prepareStatement(new Query()
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnSalt + "=?")
@@ -919,7 +919,7 @@ public class MySQL implements DataSource {
     public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
         List<String> result = new ArrayList<>();
         try (Connection con = getConnection()) {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+            PreparedStatement pst = getConnection().prepareStatement(new Query()
             		.select(columnName)
             		.from(tableName)
             		.addWhere(columnIp + "=?", null)
@@ -951,7 +951,7 @@ public class MySQL implements DataSource {
     public synchronized List<String> getAllAuthsByIp(String ip) {
         List<String> result = new ArrayList<>();
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+            PreparedStatement pst = getConnection().prepareStatement(new Query()
             		.select(columnName)
             		.from(tableName)
             		.addWhere(columnIp + "=?", null)
@@ -983,7 +983,7 @@ public class MySQL implements DataSource {
     public synchronized List<String> getAllAuthsByEmail(String email){
         List<String> countEmail = new ArrayList<>();
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+            PreparedStatement pst = getConnection().prepareStatement(new Query()
             		.select(columnName)
             		.from(tableName)
             		.addWhere(columnEmail + "=?", null)
@@ -1012,7 +1012,7 @@ public class MySQL implements DataSource {
     @Override
     public synchronized void purgeBanned(List<String> banned) {
         try (Connection con = getConnection()) {
-        	PreparedStatement pst = con.prepareStatement(new Query(this)
+        	PreparedStatement pst = con.prepareStatement(new Query()
         			.delete()
         			.from(tableName)
         			.addWhere(columnName + "=?", null)
@@ -1050,7 +1050,7 @@ public class MySQL implements DataSource {
     public boolean isLogged(String user) {
         boolean isLogged = false;
         try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+        	PreparedStatement pst = getConnection().prepareStatement(new Query()
         			.select(columnLogged)
         			.from(tableName)
         			.addWhere(columnName + "=?", null)
@@ -1076,7 +1076,7 @@ public class MySQL implements DataSource {
     @Override
     public void setLogged(String user) {
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+            PreparedStatement pst = getConnection().prepareStatement(new Query()
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnLogged + "='1'")
@@ -1101,7 +1101,7 @@ public class MySQL implements DataSource {
     @Override
     public void setUnlogged(String user) {
         try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+            PreparedStatement pst = getConnection().prepareStatement(new Query()
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnLogged + "='0'")
@@ -1124,7 +1124,7 @@ public class MySQL implements DataSource {
     @Override
     public void purgeLogged() {
         try (Connection con = getConnection()) {
-            PreparedStatement pst = con.prepareStatement(new Query(this)
+            PreparedStatement pst = con.prepareStatement(new Query()
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnLogged + "=" + 0)
@@ -1150,7 +1150,7 @@ public class MySQL implements DataSource {
     public int getAccountsRegistered() {
         int result = 0;
         try (Connection con = getConnection()) {
-        	PreparedStatement st = con.prepareStatement(new Query(this)
+        	PreparedStatement st = con.prepareStatement(new Query()
         			.select("COUNT(*)")
         			.from(tableName)
         			.build()
@@ -1180,7 +1180,7 @@ public class MySQL implements DataSource {
     public void updateName(String oldOne, String newOne) {
         try (Connection con = getConnection()) {
             PreparedStatement pst =
-            		con.prepareStatement(new Query(this)
+            		con.prepareStatement(new Query()
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnName + "=?")
@@ -1208,14 +1208,14 @@ public class MySQL implements DataSource {
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
         try (Connection con = getConnection()) {
-        	PreparedStatement st = con.prepareStatement(new Query(this)
+        	PreparedStatement st = con.prepareStatement(new Query()
             		.select("*")
             		.from(tableName)
             		.build()
             		.getQuery());
             ResultSet rs = st
             		.executeQuery();
-            PreparedStatement pst = con.prepareStatement(new Query(this)
+            PreparedStatement pst = con.prepareStatement(new Query()
             		.select("data")
             		.from("xf_user_authenticate")
             		.addWhere(columnID + "=?", null)

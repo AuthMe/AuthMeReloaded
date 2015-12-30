@@ -9,7 +9,6 @@ import fr.xephi.authme.datasource.DataSource;
 
 public class Query {
 
-	private DataSource source;
 	private String selector = null;
 	private String from = null;
 	private HashMap<String, String> where = new HashMap<String, String>();
@@ -23,9 +22,8 @@ public class Query {
 	 *
 	 * @param source
 	 */
-	public Query(DataSource source)
+	public Query()
 	{
-		this.source = source;
 	}
 
 	/**
