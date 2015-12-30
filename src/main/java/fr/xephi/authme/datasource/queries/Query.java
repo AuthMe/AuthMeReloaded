@@ -1,15 +1,10 @@
 package fr.xephi.authme.datasource.queries;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 
 public class Query {
@@ -21,10 +16,7 @@ public class Query {
 	private List<String> into = new ArrayList<String>();
 	private List<String> values = new ArrayList<String>();
 	private List<String> updateSet = new ArrayList<String>();
-	private boolean isSelect = false;
-	private boolean isDelete = false;
-	private boolean isUpdate = false;
-	private boolean isInsert = false;
+	private QueryType type;
 	private String buildQuery = "";
 
 	/**
@@ -44,10 +36,7 @@ public class Query {
 	public Query select(String selector)
 	{
 		this.selector = selector;
-		isSelect = true;
-		isDelete = false;
-		isUpdate = false;
-		isInsert = false;
+		type = QueryType.SELECT;
 		return this;
 	}
 
@@ -57,10 +46,7 @@ public class Query {
 	 */
 	public Query update()
 	{
-		isSelect = false;
-		isDelete = false;
-		isUpdate = true;
-		isInsert = false;
+		type = QueryType.UPDATE;
 		return this;
 	}
 
@@ -70,10 +56,7 @@ public class Query {
 	 */
 	public Query delete()
 	{
-		isSelect = false;
-		isDelete = true;
-		isUpdate = false;
-		isInsert = false;
+		type = QueryType.DELETE;
 		return this;
 	}
 
@@ -84,10 +67,7 @@ public class Query {
 	 */
 	public Query insert()
 	{
-		isSelect = false;
-		isDelete = false;
-		isUpdate = false;
-		isInsert = true;
+		type = QueryType.INSERT;
 		return this;
 	}
 
@@ -149,49 +129,51 @@ public class Query {
 
 	public Query build(){
 		StringBuilder str = new StringBuilder();
-		if (isSelect)
-		{
-			str.append("SELECT ").append(selector).append(" FROM ").append(from);
-		}
-		else if (isDelete)
-		{
-			str.append("DELETE FROM ").append(from);
-		}
-		else if (isUpdate)
-		{
-			str.append("UPDATE ").append(from).append(" SET ");
-			Iterator<String> iter = updateSet.iterator();
-			while (iter.hasNext())
+		switch (type) {
+			case SELECT:
 			{
-				String s = iter.next();
-				str.append(s);
-				if (iter.hasNext())
-					str.append(", ");
+				str.append("SELECT ").append(selector).append(" FROM ").append(from);
 			}
-		}
-		else if (isInsert)
-		{
-			str.append("INSERT INTO ").append(from).append(" ('");
-			Iterator<String> iter = into.iterator();
-			while (iter.hasNext())
+			case DELETE:
 			{
-				String s = iter.next();
-				str.append(s);
-				if (iter.hasNext())
-					str.append("', '");
-				else
-					str.append("')");
+				str.append("DELETE FROM ").append(from);
 			}
-			str.append(" VALUES ('");
-			iter = values.iterator();
-			while (iter.hasNext())
+			case UPDATE:
 			{
-				String s = iter.next();
-				str.append(s);
-				if (iter.hasNext())
-					str.append("', '");
-				else
-					str.append("')");
+				str.append("UPDATE ").append(from).append(" SET ");
+				Iterator<String> iter = updateSet.iterator();
+				while (iter.hasNext())
+				{
+					String s = iter.next();
+					str.append(s);
+					if (iter.hasNext())
+						str.append(", ");
+				}
+			}
+			case INSERT:
+			{
+				str.append("INSERT INTO ").append(from).append(" ('");
+				Iterator<String> iter = into.iterator();
+				while (iter.hasNext())
+				{
+					String s = iter.next();
+					str.append(s);
+					if (iter.hasNext())
+						str.append("', '");
+					else
+						str.append("')");
+				}
+				str.append(" VALUES ('");
+				iter = values.iterator();
+				while (iter.hasNext())
+				{
+					String s = iter.next();
+					str.append(s);
+					if (iter.hasNext())
+						str.append("', '");
+					else
+						str.append("')");
+				}
 			}
 		}
 		if (!where.isEmpty())
