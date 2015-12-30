@@ -612,9 +612,10 @@ public class SQLite implements DataSource {
             PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.select(columnName)
             		.from(tableName)
-            		.addWhere(columnIp + "='" + auth.getIp() + "'", null)
+            		.addWhere(columnIp + "=?", null)
             		.build()
             		.getQuery());
+            pst.setString(1, auth.getIp());
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 result.add(rs.getString(columnName));
@@ -643,9 +644,10 @@ public class SQLite implements DataSource {
             PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.select(columnName)
             		.from(tableName)
-            		.addWhere(columnIp + "='" + ip + "'", null)
+            		.addWhere(columnIp + "=?", null)
             		.build()
             		.getQuery());
+            pst.setString(1, ip);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 result.add(rs.getString(columnName));
@@ -674,9 +676,10 @@ public class SQLite implements DataSource {
             PreparedStatement pst = getConnection().prepareStatement(new Query(this)
             		.select(columnName)
             		.from(tableName)
-            		.addWhere(columnEmail + "='" + email + "'", null)
+            		.addWhere(columnEmail + "=?", null)
             		.build()
             		.getQuery());
+            pst.setString(1, email);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 countEmail.add(rs.getString(columnName));
@@ -739,9 +742,10 @@ public class SQLite implements DataSource {
         	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
         			.select(columnLogged)
         			.from(tableName)
-        			.addWhere(columnName + "='" + user + "'", null)
+        			.addWhere(columnName + "=?", null)
         			.build()
         			.getQuery());
+        	pst.setString(1, user);
             ResultSet rs = pst.executeQuery();
             isLogged = rs.next() && (rs.getInt(columnLogged) == 1);
         } catch (SQLException ex) {
@@ -765,9 +769,10 @@ public class SQLite implements DataSource {
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnLogged + "='1'")
-            		.addWhere(columnName + "='" + user.toLowerCase() + "'", null)
+            		.addWhere(columnName + "=?", null)
             		.build()
             		.getQuery());
+            pst.setString(1, user.toLowerCase());
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -789,9 +794,10 @@ public class SQLite implements DataSource {
             		.update()
             		.from(tableName)
             		.addUpdateSet(columnLogged + "='0'")
-            		.addWhere(columnName + "='" + user.toLowerCase() + "'", null)
+            		.addWhere(columnName + "=?", null)
             		.build()
             		.getQuery());
+            pst.setString(1, user.toLowerCase());
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -859,15 +865,17 @@ public class SQLite implements DataSource {
      */
     @Override
     public void updateName(String oldOne, String newOne) {
-        try {
+        try (Connection con = getConnection()) {
             PreparedStatement pst =
-            		getConnection().prepareStatement(new Query(this)
+            		con.prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
-            		.addUpdateSet(columnName + "='" + newOne + "'")
-            		.addWhere(columnName + "='" + oldOne + "'", null)
+            		.addUpdateSet(columnName + "=?")
+            		.addWhere(columnName + "=?", null)
             		.build()
             		.getQuery());
+            pst.setString(1, newOne);
+            pst.setString(2, oldOne);
             pst.executeUpdate();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
