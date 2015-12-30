@@ -53,7 +53,7 @@ public class TagReplacer {
     }
 
     private static String replaceOptionalTag(String text, String tagName, String tagValue) {
-        Pattern regex = Pattern.compile("\\[" + tagName + "\\](.*?)\\[/" + tagName + "\\]", Pattern.DOTALL);
+        Pattern regex = Pattern.compile("\\[" + tagName + "](.*?)\\[/" + tagName + "]", Pattern.DOTALL);
         Matcher matcher = regex.matcher(text);
 
         if (!matcher.find()) {

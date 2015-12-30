@@ -3,6 +3,7 @@ package messages;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.util.StringUtils;
 import utils.FileUtils;
 
 import java.util.ArrayList;
@@ -69,7 +70,7 @@ public class MessageFileVerifier {
 
     private void verifyKeys() {
         List<MessageKey> messageKeys = getAllMessageKeys();
-        List<String> fileLines = FileUtils.readLinesFromFile(messagesFile);
+        List<String> fileLines = readFileLines();
         for (String line : fileLines) {
             // Skip comments and empty lines
             if (!line.startsWith("#") && !line.trim().isEmpty()) {
@@ -137,5 +138,35 @@ public class MessageFileVerifier {
 
     private static List<MessageKey> getAllMessageKeys() {
         return new ArrayList<>(Arrays.asList(MessageKey.values()));
+    }
+
+    /**
+     * Read all lines from the messages file and skip empty lines and comment lines.
+     * This method appends lines starting with two spaces to the previously read line,
+     * akin to a YAML parser.
+     */
+    private List<String> readFileLines() {
+        String[] rawLines = FileUtils.readFromFile(messagesFile).split("\\n");
+        List<String> lines = new ArrayList<>();
+        for (String line : rawLines) {
+            // Skip comments and empty lines
+            if (!line.startsWith("#") && !StringUtils.isEmpty(line)) {
+                // Line is indented, i.e. it needs to be appended to the previous line
+                if (line.startsWith("  ")) {
+                    appendToLastElement(lines, line.substring(1));
+                } else {
+                    lines.add(line);
+                }
+            }
+        }
+        return lines;
+    }
+
+    private static void appendToLastElement(List<String> list, String text) {
+        if (list.isEmpty()) {
+            throw new IllegalStateException("List cannot be empty!");
+        }
+        int lastIndex = list.size() - 1;
+        list.set(lastIndex, list.get(lastIndex).concat(text));
     }
 }
