@@ -30,8 +30,9 @@ public class PasswordSecurity {
     }
 
     public EncryptedPassword computeHash(HashAlgorithm algorithm, String password, String playerName) {
-        EncryptionMethod method = initializeEncryptionMethod(algorithm, playerName);
-        return method.computeHash(password, playerName);
+        String playerLowerCase = playerName.toLowerCase();
+        EncryptionMethod method = initializeEncryptionMethod(algorithm, playerLowerCase);
+        return method.computeHash(password, playerLowerCase);
     }
 
     public boolean comparePassword(String password, String playerName) {
@@ -52,8 +53,9 @@ public class PasswordSecurity {
             return false;
         }
 
-        return method.comparePassword(password, encryptedPassword, playerName)
-            || supportOldAlgorithm && compareWithAllEncryptionMethods(password, encryptedPassword, playerName);
+        String playerLowerCase = playerName.toLowerCase();
+        return method.comparePassword(password, encryptedPassword, playerLowerCase)
+            || supportOldAlgorithm && compareWithAllEncryptionMethods(password, encryptedPassword, playerLowerCase);
     }
 
     /**

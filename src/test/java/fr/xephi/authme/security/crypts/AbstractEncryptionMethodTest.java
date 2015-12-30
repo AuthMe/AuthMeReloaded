@@ -16,7 +16,6 @@ import static org.junit.Assert.assertTrue;
 /**
  * Test for implementations of {@link EncryptionMethod}.
  */
-// TODO #358: Remove NoSuchAlgorithm try-catch-es when no longer necessary
 public abstract class AbstractEncryptionMethodTest {
 
     /** The username used to query {@link EncryptionMethod#comparePassword}. */

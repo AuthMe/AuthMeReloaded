@@ -67,8 +67,8 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
                     return;
                 }
 
-                // TODO #358: Do we always pass lowercase name?? In that case we need to do that in PasswordSecurity!
-                EncryptedPassword encryptedPassword = commandService.getPasswordSecurity().computeHash(playerPass, playerNameLowerCase);
+                EncryptedPassword encryptedPassword = commandService.getPasswordSecurity()
+                    .computeHash(playerPass, playerNameLowerCase);
                 auth.setPassword(encryptedPassword);
 
                 if (!dataSource.updatePassword(auth)) {

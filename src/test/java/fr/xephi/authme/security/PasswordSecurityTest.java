@@ -16,10 +16,12 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.equalToIgnoringCase;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doCallRealMethod;
 import static org.mockito.Mockito.mock;
@@ -64,12 +66,14 @@ public class PasswordSecurityTest {
         // given
         EncryptedPassword password = new EncryptedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "Tester";
+        // Calls to EncryptionMethod are always with the lower-case version of the name
+        String playerLowerCase = playerName.toLowerCase();
         String clearTextPass = "myPassTest";
 
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getPassword()).willReturn(password);
         given(dataSource.getAuth(playerName)).willReturn(auth);
-        given(method.comparePassword(clearTextPass, password, playerName)).willReturn(true);
+        given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(true);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.BCRYPT, pluginManager, false);
 
         // when
@@ -79,7 +83,7 @@ public class PasswordSecurityTest {
         assertThat(result, equalTo(true));
         verify(dataSource).getAuth(playerName);
         verify(pluginManager).callEvent(any(PasswordEncryptionEvent.class));
-        verify(method).comparePassword(clearTextPass, password, playerName);
+        verify(method).comparePassword(clearTextPass, password, playerLowerCase);
     }
 
     @Test
@@ -87,12 +91,13 @@ public class PasswordSecurityTest {
         // given
         EncryptedPassword password = new EncryptedPassword("$TEST$10$SOME_HASH", null);
         String playerName = "My_PLayer";
+        String playerLowerCase = playerName.toLowerCase();
         String clearTextPass = "passw0Rd1";
 
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getPassword()).willReturn(password);
         given(dataSource.getAuth(playerName)).willReturn(auth);
-        given(method.comparePassword(clearTextPass, password, playerName)).willReturn(false);
+        given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.CUSTOM, pluginManager, false);
 
         // when
@@ -102,7 +107,7 @@ public class PasswordSecurityTest {
         assertThat(result, equalTo(false));
         verify(dataSource).getAuth(playerName);
         verify(pluginManager).callEvent(any(PasswordEncryptionEvent.class));
-        verify(method).comparePassword(clearTextPass, password, playerName);
+        verify(method).comparePassword(clearTextPass, password, playerLowerCase);
     }
 
     @Test
@@ -127,10 +132,11 @@ public class PasswordSecurityTest {
     @Test
     public void shouldTryOtherMethodsForFailedPassword() {
         // given
-        // BCRYPT2Y hash for "Test"
+        // BCRYPT hash for "Test"
         EncryptedPassword password =
             new EncryptedPassword("$2y$10$2e6d2193f43501c926e25elvWlPmWczmrfrnbZV0dUZGITjYjnkkW");
         String playerName = "somePlayer";
+        String playerLowerCase = playerName.toLowerCase();
         String clearTextPass = "Test";
         // MD5 hash for "Test"
         EncryptedPassword newPassword = new EncryptedPassword("0cbc6611f5540bd0809a388dc95a615b");
@@ -139,9 +145,9 @@ public class PasswordSecurityTest {
         doCallRealMethod().when(auth).getPassword();
         doCallRealMethod().when(auth).setPassword(any(EncryptedPassword.class));
         auth.setPassword(password);
-        given(dataSource.getAuth(playerName)).willReturn(auth);
-        given(method.comparePassword(clearTextPass, password, playerName)).willReturn(false);
-        given(method.computeHash(clearTextPass, playerName)).willReturn(newPassword);
+        given(dataSource.getAuth(argThat(equalToIgnoringCase(playerName)))).willReturn(auth);
+        given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
+        given(method.computeHash(clearTextPass, playerLowerCase)).willReturn(newPassword);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.MD5, pluginManager, true);
 
         // when
@@ -149,9 +155,12 @@ public class PasswordSecurityTest {
 
         // then
         assertThat(result, equalTo(true));
-        verify(dataSource, times(2)).getAuth(playerName);
+        // Note ljacqu 20151230: We need to check the player name in a case-insensitive way because the methods within
+        // PasswordSecurity may convert the name into all lower-case. This is desired because EncryptionMethod methods
+        // should only be invoked with all lower-case names. Data source is case-insensitive itself, so this is fine.
+        verify(dataSource, times(2)).getAuth(argThat(equalToIgnoringCase(playerName)));
         verify(pluginManager, times(2)).callEvent(any(PasswordEncryptionEvent.class));
-        verify(method).comparePassword(clearTextPass, password, playerName);
+        verify(method).comparePassword(clearTextPass, password, playerLowerCase);
         verify(auth).setPassword(newPassword);
 
         ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
@@ -164,8 +173,9 @@ public class PasswordSecurityTest {
         // given
         String password = "MyP@ssword";
         String username = "theUserInTest";
+        String usernameLowerCase = username.toLowerCase();
         EncryptedPassword encryptedPassword = new EncryptedPassword("$T$est#Hash", "__someSalt__");
-        given(method.computeHash(password, username)).willReturn(encryptedPassword);
+        given(method.computeHash(password, usernameLowerCase)).willReturn(encryptedPassword);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.JOOMLA, pluginManager, true);
 
         // when
@@ -177,7 +187,7 @@ public class PasswordSecurityTest {
         verify(pluginManager).callEvent(captor.capture());
         PasswordEncryptionEvent event = captor.getValue();
         assertThat(JOOMLA.class.equals(caughtClassInEvent), equalTo(true));
-        assertThat(event.getPlayerName(), equalTo(username));
+        assertThat(event.getPlayerName(), equalTo(usernameLowerCase));
     }
 
     @Test

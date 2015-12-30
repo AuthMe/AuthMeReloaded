@@ -281,12 +281,6 @@ public class PlayerAuth {
     }
 
     public EncryptedPassword getPassword() {
-        // TODO #358: Check whether this check is really necessary. It's been here since the first commit.
-        /*if (Settings.getPasswordHash == HashAlgorithm.MD5VB) {
-            if (salt != null && !salt.isEmpty() && Settings.getPasswordHash == HashAlgorithm.MD5VB) {
-                return "$MD5vb$" + salt + "$" + hash;
-            }
-        }*/
         return password;
     }
 
