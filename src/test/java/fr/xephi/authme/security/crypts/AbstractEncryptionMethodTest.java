@@ -32,6 +32,10 @@ public abstract class AbstractEncryptionMethodTest {
     private static final List<String> INTERNAL_PASSWORDS =
         ImmutableList.of("test1234", "Ab_C73", "(!#&$~`_-Aa0", "Ûïé1&?+A");
 
+    private static final String[] BOGUS_HASHES = {"", "test", "$t$test$", "$SHA$Test$$$$", "$$$$$",
+        "asdfg:hjkl", "::test", "~#$#~~~#$#~", "d41d8cd98f00b204e9800998ecf427e",
+        "$2y$7a$da641e404b982ed" };
+
     /** The encryption method to test. */
     private EncryptionMethod method;
     /** Map with the hashes against which the entries in GIVEN_PASSWORDS are tested. */
@@ -120,6 +124,17 @@ public abstract class AbstractEncryptionMethodTest {
                 assertFalse("Upper-case of '" + password + "' should not match generated hash '" + hash + "'",
                     method.comparePassword(password.toUpperCase(), hashedPassword, USERNAME));
             }
+        }
+    }
+
+    /** Tests various strings to ensure that encryption methods don't rely on the hash's format too much. */
+    @Test
+    public void testMalformedHashes() {
+        String salt = method.hasSeparateSalt() ? "testSalt" : null;
+        for (String bogusHash : BOGUS_HASHES) {
+            HashedPassword hashedPwd = new HashedPassword(bogusHash, salt);
+            assertFalse("Passing bogus hash '" + bogusHash + "' does not result in an error",
+                method.comparePassword("Password", hashedPwd, "player"));
         }
     }
 

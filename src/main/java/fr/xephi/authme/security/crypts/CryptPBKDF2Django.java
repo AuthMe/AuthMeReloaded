@@ -21,6 +21,9 @@ public class CryptPBKDF2Django extends HexSaltedMethod {
     @Override
     public boolean comparePassword(String password, HashedPassword hashedPassword, String unusedName) {
         String[] line = hashedPassword.getHash().split("\\$");
+        if (line.length != 4) {
+            return false;
+        }
         String salt = line[2];
         byte[] derivedKey = DatatypeConverter.parseBase64Binary(line[3]);
         PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), 15000, derivedKey);

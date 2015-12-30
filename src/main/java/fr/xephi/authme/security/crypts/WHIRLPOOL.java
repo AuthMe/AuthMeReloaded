@@ -379,6 +379,7 @@ public class WHIRLPOOL extends UnsaltedMethod {
         }
     }
 
+    @Override
     public String computeHash(String password) {
         byte[] digest = new byte[DIGESTBYTES];
         NESSIEinit();

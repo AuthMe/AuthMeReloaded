@@ -13,11 +13,13 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
@@ -527,7 +529,12 @@ public class BCRYPT implements EncryptionMethod {
 
     @Override
     public boolean comparePassword(String password, HashedPassword hash, String name) {
-        return checkpw(password, hash.getHash());
+        try {
+            return hash.getHash().length() > 3 && checkpw(password, hash.getHash());
+        } catch (IllegalArgumentException e) {
+            ConsoleLogger.showError("Bcrypt checkpw() returned " + StringUtils.formatException(e));
+        }
+        return false;
     }
 
     @Override
