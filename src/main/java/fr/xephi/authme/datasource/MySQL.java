@@ -919,18 +919,18 @@ public class MySQL implements DataSource {
     public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
         List<String> result = new ArrayList<>();
         try (Connection con = getConnection()) {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+            PreparedStatement pst = con.prepareStatement(new Query(this)
             		.select(columnName)
             		.from(tableName)
-            		.addWhere(columnIp + "=?", null)
+            		.addWhere(columnIp + "='" + auth.getIp() + "'", null)
             		.build()
             		.getQuery());
-            pst.setString(1, auth.getIp());
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 result.add(rs.getString(columnName));
             }
             rs.close();
+            pst.close();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             ConsoleLogger.writeStackTrace(ex);
@@ -950,19 +950,19 @@ public class MySQL implements DataSource {
     @Override
     public synchronized List<String> getAllAuthsByIp(String ip) {
         List<String> result = new ArrayList<>();
-        try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+        try (Connection con = getConnection()) {
+            PreparedStatement pst = con.prepareStatement(new Query(this)
             		.select(columnName)
             		.from(tableName)
-            		.addWhere(columnIp + "=?", null)
+            		.addWhere(columnIp + "='" + ip + "'", null)
             		.build()
             		.getQuery());
-            pst.setString(1, ip);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 result.add(rs.getString(columnName));
             }
             rs.close();
+            pst.close();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             ConsoleLogger.writeStackTrace(ex);
@@ -982,19 +982,19 @@ public class MySQL implements DataSource {
     @Override
     public synchronized List<String> getAllAuthsByEmail(String email){
         List<String> countEmail = new ArrayList<>();
-        try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+        try (Connection con = getConnection()) {
+            PreparedStatement pst = con.prepareStatement(new Query(this)
             		.select(columnName)
             		.from(tableName)
-            		.addWhere(columnEmail + "=?", null)
+            		.addWhere(columnEmail + "='" + email + "'", null)
             		.build()
             		.getQuery());
-            pst.setString(1, email);
             ResultSet rs = pst.executeQuery();
             while (rs.next()) {
                 countEmail.add(rs.getString(columnName));
             }
             rs.close();
+            pst.close();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             ConsoleLogger.writeStackTrace(ex);
@@ -1049,14 +1049,13 @@ public class MySQL implements DataSource {
     @Override
     public boolean isLogged(String user) {
         boolean isLogged = false;
-        try {
-        	PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+        try (Connection con = getConnection()) {
+        	PreparedStatement pst = con.prepareStatement(new Query(this)
         			.select(columnLogged)
         			.from(tableName)
-        			.addWhere(columnName + "=?", null)
+        			.addWhere(columnName + "='" + user + "'", null)
         			.build()
         			.getQuery());
-        	pst.setString(1, user);
             ResultSet rs = pst.executeQuery();
             isLogged = rs.next() && (rs.getInt(columnLogged) == 1);
         } catch (SQLException ex) {
@@ -1075,16 +1074,16 @@ public class MySQL implements DataSource {
      */
     @Override
     public void setLogged(String user) {
-        try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+        try (Connection con = getConnection()) {
+            PreparedStatement pst = con.prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
-            		.addUpdateSet(columnLogged + "='1'")
-            		.addWhere(columnName + "=?", null)
+            		.addUpdateSet(columnLogged + "=" + 1)
+            		.addWhere(columnName + "='" + user.toLowerCase() + "'", null)
             		.build()
             		.getQuery());
-            pst.setString(1, user.toLowerCase());
             pst.executeUpdate();
+            pst.close();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             ConsoleLogger.writeStackTrace(ex);
@@ -1100,16 +1099,16 @@ public class MySQL implements DataSource {
      */
     @Override
     public void setUnlogged(String user) {
-        try {
-            PreparedStatement pst = getConnection().prepareStatement(new Query(this)
+        try (Connection con = getConnection()) {
+            PreparedStatement pst = con.prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
-            		.addUpdateSet(columnLogged + "='0'")
-            		.addWhere(columnName + "=?", null)
+            		.addUpdateSet(columnLogged + "=" + 0)
+            		.addWhere(columnName + "='" + user.toLowerCase() + "'", null)
             		.build()
             		.getQuery());
-            pst.setString(1, user.toLowerCase());
             pst.executeUpdate();
+            pst.close();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             ConsoleLogger.writeStackTrace(ex);
@@ -1183,12 +1182,10 @@ public class MySQL implements DataSource {
             		con.prepareStatement(new Query(this)
             		.update()
             		.from(tableName)
-            		.addUpdateSet(columnName + "=?")
-            		.addWhere(columnName + "=?", null)
+            		.addUpdateSet(columnName + "='" + newOne + "'")
+            		.addWhere(columnName + "='" + oldOne + "'", null)
             		.build()
             		.getQuery());
-            pst.setString(1, newOne);
-            pst.setString(2, oldOne);
             pst.executeUpdate();
             pst.close();
         } catch (Exception ex) {
