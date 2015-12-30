@@ -31,6 +31,7 @@ import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.listener.AuthMeServerStop;
+import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.output.ConsoleFilter;
@@ -117,6 +118,7 @@ public class AuthMe extends JavaPlugin {
     public MultiverseCore multiverse;
     public CombatTagPlus combatTagPlus;
     public AuthMeInventoryPacketAdapter inventoryProtector;
+    public AuthMeTabCompletePacketAdapter tabComplete;
 
     /*
      *  Maps and stuff
@@ -709,6 +711,11 @@ public class AuthMe extends JavaPlugin {
                 inventoryProtector.unregister();
                 inventoryProtector = null;
             }
+        }
+        if (tabComplete == null)
+        {
+        	tabComplete = new AuthMeTabCompletePacketAdapter(this);
+        	tabComplete.register();
         }
     }
 
