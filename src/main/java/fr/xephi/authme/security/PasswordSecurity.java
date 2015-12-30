@@ -3,11 +3,9 @@ package fr.xephi.authme.security;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
-import fr.xephi.authme.security.crypts.HashResult;
 import org.bukkit.Bukkit;
-
-import java.util.HashMap;
 
 /**
  * Manager class for password-related operations.
@@ -24,48 +22,53 @@ public class PasswordSecurity {
         this.supportOldAlgorithm = supportOldAlgorithm;
     }
 
-    public HashResult computeHash(String password, String playerName) {
+    public EncryptedPassword computeHash(String password, String playerName) {
         return computeHash(algorithm, password, playerName);
     }
 
-    public HashResult computeHash(HashAlgorithm algorithm, String password, String playerName) {
+    public EncryptedPassword computeHash(HashAlgorithm algorithm, String password, String playerName) {
         EncryptionMethod method = initializeEncryptionMethod(algorithm, playerName);
         return method.computeHash(password, playerName);
     }
 
     public boolean comparePassword(String password, String playerName) {
+        // TODO ljacqu 20151230: Defining a dataSource.getPassword() method would be more efficient
         PlayerAuth auth = dataSource.getAuth(playerName);
         if (auth != null) {
-            return comparePassword(auth.getHash(), auth.getSalt(), password, playerName);
+            return comparePassword(password, auth.getPassword(), playerName);
         }
         return false;
     }
 
-    public boolean comparePassword(String hash, String salt, String password, String playerName) {
+    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String playerName) {
         EncryptionMethod method = initializeEncryptionMethod(algorithm, playerName);
         // User is not in data source, so the result will invariably be wrong because an encryption
         // method with hasSeparateSalt() == true NEEDS the salt to evaluate the password
+        String salt = encryptedPassword.getSalt();
         if (method.hasSeparateSalt() && salt == null) {
             return false;
         }
-        return method.comparePassword(hash, password, salt, playerName)
-            || supportOldAlgorithm && compareWithAllEncryptionMethods(password, hash, salt, playerName);
+
+        return method.comparePassword(password, encryptedPassword, playerName)
+            || supportOldAlgorithm && compareWithAllEncryptionMethods(password, encryptedPassword, playerName);
     }
 
     /**
-     * Compare the given hash with all available encryption methods to support the migration to a new encryption method.
+     * Compare the given hash with all available encryption methods to support
+     * the migration to a new encryption method. Upon a successful match, the password
+     * will be hashed with the new encryption method and persisted.
      *
-     * @param password   The clear-text password to check
-     * @param hash       The hash to text the password against
-     * @param salt       The salt (or null if none available)
-     * @param playerName The name of the player
+     * @param password          The clear-text password to check
+     * @param encryptedPassword The encrypted password to test the clear-text password against
+     * @param playerName        The name of the player
      * @return True if the
      */
-    private boolean compareWithAllEncryptionMethods(String password, String hash, String salt, String playerName) {
+    private boolean compareWithAllEncryptionMethods(String password, EncryptedPassword encryptedPassword,
+                                                    String playerName) {
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
                 EncryptionMethod method = initializeEncryptionMethodWithoutEvent(algorithm);
-                if (method != null && method.comparePassword(hash, password, salt, playerName)) {
+                if (method != null && method.comparePassword(password, encryptedPassword, playerName)) {
                     hashPasswordForNewAlgorithm(password, playerName);
                     return true;
                 }
@@ -75,8 +78,8 @@ public class PasswordSecurity {
     }
 
     /**
-     * Get the encryption method from the given {@link HashAlgorithm} value and emits a
-     * {@link PasswordEncryptionEvent}. The encryption method from the event is returned,
+     * Get the encryption method from the given {@link HashAlgorithm} value and emit a
+     * {@link PasswordEncryptionEvent}. The encryption method from the event is then returned,
      * which may have been changed by an external listener.
      *
      * @param algorithm The algorithm to retrieve the encryption method for
@@ -110,14 +113,10 @@ public class PasswordSecurity {
     private void hashPasswordForNewAlgorithm(String password, String playerName) {
         PlayerAuth auth = dataSource.getAuth(playerName);
         if (auth != null) {
-            HashResult hashResult = initializeEncryptionMethod(algorithm, playerName)
+            EncryptedPassword encryptedPassword = initializeEncryptionMethod(algorithm, playerName)
                 .computeHash(password, playerName);
-
-            // TODO #358: updatePassword() should just take the HashResult..., or at least hash & salt. Idem for setHash
-            auth.setSalt(hashResult.getSalt());
-            auth.setHash(hashResult.getHash());
+            auth.setPassword(encryptedPassword);
             dataSource.updatePassword(auth);
-            dataSource.updateSalt(auth);
         }
     }
 

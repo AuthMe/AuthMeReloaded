@@ -102,7 +102,7 @@ public class FlatFile implements DataSource {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter(source, true));
-            bw.write(auth.getNickname() + ":" + auth.getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
+            bw.write(auth.getNickname() + ":" + auth.getPassword() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
@@ -137,25 +137,26 @@ public class FlatFile implements DataSource {
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equals(auth.getNickname())) {
+                    // Note ljacqu 20151230: This does not persist the salt; it is not supported in flat file.
                     switch (args.length) {
                         case 4: {
-                            newAuth = new PlayerAuth(args[0], auth.getHash(), args[2], Long.parseLong(args[3]), 0, 0, 0, "world", "your@email.com", args[0]);
+                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], Long.parseLong(args[3]), 0, 0, 0, "world", "your@email.com", args[0]);
                             break;
                         }
                         case 7: {
-                            newAuth = new PlayerAuth(args[0], auth.getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "world", "your@email.com", args[0]);
+                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "world", "your@email.com", args[0]);
                             break;
                         }
                         case 8: {
-                            newAuth = new PlayerAuth(args[0], auth.getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]);
+                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]);
                             break;
                         }
                         case 9: {
-                            newAuth = new PlayerAuth(args[0], auth.getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]);
+                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]);
                             break;
                         }
                         default: {
-                            newAuth = new PlayerAuth(args[0], auth.getHash(), args[2], 0, 0, 0, 0, "world", "your@email.com", args[0]);
+                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], 0, 0, 0, 0, "world", "your@email.com", args[0]);
                             break;
                         }
                     }
@@ -598,18 +599,6 @@ public class FlatFile implements DataSource {
             saveAuth(newAuth);
         }
         return true;
-    }
-
-    /**
-     * Method updateSalt.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
-     */
-    @Override
-    public boolean updateSalt(PlayerAuth auth) {
-        return false;
     }
 
     /**

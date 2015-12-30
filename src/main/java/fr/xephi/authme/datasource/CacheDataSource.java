@@ -271,24 +271,6 @@ public class CacheDataSource implements DataSource {
     }
 
     /**
-     * Method updateSalt.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
-     */
-    @Override
-    public synchronized boolean updateSalt(final PlayerAuth auth) {
-        boolean result = source.updateSalt(auth);
-        if (result) {
-            cachedAuths.refresh(auth.getNickname());
-        }
-        return result;
-    }
-
-    /**
      * Method getAllAuthsByName.
      *
      * @param auth PlayerAuth

@@ -3,7 +3,7 @@ package fr.xephi.authme.api;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.security.crypts.HashResult;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -149,14 +149,13 @@ public class NewAPI {
      */
     public boolean registerPlayer(String playerName, String password) {
         String name = playerName.toLowerCase();
-        HashResult result = plugin.getPasswordSecurity().computeHash(password, name);
+        EncryptedPassword result = plugin.getPasswordSecurity().computeHash(password, name);
         if (isRegistered(name)) {
             return false;
         }
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
-            .hash(result.getHash())
-            .salt(result.getSalt())
+            .hash(result)
             .realName(playerName)
             .build();
         return plugin.getDataSource().saveAuth(auth);

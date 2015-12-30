@@ -6,7 +6,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.HashResult;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 
@@ -42,7 +42,7 @@ public class RakamakConverter implements Converter {
         File source = new File(Settings.PLUGIN_FOLDER, fileName);
         File ipfiles = new File(Settings.PLUGIN_FOLDER, ipFileName);
         HashMap<String, String> playerIP = new HashMap<>();
-        HashMap<String, HashResult> playerPSW = new HashMap<>();
+        HashMap<String, EncryptedPassword> playerPSW = new HashMap<>();
         try {
             BufferedReader users;
             BufferedReader ipFile;
@@ -64,22 +64,21 @@ public class RakamakConverter implements Converter {
             while ((line = users.readLine()) != null) {
                 if (line.contains("=")) {
                     String[] arguments = line.split("=");
-                    HashResult hashResult = passwordSecurity.computeHash(hash, arguments[1], arguments[0]);
-                    playerPSW.put(arguments[0], hashResult);
+                    EncryptedPassword encryptedPassword = passwordSecurity.computeHash(hash, arguments[1], arguments[0]);
+                    playerPSW.put(arguments[0], encryptedPassword);
 
                 }
             }
             users.close();
-            for (Entry<String, HashResult> m : playerPSW.entrySet()) {
+            for (Entry<String, EncryptedPassword> m : playerPSW.entrySet()) {
                 String playerName = m.getKey();
-                HashResult psw = playerPSW.get(playerName);
+                EncryptedPassword psw = playerPSW.get(playerName);
                 String ip = useIP ? playerIP.get(playerName) : "127.0.0.1";
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(playerName)
                     .realName(playerName)
                     .ip(ip)
-                    .hash(psw.getHash())
-                    .salt(psw.getSalt())
+                    .hash(psw)
                     .lastLogin(System.currentTimeMillis())
                     .build();
                 database.saveAuth(auth);

@@ -23,7 +23,8 @@ public class XAUTH extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String hash, String password, String salt, String playerName) {
+    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String playerName) {
+        String hash = encryptedPassword.getHash();
         int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
         String saltFromHash = hash.substring(saltPos, saltPos + 12);
         return hash.equals(computeHash(password, saltFromHash, null));

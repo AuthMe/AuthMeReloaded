@@ -8,7 +8,7 @@ import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.security.crypts.HashResult;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.entity.Player;
@@ -37,7 +37,7 @@ public class RecoverEmailCommand extends PlayerCommand {
             }
 
             String thePass = RandomString.generate(Settings.getRecoveryPassLength);
-            HashResult hashNew = commandService.getPasswordSecurity().computeHash(thePass, playerName);
+            EncryptedPassword hashNew = commandService.getPasswordSecurity().computeHash(thePass, playerName);
             PlayerAuth auth;
             if (PlayerCache.getInstance().isAuthenticated(playerName)) {
                 auth = PlayerCache.getInstance().getAuth(playerName);
@@ -57,8 +57,7 @@ public class RecoverEmailCommand extends PlayerCommand {
                 commandService.send(player, MessageKey.INVALID_EMAIL);
                 return;
             }
-            auth.setHash(hashNew.getHash());
-            auth.setSalt(hashNew.getSalt());
+            auth.setPassword(hashNew);
             dataSource.updatePassword(auth);
             plugin.mail.main(auth, thePass);
             commandService.send(player, MessageKey.RECOVERY_EMAIL_SENT_MESSAGE);

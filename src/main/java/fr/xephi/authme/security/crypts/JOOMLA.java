@@ -13,7 +13,8 @@ public class JOOMLA extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String hash, String password, String unusedSalt, String unusedName) {
+    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String unusedName) {
+        String hash = encryptedPassword.getHash();
         String[] hashParts = hash.split(":");
         return hashParts.length == 2 && hash.equals(computeHash(password, hashParts[1], null));
     }

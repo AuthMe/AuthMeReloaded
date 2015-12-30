@@ -8,7 +8,6 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -138,7 +137,7 @@ public class AsynchronousLogin {
 
         String email = pAuth.getEmail();
         boolean passwordVerified = forceLogin || plugin.getPasswordSecurity()
-            .comparePassword(password, pAuth.getHash(), pAuth.getSalt(), realName);
+            .comparePassword(password, pAuth.getPassword(), realName);
 
         if (passwordVerified && player.isOnline()) {
             PlayerAuth auth = PlayerAuth.builder()
@@ -147,8 +146,7 @@ public class AsynchronousLogin {
                 .ip(getIP())
                 .lastLogin(new Date().getTime())
                 .email(email)
-                .hash(pAuth.getHash())
-                .salt(pAuth.getSalt())
+                .hash(pAuth.getPassword())
                 .build();
             database.updateSession(auth);
 

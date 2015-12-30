@@ -55,7 +55,7 @@ public class AsynchronousUnregister {
     public void process() {
         PlayerAuth cachedAuth = PlayerCache.getInstance().getAuth(name);
         if (force || plugin.getPasswordSecurity().comparePassword(
-            password, cachedAuth.getHash(), cachedAuth.getSalt(), player.getName())) {
+            password, cachedAuth.getPassword(), player.getName())) {
             if (!plugin.getDataSource().removeAuth(name)) {
                 m.send(player, MessageKey.ERROR);
                 return;

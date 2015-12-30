@@ -117,7 +117,8 @@ public class WORDPRESS extends UnsaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String hash, String password, String salt, String name) {
+    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name) {
+        String hash = encryptedPassword.getHash();
         String comparedHash = crypt(password, hash);
         return comparedHash.equals(hash);
     }

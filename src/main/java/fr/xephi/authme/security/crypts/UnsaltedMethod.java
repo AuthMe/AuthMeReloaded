@@ -15,8 +15,8 @@ public abstract class UnsaltedMethod implements EncryptionMethod {
     public abstract String computeHash(String password);
 
     @Override
-    public HashResult computeHash(String password, String name) {
-        return new HashResult(computeHash(password));
+    public EncryptedPassword computeHash(String password, String name) {
+        return new EncryptedPassword(computeHash(password));
     }
 
     @Override
@@ -25,8 +25,8 @@ public abstract class UnsaltedMethod implements EncryptionMethod {
     }
 
     @Override
-    public boolean comparePassword(String hash, String password, String salt, String name) {
-        return hash.equals(computeHash(password));
+    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name) {
+        return encryptedPassword.getHash().equals(computeHash(password));
     }
 
     @Override

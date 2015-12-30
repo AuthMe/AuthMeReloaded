@@ -15,11 +15,13 @@ public class BCRYPT2Y extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String hash, String password, String unusedSalt, String unusedName) {
+    public boolean comparePassword(String password, EncryptedPassword encrypted, String unusedName) {
+        String hash = encrypted.getHash();
         if (hash.length() != 60) {
             return false;
         }
         // The salt is the first 29 characters of the hash
+
         String salt = hash.substring(0, 29);
         return hash.equals(computeHash(password, salt, null));
     }

@@ -6,7 +6,9 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -284,13 +286,14 @@ public class MySQL implements DataSource {
             if (!rs.next()) {
                 return null;
             }
-            String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : "";
-            int group = !salt.isEmpty() && !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
+            String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
+            String hash = rs.getString(columnPassword);
+            int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
             int id = rs.getInt(columnID);
             pAuth = PlayerAuth.builder()
                 .name(rs.getString(columnName))
                 .realName(rs.getString(columnRealName))
-                .hash(rs.getString(columnPassword))
+                .hash(new EncryptedPassword(hash, salt))
                 .lastLogin(rs.getLong(columnLastLogin))
                 .ip(rs.getString(columnIp))
                 .locWorld(rs.getString(lastlocWorld))
@@ -298,7 +301,6 @@ public class MySQL implements DataSource {
                 .locY(rs.getDouble(lastlocY))
                 .locZ(rs.getDouble(lastlocZ))
                 .email(rs.getString(columnEmail))
-                .salt(salt)
                 .groupId(group)
                 .build();
             rs.close();
@@ -328,7 +330,7 @@ public class MySQL implements DataSource {
             ResultSet rs;
             String sql;
 
-            boolean useSalt = !columnSalt.isEmpty() || !auth.getSalt().isEmpty();
+            boolean useSalt = !columnSalt.isEmpty() || !StringUtils.isEmpty(auth.getPassword().getSalt());
             sql = "INSERT INTO " + tableName + "("
                 + columnName + "," + columnPassword + "," + columnIp + ","
                 + columnLastLogin + "," + columnRealName
@@ -336,12 +338,12 @@ public class MySQL implements DataSource {
                 + ") VALUES (?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
             pst = con.prepareStatement(sql);
             pst.setString(1, auth.getNickname());
-            pst.setString(2, auth.getHash());
+            pst.setString(2, auth.getPassword().getHash());
             pst.setString(3, auth.getIp());
             pst.setLong(4, auth.getLastLogin());
             pst.setString(5, auth.getRealName());
             if (useSalt) {
-                pst.setString(6, auth.getSalt());
+                pst.setString(6, auth.getPassword().getSalt());
             }
             pst.executeUpdate();
             pst.close();
@@ -513,10 +515,22 @@ public class MySQL implements DataSource {
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
         try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + columnPassword + "=? WHERE " + columnName + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, auth.getHash());
-            pst.setString(2, auth.getNickname());
+            boolean useSalt = !columnSalt.isEmpty();
+            PreparedStatement pst;
+            if (useSalt) {
+                String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?;",
+                    tableName, columnPassword, columnSalt, columnName);
+                pst = con.prepareStatement(sql);
+                pst.setString(1, auth.getPassword().getHash());
+                pst.setString(2, auth.getPassword().getSalt());
+                pst.setString(3, auth.getNickname());
+            } else {
+                String sql = String.format("UPDATE %s SET %s = ? WHERE %s = ?;",
+                    tableName, columnPassword, columnName);
+                pst = con.prepareStatement(sql);
+                pst.setString(1, auth.getPassword().getHash());
+                pst.setString(2, auth.getNickname());
+            }
             pst.executeUpdate();
             pst.close();
             return true;
@@ -708,35 +722,6 @@ public class MySQL implements DataSource {
             String sql = "UPDATE " + tableName + " SET " + columnEmail + " =? WHERE " + columnName + "=?;";
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, auth.getEmail());
-            pst.setString(2, auth.getNickname());
-            pst.executeUpdate();
-            pst.close();
-            return true;
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
-        }
-        return false;
-    }
-
-    /**
-     * Method updateSalt.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
-     */
-    @Override
-    public synchronized boolean updateSalt(PlayerAuth auth) {
-        if (columnSalt.isEmpty()) {
-            return false;
-        }
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + columnSalt + " =? WHERE " + columnName + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, auth.getSalt());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
             pst.close();
@@ -1045,12 +1030,12 @@ public class MySQL implements DataSource {
             ResultSet rs = st.executeQuery("SELECT * FROM " + tableName);
             PreparedStatement pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
             while (rs.next()) {
-                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : "";
-                int group = !salt.isEmpty() && !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
+                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
+                int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
                 PlayerAuth pAuth = PlayerAuth.builder()
                     .name(rs.getString(columnName))
                     .realName(rs.getString(columnRealName))
-                    .hash(rs.getString(columnPassword))
+                    .hash(new EncryptedPassword(rs.getString(columnPassword), salt))
                     .lastLogin(rs.getLong(columnLastLogin))
                     .ip(rs.getString(columnIp))
                     .locWorld(rs.getString(lastlocWorld))
@@ -1058,7 +1043,6 @@ public class MySQL implements DataSource {
                     .locY(rs.getDouble(lastlocY))
                     .locZ(rs.getDouble(lastlocZ))
                     .email(rs.getString(columnEmail))
-                    .salt(salt)
                     .groupId(group)
                     .build();
 
@@ -1089,12 +1073,12 @@ public class MySQL implements DataSource {
             ResultSet rs = st.executeQuery("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             PreparedStatement pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
             while (rs.next()) {
-                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : "";
-                int group = !salt.isEmpty() && !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
+                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
+                int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
                 PlayerAuth pAuth = PlayerAuth.builder()
                     .name(rs.getString(columnName))
                     .realName(rs.getString(columnRealName))
-                    .hash(rs.getString(columnPassword))
+                    .hash(new EncryptedPassword(rs.getString(columnPassword), salt))
                     .lastLogin(rs.getLong(columnLastLogin))
                     .ip(rs.getString(columnIp))
                     .locWorld(rs.getString(lastlocWorld))
@@ -1102,7 +1086,6 @@ public class MySQL implements DataSource {
                     .locY(rs.getDouble(lastlocY))
                     .locZ(rs.getDouble(lastlocZ))
                     .email(rs.getString(columnEmail))
-                    .salt(salt)
                     .groupId(group)
                     .build();
 

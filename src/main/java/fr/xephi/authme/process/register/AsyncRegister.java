@@ -8,7 +8,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.security.crypts.HashResult;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 
@@ -97,12 +97,11 @@ public class AsyncRegister {
             m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
             return;
         }
-        final HashResult hashResult = plugin.getPasswordSecurity().computeHash(password, name);
+        final EncryptedPassword encryptedPassword = plugin.getPasswordSecurity().computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
-            .hash(hashResult.getHash())
-            .salt(hashResult.getSalt())
+            .hash(encryptedPassword)
             .ip(ip)
             .locWorld(player.getLocation().getWorld().getName())
             .locX(player.getLocation().getX())
@@ -124,12 +123,11 @@ public class AsyncRegister {
     }
 
     private void passwordRegister() throws Exception {
-        final HashResult hashResult = plugin.getPasswordSecurity().computeHash(password, name);
+        final EncryptedPassword encryptedPassword = plugin.getPasswordSecurity().computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
-            .hash(hashResult.getHash())
-            .salt(hashResult.getSalt())
+            .hash(encryptedPassword)
             .ip(ip)
             .locWorld(player.getLocation().getWorld().getName())
             .locX(player.getLocation().getX())

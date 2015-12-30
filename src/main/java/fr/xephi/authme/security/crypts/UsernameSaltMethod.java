@@ -7,18 +7,18 @@ import fr.xephi.authme.security.crypts.description.Usage;
 
 /**
  * Common supertype of encryption methods that use a player's username
- * (or something based on it) as salt.
+ * (or something based on it) as embedded salt.
  */
 @Recommendation(Usage.DO_NOT_USE)
 @HasSalt(SaltType.USERNAME)
 public abstract class UsernameSaltMethod implements EncryptionMethod {
 
     @Override
-    public abstract HashResult computeHash(String password, String name);
+    public abstract EncryptedPassword computeHash(String password, String name);
 
     @Override
-    public boolean comparePassword(String hash, String password, String salt, String name) {
-        return hash.equals(computeHash(password, name).getHash());
+    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name) {
+        return encryptedPassword.getHash().equals(computeHash(password, name).getHash());
     }
 
     @Override

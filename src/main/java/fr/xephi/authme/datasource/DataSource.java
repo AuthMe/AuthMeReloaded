@@ -134,15 +134,6 @@ public interface DataSource {
      */
     boolean updateEmail(PlayerAuth auth);
 
-    /**
-     * Method updateSalt.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     */
-    boolean updateSalt(PlayerAuth auth);
-
     void close();
 
     void reload();

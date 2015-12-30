@@ -14,7 +14,8 @@ public class SHA256 extends HexSaltedMethod {
     }
 
     @Override
-    public boolean comparePassword(String hash, String password, String salt, String playerName) {
+    public boolean comparePassword(String password, EncryptedPassword encryptedPassword, String playerName) {
+        String hash = encryptedPassword.getHash();
         String[] line = hash.split("\\$");
         return line.length == 4 && hash.equals(computeHash(password, line[2], ""));
     }

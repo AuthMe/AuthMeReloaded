@@ -7,6 +7,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
@@ -65,10 +66,8 @@ public class BungeeCordMessage implements PluginMessageListener {
                             + " has registered out from one of your server!");
                     } else if ("changepassword".equals(act)) {
                     	final String password = args[2];
-                    	auth.setHash(password);
-                    	if (args.length == 4) {
-                            auth.setSalt(args[3]);
-                        }
+                        final String salt = args.length >= 4 ? args[3] : null;
+                    	auth.setPassword(new EncryptedPassword(password, salt));
                     	PlayerCache.getInstance().updatePlayer(auth);
                         dataSource.updatePassword(auth);
                     }

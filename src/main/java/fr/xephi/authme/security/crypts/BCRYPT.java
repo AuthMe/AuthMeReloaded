@@ -520,14 +520,14 @@ public class BCRYPT implements EncryptionMethod {
     }
 
     @Override
-    public HashResult computeHash(String password, String name) {
+    public EncryptedPassword computeHash(String password, String name) {
         String salt = generateSalt();
-        return new HashResult(hashpw(password, salt), null);
+        return new EncryptedPassword(hashpw(password, salt), null);
     }
 
     @Override
-    public boolean comparePassword(String hash, String password, String salt, String name) {
-        return checkpw(password, hash);
+    public boolean comparePassword(String password, EncryptedPassword hash, String name) {
+        return checkpw(password, hash.getHash());
     }
 
     @Override

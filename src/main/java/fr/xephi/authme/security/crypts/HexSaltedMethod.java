@@ -20,13 +20,13 @@ public abstract class HexSaltedMethod implements EncryptionMethod {
     public abstract String computeHash(String password, String salt, String name);
 
     @Override
-    public HashResult computeHash(String password, String name) {
+    public EncryptedPassword computeHash(String password, String name) {
         String salt = generateSalt();
-        return new HashResult(computeHash(password, salt, null));
+        return new EncryptedPassword(computeHash(password, salt, null));
     }
 
     @Override
-    public abstract boolean comparePassword(String hash, String password, String salt, String name);
+    public abstract boolean comparePassword(String password, EncryptedPassword encryptedPassword, String name);
 
     @Override
     public String generateSalt() {

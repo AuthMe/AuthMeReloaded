@@ -7,7 +7,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.security.crypts.HashResult;
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.command.CommandSender;
 
@@ -68,11 +68,9 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
                 }
 
                 // TODO #358: Do we always pass lowercase name?? In that case we need to do that in PasswordSecurity!
-                HashResult hashResult = commandService.getPasswordSecurity().computeHash(playerPass, playerNameLowerCase);
-                auth.setHash(hashResult.getHash());
-                auth.setSalt(hashResult.getSalt());
+                EncryptedPassword encryptedPassword = commandService.getPasswordSecurity().computeHash(playerPass, playerNameLowerCase);
+                auth.setPassword(encryptedPassword);
 
-                // TODO #358: updatePassword(auth) needs to update the salt, too.
                 if (!dataSource.updatePassword(auth)) {
                     commandService.send(sender, MessageKey.ERROR);
                 } else {

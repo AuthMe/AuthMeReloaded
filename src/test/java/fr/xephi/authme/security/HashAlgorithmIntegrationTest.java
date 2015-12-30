@@ -1,7 +1,7 @@
 package fr.xephi.authme.security;
 
+import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
-import fr.xephi.authme.security.crypts.HashResult;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.WrapperMock;
@@ -49,11 +49,11 @@ public class HashAlgorithmIntegrationTest {
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
                 EncryptionMethod method = algorithm.getClazz().newInstance();
-                HashResult hashResult = method.computeHash("pwd", "name");
+                EncryptedPassword encryptedPassword = method.computeHash("pwd", "name");
                 assertThat("Salt should not be null if method.hasSeparateSalt(), and vice versa. Method: '"
-                    + method + "'", StringUtils.isEmpty(hashResult.getSalt()), equalTo(!method.hasSeparateSalt()));
+                    + method + "'", StringUtils.isEmpty(encryptedPassword.getSalt()), equalTo(!method.hasSeparateSalt()));
                 assertThat("Hash should not be empty for method '" + method + "'",
-                    StringUtils.isEmpty(hashResult.getHash()), equalTo(false));
+                    StringUtils.isEmpty(encryptedPassword.getHash()), equalTo(false));
             }
         }
     }
