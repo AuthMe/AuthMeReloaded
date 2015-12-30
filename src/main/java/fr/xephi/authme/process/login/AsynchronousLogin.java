@@ -136,9 +136,9 @@ public class AsynchronousLogin {
         if (pAuth == null || needsCaptcha())
             return;
 
-        String hash = pAuth.getHash();
         String email = pAuth.getEmail();
-        boolean passwordVerified = forceLogin || plugin.getPasswordSecurity().comparePassword(password, hash, realName);
+        boolean passwordVerified = forceLogin || plugin.getPasswordSecurity()
+            .comparePassword(password, pAuth.getHash(), pAuth.getSalt(), realName);
 
         if (passwordVerified && player.isOnline()) {
             PlayerAuth auth = PlayerAuth.builder()
@@ -147,7 +147,7 @@ public class AsynchronousLogin {
                 .ip(getIP())
                 .lastLogin(new Date().getTime())
                 .email(email)
-                .hash(hash)
+                .hash(pAuth.getHash())
                 .salt(pAuth.getSalt())
                 .build();
             database.updateSession(auth);

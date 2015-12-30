@@ -121,13 +121,8 @@ public class API {
      * @return true if the password is correct, false otherwise
      */
     @Deprecated
-    public static boolean checkPassword(String playerName,
-                                        String passwordToCheck) {
-        if (!isRegistered(playerName))
-            return false;
-        String player = playerName.toLowerCase();
-        PlayerAuth auth = instance.getDataSource().getAuth(player);
-        return passwordSecurity.comparePassword(passwordToCheck, auth.getHash(), playerName);
+    public static boolean checkPassword(String playerName, String passwordToCheck) {
+        return isRegistered(playerName) && passwordSecurity.comparePassword(passwordToCheck, playerName);
     }
 
     /**

@@ -11,7 +11,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-@Recommendation(Usage.ACCEPTABLE)
+// TODO #391: Wordpress algorithm fails sometimes. Fix it and change the Recommendation to "ACCEPTABLE" if appropriate
+@Recommendation(Usage.DO_NOT_USE)
 @HasSalt(value = SaltType.TEXT, length = 9)
 // Note ljacqu 20151228: Wordpress is actually a salted algorithm but salt generation is handled internally
 // and isn't exposed to the outside, so we treat it as an unsalted implementation

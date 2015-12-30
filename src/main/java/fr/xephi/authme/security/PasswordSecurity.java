@@ -1,23 +1,19 @@
 package fr.xephi.authme.security;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashResult;
-import fr.xephi.authme.settings.Settings;
 import org.bukkit.Bukkit;
 
-import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 /**
+ * Manager class for password-related operations.
  */
 public class PasswordSecurity {
 
-    @Deprecated
-    public static final HashMap<String, String> userSalt = new HashMap<>();
     private final DataSource dataSource;
     private final HashAlgorithm algorithm;
     private final boolean supportOldAlgorithm;
@@ -26,49 +22,6 @@ public class PasswordSecurity {
         this.dataSource = dataSource;
         this.algorithm = algorithm;
         this.supportOldAlgorithm = supportOldAlgorithm;
-    }
-
-    @Deprecated
-    public static boolean comparePasswordWithHash(String password, String hash,
-                                                  String playerName) throws NoSuchAlgorithmException {
-        HashAlgorithm algorithm = Settings.getPasswordHash;
-        EncryptionMethod method;
-        try {
-            if (algorithm != HashAlgorithm.CUSTOM) {
-                method = algorithm.getClazz().newInstance();
-            } else {
-                method = null;
-            }
-
-            PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
-            Bukkit.getPluginManager().callEvent(event);
-            method = event.getMethod();
-
-            if (method == null)
-                throw new NoSuchAlgorithmException("Unknown hash algorithm");
-
-            String salt = null;
-            if (method.hasSeparateSalt()) {
-                PlayerAuth auth = AuthMe.getInstance().getDataSource().getAuth(playerName);
-                if (auth == null) {
-                    // User is not in data source, so the result will invariably be wrong because an encryption
-                    // method with hasSeparateSalt() == true NEEDS the salt to evaluate the password
-                    return false;
-                }
-                salt = auth.getSalt();
-            }
-
-            if (method.comparePassword(hash, password, salt, playerName))
-                return true;
-
-            if (Settings.supportOldPassword) {
-                if (compareWithAllEncryptionMethod(password, hash, playerName))
-                    return true;
-            }
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new NoSuchAlgorithmException("Problem with this hash algorithm");
-        }
-        return false;
     }
 
     public HashResult computeHash(String password, String playerName) {
@@ -80,71 +33,92 @@ public class PasswordSecurity {
         return method.computeHash(password, playerName);
     }
 
-    public boolean comparePassword(String hash, String password, String playerName) {
-        return comparePassword(algorithm, hash, password, playerName);
+    public boolean comparePassword(String password, String playerName) {
+        PlayerAuth auth = dataSource.getAuth(playerName);
+        if (auth != null) {
+            return comparePassword(auth.getHash(), auth.getSalt(), password, playerName);
+        }
+        return false;
     }
 
-    public boolean comparePassword(HashAlgorithm algorithm, String hash, String password, String playerName) {
+    public boolean comparePassword(String hash, String salt, String password, String playerName) {
         EncryptionMethod method = initializeEncryptionMethod(algorithm, playerName);
-        String salt = null;
-        if (method.hasSeparateSalt()) {
-            PlayerAuth auth = dataSource.getAuth(playerName);
-            if (auth == null) {
-                // User is not in data source, so the result will invariably be wrong because an encryption
-                // method with hasSeparateSalt() == true NEEDS the salt to evaluate the password
-                return false;
-            }
-            salt = auth.getSalt();
+        // User is not in data source, so the result will invariably be wrong because an encryption
+        // method with hasSeparateSalt() == true NEEDS the salt to evaluate the password
+        if (method.hasSeparateSalt() && salt == null) {
+            return false;
         }
-        return method.comparePassword(hash, password, salt, playerName);
-        // TODO #358: Add logic for Settings.supportOldPassword
+        return method.comparePassword(hash, password, salt, playerName)
+            || supportOldAlgorithm && compareWithAllEncryptionMethods(password, hash, salt, playerName);
     }
 
-    private EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm, String playerName) {
-        EncryptionMethod method;
-        try {
-            method = HashAlgorithm.CUSTOM.equals(algorithm)
-                ? null
-                : algorithm.getClazz().newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalStateException("Constructor for '" + algorithm.getClazz()
-                + "' could not be invoked. (Is there no default constructor?)", e);
-        }
-
-        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
-        Bukkit.getPluginManager().callEvent(event);
-        return event.getMethod();
-    }
-
-    @Deprecated
-    private static boolean compareWithAllEncryptionMethod(String password,
-                                                          String hash, String playerName) {
-        String salt;
-        PlayerAuth auth = AuthMe.getInstance().getDataSource().getAuth(playerName);
-        if (auth == null) {
-            salt = null;
-        } else {
-            salt = auth.getSalt();
-        }
-
-        for (HashAlgorithm algo : HashAlgorithm.values()) {
-            if (algo != HashAlgorithm.CUSTOM) {
-                try {
-                    EncryptionMethod method = algo.getClazz().newInstance();
-                    if (method.comparePassword(hash, password, salt, playerName)) {
-                        PlayerAuth nAuth = AuthMe.getInstance().getDataSource().getAuth(playerName);
-                        if (nAuth != null) {
-                           // nAuth.setHash(getHash(Settings.getPasswordHash, password, playerName));
-                            nAuth.setSalt(userSalt.containsKey(playerName) ? userSalt.get(playerName) : "");
-                            AuthMe.getInstance().getDataSource().updatePassword(nAuth);
-                            AuthMe.getInstance().getDataSource().updateSalt(nAuth);
-                        }
-                        return true;
-                    }
-                } catch (Exception ignored) {
+    /**
+     * Compare the given hash with all available encryption methods to support the migration to a new encryption method.
+     *
+     * @param password   The clear-text password to check
+     * @param hash       The hash to text the password against
+     * @param salt       The salt (or null if none available)
+     * @param playerName The name of the player
+     * @return True if the
+     */
+    private boolean compareWithAllEncryptionMethods(String password, String hash, String salt, String playerName) {
+        for (HashAlgorithm algorithm : HashAlgorithm.values()) {
+            if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
+                EncryptionMethod method = initializeEncryptionMethodWithoutEvent(algorithm);
+                if (method != null && method.comparePassword(hash, password, salt, playerName)) {
+                    hashPasswordForNewAlgorithm(password, playerName);
+                    return true;
                 }
             }
         }
         return false;
     }
+
+    /**
+     * Get the encryption method from the given {@link HashAlgorithm} value and emits a
+     * {@link PasswordEncryptionEvent}. The encryption method from the event is returned,
+     * which may have been changed by an external listener.
+     *
+     * @param algorithm The algorithm to retrieve the encryption method for
+     * @param playerName The name of the player a password will be hashed for
+     * @return The encryption method
+     */
+    private static EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm, String playerName) {
+        EncryptionMethod method = initializeEncryptionMethodWithoutEvent(algorithm);
+        PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
+        Bukkit.getPluginManager().callEvent(event);
+        return event.getMethod();
+    }
+
+    /**
+     * Initialize the encryption method corresponding to the given hash algorithm.
+     *
+     * @param algorithm The algorithm to retrieve the encryption method for
+     * @return The associated encryption method
+     */
+    private static EncryptionMethod initializeEncryptionMethodWithoutEvent(HashAlgorithm algorithm) {
+        try {
+            return HashAlgorithm.CUSTOM.equals(algorithm)
+                ? null
+                : algorithm.getClazz().newInstance();
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new UnsupportedOperationException("Constructor for '" + algorithm.getClazz().getSimpleName()
+                + "' could not be invoked. (Is there no default constructor?)", e);
+        }
+    }
+
+    private void hashPasswordForNewAlgorithm(String password, String playerName) {
+        PlayerAuth auth = dataSource.getAuth(playerName);
+        if (auth != null) {
+            HashResult hashResult = initializeEncryptionMethod(algorithm, playerName)
+                .computeHash(password, playerName);
+
+            // TODO #358: updatePassword() should just take the HashResult..., or at least hash & salt. Idem for setHash
+            auth.setSalt(hashResult.getSalt());
+            auth.setHash(hashResult.getHash());
+            dataSource.updatePassword(auth);
+            dataSource.updateSalt(auth);
+        }
+    }
+
 }

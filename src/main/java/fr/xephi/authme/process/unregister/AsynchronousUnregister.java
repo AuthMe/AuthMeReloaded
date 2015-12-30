@@ -2,6 +2,7 @@ package fr.xephi.authme.process.unregister;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -52,7 +53,9 @@ public class AsynchronousUnregister {
     }
 
     public void process() {
-        if (force || plugin.getPasswordSecurity().comparePassword(password, PlayerCache.getInstance().getAuth(name).getHash(), player.getName())) {
+        PlayerAuth cachedAuth = PlayerCache.getInstance().getAuth(name);
+        if (force || plugin.getPasswordSecurity().comparePassword(
+            password, cachedAuth.getHash(), cachedAuth.getSalt(), player.getName())) {
             if (!plugin.getDataSource().removeAuth(name)) {
                 m.send(player, MessageKey.ERROR);
                 return;

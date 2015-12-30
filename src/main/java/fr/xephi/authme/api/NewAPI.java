@@ -116,9 +116,11 @@ public class NewAPI {
     }
 
     /**
-     * @param playerName
+     * Return whether the player is registered.
      *
-     * @return true if player is registered
+     * @param playerName The player name to check
+     *
+     * @return true if player is registered, false otherwise
      */
     public boolean isRegistered(String playerName) {
         String player = playerName.toLowerCase();
@@ -134,12 +136,7 @@ public class NewAPI {
      * @return true if the password is correct, false otherwise
      */
     public boolean checkPassword(String playerName, String passwordToCheck) {
-        if (!isRegistered(playerName)) {
-            return false;
-        }
-        String player = playerName.toLowerCase();
-        PlayerAuth auth = plugin.getDataSource().getAuth(player);
-        return plugin.getPasswordSecurity().comparePassword(passwordToCheck, auth.getHash(), playerName);
+        return isRegistered(playerName) && plugin.getPasswordSecurity().comparePassword(passwordToCheck, playerName);
     }
 
     /**

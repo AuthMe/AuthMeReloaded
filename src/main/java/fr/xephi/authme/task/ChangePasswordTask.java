@@ -34,7 +34,7 @@ public class ChangePasswordTask implements Runnable {
 
         final String name = player.getName().toLowerCase();
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
-        if (passwordSecurity.comparePassword(oldPassword, auth.getHash(), player.getName())) {
+        if (passwordSecurity.comparePassword(oldPassword, auth.getHash(), auth.getSalt(), player.getName())) {
             HashResult hashResult = passwordSecurity.computeHash(newPassword, name);
             auth.setHash(hashResult.getHash());
             auth.setSalt(hashResult.getSalt());
