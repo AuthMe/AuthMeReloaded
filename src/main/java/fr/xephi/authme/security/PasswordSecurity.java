@@ -5,7 +5,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
-import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 
 /**
  * Manager class for password-related operations.
@@ -14,11 +14,14 @@ public class PasswordSecurity {
 
     private final DataSource dataSource;
     private final HashAlgorithm algorithm;
+    private final PluginManager pluginManager;
     private final boolean supportOldAlgorithm;
 
-    public PasswordSecurity(DataSource dataSource, HashAlgorithm algorithm, boolean supportOldAlgorithm) {
+    public PasswordSecurity(DataSource dataSource, HashAlgorithm algorithm,
+                            PluginManager pluginManager, boolean supportOldAlgorithm) {
         this.dataSource = dataSource;
         this.algorithm = algorithm;
+        this.pluginManager = pluginManager;
         this.supportOldAlgorithm = supportOldAlgorithm;
     }
 
@@ -86,10 +89,10 @@ public class PasswordSecurity {
      * @param playerName The name of the player a password will be hashed for
      * @return The encryption method
      */
-    private static EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm, String playerName) {
+    private EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm, String playerName) {
         EncryptionMethod method = initializeEncryptionMethodWithoutEvent(algorithm);
         PasswordEncryptionEvent event = new PasswordEncryptionEvent(method, playerName);
-        Bukkit.getPluginManager().callEvent(event);
+        pluginManager.callEvent(event);
         return event.getMethod();
     }
 

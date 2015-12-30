@@ -3,6 +3,9 @@ package fr.xephi.authme.security;
 import java.security.SecureRandom;
 import java.util.Random;
 
+/**
+ * Utility for generating random strings.
+ */
 public final class RandomString {
 
     private static final char[] chars = new char[36];
@@ -21,10 +24,23 @@ public final class RandomString {
     private RandomString() {
     }
 
+    /**
+     * Generate a string of the given length consisting of random characters within the range [0-9a-z].
+     *
+     * @param length The length of the random string to generate
+     * @return The random string
+     */
     public static String generate(int length) {
         return generate(length, chars.length);
     }
 
+    /**
+     * Generate a random hexadecimal string of the given length. In other words, the generated string
+     * contains characters only within the range [0-9a-f].
+     *
+     * @param length The length of the random string to generate
+     * @return The random hexadecimal string
+     */
     public static String generateHex(int length) {
         return generate(length, HEX_MAX_INDEX);
     }

@@ -212,7 +212,6 @@ public class AuthMe extends JavaPlugin {
 
         // Set up messages & password security
         messages = Messages.getInstance();
-        passwordSecurity = new PasswordSecurity(getDataSource(), Settings.getPasswordHash, Settings.supportOldPassword);
 
         // Connect to the database and setup tables
         try {
@@ -224,6 +223,9 @@ public class AuthMe extends JavaPlugin {
             stopOrUnload();
             return;
         }
+
+        passwordSecurity = new PasswordSecurity(getDataSource(), Settings.getPasswordHash,
+            Bukkit.getPluginManager(), Settings.supportOldPassword);
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
@@ -525,7 +527,9 @@ public class AuthMe extends JavaPlugin {
         new PerformBackup(plugin).doBackup(PerformBackup.BackupCause.STOP);
 
         // Unload modules
-        moduleManager.unloadModules();
+        if (moduleManager != null) {
+            moduleManager.unloadModules();
+        }
 
         // Close the database
         if (database != null) {

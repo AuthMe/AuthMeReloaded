@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.EncryptedPassword;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -91,6 +92,13 @@ public class SQLite implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnPassword + " VARCHAR(255) NOT NULL;");
             }
             rs.close();
+            if (!columnSalt.isEmpty()) {
+                rs = con.getMetaData().getColumns(null, null, tableName, columnSalt);
+                if (!rs.next()) {
+                    st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnSalt + " VARCHAR(255);");
+                }
+                rs.close();
+            }
             rs = con.getMetaData().getColumns(null, null, tableName, columnIp);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnIp + " VARCHAR(40) NOT NULL;");
@@ -200,7 +208,11 @@ public class SQLite implements DataSource {
         PreparedStatement pst = null;
         try {
             EncryptedPassword password = auth.getPassword();
-            if (columnSalt.isEmpty() && password.getSalt().isEmpty()) {
+            if (columnSalt.isEmpty()) {
+                if (!StringUtils.isEmpty(auth.getPassword().getSalt())) {
+                    ConsoleLogger.showError("Warning! Detected hashed password with separate salt but the salt column "
+                        + "is not set in the config!");
+                }
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword +
                     "," + columnIp + "," + columnLastLogin + "," + columnRealName + ") VALUES (?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
@@ -592,13 +604,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method purgeBanned.
-     *
-     * @param banned List<String>
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
-     */
     @Override
     public void purgeBanned(List<String> banned) {
         PreparedStatement pst = null;

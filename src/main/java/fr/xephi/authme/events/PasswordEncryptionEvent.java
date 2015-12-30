@@ -5,16 +5,17 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * This event is called when we need to compare or get an hash password, for set
- * a custom EncryptionMethod
+ * This event is called when we need to compare or hash password and allows
+ * third-party listeners to change the encryption method. This is typically
+ * done with the {@link fr.xephi.authme.security.HashAlgorithm#CUSTOM} setting.
  *
  * @author Xephi59
  */
 public class PasswordEncryptionEvent extends Event {
 
     private static final HandlerList handlers = new HandlerList();
-    private EncryptionMethod method = null;
-    private String playerName = "";
+    private EncryptionMethod method;
+    private String playerName;
 
     public PasswordEncryptionEvent(EncryptionMethod method, String playerName) {
         super(false);

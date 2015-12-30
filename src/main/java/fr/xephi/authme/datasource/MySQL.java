@@ -162,6 +162,15 @@ public class MySQL implements DataSource {
             }
             rs.close();
 
+            if (!columnSalt.isEmpty()) {
+                rs = md.getColumns(null, null, tableName, columnSalt);
+                if (!rs.next()) {
+                    st.executeUpdate("ALTER TABLE " + tableName
+                        + " ADD COLUMN " + columnSalt + " VARCHAR(255);");
+                }
+                rs.close();
+            }
+
             rs = md.getColumns(null, null, tableName, columnIp);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName
