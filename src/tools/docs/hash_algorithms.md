@@ -1,12 +1,12 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Dec 31 13:26:54 CET 2015. See hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Thu Dec 31 13:41:44 CET 2015. See hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
 
 
-Algorithm | Recommendation | Hash length | ASCII |   | Salt type | Length | Separate? |
---------- | -------------- | ----------- | ----- | - | --------- | ------ | --------- |
+Algorithm | Recommendation | Hash length | ASCII |     | Salt type | Length | Separate?
+--------- | -------------- | ----------- | ----- | --- | --------- | ------ | ---------
 BCRYPT | Recommended | 60 |  | | Text |  | 
 BCRYPT2Y | Recommended | 60 |  | | Text | 22 | 
 CRAZYCRYPT1 | Do not use | 128 |  | | Username |  | 
@@ -16,7 +16,7 @@ JOOMLA | Recommended | 65 |  | | Text | 32 |
 MD5 | Do not use | 32 |  | | None |  | 
 MD5VB | Acceptable | 56 |  | | Text | 16 | 
 MYBB | Acceptable | 32 |  | | Text | 8 | Y
-PBKDF2 | Does not work | 329 |  | | Text | 12 | 
+PBKDF2 | Does not work | 330 |  | | Text | 12 | 
 PBKDF2DJANGO | Acceptable | 77 | Y | | Text | 12 | 
 PHPBB | Acceptable | 34 |  | | Text | 16 | 
 PHPFUSION | Do not use | 64 | Y | |  |  | Y
