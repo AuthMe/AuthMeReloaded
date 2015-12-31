@@ -15,9 +15,9 @@ package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.HasSalt;
-import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 
@@ -25,43 +25,45 @@ import java.io.UnsupportedEncodingException;
 import java.security.SecureRandom;
 
 /**
+ * <p>
  * BCrypt implements OpenBSD-style Blowfish password hashing using the scheme
  * described in "A Future-Adaptable Password Scheme" by Niels Provos and David
  * Mazieres.
- * <p/>
+ * </p><p>
  * This password hashing system tries to thwart off-line password cracking using
  * a computationally-intensive hashing algorithm, based on Bruce Schneier's
  * Blowfish cipher. The work factor of the algorithm is parameterised, so it can
  * be increased as computers get faster.
- * <p/>
+ * </p><p>
  * Usage is really simple. To hash a password for the first time, call the
  * hashpw method with a random salt, like this:
- * <p/>
+ * </p><p>
  * <code>
- * String pw_hash = BCrypt.hashpw(plain_password, BCrypt.gensalt()); <br />
+ * String pw_hash = BCrypt.hashpw(plain_password, BCrypt.gensalt()); <br>
  * </code>
- * <p/>
+ * </p><p>
  * To check whether a plaintext password matches one that has been hashed
  * previously, use the checkpw method:
- * <p/>
+ * </p><p>
  * <code>
- * if (BCrypt.checkpw(candidate_password, stored_hash))<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;System.out.println("It matches");<br />
- * else<br />
- * &nbsp;&nbsp;&nbsp;&nbsp;System.out.println("It does not match");<br />
+ * if (BCrypt.checkpw(candidate_password, stored_hash))<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;System.out.println("It matches");<br>
+ * else<br>
+ * &nbsp;&nbsp;&nbsp;&nbsp;System.out.println("It does not match");<br>
  * </code>
- * <p/>
+ * </p><p>
  * The gensalt() method takes an optional parameter (log_rounds) that determines
  * the computational complexity of the hashing:
- * <p/>
+ * </p><p>
  * <code>
- * String strong_salt = BCrypt.gensalt(10)<br />
- * String stronger_salt = BCrypt.gensalt(12)<br />
+ * String strong_salt = BCrypt.gensalt(10)<br>
+ * String stronger_salt = BCrypt.gensalt(12)<br>
  * </code>
- * <p/>
+ * </p><p>
  * The amount of work increases exponentially (2**log_rounds), so each increment
  * is twice as much work. The default log_rounds is 10, and the valid range is 4
  * to 31.
+ * </p>
  *
  * @author Damien Miller
  * @version 0.2
@@ -102,8 +104,11 @@ public class BCRYPT implements EncryptionMethod {
      * @param d   the byte array to encode
      * @param len the number of bytes to encode
      *
-     * @return base64-encoded string * @throws IllegalArgumentException if the length is invalid * @throws IllegalArgumentException
+     * @return base64-encoded string
+     *
+     * @throws IllegalArgumentException if the length is invalid
      */
+
     private static String encode_base64(byte d[], int len)
         throws IllegalArgumentException {
         int off = 0;
@@ -160,6 +165,7 @@ public class BCRYPT implements EncryptionMethod {
      * @param maxolen the maximum number of bytes to decode
      *
      * @return an array containing the decoded bytes
+     *
      * @throws IllegalArgumentException if maxolen is invalid
      */
     private static byte[] decode_base64(String s, int maxolen)

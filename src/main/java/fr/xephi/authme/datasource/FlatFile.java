@@ -14,6 +14,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 
 /**
@@ -85,6 +86,15 @@ public class FlatFile implements DataSource {
             }
         }
         return false;
+    }
+
+    @Override
+    public HashedPassword getPassword(String user) {
+        PlayerAuth auth = getAuth(user);
+        if (auth != null) {
+            return auth.getPassword();
+        }
+        return null;
     }
 
     /**

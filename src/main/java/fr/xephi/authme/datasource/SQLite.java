@@ -6,7 +6,12 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -165,6 +170,29 @@ public class SQLite implements DataSource {
             close(rs);
             close(pst);
         }
+    }
+
+    @Override
+    public HashedPassword getPassword(String user) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = con.prepareStatement("SELECT " + columnPassword + "," + columnSalt
+                + " FROM " + tableName + " WHERE " + columnName + "=?");
+            pst.setString(1, user);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                return new HashedPassword(rs.getString(columnPassword),
+                    !columnSalt.isEmpty() ? rs.getString(columnSalt) : null);
+            }
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
+        } finally {
+            close(rs);
+            close(pst);
+        }
+        return null;
     }
 
     /**

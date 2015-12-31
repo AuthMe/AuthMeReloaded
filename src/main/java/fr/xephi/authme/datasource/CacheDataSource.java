@@ -9,6 +9,7 @@ import com.google.common.cache.RemovalListeners;
 import com.google.common.cache.RemovalNotification;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +64,16 @@ public class CacheDataSource implements DataSource {
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         return getAuth(user) != null;
+    }
+
+    @Override
+    public HashedPassword getPassword(String user) {
+        user = user.toLowerCase();
+        Optional<PlayerAuth> pAuthOpt = cachedAuths.getIfPresent(user);
+        if (pAuthOpt != null && pAuthOpt.isPresent()) {
+            return pAuthOpt.get().getPassword();
+        }
+        return source.getPassword(user);
     }
 
     /**

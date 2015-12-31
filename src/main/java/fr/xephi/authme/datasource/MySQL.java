@@ -6,10 +6,18 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.security.crypts.XF;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -245,6 +253,25 @@ public class MySQL implements DataSource {
     }
 
     @Override
+    public HashedPassword getPassword(String user) {
+        try (Connection con = getConnection()) {
+            String sql = "SELECT " + columnPassword + "," + columnSalt + " FROM " + tableName
+                + " WHERE " + columnName + "=?;";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, user.toLowerCase());
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return new HashedPassword(rs.getString(columnPassword),
+                    !columnSalt.isEmpty() ? rs.getString(columnSalt) : null);
+            }
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
+        }
+        return null;
+    }
+
+    @Override
     public synchronized PlayerAuth getAuth(String user) {
         PlayerAuth pAuth;
         try (Connection con = getConnection()) {
@@ -280,8 +307,7 @@ public class MySQL implements DataSource {
                 if (rs.next()) {
                     Blob blob = rs.getBlob("data");
                     byte[] bytes = blob.getBytes(1, (int) blob.length());
-                    // TODO #137: Need to find out how the salt is loaded and need to pass it along to setHash()
-                    // pAuth.setPassword(new String(bytes));
+                    pAuth.setPassword(new HashedPassword(XF.getHashFromBlob(bytes)));
                 }
             }
         } catch (SQLException ex) {
@@ -470,11 +496,9 @@ public class MySQL implements DataSource {
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     int id = rs.getInt(columnID);
-                    // Insert password in the correct table
                     pst2 = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
                     pst2.setInt(1, id);
                     pst2.setString(2, "XenForo_Authentication_Core12");
-                    // TODO #137: Need to verify that the salt info is also being passed on...
                     byte[] bytes = auth.getPassword().getHash().getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
@@ -524,7 +548,6 @@ public class MySQL implements DataSource {
                     // Insert password in the correct table
                     sql = "UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;";
                     PreparedStatement pst2 = con.prepareStatement(sql);
-                    // TODO #137: What about the salt?
                     byte[] bytes = auth.getPassword().getHash().getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
@@ -757,7 +780,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByEmail(String email){
+    public synchronized List<String> getAllAuthsByEmail(String email) {
         List<String> countEmail = new ArrayList<>();
         try (Connection con = getConnection()) {
             String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE " + columnEmail + "=?;";
@@ -920,8 +943,7 @@ public class MySQL implements DataSource {
                     if (rs2.next()) {
                         Blob blob = rs2.getBlob("data");
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
-                        // TODO #137: Need to pass the hash and the salt here
-                        // pAuth.setPassword(new String(bytes));
+                        pAuth.setPassword(new HashedPassword(XF.getHashFromBlob(bytes)));
                     }
                     rs2.close();
                 }
@@ -968,8 +990,7 @@ public class MySQL implements DataSource {
                     if (rs2.next()) {
                         Blob blob = rs2.getBlob("data");
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
-                        // TODO #137: Need to pass the hash and the salt here
-                        // pAuth.setHash(new String(bytes));
+                        pAuth.setPassword(new HashedPassword(XF.getHashFromBlob(bytes)));
                     }
                     rs2.close();
                 }

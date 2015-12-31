@@ -36,12 +36,8 @@ public class PasswordSecurity {
     }
 
     public boolean comparePassword(String password, String playerName) {
-        // TODO ljacqu 20151230: Defining a dataSource.getPassword() method would be more efficient
-        PlayerAuth auth = dataSource.getAuth(playerName);
-        if (auth != null) {
-            return comparePassword(password, auth.getPassword(), playerName);
-        }
-        return false;
+        HashedPassword auth = dataSource.getPassword(playerName);
+        return auth != null && comparePassword(password, auth, playerName);
     }
 
     public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
