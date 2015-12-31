@@ -519,6 +519,12 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
+        return updatePassword(auth.getNickname(), auth.getPassword());
+    }
+
+    @Override
+    public boolean updatePassword(String user, HashedPassword password) {
+        user = user.toLowerCase();
         try (Connection con = getConnection()) {
             boolean useSalt = !columnSalt.isEmpty();
             PreparedStatement pst;
@@ -526,29 +532,29 @@ public class MySQL implements DataSource {
                 String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?;",
                     tableName, columnPassword, columnSalt, columnName);
                 pst = con.prepareStatement(sql);
-                pst.setString(1, auth.getPassword().getHash());
-                pst.setString(2, auth.getPassword().getSalt());
-                pst.setString(3, auth.getNickname());
+                pst.setString(1, password.getHash());
+                pst.setString(2, password.getSalt());
+                pst.setString(3, user);
             } else {
                 String sql = String.format("UPDATE %s SET %s = ? WHERE %s = ?;",
                     tableName, columnPassword, columnName);
                 pst = con.prepareStatement(sql);
-                pst.setString(1, auth.getPassword().getHash());
-                pst.setString(2, auth.getNickname());
+                pst.setString(1, password.getHash());
+                pst.setString(2, user);
             }
             pst.executeUpdate();
             pst.close();
             if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
                 String sql = "SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;";
                 pst = con.prepareStatement(sql);
-                pst.setString(1, auth.getNickname());
+                pst.setString(1, user);
                 ResultSet rs = pst.executeQuery();
                 if (rs.next()) {
                     int id = rs.getInt(columnID);
                     // Insert password in the correct table
                     sql = "UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;";
                     PreparedStatement pst2 = con.prepareStatement(sql);
-                    byte[] bytes = auth.getPassword().getHash().getBytes();
+                    byte[] bytes = password.getHash().getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
                     pst2.setBlob(1, blob);

@@ -1,10 +1,9 @@
 package fr.xephi.authme.security;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
-import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -59,9 +58,10 @@ public class PasswordSecurity {
      * the migration to a new encryption method. Upon a successful match, the password
      * will be hashed with the new encryption method and persisted.
      *
-     * @param password          The clear-text password to check
+     * @param password       The clear-text password to check
      * @param hashedPassword The encrypted password to test the clear-text password against
-     * @param playerName        The name of the player
+     * @param playerName     The name of the player
+     *
      * @return True if the
      */
     private boolean compareWithAllEncryptionMethods(String password, HashedPassword hashedPassword,
@@ -83,8 +83,9 @@ public class PasswordSecurity {
      * {@link PasswordEncryptionEvent}. The encryption method from the event is then returned,
      * which may have been changed by an external listener.
      *
-     * @param algorithm The algorithm to retrieve the encryption method for
+     * @param algorithm  The algorithm to retrieve the encryption method for
      * @param playerName The name of the player a password will be hashed for
+     *
      * @return The encryption method
      */
     private EncryptionMethod initializeEncryptionMethod(HashAlgorithm algorithm, String playerName) {
@@ -98,6 +99,7 @@ public class PasswordSecurity {
      * Initialize the encryption method corresponding to the given hash algorithm.
      *
      * @param algorithm The algorithm to retrieve the encryption method for
+     *
      * @return The associated encryption method
      */
     private static EncryptionMethod initializeEncryptionMethodWithoutEvent(HashAlgorithm algorithm) {
@@ -112,13 +114,9 @@ public class PasswordSecurity {
     }
 
     private void hashPasswordForNewAlgorithm(String password, String playerName) {
-        PlayerAuth auth = dataSource.getAuth(playerName);
-        if (auth != null) {
-            HashedPassword hashedPassword = initializeEncryptionMethod(algorithm, playerName)
-                .computeHash(password, playerName);
-            auth.setPassword(hashedPassword);
-            dataSource.updatePassword(auth);
-        }
+        HashedPassword hashedPassword = initializeEncryptionMethod(algorithm, playerName)
+            .computeHash(password, playerName);
+        dataSource.updatePassword(playerName, hashedPassword);
     }
 
 }

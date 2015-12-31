@@ -63,6 +63,8 @@ public interface DataSource {
      */
     boolean updatePassword(PlayerAuth auth);
 
+    boolean updatePassword(String user, HashedPassword password);
+
     /**
      * Method purgeDatabase.
      *

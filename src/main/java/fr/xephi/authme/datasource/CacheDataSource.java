@@ -127,6 +127,16 @@ public class CacheDataSource implements DataSource {
         return result;
     }
 
+    @Override
+    public boolean updatePassword(String user, HashedPassword password) {
+        user = user.toLowerCase();
+        boolean result = source.updatePassword(user, password);
+        if (result) {
+            cachedAuths.refresh(user);
+        }
+        return result;
+    }
+
     /**
      * Method updateSession.
      *
