@@ -35,7 +35,7 @@ public abstract class PlayerCommand implements ExecutableCommand {
 
     /**
      * Return an alternative command (textual representation) that is not restricted to players only.
-     * Example: "authme register &lt;playerName&gt; &lt;password&gt;"
+     * Example: {@code "authme register <playerName> <password>"}
      *
      * @return Alternative command not only for players, or null if not applicable
      */

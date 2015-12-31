@@ -54,10 +54,11 @@ public class CommandService {
     }
 
     /**
-     * 
-     * @param sender CommandSender
-     * @param messageKey MessageKey
-     * @param replacements String...
+     * Send a message to a player.
+     *
+     * @param sender The command sender to send the message to
+     * @param messageKey The message key to send
+     * @param replacements The replacement arguments for the message key's tags
      */
     public void send(CommandSender sender, MessageKey messageKey, String... replacements) {
         messages.send(sender, messageKey, replacements);
@@ -127,7 +128,7 @@ public class CommandService {
     }
 
     /**
-     * Returns the management instance of the plugin.
+     * Return the management instance of the plugin.
      *
      * @return The Management instance linked to the AuthMe instance
      */
@@ -136,8 +137,9 @@ public class CommandService {
     }
 
     /**
-     * 
-     * @return PermissionManager the PermissionManager
+     * Return the permissions manager.
+     *
+     * @return the permissions manager
      */
     public PermissionsManager getPermissionsManager() {
         // TODO ljacqu 20151226: Might be nicer to pass the perm manager via constructor
@@ -145,9 +147,10 @@ public class CommandService {
     }
 
     /**
-     * 
-     * @param key MessageKey
-     * @return StringArray Array of String
+     * Retrieve a message by its message key.
+     *
+     * @param key The message to retrieve
+     * @return The message
      */
     public String[] retrieveMessage(MessageKey key) {
         return messages.retrieve(key);

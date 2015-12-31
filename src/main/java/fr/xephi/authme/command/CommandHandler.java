@@ -49,9 +49,10 @@ public class CommandHandler {
     }
 
     /**
-     * 
-     * @param sender
-     * @param result
+     * Execute the command for the given command sender.
+     *
+     * @param sender The sender which initiated the command
+     * @param result The mapped result
      */
     private void executeCommand(CommandSender sender, FoundCommandResult result) {
         ExecutableCommand executableCommand = result.getCommandDescription().getExecutableCommand();
