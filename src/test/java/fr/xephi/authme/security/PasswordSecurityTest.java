@@ -70,9 +70,7 @@ public class PasswordSecurityTest {
         String playerLowerCase = playerName.toLowerCase();
         String clearTextPass = "myPassTest";
 
-        PlayerAuth auth = mock(PlayerAuth.class);
-        given(auth.getPassword()).willReturn(password);
-        given(dataSource.getAuth(playerName)).willReturn(auth);
+        given(dataSource.getPassword(playerName)).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(true);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.BCRYPT, pluginManager, false);
 
@@ -81,7 +79,7 @@ public class PasswordSecurityTest {
 
         // then
         assertThat(result, equalTo(true));
-        verify(dataSource).getAuth(playerName);
+        verify(dataSource).getPassword(playerName);
         verify(pluginManager).callEvent(any(PasswordEncryptionEvent.class));
         verify(method).comparePassword(clearTextPass, password, playerLowerCase);
     }
@@ -95,8 +93,7 @@ public class PasswordSecurityTest {
         String clearTextPass = "passw0Rd1";
 
         PlayerAuth auth = mock(PlayerAuth.class);
-        given(auth.getPassword()).willReturn(password);
-        given(dataSource.getAuth(playerName)).willReturn(auth);
+        given(dataSource.getPassword(playerName)).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.CUSTOM, pluginManager, false);
 
@@ -105,7 +102,7 @@ public class PasswordSecurityTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(dataSource).getAuth(playerName);
+        verify(dataSource).getPassword(playerName);
         verify(pluginManager).callEvent(any(PasswordEncryptionEvent.class));
         verify(method).comparePassword(clearTextPass, password, playerLowerCase);
     }
@@ -116,7 +113,7 @@ public class PasswordSecurityTest {
         String playerName = "bobby";
         String clearTextPass = "tables";
 
-        given(dataSource.getAuth(playerName)).willReturn(null);
+        given(dataSource.getPassword(playerName)).willReturn(null);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.MD5, pluginManager, false);
 
         // when
@@ -124,7 +121,7 @@ public class PasswordSecurityTest {
 
         // then
         assertThat(result, equalTo(false));
-        verify(dataSource).getAuth(playerName);
+        verify(dataSource).getPassword(playerName);
         verify(pluginManager, never()).callEvent(any(Event.class));
         verify(method, never()).comparePassword(anyString(), any(HashedPassword.class), anyString());
     }
