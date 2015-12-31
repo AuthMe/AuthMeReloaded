@@ -127,7 +127,6 @@ public class PasswordSecurityTest {
         verify(method, never()).comparePassword(anyString(), any(HashedPassword.class), anyString());
     }
 
-    @Ignore
     @Test
     public void shouldTryOtherMethodsForFailedPassword() {
         // given
@@ -140,11 +139,7 @@ public class PasswordSecurityTest {
         // MD5 hash for "Test"
         HashedPassword newPassword = new HashedPassword("0cbc6611f5540bd0809a388dc95a615b");
 
-        PlayerAuth auth = mock(PlayerAuth.class);
-        doCallRealMethod().when(auth).getPassword();
-        doCallRealMethod().when(auth).setPassword(any(HashedPassword.class));
-        auth.setPassword(password);
-        given(dataSource.getAuth(argThat(equalToIgnoringCase(playerName)))).willReturn(auth);
+        given(dataSource.getPassword(argThat(equalToIgnoringCase(playerName)))).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
         given(method.computeHash(clearTextPass, playerLowerCase)).willReturn(newPassword);
         PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.MD5, pluginManager, true);
@@ -157,14 +152,10 @@ public class PasswordSecurityTest {
         // Note ljacqu 20151230: We need to check the player name in a case-insensitive way because the methods within
         // PasswordSecurity may convert the name into all lower-case. This is desired because EncryptionMethod methods
         // should only be invoked with all lower-case names. Data source is case-insensitive itself, so this is fine.
-        verify(dataSource, times(2)).getAuth(argThat(equalToIgnoringCase(playerName)));
+        verify(dataSource).getPassword(argThat(equalToIgnoringCase(playerName)));
         verify(pluginManager, times(2)).callEvent(any(PasswordEncryptionEvent.class));
         verify(method).comparePassword(clearTextPass, password, playerLowerCase);
-        verify(auth).setPassword(newPassword);
-
-        ArgumentCaptor<PlayerAuth> captor = ArgumentCaptor.forClass(PlayerAuth.class);
-        verify(dataSource).updatePassword(captor.capture());
-        assertThat(captor.getValue().getPassword(), equalTo(newPassword));
+        verify(dataSource).updatePassword(playerLowerCase, newPassword);
     }
 
     @Test
