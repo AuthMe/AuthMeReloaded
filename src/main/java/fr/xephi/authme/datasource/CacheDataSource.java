@@ -1,5 +1,11 @@
 package fr.xephi.authme.datasource;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -7,14 +13,9 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalListeners;
 import com.google.common.cache.RemovalNotification;
+
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  */
@@ -315,7 +316,7 @@ public class CacheDataSource implements DataSource {
     /**
      * Method purgeBanned.
      *
-     * @param banned List<String>
+     * @param banned List of String
      *
      * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List)
      */

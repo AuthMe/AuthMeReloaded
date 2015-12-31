@@ -1,5 +1,9 @@
 package fr.xephi.authme.command;
 
+import java.util.List;
+
+import org.bukkit.command.CommandSender;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
@@ -8,9 +12,6 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
-import org.bukkit.command.CommandSender;
-
-import java.util.List;
 
 /**
  * Service for implementations of {@link ExecutableCommand} to execute some common tasks.
@@ -31,6 +32,7 @@ public class CommandService {
      * @param commandMapper Command mapper
      * @param helpProvider Help provider
      * @param messages Messages instance
+     * @param passwordSecurity The Password Security instance
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity) {
@@ -51,6 +53,12 @@ public class CommandService {
         messages.send(sender, messageKey);
     }
 
+    /**
+     * 
+     * @param sender CommandSender
+     * @param messageKey MessageKey
+     * @param replacements String...
+     */
     public void send(CommandSender sender, MessageKey messageKey, String... replacements) {
         messages.send(sender, messageKey, replacements);
     }
@@ -127,11 +135,20 @@ public class CommandService {
         return authMe.getManagement();
     }
 
+    /**
+     * 
+     * @return PermissionManager the PermissionManager
+     */
     public PermissionsManager getPermissionsManager() {
         // TODO ljacqu 20151226: Might be nicer to pass the perm manager via constructor
         return authMe.getPermissionsManager();
     }
 
+    /**
+     * 
+     * @param key MessageKey
+     * @return StringArray Array of String
+     */
     public String[] retrieveMessage(MessageKey key) {
         return messages.retrieve(key);
     }

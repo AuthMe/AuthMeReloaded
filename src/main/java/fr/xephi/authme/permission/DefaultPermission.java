@@ -25,7 +25,11 @@ public enum DefaultPermission {
         this.title = title;
     }
 
-    /** Return the textual representation. */
+    /**
+     *  Return the textual representation.
+     *  
+     *  @return String
+     */
     public String getTitle() {
         return title;
     }

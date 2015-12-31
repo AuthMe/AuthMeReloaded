@@ -13,10 +13,14 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface HasSalt {
 
-    /** The type of the salt. */
+    /** The type of the salt.
+     * @return salttype The SaltType
+     */
     SaltType value();
 
-    /** For text salts, the length of the salt. */
+    /** For text salts, the length of the salt.
+     * @return int Integer
+     */
     int length() default 0;
 
 }

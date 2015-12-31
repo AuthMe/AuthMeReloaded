@@ -5,8 +5,6 @@ package fr.xephi.authme.security.pbkdf2;
  * Parameter data holder for PBKDF2 configuration.
  * </p>
  * <p>
- * <hr />
- * <p>
  * A free Java implementation of Password Based Key Derivation Function 2 as
  * defined by RFC 2898. Copyright (c) 2007 Matthias G&auml;rtner
  * </p>

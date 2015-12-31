@@ -12,7 +12,9 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Recommendation {
 
-    /** The recommendation for using the hash algorithm. */
+    /** The recommendation for using the hash algorithm.
+     * @return Usage The Usage
+     */
     Usage value();
 
 }

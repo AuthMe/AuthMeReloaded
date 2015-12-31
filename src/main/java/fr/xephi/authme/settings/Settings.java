@@ -122,7 +122,7 @@ public final class Settings {
     /**
      * Method reload.
      *
-     * @throws Exception
+     * @throws Exception if something went wrong
      */
     public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
@@ -140,7 +140,6 @@ public final class Settings {
         }
         messageFile = new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + messagesLanguage + ".yml");
     }
-
 
     public static void loadVariables() {
         helpHeader = configFile.getString("settings.helpHeader", "AuthMeReloaded");
@@ -340,6 +339,11 @@ public final class Settings {
         }
     }
 
+    /**
+     * 
+     * @param key the key to set
+     * @param value the value to set
+     */
     public static void setValue(String key, Object value) {
         instance.set(key, value);
         save();
@@ -382,6 +386,7 @@ public final class Settings {
      *
      * @param name String
      * @param ip   String
+     * @param domain String
      *
      * @return boolean
      */
@@ -768,11 +773,21 @@ public final class Settings {
         }
     }
 
+    /**
+     * 
+     * @param path
+     * @return
+     */
     private static boolean contains(String path) {
         return configFile.contains(path);
     }
 
     // public because it's used in AuthMe at one place
+    /**
+     * 
+     * @param path String
+     * @param value String
+     */
     public void set(String path, Object value) {
         configFile.set(path, value);
     }

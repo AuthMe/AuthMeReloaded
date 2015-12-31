@@ -1,8 +1,8 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.cache.auth.PlayerAuth;
-
 import java.util.List;
+
+import fr.xephi.authme.cache.auth.PlayerAuth;
 
 /**
  */
@@ -67,7 +67,7 @@ public interface DataSource {
      *
      * @param until long
      *
-     * @return List<String>
+     * @return List of String
      */
     List<String> autoPurgeDatabase(long until);
 
@@ -103,7 +103,7 @@ public interface DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return List<String>
+     * @return List of String
      */
     List<String> getAllAuthsByName(PlayerAuth auth);
 
@@ -112,7 +112,7 @@ public interface DataSource {
      *
      * @param ip String
      *
-     * @return List<String> * @throws Exception
+     * @return List of String * @throws Exception
      */
     List<String> getAllAuthsByIp(String ip);
 
@@ -121,7 +121,7 @@ public interface DataSource {
      *
      * @param email String
      *
-     * @return List<String> * @throws Exception
+     * @return List of String * @throws Exception
      */
     List<String> getAllAuthsByEmail(String email);
 
@@ -141,7 +141,7 @@ public interface DataSource {
     /**
      * Method purgeBanned.
      *
-     * @param banned List<String>
+     * @param banned List of String
      */
     void purgeBanned(List<String> banned);
 
@@ -195,14 +195,14 @@ public interface DataSource {
     /**
      * Method getAllAuths.
      *
-     * @return List<PlayerAuth>
+     * @return List of PlayerAuth
      */
     List<PlayerAuth> getAllAuths();
 
     /**
      * Method getLoggedPlayers.
      *
-     * @return List<PlayerAuth>
+     * @return List of PlayerAuth
      */
     List<PlayerAuth> getLoggedPlayers();
 

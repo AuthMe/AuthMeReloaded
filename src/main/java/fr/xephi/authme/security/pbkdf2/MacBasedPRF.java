@@ -1,15 +1,16 @@
 package fr.xephi.authme.security.pbkdf2;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 /**
- * Default PRF implementation based on standard javax.crypt.Mac mechanisms.
  * <p>
- * <hr />
+ * Default PRF implementation based on standard javax.crypt.Mac mechanisms.
+ * </p>
  * <p>
  * A free Java implementation of Password Based Key Derivation Function 2 as
  * defined by RFC 2898. Copyright (c) 2007 Matthias G&auml;rtner
