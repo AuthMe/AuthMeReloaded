@@ -1,31 +1,26 @@
 package fr.xephi.authme.settings;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.regex.Pattern;
-
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.util.Wrapper;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  */
@@ -313,21 +308,17 @@ public final class Settings {
         if (!EMAIL_FILE.exists()) {
             plugin.saveResource("email.html", false);
         }
-        StringBuilder str = new StringBuilder();
         try {
-            BufferedReader in = new BufferedReader(new FileReader(EMAIL_FILE));
-            String s;
-            while ((s = in.readLine()) != null)
-                str.append(s);
-            in.close();
-        } catch (IOException ignored) {
+            return Files.toString(EMAIL_FILE, Charsets.UTF_8);
+        } catch (IOException e) {
+            ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.writeStackTrace(e);
+            return "";
         }
-        return str.toString();
     }
 
     /**
-     * 
-     * @param key the key to set
+     * @param key   the key to set
      * @param value the value to set
      */
     public static void setValue(String key, Object value) {
@@ -370,8 +361,8 @@ public final class Settings {
      * return false if ip and name doesn't match with player that join the
      * server, so player has a restricted access
      *
-     * @param name String
-     * @param ip   String
+     * @param name   String
+     * @param ip     String
      * @param domain String
      *
      * @return boolean
@@ -387,14 +378,12 @@ public final class Settings {
             String testIp = args[1];
             if (testName.equalsIgnoreCase(name)) {
                 nameFound = true;
-                if (ip != null)
-                {
+                if (ip != null) {
                     if (testIp.equalsIgnoreCase(ip)) {
                         trueOnce = true;
                     }
                 }
-                if (domain != null)
-                {
+                if (domain != null) {
                     if (testIp.equalsIgnoreCase(domain)) {
                         trueOnce = true;
                     }
@@ -728,10 +717,9 @@ public final class Settings {
             changes = true;
         }
 
-        if (!contains("settings.preventOtherCase"))
-        {
-        	set("settings.preventOtherCase", false);
-        	changes = true;
+        if (!contains("settings.preventOtherCase")) {
+            set("settings.preventOtherCase", false);
+            changes = true;
         }
 
         if (contains("Email.mailText")) {
@@ -740,15 +728,14 @@ public final class Settings {
         }
 
         if (!contains("Security.stop.kickPlayersBeforeStopping")) {
-        	set("Security.stop.kickPlayersBeforeStopping", true);
-        	changes = true;
+            set("Security.stop.kickPlayersBeforeStopping", true);
+            changes = true;
         }
 
         if (!contains("Email.emailOauth2Token"))
-        	set("Email.emailOauth2Token", "");
+            set("Email.emailOauth2Token", "");
 
-        if (!contains("Hook.sendPlayerTo"))
-        {
+        if (!contains("Hook.sendPlayerTo")) {
             set("Hooks.sendPlayerTo", "");
             changes = true;
         }
@@ -760,8 +747,8 @@ public final class Settings {
     }
 
     /**
-     * 
      * @param path
+     *
      * @return
      */
     private static boolean contains(String path) {
@@ -769,9 +756,9 @@ public final class Settings {
     }
 
     // public because it's used in AuthMe at one place
+
     /**
-     * 
-     * @param path String
+     * @param path  String
      * @param value String
      */
     public void set(String path, Object value) {
