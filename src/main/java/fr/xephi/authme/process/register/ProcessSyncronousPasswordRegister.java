@@ -118,8 +118,8 @@ public class ProcessSyncronousPasswordRegister implements Runnable {
         }
 
         if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-            player.setWalkSpeed(0.0f);
-            player.setFlySpeed(0.0f);
+            player.setWalkSpeed(0.2f);
+            player.setFlySpeed(0.1f);
         }
 
         // The LoginEvent now fires (as intended) after everything is processed
