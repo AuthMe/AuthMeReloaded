@@ -310,8 +310,9 @@ public final class Settings {
     }
 
     private static String loadEmailText() {
-        if (!EMAIL_FILE.exists())
-            saveDefaultEmailText();
+        if (!EMAIL_FILE.exists()) {
+            plugin.saveResource("email.html", false);
+        }
         StringBuilder str = new StringBuilder();
         try {
             BufferedReader in = new BufferedReader(new FileReader(EMAIL_FILE));
@@ -322,21 +323,6 @@ public final class Settings {
         } catch (IOException ignored) {
         }
         return str.toString();
-    }
-
-    private static void saveDefaultEmailText() {
-        InputStream file = plugin.getResource("email.html");
-        StringBuilder str = new StringBuilder();
-        try {
-            BufferedReader in = new BufferedReader(new InputStreamReader(file, Charset.forName("utf-8")));
-            String s;
-            while ((s = in.readLine()) != null)
-                str.append(s);
-            in.close();
-            Files.touch(EMAIL_FILE);
-            Files.write(str.toString(), EMAIL_FILE, Charsets.UTF_8);
-        } catch (Exception ignored) {
-        }
     }
 
     /**
