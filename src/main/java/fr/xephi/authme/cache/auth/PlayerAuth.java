@@ -1,10 +1,11 @@
 package fr.xephi.authme.cache.auth;
 
-import fr.xephi.authme.security.crypts.HashedPassword;
-import org.bukkit.Location;
-
 import static com.google.common.base.Objects.firstNonNull;
 import static com.google.common.base.Preconditions.checkNotNull;
+
+import org.bukkit.Location;
+
+import fr.xephi.authme.security.crypts.HashedPassword;
 
 
 /**
@@ -24,7 +25,7 @@ public class PlayerAuth {
     private String realName;
 
     /**
-     *
+     * @param serialized String
      */
     public PlayerAuth(String serialized) {
         this.deserialize(serialized);
@@ -340,6 +341,8 @@ public class PlayerAuth {
 
     /**
      * Method to deserialize PlayerAuth
+     * 
+     * @param str String
      */
     public void deserialize(String str) {
         String[] args = str.split(";");

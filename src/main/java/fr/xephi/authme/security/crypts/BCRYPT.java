@@ -13,6 +13,9 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 package fr.xephi.authme.security.crypts;
 
+import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
+
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
@@ -20,9 +23,6 @@ import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
-
-import java.io.UnsupportedEncodingException;
-import java.security.SecureRandom;
 
 /**
  * <p>
@@ -64,7 +64,6 @@ import java.security.SecureRandom;
  * is twice as much work. The default log_rounds is 10, and the valid range is 4
  * to 31.
  * </p>
- *
  * @author Damien Miller
  * @version 0.2
  */

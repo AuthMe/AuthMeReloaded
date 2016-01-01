@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Denotes an encryption algorithm that is restricted to the ASCII charset.
+ * Denotes a hashing algorithm that is restricted to the ASCII charset.
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

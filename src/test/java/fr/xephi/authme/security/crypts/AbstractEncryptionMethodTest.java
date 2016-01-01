@@ -142,30 +142,44 @@ public abstract class AbstractEncryptionMethodTest {
         return method.comparePassword(password, hashes.get(password), USERNAME);
     }
 
-    // @org.junit.Test public void a() { AbstractEncryptionMethodTest.generateTest(); }
-    // TODO #364: Remove this method
+    /**
+     * Generates a test class for a given encryption method. Simply create a test class and run the following code,
+     * replacing {@code XXX} with the actual class:
+     * <p>
+     * <code>@org.junit.Test public void generate() { AbstractEncryptionMethodTest.generateTest(new XXX()); }</code>
+     * <p>
+     * The output is the entire test class.
+     *
+     * @param method The method to create a test class for
+     */
     static void generateTest(EncryptionMethod method) {
         String className = method.getClass().getSimpleName();
+        // Create javadoc and "public class extends" and the constructor call "super(new Class(),"
         System.out.println("/**\n * Test for {@link " + className + "}.\n */");
         System.out.println("public class " + className + "Test extends AbstractEncryptionMethodTest {");
         System.out.println("\n\tpublic " + className + "Test() {");
         System.out.println("\t\tsuper(new " + className + "(),");
 
+        // Iterate through the GIVEN_PASSWORDS and generate a hash so we can always check it later
         String delim = ",  ";
         for (String password : GIVEN_PASSWORDS) {
             if (password.equals(GIVEN_PASSWORDS[GIVEN_PASSWORDS.length - 1])) {
                 delim = "); ";
             }
 
+            // Encr. method uses separate salt, so we need to call the constructor that takes HashedPassword instances
             if (method.hasSeparateSalt()) {
                 HashedPassword hashedPassword = method.computeHash(password, USERNAME);
                 System.out.println(String.format("\t\tnew HashedPassword(\"%s\", \"%s\")%s// %s",
                     hashedPassword.getHash(), hashedPassword.getSalt(), delim, password));
             } else {
+                // Encryption method doesn't have separate salt, so simply pass the generated hash to the constructor
                 System.out.println("\t\t\"" + method.computeHash(password, USERNAME).getHash()
                     + "\"" + delim + "// " + password);
             }
         }
+
+        // Close the constructor and class declarations
         System.out.println("\t}");
         System.out.println("\n}");
     }

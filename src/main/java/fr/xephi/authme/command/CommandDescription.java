@@ -12,12 +12,13 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Arrays.asList;
 
 /**
- * Command description - defines which labels ("names") will lead to a command and points to the
+ * Command description – defines which labels ("names") will lead to a command and points to the
  * {@link ExecutableCommand} implementation that executes the logic of the command.
  *
- * CommandDescription instances are built hierarchically and have one parent or {@code null} for base commands
- * (main commands such as /authme) and may have multiple children extending the mapping of the parent: e.g. if
- * /authme has a child whose label is "register", then "/authme register" is the command that the child defines.
+ * CommandDescription instances are built hierarchically: they have one parent, or {@code null} for base commands
+ * (main commands such as {@code /authme}), and may have multiple children extending the mapping of the parent: e.g. if
+ * {@code /authme} has a child whose label is {@code "register"}, then {@code /authme register} is the command that
+ * the child defines.
  */
 public class CommandDescription {
 
@@ -102,10 +103,11 @@ public class CommandDescription {
     }
 
     /**
-     * Get all relative labels of this command. For example, if this object describes "/authme register" and
-     * "/authme r", then "r" and "register" are the relative labels, whereas "authme" is the label of the parent.
+     * Return all relative labels of this command. For example, if this object describes {@code /authme register} and
+     * {@code /authme r}, then it will return a list with {@code register} and {@code r}. The parent label
+     * {@code authme} is not returned.
      *
-     * @return All relative labels.
+     * @return All labels of the command description.
      */
     public List<String> getLabels() {
         return labels;

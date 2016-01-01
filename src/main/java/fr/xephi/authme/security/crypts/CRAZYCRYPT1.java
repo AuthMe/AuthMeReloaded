@@ -10,8 +10,6 @@ import fr.xephi.authme.security.crypts.description.HasSalt;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 
-@Recommendation(Usage.DO_NOT_USE)
-@HasSalt(SaltType.USERNAME)
 public class CRAZYCRYPT1 extends UsernameSaltMethod {
 
     private static final char[] CRYPTCHARS =

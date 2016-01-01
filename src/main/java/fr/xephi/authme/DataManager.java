@@ -1,18 +1,19 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 
 /**
  */
@@ -65,7 +66,7 @@ public class DataManager {
     /**
      * Method purgeAntiXray.
      *
-     * @param cleared List<String>
+     * @param cleared List of String
      */
     public synchronized void purgeAntiXray(List<String> cleared) {
         int i = 0;
@@ -90,7 +91,7 @@ public class DataManager {
     /**
      * Method purgeLimitedCreative.
      *
-     * @param cleared List<String>
+     * @param cleared List of String
      */
     public synchronized void purgeLimitedCreative(List<String> cleared) {
         int i = 0;
@@ -127,7 +128,7 @@ public class DataManager {
     /**
      * Method purgeDat.
      *
-     * @param cleared List<String>
+     * @param cleared List of String
      */
     public synchronized void purgeDat(List<String> cleared) {
         int i = 0;
@@ -160,7 +161,7 @@ public class DataManager {
     /**
      * Method purgeEssentials.
      *
-     * @param cleared List<String>
+     * @param cleared List of String
      */
     @SuppressWarnings("deprecation")
     public void purgeEssentials(List<String> cleared) {

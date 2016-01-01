@@ -8,20 +8,17 @@ import java.security.SecureRandom;
 /**
  * <p>
  * Request for Comments: 2898 PKCS #5: Password-Based Cryptography Specification
- * <p>
+ * </p><p>
  * Version 2.0
- * <p>
+ * </p>
  * <p>
  * PBKDF2 (P, S, c, dkLen)
- * <p>
- * <p>
+ * </p>
  * Options:
  * <ul>
  * <li>PRF underlying pseudorandom function (hLen denotes the length in octets
  * of the pseudorandom function output). PRF is pluggable.</li>
  * </ul>
- * <p>
- * <p>
  * Input:
  * <ul>
  * <li>P password, an octet string</li>
@@ -30,14 +27,10 @@ import java.security.SecureRandom;
  * <li>dkLen intended length in octets of the derived key, a positive integer,
  * at most (2^32 - 1) * hLen</li>
  * </ul>
- * <p>
- * <p>
  * Output:
  * <ul>
  * <li>DK derived key, a dkLen-octet string</li>
  * </ul>
- * <p>
- * <hr />
  * <p>
  * A free Java implementation of Password Based Key Derivation Function 2 as
  * defined by RFC 2898. Copyright (c) 2007 Matthias G&auml;rtner
@@ -115,13 +108,14 @@ public class PBKDF2Engine implements PBKDF2 {
      * ISO-8559-1 encoding. Output result as
      * &quot;Salt:iteration-count:PBKDF2&quot; with binary data in hexadecimal
      * encoding.
-     * <p/>
+     * <p>
      * Example: Password &quot;password&quot; (without the quotes) leads to
      * 48290A0B96C426C3:1000:973899B1D4AFEB3ED371060D0797E0EE0142BD04
-     *
+     * </p>
      * @param args Supply the password as argument.
      *
-     * @throws IOException * @throws NoSuchAlgorithmException * @throws NoSuchAlgorithmException
+     * @throws IOException an ioexception occured
+     * @throws NoSuchAlgorithmException a NoSuchAlgorithmException occured
      */
     public static void main(String[] args)
         throws IOException, NoSuchAlgorithmException {
@@ -266,8 +260,8 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Integer division with ceiling function.
      *
-     * @param a
-     * @param b
+     * @param a Integer
+     * @param b Integer
      *
      * @return ceil(a/b) * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
      * 2.</a>
@@ -288,7 +282,7 @@ public class PBKDF2Engine implements PBKDF2 {
      * @param prf        Pseudo Random Function
      * @param S          Salt as array of bytes
      * @param c          Iteration count
-     * @param blockIndex
+     * @param blockIndex Integer
      *
      * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
      * 3.</a>
@@ -314,8 +308,8 @@ public class PBKDF2Engine implements PBKDF2 {
      * Block-Xor. Xor source bytes into destination byte buffer. Destination
      * buffer must be same length or less than source buffer.
      *
-     * @param dest
-     * @param src
+     * @param dest byte array
+     * @param src byte array
      */
     protected void xor(byte[] dest, byte[] src) {
         for (int i = 0; i < dest.length; i++) {
@@ -326,9 +320,9 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Four-octet encoding of the integer i, most significant octet first.
      *
-     * @param dest
-     * @param offset
-     * @param i
+     * @param dest byte array
+     * @param offset Integer
+     * @param i Integer
      *
      * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
      * 3.</a>
