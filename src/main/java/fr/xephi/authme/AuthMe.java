@@ -75,7 +75,6 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import fr.xephi.authme.settings.custom.DatabaseSettings;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
@@ -438,7 +437,7 @@ public class AuthMe extends JavaPlugin {
         // Set up the API
         api = new NewAPI(this);
 
-        // Setup the old deprecated API
+        // Set up the deprecated API
         new API(this);
     }
 
@@ -452,7 +451,6 @@ public class AuthMe extends JavaPlugin {
         try {
             settings = new Settings(this);
             Settings.reload();
-            // DatabaseSettings databaseSettings = new DatabaseSettings();
         } catch (Exception e) {
             ConsoleLogger.writeStackTrace(e);
             ConsoleLogger.showError("Can't load the configuration file... Something went wrong, to avoid security issues the server will shutdown!");
@@ -987,7 +985,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Return the management instance.
-     *
+     * 
      * @return management The Management
      */
     public Management getManagement() {
