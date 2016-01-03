@@ -33,6 +33,7 @@ public class AsynchronousLogin {
     private final AuthMe plugin;
     private final DataSource database;
     private final Messages m;
+    private final String ip;
 
     /**
      * Constructor for AsynchronousLogin.
@@ -52,10 +53,7 @@ public class AsynchronousLogin {
         this.forceLogin = forceLogin;
         this.plugin = plugin;
         this.database = data;
-    }
-
-    protected String getIP() {
-        return plugin.getIP(player);
+        this.ip = plugin.getIP(player);
     }
 
     protected boolean needsCaptcha() {
@@ -87,7 +85,9 @@ public class AsynchronousLogin {
             m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
         }
-        if (!database.isAuthAvailable(name)) {
+
+        PlayerAuth pAuth = database.getAuth(name);
+        if (pAuth == null) {
             m.send(player, MessageKey.USER_NOT_REGISTERED);
             if (LimboCache.getInstance().hasLimboPlayer(name)) {
                 LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
@@ -97,42 +97,45 @@ public class AsynchronousLogin {
                 } else {
                     msg = m.retrieve(MessageKey.REGISTER_MESSAGE);
                 }
-                BukkitTask msgT = Bukkit.getScheduler().runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, Settings.getWarnMessageInterval));
+                BukkitTask msgT = Bukkit.getScheduler().runTaskAsynchronously(plugin,
+                    new MessageTask(plugin, name, msg, Settings.getWarnMessageInterval));
                 LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
             }
             return null;
         }
-        if (Settings.getMaxLoginPerIp > 0 && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS) && !getIP().equalsIgnoreCase("127.0.0.1") && !getIP().equalsIgnoreCase("localhost")) {
-            if (plugin.isLoggedIp(name, getIP())) {
-                m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
-                return null;
-            }
-        }
-        PlayerAuth pAuth = database.getAuth(name);
-        if (pAuth == null) {
-            m.send(player, MessageKey.USER_NOT_REGISTERED);
-            return null;
-        }
+
         if (!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
             m.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
             return null;
         }
 
-        if (Settings.preventOtherCase && !player.getName().equals(pAuth.getRealName())) {
-        	m.send(player, MessageKey.USERNAME_ALREADY_ONLINE_ERROR);
-        	return null;
+        if (Settings.getMaxLoginPerIp > 0
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
+            if (plugin.isLoggedIp(name, ip)) {
+                m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
+                return null;
+            }
         }
+
         AuthMeAsyncPreLoginEvent event = new AuthMeAsyncPreLoginEvent(player);
         Bukkit.getServer().getPluginManager().callEvent(event);
-        if (!event.canLogin())
+        if (!event.canLogin()) {
             return null;
+        }
         return pAuth;
     }
 
     public void process() {
         PlayerAuth pAuth = preAuth();
-        if (pAuth == null || needsCaptcha())
+        if (pAuth == null || needsCaptcha()) {
             return;
+        }
+
+        if (pAuth.getIp().equals("127.0.0.1") && !pAuth.getIp().equals(ip)) {
+            pAuth.setIp(ip);
+            database.saveAuth(pAuth);
+        }
 
         String email = pAuth.getEmail();
         boolean passwordVerified = forceLogin || plugin.getPasswordSecurity()
@@ -142,7 +145,7 @@ public class AsynchronousLogin {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
                 .realName(realName)
-                .ip(getIP())
+                .ip(ip)
                 .lastLogin(new Date().getTime())
                 .email(email)
                 .password(pAuth.getPassword())
@@ -183,14 +186,16 @@ public class AsynchronousLogin {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            ProcessSyncronousPlayerLogin syncronousPlayerLogin = new ProcessSyncronousPlayerLogin(player, plugin, database);
-            if (syncronousPlayerLogin.getLimbo() != null) {
-                if (syncronousPlayerLogin.getLimbo().getTimeoutTaskId() != null)
-                    syncronousPlayerLogin.getLimbo().getTimeoutTaskId().cancel();
-                if (syncronousPlayerLogin.getLimbo().getMessageTaskId() != null)
-                    syncronousPlayerLogin.getLimbo().getMessageTaskId().cancel();
+            ProcessSyncPlayerLogin syncPlayerLogin = new ProcessSyncPlayerLogin(player, plugin, database);
+            if (syncPlayerLogin.getLimbo() != null) {
+                if (syncPlayerLogin.getLimbo().getTimeoutTaskId() != null) {
+                    syncPlayerLogin.getLimbo().getTimeoutTaskId().cancel();
+                }
+                if (syncPlayerLogin.getLimbo().getMessageTaskId() != null) {
+                    syncPlayerLogin.getLimbo().getMessageTaskId().cancel();
+                }
             }
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, syncronousPlayerLogin);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, syncPlayerLogin);
         } else if (player.isOnline()) {
             if (!Settings.noConsoleSpam)
                 ConsoleLogger.info(realName + " used the wrong password");
