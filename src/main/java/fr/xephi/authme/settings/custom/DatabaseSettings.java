@@ -1,121 +1,109 @@
 package fr.xephi.authme.settings.custom;
 
-import java.io.File;
+import fr.xephi.authme.settings.custom.domain.Comment;
+import fr.xephi.authme.settings.custom.domain.Property;
+import fr.xephi.authme.settings.custom.domain.SettingsClass;
 
-import fr.xephi.authme.settings.custom.annotations.Comment;
-import fr.xephi.authme.settings.custom.annotations.Type;
-import fr.xephi.authme.settings.custom.annotations.Type.SettingType;
+import static fr.xephi.authme.settings.custom.domain.Property.newProperty;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.BOOLEAN;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.STRING;
 
-public class DatabaseSettings extends CustomSetting {
+public class DatabaseSettings implements SettingsClass {
 
 	@Comment({"What type of database do you want to use?",
 			"Valid values: sqlite, mysql"})
-	@Type(SettingType.String)
-	public String backend = "sqlite";
+    public static final Property<String> BACKEND =
+        newProperty(STRING, "DataSource.backend", "sqlite");
 
 	@Comment("Enable database caching, should improve database performance")
-	@Type(SettingType.Boolean)
-	public boolean caching = true;
+    public static final Property<Boolean> USE_CACHING =
+        newProperty(BOOLEAN, "DataSource.caching", true);
 
 	@Comment("Database host address")
-	@Type(SettingType.String)
-	public String mySQLHost = "127.0.0.1";
+    public static final Property<String> MYSQL_HOST =
+        newProperty(STRING, "DataSource.mySQLHost", "127.0.0.1");
 
 	@Comment("Database port")
-	@Type(SettingType.String)
-	public String mySQLPort = "3306";
+    public static final Property<String> MYSQL_PORT =
+        newProperty(STRING, "DataSource.mySQLPort", "3306");
 
 	@Comment("Username about Database Connection Infos")
-	@Type(SettingType.String)
-	public String mySQLUsername = "authme";
+    public static final Property<String> MYSQL_USERNAME =
+        newProperty(STRING, "DataSource.mySQLUsername", "authme");
 
 	@Comment("Password about Database Connection Infos")
-	@Type(SettingType.String)
-	public String mySQLPassword = "12345";
+    public static final Property<String> MYSQL_PASSWORD =
+        newProperty(STRING, "DataSource.mySQLPassword", "123456");
 
 	@Comment("Database Name, use with converters or as SQLITE database name")
-	@Type(SettingType.String)
-	public String mySQLDatabase = "authme";
+    public static final Property<String> MYSQL_DATABASE =
+        newProperty(STRING, "DataSource.mySQLDatabase", "authme");
 
 	@Comment("Table of the database")
-	@Type(SettingType.String)
-	public String mySQLTablename = "authme";
+    public static final Property<String> MYSQL_TABLE =
+        newProperty(STRING, "DataSource.mySQLTablename", "authme");
 
 	@Comment("Column of IDs to sort data")
-	@Type(SettingType.String)
-	public String mySQLColumnId = "id";
+    public static final Property<String> MYSQL_COL_ID =
+        newProperty(STRING, "DataSource.mySQLColumnId", "id");
 
 	@Comment("Column for storing or checking players nickname")
-	@Type(SettingType.String)
-	public String mySQLColumnName = "username";
+    public static final Property<String> MYSQL_COL_NAME =
+        newProperty(STRING, "DataSource.mySQLColumnName", "username");
 
 	@Comment("Column for storing or checking players RealName ")
-	@Type(SettingType.String)
-	public String mySQLColumnRealName = "realname";
+    public static final Property<String> MYSQL_COL_REALNAME =
+        newProperty(STRING, "DataSource.mySQLRealName", "realname");
 
 	@Comment("Column for storing players passwords")
-	@Type(SettingType.String)
-	public String mySQLColumnPassword = "password";
+    public static final Property<String> MYSQL_COL_PASSWORD =
+        newProperty(STRING, "DataSource.mySQLColumnPassword", "password");
 
 	@Comment("Column for storing players passwords salts")
-	@Type(SettingType.String)
-	public String mySQLColumnSalt = "";
+    public static final Property<String> MYSQL_COL_SALT =
+        newProperty(STRING, "ExternalBoardOptions.mySQLColumnSalt", "");
 
 	@Comment("Column for storing players emails")
-	@Type(SettingType.String)
-	public String mySQLColumnEmail = "email";
+    public static final Property<String> MYSQL_COL_EMAIL =
+        newProperty(STRING, "DataSource.mySQLColumnEmail", "email");
 
 	@Comment("Column for storing if a player is logged in or not")
-	@Type(SettingType.String)
-	public String mySQLColumnLogged = "isLogged";
+    public static final Property<String> MYSQL_COL_ISLOGGED =
+        newProperty(STRING, "DataSource.mySQLColumnLogged", "isLogged");
 
 	@Comment("Column for storing players ips")
-	@Type(SettingType.String)
-	public String mySQLColumnIp = "ip";
+    public static final Property<String> MYSQL_COL_IP =
+        newProperty(STRING, "DataSource.mySQLColumnIp", "ip");
 
 	@Comment("Column for storing players lastlogins")
-	@Type(SettingType.String)
-	public String mySQLColumnLastLogin = "lastlogin";
+    public static final Property<String> MYSQL_COL_LASTLOGIN =
+        newProperty(STRING, "DataSource.mySQLColumnLastLogin", "lastlogin");
 
 	@Comment("Column for storing player LastLocation - X")
-	@Type(SettingType.String)
-	public String mySQLColumnLastLocX = "x";
+    public static final Property<String> MYSQL_COL_LASTLOC_X =
+        newProperty(STRING, "DataSource.mySQLlastlocX", "x");
 
 	@Comment("Column for storing player LastLocation - Y")
-	@Type(SettingType.String)
-	public String mySQLColumnLastLocY = "y";
+    public static final Property<String> MYSQL_COL_LASTLOC_Y =
+        newProperty(STRING, "DataSource.mySQLlastlocY", "y");
 
 	@Comment("Column for storing player LastLocation - Z")
-	@Type(SettingType.String)
-	public String mySQLColumnLastLocZ = "z";
+    public static final Property<String> MYSQL_COL_LASTLOC_Z =
+        newProperty(STRING, "DataSource.mySQLlastlocZ", "z");
 
 	@Comment("Column for storing player LastLocation - World Name")
-	@Type(SettingType.String)
-	public String mySQLColumnLastLocWorld = "world";
+    public static final Property<String> MYSQL_COL_LASTLOC_WORLD =
+        newProperty(STRING, "DataSource.mySQLlastlocWorld", "world");
 
 	@Comment("Column for storing players groups")
-	@Type(SettingType.String)
-	public String mySQLColumnGroup = "";
+    public static final Property<String> MYSQL_COL_GROUP =
+        newProperty(STRING, "ExternalBoardOptions.mySQLColumnGroup", "");
 
 	@Comment("Enable this when you allow registration through a website")
-	@Type(SettingType.Boolean)
-	public boolean mySQLWebsite = false;
+	public static final Property<Boolean> MYSQL_WEBSITE =
+        newProperty(BOOLEAN, "DataSource.mySQLWebsite", false);
 
-	private static File configFile = new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "database.yml");
-
-	private DatabaseSettings instance;
-
-	public DatabaseSettings()
-	{
-		super(configFile);
-		instance = this;
+	private DatabaseSettings() {
 	}
 
-	public DatabaseSettings getInstance() {
-		return instance;
-	}
-
-	public void setInstance(DatabaseSettings instance) {
-		this.instance = instance;
-	}
 }

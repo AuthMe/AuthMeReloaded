@@ -1,62 +1,49 @@
 package fr.xephi.authme.settings.custom;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import fr.xephi.authme.settings.custom.domain.Comment;
+import fr.xephi.authme.settings.custom.domain.Property;
+import fr.xephi.authme.settings.custom.domain.SettingsClass;
 
-import fr.xephi.authme.settings.custom.annotations.Comment;
-import fr.xephi.authme.settings.custom.annotations.Type;
-import fr.xephi.authme.settings.custom.annotations.Type.SettingType;
+import static fr.xephi.authme.settings.custom.domain.Property.newProperty;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.BOOLEAN;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.INTEGER;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.STRING;
 
-public class PurgeSettings extends CustomSetting {
+public class PurgeSettings implements SettingsClass {
 
 	@Comment("If enabled, AuthMe automatically purges old, unused accounts")
-	@Type(SettingType.Boolean)
-	public boolean useAutoPurge = false;
+	public static final Property<Boolean> USE_AUTO_PURGE =
+        newProperty(BOOLEAN, "Purge.useAutoPurge", false);
 
 	@Comment("Number of Days an account become Unused")
-	@Type(SettingType.Int)
-	public int daysBeforeRemovePlayer = 60;
+    public static final Property<Integer> DAYS_BEFORE_REMOVE_PLAYER =
+        newProperty(INTEGER, "Purge.daysBeforeRemovePlayer", 60);
 
 	@Comment("Do we need to remove the player.dat file during purge process?")
-	@Type(SettingType.Boolean)
-	public boolean removePlayerDat = false;
+    public static final Property<Boolean> REMOVE_PLAYER_DAT =
+        newProperty(BOOLEAN, "Purge.removePlayerDat", false);
 
 	@Comment("Do we need to remove the Essentials/users/player.yml file during purge process?")
-	@Type(SettingType.Boolean)
-	public boolean removeEssentialsFiles = false;
+    public static final Property<Boolean> REMOVE_ESSENTIALS_FILES =
+        newProperty(BOOLEAN, "Purge.removeEssentialsFiles", false);
 
 	@Comment("World where are players.dat stores")
-	@Type(SettingType.String)
-	public String defaultWorld = "world";
+    public static final Property<String> DEFAULT_WORLD =
+        newProperty(STRING, "Purge.defaultWorld", "world");
 
 	@Comment("Do we need to remove LimitedCreative/inventories/player.yml, player_creative.yml files during purge process ?")
-	@Type(SettingType.Boolean)
-	public boolean removeLimiteCreativeInventories = false;
+    public static final Property<Boolean> REMOVE_LIMITED_CREATIVE_INVENTORIES =
+        newProperty(BOOLEAN, "Purge.removeLimitedCreativesInventories", false);
 
 	@Comment("Do we need to remove the AntiXRayData/PlayerData/player file during purge process?")
-	@Type(SettingType.Boolean)
-	public boolean removeAntiXRayFile = false;
+    public static final Property<Boolean> REMOVE_ANTI_XRAY_FILE =
+        newProperty(BOOLEAN, "Purge.removeAntiXRayFile", false);
 
 	@Comment("Do we need to remove permissions?")
-	@Type(SettingType.Boolean)
-	public boolean removePermissions = false;
+    public static final Property<Boolean> REMOVE_PERMISSIONS =
+        newProperty(BOOLEAN, "Purge.removePermissions", false);
 
-	private static File configFile = new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "purge.yml");
+    private PurgeSettings() {
+    }
 
-	private PurgeSettings instance;
-
-	public PurgeSettings()
-	{
-		super(configFile);
-		instance = this;
-	}
-
-	public PurgeSettings getInstance() {
-		return instance;
-	}
-
-	public void setInstance(PurgeSettings instance) {
-		this.instance = instance;
-	}
 }

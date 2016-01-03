@@ -1,46 +1,32 @@
 package fr.xephi.authme.settings.custom;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import fr.xephi.authme.settings.custom.domain.Comment;
+import fr.xephi.authme.settings.custom.domain.Property;
+import fr.xephi.authme.settings.custom.domain.SettingsClass;
 
-import fr.xephi.authme.settings.custom.annotations.Comment;
-import fr.xephi.authme.settings.custom.annotations.Type;
-import fr.xephi.authme.settings.custom.annotations.Type.SettingType;
+import static fr.xephi.authme.settings.custom.domain.Property.newProperty;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.BOOLEAN;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.STRING;
 
-public class ConverterSettings extends CustomSetting {
+public class ConverterSettings implements SettingsClass {
 
 	@Comment("Rakamak file name")
-	@Type(SettingType.String)
-	public String rakamakFileName = "users.rak";
+	public static final Property<String> RAKAMAK_FILE_NAME =
+        newProperty(STRING, "Converter.Rakamak.fileName", "users.rak");
 
-	@Comment("Rakamak use Ip ?")
-	@Type(SettingType.Boolean)
-	public boolean rakamakeUseIP = false;
+	@Comment("Rakamak use IP?")
+	public static final Property<Boolean> RAKAMAK_USE_IP =
+        newProperty(BOOLEAN, "Converter.Rakamak.useIP", false);
 
 	@Comment("Rakamak IP file name")
-	@Type(SettingType.String)
-	public String rakamakIPFileName = "UsersIp.rak";
+    public static final Property<String> RAKAMAK_IP_FILE_NAME =
+        newProperty(STRING, "Converter.Rakamak.ipFileName", "UsersIp.rak");
 
 	@Comment("CrazyLogin database file name")
-	@Type(SettingType.String)
-	public String crazyLoginFileName = "accounts.db";
+    public static final Property<String> CRAZYLOGIN_FILE_NAME =
+        newProperty(STRING, "Converter.CrazyLogin.fileName", "accounts.db");
 
-	private static File configFile = new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "converter.yml");
+    private ConverterSettings() {
+    }
 
-	private ConverterSettings instance;
-
-	public ConverterSettings()
-	{
-		super(configFile);
-		instance = this;
-	}
-
-	public ConverterSettings getInstance() {
-		return instance;
-	}
-
-	public void setInstance(ConverterSettings instance) {
-		this.instance = instance;
-	}
 }

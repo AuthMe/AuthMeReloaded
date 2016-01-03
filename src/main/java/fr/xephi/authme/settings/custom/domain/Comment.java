@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings.custom.annotations;
+package fr.xephi.authme.settings.custom.domain;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,15 +6,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- *
- * Add a comment to a field value
- *
- * @author xephi59
- *
+ * Comment for properties which are also included in the YAML file upon saving.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface Comment {
 
-	public String[] value() default "";
+	String[] value() default "";
+
 }

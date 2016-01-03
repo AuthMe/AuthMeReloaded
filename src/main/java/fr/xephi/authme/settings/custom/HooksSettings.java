@@ -1,54 +1,39 @@
 package fr.xephi.authme.settings.custom;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+import fr.xephi.authme.settings.custom.domain.Comment;
+import fr.xephi.authme.settings.custom.domain.Property;
+import fr.xephi.authme.settings.custom.domain.PropertyType;
+import fr.xephi.authme.settings.custom.domain.SettingsClass;
 
-import fr.xephi.authme.settings.custom.annotations.Comment;
-import fr.xephi.authme.settings.custom.annotations.Type;
-import fr.xephi.authme.settings.custom.annotations.Type.SettingType;
+import static fr.xephi.authme.settings.custom.domain.Property.newProperty;
 
-public class HooksSettings extends CustomSetting {
+public class HooksSettings implements SettingsClass {
 
 	@Comment("Do we need to hook with multiverse for spawn checking?")
-	@Type(SettingType.Boolean)
-	public boolean multiverse = true;
+    public static final Property<Boolean> MULTIVERSE =
+        newProperty(PropertyType.BOOLEAN, "Hooks.multiverse", true);
 
-	@Comment("Do we need to hook with BungeeCord ?")
-	@Type(SettingType.Boolean)
-	public boolean bungeecord = false;
+	@Comment("Do we need to hook with BungeeCord?")
+    public static final Property<Boolean> BUNGEECORD =
+        newProperty(PropertyType.BOOLEAN, "Hooks.bungeecord", false);
 
 	@Comment("Send player to this BungeeCord server after register/login")
-	@Type(SettingType.String)
-	public String sendPlayerTo = "";
+    public static final Property<String> BUNGEECORD_SERVER =
+        newProperty(PropertyType.STRING, "bungeecord.server", "");
 
 	@Comment("Do we need to disable Essentials SocialSpy on join?")
-	@Type(SettingType.Boolean)
-	public boolean disableSocialSpy = false;
+    public static final Property<Boolean> DISABLE_SOCIAL_SPY =
+        newProperty(PropertyType.BOOLEAN, "Hooks.disableSocialSpy", false);
 
 	@Comment("Do we need to force /motd Essentials command on join?")
-	@Type(SettingType.Boolean)
-	public boolean useEssentialsMotd = false;
+    public static final Property<Boolean> USE_ESSENTIALS_MOTD =
+        newProperty(PropertyType.BOOLEAN, "Hooks.useEssentialsMotd", false);
 
 	@Comment("Do we need to cache custom Attributes?")
-	@Type(SettingType.Boolean)
-	public boolean customAttributes = false;
+    public static final Property<Boolean> CACHE_CUSTOM_ATTRIBUTES =
+        newProperty(PropertyType.BOOLEAN, "Hooks.customAttributes", false);
 
-	private static File configFile = new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "hooks.yml");
+    private HooksSettings() {
+    }
 
-	private HooksSettings instance;
-
-	public HooksSettings()
-	{
-		super(configFile);
-		instance = this;
-	}
-
-	public HooksSettings getInstance() {
-		return instance;
-	}
-
-	public void setInstance(HooksSettings instance) {
-		this.instance = instance;
-	}
 }

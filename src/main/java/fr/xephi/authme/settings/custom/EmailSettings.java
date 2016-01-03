@@ -1,83 +1,72 @@
 package fr.xephi.authme.settings.custom;
 
-import java.io.File;
-import java.util.ArrayList;
+import fr.xephi.authme.settings.custom.domain.Comment;
+import fr.xephi.authme.settings.custom.domain.Property;
+import fr.xephi.authme.settings.custom.domain.SettingsClass;
+
 import java.util.List;
 
-import fr.xephi.authme.settings.custom.annotations.Comment;
-import fr.xephi.authme.settings.custom.annotations.Type;
-import fr.xephi.authme.settings.custom.annotations.Type.SettingType;
+import static fr.xephi.authme.settings.custom.domain.Property.newProperty;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.BOOLEAN;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.INTEGER;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.STRING;
+import static fr.xephi.authme.settings.custom.domain.PropertyType.STRING_LIST;
 
-public class EmailSettings extends CustomSetting {
+public class EmailSettings implements SettingsClass {
 
 	@Comment("Email SMTP server host")
-	@Type(SettingType.String)
-	public String mailSMTP = "smtp.gmail.com";
+	public static final Property<String> SMTP_HOST =
+        newProperty(STRING, "Email.mailSMTP", "smtp.gmail.com");
 
 	@Comment("Email SMTP server port")
-	@Type(SettingType.Int)
-	public int mailPort = 465;
+    public static final Property<Integer> SMTP_PORT =
+        newProperty(INTEGER, "Email.mailPort", 465);
 
-	@Comment("Email account whose send the mail")
-	@Type(SettingType.String)
-	public String mailAccount = "";
+	@Comment("Email account which sends the mails")
+    public static final Property<String> MAIL_ACCOUNT =
+        newProperty(STRING, "Email.mailAccount", "");
 
 	@Comment("Email account password")
-	@Type(SettingType.String)
-	public String mailPassword = "";
+    public static final Property<String> MAIL_PASSWORD =
+        newProperty(STRING, "Email.mailPassword", "");
 
-	@Comment("Random password length")
-	@Type(SettingType.Int)
-	public int recoveryPasswordLength = 8;
+	@Comment("Recovery password length")
+    public static final Property<Integer> RECOVERY_PASSWORD_LENGTH =
+        newProperty(INTEGER, "Email.RecoveryPasswordLength", 8);
 
 	@Comment("Mail Subject")
-	@Type(SettingType.String)
-	public String mailSubject = "Your new AuthMe password";
+    public static final Property<String> RECOVERY_MAIL_SUBJECT =
+        newProperty(STRING, "Email.mailSubject", "Your new AuthMe password");
 
 	@Comment("Like maxRegPerIP but with email")
-	@Type(SettingType.Int)
-	public int maxRegPerEmail = 1;
+    public static final Property<Integer> MAX_REG_PER_EMAIL =
+        newProperty(INTEGER, "Email.maxRegPerEmail", 1);
 
-	@Comment("Recall players to add an email ?")
-	@Type(SettingType.Boolean)
-	public boolean recallPlayers = false;
+	@Comment("Recall players to add an email?")
+    public static final Property<Boolean> RECALL_PLAYERS =
+        newProperty(BOOLEAN, "Email.recallPlayers", false);
 
 	@Comment("Delay in minute for the recall scheduler")
-	@Type(SettingType.Int)
-	public int delayRecall = 5;
+    public static final Property<Integer> DELAY_RECALL =
+        newProperty(INTEGER, "Email.delayRecall", 5);
 
 	@Comment("Blacklist these domains for emails")
-	@Type(SettingType.StringList)
-	public List<String> emailBlackListed = new ArrayList<String>();
+	public static final Property<List<String>> DOMAIN_BLACKLIST =
+        newProperty(STRING_LIST, "Email.emailBlacklisted", "10minutemail.com");
 
 	@Comment("Whitelist ONLY these domains for emails")
-	@Type(SettingType.StringList)
-	public List<String> emailWhiteListed = new ArrayList<String>();
+	public static final Property<List<String>> DOMAIN_WHITELIST =
+        newProperty(STRING_LIST, "Email.emailWhitelisted");
 
-	@Comment("Do we need to send new password draw in an image ?")
-	@Type(SettingType.Boolean)
-	public boolean generateImage = false;
+	@Comment("Send the new password drawn in an image?")
+    public static final Property<Boolean> PASSWORD_AS_IMAGE =
+        newProperty(BOOLEAN, "Email.generateImage", false);
 
-	private static File configFile = new File("." + File.separator + "plugins" + File.separator + "AuthMe" + File.separator + "emails.yml");
+    @Comment("The OAuth2 token")
+    public static final Property<String> OAUTH2_TOKEN =
+        newProperty(STRING, "Email.emailOauth2Token", "");
 
-	private EmailSettings instance;
+    private EmailSettings() {
+    }
 
-	public EmailSettings()
-	{
-		super(configFile);
-		instance = this;
-		if (this.isFirstLaunch)
-		{
-			this.emailBlackListed.add("10minutemail.com");
-			save();
-		}
-	}
-
-	public EmailSettings getInstance() {
-		return instance;
-	}
-
-	public void setInstance(EmailSettings instance) {
-		this.instance = instance;
-	}
 }

@@ -3,6 +3,7 @@ package fr.xephi.authme.util;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Utils class for collections.
@@ -57,5 +58,18 @@ public final class CollectionUtils {
      */
     public static <T> boolean isEmpty(Collection<T> coll) {
         return coll == null || coll.isEmpty();
+    }
+
+    public static <T> List<T> filterCommonStart(List<T> coll1, List<T> coll2) {
+        List<T> commonStart = new ArrayList<>();
+        int minSize = Math.min(coll1.size(), coll2.size());
+        for (int i = 0; i < minSize; ++i) {
+            if (Objects.equals(coll1.get(i), coll2.get(i))) {
+                commonStart.add(coll1.get(i));
+            } else {
+                break;
+            }
+        }
+        return commonStart;
     }
 }
