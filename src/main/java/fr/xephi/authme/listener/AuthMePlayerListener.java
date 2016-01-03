@@ -206,8 +206,9 @@ public class AuthMePlayerListener implements Listener {
             joinMessage.put(name, joinMsg);
         }
 
-        if (Settings.checkVeryGames)
-        	plugin.getVerygamesIp(player);
+        if (Settings.checkVeryGames) {
+            plugin.getVerygamesIp(player);
+        }
 
         // Shedule login task so works after the prelogin
         // (Fix found by Koolaid5000)
@@ -222,21 +223,24 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerAuth auth = plugin.getDataSource().getAuth(event.getName());
-        if (auth != null && auth.getRealName() != null && !auth.getRealName().isEmpty() &&
-            !auth.getRealName().equals("Player") && !auth.getRealName().equals(event.getName())) {
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage("You should join using username: " + ChatColor.AQUA + auth.getRealName() +
-                ChatColor.RESET + "\nnot: " + ChatColor.RED + event.getName()); // TODO: write a better message
-            return;
+        if (Settings.preventOtherCase && auth != null && auth.getRealName() != null) {
+            String realName = auth.getRealName();
+            if(!realName.isEmpty() && !realName.equals("Player") && !realName.equals(event.getName())) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                // TODO: Add a message like : MessageKey.INVALID_NAME_CASE
+                event.setKickMessage("You should join using username: " + ChatColor.AQUA + realName +
+                    ChatColor.RESET + "\nnot: " + ChatColor.RED + event.getName());
+                return;
+            }
+            if (realName.isEmpty() || realName.equals("Player")) {
+                auth.setRealName(event.getName());
+                plugin.getDataSource().saveAuth(auth);
+            }
         }
 
-        if (auth != null && auth.getRealName().equals("Player")) {
-            auth.setRealName(event.getName());
-            plugin.getDataSource().saveAuth(auth);
-        }
-
+        String playerIP = event.getAddress().getHostAddress();
         if (auth == null && Settings.enableProtection) {
-            String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            String countryCode = GeoLiteAPI.getCountryCode(playerIP);
             if (!Settings.countriesBlacklist.isEmpty() && Settings.countriesBlacklist.contains(countryCode)) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
