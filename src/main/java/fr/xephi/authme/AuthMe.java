@@ -1,35 +1,9 @@
 package fr.xephi.authme;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-import org.mcstats.Metrics;
-import org.mcstats.Metrics.Graph;
-
 import com.earth2me.essentials.Essentials;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import com.onarandombox.MultiverseCore.MultiverseCore;
-
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -80,6 +54,29 @@ import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Wrapper;
 import net.minelink.ctplus.CombatTagPlus;
+import org.apache.logging.log4j.LogManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
+
+import java.io.IOException;
+import java.net.URL;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * The AuthMe main class.
@@ -135,6 +132,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Get the plugin's instance.
+     *
      * @return AuthMe
      */
     public static AuthMe getInstance() {
@@ -143,6 +141,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Get the plugin's name.
+     *
      * @return The plugin's name.
      */
     public static String getPluginName() {
@@ -151,6 +150,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Get the plugin's version.
+     *
      * @return The plugin's version.
      */
     public static String getPluginVersion() {
@@ -159,6 +159,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Get the plugin's build number.
+     *
      * @return The plugin's build number.
      */
     public static String getPluginBuildNumber() {
@@ -167,6 +168,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Get the plugin's Settings.
+     *
      * @return Plugin's settings.
      */
     public Settings getSettings() {
@@ -175,6 +177,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Get the Messages instance.
+     *
      * @return Plugin's messages.
      */
     public Messages getMessages() {
@@ -274,7 +277,6 @@ public class AuthMe extends JavaPlugin {
         new PerformBackup(plugin).doBackup(PerformBackup.BackupCause.START);
 
 
-
         // Setup the inventory backup
         playerBackup = new JsonCache();
 
@@ -308,8 +310,8 @@ public class AuthMe extends JavaPlugin {
         // Register a server shutdown hook
         try {
             Runtime.getRuntime().addShutdownHook(new AuthMeServerStop(this));
-        } catch (Exception e){
-        	e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
         // Sponsor messages
@@ -595,16 +597,16 @@ public class AuthMe extends JavaPlugin {
 
         // TODO: Move this to another place maybe ?
         if (Settings.getPasswordHash == HashAlgorithm.PLAINTEXT) {
-        	ConsoleLogger.showError("Your HashAlgorithm has been detected as plaintext and is now deprecated; " +
+            ConsoleLogger.showError("Your HashAlgorithm has been detected as plaintext and is now deprecated; " +
                 "it will be changed and hashed now to the AuthMe default hashing method");
-        	for (PlayerAuth auth : database.getAllAuths()) {
+            for (PlayerAuth auth : database.getAllAuths()) {
                 HashedPassword hashedPassword = passwordSecurity.computeHash(
                     HashAlgorithm.SHA256, auth.getPassword().getHash(), auth.getNickname());
                 auth.setPassword(hashedPassword);
-        		database.updatePassword(auth);
-        	}
-        	Settings.setValue("settings.security.passwordHash", "SHA256");
-        	Settings.reload();
+                database.updatePassword(auth);
+            }
+            Settings.setValue("settings.security.passwordHash", "SHA256");
+            Settings.reload();
         }
 
         if (Settings.isCachingEnabled) {
@@ -717,10 +719,9 @@ public class AuthMe extends JavaPlugin {
                 inventoryProtector = null;
             }
         }
-        if (tabComplete == null)
-        {
-        	tabComplete = new AuthMeTabCompletePacketAdapter(this);
-        	tabComplete.register();
+        if (tabComplete == null) {
+            tabComplete = new AuthMeTabCompletePacketAdapter(this);
+            tabComplete.register();
         }
     }
 
@@ -891,50 +892,34 @@ public class AuthMe extends JavaPlugin {
      * Gets a player's real IP through VeryGames method.
      *
      * @param player The player to process.
-     *
      */
     @Deprecated
     public void getVerygamesIp(final Player player) {
-    	final String name = player.getName().toLowerCase();
-    	Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable(){
-			@Override
-			public void run() {
-				String realIP = player.getAddress().getAddress().getHostAddress();
-				if (realIp.containsKey(name))
-					realIP = realIp.get(name);
-		        String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
-		        sUrl = sUrl.replace("%IP%", realIP)
-		            .replace("%PORT%", "" + player.getAddress().getPort());
-		        try {
-		            URL url = new URL(sUrl);
-		            URLConnection urlCon = url.openConnection();
-		            urlCon.setConnectTimeout(5000);
-		            urlCon.setReadTimeout(5000);
-		            try (BufferedReader in = new BufferedReader(new InputStreamReader(urlCon.getInputStream()))) {
-		                String inputLine = in.readLine();
-		                if (!StringUtils.isEmpty(inputLine) && !inputLine.equalsIgnoreCase("error")
-		                    && !inputLine.contains("error")) {
-		                    realIP = inputLine;
-		                }
-		            } catch (IOException e) {
-		                ConsoleLogger.showError("Could not read from Very Games API - " + StringUtils.formatException(e));
-		            }
-		        } catch (IOException e) {
-		            ConsoleLogger.showError("Could not fetch Very Games API with URL '" + sUrl + "' - "
-		                + StringUtils.formatException(e));
-		        }
-		        if (realIp.containsKey(name))
-		        	realIp.remove(name);
-		        realIp.putIfAbsent(name, realIP);
-			}
-    	});
+        final String name = player.getName().toLowerCase();
+        String currentIp = player.getAddress().getAddress().getHostAddress();
+        if (realIp.containsKey(name)) {
+            currentIp = realIp.get(name);
+        }
+        String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
+        sUrl = sUrl.replace("%IP%", currentIp).replace("%PORT%", "" + player.getAddress().getPort());
+        try {
+            String result = Resources.toString(new URL(sUrl), Charsets.UTF_8);
+            if (!StringUtils.isEmpty(result) && !result.equalsIgnoreCase("error") && !result.contains("error")) {
+                currentIp = result;
+                realIp.put(name, currentIp);
+            }
+        } catch (IOException e) {
+            ConsoleLogger.showError("Could not fetch Very Games API with URL '" +
+                sUrl + "' - " + StringUtils.formatException(e));
+        }
     }
 
     public String getIP(final Player player) {
         final String name = player.getName().toLowerCase();
         String ip = player.getAddress().getAddress().getHostAddress();
-        if (realIp.containsKey(name))
+        if (realIp.containsKey(name)) {
             ip = realIp.get(name);
+        }
         return ip;
     }
 
@@ -985,7 +970,7 @@ public class AuthMe extends JavaPlugin {
 
     /**
      * Return the management instance.
-     * 
+     *
      * @return management The Management
      */
     public Management getManagement() {

@@ -49,6 +49,10 @@ public class AsynchronousJoin {
     }
 
     public void process() {
+        if (Settings.checkVeryGames) {
+            plugin.getVerygamesIp(player);
+        }
+
         if (Utils.isUnrestricted(player)) {
             return;
         }
