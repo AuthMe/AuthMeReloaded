@@ -31,6 +31,10 @@ public class Property<T> {
         return new Property<>(type, path, Arrays.asList(defaultValues));
     }
 
+    public static <E extends Enum<E>> Property<E> newProperty(Class<E> clazz, String path, E defaultValue) {
+        return new Property<>(new PropertyType.EnumProperty<>(clazz), path, defaultValue);
+    }
+
     // -----
     // Overloaded convenience methods for specific types
     // -----

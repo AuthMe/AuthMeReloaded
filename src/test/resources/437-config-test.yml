@@ -3,7 +3,7 @@ test:
 DataSource:
     # What type of database do you want to use?
     # Valid values: sqlite, mysql
-    backend: sqlite
+    backend: mysql
     # Enable database caching, should improve database performance
     caching: true
 settings:

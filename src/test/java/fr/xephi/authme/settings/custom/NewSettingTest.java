@@ -1,5 +1,6 @@
 package fr.xephi.authme.settings.custom;
 
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.custom.domain.Property;
 import fr.xephi.authme.settings.custom.domain.PropertyType;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -83,12 +84,14 @@ public class NewSettingTest {
         String helpHeader = settings.getOption(newProperty("settings.helpHeader", ""));
         List<String> unsafePasswords = settings.getOption(
             newProperty(PropertyType.STRING_LIST, "Security.unsafePasswords"));
+        DataSource.DataSourceType dataSourceType = settings.getOption(DatabaseSettings.BACKEND);
 
         // then
         assertThat(result, equalTo(22));
         assertThat(systemName, equalTo(TestConfiguration.SYSTEM_NAME.getDefaultValue()));
         assertThat(helpHeader, equalTo("AuthMeReloaded"));
         assertThat(unsafePasswords, contains("123456", "qwerty", "54321"));
+        assertThat(dataSourceType, equalTo(DataSource.DataSourceType.MYSQL));
     }
 
     private File getConfigFile() {

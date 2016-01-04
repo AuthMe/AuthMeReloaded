@@ -28,8 +28,6 @@ public class NewSetting {
         ConverterSettings.class, DatabaseSettings.class, EmailSettings.class, HooksSettings.class,
         ProtectionSettings.class, PurgeSettings.class, SecuritySettings.class);
 
-    private static final int YAML_INDENTATION = 4;
-
     private File file;
     private YamlConfiguration configuration;
 
@@ -75,7 +73,7 @@ public class NewSetting {
                 if (newPathParts.size() > 1) {
                     for (String path : newPathParts.subList(0, newPathParts.size() - 1)) {
                         writer.append("\n")
-                            .append(StringUtils.repeat(" ", indentationLevel * YAML_INDENTATION))
+                            .append(indent(indentationLevel))
                             .append(path)
                             .append(": ");
                         ++indentationLevel;
@@ -83,12 +81,12 @@ public class NewSetting {
                 }
                 for (String comment : entry.getValue()) {
                     writer.append("\n")
-                        .append(StringUtils.repeat(" ", indentationLevel * YAML_INDENTATION))
+                        .append(indent(indentationLevel))
                         .append("# ")
                         .append(comment);
                 }
                 writer.append("\n")
-                    .append(StringUtils.repeat(" ", indentationLevel * YAML_INDENTATION))
+                    .append(indent(indentationLevel))
                     .append(CollectionUtils.getRange(newPathParts, newPathParts.size() - 1).get(0))
                     .append(": ");
 
@@ -96,7 +94,7 @@ public class NewSetting {
                 String delim = "";
                 for (String yamlLine : yamlLines) {
                     writer.append(delim).append(yamlLine);
-                    delim = "\n" + StringUtils.repeat(" ", indentationLevel * YAML_INDENTATION);
+                    delim = "\n" + indent(indentationLevel);
                 }
 
                 currentPath = propertyPath.subList(0, propertyPath.size() - 1);
@@ -107,6 +105,15 @@ public class NewSetting {
             ConsoleLogger.showError("Could not save config file - " + StringUtils.formatException(e));
             ConsoleLogger.writeStackTrace(e);
         }
+    }
+
+    private static String indent(int level) {
+        // YAML uses indentation of 4 spaces
+        StringBuilder sb = new StringBuilder(level * 4);
+        for (int i = 0; i < level; ++i) {
+            sb.append("    ");
+        }
+        return sb.toString();
     }
 
     private static PropertyMap getAllPropertyFields() {

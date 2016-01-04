@@ -60,15 +60,13 @@ public final class CollectionUtils {
         return coll == null || coll.isEmpty();
     }
 
-    public static <T> List<T> filterCommonStart(List<T> coll1, List<T> coll2) {
+    public static <T> List<T> filterCommonStart(List<T> list1, List<T> list2) {
         List<T> commonStart = new ArrayList<>();
-        int minSize = Math.min(coll1.size(), coll2.size());
-        for (int i = 0; i < minSize; ++i) {
-            if (Objects.equals(coll1.get(i), coll2.get(i))) {
-                commonStart.add(coll1.get(i));
-            } else {
-                break;
-            }
+        int minSize = Math.min(list1.size(), list2.size());
+        int i = 0;
+        while (i < minSize && Objects.equals(list1.get(i), list2.get(i))) {
+            commonStart.add(list1.get(i));
+            ++i;
         }
         return commonStart;
     }
