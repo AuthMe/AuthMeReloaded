@@ -193,7 +193,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (Settings.isForceSurvivalModeEnabled
-                && !player.hasPermission(PlayerPermission.BYPASS_FORCE_SURVIVAL.getNode())) {
+            && !player.hasPermission(PlayerPermission.BYPASS_FORCE_SURVIVAL.getNode())) {
             player.setGameMode(GameMode.SURVIVAL);
         }
 
@@ -221,7 +221,7 @@ public class AuthMePlayerListener implements Listener {
         PlayerAuth auth = plugin.getDataSource().getAuth(event.getName());
         if (Settings.preventOtherCase && auth != null && auth.getRealName() != null) {
             String realName = auth.getRealName();
-            if(!realName.isEmpty() && !realName.equals("Player") && !realName.equals(event.getName())) {
+            if (!realName.isEmpty() && !realName.equals("Player") && !realName.equals(event.getName())) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 // TODO: Add a message like : MessageKey.INVALID_NAME_CASE
                 event.setKickMessage("You should join using username: " + ChatColor.AQUA + realName +
@@ -274,31 +274,30 @@ public class AuthMePlayerListener implements Listener {
         // Get the permissions manager
         PermissionsManager permsMan = plugin.getPermissionsManager();
 
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL
-            && permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
-            int playersOnline = Utils.getOnlinePlayers().size();
-            if (playersOnline > plugin.getServer().getMaxPlayers()) {
-                event.allow();
-            } else {
-                Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
-                if (pl != null) {
-                    pl.kickPlayer(m.retrieveSingle(MessageKey.KICK_FOR_VIP));
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            if (permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
+                int playersOnline = Utils.getOnlinePlayers().size();
+                if (playersOnline > plugin.getServer().getMaxPlayers()) {
                     event.allow();
                 } else {
-                    ConsoleLogger.info("The player " + event.getPlayer().getName() + " tried to join, but the server was full");
-                    event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
-                    event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+                    Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
+                    if (pl != null) {
+                        pl.kickPlayer(m.retrieveSingle(MessageKey.KICK_FOR_VIP));
+                        event.allow();
+                    } else {
+                        ConsoleLogger.info("The player " + event.getPlayer().getName() + " tried to join, but the server was full");
+                        event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
+                        event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+                    }
                 }
+            } else {
+                event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
+                event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+                return;
             }
         }
 
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-            return;
-        }
-
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
-            event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
-            event.setResult(PlayerLoginEvent.Result.KICK_FULL);
             return;
         }
 
