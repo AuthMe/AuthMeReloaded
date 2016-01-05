@@ -1,13 +1,13 @@
 package fr.xephi.authme.settings.custom;
 
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.settings.custom.domain.Comment;
-import fr.xephi.authme.settings.custom.domain.Property;
-import fr.xephi.authme.settings.custom.domain.SettingsClass;
+import fr.xephi.authme.settings.domain.Comment;
+import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.domain.SettingsClass;
 
-import static fr.xephi.authme.settings.custom.domain.Property.newProperty;
-import static fr.xephi.authme.settings.custom.domain.PropertyType.BOOLEAN;
-import static fr.xephi.authme.settings.custom.domain.PropertyType.STRING;
+import static fr.xephi.authme.settings.domain.Property.newProperty;
+import static fr.xephi.authme.settings.domain.PropertyType.BOOLEAN;
+import static fr.xephi.authme.settings.domain.PropertyType.STRING;
 
 public class DatabaseSettings implements SettingsClass {
 

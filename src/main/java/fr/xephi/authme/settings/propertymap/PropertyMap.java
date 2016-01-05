@@ -1,6 +1,6 @@
-package fr.xephi.authme.settings.custom.propertymap;
+package fr.xephi.authme.settings.propertymap;
 
-import fr.xephi.authme.settings.custom.domain.Property;
+import fr.xephi.authme.settings.domain.Property;
 
 import java.util.Map;
 import java.util.Set;

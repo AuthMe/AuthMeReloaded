@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings.custom.propertymap;
+package fr.xephi.authme.settings.propertymap;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings.custom.domain;
+package fr.xephi.authme.settings.domain;
 
 /**
  * Marker for classes that define {@link Property} fields.

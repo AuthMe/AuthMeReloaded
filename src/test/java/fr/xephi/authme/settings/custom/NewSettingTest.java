@@ -1,8 +1,8 @@
 package fr.xephi.authme.settings.custom;
 
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.settings.custom.domain.Property;
-import fr.xephi.authme.settings.custom.domain.PropertyType;
+import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.domain.PropertyType;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -12,7 +12,7 @@ import java.io.File;
 import java.net.URL;
 import java.util.List;
 
-import static fr.xephi.authme.settings.custom.domain.Property.newProperty;
+import static fr.xephi.authme.settings.domain.Property.newProperty;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;

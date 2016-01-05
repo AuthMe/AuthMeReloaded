@@ -1,10 +1,10 @@
 package fr.xephi.authme.settings.custom;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.custom.domain.Comment;
-import fr.xephi.authme.settings.custom.domain.Property;
-import fr.xephi.authme.settings.custom.domain.SettingsClass;
-import fr.xephi.authme.settings.custom.propertymap.PropertyMap;
+import fr.xephi.authme.settings.domain.Comment;
+import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.domain.SettingsClass;
+import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.YamlConfiguration;

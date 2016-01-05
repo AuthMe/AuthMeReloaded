@@ -1,15 +1,15 @@
 package fr.xephi.authme.settings.custom;
 
-import fr.xephi.authme.settings.custom.domain.Comment;
-import fr.xephi.authme.settings.custom.domain.Property;
-import fr.xephi.authme.settings.custom.domain.SettingsClass;
+import fr.xephi.authme.settings.domain.Comment;
+import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.domain.SettingsClass;
 
 import java.util.List;
 
-import static fr.xephi.authme.settings.custom.domain.Property.newProperty;
-import static fr.xephi.authme.settings.custom.domain.PropertyType.BOOLEAN;
-import static fr.xephi.authme.settings.custom.domain.PropertyType.INTEGER;
-import static fr.xephi.authme.settings.custom.domain.PropertyType.STRING_LIST;
+import static fr.xephi.authme.settings.domain.Property.newProperty;
+import static fr.xephi.authme.settings.domain.PropertyType.BOOLEAN;
+import static fr.xephi.authme.settings.domain.PropertyType.INTEGER;
+import static fr.xephi.authme.settings.domain.PropertyType.STRING_LIST;
 
 
 public class ProtectionSettings implements SettingsClass {

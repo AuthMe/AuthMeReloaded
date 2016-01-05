@@ -1,11 +1,11 @@
 package fr.xephi.authme.settings.custom;
 
-import fr.xephi.authme.settings.custom.domain.Comment;
-import fr.xephi.authme.settings.custom.domain.Property;
-import fr.xephi.authme.settings.custom.domain.PropertyType;
-import fr.xephi.authme.settings.custom.domain.SettingsClass;
+import fr.xephi.authme.settings.domain.Comment;
+import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.domain.PropertyType;
+import fr.xephi.authme.settings.domain.SettingsClass;
 
-import static fr.xephi.authme.settings.custom.domain.Property.newProperty;
+import static fr.xephi.authme.settings.domain.Property.newProperty;
 
 public class HooksSettings implements SettingsClass {
 
