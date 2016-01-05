@@ -45,120 +45,42 @@ commands:
         usage: /converter <datatype>
 permissions:
     authme.admin.*:
-         description: Gives access to all authme admin commands
-         children:
-             authme.admin.reload: true
-             authme.admin.register: true
-             authme.admin.changepassword: true
-             authme.admin.unregister: true
-             authme.admin.purge: true
-             authme.seeOtherAccounts: true # This isn't a child of the admin section! Probably doesn't work.
-             authme.admin.lastlogin: true
-             authme.admin.getemail: true
-             authme.admin.chgemail: true
-             authme.admin.purgelastpos: true
-             authme.admin.switchantibot: true
-             authme.bypassantibot: true # This isn't a child of the admin section! Probably doesn't work.
-             authme.admin.getip: true
-             authme.admin.converter: true
-             authme.admin.resetposition: true
-             authme.admin.forcelogin: true
-    authme.register:
-        description: Register an account
-        default: true
-    authme.login:
-        description: Login into a account
-        default: true
-    authme.changepassword:
-        description: Change password of a account
-        default: true
-    authme.logout:
-        description: Logout
-        default: true
-    authme.email:
-        description: Email
-        default: true
-    authme.allow2accounts:
-        description: allow more accounts for same ip
-        default: false
-    authme.seeOtherAccounts:
-        description: display other accounts about a player when he logs in
-        default: false
-    authme.unregister:
-        description: unregister your account
-        default: true
-    authme.admin.reload:
-        description: AuthMe reload commands
-        default: op
-    authme.admin.register:
-        description: AuthMe register command
-        default: op
-    authme.admin.changepassword:
-        description: AuthMe changepassword command
-        default: op
-    authme.admin.unregister:
-        description: AuthMe unregister command
-        default: op
-    authme.admin.purge:
-        description: AuthMe unregister command
-        default: op
-    authme.admin.lastlogin:
-        description: Get last login date about a player
-        default: op
-    authme.admin.getemail:
-        description: Get last email about a player
-        default: op
-    authme.admin.chgemail:
-        description: Change a player email
-        default: op
-    authme.admin.accounts:
-        description: Display Players Accounts
-        default: op
-    authme.captcha:
-        description: Captcha
-        default: true
-    authme.admin.setspawn:
-        description: Set the AuthMe spawn point
-        default: op
-    authme.admin.spawn:
-        description: Teleport to AuthMe spawn point
-        default: op
-    authme.vip:
-        description: Allow vip slot when the server is full
-        default: op
-    authme.admin.purgebannedplayers:
-        description: Purge banned players
-        default: op
-    authme.bypassforcesurvival:
-        description: Bypass all ForceSurvival features
-        default: false
-    authme.admin.purgelastpos:
-        description: Purge last pos of players
-        default: op
-    authme.admin.switchantibot:
-        description: Switch AntiBot mode on/off
-        default: op
-    authme.bypassantibot:
-        description: Bypass the AntiBot check
-        default: op
-    authme.admin.setfirstspawn:
-        description: Set the AuthMe First Spawn Point
-        default: op
-    authme.admin.firstspawn:
-        description: Teleport to AuthMe First Spawn Point
-        default: op
-    authme.admin.getip:
-        description: Get IP from a player ( fake and real )
-        default: op
-    authme.admin.converter:
-        description: Allow /converter command
-        default: op
-    authme.admin.resetposition:
-        description: Reset last position for a player
-        default: op
-    authme.admin.forcelogin:
-        description: Force login for that player
-        default: op
-    authme.canbeforced:
-        description: Can this player be forced to login
-        default: true
+        description: Give access to all admin commands.
+        children:
+            authme.admin.accounts: true
+            authme.admin.changemail: true
+            authme.admin.changepassword: true
+            authme.admin.converter: true
+            authme.admin.firstspawn: true
+            authme.admin.forcelogin: true
+            authme.admin.getemail: true
+            authme.admin.getip: true
+            authme.admin.lastlogin: true
+            authme.admin.purge: true
+            authme.admin.purgebannedplayers: true
+            authme.admin.purgelastpos: true
+            authme.admin.register: true
+            authme.admin.reload: true
+            authme.admin.setfirstspawn: true
+            authme.admin.setspawn: true
+            authme.admin.spawn: true
+            authme.admin.switchantibot: true
+            authme.admin.unregister: true
+    authme.player.*:
+        description: Permission to use all player (non-admin) commands.
+        children:
+            authme.player.allow2accounts: true
+            authme.player.bypassantibot: true
+            authme.player.bypassforcesurvival: true
+            authme.player.canbeforced: true
+            authme.player.captcha: true
+            authme.player.changepassword: true
+            authme.player.email.add: true
+            authme.player.email.change: true
+            authme.player.email.recover: true
+            authme.player.login: true
+            authme.player.logout: true
+            authme.player.register: true
+            authme.player.seeotheraccounts: true
+            authme.player.unregister: true
+            authme.player.vip: true
