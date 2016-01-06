@@ -32,7 +32,6 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
-import fr.xephi.authme.listener.AuthMeServerStop;
 import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.modules.ModuleManager;
@@ -307,13 +306,6 @@ public class AuthMe extends JavaPlugin {
         // Show settings warnings
         showSettingsWarnings();
 
-        // Register a server shutdown hook
-        try {
-            Runtime.getRuntime().addShutdownHook(new AuthMeServerStop(this));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
         // Sponsor messages
         ConsoleLogger.info("AuthMe hooks perfectly with the VeryGames server hosting!");
         ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
@@ -521,10 +513,10 @@ public class AuthMe extends JavaPlugin {
     public void onDisable() {
         // Save player data
         Collection<? extends Player> players = Utils.getOnlinePlayers();
-        if (players != null) {
-            for (Player player : players) {
-                this.savePlayer(player);
-            }
+        for (Player player : players) {
+            savePlayer(player);
+            // TODO: add a MessageKey
+            player.kickPlayer("Server is restarting or AuthMe plugin was disabled.");
         }
 
         // Do backup on stop if enabled
