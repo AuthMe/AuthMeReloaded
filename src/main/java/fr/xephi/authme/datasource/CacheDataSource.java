@@ -7,6 +7,7 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalListeners;
 import com.google.common.cache.RemovalNotification;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -52,15 +53,6 @@ public class CacheDataSource implements DataSource {
                 });
     }
 
-    /**
-     * Method isAuthAvailable.
-     *
-     * @param user String
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
-     */
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         return getAuth(user) != null;
@@ -91,15 +83,6 @@ public class CacheDataSource implements DataSource {
         return cachedAuths.getUnchecked(user).orNull();
     }
 
-    /**
-     * Method saveAuth.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
-     */
     @Override
     public synchronized boolean saveAuth(PlayerAuth auth) {
         boolean result = source.saveAuth(auth);
@@ -109,15 +92,6 @@ public class CacheDataSource implements DataSource {
         return result;
     }
 
-    /**
-     * Method updatePassword.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
-     */
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
         boolean result = source.updatePassword(auth);
@@ -137,15 +111,6 @@ public class CacheDataSource implements DataSource {
         return result;
     }
 
-    /**
-     * Method updateSession.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
-     */
     @Override
     public boolean updateSession(PlayerAuth auth) {
         boolean result = source.updateSession(auth);
@@ -155,47 +120,20 @@ public class CacheDataSource implements DataSource {
         return result;
     }
 
-    /**
-     * Method updateQuitLoc.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
-     */
     @Override
     public boolean updateQuitLoc(final PlayerAuth auth) {
-        boolean result = source.updateSession(auth);
+        boolean result = source.updateQuitLoc(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
         }
         return result;
     }
 
-    /**
-     * Method getIps.
-     *
-     * @param ip String
-     *
-     * @return int
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getIps(String)
-     */
     @Override
     public int getIps(String ip) {
         return source.getIps(ip);
     }
 
-    /**
-     * Method purgeDatabase.
-     *
-     * @param until long
-     *
-     * @return int
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
-     */
     @Override
     public int purgeDatabase(long until) {
         int cleared = source.purgeDatabase(until);
@@ -209,15 +147,6 @@ public class CacheDataSource implements DataSource {
         return cleared;
     }
 
-    /**
-     * Method autoPurgeDatabase.
-     *
-     * @param until long
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
-     */
     @Override
     public List<String> autoPurgeDatabase(long until) {
         List<String> cleared = source.autoPurgeDatabase(until);
@@ -227,15 +156,6 @@ public class CacheDataSource implements DataSource {
         return cleared;
     }
 
-    /**
-     * Method removeAuth.
-     *
-     * @param name String
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
-     */
     @Override
     public synchronized boolean removeAuth(String name) {
         name = name.toLowerCase();
@@ -246,22 +166,17 @@ public class CacheDataSource implements DataSource {
         return result;
     }
 
-    /**
-     * Method close.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#close()
-     */
     @Override
     public synchronized void close() {
-        exec.shutdown();
+        try {
+            exec.shutdown();
+            exec.awaitTermination(8, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            ConsoleLogger.writeStackTrace(e);
+        }
         source.close();
     }
 
-    /**
-     * Method reload.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#reload()
-     */
     @Override
     public void reload() { // unused method
         exec.execute(new Runnable() {
@@ -273,15 +188,6 @@ public class CacheDataSource implements DataSource {
         });
     }
 
-    /**
-     * Method updateEmail.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
-     */
     @Override
     public synchronized boolean updateEmail(final PlayerAuth auth) {
         boolean result = source.updateEmail(auth);
@@ -291,55 +197,21 @@ public class CacheDataSource implements DataSource {
         return result;
     }
 
-    /**
-     * Method getAllAuthsByName.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
-     */
     @Override
     public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
         return source.getAllAuthsByName(auth);
     }
 
-    /**
-     * Method getAllAuthsByIp.
-     *
-     * @param ip String
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
-     */
     @Override
     public synchronized List<String> getAllAuthsByIp(final String ip) {
         return source.getAllAuthsByIp(ip);
     }
 
-    /**
-     * Method getAllAuthsByEmail.
-     *
-     * @param email String
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
-     */
     @Override
     public synchronized List<String> getAllAuthsByEmail(final String email) {
         return source.getAllAuthsByEmail(email);
     }
 
-    /**
-     * Method purgeBanned.
-     *
-     * @param banned List<String>
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List)
-     */
     @Override
     public synchronized void purgeBanned(final List<String> banned) {
         exec.execute(new Runnable() {
@@ -351,39 +223,16 @@ public class CacheDataSource implements DataSource {
         });
     }
 
-    /**
-     * Method getType.
-     *
-     * @return DataSourceType
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getType()
-     */
     @Override
     public DataSourceType getType() {
         return source.getType();
     }
 
-    /**
-     * Method isLogged.
-     *
-     * @param user String
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
-     */
     @Override
     public boolean isLogged(String user) {
         return PlayerCache.getInstance().isAuthenticated(user);
     }
 
-    /**
-     * Method setLogged.
-     *
-     * @param user String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
-     */
     @Override
     public void setLogged(final String user) {
         exec.execute(new Runnable() {
@@ -394,13 +243,6 @@ public class CacheDataSource implements DataSource {
         });
     }
 
-    /**
-     * Method setUnlogged.
-     *
-     * @param user String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
-     */
     @Override
     public void setUnlogged(final String user) {
         exec.execute(new Runnable() {
@@ -411,11 +253,6 @@ public class CacheDataSource implements DataSource {
         });
     }
 
-    /**
-     * Method purgeLogged.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeLogged()
-     */
     @Override
     public void purgeLogged() {
         exec.execute(new Runnable() {
@@ -427,26 +264,11 @@ public class CacheDataSource implements DataSource {
         });
     }
 
-    /**
-     * Method getAccountsRegistered.
-     *
-     * @return int
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
-     */
     @Override
     public int getAccountsRegistered() {
         return source.getAccountsRegistered();
     }
 
-    /**
-     * Method updateName.
-     *
-     * @param oldOne String
-     * @param newOne String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
-     */
     @Override
     public void updateName(final String oldOne, final String newOne) {
         exec.execute(new Runnable() {
@@ -458,25 +280,11 @@ public class CacheDataSource implements DataSource {
         });
     }
 
-    /**
-     * Method getAllAuths.
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
-     */
     @Override
     public List<PlayerAuth> getAllAuths() {
         return source.getAllAuths();
     }
 
-    /**
-     * Method getLoggedPlayers.
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
-     */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         return new ArrayList<>(PlayerCache.getInstance().getCache().values());

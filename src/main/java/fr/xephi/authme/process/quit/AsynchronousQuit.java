@@ -93,6 +93,7 @@ public class AsynchronousQuit {
             database.setUnlogged(name);
         }
 
+        plugin.realIp.remove(name);
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
     }
 }

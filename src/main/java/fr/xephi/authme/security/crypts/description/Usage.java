@@ -2,6 +2,12 @@ package fr.xephi.authme.security.crypts.description;
 
 /**
  * Usage recommendation that can be provided for a hash algorithm.
+ * <p>
+ * Use the following rules of thumb:
+ * <ul>
+ *     <li>Hashes using MD5 may be {@link #ACCEPTABLE} but never {@link #RECOMMENDED}.</li>
+ *     <li>Hashes using no salt or one based on the username should be {@link #DO_NOT_USE}.</li>
+ * </ul>
  */
 public enum Usage {
 

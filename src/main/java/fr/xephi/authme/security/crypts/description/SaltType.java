@@ -8,7 +8,7 @@ public enum SaltType {
     /** Random, newly generated text. */
     TEXT,
 
-    /** Salt is based on the username, including variations and repetitions. */
+    /** Salt is based on the username, including variations and repetitions thereof. */
     USERNAME,
 
     /** No salt. */

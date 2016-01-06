@@ -26,7 +26,7 @@ import fr.xephi.authme.util.Utils.GroupType;
 
 /**
  */
-public class ProcessSyncronousPlayerLogin implements Runnable {
+public class ProcessSyncPlayerLogin implements Runnable {
 
     private final LimboPlayer limbo;
     private final Player player;
@@ -38,14 +38,14 @@ public class ProcessSyncronousPlayerLogin implements Runnable {
     private final JsonCache playerCache;
 
     /**
-     * Constructor for ProcessSyncronousPlayerLogin.
+     * Constructor for ProcessSyncPlayerLogin.
      *
      * @param player Player
      * @param plugin AuthMe
      * @param data   DataSource
      */
-    public ProcessSyncronousPlayerLogin(Player player, AuthMe plugin,
-                                        DataSource data) {
+    public ProcessSyncPlayerLogin(Player player, AuthMe plugin,
+                                  DataSource data) {
         this.plugin = plugin;
         this.database = data;
         this.pm = plugin.getServer().getPluginManager();

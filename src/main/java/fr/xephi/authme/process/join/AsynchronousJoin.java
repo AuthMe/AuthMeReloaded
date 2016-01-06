@@ -49,6 +49,10 @@ public class AsynchronousJoin {
     }
 
     public void process() {
+        if (Settings.checkVeryGames) {
+            plugin.getVerygamesIp(player);
+        }
+
         if (Utils.isUnrestricted(player)) {
             return;
         }
@@ -58,6 +62,8 @@ public class AsynchronousJoin {
         }
 
         final String ip = plugin.getIP(player);
+
+
         if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip, player.getAddress().getHostName())) {
             sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -110,7 +116,6 @@ public class AsynchronousJoin {
                     });
                 }
             }
-
             placePlayerSafely(player, spawnLoc);
             LimboCache.getInstance().updateLimboPlayer(player);
 
@@ -126,6 +131,22 @@ public class AsynchronousJoin {
                 }
             }
 
+            if (Settings.isSessionsEnabled && (PlayerCache.getInstance().isAuthenticated(name) || database.isLogged(name))) {
+                if (plugin.sessions.containsKey(name)) {
+                    plugin.sessions.get(name).cancel();
+                    plugin.sessions.remove(name);
+                }
+                PlayerAuth auth = database.getAuth(name);
+                database.setUnlogged(name);
+                PlayerCache.getInstance().removePlayer(name);
+                if (auth != null && auth.getIp().equals(ip)) {
+                    m.send(player, MessageKey.SESSION_RECONNECTION);
+                    plugin.getManagement().performLogin(player, "dontneed", true);
+                    return;
+                } else if (Settings.sessionExpireOnIpChange) {
+                    m.send(player, MessageKey.SESSION_EXPIRED);
+                }
+            }
         } else {
             if (!Settings.unRegisteredGroup.isEmpty()) {
                 Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
@@ -179,7 +200,7 @@ public class AsynchronousJoin {
                 if (Settings.applyBlindEffect) {
                     int blindTimeOut;
                     // Allow infinite blindness effect
-                    if(timeOut <= 0) {
+                    if (timeOut <= 0) {
                         blindTimeOut = 99999;
                     } else {
                         blindTimeOut = timeOut;
@@ -194,23 +215,6 @@ public class AsynchronousJoin {
         if (timeOut > 0) {
             BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
-        }
-
-        if (Settings.isSessionsEnabled && isAuthAvailable && (PlayerCache.getInstance().isAuthenticated(name) || database.isLogged(name))) {
-            if (plugin.sessions.containsKey(name)) {
-                plugin.sessions.get(name).cancel();
-                plugin.sessions.remove(name);
-            }
-            PlayerAuth auth = database.getAuth(name);
-            database.setUnlogged(name);
-            PlayerCache.getInstance().removePlayer(name);
-            if (auth != null && auth.getIp().equals(ip)) {
-                m.send(player, MessageKey.SESSION_RECONNECTION);
-                plugin.getManagement().performLogin(player, "dontneed", true);
-                return;
-            } else if (Settings.sessionExpireOnIpChange) {
-                m.send(player, MessageKey.SESSION_EXPIRED);
-            }
         }
 
         String[] msg;

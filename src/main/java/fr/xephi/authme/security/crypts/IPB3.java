@@ -8,7 +8,7 @@ import fr.xephi.authme.security.crypts.description.Usage;
 
 import static fr.xephi.authme.security.HashUtils.md5;
 
-@Recommendation(Usage.DO_NOT_USE)
+@Recommendation(Usage.ACCEPTABLE)
 @HasSalt(value = SaltType.TEXT, length = 5)
 public class IPB3 extends SeparateSaltMethod {
 

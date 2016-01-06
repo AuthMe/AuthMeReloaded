@@ -15,6 +15,8 @@ public final class CollectionUtils {
     /**
      * Get a range from a list based on start and count parameters in a safe way.
      *
+     * @param <T> element
+     * @param list The List
      * @param start The start index
      * @param count The number of elements to add
      *
@@ -34,6 +36,8 @@ public final class CollectionUtils {
     /**
      * Get all elements from a list starting from the given index.
      *
+     * @param <T> element
+     * @param list The List
      * @param start The start index
      *
      * @return The sublist of all elements from index {@code start} and on; empty list
@@ -46,6 +50,11 @@ public final class CollectionUtils {
         return getRange(list, start, list.size() - start);
     }
 
+    /**
+     * @param <T> element
+     * @param coll Collection
+     * @return boolean Boolean
+     */
     public static <T> boolean isEmpty(Collection<T> coll) {
         return coll == null || coll.isEmpty();
     }

@@ -1,15 +1,16 @@
 package fr.xephi.authme.api;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.util.Utils;
 
 /**
  * The current API of AuthMe.
@@ -76,7 +77,7 @@ public class NewAPI {
     }
 
     /**
-     * @param player
+     * @param player a Player
      *
      * @return true if player is a npc
      */
@@ -85,7 +86,7 @@ public class NewAPI {
     }
 
     /**
-     * @param player
+     * @param player a Player
      *
      * @return true if the player is unrestricted
      */

@@ -241,8 +241,9 @@ public class WHIRLPOOL extends UnsaltedMethod {
      *
      * @param source     plaintext data to hash.
      * @param sourceBits how many bits of plaintext to process.
-     *                   <p/>
-     *                   This method maintains the invariant: bufferBits < 512
+     *                   <p>
+     *                   This method maintains the invariant: bufferBits &lt; 512
+     *                   </p>
      */
     public void NESSIEadd(byte[] source, long sourceBits) {
         /*
@@ -322,10 +323,12 @@ public class WHIRLPOOL extends UnsaltedMethod {
     }
 
     /**
+     * <p>
      * Get the hash value from the hashing state.
-     * <p/>
-     * This method uses the invariant: bufferBits < 512
-     *
+     * </p>
+     * <p>
+     * This method uses the invariant: bufferBits &lt; 512
+     * </p>
      * @param digest byte[]
      */
     public void NESSIEfinalize(byte[] digest) {
@@ -367,7 +370,7 @@ public class WHIRLPOOL extends UnsaltedMethod {
      * Delivers string input data to the hashing algorithm.
      *
      * @param source plaintext data to hash (ASCII text string).
-     *               This method maintains the invariant: bufferBits < 512
+     *               This method maintains the invariant: bufferBits &lt; 512
      */
     public void NESSIEadd(String source) {
         if (source.length() > 0) {

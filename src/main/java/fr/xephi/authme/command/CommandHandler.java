@@ -1,10 +1,11 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.util.StringUtils;
-import org.bukkit.command.CommandSender;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.bukkit.command.CommandSender;
+
+import fr.xephi.authme.util.StringUtils;
 
 /**
  * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
@@ -16,6 +17,8 @@ public class CommandHandler {
 
     /**
      * Create a command handler.
+     * 
+     * @param commandService The CommandService instance
      */
     public CommandHandler(CommandService commandService) {
         this.commandService = commandService;
@@ -45,6 +48,12 @@ public class CommandHandler {
         return !FoundResultStatus.MISSING_BASE_COMMAND.equals(result.getResultStatus());
     }
 
+    /**
+     * Execute the command for the given command sender.
+     *
+     * @param sender The sender which initiated the command
+     * @param result The mapped result
+     */
     private void executeCommand(CommandSender sender, FoundCommandResult result) {
         ExecutableCommand executableCommand = result.getCommandDescription().getExecutableCommand();
         List<String> arguments = result.getArguments();

@@ -1,11 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.StringUtils;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -14,6 +8,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 
 /**
  */
@@ -40,7 +40,8 @@ public class SQLite implements DataSource {
     /**
      * Constructor for SQLite.
      *
-     * @throws ClassNotFoundException * @throws SQLException
+     * @throws ClassNotFoundException Exception
+     * @throws SQLException Exception
      */
     public SQLite() throws ClassNotFoundException, SQLException {
         this.database = Settings.getMySQLDatabase;
@@ -69,11 +70,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method connect.
-     *
-     * @throws ClassNotFoundException * @throws SQLException
-     */
     private synchronized void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
@@ -81,11 +77,6 @@ public class SQLite implements DataSource {
 
     }
 
-    /**
-     * Method setup.
-     *
-     * @throws SQLException
-     */
     private synchronized void setup() throws SQLException {
         Statement st = null;
         ResultSet rs = null;
@@ -147,13 +138,6 @@ public class SQLite implements DataSource {
         ConsoleLogger.info("SQLite Setup finished");
     }
 
-    /**
-     * Method isAuthAvailable.
-     *
-     * @param user String
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
-     */
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         PreparedStatement pst = null;
@@ -224,13 +208,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method saveAuth.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
-     */
     @Override
     public synchronized boolean saveAuth(PlayerAuth auth) {
         PreparedStatement pst = null;
@@ -270,13 +247,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method updatePassword.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
-     */
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
         return updatePassword(auth.getNickname(), auth.getPassword());
@@ -309,13 +279,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method updateSession.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
-     */
     @Override
     public boolean updateSession(PlayerAuth auth) {
         PreparedStatement pst = null;
@@ -335,13 +298,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method purgeDatabase.
-     *
-     * @param until long
-     *
-     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
-     */
     @Override
     public int purgeDatabase(long until) {
         PreparedStatement pst = null;
@@ -358,13 +314,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method autoPurgeDatabase.
-     *
-     * @param until long
-     *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
-     */
     @Override
     public List<String> autoPurgeDatabase(long until) {
         PreparedStatement pst = null;
@@ -387,13 +336,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method removeAuth.
-     *
-     * @param user String
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
-     */
     @Override
     public synchronized boolean removeAuth(String user) {
         PreparedStatement pst = null;
@@ -410,13 +352,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method updateQuitLoc.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
-     */
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
         PreparedStatement pst = null;
@@ -437,13 +372,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method getIps.
-     *
-     * @param ip String
-     *
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
-     */
     @Override
     public int getIps(String ip) {
         PreparedStatement pst = null;
@@ -467,13 +395,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method updateEmail.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
-     */
     @Override
     public boolean updateEmail(PlayerAuth auth) {
         PreparedStatement pst = null;
@@ -491,11 +412,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method close.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#close()
-     */
     @Override
     public synchronized void close() {
         try {
@@ -505,20 +421,10 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method reload.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#reload()
-     */
     @Override
     public void reload() {
     }
 
-    /**
-     * Method close.
-     *
-     * @param st Statement
-     */
     private void close(Statement st) {
         if (st != null) {
             try {
@@ -529,11 +435,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method close.
-     *
-     * @param rs ResultSet
-     */
     private void close(ResultSet rs) {
         if (rs != null) {
             try {
@@ -544,13 +445,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAllAuthsByName.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
-     */
     @Override
     public List<String> getAllAuthsByName(PlayerAuth auth) {
         PreparedStatement pst = null;
@@ -575,13 +469,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAllAuthsByIp.
-     *
-     * @param ip String
-     *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
-     */
     @Override
     public List<String> getAllAuthsByIp(String ip) {
         PreparedStatement pst = null;
@@ -606,13 +493,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAllAuthsByEmail.
-     *
-     * @param email String
-     *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
-     */
     @Override
     public List<String> getAllAuthsByEmail(String email) {
         PreparedStatement pst = null;
@@ -653,23 +533,11 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getType.
-     *
-     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType()
-     */
     @Override
     public DataSourceType getType() {
         return DataSourceType.SQLITE;
     }
 
-    /**
-     * Method isLogged.
-     *
-     * @param user String
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
-     */
     @Override
     public boolean isLogged(String user) {
         PreparedStatement pst = null;
@@ -690,13 +558,6 @@ public class SQLite implements DataSource {
         return false;
     }
 
-    /**
-     * Method setLogged.
-     *
-     * @param user String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
-     */
     @Override
     public void setLogged(String user) {
         PreparedStatement pst = null;
@@ -712,13 +573,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method setUnlogged.
-     *
-     * @param user String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
-     */
     @Override
     public void setUnlogged(String user) {
         PreparedStatement pst = null;
@@ -735,11 +589,6 @@ public class SQLite implements DataSource {
             }
     }
 
-    /**
-     * Method purgeLogged.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeLogged()
-     */
     @Override
     public void purgeLogged() {
         PreparedStatement pst = null;
@@ -755,11 +604,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAccountsRegistered.
-     *
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
-     */
     @Override
     public int getAccountsRegistered() {
         int result = 0;
@@ -795,11 +639,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAllAuths.
-     *
-     * @return List<PlayerAuth>
-     */
     @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
@@ -821,11 +660,6 @@ public class SQLite implements DataSource {
         return auths;
     }
 
-    /**
-     * Method getLoggedPlayers.
-     *
-     * @return List<PlayerAuth>
-     */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         List<PlayerAuth> auths = new ArrayList<>();

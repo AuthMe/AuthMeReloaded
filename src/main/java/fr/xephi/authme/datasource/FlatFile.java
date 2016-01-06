@@ -406,7 +406,7 @@ public class FlatFile implements DataSource {
      *
      * @param until long
      *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
+     * @return List of String * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
      */
     @Override
     public List<String> autoPurgeDatabase(long until) {
@@ -622,7 +622,7 @@ public class FlatFile implements DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
+     * @return List of String * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
      */
     @Override
     public List<String> getAllAuthsByName(PlayerAuth auth) {
@@ -659,7 +659,7 @@ public class FlatFile implements DataSource {
      *
      * @param ip String
      *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
+     * @return List of String * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
      */
     @Override
     public List<String> getAllAuthsByIp(String ip) {
@@ -696,7 +696,7 @@ public class FlatFile implements DataSource {
      *
      * @param email String
      *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
+     * @return List of String * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
      */
     @Override
     public List<String> getAllAuthsByEmail(String email) {
@@ -731,7 +731,7 @@ public class FlatFile implements DataSource {
     /**
      * Method purgeBanned.
      *
-     * @param banned List<String>
+     * @param banned List of String
      *
      * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List)
      */
@@ -876,7 +876,7 @@ public class FlatFile implements DataSource {
     /**
      * Method getAllAuths.
      *
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
+     * @return List of PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
      */
     @Override
     public List<PlayerAuth> getAllAuths() {
@@ -928,7 +928,7 @@ public class FlatFile implements DataSource {
     /**
      * Method getLoggedPlayers.
      *
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
+     * @return List of PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
      */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {

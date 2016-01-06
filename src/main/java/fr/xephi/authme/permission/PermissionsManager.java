@@ -1,10 +1,11 @@
 package fr.xephi.authme.permission;
 
-import de.bananaco.bpermissions.api.ApiLayer;
-import de.bananaco.bpermissions.api.CalculableType;
-import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.util.CollectionUtils;
-import net.milkbowl.vault.permission.Permission;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.bukkit.Bukkit;
@@ -17,24 +18,25 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
+
+import de.bananaco.bpermissions.api.ApiLayer;
+import de.bananaco.bpermissions.api.CalculableType;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.util.CollectionUtils;
+import net.milkbowl.vault.permission.Permission;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
 /**
+ * <p>
  * PermissionsManager.
- * <p/>
+ * </p><p>
  * A permissions manager, to manage and use various permissions systems.
  * This manager supports dynamic plugin hooking and various other features.
- * <p/>
+ * </p><p>
  * Written by Tim Visée.
- *
+ * </p>
  * @author Tim Visée, http://timvisee.com
  * @version 0.2.1
  */
@@ -296,8 +298,8 @@ public class PermissionsManager implements PermissionsService {
         }
 
         Player player = (Player) sender;
-        return hasPermission(player, permissionNode.getNode(), def)
-            || hasPermission(player, permissionNode.getWildcardNode().getNode(), def);
+        return hasPermission(player, permissionNode.getNode(), def);
+        //    || hasPermission(player, permissionNode.getWildcardNode().getNode(), def);
     }
 
     public boolean hasPermission(Player player, Iterable<PermissionNode> nodes, boolean def) {

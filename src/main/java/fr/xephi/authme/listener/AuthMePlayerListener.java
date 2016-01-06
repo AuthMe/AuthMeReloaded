@@ -193,7 +193,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (Settings.isForceSurvivalModeEnabled
-                && !player.hasPermission(PlayerPermission.BYPASS_FORCE_SURVIVAL.getNode())) {
+            && !player.hasPermission(PlayerPermission.BYPASS_FORCE_SURVIVAL.getNode())) {
             player.setGameMode(GameMode.SURVIVAL);
         }
 
@@ -205,9 +205,6 @@ public class AuthMePlayerListener implements Listener {
             event.setJoinMessage(null);
             joinMessage.put(name, joinMsg);
         }
-
-        if (Settings.checkVeryGames)
-        	plugin.getVerygamesIp(player);
 
         // Shedule login task so works after the prelogin
         // (Fix found by Koolaid5000)
@@ -222,21 +219,24 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerAuth auth = plugin.getDataSource().getAuth(event.getName());
-        if (auth != null && auth.getRealName() != null && !auth.getRealName().isEmpty() &&
-            !auth.getRealName().equals("Player") && !auth.getRealName().equals(event.getName())) {
-            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-            event.setKickMessage("You should join using username: " + ChatColor.AQUA + auth.getRealName() +
-                ChatColor.RESET + "\nnot: " + ChatColor.RED + event.getName()); // TODO: write a better message
-            return;
+        if (Settings.preventOtherCase && auth != null && auth.getRealName() != null) {
+            String realName = auth.getRealName();
+            if (!realName.isEmpty() && !realName.equals("Player") && !realName.equals(event.getName())) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                // TODO: Add a message like : MessageKey.INVALID_NAME_CASE
+                event.setKickMessage("You should join using username: " + ChatColor.AQUA + realName +
+                    ChatColor.RESET + "\nnot: " + ChatColor.RED + event.getName());
+                return;
+            }
+            if (realName.isEmpty() || realName.equals("Player")) {
+                auth.setRealName(event.getName());
+                plugin.getDataSource().saveAuth(auth);
+            }
         }
 
-        if (auth != null && auth.getRealName().equals("Player")) {
-            auth.setRealName(event.getName());
-            plugin.getDataSource().saveAuth(auth);
-        }
-
+        String playerIP = event.getAddress().getHostAddress();
         if (auth == null && Settings.enableProtection) {
-            String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            String countryCode = GeoLiteAPI.getCountryCode(playerIP);
             if (!Settings.countriesBlacklist.isEmpty() && Settings.countriesBlacklist.contains(countryCode)) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
@@ -274,31 +274,30 @@ public class AuthMePlayerListener implements Listener {
         // Get the permissions manager
         PermissionsManager permsMan = plugin.getPermissionsManager();
 
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL
-            && permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
-            int playersOnline = Utils.getOnlinePlayers().size();
-            if (playersOnline > plugin.getServer().getMaxPlayers()) {
-                event.allow();
-            } else {
-                Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
-                if (pl != null) {
-                    pl.kickPlayer(m.retrieveSingle(MessageKey.KICK_FOR_VIP));
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            if (permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
+                int playersOnline = Utils.getOnlinePlayers().size();
+                if (playersOnline > plugin.getServer().getMaxPlayers()) {
                     event.allow();
                 } else {
-                    ConsoleLogger.info("The player " + event.getPlayer().getName() + " tried to join, but the server was full");
-                    event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
-                    event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+                    Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
+                    if (pl != null) {
+                        pl.kickPlayer(m.retrieveSingle(MessageKey.KICK_FOR_VIP));
+                        event.allow();
+                    } else {
+                        ConsoleLogger.info("The player " + event.getPlayer().getName() + " tried to join, but the server was full");
+                        event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
+                        event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+                    }
                 }
+            } else {
+                event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
+                event.setResult(PlayerLoginEvent.Result.KICK_FULL);
+                return;
             }
         }
 
         if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
-            return;
-        }
-
-        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL && !permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
-            event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
-            event.setResult(PlayerLoginEvent.Result.KICK_FULL);
             return;
         }
 
