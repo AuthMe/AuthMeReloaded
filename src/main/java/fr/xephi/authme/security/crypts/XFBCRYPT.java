@@ -3,7 +3,7 @@ package fr.xephi.authme.security.crypts;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class XF extends BCRYPT {
+public class XFBCRYPT extends BCRYPT {
     private static final Pattern HASH_PATTERN = Pattern.compile("\"hash\";s.*\"(.*)?\"");
 
     @Override

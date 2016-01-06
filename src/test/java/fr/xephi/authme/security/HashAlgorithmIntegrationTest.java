@@ -48,8 +48,8 @@ public class HashAlgorithmIntegrationTest {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             // TODO #137: Remove this check
-            if (HashAlgorithm.XENFORO.equals(algorithm)) {
-                System.out.println("Note: Currently skipping XENFORO hash (TODO #137: Fix it)");
+            if (HashAlgorithm.XFBCRYPT.equals(algorithm)) {
+                System.out.println("Note: Currently skipping XFBCRYPT hash (TODO #137: Fix it)");
                 continue;
             }
 

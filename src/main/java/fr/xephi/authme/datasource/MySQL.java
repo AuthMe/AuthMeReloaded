@@ -7,7 +7,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.security.crypts.XF;
+import fr.xephi.authme.security.crypts.XFBCRYPT;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 
@@ -300,14 +300,14 @@ public class MySQL implements DataSource {
                 .build();
             rs.close();
             pst.close();
-            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                 pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
                 pst.setInt(1, id);
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     Blob blob = rs.getBlob("data");
                     byte[] bytes = blob.getBytes(1, (int) blob.length());
-                    pAuth.setPassword(new HashedPassword(XF.getHashFromBlob(bytes)));
+                    pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
                 }
             }
         } catch (SQLException ex) {
@@ -490,7 +490,7 @@ public class MySQL implements DataSource {
                 }
                 rs.close();
                 pst.close();
-            } else if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            } else if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                 pst = con.prepareStatement("SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
@@ -544,7 +544,7 @@ public class MySQL implements DataSource {
             }
             pst.executeUpdate();
             pst.close();
-            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                 String sql = "SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, user);
@@ -641,7 +641,7 @@ public class MySQL implements DataSource {
         try (Connection con = getConnection()) {
             String sql;
             PreparedStatement pst;
-            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                 sql = "SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, user);
@@ -942,14 +942,14 @@ public class MySQL implements DataSource {
                     .groupId(group)
                     .build();
 
-                if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                     int id = rs.getInt(columnID);
                     pst.setInt(1, id);
                     ResultSet rs2 = pst.executeQuery();
                     if (rs2.next()) {
                         Blob blob = rs2.getBlob("data");
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
-                        pAuth.setPassword(new HashedPassword(XF.getHashFromBlob(bytes)));
+                        pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
                     }
                     rs2.close();
                 }
@@ -989,14 +989,14 @@ public class MySQL implements DataSource {
                     .groupId(group)
                     .build();
 
-                if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                     int id = rs.getInt(columnID);
                     pst.setInt(1, id);
                     ResultSet rs2 = pst.executeQuery();
                     if (rs2.next()) {
                         Blob blob = rs2.getBlob("data");
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
-                        pAuth.setPassword(new HashedPassword(XF.getHashFromBlob(bytes)));
+                        pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
                     }
                     rs2.close();
                 }
