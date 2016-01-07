@@ -5,7 +5,6 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.entity.Player;
@@ -50,6 +49,11 @@ public class AsyncChangeEmail {
                 }
                 if (!oldEmail.equals(currentEmail)) {
                     m.send(player, MessageKey.INVALID_OLD_EMAIL);
+                    return;
+                }
+            } else {
+                if (!StringUtils.isEmpty(currentEmail) && !currentEmail.equals("your@email.com")) {
+                    m.send(player, MessageKey.USAGE_CHANGE_EMAIL);
                     return;
                 }
             }

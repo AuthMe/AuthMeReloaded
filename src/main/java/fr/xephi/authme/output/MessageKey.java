@@ -97,6 +97,8 @@ public enum MessageKey {
 
     USAGE_ADD_EMAIL("usage_email_add"),
 
+    USAGE_CHANGE_EMAIL("usage_email_change"),
+
     USAGE_RECOVER_EMAIL("usage_email_recovery"),
 
     INVALID_NEW_EMAIL("new_email_invalid"),
