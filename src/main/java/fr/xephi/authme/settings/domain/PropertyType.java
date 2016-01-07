@@ -143,40 +143,4 @@ public abstract class PropertyType<T> {
         }
     }
 
-    /**
-     * Enum property.
-     * @param <E> The enum class
-     */
-    static final class EnumProperty<E extends Enum<E>> extends PropertyType<E> {
-        private Class<E> clazz;
-
-        public EnumProperty(Class<E> clazz) {
-            this.clazz = clazz;
-        }
-
-        @Override
-        public E getFromFile(Property<E> property, YamlConfiguration configuration) {
-            String textValue = configuration.getString(property.getPath());
-            if (textValue == null) {
-                return property.getDefaultValue();
-            }
-            E mappedValue = mapToEnum(textValue);
-            return mappedValue != null ? mappedValue : property.getDefaultValue();
-        }
-
-        @Override
-        protected List<String> asYaml(E value) {
-            return asList("'" + value + "'");
-        }
-
-        private E mapToEnum(String value) {
-            for (E entry : clazz.getEnumConstants()) {
-                if (entry.name().equalsIgnoreCase(value)) {
-                    return entry;
-                }
-            }
-            return null;
-        }
-    }
-
 }

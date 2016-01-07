@@ -32,7 +32,7 @@ public class Property<T> {
     }
 
     public static <E extends Enum<E>> Property<E> newProperty(Class<E> clazz, String path, E defaultValue) {
-        return new Property<>(new PropertyType.EnumProperty<>(clazz), path, defaultValue);
+        return new Property<>(new EnumPropertyType<>(clazz), path, defaultValue);
     }
 
     // -----
