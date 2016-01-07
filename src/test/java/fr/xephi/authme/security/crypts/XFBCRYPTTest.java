@@ -1,9 +1,17 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.util.WrapperMock;
+import org.junit.BeforeClass;
+
 /**
  * Test for {@link XFBCRYPT}.
  */
 public class XFBCRYPTTest extends AbstractEncryptionMethodTest {
+
+    @BeforeClass
+    public static void setUpWrapper() {
+        WrapperMock.createInstance();
+    }
 
     public XFBCRYPTTest() {
         super(new XFBCRYPT(),
