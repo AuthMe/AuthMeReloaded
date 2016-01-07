@@ -49,6 +49,10 @@ public abstract class PropertyType<T> {
      */
     protected abstract List<String> asYaml(T value);
 
+    protected boolean contains(Property<T> property, YamlConfiguration configuration) {
+        return configuration.contains(property.getPath());
+    }
+
 
     /**
      * Boolean property.

@@ -58,6 +58,53 @@ public class EnumPropertyTypeTest {
         assertThat(result, equalTo(TestEnum.ENTRY_C));
     }
 
+    @Test
+    public void shouldReturnTrueForContainsCheck() {
+        // given
+        PropertyType<TestEnum> propertyType = new EnumPropertyType<>(TestEnum.class);
+        Property<TestEnum> property = Property.newProperty(TestEnum.class, "my.test.path", TestEnum.ENTRY_C);
+        YamlConfiguration configuration = mock(YamlConfiguration.class);
+        given(configuration.contains(property.getPath())).willReturn(true);
+        given(configuration.getString(property.getPath())).willReturn("ENTRY_B");
+
+        // when
+        boolean result = propertyType.contains(property, configuration);
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldReturnFalseForFileWithoutConfig() {
+        // given
+        PropertyType<TestEnum> propertyType = new EnumPropertyType<>(TestEnum.class);
+        Property<TestEnum> property = Property.newProperty(TestEnum.class, "my.test.path", TestEnum.ENTRY_C);
+        YamlConfiguration configuration = mock(YamlConfiguration.class);
+        given(configuration.contains(property.getPath())).willReturn(false);
+
+        // when
+        boolean result = propertyType.contains(property, configuration);
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
+    @Test
+    public void shouldReturnFalseForUnknownValue() {
+        // given
+        PropertyType<TestEnum> propertyType = new EnumPropertyType<>(TestEnum.class);
+        Property<TestEnum> property = Property.newProperty(TestEnum.class, "my.test.path", TestEnum.ENTRY_C);
+        YamlConfiguration configuration = mock(YamlConfiguration.class);
+        given(configuration.contains(property.getPath())).willReturn(true);
+        given(configuration.getString(property.getPath())).willReturn("wrong value");
+
+        // when
+        boolean result = propertyType.contains(property, configuration);
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
 
     private enum TestEnum {
 

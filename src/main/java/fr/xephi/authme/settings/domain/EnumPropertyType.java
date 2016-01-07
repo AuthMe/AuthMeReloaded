@@ -33,6 +33,12 @@ class EnumPropertyType<E extends Enum<E>> extends PropertyType<E> {
         return asList("'" + value + "'");
     }
 
+    @Override
+    public boolean contains(Property<E> property, YamlConfiguration configuration) {
+        return super.contains(property, configuration)
+            && mapToEnum(configuration.getString(property.getPath())) != null;
+    }
+
     private E mapToEnum(String value) {
         for (E entry : clazz.getEnumConstants()) {
             if (entry.name().equalsIgnoreCase(value)) {
