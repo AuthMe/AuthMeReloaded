@@ -47,12 +47,6 @@ public class HashAlgorithmIntegrationTest {
     public void shouldBeAbleToInstantiateEncryptionAlgorithms() throws InstantiationException, IllegalAccessException {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
-            // TODO #137: Remove this check
-            if (HashAlgorithm.XFBCRYPT.equals(algorithm)) {
-                System.out.println("Note: Currently skipping XFBCRYPT hash (TODO #137: Fix it)");
-                continue;
-            }
-
             if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
                 EncryptionMethod method = algorithm.getClazz().newInstance();
                 HashedPassword hashedPassword = method.computeHash("pwd", "name");

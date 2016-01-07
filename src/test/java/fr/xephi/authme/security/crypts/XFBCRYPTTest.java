@@ -1,7 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import org.junit.Test;
-
 /**
  * Test for {@link XFBCRYPT}.
  */
