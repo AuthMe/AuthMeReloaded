@@ -96,7 +96,7 @@ public class MySQL implements DataSource {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
         ds.setDriverClassName("com.mysql.jdbc.Driver");
-        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?rewriteBatchedStatements=true");
+        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?rewriteBatchedStatements=true&jdbcCompliantTruncation=false");
         ds.setUsername(this.username);
         ds.setPassword(this.password);
         ds.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
