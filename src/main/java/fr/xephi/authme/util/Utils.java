@@ -235,8 +235,7 @@ public final class Utils {
     }
 
     public static Player getPlayer(String name) {
-        name = name.toLowerCase();
-        return wrapper.getServer().getPlayer(name);
+        return wrapper.getServer().getPlayerExact(name);
     }
 
     public static boolean isNPC(Player player) {

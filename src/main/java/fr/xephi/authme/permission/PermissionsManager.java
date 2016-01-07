@@ -298,8 +298,8 @@ public class PermissionsManager implements PermissionsService {
         }
 
         Player player = (Player) sender;
-        return hasPermission(player, permissionNode.getNode(), def)
-            || hasPermission(player, permissionNode.getWildcardNode().getNode(), def);
+        return hasPermission(player, permissionNode.getNode(), def);
+        //    || hasPermission(player, permissionNode.getWildcardNode().getNode(), def);
     }
 
     public boolean hasPermission(Player player, Iterable<PermissionNode> nodes, boolean def) {
