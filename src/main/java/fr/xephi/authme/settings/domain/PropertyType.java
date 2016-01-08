@@ -42,16 +42,23 @@ public abstract class PropertyType<T> {
     }
 
     /**
+     * Return whether the property is present in the given configuration.
+     *
+     * @param property The property to search for
+     * @param configuration The configuration to verify
+     * @return True if the property is present, false otherwise
+     */
+    public boolean contains(Property<T> property, YamlConfiguration configuration) {
+        return configuration.contains(property.getPath());
+    }
+
+    /**
      * Transform the given value to YAML.
      *
      * @param value The value to transform
      * @return The value as YAML
      */
     protected abstract List<String> asYaml(T value);
-
-    protected boolean contains(Property<T> property, YamlConfiguration configuration) {
-        return configuration.contains(property.getPath());
-    }
 
 
     /**
@@ -144,6 +151,11 @@ public abstract class PropertyType<T> {
                 resultLines.add("    - " + StringProperty.toYamlLiteral(entry));
             }
             return resultLines;
+        }
+
+        @Override
+        public boolean contains(Property<List<String>> property, YamlConfiguration configuration) {
+            return configuration.contains(property.getPath()) && configuration.isList(property.getPath());
         }
     }
 

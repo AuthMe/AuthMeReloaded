@@ -34,9 +34,9 @@ public class PropertyMapTest {
         }
 
         // then
-        Set<Map.Entry<Property, String[]>> entrySet = map.entrySet();
+        Set<Map.Entry<Property<?>, String[]>> entrySet = map.entrySet();
         List<String> resultPaths = new ArrayList<>(entrySet.size());
-        for (Map.Entry<Property, String[]> entry : entrySet) {
+        for (Map.Entry<Property<?>, String[]> entry : entrySet) {
             resultPaths.add(entry.getKey().getPath());
         }
 

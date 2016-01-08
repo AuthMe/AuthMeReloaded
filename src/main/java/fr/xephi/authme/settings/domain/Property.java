@@ -74,6 +74,16 @@ public class Property<T> {
         return type.asYaml(this, configuration);
     }
 
+    /**
+     * Return whether or not the given configuration file contains the property.
+     *
+     * @param configuration The configuration file to verify
+     * @return True if the property is present, false otherwise
+     */
+    public boolean isPresent(YamlConfiguration configuration) {
+        return type.contains(this, configuration);
+    }
+
     // -----
     // Trivial getters
     // -----

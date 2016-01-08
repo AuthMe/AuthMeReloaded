@@ -30,7 +30,6 @@ public class NewSettingsWriteTest {
     }
 
 
-
     private File getConfigFile() {
         URL url = getClass().getClassLoader().getResource(CONFIG_FILE);
         if (url == null) {
