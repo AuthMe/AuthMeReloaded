@@ -157,6 +157,36 @@ public class SQLite implements DataSource {
     }
 
     @Override
+    public HashedPassword getPassword(String user) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = con.prepareStatement("SELECT " + columnPassword + "," + columnSalt
+                + " FROM " + tableName + " WHERE " + columnName + "=?");
+            pst.setString(1, user);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                return new HashedPassword(rs.getString(columnPassword),
+                    !columnSalt.isEmpty() ? rs.getString(columnSalt) : null);
+            }
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
+        } finally {
+            close(rs);
+            close(pst);
+        }
+        return null;
+    }
+
+    /**
+     * Method getAuth.
+     *
+     * @param user String
+     *
+     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
+     */
+    @Override
     public synchronized PlayerAuth getAuth(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -219,9 +249,14 @@ public class SQLite implements DataSource {
 
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
+        return updatePassword(auth.getNickname(), auth.getPassword());
+    }
+
+    @Override
+    public boolean updatePassword(String user, HashedPassword password) {
+        user = user.toLowerCase();
         PreparedStatement pst = null;
         try {
-            HashedPassword password = auth.getPassword();
             boolean useSalt = !columnSalt.isEmpty();
             String sql = "UPDATE " + tableName + " SET " + columnPassword + " = ?"
                 + (useSalt ? ", " + columnSalt + " = ?" : "")
@@ -230,9 +265,9 @@ public class SQLite implements DataSource {
             pst.setString(1, password.getHash());
             if (useSalt) {
                 pst.setString(2, password.getSalt());
-                pst.setString(3, auth.getNickname());
+                pst.setString(3, user);
             } else {
-                pst.setString(2, auth.getNickname());
+                pst.setString(2, user);
             }
             pst.executeUpdate();
         } catch (SQLException ex) {

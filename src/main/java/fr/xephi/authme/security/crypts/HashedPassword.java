@@ -4,7 +4,7 @@ package fr.xephi.authme.security.crypts;
  * The result of a hash computation. See {@link #salt} for details.
  */
 public class HashedPassword {
-    
+
     /** The generated hash. */
     private final String hash;
     /**
@@ -36,13 +36,13 @@ public class HashedPassword {
     public HashedPassword(String hash) {
         this(hash, null);
     }
-    
+
     public String getHash() {
         return hash;
     }
-    
+
     public String getSalt() {
         return salt;
     }
-    
+
 }
