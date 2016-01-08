@@ -35,10 +35,12 @@ public class NewSettingIntegrationTest {
     public static void generatePropertyMap() {
         propertyMap = new PropertyMap();
         for (Field field : TestConfiguration.class.getDeclaredFields()) {
-            Property<?> property =
-                (Property<?>) ReflectionTestUtils.getFieldValue(TestConfiguration.class, null, field.getName());
-            String[] comments = new String[]{"Comment for '" + property.getPath() + "'"};
-            propertyMap.put(property, comments);
+            Object fieldValue = ReflectionTestUtils.getFieldValue(TestConfiguration.class, null, field.getName());
+            if (fieldValue instanceof Property<?>) {
+                Property<?> property = (Property<?>) fieldValue;
+                String[] comments = new String[]{"Comment for '" + property.getPath() + "'"};
+                propertyMap.put(property, comments);
+            }
         }
     }
 
