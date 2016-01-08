@@ -61,8 +61,8 @@ public class AsynchronousQuit {
             database.updateSession(auth);
         }
 
-        if (LimboCache.getInstance().hasLimboPlayer(name)) {
-            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+        if (limbo != null) {
             if (limbo.getGroup() != null && !limbo.getGroup().isEmpty())
                 Utils.addNormal(player, limbo.getGroup());
             needToChange = true;
