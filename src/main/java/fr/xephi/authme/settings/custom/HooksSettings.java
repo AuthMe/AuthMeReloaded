@@ -19,7 +19,7 @@ public class HooksSettings implements SettingsClass {
 
 	@Comment("Send player to this BungeeCord server after register/login")
     public static final Property<String> BUNGEECORD_SERVER =
-        newProperty(PropertyType.STRING, "bungeecord.server", "");
+        newProperty(PropertyType.STRING, "Hooks.sendPlayerTo", "");
 
 	@Comment("Do we need to disable Essentials SocialSpy on join?")
     public static final Property<Boolean> DISABLE_SOCIAL_SPY =

@@ -355,6 +355,8 @@ Email:
     emailWhitelisted: []
     # Do we need to send new password draw in an image?
     generateImage: false
+    # The email OAuth 2 token (leave empty if not used)
+    emailOauth2Token: ''
 Hooks:
     # Do we need to hook with multiverse for spawn checking?
     multiverse: true

@@ -1,114 +1,84 @@
 package fr.xephi.authme.settings.custom;
 
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.PropertyType;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.io.File;
-import java.net.URL;
-import java.util.List;
 
-import static fr.xephi.authme.settings.domain.Property.newProperty;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+/**
+ * Test for {@link NewSetting}.
+ */
 public class NewSettingTest {
-
-    private static final String CONFIG_FILE = "437-config-test.yml";
-
-    @Test
-    public void shouldReturnIntegerFromFile() {
-        // given
-        YamlConfiguration file = mock(YamlConfiguration.class);
-        Property<Integer> config = TestConfiguration.DURATION_IN_SECONDS;
-        given(file.getInt("test.duration", 4)).willReturn(18);
-        NewSetting settings = new NewSetting(file, "conf.txt");
-
-        // when
-        int retrieve = settings.getOption(config);
-
-        // then
-        assertThat(retrieve, equalTo(18));
-    }
 
     @Test
     public void shouldLoadAllConfigs() {
         // given
         YamlConfiguration file = mock(YamlConfiguration.class);
+        given(file.getString(anyString(), anyString())).willAnswer(withDefaultArgument());
+        given(file.getBoolean(anyString(), anyBoolean())).willAnswer(withDefaultArgument());
+        given(file.getDouble(anyString(), anyDouble())).willAnswer(withDefaultArgument());
+        given(file.getInt(anyString(), anyInt())).willAnswer(withDefaultArgument());
 
-        given(file.getString(anyString(), anyString())).willAnswer(new Answer<String>() {
-            @Override
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                // Return the second parameter -> the default
-                return (String) invocation.getArguments()[1];
-            }
-        });
+        setReturnValue(file, TestConfiguration.VERSION_NUMBER, 20);
+        setReturnValue(file, TestConfiguration.SKIP_BORING_FEATURES, true);
+        setReturnValue(file, TestConfiguration.RATIO_LIMIT, 4.25);
+        setReturnValue(file, TestConfiguration.SYSTEM_NAME, "myTestSys");
 
-        given(file.getInt(eq(EmailSettings.RECOVERY_PASSWORD_LENGTH.getPath()), anyInt()))
-            .willReturn(20);
-        given(file.getBoolean(eq(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE.getPath()), anyBoolean()))
-            .willReturn(false);
+        // when / then
+        NewSetting settings = new NewSetting(file, new File("conf.txt"), null);
 
-        // when
-        NewSetting settings = new NewSetting(file, "conf.txt");
+        assertThat(settings.getOption(TestConfiguration.VERSION_NUMBER), equalTo(20));
+        assertThat(settings.getOption(TestConfiguration.SKIP_BORING_FEATURES), equalTo(true));
+        assertThat(settings.getOption(TestConfiguration.RATIO_LIMIT), equalTo(4.25));
+        assertThat(settings.getOption(TestConfiguration.SYSTEM_NAME), equalTo("myTestSys"));
 
-        // then
-        // Expect the value we told the YAML mock to return:
-        assertThat(settings.getOption(EmailSettings.RECOVERY_PASSWORD_LENGTH), equalTo(20));
-        // Expect the default:
-        assertThat(settings.getOption(EmailSettings.SMTP_HOST), equalTo(EmailSettings.SMTP_HOST.getDefaultValue()));
-        // Expect the value we told the YAML mock to return:
-        assertThat(settings.getOption(SecuritySettings.REMOVE_PASSWORD_FROM_CONSOLE), equalTo(false));
+        assertDefaultValue(TestConfiguration.DURATION_IN_SECONDS, settings);
+        assertDefaultValue(TestConfiguration.DUST_LEVEL, settings);
+        assertDefaultValue(TestConfiguration.COOL_OPTIONS, settings);
     }
 
-    @Test
-    public void executeIntegrationTest() {
-        // given
-        YamlConfiguration yamlFile = YamlConfiguration.loadConfiguration(getConfigFile());
-        NewSetting settings = new NewSetting(yamlFile, "conf.txt");
-
-        // when
-        int result = settings.getOption(TestConfiguration.DURATION_IN_SECONDS);
-        String systemName = settings.getOption(TestConfiguration.SYSTEM_NAME);
-        String helpHeader = settings.getOption(newProperty("settings.helpHeader", ""));
-        List<String> unsafePasswords = settings.getOption(
-            newProperty(PropertyType.STRING_LIST, "Security.unsafePasswords"));
-        DataSource.DataSourceType dataSourceType = settings.getOption(DatabaseSettings.BACKEND);
-
-        // then
-        assertThat(result, equalTo(22));
-        assertThat(systemName, equalTo(TestConfiguration.SYSTEM_NAME.getDefaultValue()));
-        assertThat(helpHeader, equalTo("AuthMeReloaded"));
-        assertThat(unsafePasswords, contains("123456", "qwerty", "54321"));
-        assertThat(dataSourceType, equalTo(DataSource.DataSourceType.MYSQL));
-    }
-
-    private File getConfigFile() {
-        URL url = getClass().getClassLoader().getResource(CONFIG_FILE);
-        if (url == null) {
-            throw new RuntimeException("File '" + CONFIG_FILE + "' could not be loaded");
+    private static <T> void setReturnValue(YamlConfiguration config, Property<T> property, T value) {
+        if (value instanceof String) {
+            when(config.getString(eq(property.getPath()), anyString())).thenReturn((String) value);
+        } else if (value instanceof Integer) {
+            when(config.getInt(eq(property.getPath()), anyInt())).thenReturn((Integer) value);
+        } else if (value instanceof Boolean) {
+            when(config.getBoolean(eq(property.getPath()), anyBoolean())).thenReturn((Boolean) value);
+        } else if (value instanceof Double) {
+            when(config.getDouble(eq(property.getPath()), anyDouble())).thenReturn((Double) value);
+        } else {
+            throw new UnsupportedOperationException("Value has unsupported type '"
+                + (value == null ? "null" : value.getClass().getSimpleName()) + "'");
         }
-        return new File(url.getFile());
     }
 
-    private static class TestConfiguration {
+    private static void assertDefaultValue(Property<?> property, NewSetting setting) {
+        assertThat(property.getPath() + " has default value",
+            setting.getOption(property).equals(property.getDefaultValue()), equalTo(true));
+    }
 
-        public static final Property<Integer> DURATION_IN_SECONDS =
-            newProperty("test.duration", 4);
-
-        public static final Property<String> SYSTEM_NAME =
-            newProperty("test.systemName", "[TestDefaultValue]");
+    private static <T> Answer<T> withDefaultArgument() {
+        return new Answer<T>() {
+            @Override
+            public T answer(InvocationOnMock invocation) throws Throwable {
+                // Return the second parameter -> the default
+                return (T) invocation.getArguments()[1];
+            }
+        };
     }
 
 }

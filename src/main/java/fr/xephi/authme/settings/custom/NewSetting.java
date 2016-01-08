@@ -24,6 +24,12 @@ public class NewSetting {
     private File file;
     private YamlConfiguration configuration;
 
+    /**
+     * Constructor.
+     * Loads the file as YAML and checks its integrity.
+     *
+     * @param file The configuration file
+     */
     public NewSetting(File file) {
         this.configuration = YamlConfiguration.loadConfiguration(file);
         this.file = file;
@@ -34,12 +40,33 @@ public class NewSetting {
         }
     }
 
+    /**
+     * Simple constructor for testing purposes. Does not check for all properties and
+     * never saves to the file.
+     *
+     * @param yamlConfiguration The YamlConfiguration object to use
+     * @param file The file to write to
+     * @param propertyMap The property map whose properties should be verified for presence, or null to skip this
+     */
     @VisibleForTesting
-    NewSetting(YamlConfiguration yamlConfiguration, String file) {
+    NewSetting(YamlConfiguration yamlConfiguration, File file, PropertyMap propertyMap) {
         this.configuration = yamlConfiguration;
-        this.file = new File(file);
+        this.file = file;
+
+        if (propertyMap != null) {
+            if (!containsAllSettings(propertyMap)) {
+                save(propertyMap);
+            }
+        }
     }
 
+    /**
+     * Get the given property from the configuration.
+     *
+     * @param property The property to retrieve
+     * @param <T> The property's type
+     * @return The property's value
+     */
     public <T> T getOption(Property<T> property) {
         return property.getFromFile(configuration);
     }
@@ -105,7 +132,8 @@ public class NewSetting {
         }
     }
 
-    private boolean containsAllSettings(PropertyMap propertyMap) {
+    @VisibleForTesting
+    boolean containsAllSettings(PropertyMap propertyMap) {
         for (Property<?> property : propertyMap.keySet()) {
             if (!property.isPresent(configuration)) {
                 return false;

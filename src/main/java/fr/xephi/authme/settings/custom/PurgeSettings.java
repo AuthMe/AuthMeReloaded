@@ -25,7 +25,7 @@ public class PurgeSettings implements SettingsClass {
 
 	@Comment("Do we need to remove the Essentials/users/player.yml file during purge process?")
     public static final Property<Boolean> REMOVE_ESSENTIALS_FILES =
-        newProperty(BOOLEAN, "Purge.removeEssentialsFiles", false);
+        newProperty(BOOLEAN, "Purge.removeEssentialsFile", false);
 
 	@Comment("World where are players.dat stores")
     public static final Property<String> DEFAULT_WORLD =
