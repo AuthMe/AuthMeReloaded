@@ -13,16 +13,17 @@
 // OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 package fr.xephi.authme.security.crypts;
 
-import java.io.UnsupportedEncodingException;
-import java.security.SecureRandom;
-
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
+
+import java.io.UnsupportedEncodingException;
+import java.security.SecureRandom;
 
 /**
  * <p>
@@ -64,6 +65,7 @@ import fr.xephi.authme.util.StringUtils;
  * is twice as much work. The default log_rounds is 10, and the valid range is 4
  * to 31.
  * </p>
+ *
  * @author Damien Miller
  * @version 0.2
  */
@@ -103,7 +105,9 @@ public class BCRYPT implements EncryptionMethod {
      * @param d   the byte array to encode
      * @param len the number of bytes to encode
      *
-     * @return base64-encoded string * @throws IllegalArgumentException if the length is invalid * @throws IllegalArgumentException
+     * @return base64-encoded string
+     *
+     * @throws IllegalArgumentException if the length is invalid
      */
     private static String encode_base64(byte d[], int len)
         throws IllegalArgumentException {
@@ -161,6 +165,7 @@ public class BCRYPT implements EncryptionMethod {
      * @param maxolen the maximum number of bytes to decode
      *
      * @return an array containing the decoded bytes
+     *
      * @throws IllegalArgumentException if maxolen is invalid
      */
     private static byte[] decode_base64(String s, int maxolen)

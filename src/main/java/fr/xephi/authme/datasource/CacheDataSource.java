@@ -10,6 +10,7 @@ import com.google.common.cache.RemovalNotification;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,25 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public HashedPassword getPassword(String user) {
+        user = user.toLowerCase();
+        Optional<PlayerAuth> pAuthOpt = cachedAuths.getIfPresent(user);
+        if (pAuthOpt != null && pAuthOpt.isPresent()) {
+            return pAuthOpt.get().getPassword();
+        }
+        return source.getPassword(user);
+    }
+
+    /**
+     * Method getAuth.
+     *
+     * @param user String
+     *
+     * @return PlayerAuth
+     *
+     * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
+     */
+    @Override
     public synchronized PlayerAuth getAuth(String user) {
         user = user.toLowerCase();
         return cachedAuths.getUnchecked(user).orNull();
@@ -77,6 +97,16 @@ public class CacheDataSource implements DataSource {
         boolean result = source.updatePassword(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
+        }
+        return result;
+    }
+
+    @Override
+    public boolean updatePassword(String user, HashedPassword password) {
+        user = user.toLowerCase();
+        boolean result = source.updatePassword(user, password);
+        if (result) {
+            cachedAuths.refresh(user);
         }
         return result;
     }

@@ -1,5 +1,12 @@
 package fr.xephi.authme.datasource;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.Settings;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,12 +16,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.settings.Settings;
 
 /**
  */
@@ -87,6 +88,15 @@ public class FlatFile implements DataSource {
         return false;
     }
 
+    @Override
+    public HashedPassword getPassword(String user) {
+        PlayerAuth auth = getAuth(user);
+        if (auth != null) {
+            return auth.getPassword();
+        }
+        return null;
+    }
+
     /**
      * Method saveAuth.
      *
@@ -126,7 +136,13 @@ public class FlatFile implements DataSource {
      */
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
-        if (!isAuthAvailable(auth.getNickname())) {
+        return updatePassword(auth.getNickname(), auth.getPassword());
+    }
+
+    @Override
+    public boolean updatePassword(String user, HashedPassword password) {
+        user = user.toLowerCase();
+        if (!isAuthAvailable(user)) {
             return false;
         }
         PlayerAuth newAuth = null;
@@ -136,27 +152,27 @@ public class FlatFile implements DataSource {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
-                if (args[0].equals(auth.getNickname())) {
+                if (args[0].equals(user)) {
                     // Note ljacqu 20151230: This does not persist the salt; it is not supported in flat file.
                     switch (args.length) {
                         case 4: {
-                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], Long.parseLong(args[3]), 0, 0, 0, "world", "your@email.com", args[0]);
+                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], Long.parseLong(args[3]), 0, 0, 0, "world", "your@email.com", args[0]);
                             break;
                         }
                         case 7: {
-                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "world", "your@email.com", args[0]);
+                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "world", "your@email.com", args[0]);
                             break;
                         }
                         case 8: {
-                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]);
+                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]);
                             break;
                         }
                         case 9: {
-                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]);
+                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]);
                             break;
                         }
                         default: {
-                            newAuth = new PlayerAuth(args[0], auth.getPassword().getHash(), args[2], 0, 0, 0, 0, "world", "your@email.com", args[0]);
+                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], 0, 0, 0, 0, "world", "your@email.com", args[0]);
                             break;
                         }
                     }
@@ -178,7 +194,7 @@ public class FlatFile implements DataSource {
             }
         }
         if (newAuth != null) {
-            removeAuth(auth.getNickname());
+            removeAuth(user);
             saveAuth(newAuth);
         }
         return true;

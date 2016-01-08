@@ -515,21 +515,12 @@ public final class Settings {
             set("Xenoforo.predefinedSalt", null);
             changes = true;
         }
-        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") ||
-            configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
-            set("settings.security.passwordHash", "XENFORO");
-            changes = true;
-        }
         if (!contains("Protection.enableProtection")) {
             set("Protection.enableProtection", false);
             changes = true;
         }
         if (!contains("settings.restrictions.removeSpeed")) {
             set("settings.restrictions.removeSpeed", true);
-            changes = true;
-        }
-        if (!contains("DataSource.mySQLMaxConections")) {
-            set("DataSource.mySQLMaxConections", 25);
             changes = true;
         }
         if (!contains("Protection.countries")) {
@@ -741,6 +732,7 @@ public final class Settings {
         }
 
         if (changes) {
+            save();
             plugin.getLogger().warning("Merged new Config Options - I'm not an error, please don't report me");
             plugin.getLogger().warning("Please check your config.yml file for new configs!");
         }

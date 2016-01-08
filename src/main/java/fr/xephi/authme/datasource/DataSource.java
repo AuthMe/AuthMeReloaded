@@ -1,8 +1,9 @@
 package fr.xephi.authme.datasource;
 
-import java.util.List;
-
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+
+import java.util.List;
 
 /**
  */
@@ -16,6 +17,15 @@ public interface DataSource {
      * @return boolean
      */
     boolean isAuthAvailable(String user);
+
+    /**
+     * Method getPassword.
+     *
+     * @param user String
+     *
+     * @return String
+     */
+    HashedPassword getPassword(String user);
 
     /**
      * Method getAuth.
@@ -52,6 +62,8 @@ public interface DataSource {
      * @return boolean
      */
     boolean updatePassword(PlayerAuth auth);
+
+    boolean updatePassword(String user, HashedPassword password);
 
     /**
      * Method purgeDatabase.
