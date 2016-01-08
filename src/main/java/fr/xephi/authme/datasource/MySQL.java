@@ -334,17 +334,18 @@ public class MySQL implements DataSource {
             boolean useSalt = !columnSalt.isEmpty() || !StringUtils.isEmpty(auth.getPassword().getSalt());
             sql = "INSERT INTO " + tableName + "("
                 + columnName + "," + columnPassword + "," + columnIp + ","
-                + columnLastLogin + "," + columnRealName
+                + columnLastLogin + "," + columnRealName + "," + columnEmail
                 + (useSalt ? "," + columnSalt : "")
-                + ") VALUES (?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
+                + ") VALUES (?,?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
             pst = con.prepareStatement(sql);
             pst.setString(1, auth.getNickname());
             pst.setString(2, auth.getPassword().getHash());
             pst.setString(3, auth.getIp());
             pst.setLong(4, auth.getLastLogin());
             pst.setString(5, auth.getRealName());
+            pst.setString(6, auth.getEmail());
             if (useSalt) {
-                pst.setString(6, auth.getPassword().getSalt());
+                pst.setString(7, auth.getPassword().getSalt());
             }
             pst.executeUpdate();
             pst.close();
