@@ -254,4 +254,23 @@ public class CommandMapperTest {
         assertThat(result.getDifference(), equalTo(0.0));
     }
 
+    @Test
+    public void shouldRecognizeMissingPermissionForCommand() {
+        // given
+        List<String> parts = Arrays.asList("authme", "login", "test1");
+        CommandSender sender = mock(CommandSender.class);
+        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(false);
+
+        // when
+        FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
+
+        // then
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "authme", "login")));
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.NO_PERMISSION));
+        assertThat(result.getArguments(), contains("test1"));
+        assertThat(result.getDifference(), equalTo(0.0));
+        assertThat(result.getLabels(), equalTo(parts.subList(0, 2)));
+        assertThat(result.getArguments(), contains(parts.get(2)));
+    }
+
 }
