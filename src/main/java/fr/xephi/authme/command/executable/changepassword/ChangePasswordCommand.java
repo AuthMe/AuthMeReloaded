@@ -32,12 +32,7 @@ public class ChangePasswordCommand extends PlayerCommand {
 
         // Make sure the password is allowed
         String playerPassLowerCase = newPassword.toLowerCase();
-        // TODO #308: Remove SQL keywords check
-        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where")
-            || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify")
-            || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
-            || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
-            || !playerPassLowerCase.matches(Settings.getPassRegex)) {
+        if (!playerPassLowerCase.matches(Settings.getPassRegex)) {
             commandService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
             return;
         }
