@@ -48,6 +48,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.settings.custom.NewSetting;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
@@ -67,6 +68,7 @@ import org.bukkit.scheduler.BukkitTask;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Calendar;
@@ -97,6 +99,7 @@ public class AuthMe extends JavaPlugin {
     private CommandHandler commandHandler = null;
     private PermissionsManager permsMan = null;
     private Settings settings;
+    private NewSetting newSettings;
     private Messages messages;
     private JsonCache playerBackup;
     private ModuleManager moduleManager;
@@ -213,6 +216,7 @@ public class AuthMe extends JavaPlugin {
             setEnabled(false);
             return;
         }
+        newSettings = createNewSetting();
 
         // Set up messages & password security
         messages = Messages.getInstance();
@@ -233,7 +237,7 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity);
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings);
 
         // Set up the module manager
         setupModuleManager();
@@ -415,11 +419,12 @@ public class AuthMe extends JavaPlugin {
     }
 
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
-                                                    PasswordSecurity passwordSecurity) {
+                                                    PasswordSecurity passwordSecurity, NewSetting settings) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager);
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, messages, permissionsManager, helpProvider);
-        CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity);
+        CommandService commandService = new CommandService(
+            this, mapper, helpProvider, messages, passwordSecurity, settings);
         return new CommandHandler(commandService);
     }
 
@@ -441,17 +446,22 @@ public class AuthMe extends JavaPlugin {
      * @return True on success, false on failure.
      */
     private boolean loadSettings() {
-        // TODO: new configuration style (more files)
         try {
             settings = new Settings(this);
             Settings.reload();
         } catch (Exception e) {
             ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError("Can't load the configuration file... Something went wrong, to avoid security issues the server will shutdown!");
+            ConsoleLogger.showError("Can't load the configuration file... Something went wrong. "
+                + "To avoid security issues the server will shut down!");
             server.shutdown();
             return true;
         }
         return false;
+    }
+
+    private NewSetting createNewSetting() {
+        File configFile = new File(getDataFolder() + "config.yml");
+        return new NewSetting(getConfig(), configFile);
     }
 
     /**

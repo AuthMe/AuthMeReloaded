@@ -2,6 +2,8 @@ package fr.xephi.authme.command;
 
 import java.util.List;
 
+import fr.xephi.authme.settings.custom.NewSetting;
+import fr.xephi.authme.settings.domain.Property;
 import org.bukkit.command.CommandSender;
 
 import fr.xephi.authme.AuthMe;
@@ -24,6 +26,7 @@ public class CommandService {
     private final HelpProvider helpProvider;
     private final CommandMapper commandMapper;
     private final PasswordSecurity passwordSecurity;
+    private final NewSetting settings;
 
     /**
      * Constructor.
@@ -35,12 +38,13 @@ public class CommandService {
      * @param passwordSecurity The Password Security instance
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
-                          PasswordSecurity passwordSecurity) {
+                          PasswordSecurity passwordSecurity, NewSetting settings) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
         this.commandMapper = commandMapper;
         this.passwordSecurity = passwordSecurity;
+        this.settings = settings;
     }
 
     /**
@@ -154,6 +158,17 @@ public class CommandService {
      */
     public String[] retrieveMessage(MessageKey key) {
         return messages.retrieve(key);
+    }
+
+    /**
+     * Retrieve the given property's value.
+     *
+     * @param property The property to retrieve
+     * @param <T> The type of the property
+     * @return The property's value
+     */
+    public <T> T getProperty(Property<T> property) {
+        return settings.getProperty(property);
     }
 
 }

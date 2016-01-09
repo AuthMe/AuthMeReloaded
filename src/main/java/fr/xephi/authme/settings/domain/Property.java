@@ -1,6 +1,6 @@
 package fr.xephi.authme.settings.domain;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.Arrays;
 import java.util.List;
@@ -60,7 +60,7 @@ public class Property<T> {
      * @param configuration The configuration to read the value from
      * @return The value, or default if not present
      */
-    public T getFromFile(YamlConfiguration configuration) {
+    public T getFromFile(FileConfiguration configuration) {
         return type.getFromFile(this, configuration);
     }
 
@@ -70,7 +70,7 @@ public class Property<T> {
      * @param configuration The configuration to read the value from
      * @return The property value as YAML
      */
-    public List<String> formatValueAsYaml(YamlConfiguration configuration) {
+    public List<String> formatValueAsYaml(FileConfiguration configuration) {
         return type.asYaml(this, configuration);
     }
 
@@ -80,7 +80,7 @@ public class Property<T> {
      * @param configuration The configuration file to verify
      * @return True if the property is present, false otherwise
      */
-    public boolean isPresent(YamlConfiguration configuration) {
+    public boolean isPresent(FileConfiguration configuration) {
         return type.contains(this, configuration);
     }
 

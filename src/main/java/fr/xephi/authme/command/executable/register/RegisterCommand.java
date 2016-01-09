@@ -43,6 +43,6 @@ public class RegisterCommand extends PlayerCommand {
 
     @Override
     public String getAlternativeCommand() {
-        return "authme register <playername> <password>";
+        return "/authme register <playername> <password>";
     }
 }

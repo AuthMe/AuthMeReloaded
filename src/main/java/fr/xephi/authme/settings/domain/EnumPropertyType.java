@@ -1,6 +1,6 @@
 package fr.xephi.authme.settings.domain;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ class EnumPropertyType<E extends Enum<E>> extends PropertyType<E> {
     }
 
     @Override
-    public E getFromFile(Property<E> property, YamlConfiguration configuration) {
+    public E getFromFile(Property<E> property, FileConfiguration configuration) {
         String textValue = configuration.getString(property.getPath());
         if (textValue == null) {
             return property.getDefaultValue();
@@ -34,7 +34,7 @@ class EnumPropertyType<E extends Enum<E>> extends PropertyType<E> {
     }
 
     @Override
-    public boolean contains(Property<E> property, YamlConfiguration configuration) {
+    public boolean contains(Property<E> property, FileConfiguration configuration) {
         return super.contains(property, configuration)
             && mapToEnum(configuration.getString(property.getPath())) != null;
     }

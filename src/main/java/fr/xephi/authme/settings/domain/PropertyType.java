@@ -1,6 +1,6 @@
 package fr.xephi.authme.settings.domain;
 
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +28,7 @@ public abstract class PropertyType<T> {
      * @param configuration The YAML configuration to read from
      * @return The read value, or the default value if absent
      */
-    public abstract T getFromFile(Property<T> property, YamlConfiguration configuration);
+    public abstract T getFromFile(Property<T> property, FileConfiguration configuration);
 
     /**
      * Return the property's value (or its default) as YAML.
@@ -37,7 +37,7 @@ public abstract class PropertyType<T> {
      * @param configuration The YAML configuration to read from
      * @return The read value or its default in YAML format
      */
-    public List<String> asYaml(Property<T> property, YamlConfiguration configuration) {
+    public List<String> asYaml(Property<T> property, FileConfiguration configuration) {
         return asYaml(getFromFile(property, configuration));
     }
 
@@ -48,7 +48,7 @@ public abstract class PropertyType<T> {
      * @param configuration The configuration to verify
      * @return True if the property is present, false otherwise
      */
-    public boolean contains(Property<T> property, YamlConfiguration configuration) {
+    public boolean contains(Property<T> property, FileConfiguration configuration) {
         return configuration.contains(property.getPath());
     }
 
@@ -66,7 +66,7 @@ public abstract class PropertyType<T> {
      */
     private static final class BooleanProperty extends PropertyType<Boolean> {
         @Override
-        public Boolean getFromFile(Property<Boolean> property, YamlConfiguration configuration) {
+        public Boolean getFromFile(Property<Boolean> property, FileConfiguration configuration) {
             return configuration.getBoolean(property.getPath(), property.getDefaultValue());
         }
 
@@ -81,7 +81,7 @@ public abstract class PropertyType<T> {
      */
     private static final class DoubleProperty extends PropertyType<Double> {
         @Override
-        public Double getFromFile(Property<Double> property, YamlConfiguration configuration) {
+        public Double getFromFile(Property<Double> property, FileConfiguration configuration) {
             return configuration.getDouble(property.getPath(), property.getDefaultValue());
         }
 
@@ -96,7 +96,7 @@ public abstract class PropertyType<T> {
      */
     private static final class IntegerProperty extends PropertyType<Integer> {
         @Override
-        public Integer getFromFile(Property<Integer> property, YamlConfiguration configuration) {
+        public Integer getFromFile(Property<Integer> property, FileConfiguration configuration) {
             return configuration.getInt(property.getPath(), property.getDefaultValue());
         }
 
@@ -111,7 +111,7 @@ public abstract class PropertyType<T> {
      */
     private static final class StringProperty extends PropertyType<String> {
         @Override
-        public String getFromFile(Property<String> property, YamlConfiguration configuration) {
+        public String getFromFile(Property<String> property, FileConfiguration configuration) {
             return configuration.getString(property.getPath(), property.getDefaultValue());
         }
 
@@ -131,7 +131,7 @@ public abstract class PropertyType<T> {
      */
     private static final class StringListProperty extends PropertyType<List<String>> {
         @Override
-        public List<String> getFromFile(Property<List<String>> property, YamlConfiguration configuration) {
+        public List<String> getFromFile(Property<List<String>> property, FileConfiguration configuration) {
             if (!configuration.isList(property.getPath())) {
                 return property.getDefaultValue();
             }
@@ -154,7 +154,7 @@ public abstract class PropertyType<T> {
         }
 
         @Override
-        public boolean contains(Property<List<String>> property, YamlConfiguration configuration) {
+        public boolean contains(Property<List<String>> property, FileConfiguration configuration) {
             return configuration.contains(property.getPath()) && configuration.isList(property.getPath());
         }
     }

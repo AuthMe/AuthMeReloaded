@@ -6,7 +6,7 @@ import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -22,41 +22,43 @@ import java.util.Map;
 public class NewSetting {
 
     private File file;
-    private YamlConfiguration configuration;
+    private FileConfiguration configuration;
 
     /**
      * Constructor.
      * Loads the file as YAML and checks its integrity.
      *
+     * @param configuration The configuration to interact with
      * @param file The configuration file
      */
-    public NewSetting(File file) {
-        this.configuration = YamlConfiguration.loadConfiguration(file);
+    public NewSetting(FileConfiguration configuration, File file) {
+        this.configuration = configuration;
         this.file = file;
 
-        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
-        if (!containsAllSettings(propertyMap)) {
-            save(propertyMap);
-        }
+        // TODO ljacqu 20160109: Ensure that save() works as desired (i.e. that it always produces valid YAML)
+        // and then uncomment the lines below. Once this is uncommented, the checks in the old Settings.java should
+        // be removed as we should check to rewrite the config.yml file only at one place
+        // --------
+        // PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
+        // if (!containsAllSettings(propertyMap)) {
+        //     save(propertyMap);
+        // }
     }
 
     /**
-     * Simple constructor for testing purposes. Does not check for all properties and
-     * never saves to the file.
+     * Constructor for testing purposes, allowing more options.
      *
-     * @param yamlConfiguration The YamlConfiguration object to use
+     * @param configuration The FileConfiguration object to use
      * @param file The file to write to
      * @param propertyMap The property map whose properties should be verified for presence, or null to skip this
      */
     @VisibleForTesting
-    NewSetting(YamlConfiguration yamlConfiguration, File file, PropertyMap propertyMap) {
-        this.configuration = yamlConfiguration;
+    NewSetting(FileConfiguration configuration, File file, PropertyMap propertyMap) {
+        this.configuration = configuration;
         this.file = file;
 
-        if (propertyMap != null) {
-            if (!containsAllSettings(propertyMap)) {
-                save(propertyMap);
-            }
+        if (propertyMap != null && !containsAllSettings(propertyMap)) {
+            save(propertyMap);
         }
     }
 
@@ -67,7 +69,7 @@ public class NewSetting {
      * @param <T> The property's type
      * @return The property's value
      */
-    public <T> T getOption(Property<T> property) {
+    public <T> T getProperty(Property<T> property) {
         return property.getFromFile(configuration);
     }
 

@@ -67,7 +67,7 @@ public class NewSettingIntegrationTest {
             .build();
         for (Map.Entry<Property<?>, Object> entry : expectedValues.entrySet()) {
             assertThat("Property '" + entry.getKey().getPath() + "' has expected value",
-                settings.getOption(entry.getKey()), equalTo(entry.getValue()));
+                settings.getProperty(entry.getKey()), equalTo(entry.getValue()));
         }
         assertThat(file.exists(), equalTo(false));
     }
@@ -100,7 +100,7 @@ public class NewSettingIntegrationTest {
             .build();
         for (Map.Entry<Property<?>, Object> entry : expectedValues.entrySet()) {
             assertThat("Property '" + entry.getKey().getPath() + "' has expected value",
-                settings.getOption(entry.getKey()), equalTo(entry.getValue()));
+                settings.getProperty(entry.getKey()), equalTo(entry.getValue()));
         }
     }
 

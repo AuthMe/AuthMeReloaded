@@ -41,10 +41,10 @@ public class NewSettingTest {
         // when / then
         NewSetting settings = new NewSetting(file, new File("conf.txt"), null);
 
-        assertThat(settings.getOption(TestConfiguration.VERSION_NUMBER), equalTo(20));
-        assertThat(settings.getOption(TestConfiguration.SKIP_BORING_FEATURES), equalTo(true));
-        assertThat(settings.getOption(TestConfiguration.RATIO_LIMIT), equalTo(4.25));
-        assertThat(settings.getOption(TestConfiguration.SYSTEM_NAME), equalTo("myTestSys"));
+        assertThat(settings.getProperty(TestConfiguration.VERSION_NUMBER), equalTo(20));
+        assertThat(settings.getProperty(TestConfiguration.SKIP_BORING_FEATURES), equalTo(true));
+        assertThat(settings.getProperty(TestConfiguration.RATIO_LIMIT), equalTo(4.25));
+        assertThat(settings.getProperty(TestConfiguration.SYSTEM_NAME), equalTo("myTestSys"));
 
         assertDefaultValue(TestConfiguration.DURATION_IN_SECONDS, settings);
         assertDefaultValue(TestConfiguration.DUST_LEVEL, settings);
@@ -68,7 +68,7 @@ public class NewSettingTest {
 
     private static void assertDefaultValue(Property<?> property, NewSetting setting) {
         assertThat(property.getPath() + " has default value",
-            setting.getOption(property).equals(property.getDefaultValue()), equalTo(true));
+            setting.getProperty(property).equals(property.getDefaultValue()), equalTo(true));
     }
 
     private static <T> Answer<T> withDefaultArgument() {
