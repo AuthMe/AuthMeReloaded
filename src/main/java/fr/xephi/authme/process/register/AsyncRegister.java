@@ -44,10 +44,7 @@ public class AsyncRegister {
         } else if (!Settings.isRegistrationEnabled) {
             m.send(player, MessageKey.REGISTRATION_DISABLED);
             return false;
-        } else if (passLow.contains("delete") || passLow.contains("where") || passLow.contains("insert")
-            || passLow.contains("modify") || passLow.contains("from") || passLow.contains("select")
-            || passLow.contains(";") || passLow.contains("null") || !passLow.matches(Settings.getPassRegex)) {
-            // TODO #308: Remove check for SQL keywords
+        } else if (!passLow.matches(Settings.getPassRegex)) {
             m.send(player, MessageKey.PASSWORD_MATCH_ERROR);
             return false;
         } else if (passLow.equalsIgnoreCase(player.getName())) {

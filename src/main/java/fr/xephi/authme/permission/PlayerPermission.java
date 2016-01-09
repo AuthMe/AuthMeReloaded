@@ -83,7 +83,12 @@ public enum PlayerPermission implements PermissionNode {
 	/**
 	 * Permission to use all player (non-admin) commands.
 	 */
-	PLAYER_ALL("authme.player.*");
+	PLAYER_ALL("authme.player.*"),
+
+	/**
+	 * Permission to use to see own other accounts.
+	 */
+	SEE_OWN_ACCOUNTS("authme.player.seeownaccounts");
 
     /**
      * The permission node.

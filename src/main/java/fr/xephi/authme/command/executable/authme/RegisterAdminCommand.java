@@ -27,12 +27,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
         final String playerPassLowerCase = playerPass.toLowerCase();
 
         // Command logic
-        // TODO #308: Remove the check for SQL keywords
-        if (playerPassLowerCase.contains("delete") || playerPassLowerCase.contains("where")
-            || playerPassLowerCase.contains("insert") || playerPassLowerCase.contains("modify")
-            || playerPassLowerCase.contains("from") || playerPassLowerCase.contains("select")
-            || playerPassLowerCase.contains(";") || playerPassLowerCase.contains("null")
-            || !playerPassLowerCase.matches(Settings.getPassRegex)) {
+        if (!playerPassLowerCase.matches(Settings.getPassRegex)) {
             commandService.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
             return;
         }

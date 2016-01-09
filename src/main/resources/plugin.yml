@@ -141,6 +141,7 @@ permissions:
             authme.player.seeotheraccounts: true
             authme.player.unregister: true
             authme.player.vip: true
+            authme.player.seeownaccounts: true
     authme.player.bypassantibot:
         description: Permission node to bypass AntiBot protection.
         default: false
@@ -185,4 +186,7 @@ permissions:
         default: false
     authme.player.seeotheraccounts:
         description: Permission for user to see other accounts.
+        default: false
+    authme.player.seeownaccounts:
+        description: Permission for user to see own other accounts.
         default: false

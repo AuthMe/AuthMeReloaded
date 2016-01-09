@@ -79,6 +79,7 @@ typing commands or using the inventory. It can also kick players with uncommonly
   <li>Supported alternative registration methods:<br>
   <ul>
     <li>PHPBB, VBulletin: MD5VB - PHPBB</li>
+    <li>Xenforo: XFBCRYPT</li>
     <li>MyBB: MYBB</li>
     <li>IPB3: IPB3</li>
     <li>PhpFusion: PHPFUSION</li>
