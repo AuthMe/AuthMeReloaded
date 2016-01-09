@@ -635,7 +635,7 @@ public class MySQL implements DataSource {
                 list.add(rs.getString(columnName));
             }
             rs.close();
-            sql = "DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?:";
+            sql = "DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;";
             st = con.prepareStatement(sql);
             st.setLong(1, until);
             st.executeUpdate();
