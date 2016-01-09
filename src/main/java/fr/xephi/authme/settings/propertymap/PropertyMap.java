@@ -14,7 +14,7 @@ import java.util.TreeMap;
  */
 public class PropertyMap {
 
-    private Map<Property<?>, String[]> propertyMap;
+    private Map<Property<?>, String[]> map;
     private PropertyMapComparator comparator;
 
     /**
@@ -22,7 +22,7 @@ public class PropertyMap {
      */
     public PropertyMap() {
         comparator = new PropertyMapComparator();
-        propertyMap = new TreeMap<>(comparator);
+        map = new TreeMap<>(comparator);
     }
 
     /**
@@ -33,7 +33,7 @@ public class PropertyMap {
      */
     public void put(Property property, String[] comments) {
         comparator.add(property);
-        propertyMap.put(property, comments);
+        map.put(property, comments);
     }
 
     /**
@@ -42,7 +42,7 @@ public class PropertyMap {
      * @return The entry set
      */
     public Set<Map.Entry<Property<?>, String[]>> entrySet() {
-        return propertyMap.entrySet();
+        return map.entrySet();
     }
 
     /**
@@ -51,7 +51,16 @@ public class PropertyMap {
      * @return The key set
      */
     public Set<Property<?>> keySet() {
-        return propertyMap.keySet();
+        return map.keySet();
+    }
+
+    /**
+     * Return the size of the map.
+     *
+     * @return The size
+     */
+    public int size() {
+        return map.size();
     }
 
 }

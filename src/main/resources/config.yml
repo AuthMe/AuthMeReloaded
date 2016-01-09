@@ -340,8 +340,6 @@ Email:
     RecoveryPasswordLength: 8
     # Email subject of password get
     mailSubject: 'Your new AuthMe Password'
-    # Email text here
-    mailText: 'Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><image><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword'
     # Like maxRegPerIp but with email
     maxRegPerEmail: 1
     # Recall players to add an email?

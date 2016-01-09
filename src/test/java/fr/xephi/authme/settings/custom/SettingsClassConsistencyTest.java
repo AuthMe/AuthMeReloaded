@@ -54,7 +54,7 @@ public class SettingsClassConsistencyTest {
             for (Field field : fields) {
                 if (Property.class.isAssignableFrom(field.getType())) {
                     String fieldName = "Field " + clazz.getSimpleName() + "#" + field.getName();
-                    assertThat(fieldName + "should be public, static, and final",
+                    assertThat(fieldName + " should be public, static, and final",
                         isValidConstantField(field), equalTo(true));
                 }
             }
