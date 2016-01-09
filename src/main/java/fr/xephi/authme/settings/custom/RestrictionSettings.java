@@ -141,6 +141,31 @@ public class RestrictionSettings implements SettingsClass {
     public static final Property<Boolean> BAN_UNKNOWN_IP =
         newProperty("settings.restrictions.banUnsafedIP", false);
 
+    @Comment("Spawn priority; values: authme, essentials, multiverse, default")
+    public static final Property<String> SPAWN_PRIORITY =
+        newProperty("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+
+    @Comment("Maximum Login authorized by IP")
+    public static final Property<Integer> MAX_LOGIN_PER_IP =
+        newProperty("settings.restrictions.maxLoginPerIp", 0);
+
+    @Comment("Maximum Join authorized by IP")
+    public static final Property<Integer> MAX_JOIN_PER_IP =
+        newProperty("settings.restrictions.maxJoinPerIp", 0);
+
+    @Comment("AuthMe will NEVER teleport players if set to true!")
+    public static final Property<Boolean> NO_TELEPORT =
+        newProperty("settings.restrictions.noTeleport", false);
+
+    @Comment("Regex syntax for allowed chars in passwords")
+    public static final Property<String> ALLOWED_PASSWORD_CHARS =
+        newProperty("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
+
+    @Comment("Force survival gamemode when player joins?")
+    public static final Property<Boolean> FORCE_SURVIVAL_MODE =
+        newProperty("settings.GameMode.ForceSurvivalMode", false);
+
+
     private RestrictionSettings() {
     }
 
