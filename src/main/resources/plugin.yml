@@ -187,6 +187,6 @@ permissions:
     authme.player.seeotheraccounts:
         description: Permission for user to see other accounts.
         default: false
-    authme.player.showownaccounts:
+    authme.player.seeownaccounts:
         description: Permission for user to see own other accounts.
         default: false

@@ -88,7 +88,7 @@ public enum PlayerPermission implements PermissionNode {
 	/**
 	 * Permission to use to see own other accounts.
 	 */
-	SEE_OWN_ACCOUNTS("authme.player.showotheraccounts");
+	SEE_OWN_ACCOUNTS("authme.player.seeownaccounts");
 
     /**
      * The permission node.
