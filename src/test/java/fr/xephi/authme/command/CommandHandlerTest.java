@@ -14,6 +14,7 @@ import static fr.xephi.authme.command.FoundResultStatus.SUCCESS;
 import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
@@ -89,7 +90,9 @@ public class CommandHandlerTest {
         assertThat(captor.getValue(), contains("unreg", "testPlayer"));
 
         verify(command, never()).getExecutableCommand();
-        verify(serviceMock).outputMappingError(eq(sender), any(FoundCommandResult.class));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(sender).sendMessage(captor.capture());
+        assertThat(captor.getValue(), containsString("don't have permission"));
     }
 
     @Test

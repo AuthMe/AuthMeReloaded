@@ -422,9 +422,9 @@ public class AuthMe extends JavaPlugin {
                                                     PasswordSecurity passwordSecurity, NewSetting settings) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager);
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
-        CommandMapper mapper = new CommandMapper(baseCommands, messages, permissionsManager, helpProvider);
+        CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
         CommandService commandService = new CommandService(
-            this, mapper, helpProvider, messages, passwordSecurity, settings);
+            this, mapper, helpProvider, messages, passwordSecurity, permissionsManager, settings);
         return new CommandHandler(commandService);
     }
 

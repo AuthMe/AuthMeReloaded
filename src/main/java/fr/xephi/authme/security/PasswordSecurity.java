@@ -62,7 +62,7 @@ public class PasswordSecurity {
      * @param hashedPassword The encrypted password to test the clear-text password against
      * @param playerName     The name of the player
      *
-     * @return True if the
+     * @return True if there was a password match with another encryption method, false otherwise
      */
     private boolean compareWithAllEncryptionMethods(String password, HashedPassword hashedPassword,
                                                     String playerName) {

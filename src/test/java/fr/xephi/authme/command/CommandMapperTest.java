@@ -1,7 +1,5 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
@@ -43,7 +41,7 @@ public class CommandMapperTest {
     @Before
     public void setUpMocks() {
         permissionsManagerMock = mock(PermissionsManager.class);
-        mapper = new CommandMapper(commands, mock(Messages.class), permissionsManagerMock, mock(HelpProvider.class));
+        mapper = new CommandMapper(commands, permissionsManagerMock);
     }
 
     // -----------

@@ -39,6 +39,7 @@ public class CommandServiceTest {
     private Messages messages;
     private PasswordSecurity passwordSecurity;
     private CommandService commandService;
+    private PermissionsManager permissionsManager;
     private NewSetting settings;
 
     @Before
@@ -48,8 +49,10 @@ public class CommandServiceTest {
         helpProvider = mock(HelpProvider.class);
         messages = mock(Messages.class);
         passwordSecurity = mock(PasswordSecurity.class);
+        permissionsManager = mock(PermissionsManager.class);
         settings = mock(NewSetting.class);
-        commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity, settings);
+        commandService = new CommandService(
+            authMe, commandMapper, helpProvider, messages, passwordSecurity, permissionsManager, settings);
     }
 
     @Test
@@ -90,19 +93,6 @@ public class CommandServiceTest {
         // then
         assertThat(result, equalTo(givenResult));
         verify(commandMapper).mapPartsToCommand(sender, commandParts);
-    }
-
-    @Test
-    public void shouldOutputMappingError() {
-        // given
-        CommandSender sender = mock(CommandSender.class);
-        FoundCommandResult result = mock(FoundCommandResult.class);
-
-        // when
-        commandService.outputMappingError(sender, result);
-
-        // then
-        verify(commandMapper).outputStandardError(sender, result);
     }
 
     @Test
@@ -174,16 +164,11 @@ public class CommandServiceTest {
 
     @Test
     public void shouldReturnPermissionsManager() {
-        // given
-        PermissionsManager manager = mock(PermissionsManager.class);
-        given(authMe.getPermissionsManager()).willReturn(manager);
-
-        // when
+        // given / when
         PermissionsManager result = commandService.getPermissionsManager();
 
         // then
-        assertThat(result, equalTo(manager));
-        verify(authMe).getPermissionsManager();
+        assertThat(result, equalTo(permissionsManager));
     }
 
     @Test
