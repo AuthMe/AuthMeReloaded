@@ -104,7 +104,12 @@ public class MySQL implements DataSource {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
         ds.setDriverClassName("com.mysql.jdbc.Driver");
-        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?rewriteBatchedStatements=true&jdbcCompliantTruncation=false");
+        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+        ds.addDataSourceProperty("rewriteBatchedStatements", "true");
+        ds.addDataSourceProperty("jdbcCompliantTruncation", "false");
+        ds.addDataSourceProperty("cachePrepStmts", "true");
+        ds.addDataSourceProperty("prepStmtCacheSize", "250");
+        ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
         ds.setUsername(this.username);
         ds.setPassword(this.password);
         ds.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
@@ -329,17 +334,18 @@ public class MySQL implements DataSource {
             boolean useSalt = !columnSalt.isEmpty() || !StringUtils.isEmpty(auth.getPassword().getSalt());
             sql = "INSERT INTO " + tableName + "("
                 + columnName + "," + columnPassword + "," + columnIp + ","
-                + columnLastLogin + "," + columnRealName
+                + columnLastLogin + "," + columnRealName + "," + columnEmail
                 + (useSalt ? "," + columnSalt : "")
-                + ") VALUES (?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
+                + ") VALUES (?,?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
             pst = con.prepareStatement(sql);
             pst.setString(1, auth.getNickname());
             pst.setString(2, auth.getPassword().getHash());
             pst.setString(3, auth.getIp());
             pst.setLong(4, auth.getLastLogin());
             pst.setString(5, auth.getRealName());
+            pst.setString(6, auth.getEmail());
             if (useSalt) {
-                pst.setString(6, auth.getPassword().getSalt());
+                pst.setString(7, auth.getPassword().getSalt());
             }
             pst.executeUpdate();
             pst.close();
@@ -496,10 +502,12 @@ public class MySQL implements DataSource {
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     int id = rs.getInt(columnID);
-                    pst2 = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
+                    sql = "INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?)";
+                    pst2 = con.prepareStatement(sql);
                     pst2.setInt(1, id);
-                    pst2.setString(2, "XenForo_Authentication_Core12");
-                    byte[] bytes = auth.getPassword().getHash().getBytes();
+                    pst2.setString(2, XFBCRYPT.SCHEME_CLASS);
+                    String serializedHash = XFBCRYPT.serializeHash(auth.getPassword().getHash());
+                    byte[] bytes = serializedHash.getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
                     pst2.setBlob(3, blob);
@@ -554,7 +562,8 @@ public class MySQL implements DataSource {
                     // Insert password in the correct table
                     sql = "UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;";
                     PreparedStatement pst2 = con.prepareStatement(sql);
-                    byte[] bytes = password.getHash().getBytes();
+                    String serializedHash = XFBCRYPT.serializeHash(password.getHash());
+                    byte[] bytes = serializedHash.getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
                     pst2.setBlob(1, blob);
@@ -564,7 +573,7 @@ public class MySQL implements DataSource {
                     // ...
                     sql = "UPDATE xf_user_authenticate SET scheme_class=? WHERE " + columnID + "=?;";
                     pst2 = con.prepareStatement(sql);
-                    pst2.setString(1, "XenForo_Authentication_Core12");
+                    pst2.setString(1, XFBCRYPT.SCHEME_CLASS);
                     pst2.setInt(2, id);
                     pst2.executeUpdate();
                     pst2.close();

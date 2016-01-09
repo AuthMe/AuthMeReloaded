@@ -1,5 +1,11 @@
 package fr.xephi.authme.datasource;
 
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -8,12 +14,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.StringUtils;
 
 /**
  */
@@ -41,7 +41,7 @@ public class SQLite implements DataSource {
      * Constructor for SQLite.
      *
      * @throws ClassNotFoundException Exception
-     * @throws SQLException Exception
+     * @throws SQLException           Exception
      */
     public SQLite() throws ClassNotFoundException, SQLException {
         this.database = Settings.getMySQLDatabase;
@@ -219,23 +219,26 @@ public class SQLite implements DataSource {
                         + "is not set in the config!");
                 }
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword +
-                    "," + columnIp + "," + columnLastLogin + "," + columnRealName + ") VALUES (?,?,?,?,?);");
+                    "," + columnIp + "," + columnLastLogin + "," + columnRealName + "," + columnEmail +
+                    ") VALUES (?,?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, password.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
                 pst.setString(5, auth.getRealName());
+                pst.setString(6, auth.getEmail());
                 pst.executeUpdate();
             } else {
                 pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + ","
-                    + columnIp + "," + columnLastLogin + "," + columnSalt + "," + columnRealName
-                    + ") VALUES (?,?,?,?,?,?);");
+                    + columnIp + "," + columnLastLogin + "," + columnRealName + "," + columnEmail + "," + columnSalt
+                    + ") VALUES (?,?,?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
                 pst.setString(2, password.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
-                pst.setString(5, password.getSalt());
-                pst.setString(6, auth.getRealName());
+                pst.setString(5, auth.getRealName());
+                pst.setString(6, auth.getEmail());
+                pst.setString(7, password.getSalt());
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
