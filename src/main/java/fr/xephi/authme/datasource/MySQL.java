@@ -627,15 +627,18 @@ public class MySQL implements DataSource {
     public synchronized List<String> autoPurgeDatabase(long until) {
         List<String> list = new ArrayList<>();
         try (Connection con = getConnection()) {
-            String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE " + columnLastLogin + "<" + until;
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql);
+            String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE " + columnLastLogin + "<?;";
+            PreparedStatement st = con.prepareStatement(sql);
+            st.setLong(1, until);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 list.add(rs.getString(columnName));
             }
             rs.close();
-            sql = "DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<" + until;
-            st.executeUpdate(sql);
+            sql = "DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?:";
+            st = con.prepareStatement(sql);
+            st.setLong(1, until);
+            st.executeUpdate();
             st.close();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -657,9 +660,10 @@ public class MySQL implements DataSource {
                 ResultSet rs = pst.executeQuery();
                 if (rs.next()) {
                     int id = rs.getInt(columnID);
-                    sql = "DELETE FROM xf_user_authenticate WHERE " + columnID + "=" + id;
-                    Statement st = con.createStatement();
-                    st.executeUpdate(sql);
+                    sql = "DELETE FROM xf_user_authenticate WHERE " + columnID + "=?;";
+                    PreparedStatement st = con.prepareStatement(sql);
+                    st.setInt(1, id);
+                    st.executeUpdate();
                     st.close();
                 }
                 rs.close();
