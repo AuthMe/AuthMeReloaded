@@ -1,6 +1,7 @@
 package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.process.email.AsyncAddEmail;
 import fr.xephi.authme.process.email.AsyncChangeEmail;
 import fr.xephi.authme.process.join.AsynchronousJoin;
 import fr.xephi.authme.process.login.AsynchronousLogin;
@@ -90,11 +91,11 @@ public class Management {
         });
     }
 
-    public void performAddEmail(final Player player, final String newEmail, final String newEmailVerify) {
+    public void performAddEmail(final Player player, final String newEmail) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                new AsyncChangeEmail(player, plugin, null, newEmail, newEmailVerify).process();
+                new AsyncAddEmail(plugin, player, newEmail).process();
             }
         });
     }
