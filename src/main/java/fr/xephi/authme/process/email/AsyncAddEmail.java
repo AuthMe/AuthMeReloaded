@@ -15,29 +15,30 @@ import org.bukkit.entity.Player;
  */
 public class AsyncAddEmail {
 
-    private AuthMe plugin;
-    private Player player;
-    private String email;
-    private Messages messages;
+    private final Player player;
+    private final String email;
+    private final Messages messages;
+    private final DataSource dataSource;
+    private final PlayerCache playerCache;
 
-    public AsyncAddEmail(AuthMe plugin, Player player, String email) {
-        this.plugin = plugin;
+    public AsyncAddEmail(AuthMe plugin, Player player, String email, DataSource dataSource, PlayerCache playerCache) {
         this.messages = plugin.getMessages();
         this.player = player;
         this.email = email;
+        this.dataSource = dataSource;
+        this.playerCache = playerCache;
     }
 
     public void process() {
         String playerName = player.getName().toLowerCase();
-        PlayerCache playerCache = PlayerCache.getInstance();
 
         if (playerCache.isAuthenticated(playerName)) {
-            PlayerAuth auth = PlayerCache.getInstance().getAuth(playerName);
+            PlayerAuth auth = playerCache.getAuth(playerName);
             String currentEmail = auth.getEmail();
 
-            if (currentEmail == null) {
+            if (currentEmail != null) {
                 messages.send(player, MessageKey.USAGE_CHANGE_EMAIL);
-            } else if (StringUtils.isEmpty(email) || "your@email.com".equals(email) || Settings.isEmailCorrect(email)) {
+            } else if (isEmailInvalid(email)) {
                 messages.send(player, MessageKey.INVALID_EMAIL);
             } else {
                 auth.setEmail(email);
@@ -45,8 +46,13 @@ public class AsyncAddEmail {
                 messages.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
             }
         } else {
-            sendUnloggedMessage(plugin.getDataSource());
+            sendUnloggedMessage(dataSource);
         }
+    }
+
+    private static boolean isEmailInvalid(String email) {
+        return StringUtils.isEmpty(email) || "your@email.com".equals(email)
+            || !Settings.isEmailCorrect(email);
     }
 
     private void sendUnloggedMessage(DataSource dataSource) {
