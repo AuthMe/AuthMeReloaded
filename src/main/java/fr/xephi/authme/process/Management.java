@@ -106,7 +106,7 @@ public class Management {
         sched.runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                new AsyncChangeEmail(player, plugin, oldEmail, newEmail).process();
+                new AsyncChangeEmail(player, plugin, oldEmail, newEmail, plugin.getDataSource(), PlayerCache.getInstance()).process();
             }
         });
     }

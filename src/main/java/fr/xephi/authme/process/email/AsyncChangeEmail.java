@@ -3,6 +3,7 @@ package fr.xephi.authme.process.email;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -15,23 +16,26 @@ import org.bukkit.entity.Player;
 public class AsyncChangeEmail {
 
     private final Player player;
-    private final AuthMe plugin;
     private final String oldEmail;
     private final String newEmail;
     private final Messages m;
+    private final PlayerCache playerCache;
+    private final DataSource dataSource;
 
-    public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail) {
+    public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail,
+                            String newEmail, DataSource dataSource, PlayerCache playerCache) {
         this.m = plugin.getMessages();
         this.player = player;
-        this.plugin = plugin;
         this.oldEmail = oldEmail;
         this.newEmail = newEmail;
+        this.playerCache = playerCache;
+        this.dataSource = dataSource;
     }
 
     public void process() {
         String playerName = player.getName().toLowerCase();
-        if (PlayerCache.getInstance().isAuthenticated(playerName)) {
-            PlayerAuth auth = PlayerCache.getInstance().getAuth(playerName);
+        if (playerCache.isAuthenticated(playerName)) {
+            PlayerAuth auth = playerCache.getAuth(playerName);
             String currentEmail = auth.getEmail();
 
             if (currentEmail == null) {
@@ -40,7 +44,7 @@ public class AsyncChangeEmail {
                 m.send(player, MessageKey.INVALID_EMAIL);
             } else if (!oldEmail.equals(currentEmail)) {
                 m.send(player, MessageKey.INVALID_OLD_EMAIL);
-            } else if (Settings.isEmailCorrect(newEmail)) {
+            } else if (!Settings.isEmailCorrect(newEmail)) {
                 m.send(player, MessageKey.INVALID_NEW_EMAIL);
             } else {
                 saveNewEmail(auth);
@@ -52,8 +56,8 @@ public class AsyncChangeEmail {
 
     private void saveNewEmail(PlayerAuth auth) {
         auth.setEmail(newEmail);
-        if (plugin.getDataSource().updateEmail(auth)) {
-            PlayerCache.getInstance().updatePlayer(auth);
+        if (dataSource.updateEmail(auth)) {
+            playerCache.updatePlayer(auth);
             m.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
         } else {
             m.send(player, MessageKey.ERROR);
@@ -62,7 +66,7 @@ public class AsyncChangeEmail {
     }
 
     private void outputUnloggedMessage() {
-        if (plugin.getDataSource().isAuthAvailable(player.getName())) {
+        if (dataSource.isAuthAvailable(player.getName())) {
             m.send(player, MessageKey.LOGIN_MESSAGE);
         } else if (Settings.emailRegistration) {
             m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
