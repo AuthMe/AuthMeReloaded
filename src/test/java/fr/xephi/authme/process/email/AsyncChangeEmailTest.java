@@ -6,6 +6,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.entity.Player;
 import org.junit.After;
@@ -13,6 +14,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -62,6 +64,25 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
+    public void shouldShowErrorIfSaveFails() {
+        // given
+        AsyncChangeEmail process = createProcess("old@mail.tld", "new@mail.tld");
+        given(player.getName()).willReturn("Bobby");
+        given(playerCache.isAuthenticated("bobby")).willReturn(true);
+        PlayerAuth auth = authWithMail("old@mail.tld");
+        given(playerCache.getAuth("bobby")).willReturn(auth);
+        given(dataSource.updateEmail(auth)).willReturn(false);
+
+        // when
+        process.process();
+
+        // then
+        verify(dataSource).updateEmail(auth);
+        verify(playerCache, never()).updatePlayer(auth);
+        verify(messages).send(player, MessageKey.ERROR);
+    }
+
+    @Test
     public void shouldShowAddEmailUsage() {
         // given
         AsyncChangeEmail process = createProcess("old@mail.tld", "new@mail.tld");
@@ -74,8 +95,8 @@ public class AsyncChangeEmailTest {
         process.process();
 
         // then
-        verify(dataSource, never()).updateEmail(auth);
-        verify(playerCache, never()).updatePlayer(auth);
+        verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
         verify(messages).send(player, MessageKey.USAGE_ADD_EMAIL);
     }
 
@@ -92,8 +113,8 @@ public class AsyncChangeEmailTest {
         process.process();
 
         // then
-        verify(dataSource, never()).updateEmail(auth);
-        verify(playerCache, never()).updatePlayer(auth);
+        verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
         verify(messages).send(player, MessageKey.INVALID_NEW_EMAIL);
     }
 
@@ -110,9 +131,62 @@ public class AsyncChangeEmailTest {
         process.process();
 
         // then
-        verify(dataSource, never()).updateEmail(auth);
-        verify(playerCache, never()).updatePlayer(auth);
+        verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
         verify(messages).send(player, MessageKey.INVALID_OLD_EMAIL);
+    }
+
+    @Test
+    public void shouldSendLoginMessage() {
+        // given
+        AsyncChangeEmail process = createProcess("old@mail.tld", "new@mail.tld");
+        given(player.getName()).willReturn("Bobby");
+        given(playerCache.isAuthenticated("bobby")).willReturn(false);
+        given(dataSource.isAuthAvailable("Bobby")).willReturn(true);
+
+        // when
+        process.process();
+
+        // then
+        verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(messages).send(player, MessageKey.LOGIN_MESSAGE);
+    }
+
+    @Test
+    public void shouldShowEmailRegistrationMessage() {
+        // given
+        AsyncChangeEmail process = createProcess("old@mail.tld", "new@mail.tld");
+        given(player.getName()).willReturn("Bobby");
+        given(playerCache.isAuthenticated("bobby")).willReturn(false);
+        given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
+        Settings.emailRegistration = true;
+
+        // when
+        process.process();
+
+        // then
+        verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(messages).send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+    }
+
+    @Test
+    public void shouldShowRegistrationMessage() {
+        // given
+        AsyncChangeEmail process = createProcess("old@mail.tld", "new@mail.tld");
+        given(player.getName()).willReturn("Bobby");
+        given(playerCache.isAuthenticated("bobby")).willReturn(false);
+        given(dataSource.isAuthAvailable("Bobby")).willReturn(false);
+        Settings.emailRegistration = false;
+
+        // when
+        process.process();
+
+        // then
+        verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(messages).send(player, MessageKey.REGISTER_MESSAGE);
     }
 
     private static PlayerAuth authWithMail(String email) {

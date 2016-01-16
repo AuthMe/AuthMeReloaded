@@ -40,18 +40,21 @@ public class AsyncChangeEmail {
 
             if (currentEmail == null) {
                 m.send(player, MessageKey.USAGE_ADD_EMAIL);
-            } else if (StringUtils.isEmpty(newEmail) || "your@email.com".equals(newEmail)) {
-                m.send(player, MessageKey.INVALID_EMAIL);
+            } else if (isEmailInvalid(newEmail)) {
+                m.send(player, MessageKey.INVALID_NEW_EMAIL);
             } else if (!oldEmail.equals(currentEmail)) {
                 m.send(player, MessageKey.INVALID_OLD_EMAIL);
-            } else if (!Settings.isEmailCorrect(newEmail)) {
-                m.send(player, MessageKey.INVALID_NEW_EMAIL);
             } else {
                 saveNewEmail(auth);
             }
         } else {
             outputUnloggedMessage();
         }
+    }
+
+    private static boolean isEmailInvalid(String email) {
+        return StringUtils.isEmpty(email) || "your@email.com".equals(email)
+            || !Settings.isEmailCorrect(email);
     }
 
     private void saveNewEmail(PlayerAuth auth) {
