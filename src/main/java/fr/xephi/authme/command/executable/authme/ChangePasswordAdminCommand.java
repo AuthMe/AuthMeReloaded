@@ -8,7 +8,8 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.custom.RestrictionSettings;
+import fr.xephi.authme.settings.custom.SecuritySettings;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -27,7 +28,7 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
 
         // Validate the password
         String playerPassLowerCase = playerPass.toLowerCase();
-        if (!playerPassLowerCase.matches(Settings.getPassRegex)) {
+        if (!playerPassLowerCase.matches(commandService.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX))) {
             commandService.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
             return;
         }
@@ -35,12 +36,12 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
             commandService.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
             return;
         }
-        if (playerPassLowerCase.length() < Settings.getPasswordMinLen
-                || playerPassLowerCase.length() > Settings.passwordMaxLength) {
+        if (playerPassLowerCase.length() < commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)
+                || playerPassLowerCase.length() > commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)) {
             commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
             return;
         }
-        if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(playerPassLowerCase)) {
+        if (commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(playerPassLowerCase)) {
             commandService.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
             return;
         }

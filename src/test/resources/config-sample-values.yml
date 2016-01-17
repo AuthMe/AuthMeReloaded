@@ -1,0 +1,27 @@
+# Test config file with all options
+# defined in the TestConfiguration class
+
+test:
+    duration: 22
+    systemName: 'Custom sys name'
+sample:
+    ratio:
+        limit: -4.1
+        fields:
+            - 'Australia'
+            - 'Burundi'
+            - 'Colombia'
+version: 2492
+features:
+    boring:
+        skip: false
+        colors:
+            - 'beige'
+            - 'gray'
+        dustLevel: 0.81
+    cool:
+        enabled: true
+        options:
+            - 'Dinosaurs'
+            - 'Explosions'
+            - 'Big trucks'

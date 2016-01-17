@@ -1,34 +1,9 @@
 package fr.xephi.authme;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-import org.mcstats.Metrics;
-import org.mcstats.Metrics.Graph;
-
 import com.earth2me.essentials.Essentials;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import com.onarandombox.MultiverseCore.MultiverseCore;
-
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -73,11 +48,36 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.settings.custom.NewSetting;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Wrapper;
 import net.minelink.ctplus.CombatTagPlus;
+import org.apache.logging.log4j.LogManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+import org.mcstats.Metrics;
+import org.mcstats.Metrics.Graph;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 /**
  * The AuthMe main class.
@@ -99,6 +99,7 @@ public class AuthMe extends JavaPlugin {
     private CommandHandler commandHandler = null;
     private PermissionsManager permsMan = null;
     private Settings settings;
+    private NewSetting newSettings;
     private Messages messages;
     private JsonCache playerBackup;
     private ModuleManager moduleManager;
@@ -215,6 +216,7 @@ public class AuthMe extends JavaPlugin {
             setEnabled(false);
             return;
         }
+        newSettings = createNewSetting();
 
         // Set up messages & password security
         messages = Messages.getInstance();
@@ -235,7 +237,7 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity);
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings);
 
         // Set up the module manager
         setupModuleManager();
@@ -417,11 +419,12 @@ public class AuthMe extends JavaPlugin {
     }
 
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
-                                                    PasswordSecurity passwordSecurity) {
+                                                    PasswordSecurity passwordSecurity, NewSetting settings) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager);
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
-        CommandMapper mapper = new CommandMapper(baseCommands, messages, permissionsManager, helpProvider);
-        CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity);
+        CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
+        CommandService commandService = new CommandService(
+            this, mapper, helpProvider, messages, passwordSecurity, permissionsManager, settings);
         return new CommandHandler(commandService);
     }
 
@@ -443,17 +446,22 @@ public class AuthMe extends JavaPlugin {
      * @return True on success, false on failure.
      */
     private boolean loadSettings() {
-        // TODO: new configuration style (more files)
         try {
             settings = new Settings(this);
             Settings.reload();
         } catch (Exception e) {
             ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError("Can't load the configuration file... Something went wrong, to avoid security issues the server will shutdown!");
+            ConsoleLogger.showError("Can't load the configuration file... Something went wrong. "
+                + "To avoid security issues the server will shut down!");
             server.shutdown();
             return true;
         }
         return false;
+    }
+
+    private NewSetting createNewSetting() {
+        File configFile = new File(getDataFolder() + "config.yml");
+        return new NewSetting(getConfig(), configFile);
     }
 
     /**

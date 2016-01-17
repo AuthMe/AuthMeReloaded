@@ -1,13 +1,11 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
@@ -19,16 +17,10 @@ import static fr.xephi.authme.command.FoundResultStatus.MISSING_BASE_COMMAND;
 import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 
 /**
- * The AuthMe command handler, responsible for mapping incoming command parts to the correct {@link CommandDescription}
- * or to display help messages for erroneous invocations (unknown command, no permission, etc.).
+ * The AuthMe command handler, responsible for mapping incoming
+ * command parts to the correct {@link CommandDescription}.
  */
 public class CommandMapper {
-
-    /**
-     * The threshold for suggesting a similar command. If the difference is below this value, we will
-     * ask the player whether he meant the similar command.
-     */
-    private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
 
     /**
      * The class of the help command, to which the base label should also be passed in the arguments.
@@ -36,84 +28,13 @@ public class CommandMapper {
     private static final Class<? extends ExecutableCommand> HELP_COMMAND_CLASS = HelpCommand.class;
 
     private final Set<CommandDescription> baseCommands;
-    private final Messages messages;
     private final PermissionsManager permissionsManager;
-    private final HelpProvider helpProvider;
 
-    public CommandMapper(Set<CommandDescription> baseCommands, Messages messages,
-                         PermissionsManager permissionsManager, HelpProvider helpProvider) {
+    public CommandMapper(Set<CommandDescription> baseCommands, PermissionsManager permissionsManager) {
         this.baseCommands = baseCommands;
-        this.messages = messages;
         this.permissionsManager = permissionsManager;
-        this.helpProvider = helpProvider;
     }
 
-    public void outputStandardError(CommandSender sender, FoundCommandResult result) {
-        switch (result.getResultStatus()) {
-            case SUCCESS:
-                // Successful mapping, so no error to output
-                break;
-            case MISSING_BASE_COMMAND:
-                sender.sendMessage(ChatColor.DARK_RED + "Failed to parse " + AuthMe.getPluginName() + " command!");
-                break;
-            case INCORRECT_ARGUMENTS:
-                sendImproperArgumentsMessage(sender, result);
-                break;
-            case UNKNOWN_LABEL:
-                sendUnknownCommandMessage(sender, result);
-                break;
-            case NO_PERMISSION:
-                sendPermissionDeniedError(sender);
-                break;
-            default:
-                throw new IllegalStateException("Unknown result status '" + result.getResultStatus() + "'");
-        }
-    }
-
-    /**
-     * Show an "unknown command" message to the user and suggest an existing command if its similarity is within
-     * the defined threshold.
-     *
-     * @param sender The command sender
-     * @param result The command that was found during the mapping process
-     */
-    private static void sendUnknownCommandMessage(CommandSender sender, FoundCommandResult result) {
-        sender.sendMessage(ChatColor.DARK_RED + "Unknown command!");
-
-        // Show a command suggestion if available and the difference isn't too big
-        if (result.getDifference() <= SUGGEST_COMMAND_THRESHOLD && result.getCommandDescription() != null) {
-            sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD
-                + CommandUtils.constructCommandPath(result.getCommandDescription()) + ChatColor.YELLOW + "?");
-        }
-
-        sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + result.getLabels().get(0)
-            + " help" + ChatColor.YELLOW + " to view help.");
-    }
-
-    private void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result) {
-        CommandDescription command = result.getCommandDescription();
-        if (!permissionsManager.hasPermission(sender, command)) {
-            sendPermissionDeniedError(sender);
-            return;
-        }
-
-        // Show the command argument help
-        sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
-        List<String> lines = helpProvider.printHelp(sender, result, HelpProvider.SHOW_ARGUMENTS);
-        for (String line : lines) {
-            sender.sendMessage(line);
-        }
-
-        List<String> labels = result.getLabels();
-        String childLabel = labels.size() >= 2 ? labels.get(1) : "";
-        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE
-            + "/" + labels.get(0) + " help " + childLabel);
-    }
-
-    // TODO ljacqu 20151212: Remove me once I am a MessageKey
-    private static void sendPermissionDeniedError(CommandSender sender) {
-        sender.sendMessage(ChatColor.DARK_RED + "You don't have permission to use this command!");
-    }
 
     /**
      * Map incoming command parts to a command. This processes all parts and distinguishes the labels from arguments.

@@ -7,6 +7,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -311,7 +312,7 @@ public final class Settings {
         try {
             return Files.toString(EMAIL_FILE, Charsets.UTF_8);
         } catch (IOException e) {
-            ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.showError("Error loading email text: " + StringUtils.formatException(e));
             ConsoleLogger.writeStackTrace(e);
             return "";
         }

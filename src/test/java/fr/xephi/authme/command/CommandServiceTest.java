@@ -8,6 +8,9 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.settings.custom.NewSetting;
+import fr.xephi.authme.settings.custom.SecuritySettings;
+import fr.xephi.authme.settings.domain.Property;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -36,6 +39,8 @@ public class CommandServiceTest {
     private Messages messages;
     private PasswordSecurity passwordSecurity;
     private CommandService commandService;
+    private PermissionsManager permissionsManager;
+    private NewSetting settings;
 
     @Before
     public void setUpService() {
@@ -44,7 +49,10 @@ public class CommandServiceTest {
         helpProvider = mock(HelpProvider.class);
         messages = mock(Messages.class);
         passwordSecurity = mock(PasswordSecurity.class);
-        commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity);
+        permissionsManager = mock(PermissionsManager.class);
+        settings = mock(NewSetting.class);
+        commandService = new CommandService(
+            authMe, commandMapper, helpProvider, messages, passwordSecurity, permissionsManager, settings);
     }
 
     @Test
@@ -85,19 +93,6 @@ public class CommandServiceTest {
         // then
         assertThat(result, equalTo(givenResult));
         verify(commandMapper).mapPartsToCommand(sender, commandParts);
-    }
-
-    @Test
-    public void shouldOutputMappingError() {
-        // given
-        CommandSender sender = mock(CommandSender.class);
-        FoundCommandResult result = mock(FoundCommandResult.class);
-
-        // when
-        commandService.outputMappingError(sender, result);
-
-        // then
-        verify(commandMapper).outputStandardError(sender, result);
     }
 
     @Test
@@ -169,16 +164,11 @@ public class CommandServiceTest {
 
     @Test
     public void shouldReturnPermissionsManager() {
-        // given
-        PermissionsManager manager = mock(PermissionsManager.class);
-        given(authMe.getPermissionsManager()).willReturn(manager);
-
-        // when
+        // given / when
         PermissionsManager result = commandService.getPermissionsManager();
 
         // then
-        assertThat(result, equalTo(manager));
-        verify(authMe).getPermissionsManager();
+        assertThat(result, equalTo(permissionsManager));
     }
 
     @Test
@@ -194,5 +184,19 @@ public class CommandServiceTest {
         // then
         assertThat(result, equalTo(givenMessages));
         verify(messages).retrieve(key);
+    }
+
+    @Test
+    public void shouldRetrieveProperty() {
+        // given
+        Property<Integer> property = SecuritySettings.CAPTCHA_LENGTH;
+        given(settings.getProperty(property)).willReturn(7);
+
+        // when
+        int result = settings.getProperty(property);
+
+        // then
+        assertThat(result, equalTo(7));
+        verify(settings).getProperty(property);
     }
 }

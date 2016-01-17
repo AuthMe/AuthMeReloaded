@@ -156,8 +156,10 @@ settings:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false
     security:
-        # minimum Length of password
+        # Minimum length of password
         minPasswordLength: 5
+        # Maximum length of password
+        passwordMaxLength: 30
         # this is very important options,
         # every time player join the server,
         # if they are registered, AuthMe will switch him
@@ -209,7 +211,7 @@ settings:
         # Only registered and logged in players can play.
         # See restrictions for exceptions
         force: true
-        # Does we replace password registration by an Email registration method?
+        # Do we replace password registration by an email registration method?
         enableEmailRegistrationSystem: false
         # Enable double check of email when you register
         # when it's true, registration require that kind of command:
@@ -340,8 +342,6 @@ Email:
     RecoveryPasswordLength: 8
     # Email subject of password get
     mailSubject: 'Your new AuthMe Password'
-    # Email text here
-    mailText: 'Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><image><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword'
     # Like maxRegPerIp but with email
     maxRegPerEmail: 1
     # Recall players to add an email?
@@ -355,6 +355,8 @@ Email:
     emailWhitelisted: []
     # Do we need to send new password draw in an image?
     generateImage: false
+    # The email OAuth 2 token (leave empty if not used)
+    emailOauth2Token: ''
 Hooks:
     # Do we need to hook with multiverse for spawn checking?
     multiverse: true
