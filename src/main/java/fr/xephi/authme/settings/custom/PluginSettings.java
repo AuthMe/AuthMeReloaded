@@ -40,6 +40,20 @@ public class PluginSettings implements SettingsClass {
     public static final Property<Boolean> SESSIONS_EXPIRE_ON_IP_CHANGE =
         newProperty("settings.sessions.sessionExpireOnIpChange", true);
 
+    @Comment("Message language, available: en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, lt, it, ko, pt")
+    public static final Property<String> MESSAGES_LANGUAGE =
+        newProperty("settings.messagesLanguage", "en");
+
+    @Comment({
+        "Take care with this option; if you don't want",
+        "to use Vault and group switching of AuthMe",
+        "for unloggedIn players, set this setting to true.",
+        "Default is false."
+    })
+    public static final Property<Boolean> ENABLE_PERMISSION_CHECK =
+        newProperty("permission.EnablePermissionCheck", false);
+
+
     private PluginSettings() {
     }
 

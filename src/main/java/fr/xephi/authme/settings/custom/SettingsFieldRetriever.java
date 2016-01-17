@@ -18,9 +18,10 @@ final class SettingsFieldRetriever {
 
     /** The classes to scan for properties. */
     private static final List<Class<? extends SettingsClass>> CONFIGURATION_CLASSES = Arrays.asList(
-        ConverterSettings.class,   PluginSettings.class,  RestrictionSettings.class,
-        DatabaseSettings.class,    EmailSettings.class,   HooksSettings.class,
-        ProtectionSettings.class,  PurgeSettings.class,   SecuritySettings.class);
+        ConverterSettings.class,    PluginSettings.class,  RestrictionSettings.class,
+        DatabaseSettings.class,     EmailSettings.class,   HooksSettings.class,
+        ProtectionSettings.class,   PurgeSettings.class,   SecuritySettings.class,
+        RegistrationSettings.class, BackupSettings.class);
 
     private SettingsFieldRetriever() {
     }

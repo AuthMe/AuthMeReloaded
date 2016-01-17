@@ -165,6 +165,18 @@ public class RestrictionSettings implements SettingsClass {
     public static final Property<Boolean> FORCE_SURVIVAL_MODE =
         newProperty("settings.GameMode.ForceSurvivalMode", false);
 
+    @Comment({
+        "Below you can list all account names that",
+        "AuthMe will ignore for registration or login, configure it",
+        "at your own risk!! Remember that if you are going to add",
+        "nickname with [], you have to delimit name with ' '.",
+        "this option add compatibility with BuildCraft and some",
+        "other mods.",
+        "It is case-sensitive!"
+    })
+    public static final Property<List<String>> UNRESTRICTED_NAMES =
+        newProperty(PropertyType.STRING_LIST, "settings.unrestrictions.UnrestrictedName");
+
 
     private RestrictionSettings() {
     }

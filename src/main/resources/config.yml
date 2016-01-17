@@ -209,7 +209,7 @@ settings:
         # Only registered and logged in players can play.
         # See restrictions for exceptions
         force: true
-        # Does we replace password registration by an Email registration method?
+        # Do we replace password registration by an email registration method?
         enableEmailRegistrationSystem: false
         # Enable double check of email when you register
         # when it's true, registration require that kind of command:

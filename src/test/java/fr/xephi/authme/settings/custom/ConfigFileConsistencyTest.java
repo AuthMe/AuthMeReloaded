@@ -1,9 +1,11 @@
 package fr.xephi.authme.settings.custom;
 
+import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.MemorySection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 
@@ -16,8 +18,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -40,7 +40,19 @@ public class ConfigFileConsistencyTest {
         boolean result = settings.containsAllSettings(SettingsFieldRetriever.getAllPropertyFields());
 
         // then
-        assertThat(result, equalTo(true));
+        if (!result) {
+            FileConfiguration configuration =
+                (FileConfiguration) ReflectionTestUtils.getFieldValue(NewSetting.class, settings, "configuration");
+
+            Set<String> knownProperties = getAllKnownPropertyPaths();
+            List<String> missingProperties = new ArrayList<>();
+            for (String path : knownProperties) {
+                if (!configuration.contains(path)) {
+                    missingProperties.add(path);
+                }
+            }
+            fail("Found missing properties!\n-" + StringUtils.join("\n-", missingProperties));
+        }
     }
 
     @Test

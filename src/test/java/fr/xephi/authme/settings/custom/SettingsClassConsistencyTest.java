@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -79,6 +81,17 @@ public class SettingsClassConsistencyTest {
                     paths.add(property.getPath());
                 }
             }
+        }
+    }
+
+    @Test
+    public void shouldHaveHiddenDefaultConstructorOnly() {
+        for (Class<?> clazz : classes) {
+            Constructor<?>[] constructors = clazz.getDeclaredConstructors();
+            assertThat(clazz + " should only have one constructor",
+                constructors, arrayWithSize(1));
+            assertThat("Constructor of " + clazz + " is private",
+                Modifier.isPrivate(constructors[0].getModifiers()), equalTo(true));
         }
     }
 
