@@ -44,6 +44,8 @@ public class AsyncChangeEmail {
                 m.send(player, MessageKey.INVALID_NEW_EMAIL);
             } else if (!oldEmail.equals(currentEmail)) {
                 m.send(player, MessageKey.INVALID_OLD_EMAIL);
+            } else if (dataSource.isEmailStored(newEmail)) {
+                m.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
                 saveNewEmail(auth);
             }

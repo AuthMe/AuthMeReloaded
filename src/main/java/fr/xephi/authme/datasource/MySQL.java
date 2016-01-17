@@ -971,9 +971,8 @@ public class MySQL implements DataSource {
             pst.close();
             rs.close();
             st.close();
-        } catch (Exception ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
         return auths;
     }
@@ -1015,11 +1014,29 @@ public class MySQL implements DataSource {
                 }
                 auths.add(pAuth);
             }
-        } catch (Exception ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
         return auths;
+    }
+
+    @Override
+    public synchronized boolean isEmailStored(String email) {
+        String sql = "SELECT 1 FROM " + tableName + " WHERE " + columnEmail + " = ?";
+        try (Connection con = ds.getConnection()) {
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, email);
+            ResultSet rs = pst.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+        return false;
+    }
+
+    private static void logSqlException(SQLException e) {
+        ConsoleLogger.showError("Error executing SQL query: " + StringUtils.formatException(e));
+        ConsoleLogger.writeStackTrace(e);
     }
 
 }

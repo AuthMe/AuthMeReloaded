@@ -53,6 +53,7 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("tester")).willReturn(auth);
+        given(dataSource.isEmailStored("my.mail@example.org")).willReturn(false);
 
         // when
         process.process();
@@ -72,6 +73,7 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn("another@mail.tld");
         given(playerCache.getAuth("my_player")).willReturn(auth);
+        given(dataSource.isEmailStored("some.mail@example.org")).willReturn(false);
 
         // when
         process.process();
@@ -90,12 +92,32 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("my_player")).willReturn(auth);
+        given(dataSource.isEmailStored("invalid_mail")).willReturn(false);
 
         // when
         process.process();
 
         // then
         verify(messages).send(player, MessageKey.INVALID_EMAIL);
+        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+    }
+
+    @Test
+    public void shouldNotAddMailIfAlreadyUsed() {
+        // given
+        AsyncAddEmail process = createProcess("player@mail.tld");
+        given(player.getName()).willReturn("TestName");
+        given(playerCache.isAuthenticated("testname")).willReturn(true);
+        PlayerAuth auth = mock(PlayerAuth.class);
+        given(auth.getEmail()).willReturn(null);
+        given(playerCache.getAuth("testname")).willReturn(auth);
+        given(dataSource.isEmailStored("player@mail.tld")).willReturn(true);
+
+        // when
+        process.process();
+
+        // then
+        verify(messages).send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
     }
 

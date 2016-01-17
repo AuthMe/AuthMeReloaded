@@ -57,3 +57,4 @@ email_exists: '&cA recovery email was already sent! You can discard it and send 
 country_banned: '&4Your country is banned from this server!'
 antibot_auto_enabled: '&4[AntiBotService] AntiBot enabled due to the huge number of connections!'
 antibot_auto_disabled: '&2[AntiBotService] AntiBot disabled disabled after %m minutes!'
+email_already_used: '&4The email address is already being used'

@@ -684,6 +684,25 @@ public class SQLite implements DataSource {
         return auths;
     }
 
+    @Override
+    public synchronized boolean isEmailStored(String email) {
+        try {
+            PreparedStatement ps = con.prepareStatement(
+                "SELECT 1 FROM " + tableName + " WHERE LOWER(" + columnEmail + ") = LOWER(?)");
+            ps.setString(1, email);
+            ResultSet rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+        return false;
+    }
+
+    private static void logSqlException(SQLException e) {
+        ConsoleLogger.showError("Error while executing SQL statement: " + StringUtils.formatException(e));
+        ConsoleLogger.writeStackTrace(e);
+    }
+
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = !columnSalt.isEmpty() ? row.getString(columnSalt) : null;
 

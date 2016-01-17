@@ -121,7 +121,9 @@ public enum MessageKey {
 
     ANTIBOT_AUTO_ENABLED_MESSAGE("antibot_auto_enabled"),
 
-    ANTIBOT_AUTO_DISABLED_MESSAGE("antibot_auto_disabled", "%m");
+    ANTIBOT_AUTO_DISABLED_MESSAGE("antibot_auto_disabled", "%m"),
+
+    EMAIL_ALREADY_USED_ERROR("email_already_used");
 
 
     private String key;

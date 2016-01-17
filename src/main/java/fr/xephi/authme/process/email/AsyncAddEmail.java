@@ -36,10 +36,13 @@ public class AsyncAddEmail {
             PlayerAuth auth = playerCache.getAuth(playerName);
             String currentEmail = auth.getEmail();
 
-            if (currentEmail != null) {
+            if (currentEmail != null && !"your@mail.com".equals(currentEmail)) {
+                System.out.println("Email is currentEmail " + currentEmail); // FIXME remove
                 messages.send(player, MessageKey.USAGE_CHANGE_EMAIL);
             } else if (isEmailInvalid(email)) {
                 messages.send(player, MessageKey.INVALID_EMAIL);
+            } else if (dataSource.isEmailStored(email)) {
+                messages.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
                 auth.setEmail(email);
                 playerCache.updatePlayer(auth);

@@ -137,6 +137,25 @@ public class AsyncChangeEmailTest {
     }
 
     @Test
+    public void shouldRejectAlreadyUsedEmail() {
+        // given
+        AsyncChangeEmail process = createProcess("old@example.com", "new@example.com");
+        given(player.getName()).willReturn("Username");
+        given(playerCache.isAuthenticated("username")).willReturn(true);
+        PlayerAuth auth = authWithMail("old@example.com");
+        given(playerCache.getAuth("username")).willReturn(auth);
+        given(dataSource.isEmailStored("new@example.com")).willReturn(true);
+
+        // when
+        process.process();
+
+        // then
+        verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
+        verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
+        verify(messages).send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
+    }
+
+    @Test
     public void shouldSendLoginMessage() {
         // given
         AsyncChangeEmail process = createProcess("old@mail.tld", "new@mail.tld");
