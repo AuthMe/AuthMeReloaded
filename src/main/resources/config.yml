@@ -156,8 +156,10 @@ settings:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false
     security:
-        # minimum Length of password
+        # Minimum length of password
         minPasswordLength: 5
+        # Maximum length of password
+        passwordMaxLength: 30
         # this is very important options,
         # every time player join the server,
         # if they are registered, AuthMe will switch him

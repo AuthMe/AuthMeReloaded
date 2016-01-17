@@ -4,7 +4,8 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.custom.RestrictionSettings;
+import fr.xephi.authme.settings.custom.SecuritySettings;
 import fr.xephi.authme.task.ChangePasswordTask;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.Server;
@@ -19,9 +20,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -44,11 +45,11 @@ public class ChangePasswordCommandTest {
         cacheMock = wrapperMock.getPlayerCache();
         commandService = mock(CommandService.class);
 
+        when(commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).thenReturn(2);
+        when(commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).thenReturn(50);
         // Only allow passwords with alphanumerical characters for the test
-        Settings.getPassRegex = "[a-zA-Z0-9]+";
-        Settings.getPasswordMinLen = 2;
-        Settings.passwordMaxLength = 50;
-        Settings.unsafePasswords = Collections.EMPTY_LIST;
+        when(commandService.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).thenReturn("[a-zA-Z0-9]+");
+        when(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).thenReturn(Collections.EMPTY_LIST);
     }
 
     @Test
@@ -112,7 +113,7 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("abc12", true);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        Settings.passwordMaxLength = 3;
+        given(commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(3);
 
         // when
         command.executeCommand(sender, Arrays.asList("12", "test"), commandService);
@@ -127,7 +128,7 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("abc12", true);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        Settings.getPasswordMinLen = 7;
+        given(commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(7);
 
         // when
         command.executeCommand(sender, Arrays.asList("oldverylongpassword", "tester"), commandService);
@@ -142,7 +143,8 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("player", true);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        Settings.unsafePasswords = asList("test", "abc123");
+        given(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS))
+            .willReturn(Arrays.asList("test", "abc123"));
 
         // when
         command.executeCommand(sender, Arrays.asList("oldpw", "abc123"), commandService);

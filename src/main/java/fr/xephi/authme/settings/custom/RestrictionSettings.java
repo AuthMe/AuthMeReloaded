@@ -158,7 +158,7 @@ public class RestrictionSettings implements SettingsClass {
         newProperty("settings.restrictions.noTeleport", false);
 
     @Comment("Regex syntax for allowed chars in passwords")
-    public static final Property<String> ALLOWED_PASSWORD_CHARS =
+    public static final Property<String> ALLOWED_PASSWORD_REGEX =
         newProperty("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
 
     @Comment("Force survival gamemode when player joins?")

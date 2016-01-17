@@ -51,6 +51,10 @@ public class SecuritySettings implements SettingsClass {
     public static final Property<Integer> MIN_PASSWORD_LENGTH =
         newProperty("settings.security.minPasswordLength", 5);
 
+    @Comment("Maximum length of password")
+    public static final Property<Integer> MAX_PASSWORD_LENGTH =
+        newProperty("settings.security.passwordMaxLength", 30);
+
     @Comment({
         "This is a very important option: every time a player joins the server,",
         "if they are registered, AuthMe will switch him to unLoggedInGroup.",
