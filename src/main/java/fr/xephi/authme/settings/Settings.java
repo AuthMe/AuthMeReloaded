@@ -727,7 +727,7 @@ public final class Settings {
         if (!contains("Email.emailOauth2Token"))
             set("Email.emailOauth2Token", "");
 
-        if (!contains("Hook.sendPlayerTo")) {
+        if (!contains("Hooks.sendPlayerTo")) {
             set("Hooks.sendPlayerTo", "");
             changes = true;
         }
