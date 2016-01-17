@@ -525,8 +525,6 @@ public class AuthMe extends JavaPlugin {
         Collection<? extends Player> players = Utils.getOnlinePlayers();
         for (Player player : players) {
             savePlayer(player);
-            // TODO: add a MessageKey
-            player.kickPlayer("Server is restarting or AuthMe plugin was disabled.");
         }
 
         // Do backup on stop if enabled
@@ -752,7 +750,6 @@ public class AuthMe extends JavaPlugin {
             }
         }
         PlayerCache.getInstance().removePlayer(name);
-        player.saveData();
     }
 
     // Select the player to kick when a vip player join the server when full

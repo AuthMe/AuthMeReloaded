@@ -7,6 +7,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.JOOMLA;
 import fr.xephi.authme.security.crypts.PHPBB;
+import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.junit.Before;
@@ -42,6 +43,7 @@ public class PasswordSecurityTest {
 
     @Before
     public void setUpMocks() {
+        WrapperMock.createInstance();
         pluginManager = mock(PluginManager.class);
         dataSource = mock(DataSource.class);
         method = mock(EncryptionMethod.class);
@@ -209,7 +211,7 @@ public class PasswordSecurityTest {
         HashedPassword hashedPassword = new HashedPassword("~T!est#Hash");
         given(method.computeHash(password, username)).willReturn(hashedPassword);
         given(method.hasSeparateSalt()).willReturn(true);
-        PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.XAUTH, pluginManager, true);
+        PasswordSecurity security = new PasswordSecurity(dataSource, HashAlgorithm.XAUTH, pluginManager, false);
 
         // when
         boolean result = security.comparePassword(password, hashedPassword, username);
