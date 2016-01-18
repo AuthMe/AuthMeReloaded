@@ -540,7 +540,7 @@ public class AuthMe extends JavaPlugin {
         List<BukkitTask> pendingTasks = getServer().getScheduler().getPendingTasks();
         for (Iterator<BukkitTask> iterator = pendingTasks.iterator(); iterator.hasNext();) {
             BukkitTask pendingTask = iterator.next();
-            if (pendingTask.getOwner().equals(this) || pendingTask.isSync()) {
+            if (!pendingTask.getOwner().equals(this) || pendingTask.isSync()) {
                 //remove all unrelevant tasks
                 iterator.remove();
             }
