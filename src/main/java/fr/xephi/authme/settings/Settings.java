@@ -284,7 +284,7 @@ public final class Settings {
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
-        delayJoinLeaveMessages = configFile.getBoolean("settings.delayJoinLeaveMessage", false);
+        delayJoinLeaveMessages = configFile.getBoolean("settings.delayJoinLeaveMessages", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
