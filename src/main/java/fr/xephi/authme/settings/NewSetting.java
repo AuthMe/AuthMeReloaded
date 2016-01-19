@@ -41,7 +41,9 @@ public class NewSetting {
         // be removed as we should check to rewrite the config.yml file only at one place
         // --------
         // PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
-        // if (!containsAllSettings(propertyMap)) {
+        // if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap)) {
+        //     ConsoleLogger.info("Merged new config options");
+        //     ConsoleLogger.info("Please check your config.yml file for new settings!");
         //     save(propertyMap);
         // }
     }
@@ -58,7 +60,7 @@ public class NewSetting {
         this.configuration = configuration;
         this.file = file;
 
-        if (propertyMap != null && !containsAllSettings(propertyMap)) {
+        if (propertyMap != null && SettingsMigrationService.checkAndMigrate(configuration, propertyMap)) {
             save(propertyMap);
         }
     }
@@ -133,16 +135,6 @@ public class NewSetting {
             ConsoleLogger.showError("Could not save config file - " + StringUtils.formatException(e));
             ConsoleLogger.writeStackTrace(e);
         }
-    }
-
-    @VisibleForTesting
-    boolean containsAllSettings(PropertyMap propertyMap) {
-        for (Property<?> property : propertyMap.keySet()) {
-            if (!property.isPresent(configuration)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     private static String indent(int level) {

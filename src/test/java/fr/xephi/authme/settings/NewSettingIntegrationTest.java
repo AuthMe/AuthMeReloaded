@@ -2,10 +2,10 @@ package fr.xephi.authme.settings;
 
 import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.TestConfiguration;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
+import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -35,6 +35,7 @@ public class NewSettingIntegrationTest {
 
     @BeforeClass
     public static void generatePropertyMap() {
+        WrapperMock.createInstance();
         propertyMap = new PropertyMap();
         for (Field field : TestConfiguration.class.getDeclaredFields()) {
             Object fieldValue = ReflectionTestUtils.getFieldValue(TestConfiguration.class, null, field.getName());
