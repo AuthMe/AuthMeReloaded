@@ -7,6 +7,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -283,7 +284,7 @@ public final class Settings {
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
-        delayJoinLeaveMessages = configFile.getBoolean("settings.delayJoinLeaveMessage", false);
+        delayJoinLeaveMessages = configFile.getBoolean("settings.delayJoinLeaveMessages", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
@@ -311,7 +312,7 @@ public final class Settings {
         try {
             return Files.toString(EMAIL_FILE, Charsets.UTF_8);
         } catch (IOException e) {
-            ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.showError("Error loading email text: " + StringUtils.formatException(e));
             ConsoleLogger.writeStackTrace(e);
             return "";
         }
@@ -726,7 +727,7 @@ public final class Settings {
         if (!contains("Email.emailOauth2Token"))
             set("Email.emailOauth2Token", "");
 
-        if (!contains("Hook.sendPlayerTo")) {
+        if (!contains("Hooks.sendPlayerTo")) {
             set("Hooks.sendPlayerTo", "");
             changes = true;
         }

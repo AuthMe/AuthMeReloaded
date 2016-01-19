@@ -1,7 +1,5 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
@@ -43,7 +41,7 @@ public class CommandMapperTest {
     @Before
     public void setUpMocks() {
         permissionsManagerMock = mock(PermissionsManager.class);
-        mapper = new CommandMapper(commands, mock(Messages.class), permissionsManagerMock, mock(HelpProvider.class));
+        mapper = new CommandMapper(commands, permissionsManagerMock);
     }
 
     // -----------
@@ -254,6 +252,25 @@ public class CommandMapperTest {
         assertThat(result.getLabels(), contains("email", "helptest"));
         assertThat(result.getArguments(), contains("email", "arg1"));
         assertThat(result.getDifference(), equalTo(0.0));
+    }
+
+    @Test
+    public void shouldRecognizeMissingPermissionForCommand() {
+        // given
+        List<String> parts = Arrays.asList("authme", "login", "test1");
+        CommandSender sender = mock(CommandSender.class);
+        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(false);
+
+        // when
+        FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
+
+        // then
+        assertThat(result.getCommandDescription(), equalTo(getCommandWithLabel(commands, "authme", "login")));
+        assertThat(result.getResultStatus(), equalTo(FoundResultStatus.NO_PERMISSION));
+        assertThat(result.getArguments(), contains("test1"));
+        assertThat(result.getDifference(), equalTo(0.0));
+        assertThat(result.getLabels(), equalTo(parts.subList(0, 2)));
+        assertThat(result.getArguments(), contains(parts.get(2)));
     }
 
 }

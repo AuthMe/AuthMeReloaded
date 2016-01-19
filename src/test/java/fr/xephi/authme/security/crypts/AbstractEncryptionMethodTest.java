@@ -26,8 +26,8 @@ public abstract class AbstractEncryptionMethodTest {
      */
     public static final String[] GIVEN_PASSWORDS = {"password", "PassWord1", "&^%te$t?Pw@_", "âË_3(íù*"};
     /**
-     * List of passwords that are hashed at runtime and then tested against; this verifies that hashes that are
-     * generated are valid.
+     * List of passwords that are hashed at runtime and then tested against; this verifies that newly generated hashes
+     * are valid.
      */
     private static final List<String> INTERNAL_PASSWORDS =
         ImmutableList.of("test1234", "Ab_C73", "(!#&$~`_-Aa0", "Ûïé1&?+A");

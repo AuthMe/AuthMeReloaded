@@ -1,9 +1,5 @@
 package fr.xephi.authme.command;
 
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
@@ -12,6 +8,11 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.settings.custom.NewSetting;
+import fr.xephi.authme.settings.domain.Property;
+import org.bukkit.command.CommandSender;
+
+import java.util.List;
 
 /**
  * Service for implementations of {@link ExecutableCommand} to execute some common tasks.
@@ -24,6 +25,8 @@ public class CommandService {
     private final HelpProvider helpProvider;
     private final CommandMapper commandMapper;
     private final PasswordSecurity passwordSecurity;
+    private final PermissionsManager permissionsManager;
+    private final NewSetting settings;
 
     /**
      * Constructor.
@@ -33,14 +36,19 @@ public class CommandService {
      * @param helpProvider Help provider
      * @param messages Messages instance
      * @param passwordSecurity The Password Security instance
+     * @param permissionsManager The permissions manager
+     * @param settings The settings manager
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
-                          PasswordSecurity passwordSecurity) {
+                          PasswordSecurity passwordSecurity, PermissionsManager permissionsManager,
+                          NewSetting settings) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
         this.commandMapper = commandMapper;
         this.passwordSecurity = passwordSecurity;
+        this.permissionsManager = permissionsManager;
+        this.settings = settings;
     }
 
     /**
@@ -73,17 +81,6 @@ public class CommandService {
      */
     public FoundCommandResult mapPartsToCommand(CommandSender sender, List<String> commandParts) {
         return commandMapper.mapPartsToCommand(sender, commandParts);
-    }
-
-    /**
-     * Output the standard error message for the status in the provided {@link FoundCommandResult} object.
-     * Does not output anything for successful mappings.
-     *
-     * @param sender The sender to output the error to
-     * @param result The mapping result to process
-     */
-    public void outputMappingError(CommandSender sender, FoundCommandResult result) {
-        commandMapper.outputStandardError(sender, result);
     }
 
     /**
@@ -142,8 +139,7 @@ public class CommandService {
      * @return the permissions manager
      */
     public PermissionsManager getPermissionsManager() {
-        // TODO ljacqu 20151226: Might be nicer to pass the perm manager via constructor
-        return authMe.getPermissionsManager();
+        return permissionsManager;
     }
 
     /**
@@ -154,6 +150,17 @@ public class CommandService {
      */
     public String[] retrieveMessage(MessageKey key) {
         return messages.retrieve(key);
+    }
+
+    /**
+     * Retrieve the given property's value.
+     *
+     * @param property The property to retrieve
+     * @param <T> The type of the property
+     * @return The property's value
+     */
+    public <T> T getProperty(Property<T> property) {
+        return settings.getProperty(property);
     }
 
 }

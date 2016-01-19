@@ -11,7 +11,7 @@ public class BCRYPT2Y extends HexSaltedMethod {
         if (salt.length() == 22) {
             salt = "$2y$10$" + salt;
         }
-        return BCRYPT.hashpw(password, salt);
+        return BCryptService.hashpw(password, salt);
     }
 
     @Override

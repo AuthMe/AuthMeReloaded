@@ -1,0 +1,570 @@
+# =======================================================================================================
+#     _____          __  .__       _____        __________       .__                   .___         .___
+#    /  _  \  __ ___/  |_|  |__   /     \   ____\______   \ ____ |  |   _________    __| _/____   __| _/
+#   /  /_\  \|  |  \   __|  |  \ /  \ /  \_/ __ \|       __/ __ \|  |  /  _ \__  \  / __ _/ __ \ / __ |
+#  /    |    |  |  /|  | |   Y  /    Y    \  ___/|    |   \  ___/|  |_(  <_> / __ \/ /_/ \  ___// /_/ |
+#  \____|__  |____/ |__| |___|  \____|__  /\___  |____|_  /\___  |____/\____(____  \____ |\___  \____ |
+#          \/                 \/        \/     \/       \/     \/                \/     \/    \/     \/
+#
+# =======================================================================================================
+#
+#                                      Authme Main Configuration File.
+#
+# =======================================================================================================
+
+# Plugin infos (overwritten on start, just a simple way to find out your plugin version).
+authors: ${pluginAuthors}
+version: ${project.version}
+buildNumber: ${buildNumber}
+
+# Set this setting to true when you have configured the plugin,
+# when false the server will be stopped with a warning message.
+enabled: false
+
+# Database settings.
+data_source:
+    # ===========================
+    # Database general settings.
+    # ===========================
+
+    # Database backend (sqlite, mysql).
+    backend: sqlite
+    # Enable database queries caching, should improve performance.
+    caching: true
+
+    # ===========================
+    # SqLite db parameters.
+    # ===========================
+
+    sqlite:
+        # The name of the database storage file.
+        filename: 'authme.db'
+
+    # ===========================
+    # MySql db parameters.
+    # ===========================
+
+    mysql:
+        # Connection parameters.
+        host: '127.0.0.1'
+        port: 3306
+        username: 'change_me'
+        password: 'change_me'
+        database: 'my_minecraft_server'
+        tablename: 'authme'
+
+        # Column names.
+        column_names:
+            id: id
+            # Column for storing nicknames (ignore case nickname).
+            name: username
+            # Column for storing the realname (case sensitive nickname).
+            real_name: realname
+            # Column for storing passwords.
+            password: password
+            # Column for storing email addresses.
+            email: email
+            # Column for storing the authentication status (logged or not).
+            login_status: isLogged
+            # Column for storing player IPs.
+            ip: ip
+            # Column for storing lastlogins date and time.
+            last_login_timestamp: lastlogin
+            # Latest logout location of the players.
+            last_location:
+                world: world
+                x: x
+                y: y
+                z: z
+                # Enabled only if the bungeecord integration is activated.
+                server: world
+
+        # Support for registrations via WebInterfaces/CSM.
+        # Disable some backend caching parameters.
+        disableAggressiveCaching: false
+
+# Main settings
+settings:
+
+    # ===========================
+    # Bungeecord integration
+    # ===========================
+
+    bungeecord:
+        # Enable bungeecord integration features
+        enabled: true
+
+        # Server name (must be unique, please use the name in the bungeecord configuration).
+        # Use 'auto' for auto configuration (requires the bungeecord module).
+        serverName: LoginLobby1
+        # Keep the auth status when the player moves between servers.
+        # Required if you're using the bungeecord module.
+        keepAuthBetweenServers: true
+
+        # Target server after login
+        send_after_login:
+            enabled: false
+            message: ''
+            delay: 5
+            # Server name ("ServerName") or group ("G:GroupName")
+            # Groups are avariable only when the bungeecord module is avariable.
+            # If the server change fails the player will be kicked.
+            target: Lobby1
+            failKickMessage: 'Failed to connect to the lobby! Please try to join the server again!'
+        # Target server after logout
+        send_after_logout:
+            enabled: false
+            message: ''
+            delay: 5
+            # Server name ("ServerName") or group ("G:GroupName")
+            # Groups are avariable only when the bungeecord module is avariable.
+            # If the server change fails the player will be kicked.
+            target: LoginLobby1
+            failKickMessage: 'Failed to connect to the lobby! Please try to join the server again!'
+    
+        # Variables:
+        # %p playername
+        bungee_commands:
+            player_command_after_register:
+                enabled: false
+                cmd: ''
+            console_command_after_register:
+                enabled: false
+                cmd: 'alert %p joined for the first time the network!'
+            player_command_after_login:
+                enabled: false
+                cmd: 'glist'
+            console_command_after_login:
+                enabled: false
+                cmd: 'alert %p logged in correctly!'
+            player_command_after_join:
+                enabled: false
+                cmd: ''
+            console_command_after_join:
+                enabled: false
+                cmd: 'alert %p joined the network!'
+            player_command_first_join:
+                enabled: false
+                cmd: ''
+            console_command_first_join:
+                enabled: false
+                cmd: 'alert %p joined for the first time the network!'
+
+    # ===========================
+    # Sessions configuration.
+    # ===========================
+
+    sessions:
+        # Enable sessions.
+        # When a player is authenticated, his IP and his nickname is saved.
+        # The next time the player will join the server, if his IP is the same
+        # of the last time, and the timeout time hasn't expired, he will be
+        # automatically authenticated.
+        enabled: false
+        # Session timeout.
+        # 0 for unlimited time (Very dangerous, use it at your own risk!)
+        # Consider that if player's ip has changed but the timeout hasn't
+        # expired, player will be kicked out of the sever!
+        timeout: 10
+        # When enabled a player's session will expire if someone tries to
+        # login with a different IP Address.
+        expire_on_ip_change: true
+
+    # ===========================
+    # Registration settings.
+    # ===========================
+
+    registration:       
+        # After how many time unregistered players should be kicked?
+        # Set to 0 to disable. (default: 30)
+        timeout: 30
+
+        nickname:
+            min_length: 4
+            max_lenght: 16
+            # Regex syntax.
+            allowed_characters: '[a-zA-Z0-9_]*'
+
+        password:
+            # Enable double check of password on registration:
+            # /register <password> <confirmPassword>
+            double_check: true
+            # Minimum password lenght.
+            min_length: 5
+            # Regex syntax.
+            allowed_characters: '[\x21-\x7E]*'
+            # Denied unsafe passwords.
+            unsafePasswords:
+            - '123456'
+            - 'password'
+            - 'qwerty'
+            - '12345'
+            - '54321'
+
+    # ===========================
+    # Login settings.
+    # ===========================
+
+    login:       
+        # After how many time unlogged players should be kicked?
+        # Set to 0 to disable. (default: 30)
+        timeout: 30
+
+        
+
+    # ===========================
+    # Encryption parameters.
+    # ===========================
+
+    password_encryption:
+        # The hashing algorithm.
+        # Possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB, MYBB, IPB3,
+        # PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512, DOUBLEMD5,
+        # PBKDF2, PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM (developpers only).
+        encryption_algorithm: SHA256
+        # The salt length for the SALTED2MD5 and MD5(MD5(password)+salt) algorithms.
+        md5_salt_length: 8
+        # If password check fails try all the other hash algorithm.
+        # AuthMe will update the password to the new passwordHash.
+        enable_convertion: false
+
+    # ===========================
+    # Unlogged user restrictions.
+    # ===========================
+
+    unlogged_restrictions:
+        # Deny chat messages send for unlogged users.
+        deny_chat: true
+        # Hide chat to unlogged users. 
+        # Only player messages, plugins will be able to send messages to the player anyway.
+        hide_chat: false
+
+        # Deny any command message not in the whitelist below.
+        deny_commands: true
+        command_whitelist:
+        - /login
+        - /register
+        - /l
+        - /reg
+        - /email
+        - /captcha
+
+        movements:
+            # Restrict player movements.
+            restrict: true
+            # Allowed radius.
+            allowed_radius: 0
+            # Should unlogged players have speed = 0?
+            # After the login the walking/flying speeed will be reset to the default value.
+            removeSpeed: true
+        
+        # End is there atm xD
+        
+        # This option will save the quit location of the players.
+        SaveQuitLocation: false
+        # Should not logged in players be teleported to the spawn?
+        # After the authentication, if SaveQuitLocation is enabled,
+        # they will be teleported back to their normal position.
+        teleportUnAuthedToSpawn: false
+        
+        # If enabled, after the login, if the ForceSpawnOnTheseWorlds setting contains
+        # the player's world, he will be teleported to the world spawnpoint.
+        # The quit location of the player will be overwritten.
+        # This is different from "teleportUnAuthedToSpawn" that teleports player
+        # back to his quit location after the authentication.
+        ForceSpawnLocOnJoinEnabled: false
+        # WorldNames where we need to force the spawn location
+        # Warning: This setting is Case Sensitive!
+        ForceSpawnOnTheseWorlds:
+        - world
+        - world_nether
+        - world_the_end
+
+        # this is very important options,
+        # every time player join the server,
+        # if they are registered, AuthMe will switch him
+        # to unLoggedInGroup, this
+        # should prevent all major exploit.
+        # So you can set up on your Permission Plugin
+        # this special group with 0 permissions, or permissions to chat,
+        # or permission to
+        # send private message or all other perms that you want,
+        # the better way is to set up
+        # this group with few permissions,
+        # so if player try to exploit some account,
+        # they can
+        # do anything except what you set in perm Group.
+        # After a correct logged-in player will be
+        # moved to his correct permissions group!
+        # Pay attention group name is case sensitive,
+        # so Admin is different from admin,
+        # otherwise your group will be wiped,
+        # and player join in default group []!
+        # Example unLoggedinGroup: NotLogged
+        unLoggedinGroup: unLoggedinGroup
+
+        # ===========================
+        # Address restrictions
+        # ===========================
+        
+        # Max number of registrations per IP (default: 1)
+        maxRegPerIp: 1
+        # Maximum allowed number of Logins per IP, 0 to disable (default: 0)
+        maxLoginPerIp: 0
+        # Maximum allowed number of Joins per IP, 0 to disable (default: 0)
+        maxJoinPerIp: 0
+        
+        # When this setting is enabled, online players can't be kicked out
+        # due to "Logged in from another Location"
+        # This setting will prevent potetial security exploits.
+        ForceSingleSession: true
+        
+        # To activate the restricted user feature you need
+        # to enable this option and configure the
+        # AllowedRestrctedUser field.
+        AllowRestrictedUser: false
+        # The restricted user feature will kick players listed below
+        # if they dont match of the defined ip address.
+        # Example:
+        #   AllowedRestrictedUser:
+        #   - playername;127.0.0.1
+        AllowedRestrictedUser:
+        - playername;127.0.0.
+        # Ban ip when the ip is not the ip registered in database
+        banUnsafedIP: false
+        
+
+        
+        # ===============================
+        # Other restrictions
+        # ===============================
+        
+        # Should we protect the player inventory before logging in?
+        # Warning: Requires the latest version of ProtocolLib!
+        ProtectInventoryBeforeLogIn: true
+        
+        # Should unregistered players be kicked immediately?
+        kickNonRegistered: false
+        # Should players be kicked on wrong password?
+        kickOnWrongPassword: false
+        
+        # Should we display all other accounts of a player when he joins?
+        # Required permission: authme.admin.accounts
+        displayOtherAccounts: true
+        
+        # ===============================
+        # Restrictions compatibility
+        # ===============================
+        
+        # Spawn Priority. Avariable values : authme, essentials, multiverse, default
+        spawnPriority: authme,essentials,multiverse,default
+        # AuthMe will NEVER teleport players!
+        noTeleport: false
+        
+    GameMode:
+        # Do you want to set player's gamemode to survival when he joins?
+        # This enables also the settings below.
+        ForceSurvivalMode: false
+        # Do you want to reset player's inventory if player joins with creative mode?
+        ResetInventoryIfCreative: false
+        # Do you want to force the survival mode ONLY after the /login process?
+        ForceOnlyAfterLogin: false
+        
+        # sgdc3: Ok, our configuration is shit.... xD Today I will stop there
+        
+
+    registration:
+        # enable registration on the server?
+        enabled: true
+        # Send every X seconds a message to a player to
+        # remind him that he has to login/register
+        messageInterval: 5
+        # Only registered and logged in players can play.
+        # See restrictions for exceptions
+        force: true
+        # Does we replace password registration by an Email registration method ?
+        enableEmailRegistrationSystem: false
+        # Enable double check of email when you register
+        # when it's true, registration require that kind of command:
+        # /register <email> <confirmEmail>
+        doubleEmailCheck: false
+        # Do we force kicking player after a successful registration ?
+        # Do not use with login feature below
+        forceKickAfterRegister: false
+        # Does AuthMe need to enforce a /login after a successful registration ?
+        forceLoginAfterRegister: false
+    unrestrictions:
+        # below you can list all your account name, that
+        # AuthMe will ignore for registration or login, configure it
+        # at your own risk!! Remember that if you are going to add
+        # nickname with [], you have to delimit name with ' '.
+        # this option add compatibility with BuildCraft and some
+        # other mods.
+        # It is CaseSensitive!
+        UnrestrictedName: []
+    # Message language, available : en, de, br, cz, pl, fr, ru, hu, sk, es, zhtw, fi, zhcn, lt, it, ko, pt
+    messagesLanguage: en
+    # Force these commands after /login, without any '/', use %p for replace with player name
+    forceCommands: []
+    # Force these commands after /login as a server console, without any '/', use %p for replace with player name
+    forceCommandsAsConsole: []
+    # Force these commands after /register, without any '/', use %p for replace with player name
+    forceRegisterCommands: []
+    # Force these commands after /register as a server console, without any '/', use %p for replace with player name
+    forceRegisterCommandsAsConsole: []
+    # Do we need to display the welcome message (welcome.txt) after a register or a login?
+    # You can use colors in this welcome.txt + some replaced strings :
+    # {PLAYER} : player name, {ONLINE} : display number of online players, {MAXPLAYERS} : display server slots,
+    # {IP} : player ip, {LOGINS} : number of players logged, {WORLD} : player current world, {SERVER} : server name
+    # {VERSION} : get current bukkit version, {COUNTRY} : player country
+    useWelcomeMessage: true
+    # Do we need to broadcast the welcome message to all server or only to the player? set true for server or false for player
+    broadcastWelcomeMessage: false
+    # Do we need to delay the join/leave message to be displayed only when the player is authenticated ?
+    delayJoinLeaveMessages: true
+    # Do we need to add potion effect Blinding before login/register ?
+    applyBlindEffect: false
+ExternalBoardOptions:
+    # MySQL column for the salt , needed for some forum/cms support
+    mySQLColumnSalt: ''
+    # MySQL column for the group, needed for some forum/cms support
+    mySQLColumnGroup: ''
+    # -1 mean disabled. If u want that only
+    # activated player can login in your server
+    # u can put in this options the group number
+    # of unactivated user, needed for some forum/cms support
+    nonActivedUserGroup: -1
+    # Other MySQL columns where we need to put the Username (case sensitive)
+    mySQLOtherUsernameColumns: []
+    # How much Log to Round needed in BCrypt(do not change it if you do not know what's your doing)
+    bCryptLog2Round: 10
+    # phpBB prefix defined during phpbb installation process
+    phpbbTablePrefix: 'phpbb_'
+    # phpBB activated group id , 2 is default registered group defined by phpbb
+    phpbbActivatedGroupId: 2
+    # WordPress prefix defined during WordPress installation process
+    wordpressTablePrefix: 'wp_'
+permission:
+    # Take care with this options, if you dont want
+    # to use Vault and Group Switching of
+    # AuthMe for unloggedIn players put true
+    # below, default is false.
+    EnablePermissionCheck: false
+BackupSystem:
+   # Enable or Disable Automatic Backup
+    ActivateBackup: false
+   # set Backup at every start of Server
+    OnServerStart: false
+   # set Backup at every stop of Server
+    OnServerStop: true
+   # Windows only mysql installation Path
+    MysqlWindowsPath: 'C:\\Program Files\\MySQL\\MySQL Server 5.1\\'
+Security:
+    SQLProblem:
+        # Stop the server if we can't contact the sql database
+        # Take care with this, if you set that to false,
+        # AuthMe automatically disable and the server is not protected!
+        stopServer: true
+    ReloadCommand:
+        # /reload support
+        useReloadCommandSupport: true
+    console:
+        # Remove spam console
+        noConsoleSpam: false
+        # Replace passwords in the console when player type a command like /login
+        removePassword: true
+    captcha:
+        # Player need to put a captcha when he fails too lot the password
+        useCaptcha: false
+        # Max allowed tries before request a captcha
+        maxLoginTry: 5
+        # Captcha length
+        captchaLength: 5
+Converter:
+    Rakamak:
+        # Rakamak file name
+        fileName: users.rak
+        # Rakamak use ip ?
+        useIP: false
+        # IP file name for rakamak
+        ipFileName: UsersIp.rak
+    CrazyLogin:
+        # CrazyLogin database file
+        fileName: accounts.db
+Email:
+    # Email SMTP server host
+    mailSMTP: smtp.gmail.com
+    # Email SMTP server port
+    mailPort: 465
+    # Email account that send the mail
+    mailAccount: ''
+    # Email account password
+    mailPassword: ''
+    # Custom SenderName, that replace the mailAccount name in the email
+    mailSenderName: ''
+    # Random password length
+    RecoveryPasswordLength: 8
+    # Email subject of password get
+    mailSubject: 'Your new AuthMe Password'
+    # Email text here
+    mailText: 'Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword'
+    # Like maxRegPerIp but with email
+    maxRegPerEmail: 1
+    # Recall players to add an email ?
+    recallPlayers: false
+    # Delay in minute for the recall scheduler
+    delayRecall: 5
+    # Blacklist these domains for emails
+    emailBlacklisted:
+    - 10minutemail.com
+    # WhiteList only these domains for emails
+    emailWhitelisted: []
+    # Do we need to send new password draw in an image ?
+    generateImage: false
+Hooks:
+    # Do we need to hook with multiverse for spawn checking?
+    multiverse: true
+    # Do we need to hook with BungeeCord for get the real Player ip ?
+    bungeecord: false
+    # Do we need to disable Essentials SocialSpy on join ?
+    disableSocialSpy: true
+    # Do we need to force /motd Essentials command on join ?
+    useEssentialsMotd: false
+    # Do we need to cache custom Attributes ?
+    customAttributes: false
+Purge:
+    # On Enable , does AuthMe need to purge automatically old accounts unused ?
+    useAutoPurge: false
+    # Number of Days an account become Unused
+    daysBeforeRemovePlayer: 60
+    # Do we need to remove the player.dat file during purge process ?
+    removePlayerDat: false
+    # Do we need to remove the Essentials/users/player.yml file during purge process ?
+    removeEssentialsFile: false
+    # World where are players.dat stores
+    defaultWorld: 'world'
+    # Do we need to remove LimitedCreative/inventories/player.yml , player_creative.yml files during purge process ?
+    removeLimitedCreativesInventories: false
+    # Do we need to remove the AntiXRayData/PlayerData/player file during purge process ?
+    removeAntiXRayFile: false
+    # Do we need to remove permissions ?
+    removePermissions: false
+Protection:
+    # Enable some servers protection ( country based login, antibot )
+    enableProtection: false
+    # Countries allowed to join the server and register, see http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/ for countries' codes
+    countries:
+    - US
+    - GB
+    # Countries blacklisted automatically ( without any needed to enable protection )
+    countriesBlacklist:
+    - A1
+    # Do we need to enable automatic antibot system?
+    enableAntiBot: false
+    # Max number of player allowed to login in 5 secs before enable AntiBot system automatically
+    antiBotSensibility: 5
+    # Duration in minutes of the antibot automatic system
+    antiBotDuration: 10
+VeryGames:
+    # These features are only available on VeryGames Server Provider
+    enableIpCheck: false

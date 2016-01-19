@@ -6,7 +6,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.custom.SecuritySettings;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.entity.Player;
 
@@ -28,20 +28,20 @@ public class CaptchaCommand extends PlayerCommand {
             return;
         }
 
-        if (!Settings.useCaptcha) {
+        if (!commandService.getProperty(SecuritySettings.USE_CAPTCHA)) {
             commandService.send(player, MessageKey.USAGE_LOGIN);
             return;
         }
-
 
         if (!plugin.cap.containsKey(playerNameLowerCase)) {
             commandService.send(player, MessageKey.USAGE_LOGIN);
             return;
         }
 
-        if (Settings.useCaptcha && !captcha.equals(plugin.cap.get(playerNameLowerCase))) {
+        if (!captcha.equals(plugin.cap.get(playerNameLowerCase))) {
             plugin.cap.remove(playerNameLowerCase);
-            String randStr = RandomString.generate(Settings.captchaLength);
+            int captchaLength = commandService.getProperty(SecuritySettings.CAPTCHA_LENGTH);
+            String randStr = RandomString.generate(captchaLength);
             plugin.cap.put(playerNameLowerCase, randStr);
             commandService.send(player, MessageKey.CAPTCHA_WRONG_ERROR, plugin.cap.get(playerNameLowerCase));
             return;

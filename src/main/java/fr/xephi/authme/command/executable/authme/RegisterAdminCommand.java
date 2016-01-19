@@ -7,6 +7,7 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.custom.SecuritySettings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -35,8 +36,8 @@ public class RegisterAdminCommand implements ExecutableCommand {
             commandService.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
             return;
         }
-        if (playerPassLowerCase.length() < Settings.getPasswordMinLen
-            || playerPassLowerCase.length() > Settings.passwordMaxLength) {
+        if (playerPassLowerCase.length() < commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)
+            || playerPassLowerCase.length() > commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)) {
             commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
             return;
         }

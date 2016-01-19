@@ -5,13 +5,12 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.custom.SecuritySettings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -20,6 +19,7 @@ import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -35,8 +35,8 @@ public class CaptchaCommandTest {
     @Before
     public void setUpWrapperMock() {
         wrapperMock = WrapperMock.createInstance();
-        Settings.useCaptcha = true;
         commandService = mock(CommandService.class);
+        given(commandService.getProperty(SecuritySettings.USE_CAPTCHA)).willReturn(true);
     }
 
     @Test
@@ -46,7 +46,7 @@ public class CaptchaCommandTest {
         ExecutableCommand command = new CaptchaCommand();
 
         // when
-        command.executeCommand(sender, new ArrayList<String>(), mock(CommandService.class));
+        command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
         assertThat(wrapperMock.wasMockCalled(AuthMe.class), equalTo(false));
@@ -54,14 +54,14 @@ public class CaptchaCommandTest {
     }
 
     @Test
-    @Ignore
     public void shouldRejectIfCaptchaIsNotUsed() {
         // given
         Player player = mockPlayerWithName("testplayer");
         ExecutableCommand command = new CaptchaCommand();
+        given(commandService.getProperty(SecuritySettings.USE_CAPTCHA)).willReturn(false);
 
         // when
-        command.executeCommand(player, Collections.singletonList("1234"), mock(CommandService.class));
+        command.executeCommand(player, Collections.singletonList("1234"), commandService);
 
         // then
         verify(commandService).send(player, MessageKey.USAGE_LOGIN);

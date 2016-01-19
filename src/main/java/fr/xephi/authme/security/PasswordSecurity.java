@@ -41,15 +41,8 @@ public class PasswordSecurity {
 
     public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
         EncryptionMethod method = initializeEncryptionMethod(algorithm, playerName);
-        // User is not in data source, so the result will invariably be wrong because an encryption
-        // method with hasSeparateSalt() == true NEEDS the salt to evaluate the password
-        String salt = hashedPassword.getSalt();
-        if (method.hasSeparateSalt() && salt == null) {
-            return false;
-        }
-
         String playerLowerCase = playerName.toLowerCase();
-        return method.comparePassword(password, hashedPassword, playerLowerCase)
+        return methodMatches(method, password, hashedPassword, playerLowerCase)
             || supportOldAlgorithm && compareWithAllEncryptionMethods(password, hashedPassword, playerLowerCase);
     }
 
@@ -62,20 +55,36 @@ public class PasswordSecurity {
      * @param hashedPassword The encrypted password to test the clear-text password against
      * @param playerName     The name of the player
      *
-     * @return True if the
+     * @return True if there was a password match with another encryption method, false otherwise
      */
     private boolean compareWithAllEncryptionMethods(String password, HashedPassword hashedPassword,
                                                     String playerName) {
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
                 EncryptionMethod method = initializeEncryptionMethodWithoutEvent(algorithm);
-                if (method != null && method.comparePassword(password, hashedPassword, playerName)) {
+                if (methodMatches(method, password, hashedPassword, playerName)) {
                     hashPasswordForNewAlgorithm(password, playerName);
                     return true;
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * Verify with the given encryption method whether the password matches the hash after checking that
+     * the method can be called safely with the given data.
+     *
+     * @param method The encryption method to use
+     * @param password The password to check
+     * @param hashedPassword The hash to check against
+     * @param playerName The name of the player
+     * @return True if the password matched, false otherwise
+     */
+    private static boolean methodMatches(EncryptionMethod method, String password,
+                                         HashedPassword hashedPassword, String playerName) {
+        return method != null && (!method.hasSeparateSalt() || hashedPassword.getSalt() != null)
+            && method.comparePassword(password, hashedPassword, playerName);
     }
 
     /**
