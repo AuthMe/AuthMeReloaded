@@ -170,8 +170,7 @@ public class SQLite implements DataSource {
                     !columnSalt.isEmpty() ? rs.getString(columnSalt) : null);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+            logSqlException(ex);
         } finally {
             close(rs);
             close(pst);
@@ -462,7 +461,7 @@ public class SQLite implements DataSource {
             }
             return countIp;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
             return new ArrayList<>();
         } catch (NullPointerException npe) {
             return new ArrayList<>();
@@ -530,7 +529,7 @@ public class SQLite implements DataSource {
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
         } finally {
             close(pst);
         }
@@ -686,14 +685,16 @@ public class SQLite implements DataSource {
 
     @Override
     public synchronized boolean isEmailStored(String email) {
-        try {
-            PreparedStatement ps = con.prepareStatement(
-                "SELECT 1 FROM " + tableName + " WHERE LOWER(" + columnEmail + ") = LOWER(?)");
+        String sql = "SELECT 1 FROM " + tableName + " WHERE " + columnEmail + " = ? COLLATE NOCASE;";
+        ResultSet rs = null;
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
             ps.setString(1, email);
-            ResultSet rs = ps.executeQuery();
+            rs = ps.executeQuery();
             return rs.next();
         } catch (SQLException e) {
             logSqlException(e);
+        } finally {
+            close(rs);
         }
         return false;
     }
