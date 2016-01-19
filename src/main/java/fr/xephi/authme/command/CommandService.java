@@ -8,7 +8,7 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.custom.NewSetting;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import org.bukkit.command.CommandSender;
 

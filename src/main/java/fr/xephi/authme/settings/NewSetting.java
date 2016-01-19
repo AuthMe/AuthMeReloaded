@@ -1,8 +1,9 @@
-package fr.xephi.authme.settings.custom;
+package fr.xephi.authme.settings;
 
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;

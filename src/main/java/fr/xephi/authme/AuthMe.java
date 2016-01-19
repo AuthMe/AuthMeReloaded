@@ -48,7 +48,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import fr.xephi.authme.settings.custom.NewSetting;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;

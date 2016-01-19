@@ -1,7 +1,9 @@
-package fr.xephi.authme.settings.custom;
+package fr.xephi.authme.settings;
 
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.MemorySection;

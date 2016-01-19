@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings.custom;
+package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.domain.PropertyType;
@@ -11,7 +11,7 @@ import static fr.xephi.authme.settings.domain.Property.newProperty;
 /**
  * Sample properties for testing purposes.
  */
-class TestConfiguration implements SettingsClass {
+public final class TestConfiguration implements SettingsClass {
 
     public static final Property<Integer> DURATION_IN_SECONDS =
         newProperty("test.duration", 4);
@@ -42,5 +42,9 @@ class TestConfiguration implements SettingsClass {
 
     public static final Property<List<String>> COOL_OPTIONS =
         newProperty(PropertyType.STRING_LIST, "features.cool.options", "Sparks", "Sprinkles");
+
+
+    private TestConfiguration() {
+    }
 
 }

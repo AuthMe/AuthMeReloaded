@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings.custom;
+package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.settings.domain.Comment;
 import fr.xephi.authme.settings.domain.Property;
@@ -12,9 +12,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Utility class responsible for the retrieval of all {@link Property} fields via reflections.
+ * Utility class responsible for retrieving all {@link Property} fields
+ * from {@link SettingsClass} implementations via reflection.
  */
-final class SettingsFieldRetriever {
+public final class SettingsFieldRetriever {
 
     /** The classes to scan for properties. */
     private static final List<Class<? extends SettingsClass>> CONFIGURATION_CLASSES = Arrays.asList(
@@ -37,7 +38,7 @@ final class SettingsFieldRetriever {
         for (Class<?> clazz : CONFIGURATION_CLASSES) {
             Field[] declaredFields = clazz.getDeclaredFields();
             for (Field field : declaredFields) {
-                Property property = getFieldIfRelevant(field);
+                Property property = getPropertyField(field);
                 if (property != null) {
                     properties.put(property, getCommentsForField(field));
                 }
@@ -53,7 +54,13 @@ final class SettingsFieldRetriever {
         return new String[0];
     }
 
-    private static Property<?> getFieldIfRelevant(Field field) {
+    /**
+     * Return the given field's value if it is a static {@link Property}.
+     *
+     * @param field The field's value to return
+     * @return The property the field defines, or null if not applicable
+     */
+    private static Property<?> getPropertyField(Field field) {
         field.setAccessible(true);
         if (field.isAccessible() && Property.class.equals(field.getType()) && Modifier.isStatic(field.getModifiers())) {
             try {
