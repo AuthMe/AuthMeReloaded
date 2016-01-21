@@ -93,7 +93,6 @@ public class UtilsTest {
     }
 
     // Note: This method is used through reflections
-    @SuppressWarnings("unused")
     public static Player[] onlinePlayersImpl() {
         return new Player[]{
             mock(Player.class), mock(Player.class)
