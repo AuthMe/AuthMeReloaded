@@ -3,7 +3,7 @@ machine:
     version: oraclejdk7
 general:
   artifacts:
-    - "/home/ubuntu/AuthMeReloaded/target/AuthMe-*.jar"
+    - "target/AuthMe-*.jar"
 test:
   override:
     - mvn clean install -B
