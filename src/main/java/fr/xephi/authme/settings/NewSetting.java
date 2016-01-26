@@ -8,6 +8,8 @@ import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -36,16 +38,12 @@ public class NewSetting {
         this.configuration = configuration;
         this.file = file;
 
-        // TODO ljacqu 20160109: Ensure that save() works as desired (i.e. that it always produces valid YAML)
-        // and then uncomment the lines below. Once this is uncommented, the checks in the old Settings.java should
-        // be removed as we should check to rewrite the config.yml file only at one place
-        // --------
-        // PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
-        // if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap)) {
-        //     ConsoleLogger.info("Merged new config options");
-        //     ConsoleLogger.info("Please check your config.yml file for new settings!");
-        //     save(propertyMap);
-        // }
+        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
+        if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap)) {
+            ConsoleLogger.info("Merged new config options");
+            ConsoleLogger.info("Please check your config.yml file for new settings!");
+            save(propertyMap);
+        }
     }
 
     /**
@@ -76,13 +74,17 @@ public class NewSetting {
         return property.getFromFile(configuration);
     }
 
-    public void save() {
-        save(SettingsFieldRetriever.getAllPropertyFields());
-    }
-
     public void save(PropertyMap propertyMap) {
         try (FileWriter writer = new FileWriter(file)) {
             writer.write("");
+
+            DumperOptions simpleOptions = new DumperOptions();
+            simpleOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            Yaml simpleYaml = new Yaml(simpleOptions);
+            DumperOptions singleQuoteOptions = new DumperOptions();
+            singleQuoteOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.SINGLE_QUOTED);
+            singleQuoteOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            Yaml singleQuoteYaml = new Yaml(singleQuoteOptions);
 
             // Contains all but the last node of the setting, e.g. [DataSource, mysql] for "DataSource.mysql.username"
             List<String> currentPath = new ArrayList<>();
@@ -118,14 +120,8 @@ public class NewSetting {
                 writer.append("\n")
                     .append(indent(indentationLevel))
                     .append(CollectionUtils.getRange(newPathParts, newPathParts.size() - 1).get(0))
-                    .append(": ");
-
-                List<String> yamlLines = property.formatValueAsYaml(configuration);
-                String delim = "";
-                for (String yamlLine : yamlLines) {
-                    writer.append(delim).append(yamlLine);
-                    delim = "\n" + indent(indentationLevel);
-                }
+                    .append(": ")
+                    .append(toYaml(property, indentationLevel, simpleYaml, singleQuoteYaml));
 
                 currentPath = propertyPath.subList(0, propertyPath.size() - 1);
             }
@@ -135,6 +131,33 @@ public class NewSetting {
             ConsoleLogger.showError("Could not save config file - " + StringUtils.formatException(e));
             ConsoleLogger.writeStackTrace(e);
         }
+    }
+
+    private <T> String toYaml(Property<T> property, int indent, Yaml simpleYaml, Yaml singleQuoteYaml) {
+        T value = property.getFromFile(configuration);
+        String representation = property.hasSingleQuotes()
+            ? singleQuoteYaml.dump(value)
+            : simpleYaml.dump(value);
+
+        // If the property is a non-empty list we need to append a new line because it will be
+        // something like the following, which requires a new line:
+        // - 'item 1'
+        // - 'second item in list'
+        if (property.isList() && !((List) value).isEmpty()) {
+            representation = "\n" + representation;
+        }
+
+        return join("\n" + indent(indent), representation.split("\\n"));
+    }
+
+    private static String join(String delimiter, String[] items) {
+        StringBuilder sb = new StringBuilder();
+        String delim = "";
+        for (String item : items) {
+            sb.append(delim).append(item);
+            delim = delimiter;
+        }
+        return sb.toString();
     }
 
     private static String indent(int level) {

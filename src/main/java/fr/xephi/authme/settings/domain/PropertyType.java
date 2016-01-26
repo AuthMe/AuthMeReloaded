@@ -2,10 +2,7 @@ package fr.xephi.authme.settings.domain;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import static java.util.Arrays.asList;
 
 /**
  * Handles a certain property type and provides type-specific functionality.
@@ -31,17 +28,6 @@ public abstract class PropertyType<T> {
     public abstract T getFromFile(Property<T> property, FileConfiguration configuration);
 
     /**
-     * Return the property's value (or its default) as YAML.
-     *
-     * @param property The property to transform
-     * @param configuration The YAML configuration to read from
-     * @return The read value or its default in YAML format
-     */
-    public List<String> asYaml(Property<T> property, FileConfiguration configuration) {
-        return asYaml(getFromFile(property, configuration));
-    }
-
-    /**
      * Return whether the property is present in the given configuration.
      *
      * @param property The property to search for
@@ -53,12 +39,17 @@ public abstract class PropertyType<T> {
     }
 
     /**
-     * Transform the given value to YAML.
+     * Return whether the property type should be wrapped in single quotes in YAML.
      *
-     * @param value The value to transform
-     * @return The value as YAML
+     * @return True if single quotes should be used, false if not
      */
-    protected abstract List<String> asYaml(T value);
+    public boolean hasSingleQuotes() {
+        return false;
+    }
+
+    public boolean isList() {
+        return false;
+    }
 
 
     /**
@@ -68,11 +59,6 @@ public abstract class PropertyType<T> {
         @Override
         public Boolean getFromFile(Property<Boolean> property, FileConfiguration configuration) {
             return configuration.getBoolean(property.getPath(), property.getDefaultValue());
-        }
-
-        @Override
-        protected List<String> asYaml(Boolean value) {
-            return asList(value ? "true" : "false");
         }
     }
 
@@ -84,11 +70,6 @@ public abstract class PropertyType<T> {
         public Double getFromFile(Property<Double> property, FileConfiguration configuration) {
             return configuration.getDouble(property.getPath(), property.getDefaultValue());
         }
-
-        @Override
-        protected List<String> asYaml(Double value) {
-            return asList(String.valueOf(value));
-        }
     }
 
     /**
@@ -98,11 +79,6 @@ public abstract class PropertyType<T> {
         @Override
         public Integer getFromFile(Property<Integer> property, FileConfiguration configuration) {
             return configuration.getInt(property.getPath(), property.getDefaultValue());
-        }
-
-        @Override
-        protected List<String> asYaml(Integer value) {
-            return asList(String.valueOf(value));
         }
     }
 
@@ -114,15 +90,9 @@ public abstract class PropertyType<T> {
         public String getFromFile(Property<String> property, FileConfiguration configuration) {
             return configuration.getString(property.getPath(), property.getDefaultValue());
         }
-
         @Override
-        protected List<String> asYaml(String value) {
-            return asList(toYamlLiteral(value));
-        }
-
-        public static String toYamlLiteral(String str) {
-            // TODO: Need to handle new lines properly
-            return "'" + str.replace("'", "''") + "'";
+        public boolean hasSingleQuotes() {
+            return true;
         }
     }
 
@@ -139,23 +109,18 @@ public abstract class PropertyType<T> {
         }
 
         @Override
-        protected List<String> asYaml(List<String> value) {
-            if (value.isEmpty()) {
-                return asList("[]");
-            }
-
-            List<String> resultLines = new ArrayList<>();
-            resultLines.add(""); // add
-            for (String entry : value) {
-                // TODO: StringProperty#toYamlLiteral will return List<String>...
-                resultLines.add("    - " + StringProperty.toYamlLiteral(entry));
-            }
-            return resultLines;
+        public boolean contains(Property<List<String>> property, FileConfiguration configuration) {
+            return configuration.contains(property.getPath()) && configuration.isList(property.getPath());
         }
 
         @Override
-        public boolean contains(Property<List<String>> property, FileConfiguration configuration) {
-            return configuration.contains(property.getPath()) && configuration.isList(property.getPath());
+        public boolean hasSingleQuotes() {
+            return true;
+        }
+
+        @Override
+        public boolean isList() {
+            return true;
         }
     }
 
