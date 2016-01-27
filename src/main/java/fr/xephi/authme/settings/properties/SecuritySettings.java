@@ -30,6 +30,10 @@ public class SecuritySettings implements SettingsClass {
     public static final Property<Boolean> REMOVE_PASSWORD_FROM_CONSOLE =
         newProperty("Security.console.removePassword", true);
 
+    @Comment("Copy AuthMe log output in a separate file as well?")
+    public static final Property<Boolean> USE_LOGGING =
+        newProperty("Security.console.logConsole", true);
+
     @Comment("Player need to put a captcha when he fails too lot the password")
     public static final Property<Boolean> USE_CAPTCHA =
         newProperty("Security.captcha.useCaptcha", false);
