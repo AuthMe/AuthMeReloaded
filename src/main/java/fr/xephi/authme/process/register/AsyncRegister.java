@@ -75,7 +75,7 @@ public class AsyncRegister {
             if (!preRegisterCheck()) {
                 return;
             }
-            if (!email.isEmpty() && !email.equals("")) {
+            if (email != null && !email.isEmpty()) {
                 emailRegister();
             } else {
                 passwordRegister();
