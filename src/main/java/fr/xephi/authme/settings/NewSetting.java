@@ -76,16 +76,10 @@ public class NewSetting {
 
     public void save(PropertyMap propertyMap) {
         try (FileWriter writer = new FileWriter(file)) {
+            Yaml simpleYaml = newYaml(false);
+            Yaml singleQuoteYaml = newYaml(true);
+
             writer.write("");
-
-            DumperOptions simpleOptions = new DumperOptions();
-            simpleOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-            Yaml simpleYaml = new Yaml(simpleOptions);
-            DumperOptions singleQuoteOptions = new DumperOptions();
-            singleQuoteOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.SINGLE_QUOTED);
-            singleQuoteOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
-            Yaml singleQuoteYaml = new Yaml(singleQuoteOptions);
-
             // Contains all but the last node of the setting, e.g. [DataSource, mysql] for "DataSource.mysql.username"
             List<String> currentPath = new ArrayList<>();
             for (Map.Entry<Property<?>, String[]> entry : propertyMap.entrySet()) {
@@ -148,6 +142,16 @@ public class NewSetting {
         }
 
         return join("\n" + indent(indent), representation.split("\\n"));
+    }
+
+    private static Yaml newYaml(boolean useSingleQuotes) {
+        DumperOptions options = new DumperOptions();
+        options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        options.setAllowUnicode(true);
+        if (useSingleQuotes) {
+            options.setDefaultScalarStyle(DumperOptions.ScalarStyle.SINGLE_QUOTED);
+        }
+        return new Yaml(options);
     }
 
     private static String join(String delimiter, String[] items) {
