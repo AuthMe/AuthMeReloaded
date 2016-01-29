@@ -38,9 +38,16 @@ public class PerformBackup {
      * @param cause BackupCause The cause of the backup.
      */
     public void doBackup(BackupCause cause) {
+
+        // Do nothing if backup is disabled
         if (!Settings.isBackupActivated) {
-            ConsoleLogger.showError("Can't perform a Backup: disabled in configuration. Cause of the Backup: " + cause.name());
+            // Print a warning if the backup was requested via command or by another plugin
+            if (cause == BackupCause.COMMAND || cause == BackupCause.OTHER) {
+                ConsoleLogger.showError("Can't perform a Backup: disabled in configuration. Cause of the Backup: " + cause.name());
+            }
+            return;
         }
+
         // Check whether a backup should be made at the specified point in time
         switch (cause) {
             case START:
