@@ -50,6 +50,8 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
@@ -628,7 +630,7 @@ public class AuthMe extends JavaPlugin {
         if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
             ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, it will be changed " +
                 "to SQLite... Connection will be impossible until conversion is done!");
-            ForceFlatToSqlite converter = new ForceFlatToSqlite(database);
+            ForceFlatToSqlite converter = new ForceFlatToSqlite(database, newSettings);
             DataSource source = converter.run();
             if (source != null) {
                 database = source;
@@ -636,7 +638,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // TODO: Move this to another place maybe ?
-        if (Settings.getPasswordHash == HashAlgorithm.PLAINTEXT) {
+        if (HashAlgorithm.PLAINTEXT == newSettings.getProperty(SecuritySettings.PASSWORD_HASH)) {
             ConsoleLogger.showError("Your HashAlgorithm has been detected as plaintext and is now deprecated; " +
                 "it will be changed and hashed now to the AuthMe default hashing method");
             for (PlayerAuth auth : database.getAllAuths()) {
@@ -645,11 +647,11 @@ public class AuthMe extends JavaPlugin {
                 auth.setPassword(hashedPassword);
                 database.updatePassword(auth);
             }
-            Settings.setValue("settings.security.passwordHash", "SHA256");
-            Settings.reload();
+            newSettings.setProperty(SecuritySettings.PASSWORD_HASH, HashAlgorithm.SHA256);
+            newSettings.save();
         }
 
-        if (Settings.isCachingEnabled) {
+        if (newSettings.getProperty(DatabaseSettings.USE_CACHING)) {
             database = new CacheDataSource(database);
         }
     }
@@ -740,24 +742,20 @@ public class AuthMe extends JavaPlugin {
     // Check the presence of the ProtocolLib plugin
     public void checkProtocolLib() {
         if (!server.getPluginManager().isPluginEnabled("ProtocolLib")) {
-            if (Settings.protectInventoryBeforeLogInEnabled) {
-                ConsoleLogger.showError("WARNING!!! The protectInventory feature requires ProtocolLib! Disabling it...");
+            if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
+                ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
-                getSettings().set("settings.restrictions.ProtectInventoryBeforeLogIn", false);
+                newSettings.setProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN, false);
             }
             return;
         }
 
-        if (Settings.protectInventoryBeforeLogInEnabled) {
-            if (inventoryProtector == null) {
-                inventoryProtector = new AuthMeInventoryPacketAdapter(this);
-                inventoryProtector.register();
-            }
-        } else {
-            if (inventoryProtector != null) {
-                inventoryProtector.unregister();
-                inventoryProtector = null;
-            }
+        if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN) && inventoryProtector == null) {
+            inventoryProtector = new AuthMeInventoryPacketAdapter(this);
+            inventoryProtector.register();
+        } else if (inventoryProtector != null) {
+            inventoryProtector.unregister();
+            inventoryProtector = null;
         }
         if (tabComplete == null) {
             tabComplete = new AuthMeTabCompletePacketAdapter(this);
@@ -895,12 +893,12 @@ public class AuthMe extends JavaPlugin {
                 for (Player player : Utils.getOnlinePlayers()) {
                     if (player.isOnline()) {
                         String name = player.getName().toLowerCase();
-                        if (database.isAuthAvailable(name))
-                            if (PlayerCache.getInstance().isAuthenticated(name)) {
-                                String email = database.getAuth(name).getEmail();
-                                if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
-                                    messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
+                        if (database.isAuthAvailable(name) && PlayerCache.getInstance().isAuthenticated(name)) {
+                            String email = database.getAuth(name).getEmail();
+                            if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com")) {
+                                messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
                             }
+                        }
                     }
                 }
             }

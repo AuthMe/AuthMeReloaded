@@ -31,9 +31,8 @@ public final class Settings {
     public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
-    public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
-    public static final File EMAIL_FILE = new File(PLUGIN_FOLDER, "email.html");
-    public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
+    private static final File EMAIL_FILE = new File(PLUGIN_FOLDER, "email.html");
+    private static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
     public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
     // This is not an option!
     public static boolean antiBotInAction = false;
@@ -312,15 +311,6 @@ public final class Settings {
     }
 
     /**
-     * @param key   the key to set
-     * @param value the value to set
-     */
-    public static void setValue(String key, Object value) {
-        instance.set(key, value);
-        save();
-    }
-
-    /**
      * Method getPasswordHash.
      *
      * @return HashAlgorithm
@@ -392,7 +382,7 @@ public final class Settings {
      *
      * @return True if saved successfully
      */
-    public static boolean save() {
+    private static boolean save() {
         try {
             configFile.save(SETTINGS_FILE);
             return true;
@@ -504,32 +494,13 @@ public final class Settings {
     }
 
     /**
-     * @param path
-     *
-     * @return
-     */
-    private static boolean contains(String path) {
-        return configFile.contains(path);
-    }
-
-    // public because it's used in AuthMe at one place
-
-    /**
-     * @param path  String
-     * @param value String
-     */
-    public void set(String path, Object value) {
-        configFile.set(path, value);
-    }
-
-    /**
      * Saves current configuration (plus defaults) to disk.
      * <p>
      * If defaults and configuration are empty, saves blank file.
      *
      * @return True if saved successfully
      */
-    public final boolean saveDefaults() {
+    private boolean saveDefaults() {
         configFile.options()
             .copyDefaults(true)
             .copyHeader(true);

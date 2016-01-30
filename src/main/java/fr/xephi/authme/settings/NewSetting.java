@@ -28,8 +28,7 @@ public class NewSetting {
     private FileConfiguration configuration;
 
     /**
-     * Constructor.
-     * Loads the file as YAML and checks its integrity.
+     * Constructor. Checks the given {@link FileConfiguration} object for completeness.
      *
      * @param configuration The configuration to interact with
      * @param file The configuration file
@@ -74,7 +73,25 @@ public class NewSetting {
         return property.getFromFile(configuration);
     }
 
-    public void save(PropertyMap propertyMap) {
+    /**
+     * Set a new value for the given property.
+     *
+     * @param property The property to modify
+     * @param value The new value to assign to the property
+     * @param <T> The property's type
+     */
+    public <T> void setProperty(Property<T> property, T value) {
+        configuration.set(property.getPath(), value);
+    }
+
+    /**
+     * Save the config file. Use after migrating one or more settings.
+     */
+    public void save() {
+        save(SettingsFieldRetriever.getAllPropertyFields());
+    }
+
+    private void save(PropertyMap propertyMap) {
         try (FileWriter writer = new FileWriter(file)) {
             Yaml simpleYaml = newYaml(false);
             Yaml singleQuoteYaml = newYaml(true);
@@ -165,7 +182,7 @@ public class NewSetting {
     }
 
     private static String indent(int level) {
-        // YAML uses indentation of 4 spaces
+        // We use an indentation of 4 spaces
         StringBuilder sb = new StringBuilder(level * 4);
         for (int i = 0; i < level; ++i) {
             sb.append("    ");
