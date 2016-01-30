@@ -10,7 +10,6 @@ import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.CollectionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -44,9 +43,11 @@ public class HelpProvider {
     public static final int ALL_OPTIONS = ~HIDE_COMMAND;
 
     private final PermissionsManager permissionsManager;
+    private final String helpHeader;
 
-    public HelpProvider(PermissionsManager permissionsManager) {
+    public HelpProvider(PermissionsManager permissionsManager, String helpHeader) {
         this.permissionsManager = permissionsManager;
+        this.helpHeader = helpHeader;
     }
 
     public List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
@@ -55,7 +56,7 @@ public class HelpProvider {
         }
 
         List<String> lines = new ArrayList<>();
-        lines.add(ChatColor.GOLD + "==========[ " + Settings.helpHeader + " HELP ]==========");
+        lines.add(ChatColor.GOLD + "==========[ " + helpHeader + " HELP ]==========");
 
         CommandDescription command = result.getCommandDescription();
         List<String> labels = ImmutableList.copyOf(result.getLabels());

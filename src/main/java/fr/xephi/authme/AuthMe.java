@@ -45,10 +45,12 @@ import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
@@ -80,6 +82,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
 
 /**
  * The AuthMe main class.
@@ -279,7 +283,7 @@ public class AuthMe extends JavaPlugin {
         // End of Hooks
 
         // Do a backup on start
-        new PerformBackup(plugin).doBackup(PerformBackup.BackupCause.START);
+        new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.START);
 
 
         // Setup the inventory backup
@@ -422,7 +426,7 @@ public class AuthMe extends JavaPlugin {
 
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
                                                     PasswordSecurity passwordSecurity, NewSetting settings) {
-        HelpProvider helpProvider = new HelpProvider(permissionsManager);
+        HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
         CommandService commandService = new CommandService(
@@ -530,7 +534,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Do backup on stop if enabled
-        new PerformBackup(plugin).doBackup(PerformBackup.BackupCause.STOP);
+        new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.STOP);
 
         // Unload modules
         if (moduleManager != null) {
@@ -595,7 +599,7 @@ public class AuthMe extends JavaPlugin {
             database.close();
         // Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
         boolean isSQLite = false;
-        switch (Settings.getDataSource) {
+        switch (newSettings.getProperty(DatabaseSettings.BACKEND)) {
             case FILE:
                 database = new FlatFile();
                 break;
@@ -788,16 +792,14 @@ public class AuthMe extends JavaPlugin {
         PlayerCache.getInstance().removePlayer(name);
     }
 
-    // Select the player to kick when a vip player join the server when full
+    // Select the player to kick when a vip player joins the server when full
     public Player generateKickPlayer(Collection<? extends Player> collection) {
-        Player player = null;
-        for (Player p : collection) {
-            if (!getPermissionsManager().hasPermission(p, PlayerPermission.IS_VIP)) {
-                player = p;
-                break;
+        for (Player player : collection) {
+            if (!getPermissionsManager().hasPermission(player, PlayerPermission.IS_VIP)) {
+                return player;
             }
         }
-        return player;
+        return null;
     }
 
     // Purge inactive players from the database, as defined in the configuration
@@ -809,10 +811,7 @@ public class AuthMe extends JavaPlugin {
         calendar.add(Calendar.DATE, -(Settings.purgeDelay));
         long until = calendar.getTimeInMillis();
         List<String> cleared = database.autoPurgeDatabase(until);
-        if (cleared == null) {
-            return;
-        }
-        if (cleared.isEmpty()) {
+        if (CollectionUtils.isEmpty(cleared)) {
             return;
         }
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");

@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 /**
+ * Old settings manager. See {@link NewSetting} for the new manager.
  */
 public final class Settings {
 
@@ -66,8 +67,7 @@ public final class Settings {
         isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
         isCachingEnabled,
         isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
-        protectInventoryBeforeLogInEnabled, isBackupActivated,
-        isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
+        protectInventoryBeforeLogInEnabled, isStopEnabled, reloadSupport,
         rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
         useCaptcha, emailRegistration, multiverse, bungee,
         banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
@@ -79,7 +79,7 @@ public final class Settings {
         checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
         kickPlayersBeforeStopping,
         customAttributes, generateImage, isRemoveSpeedEnabled, preventOtherCase;
-    public static String helpHeader, getNickRegex, getUnloggedinGroup, getMySQLHost,
+    public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
         getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
         getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
         getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
@@ -135,7 +135,6 @@ public final class Settings {
     }
 
     public static void loadVariables() {
-        helpHeader = configFile.getString("settings.helpHeader", "AuthMeReloaded");
         messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en").toLowerCase());
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
@@ -201,9 +200,6 @@ public final class Settings {
         plugin.checkProtocolLib();
 
         passwordMaxLength = configFile.getInt("settings.security.passwordMaxLength", 20);
-        isBackupActivated = configFile.getBoolean("BackupSystem.ActivateBackup", false);
-        isBackupOnStart = configFile.getBoolean("BackupSystem.OnServerStart", false);
-        isBackupOnStop = configFile.getBoolean("BackupSystem.OnServeStop", false);
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
