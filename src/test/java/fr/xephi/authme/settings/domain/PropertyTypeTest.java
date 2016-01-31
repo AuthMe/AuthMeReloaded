@@ -13,7 +13,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyDouble;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
@@ -33,8 +32,6 @@ public class PropertyTypeTest {
 
         when(configuration.getBoolean(eq("bool.path.test"), anyBoolean())).thenReturn(true);
         when(configuration.getBoolean(eq("bool.path.wrong"), anyBoolean())).thenAnswer(secondParameter());
-        when(configuration.getDouble(eq("double.path.test"), anyDouble())).thenReturn(-6.4);
-        when(configuration.getDouble(eq("double.path.wrong"), anyDouble())).thenAnswer(secondParameter());
         when(configuration.getInt(eq("int.path.test"), anyInt())).thenReturn(27);
         when(configuration.getInt(eq("int.path.wrong"), anyInt())).thenAnswer(secondParameter());
         when(configuration.getString(eq("str.path.test"), anyString())).thenReturn("Test value");
@@ -67,31 +64,6 @@ public class PropertyTypeTest {
 
         // then
         assertThat(result, equalTo(true));
-    }
-
-    /* Double */
-    @Test
-    public void shouldGetDoubleValue() {
-        // given
-        Property<Double> property = Property.newProperty(PropertyType.DOUBLE, "double.path.test", 3.8);
-
-        // when
-        double result = property.getFromFile(configuration);
-
-        // then
-        assertThat(result, equalTo(-6.4));
-    }
-
-    @Test
-    public void shouldGetDoubleDefault() {
-        // given
-        Property<Double> property = Property.newProperty(PropertyType.DOUBLE, "double.path.wrong", 12.0);
-
-        // when
-        double result = property.getFromFile(configuration);
-
-        // then
-        assertThat(result, equalTo(12.0));
     }
 
     /* Integer */

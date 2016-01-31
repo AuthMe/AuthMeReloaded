@@ -224,7 +224,7 @@ public class AuthMe extends JavaPlugin {
             return;
         }
 
-        messages = new Messages(Settings.messageFile);
+        messages = new Messages(newSettings.getMessagesFile());
 
         // Connect to the database and setup tables
         try {

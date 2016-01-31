@@ -1,6 +1,7 @@
 package fr.xephi.authme.settings.domain;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Enum property type.
@@ -32,8 +33,8 @@ class EnumPropertyType<E extends Enum<E>> extends PropertyType<E> {
     }
 
     @Override
-    public boolean hasSingleQuotes() {
-        return true;
+    public String toYaml(E value, Yaml simpleYaml, Yaml singleQuoteYaml) {
+        return singleQuoteYaml.dump(value.name());
     }
 
     private E mapToEnum(String value) {

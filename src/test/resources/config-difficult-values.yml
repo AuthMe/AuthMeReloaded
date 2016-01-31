@@ -5,7 +5,7 @@ test:
     systemName: 'A ''test'' name'
 sample:
     ratio:
-        limit: -41.8
+        order: Fourth
         fields:
             - Australia\
             - '	Burundi'''
@@ -23,7 +23,7 @@ features:
             - |
                 gray
                 with new lines
-        # dustLevel: 0.81 <-- missing property triggering rewrite
+        # dustLevel: 8 <-- missing property triggering rewrite
     cool:
         enabled: yes
         options: []

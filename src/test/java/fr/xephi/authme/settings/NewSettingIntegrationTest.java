@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.TestConfiguration;
+import fr.xephi.authme.settings.properties.TestEnum;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -48,12 +49,12 @@ public class NewSettingIntegrationTest {
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
             .put(TestConfiguration.SYSTEM_NAME, "Custom sys name")
-            .put(TestConfiguration.RATIO_LIMIT, -4.1)
+            .put(TestConfiguration.RATIO_ORDER, TestEnum.FIRST)
             .put(TestConfiguration.RATIO_FIELDS, Arrays.asList("Australia", "Burundi", "Colombia"))
             .put(TestConfiguration.VERSION_NUMBER, 2492)
             .put(TestConfiguration.SKIP_BORING_FEATURES, false)
             .put(TestConfiguration.BORING_COLORS, Arrays.asList("beige", "gray"))
-            .put(TestConfiguration.DUST_LEVEL, 0.81)
+            .put(TestConfiguration.DUST_LEVEL, 2)
             .put(TestConfiguration.USE_COOL_FEATURES, true)
             .put(TestConfiguration.COOL_OPTIONS, Arrays.asList("Dinosaurs", "Explosions", "Big trucks"))
             .build();
@@ -81,12 +82,12 @@ public class NewSettingIntegrationTest {
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
             .put(TestConfiguration.SYSTEM_NAME, "[TestDefaultValue]")
-            .put(TestConfiguration.RATIO_LIMIT, 3.0)
+            .put(TestConfiguration.RATIO_ORDER, TestEnum.SECOND)
             .put(TestConfiguration.RATIO_FIELDS, Arrays.asList("Australia", "Burundi", "Colombia"))
             .put(TestConfiguration.VERSION_NUMBER, 32046)
             .put(TestConfiguration.SKIP_BORING_FEATURES, false)
             .put(TestConfiguration.BORING_COLORS, Collections.EMPTY_LIST)
-            .put(TestConfiguration.DUST_LEVEL, 0.2)
+            .put(TestConfiguration.DUST_LEVEL, -1)
             .put(TestConfiguration.USE_COOL_FEATURES, false)
             .put(TestConfiguration.COOL_OPTIONS, Arrays.asList("Dinosaurs", "Explosions", "Big trucks"))
             .build();
@@ -129,12 +130,12 @@ public class NewSettingIntegrationTest {
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 20)
             .put(TestConfiguration.SYSTEM_NAME, "A 'test' name")
-            .put(TestConfiguration.RATIO_LIMIT, -41.8)
+            .put(TestConfiguration.RATIO_ORDER, TestEnum.FOURTH)
             .put(TestConfiguration.RATIO_FIELDS, Arrays.asList("Australia\\", "\tBurundi'", "Colombia?\n''"))
             .put(TestConfiguration.VERSION_NUMBER, -1337)
             .put(TestConfiguration.SKIP_BORING_FEATURES, false)
             .put(TestConfiguration.BORING_COLORS, Arrays.asList("it's a difficult string!", "gray\nwith new lines\n"))
-            .put(TestConfiguration.DUST_LEVEL, 0.2)
+            .put(TestConfiguration.DUST_LEVEL, -1)
             .put(TestConfiguration.USE_COOL_FEATURES, true)
             .put(TestConfiguration.COOL_OPTIONS, Collections.EMPTY_LIST)
             .put(additionalProperties.get(0), additionalProperties.get(0).getDefaultValue())

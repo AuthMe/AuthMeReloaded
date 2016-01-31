@@ -2,6 +2,7 @@ package fr.xephi.authme.settings;
 
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.TestConfiguration;
+import fr.xephi.authme.settings.properties.TestEnum;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
@@ -37,7 +38,7 @@ public class NewSettingTest {
 
         setReturnValue(file, TestConfiguration.VERSION_NUMBER, 20);
         setReturnValue(file, TestConfiguration.SKIP_BORING_FEATURES, true);
-        setReturnValue(file, TestConfiguration.RATIO_LIMIT, 4.25);
+        setReturnValue(file, TestConfiguration.RATIO_ORDER, TestEnum.THIRD);
         setReturnValue(file, TestConfiguration.SYSTEM_NAME, "myTestSys");
 
         // when / then
@@ -45,7 +46,7 @@ public class NewSettingTest {
 
         assertThat(settings.getProperty(TestConfiguration.VERSION_NUMBER), equalTo(20));
         assertThat(settings.getProperty(TestConfiguration.SKIP_BORING_FEATURES), equalTo(true));
-        assertThat(settings.getProperty(TestConfiguration.RATIO_LIMIT), equalTo(4.25));
+        assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER), equalTo(TestEnum.THIRD));
         assertThat(settings.getProperty(TestConfiguration.SYSTEM_NAME), equalTo("myTestSys"));
 
         assertDefaultValue(TestConfiguration.DURATION_IN_SECONDS, settings);
@@ -60,8 +61,8 @@ public class NewSettingTest {
             when(config.getInt(eq(property.getPath()), anyInt())).thenReturn((Integer) value);
         } else if (value instanceof Boolean) {
             when(config.getBoolean(eq(property.getPath()), anyBoolean())).thenReturn((Boolean) value);
-        } else if (value instanceof Double) {
-            when(config.getDouble(eq(property.getPath()), anyDouble())).thenReturn((Double) value);
+        } else if (value instanceof Enum<?>) {
+            when(config.getString(property.getPath())).thenReturn(((Enum<?>) value).name());
         } else {
             throw new UnsupportedOperationException("Value has unsupported type '"
                 + (value == null ? "null" : value.getClass().getSimpleName()) + "'");

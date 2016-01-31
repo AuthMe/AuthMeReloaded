@@ -171,19 +171,7 @@ public class NewSetting {
     }
 
     private <T> String toYaml(Property<T> property, int indent, Yaml simpleYaml, Yaml singleQuoteYaml) {
-        T value = property.getFromFile(configuration);
-        String representation = property.hasSingleQuotes()
-            ? singleQuoteYaml.dump(value)
-            : simpleYaml.dump(value);
-
-        // If the property is a non-empty list we need to append a new line because it will be
-        // something like the following, which requires a new line:
-        // - 'item 1'
-        // - 'second item in list'
-        if (property.isList() && !((List) value).isEmpty()) {
-            representation = "\n" + representation;
-        }
-
+        String representation = property.toYaml(configuration, simpleYaml, singleQuoteYaml);
         return join("\n" + indent(indent), representation.split("\\n"));
     }
 
@@ -197,7 +185,7 @@ public class NewSetting {
     }
 
     private File buildMessagesFileFromCode(String language) {
-        return new File(pluginFolder.getName(),
+        return new File(pluginFolder,
             makePath("messages", "messages_" + language + ".yml"));
     }
 

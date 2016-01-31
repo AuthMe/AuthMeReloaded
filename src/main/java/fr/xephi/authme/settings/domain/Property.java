@@ -1,6 +1,7 @@
 package fr.xephi.authme.settings.domain;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.yaml.snakeyaml.Yaml;
 
 import java.util.Arrays;
 import java.util.List;
@@ -102,24 +103,15 @@ public class Property<T> {
     }
 
     /**
-     * Return whether the property should be represented wrapped in single quotes in YAML.
-     * The YAML format allows both using single quotes and not for all types but for certain
-     * types one representation makes more sense. Typically we wrap string-like types in
-     * single quotes and all other ones not.
+     * Format the property's value as YAML.
      *
-     * @return True if single quotes should be used, false otherwise
+     * @param configuration The file configuration
+     * @param simpleYaml YAML object (default)
+     * @param singleQuoteYaml YAML object using single quotes
+     * @return The generated YAML
      */
-    public boolean hasSingleQuotes() {
-        return type.hasSingleQuotes();
-    }
-
-    /**
-     * Return whether the property has a list type.
-     *
-     * @return True if the property type is a list, false otherwise
-     */
-    public boolean isList() {
-        return type.isList();
+    public String toYaml(FileConfiguration configuration, Yaml simpleYaml, Yaml singleQuoteYaml) {
+        return type.toYaml(getFromFile(configuration), simpleYaml, singleQuoteYaml);
     }
 
     // -----

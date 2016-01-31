@@ -1,6 +1,7 @@
 package fr.xephi.authme.settings.domain;
 
 import org.bukkit.configuration.file.FileConfiguration;
+import org.yaml.snakeyaml.Yaml;
 
 import java.util.List;
 
@@ -13,7 +14,6 @@ import java.util.List;
 public abstract class PropertyType<T> {
 
     public static final PropertyType<Boolean> BOOLEAN = new BooleanProperty();
-    public static final PropertyType<Double>  DOUBLE  = new DoubleProperty();
     public static final PropertyType<Integer> INTEGER = new IntegerProperty();
     public static final PropertyType<String>  STRING  = new StringProperty();
     public static final PropertyType<List<String>> STRING_LIST = new StringListProperty();
@@ -39,16 +39,15 @@ public abstract class PropertyType<T> {
     }
 
     /**
-     * Return whether the property type should be wrapped in single quotes in YAML.
+     * Format the value as YAML.
      *
-     * @return True if single quotes should be used, false if not
+     * @param value The value to export
+     * @param simpleYaml YAML object (default)
+     * @param singleQuoteYaml YAML object set to use single quotes
+     * @return The generated YAML
      */
-    public boolean hasSingleQuotes() {
-        return false;
-    }
-
-    public boolean isList() {
-        return false;
+    public String toYaml(T value, Yaml simpleYaml, Yaml singleQuoteYaml) {
+        return simpleYaml.dump(value);
     }
 
 
@@ -59,16 +58,6 @@ public abstract class PropertyType<T> {
         @Override
         public Boolean getFromFile(Property<Boolean> property, FileConfiguration configuration) {
             return configuration.getBoolean(property.getPath(), property.getDefaultValue());
-        }
-    }
-
-    /**
-     * Double property.
-     */
-    private static final class DoubleProperty extends PropertyType<Double> {
-        @Override
-        public Double getFromFile(Property<Double> property, FileConfiguration configuration) {
-            return configuration.getDouble(property.getPath(), property.getDefaultValue());
         }
     }
 
@@ -91,8 +80,8 @@ public abstract class PropertyType<T> {
             return configuration.getString(property.getPath(), property.getDefaultValue());
         }
         @Override
-        public boolean hasSingleQuotes() {
-            return true;
+        public String toYaml(String value, Yaml simpleYaml, Yaml singleQuoteYaml) {
+            return singleQuoteYaml.dump(value);
         }
     }
 
@@ -114,13 +103,13 @@ public abstract class PropertyType<T> {
         }
 
         @Override
-        public boolean hasSingleQuotes() {
-            return true;
-        }
-
-        @Override
-        public boolean isList() {
-            return true;
+        public String toYaml(List<String> value, Yaml simpleYaml, Yaml singleQuoteYaml) {
+            String yaml = singleQuoteYaml.dump(value);
+            // If the property is a non-empty list we need to append a new line because it will be
+            // something like the following, which requires a new line:
+            // - 'item 1'
+            // - 'second item in list'
+            return value.isEmpty() ? yaml : "\n" + yaml;
         }
     }
 

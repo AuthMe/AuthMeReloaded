@@ -19,8 +19,8 @@ public final class TestConfiguration implements SettingsClass {
     public static final Property<String> SYSTEM_NAME =
         newProperty("test.systemName", "[TestDefaultValue]");
 
-    public static final Property<Double> RATIO_LIMIT =
-        newProperty(PropertyType.DOUBLE, "sample.ratio.limit", 3.0);
+    public static final Property<TestEnum> RATIO_ORDER =
+        newProperty(TestEnum.class, "sample.ratio.order", TestEnum.SECOND);
 
     public static final Property<List<String>> RATIO_FIELDS =
         newProperty(PropertyType.STRING_LIST, "sample.ratio.fields", "a", "b", "c");
@@ -34,8 +34,8 @@ public final class TestConfiguration implements SettingsClass {
     public static final Property<List<String>> BORING_COLORS =
         newProperty(PropertyType.STRING_LIST, "features.boring.colors");
 
-    public static final Property<Double> DUST_LEVEL =
-        newProperty(PropertyType.DOUBLE, "features.boring.dustLevel", 0.2);
+    public static final Property<Integer> DUST_LEVEL =
+        newProperty(PropertyType.INTEGER, "features.boring.dustLevel", -1);
 
     public static final Property<Boolean> USE_COOL_FEATURES =
         newProperty("features.cool.enabled", false);
