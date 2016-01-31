@@ -34,7 +34,6 @@ import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
 import fr.xephi.authme.mail.SendMailSSL;
-import fr.xephi.authme.modules.ModuleManager;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
@@ -110,7 +109,6 @@ public class AuthMe extends JavaPlugin {
     private NewSetting newSettings;
     private Messages messages;
     private JsonCache playerBackup;
-    private ModuleManager moduleManager;
     private PasswordSecurity passwordSecurity;
     private DataSource database;
 
@@ -219,15 +217,14 @@ public class AuthMe extends JavaPlugin {
         setPluginInfos();
 
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
+        newSettings = createNewSetting();
         if (loadSettings()) {
             server.shutdown();
             setEnabled(false);
             return;
         }
-        newSettings = createNewSetting();
 
-        // Set up messages & password security
-        messages = Messages.getInstance();
+        messages = new Messages(Settings.messageFile);
 
         // Connect to the database and setup tables
         try {
@@ -246,9 +243,6 @@ public class AuthMe extends JavaPlugin {
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
         commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings);
-
-        // Set up the module manager
-        setupModuleManager();
 
         // Setup otherAccounts file
         this.otherAccounts = OtherAccounts.getInstance();
@@ -325,21 +319,6 @@ public class AuthMe extends JavaPlugin {
 
         // Successful message
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
-    }
-
-    /**
-     * Set up the module manager.
-     */
-    private void setupModuleManager() {
-        // TODO: Clean this up!
-        // TODO: split the plugin in more modules
-        // TODO: log number of loaded modules
-
-        // Define the module manager instance
-        moduleManager = new ModuleManager(this);
-
-        // Load the modules
-        // int loaded = moduleManager.loadModules();
     }
 
     /**
@@ -469,7 +448,7 @@ public class AuthMe extends JavaPlugin {
 
     private NewSetting createNewSetting() {
         File configFile = new File(getDataFolder() + "config.yml");
-        return new NewSetting(getConfig(), configFile);
+        return new NewSetting(getConfig(), configFile, getDataFolder());
     }
 
     /**
@@ -536,18 +515,15 @@ public class AuthMe extends JavaPlugin {
         }
 
         // Do backup on stop if enabled
-        new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.STOP);
-
-        // Unload modules
-        if (moduleManager != null) {
-            moduleManager.unloadModules();
+        if (newSettings != null) {
+            new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.STOP);
         }
 
         List<BukkitTask> pendingTasks = getServer().getScheduler().getPendingTasks();
         for (Iterator<BukkitTask> iterator = pendingTasks.iterator(); iterator.hasNext();) {
             BukkitTask pendingTask = iterator.next();
             if (!pendingTask.getOwner().equals(this) || pendingTask.isSync()) {
-                //remove all unrelevant tasks
+                //remove all irrelevant tasks
                 iterator.remove();
             }
         }
@@ -971,10 +947,6 @@ public class AuthMe extends JavaPlugin {
                 count++;
         }
         return count >= Settings.getMaxJoinPerIp;
-    }
-
-    public ModuleManager getModuleManager() {
-        return moduleManager;
     }
 
     /**

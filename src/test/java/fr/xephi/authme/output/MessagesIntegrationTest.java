@@ -1,6 +1,5 @@
 package fr.xephi.authme.output;
 
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -37,15 +36,12 @@ public class MessagesIntegrationTest {
     public void setUpMessages() {
         WrapperMock.createInstance();
 
-        Settings.messagesLanguage = "en";
         URL url = getClass().getClassLoader().getResource(YML_TEST_FILE);
         if (url == null) {
             throw new RuntimeException("File '" + YML_TEST_FILE + "' could not be loaded");
         }
 
-        Settings.messageFile = new File(url.getFile());
-        Settings.messagesLanguage = "en";
-        messages = Messages.getInstance();
+        messages = new Messages(new File(url.getFile()));
     }
 
     @Test

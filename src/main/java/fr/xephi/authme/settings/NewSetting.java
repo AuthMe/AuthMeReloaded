@@ -3,11 +3,13 @@ package fr.xephi.authme.settings;
 import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -19,23 +21,30 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static fr.xephi.authme.util.StringUtils.makePath;
+
 /**
  * The new settings manager.
  */
 public class NewSetting {
 
-    private File file;
+    private final File pluginFolder;
+    private final File configFile;
     private FileConfiguration configuration;
+    private File messagesFile;
 
     /**
      * Constructor. Checks the given {@link FileConfiguration} object for completeness.
      *
      * @param configuration The configuration to interact with
-     * @param file The configuration file
+     * @param configFile The configuration file
+     * @param pluginFolder The AuthMe plugin folder
      */
-    public NewSetting(FileConfiguration configuration, File file) {
+    public NewSetting(FileConfiguration configuration, File configFile, File pluginFolder) {
         this.configuration = configuration;
-        this.file = file;
+        this.configFile = configFile;
+        this.pluginFolder = pluginFolder;
+        messagesFile = buildMessagesFile();
 
         PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
         if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap)) {
@@ -49,13 +58,14 @@ public class NewSetting {
      * Constructor for testing purposes, allowing more options.
      *
      * @param configuration The FileConfiguration object to use
-     * @param file The file to write to
+     * @param configFile The file to write to
      * @param propertyMap The property map whose properties should be verified for presence, or null to skip this
      */
     @VisibleForTesting
-    NewSetting(FileConfiguration configuration, File file, PropertyMap propertyMap) {
+    NewSetting(FileConfiguration configuration, File configFile, PropertyMap propertyMap) {
         this.configuration = configuration;
-        this.file = file;
+        this.configFile = configFile;
+        this.pluginFolder = new File("");
 
         if (propertyMap != null && SettingsMigrationService.checkAndMigrate(configuration, propertyMap)) {
             save(propertyMap);
@@ -91,8 +101,24 @@ public class NewSetting {
         save(SettingsFieldRetriever.getAllPropertyFields());
     }
 
+    /**
+     * Return the messages file based on the messages language config.
+     *
+     * @return The messages file to read messages from
+     */
+    public File getMessagesFile() {
+        return messagesFile;
+    }
+
+    /**
+     * Reload the configuration.
+     */
+    public void reload() {
+        configuration = YamlConfiguration.loadConfiguration(configFile);
+    }
+
     private void save(PropertyMap propertyMap) {
-        try (FileWriter writer = new FileWriter(file)) {
+        try (FileWriter writer = new FileWriter(configFile)) {
             Yaml simpleYaml = newYaml(false);
             Yaml singleQuoteYaml = newYaml(true);
 
@@ -159,6 +185,20 @@ public class NewSetting {
         }
 
         return join("\n" + indent(indent), representation.split("\\n"));
+    }
+
+    private File buildMessagesFile() {
+        String languageCode = getProperty(PluginSettings.MESSAGES_LANGUAGE);
+        File messagesFile = buildMessagesFileFromCode(languageCode);
+        if (messagesFile.exists()) {
+            return messagesFile;
+        }
+        return buildMessagesFileFromCode("en");
+    }
+
+    private File buildMessagesFileFromCode(String language) {
+        return new File(pluginFolder.getName(),
+            makePath("messages", "messages_" + language + ".yml"));
     }
 
     private static Yaml newYaml(boolean useSingleQuotes) {

@@ -12,6 +12,7 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import org.bukkit.command.CommandSender;
 
+import java.io.File;
 import java.util.List;
 
 /**
@@ -102,6 +103,16 @@ public class CommandService {
     }
 
     /**
+     * Return the AuthMe instance for further manipulation. Use only if other methods from
+     * the command service cannot be used.
+     *
+     * @return The AuthMe instance
+     */
+    public AuthMe getAuthMe() {
+        return authMe;
+    }
+
+    /**
      * Return the PasswordSecurity instance.
      *
      * @return The password security instance
@@ -153,6 +164,15 @@ public class CommandService {
     }
 
     /**
+     * Change the messages instance to retrieve messages from the given file.
+     *
+     * @param file The new file to read messages from
+     */
+    public void reloadMessages(File file) {
+        messages.reload(file);
+    }
+
+    /**
      * Retrieve the given property's value.
      *
      * @param property The property to retrieve
@@ -161,6 +181,15 @@ public class CommandService {
      */
     public <T> T getProperty(Property<T> property) {
         return settings.getProperty(property);
+    }
+
+    /**
+     * Return the settings manager.
+     *
+     * @return The settings manager
+     */
+    public NewSetting getSettings() {
+        return settings;
     }
 
 }

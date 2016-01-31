@@ -2,6 +2,7 @@ package fr.xephi.authme.settings;
 
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.TestConfiguration;
+import fr.xephi.authme.settings.propertymap.PropertyMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -40,7 +41,7 @@ public class NewSettingTest {
         setReturnValue(file, TestConfiguration.SYSTEM_NAME, "myTestSys");
 
         // when / then
-        NewSetting settings = new NewSetting(file, new File("conf.txt"), null);
+        NewSetting settings = new NewSetting(file, new File("conf.txt"), (PropertyMap) null);
 
         assertThat(settings.getProperty(TestConfiguration.VERSION_NUMBER), equalTo(20));
         assertThat(settings.getProperty(TestConfiguration.SKIP_BORING_FEATURES), equalTo(true));
