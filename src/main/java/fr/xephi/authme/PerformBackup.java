@@ -57,9 +57,14 @@ public class PerformBackup {
      */
     public void doBackup(BackupCause cause) {
         if (!settings.getProperty(BackupSettings.ENABLED)) {
-            ConsoleLogger.showError("Can't perform a Backup: disabled in configuration. Cause of the Backup: "
-                + cause.name());
+            // Print a warning if the backup was requested via command or by another plugin
+            if (cause == BackupCause.COMMAND || cause == BackupCause.OTHER) {
+                ConsoleLogger.showError("Can't perform a Backup: disabled in configuration. Cause of the Backup: "
+                    + cause.name());
+            }
+            return;
         }
+
         // Check whether a backup should be made at the specified point in time
         if (BackupCause.START.equals(cause) && !settings.getProperty(BackupSettings.ON_SERVER_START)
             || BackupCause.STOP.equals(cause) && !settings.getProperty(BackupSettings.ON_SERVER_STOP)) {
@@ -196,7 +201,8 @@ public class PerformBackup {
     public enum BackupCause {
         START,
         STOP,
-        COMMAND
+        COMMAND,
+        OTHER
     }
 
 }

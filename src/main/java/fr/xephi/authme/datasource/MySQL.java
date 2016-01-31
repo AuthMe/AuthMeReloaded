@@ -110,6 +110,12 @@ public class MySQL implements DataSource {
         ds.addDataSourceProperty("cachePrepStmts", "true");
         ds.addDataSourceProperty("prepStmtCacheSize", "250");
         ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        //set utf-8 as default encoding
+        ds.addDataSourceProperty("characterEncoding", "utf8");
+        ds.addDataSourceProperty("encoding","UTF-8");
+        ds.addDataSourceProperty("useUnicode", "true");
+
         ds.setUsername(this.username);
         ds.setPassword(this.password);
         ds.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable

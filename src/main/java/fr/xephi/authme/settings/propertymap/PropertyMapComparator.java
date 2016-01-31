@@ -31,9 +31,4 @@ final class PropertyMapComparator implements Comparator<Property> {
         return Node.compare(parent, p1.getPath(), p2.getPath());
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj;
-    }
-
 }

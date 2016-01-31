@@ -75,18 +75,21 @@ public class AsynchronousQuit {
         }
         if (Settings.isSessionsEnabled && !isKick) {
             if (Settings.getSessionTimeout != 0) {
-                BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+                if (plugin.isEnabled()) {
+                    BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
-                    @Override
-                    public void run() {
-                        PlayerCache.getInstance().removePlayer(name);
-                        if (database.isLogged(name))
-                            database.setUnlogged(name);
-                        plugin.sessions.remove(name);
-                    }
+                        @Override
+                        public void run() {
+                            postLogout();
+                        }
 
-                }, Settings.getSessionTimeout * 20 * 60);
-                plugin.sessions.put(name, task);
+                    }, Settings.getSessionTimeout * 20 * 60);
+
+                    plugin.sessions.put(name, task);
+                } else {
+                    //plugin is disable we canno schedule more tasks so run it directly here
+                    postLogout();
+                }
             }
         } else {
             PlayerCache.getInstance().removePlayer(name);
@@ -94,6 +97,15 @@ public class AsynchronousQuit {
         }
 
         plugin.realIp.remove(name);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
+        if (plugin.isEnabled()) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
+        }
+    }
+
+    private void postLogout() {
+        PlayerCache.getInstance().removePlayer(name);
+        if (database.isLogged(name))
+            database.setUnlogged(name);
+        plugin.sessions.remove(name);
     }
 }
