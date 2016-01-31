@@ -547,6 +547,11 @@ public final class Settings {
             set("settings.forceCommands", new ArrayList<String>());
             changes = true;
         }
+        if (contains("settings.delayJoinMessage")) {
+            set("settings.delayJoinLeaveMessages", false);
+            set("settings.delayJoinMessage", null);
+            changes = true;
+        }
         if (!contains("settings.forceCommandsAsConsole")) {
             set("settings.forceCommandsAsConsole", new ArrayList<String>());
             changes = true;
