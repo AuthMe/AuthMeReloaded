@@ -341,43 +341,6 @@ public final class Settings {
     }
 
     /**
-     * Config option for setting and check restricted user by username;ip ,
-     * return false if ip and name doesn't match with player that join the
-     * server, so player has a restricted access
-     *
-     * @param name   String
-     * @param ip     String
-     * @param domain String
-     *
-     * @return boolean
-     */
-    public static boolean getRestrictedIp(String name, String ip, String domain) {
-
-        Iterator<String> iterator = getRestrictedIp.iterator();
-        boolean trueOnce = false;
-        boolean nameFound = false;
-        while (iterator.hasNext()) {
-            String[] args = iterator.next().split(";");
-            String testName = args[0];
-            String testIp = args[1];
-            if (testName.equalsIgnoreCase(name)) {
-                nameFound = true;
-                if (ip != null) {
-                    if (testIp.equalsIgnoreCase(ip)) {
-                        trueOnce = true;
-                    }
-                }
-                if (domain != null) {
-                    if (testIp.equalsIgnoreCase(domain)) {
-                        trueOnce = true;
-                    }
-                }
-            }
-        }
-        return !nameFound || trueOnce;
-    }
-
-    /**
      * Saves the configuration to disk
      *
      * @return True if saved successfully

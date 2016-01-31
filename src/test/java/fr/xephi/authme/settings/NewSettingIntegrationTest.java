@@ -42,7 +42,6 @@ public class NewSettingIntegrationTest {
         // given
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(getConfigFile(COMPLETE_FILE));
         File file = new File("unused");
-        assumeThat(file.exists(), equalTo(false));
 
         // when / then
         NewSetting settings = new NewSetting(configuration, file, propertyMap);

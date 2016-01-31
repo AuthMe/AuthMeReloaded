@@ -5,7 +5,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
@@ -27,22 +26,21 @@ public final class SettingsMigrationService {
      *
      * @param configuration The file configuration to check and migrate
      * @param propertyMap The property map of all existing properties
+     * @param pluginFolder The plugin folder
      * @return True if there is a change and the config must be saved, false if the config is up-to-date
      */
-    public static boolean checkAndMigrate(FileConfiguration configuration, PropertyMap propertyMap) {
-        return performMigrations(configuration) || hasDeprecatedProperties(configuration)
+    public static boolean checkAndMigrate(FileConfiguration configuration, PropertyMap propertyMap, File pluginFolder) {
+        return performMigrations(configuration, pluginFolder) || hasDeprecatedProperties(configuration)
             || !containsAllSettings(configuration, propertyMap);
     }
 
-    private static boolean performMigrations(FileConfiguration configuration) {
+    private static boolean performMigrations(FileConfiguration configuration, File pluginFolder) {
         boolean changes = false;
         if ("[a-zA-Z0-9_?]*".equals(configuration.getString(ALLOWED_NICKNAME_CHARACTERS.getPath()))) {
             configuration.set(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");
             changes = true;
         }
-        // TODO #450: Don't get the data folder statically
-        Wrapper w = Wrapper.getInstance();
-        changes = changes || performMailTextToFileMigration(configuration, w.getDataFolder());
+        changes = changes || performMailTextToFileMigration(configuration, pluginFolder);
 
         return changes;
     }

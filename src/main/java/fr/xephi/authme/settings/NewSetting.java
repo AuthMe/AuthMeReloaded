@@ -47,7 +47,7 @@ public class NewSetting {
         messagesFile = buildMessagesFile();
 
         PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
-        if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap)) {
+        if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
             ConsoleLogger.info("Merged new config options");
             ConsoleLogger.info("Please check your config.yml file for new settings!");
             save(propertyMap);
@@ -67,7 +67,7 @@ public class NewSetting {
         this.configFile = configFile;
         this.pluginFolder = new File("");
 
-        if (propertyMap != null && SettingsMigrationService.checkAndMigrate(configuration, propertyMap)) {
+        if (propertyMap != null && SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
             save(propertyMap);
         }
     }
