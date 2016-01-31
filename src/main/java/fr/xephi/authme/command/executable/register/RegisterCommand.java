@@ -6,6 +6,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class RegisterCommand extends PlayerCommand {
                 return;
             }
             final String email = arguments.get(0);
-            if (!Settings.isEmailCorrect(email)) {
+            if (!Utils.isEmailCorrect(email, commandService.getSettings())) {
                 commandService.send(player, MessageKey.INVALID_EMAIL);
                 return;
             }

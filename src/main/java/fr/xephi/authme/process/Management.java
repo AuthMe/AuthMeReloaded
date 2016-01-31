@@ -8,6 +8,7 @@ import fr.xephi.authme.process.logout.AsynchronousLogout;
 import fr.xephi.authme.process.quit.AsynchronousQuit;
 import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.process.unregister.AsynchronousUnregister;
+import fr.xephi.authme.settings.NewSetting;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -17,15 +18,17 @@ public class Management {
 
     private final AuthMe plugin;
     private final BukkitScheduler sched;
+    private final NewSetting settings;
 
     /**
      * Constructor for Management.
      *
      * @param plugin AuthMe
      */
-    public Management(AuthMe plugin) {
+    public Management(AuthMe plugin, NewSetting settings) {
         this.plugin = plugin;
         this.sched = this.plugin.getServer().getScheduler();
+        this.settings = settings;
     }
 
     public void performLogin(final Player player, final String password, final boolean forceLogin) {
@@ -94,7 +97,7 @@ public class Management {
         sched.runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                new AsyncChangeEmail(player, plugin, null, newEmail, newEmailVerify).process();
+                new AsyncChangeEmail(player, plugin, null, newEmail, newEmailVerify, settings).process();
             }
         });
     }
@@ -103,7 +106,7 @@ public class Management {
         sched.runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                new AsyncChangeEmail(player, plugin, oldEmail, newEmail).process();
+                new AsyncChangeEmail(player, plugin, oldEmail, newEmail, settings).process();
             }
         });
     }

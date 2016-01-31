@@ -361,7 +361,7 @@ public final class Settings {
      *
      * @return String
      */
-    public static String checkLang(String lang) {
+    private static String checkLang(String lang) {
         if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
             ConsoleLogger.info("Set Language to: " + lang);
             return lang;
@@ -418,42 +418,6 @@ public final class Settings {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Method isEmailCorrect.
-     *
-     * @param email String
-     *
-     * @return boolean
-     */
-    public static boolean isEmailCorrect(String email) {
-        if (!email.contains("@"))
-            return false;
-        if (email.equalsIgnoreCase("your@email.com"))
-            return false;
-        String emailDomain = email.split("@")[1];
-        boolean correct = true;
-        if (emailWhitelist != null && !emailWhitelist.isEmpty()) {
-            for (String domain : emailWhitelist) {
-                if (!domain.equalsIgnoreCase(emailDomain)) {
-                    correct = false;
-                } else {
-                    correct = true;
-                    break;
-                }
-            }
-            return correct;
-        }
-        if (emailBlacklist != null && !emailBlacklist.isEmpty()) {
-            for (String domain : emailBlacklist) {
-                if (domain.equalsIgnoreCase(emailDomain)) {
-                    correct = false;
-                    break;
-                }
-            }
-        }
-        return correct;
     }
 
     /**

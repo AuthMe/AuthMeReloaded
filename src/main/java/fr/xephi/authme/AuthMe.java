@@ -49,6 +49,8 @@ import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.CollectionUtils;
@@ -292,7 +294,7 @@ public class AuthMe extends JavaPlugin {
         setupApi();
 
         // Set up the management
-        management = new Management(this);
+        management = new Management(this, newSettings);
 
         // Set up the BungeeCord hook
         setupBungeeCordHook();
@@ -339,12 +341,13 @@ public class AuthMe extends JavaPlugin {
      */
     private void showSettingsWarnings() {
         // Force single session disabled
-        if (!Settings.isForceSingleSessionEnabled) {
+        if (!newSettings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
             ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
         }
 
         // Session timeout disabled
-        if (Settings.getSessionTimeout == 0 && Settings.isSessionsEnabled) {
+        if (newSettings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
+            && newSettings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
             ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
         }
     }
@@ -399,7 +402,7 @@ public class AuthMe extends JavaPlugin {
      * Set up the BungeeCord hook.
      */
     private void setupBungeeCordHook() {
-        if (Settings.bungee) {
+        if (newSettings.getProperty(HooksSettings.BUNGEECORD)) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
         }
