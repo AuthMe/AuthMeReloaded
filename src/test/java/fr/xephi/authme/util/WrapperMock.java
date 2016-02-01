@@ -83,14 +83,13 @@ public class WrapperMock extends Wrapper {
         return mocks.get(mockClass) != null;
     }
 
-    @SuppressWarnings("unchecked")
-    private <T> T getMock(Class<?> clazz) {
+    private <T> T getMock(Class<T> clazz) {
         Object o = mocks.get(clazz);
         if (o == null) {
             o = Mockito.mock(clazz);
             mocks.put(clazz, o);
         }
-        return (T) o;
+        return clazz.cast(o);
     }
 
 

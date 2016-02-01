@@ -1,4 +1,4 @@
-﻿# Translator: MineWolf50 
+# Translator: MineWolf50 
 # Last Time Edit : 2015 / 7 / 14 , A.M.10:14
 # = = = = = = = = = = = = = = = = = = = = = = = #
 unknown_user: "&b【AuthMe】&6沒有在資料庫內找到該玩家。"
@@ -59,3 +59,4 @@ email_exists: '&b【AuthMe】&6這個帳戶已經有設定電子郵件了'
 country_banned: '&b【AuthMe】&6你所在的地區無法進入此伺服器'
 antibot_auto_enabled: '&b【AuthMe】&6AntiBotMod已自動啟用!'
 antibot_auto_disabled: '&b【AuthMe】&6AntiBotMod將會於 &c%m &6分鐘後自動關閉'
+kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'

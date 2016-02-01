@@ -7,15 +7,13 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
+
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -145,13 +143,9 @@ public final class Utils {
             return true;
         }
 
-        if (!Settings.isForcedRegistrationEnabled) {
-            // TODO ljacqu 20151123: Use a getter to retrieve things from AuthMe
-            if (!plugin.database.isAuthAvailable(player.getName())) {
-                return true;
-            }
+        if (!Settings.isForcedRegistrationEnabled && !plugin.getDataSource().isAuthAvailable(player.getName())) {
+            return true;
         }
-
         return false;
     }
 
@@ -161,15 +155,6 @@ public final class Utils {
             && (Settings.getUnrestrictedName.contains(player.getName().toLowerCase()));
     }
 
-    /**
-     * Method packCoords.
-     *
-     * @param x  double
-     * @param y  double
-     * @param z  double
-     * @param w  String
-     * @param pl Player
-     */
     public static void packCoords(double x, double y, double z, String w, final Player pl) {
         World theWorld;
         if (w.equals("unavailableworld")) {
@@ -194,38 +179,6 @@ public final class Utils {
                 }
             }
         });
-    }
-
-    /**
-     * Force the game mode of a player.
-     *
-     * @param player the player to modify.
-     */
-    public static void forceGM(Player player) {
-        if (!plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)) {
-            player.setGameMode(GameMode.SURVIVAL);
-        }
-    }
-
-    /**
-     * Delete a given directory and all his content.
-     *
-     * @param directory File
-     */
-    public static void purgeDirectory(File directory) {
-        if (!directory.isDirectory()) {
-            return;
-        }
-        File[] files = directory.listFiles();
-        if (files == null) {
-            return;
-        }
-        for (File target : files) {
-            if (target.isDirectory()) {
-                purgeDirectory(target);
-            }
-            target.delete();
-        }
     }
 
     /**
@@ -281,14 +234,13 @@ public final class Utils {
         }
     }
 
-    @SuppressWarnings("deprecation")
     public static Player getPlayer(String name) {
-        name = name.toLowerCase();
-        return wrapper.getServer().getPlayer(name);
+        return wrapper.getServer().getPlayerExact(name);
     }
 
     public static boolean isNPC(Player player) {
-        return player.hasMetadata("NPC") || plugin.combatTagPlus != null && plugin.combatTagPlus.getNpcPlayerHelper().isNpc(player);
+        return player.hasMetadata("NPC") || plugin.combatTagPlus != null
+            && plugin.combatTagPlus.getNpcPlayerHelper().isNpc(player);
     }
 
     public static void teleportToSpawn(Player player) {

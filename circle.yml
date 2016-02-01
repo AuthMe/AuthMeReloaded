@@ -7,3 +7,7 @@ general:
 test:
   override:
     - mvn clean install -B
+
+notify:
+  webhooks:
+    - url: https://webhooks.gitter.im/e/7b92ac1a1741748b26bf

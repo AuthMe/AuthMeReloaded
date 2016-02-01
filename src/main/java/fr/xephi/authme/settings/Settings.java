@@ -1,18 +1,22 @@
 package fr.xephi.authme.settings;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-
-import java.io.*;
-import java.nio.charset.Charset;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -60,19 +64,20 @@ public final class Settings {
         isMovementAllowed, isKickNonRegisteredEnabled,
         isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
         isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
-        isResetInventoryIfCreative, isCachingEnabled,
-        isKickOnWrongPasswordEnabled, getEnablePasswordVerifier,
+        isCachingEnabled,
+        isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
         protectInventoryBeforeLogInEnabled, isBackupActivated,
         isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
         rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
         useCaptcha, emailRegistration, multiverse, bungee,
         banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-        disableSocialSpy, forceOnlyAfterLogin, useEssentialsMotd, usePurge,
+        disableSocialSpy, useEssentialsMotd, usePurge,
         purgePlayerDat, purgeEssentialsFile, supportOldPassword,
         purgeLimitedCreative, purgeAntiXray, purgePermissions,
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
+        kickPlayersBeforeStopping,
         customAttributes, generateImage, isRemoveSpeedEnabled, preventOtherCase;
     public static String helpHeader, getNickRegex, getUnloggedinGroup, getMySQLHost,
         getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
@@ -86,7 +91,7 @@ public final class Settings {
         getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
         getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
         spawnPriority, crazyloginFileName, getPassRegex,
-        getMySQLColumnRealName;
+        getMySQLColumnRealName, emailOauth2Token, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
         getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
@@ -94,7 +99,7 @@ public final class Settings {
         getMailPort, maxLoginTry, captchaLength, saltLength,
         getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
         antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
-        getMaxJoinPerIp, getMySQLMaxConnections;
+        getMaxJoinPerIp;
     protected static YamlConfiguration configFile;
     private static AuthMe plugin;
     private static Settings instance;
@@ -113,7 +118,7 @@ public final class Settings {
     /**
      * Method reload.
      *
-     * @throws Exception
+     * @throws Exception if something went wrong
      */
     public static void reload() throws Exception {
         plugin.getLogger().info("Loading Configuration File...");
@@ -131,7 +136,6 @@ public final class Settings {
         }
         messageFile = new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + messagesLanguage + ".yml");
     }
-
 
     public static void loadVariables() {
         helpHeader = configFile.getString("settings.helpHeader", "AuthMeReloaded");
@@ -162,7 +166,6 @@ public final class Settings {
         isForceSpawnLocOnJoinEnabled = configFile.getBoolean("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
         isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
         isForceSurvivalModeEnabled = configFile.getBoolean("settings.GameMode.ForceSurvivalMode", false);
-        isResetInventoryIfCreative = configFile.getBoolean("settings.GameMode.ResetInventoryIfCreative", false);
         getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp", 1);
         getPasswordHash = getPasswordHash();
         getUnloggedinGroup = configFile.getString("settings.security.unLoggedinGroup", "unLoggedInGroup");
@@ -170,7 +173,6 @@ public final class Settings {
         isCachingEnabled = configFile.getBoolean("DataSource.caching", true);
         getMySQLHost = configFile.getString("DataSource.mySQLHost", "127.0.0.1");
         getMySQLPort = configFile.getString("DataSource.mySQLPort", "3306");
-        getMySQLMaxConnections = configFile.getInt("DataSource.mySQLMaxConections", 25);
         getMySQLUsername = configFile.getString("DataSource.mySQLUsername", "authme");
         getMySQLPassword = configFile.getString("DataSource.mySQLPassword", "12345");
         getMySQLDatabase = configFile.getString("DataSource.mySQLDatabase", "authme");
@@ -196,7 +198,7 @@ public final class Settings {
         }
 
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
-        getEnablePasswordVerifier = configFile.getBoolean("settings.restrictions.enablePasswordVerifier", true);
+        enablePasswordConfirmation = configFile.getBoolean("settings.restrictions.enablePasswordConfirmation", true);
 
         protectInventoryBeforeLogInEnabled = configFile.getBoolean("settings.restrictions.ProtectInventoryBeforeLogIn", true);
         plugin.checkProtocolLib();
@@ -249,7 +251,6 @@ public final class Settings {
         useLogging = configFile.getBoolean("Security.console.logConsole", false);
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
-        forceOnlyAfterLogin = configFile.getBoolean("settings.GameMode.ForceOnlyAfterLogin", false);
         useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
         usePurge = configFile.getBoolean("Purge.useAutoPurge", false);
         purgeDelay = configFile.getInt("Purge.daysBeforeRemovePlayer", 60);
@@ -283,7 +284,7 @@ public final class Settings {
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
-        delayJoinLeaveMessages = configFile.getBoolean("settings.delayJoinLeaveMessage", false);
+        delayJoinLeaveMessages = configFile.getBoolean("settings.delayJoinLeaveMessages", false);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
@@ -295,6 +296,9 @@ public final class Settings {
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
         generateImage = configFile.getBoolean("Email.generateImage", false);
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
+        kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
+        emailOauth2Token = configFile.getString("Email.emailOauth2Token", "");
+        sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
 
         // Load the welcome message
         getWelcomeMessage();
@@ -302,39 +306,23 @@ public final class Settings {
     }
 
     private static String loadEmailText() {
-    	if (!EMAIL_FILE.exists())
-    		saveDefaultEmailText();
-    	StringBuilder str = new StringBuilder();
-    	try {
-    		BufferedReader in = new BufferedReader(new FileReader(EMAIL_FILE));
-    		String s;
-    		while ((s = in.readLine()) != null)
-    			str.append(s);
-    		in.close();
-    	} catch(IOException e)
-    	{
-    	}
-    	return str.toString();
-	}
+        if (!EMAIL_FILE.exists()) {
+            plugin.saveResource("email.html", false);
+        }
+        try {
+            return Files.toString(EMAIL_FILE, Charsets.UTF_8);
+        } catch (IOException e) {
+            ConsoleLogger.showError("Error loading email text: " + StringUtils.formatException(e));
+            ConsoleLogger.writeStackTrace(e);
+            return "";
+        }
+    }
 
-	private static void saveDefaultEmailText() {
-		InputStream file = plugin.getResource("email.html");
-		StringBuilder str = new StringBuilder();
-		try {
-			BufferedReader in = new BufferedReader(new InputStreamReader(file, Charset.forName("utf-8")));
-			String s;
-			while ((s = in.readLine()) != null)
-				str.append(s);
-			in.close();
-			Files.touch(EMAIL_FILE);
-			Files.write(str.toString(), EMAIL_FILE, Charsets.UTF_8);
-		}
-		catch(Exception e)
-		{
-		}
-	}
-
-	public static void setValue(String key, Object value) {
+    /**
+     * @param key   the key to set
+     * @param value the value to set
+     */
+    public static void setValue(String key, Object value) {
         instance.set(key, value);
         save();
     }
@@ -374,12 +362,13 @@ public final class Settings {
      * return false if ip and name doesn't match with player that join the
      * server, so player has a restricted access
      *
-     * @param name String
-     * @param ip   String
+     * @param name   String
+     * @param ip     String
+     * @param domain String
      *
      * @return boolean
      */
-    public static boolean getRestrictedIp(String name, String ip) {
+    public static boolean getRestrictedIp(String name, String ip, String domain) {
 
         Iterator<String> iterator = getRestrictedIp.iterator();
         boolean trueOnce = false;
@@ -390,8 +379,15 @@ public final class Settings {
             String testIp = args[1];
             if (testName.equalsIgnoreCase(name)) {
                 nameFound = true;
-                if (testIp.equalsIgnoreCase(ip)) {
-                    trueOnce = true;
+                if (ip != null) {
+                    if (testIp.equalsIgnoreCase(ip)) {
+                        trueOnce = true;
+                    }
+                }
+                if (domain != null) {
+                    if (testIp.equalsIgnoreCase(domain)) {
+                        trueOnce = true;
+                    }
                 }
             }
         }
@@ -520,21 +516,12 @@ public final class Settings {
             set("Xenoforo.predefinedSalt", null);
             changes = true;
         }
-        if (configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA1") ||
-            configFile.getString("settings.security.passwordHash", "SHA256").toUpperCase().equals("XFSHA256")) {
-            set("settings.security.passwordHash", "XENFORO");
-            changes = true;
-        }
         if (!contains("Protection.enableProtection")) {
             set("Protection.enableProtection", false);
             changes = true;
         }
         if (!contains("settings.restrictions.removeSpeed")) {
             set("settings.restrictions.removeSpeed", true);
-            changes = true;
-        }
-        if (!contains("DataSource.mySQLMaxConections")) {
-            set("DataSource.mySQLMaxConections", 25);
             changes = true;
         }
         if (!contains("Protection.countries")) {
@@ -574,6 +561,14 @@ public final class Settings {
         }
         if (!contains("settings.useWelcomeMessage")) {
             set("settings.useWelcomeMessage", true);
+            changes = true;
+        }
+        if (!contains("settings.restrictions.enablePasswordConfirmation")) {
+            set("settings.restrictions.enablePasswordConfirmation", true);
+            changes = true;
+        }
+        if (contains("settings.restrictions.enablePasswordVerifier")) {
+            set("settings.restrictions.enablePasswordVerifier", null);
             changes = true;
         }
         if (!contains("settings.security.unsafePasswords")) {
@@ -714,29 +709,51 @@ public final class Settings {
             changes = true;
         }
 
-        if (!contains("settings.preventOtherCase"))
-        {
-        	set("settings.preventOtherCase", false);
-        	changes = true;
+        if (!contains("settings.preventOtherCase")) {
+            set("settings.preventOtherCase", false);
+            changes = true;
         }
 
-        if (contains("Email.mailText"))
-        {
-        	set("Email.mailText", null);
-        	ConsoleLogger.showError("Remove Email.mailText from config, we now use the email.html file");
+        if (contains("Email.mailText")) {
+            set("Email.mailText", null);
+            ConsoleLogger.showError("Remove Email.mailText from config, we now use the email.html file");
+        }
+
+        if (!contains("Security.stop.kickPlayersBeforeStopping")) {
+            set("Security.stop.kickPlayersBeforeStopping", true);
+            changes = true;
+        }
+
+        if (!contains("Email.emailOauth2Token"))
+            set("Email.emailOauth2Token", "");
+
+        if (!contains("Hooks.sendPlayerTo")) {
+            set("Hooks.sendPlayerTo", "");
+            changes = true;
         }
 
         if (changes) {
+            save();
             plugin.getLogger().warning("Merged new Config Options - I'm not an error, please don't report me");
             plugin.getLogger().warning("Please check your config.yml file for new configs!");
         }
     }
 
+    /**
+     * @param path
+     *
+     * @return
+     */
     private static boolean contains(String path) {
         return configFile.contains(path);
     }
 
     // public because it's used in AuthMe at one place
+
+    /**
+     * @param path  String
+     * @param value String
+     */
     public void set(String path, Object value) {
         configFile.set(path, value);
     }

@@ -59,12 +59,9 @@ package fr.xephi.authme.security.crypts;
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
-/**
- */
-public class WHIRLPOOL implements EncryptionMethod {
+public class WHIRLPOOL extends UnsaltedMethod {
 
     /**
      * The message digest size (in bits)
@@ -164,13 +161,6 @@ public class WHIRLPOOL implements EncryptionMethod {
     public WHIRLPOOL() {
     }
 
-    /**
-     * Method display.
-     *
-     * @param array byte[]
-     *
-     * @return String
-     */
     protected static String display(byte[] array) {
         char[] val = new char[2 * array.length];
         String hex = "0123456789ABCDEF";
@@ -251,8 +241,9 @@ public class WHIRLPOOL implements EncryptionMethod {
      *
      * @param source     plaintext data to hash.
      * @param sourceBits how many bits of plaintext to process.
-     *                   <p/>
-     *                   This method maintains the invariant: bufferBits < 512
+     *                   <p>
+     *                   This method maintains the invariant: bufferBits &lt; 512
+     *                   </p>
      */
     public void NESSIEadd(byte[] source, long sourceBits) {
         /*
@@ -332,10 +323,12 @@ public class WHIRLPOOL implements EncryptionMethod {
     }
 
     /**
+     * <p>
      * Get the hash value from the hashing state.
-     * <p/>
-     * This method uses the invariant: bufferBits < 512
-     *
+     * </p>
+     * <p>
+     * This method uses the invariant: bufferBits &lt; 512
+     * </p>
      * @param digest byte[]
      */
     public void NESSIEfinalize(byte[] digest) {
@@ -377,8 +370,7 @@ public class WHIRLPOOL implements EncryptionMethod {
      * Delivers string input data to the hashing algorithm.
      *
      * @param source plaintext data to hash (ASCII text string).
-     *               <p/>
-     *               This method maintains the invariant: bufferBits < 512
+     *               This method maintains the invariant: bufferBits &lt; 512
      */
     public void NESSIEadd(String source) {
         if (source.length() > 0) {
@@ -390,18 +382,8 @@ public class WHIRLPOOL implements EncryptionMethod {
         }
     }
 
-    /**
-     * Method getHash.
-     *
-     * @param password String
-     * @param salt     String
-     * @param name     String
-     *
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
     @Override
-    public String getHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password) {
         byte[] digest = new byte[DIGESTBYTES];
         NESSIEinit();
         NESSIEadd(password);
@@ -409,18 +391,4 @@ public class WHIRLPOOL implements EncryptionMethod {
         return display(digest);
     }
 
-    /**
-     * Method comparePassword.
-     *
-     * @param hash       String
-     * @param password   String
-     * @param playerName String
-     *
-     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
-    @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
-        return hash.equals(getHash(password, "", ""));
-    }
 }

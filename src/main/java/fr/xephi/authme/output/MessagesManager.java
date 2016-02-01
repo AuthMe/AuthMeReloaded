@@ -2,20 +2,17 @@ package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.CustomConfiguration;
+import org.bukkit.ChatColor;
 
 import java.io.File;
 
 /**
  * Class responsible for reading messages from a file and formatting them for Minecraft.
- * <p />
+ * <p>
  * This class is used within {@link Messages}, which offers a high-level interface for accessing
  * or sending messages from a properties file.
  */
 class MessagesManager extends CustomConfiguration {
-
-    /** The section symbol, used in Minecraft for formatting codes. */
-    private static final String SECTION_SIGN = "\u00a7";
-
 
     /**
      * Constructor for Messages.
@@ -49,12 +46,10 @@ class MessagesManager extends CustomConfiguration {
     }
 
     static String[] formatMessage(String message) {
-        // TODO: Check that the codes actually exist, i.e. replace &c but not &y
-        // TODO: Allow '&' to be retained with the code '&&'
         String[] lines = message.split("&n");
         for (int i = 0; i < lines.length; ++i) {
             // We don't initialize a StringBuilder here because mostly we will only have one entry
-            lines[i] = lines[i].replace("&", SECTION_SIGN);
+            lines[i] = ChatColor.translateAlternateColorCodes('&', lines[i]);
         }
         return lines;
     }

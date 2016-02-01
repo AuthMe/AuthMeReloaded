@@ -1,31 +1,21 @@
 package fr.xephi.authme.command.executable.email;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
-import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.util.Wrapper;
-import org.bukkit.command.CommandSender;
+import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.PlayerCommand;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
+ * Change email command.
  */
-public class ChangeEmailCommand extends ExecutableCommand {
+public class ChangeEmailCommand extends PlayerCommand {
 
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Make sure the current command executor is a player
-        if (!(sender instanceof Player)) {
-            return true;
-        }
+    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+        String playerMailOld = arguments.get(0);
+        String playerMailNew = arguments.get(1);
 
-        // Get the parameter values
-        String playerMailOld = commandArguments.get(0);
-        String playerMailNew = commandArguments.get(1);
-
-        // Get the player instance and execute action
-        final AuthMe plugin = Wrapper.getInstance().getAuthMe();
-        final Player player = (Player) sender;
-        plugin.getManagement().performChangeEmail(player, playerMailOld, playerMailNew);
-        return true;
+        commandService.getManagement().performChangeEmail(player, playerMailOld, playerMailNew);
     }
 }

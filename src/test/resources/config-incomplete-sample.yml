@@ -1,0 +1,27 @@
+# Test config file with missing options from TestConfiguration
+# Notice the commented out lines!
+
+test:
+    duration: 22
+#    systemName: 'Custom sys name'
+sample:
+    ratio:
+#        limit: 3.0
+        fields:
+            - 'Australia'
+            - 'Burundi'
+            - 'Colombia'
+#version: 2492
+features:
+#    boring:
+#        skip: false
+#        colors:
+#            - 'beige'
+#            - 'gray'
+#        dustLevel: 0.81
+    cool:
+#        enabled: true
+        options:
+            - 'Dinosaurs'
+            - 'Explosions'
+            - 'Big trucks'

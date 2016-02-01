@@ -32,7 +32,10 @@ package fr.xephi.authme.security.pbkdf2;
  */
 public class BinTools {
 
-    public static final String hex = "0123456789ABCDEF";
+    private static final String HEX_CHARS = "0123456789ABCDEF";
+
+    private BinTools() {
+    }
 
     /**
      * Simple binary-to-hexadecimal conversion.
@@ -49,8 +52,8 @@ public class BinTools {
         StringBuffer stringBuffer = new StringBuffer(2 * b.length);
         for (byte aB : b) {
             int v = (256 + aB) % 256;
-            stringBuffer.append(hex.charAt((v / 16) & 15));
-            stringBuffer.append(hex.charAt((v % 16) & 15));
+            stringBuffer.append(HEX_CHARS.charAt((v / 16) & 15));
+            stringBuffer.append(HEX_CHARS.charAt((v % 16) & 15));
         }
         return stringBuffer.toString();
     }
@@ -58,11 +61,11 @@ public class BinTools {
     /**
      * Convert hex string to array of bytes.
      *
-     * @param s String containing hexadecimal digits. May be <code>null</code>
-     *          . On odd length leading zero will be assumed.
+     * @param s String containing hexadecimal digits. May be <code>null</code>.
+     *          On odd length leading zero will be assumed.
      *
-     * @return Array on bytes, non-<code>null</code>. * @throws IllegalArgumentException
-     * when string contains non-hex character
+     * @return Array on bytes, non-<code>null</code>.
+     * @throws IllegalArgumentException when string contains non-hex character
      */
     public static byte[] hex2bin(final String s) {
         String m = s;
@@ -85,10 +88,10 @@ public class BinTools {
     /**
      * Convert hex digit to numerical value.
      *
-     * @param c 0-9, a-f, A-F allowd.
+     * @param c 0-9, a-f, A-F allowed.
      *
-     * @return 0-15 * @throws IllegalArgumentException
-     * on non-hex character
+     * @return 0-15
+     * @throws IllegalArgumentException on non-hex character
      */
     public static int hex2bin(char c) {
         if (c >= '0' && c <= '9') {
@@ -103,12 +106,8 @@ public class BinTools {
         throw new IllegalArgumentException("Input string may only contain hex digits, but found '" + c + "'");
     }
 
-    /**
-     * Method main.
-     *
-     * @param args String[]
-     */
-    public static void main(String[] args) {
+    // TODO ljacqu 20151219: Move to a BinToolsTest class
+    private static void testUtils(String[] args) {
         byte b[] = new byte[256];
         byte bb = 0;
         for (int i = 0; i < 256; i++) {

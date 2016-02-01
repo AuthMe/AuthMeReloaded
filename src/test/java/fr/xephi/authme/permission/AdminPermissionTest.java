@@ -13,29 +13,15 @@ import static org.junit.Assert.fail;
 public class AdminPermissionTest {
 
     @Test
-    public void shouldStartWithAuthMePrefix() {
+    public void shouldStartWithAuthMeAdminPrefix() {
         // given
-        String requiredPrefix = "authme.";
+        String requiredPrefix = "authme.admin.";
 
         // when/then
         for (AdminPermission permission : AdminPermission.values()) {
             if (!permission.getNode().startsWith(requiredPrefix)) {
                 fail("The permission '" + permission + "' does not start with the required prefix '"
                     + requiredPrefix + "'");
-            }
-        }
-    }
-
-    @Test
-    public void shouldContainAdminBranch() {
-        // given
-        String requiredBranch = ".admin.";
-
-        // when/then
-        for (AdminPermission permission : AdminPermission.values()) {
-            if (!permission.getNode().contains(requiredBranch)) {
-                fail("The permission '" + permission + "' does not contain with the required branch '"
-                    + requiredBranch + "'");
             }
         }
     }

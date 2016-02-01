@@ -17,9 +17,7 @@ public enum PermissionsSystemType {
 
     Z_PERMISSIONS("zPermissions"),
 
-    VAULT("Vault"),
-
-    PERMISSIONS("Permissions");
+    VAULT("Vault");
 
     public final String name;
 

@@ -5,7 +5,6 @@ import com.google.common.io.Files;
 import com.google.gson.*;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -109,7 +108,7 @@ public class JsonCache {
         }
         File file = new File(cacheDir, path);
         if (file.exists()) {
-            Utils.purgeDirectory(file);
+            purgeDirectory(file);
             if (!file.delete()) {
                 ConsoleLogger.showError("Failed to remove" + player.getName() + "cache.");
             }
@@ -155,7 +154,6 @@ public class JsonCache {
             JsonElement e;
             String group = null;
             boolean operator = false;
-            boolean flying = false;
 
             if ((e = jsonObject.get("group")) != null) {
                 group = e.getAsString();
@@ -163,11 +161,8 @@ public class JsonCache {
             if ((e = jsonObject.get("operator")) != null) {
                 operator = e.getAsBoolean();
             }
-            if ((e = jsonObject.get("flying")) != null) {
-                flying = e.getAsBoolean();
-            }
 
-            return new DataFileCache(group, operator, flying);
+            return new DataFileCache(group, operator);
         }
     }
 
@@ -188,9 +183,29 @@ public class JsonCache {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("group", dataFileCache.getGroup());
             jsonObject.addProperty("operator", dataFileCache.getOperator());
-            jsonObject.addProperty("flying", dataFileCache.isFlying());
 
             return jsonObject;
+        }
+    }
+
+    /**
+     * Delete a given directory and all its content.
+     *
+     * @param directory The directory to remove
+     */
+    private static void purgeDirectory(File directory) {
+        if (!directory.isDirectory()) {
+            return;
+        }
+        File[] files = directory.listFiles();
+        if (files == null) {
+            return;
+        }
+        for (File target : files) {
+            if (target.isDirectory()) {
+                purgeDirectory(target);
+            }
+            target.delete();
         }
     }
 

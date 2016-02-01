@@ -2,9 +2,16 @@ package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +40,8 @@ public class SQLite implements DataSource {
     /**
      * Constructor for SQLite.
      *
-     * @throws ClassNotFoundException * @throws SQLException
+     * @throws ClassNotFoundException Exception
+     * @throws SQLException           Exception
      */
     public SQLite() throws ClassNotFoundException, SQLException {
         this.database = Settings.getMySQLDatabase;
@@ -62,11 +70,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method connect.
-     *
-     * @throws ClassNotFoundException * @throws SQLException
-     */
     private synchronized void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
@@ -74,11 +77,6 @@ public class SQLite implements DataSource {
 
     }
 
-    /**
-     * Method setup.
-     *
-     * @throws SQLException
-     */
     private synchronized void setup() throws SQLException {
         Statement st = null;
         ResultSet rs = null;
@@ -90,6 +88,13 @@ public class SQLite implements DataSource {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnPassword + " VARCHAR(255) NOT NULL;");
             }
             rs.close();
+            if (!columnSalt.isEmpty()) {
+                rs = con.getMetaData().getColumns(null, null, tableName, columnSalt);
+                if (!rs.next()) {
+                    st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnSalt + " VARCHAR(255);");
+                }
+                rs.close();
+            }
             rs = con.getMetaData().getColumns(null, null, tableName, columnIp);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnIp + " VARCHAR(40) NOT NULL;");
@@ -133,13 +138,6 @@ public class SQLite implements DataSource {
         ConsoleLogger.info("SQLite Setup finished");
     }
 
-    /**
-     * Method isAuthAvailable.
-     *
-     * @param user String
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
-     */
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         PreparedStatement pst = null;
@@ -158,6 +156,28 @@ public class SQLite implements DataSource {
         }
     }
 
+    @Override
+    public HashedPassword getPassword(String user) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = con.prepareStatement("SELECT " + columnPassword + "," + columnSalt
+                + " FROM " + tableName + " WHERE " + columnName + "=?");
+            pst.setString(1, user);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                return new HashedPassword(rs.getString(columnPassword),
+                    !columnSalt.isEmpty() ? rs.getString(columnSalt) : null);
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        } finally {
+            close(rs);
+            close(pst);
+        }
+        return null;
+    }
+
     /**
      * Method getAuth.
      *
@@ -174,15 +194,7 @@ public class SQLite implements DataSource {
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next()) {
-                if (rs.getString(columnIp).isEmpty()) {
-                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                } else {
-                    if (!columnSalt.isEmpty()) {
-                        return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                    } else {
-                        return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                    }
-                }
+                return buildAuthFromResultSet(rs);
             } else {
                 return null;
             }
@@ -195,33 +207,37 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method saveAuth.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
-     */
     @Override
     public synchronized boolean saveAuth(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            if (columnSalt.isEmpty() && auth.getSalt().isEmpty()) {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnRealName + ") VALUES (?,?,?,?,?);");
+            HashedPassword password = auth.getPassword();
+            if (columnSalt.isEmpty()) {
+                if (!StringUtils.isEmpty(auth.getPassword().getSalt())) {
+                    ConsoleLogger.showError("Warning! Detected hashed password with separate salt but the salt column "
+                        + "is not set in the config!");
+                }
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword +
+                    "," + columnIp + "," + columnLastLogin + "," + columnRealName + "," + columnEmail +
+                    ") VALUES (?,?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
-                pst.setString(2, auth.getHash());
+                pst.setString(2, password.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
                 pst.setString(5, auth.getRealName());
+                pst.setString(6, auth.getEmail());
                 pst.executeUpdate();
             } else {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnSalt + "," + columnRealName + ") VALUES (?,?,?,?,?,?);");
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + ","
+                    + columnIp + "," + columnLastLogin + "," + columnRealName + "," + columnEmail + "," + columnSalt
+                    + ") VALUES (?,?,?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
-                pst.setString(2, auth.getHash());
+                pst.setString(2, password.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
-                pst.setString(5, auth.getSalt());
-                pst.setString(6, auth.getRealName());
+                pst.setString(5, auth.getRealName());
+                pst.setString(6, auth.getEmail());
+                pst.setString(7, password.getSalt());
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
@@ -233,20 +249,28 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method updatePassword.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
-     */
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
+        return updatePassword(auth.getNickname(), auth.getPassword());
+    }
+
+    @Override
+    public boolean updatePassword(String user, HashedPassword password) {
+        user = user.toLowerCase();
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE " + columnName + "=?;");
-            pst.setString(1, auth.getHash());
-            pst.setString(2, auth.getNickname());
+            boolean useSalt = !columnSalt.isEmpty();
+            String sql = "UPDATE " + tableName + " SET " + columnPassword + " = ?"
+                + (useSalt ? ", " + columnSalt + " = ?" : "")
+                + " WHERE " + columnName + " = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, password.getHash());
+            if (useSalt) {
+                pst.setString(2, password.getSalt());
+                pst.setString(3, user);
+            } else {
+                pst.setString(2, user);
+            }
             pst.executeUpdate();
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -257,13 +281,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method updateSession.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
-     */
     @Override
     public boolean updateSession(PlayerAuth auth) {
         PreparedStatement pst = null;
@@ -283,13 +300,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method purgeDatabase.
-     *
-     * @param until long
-     *
-     * @return int * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
-     */
     @Override
     public int purgeDatabase(long until) {
         PreparedStatement pst = null;
@@ -306,13 +316,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method autoPurgeDatabase.
-     *
-     * @param until long
-     *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
-     */
     @Override
     public List<String> autoPurgeDatabase(long until) {
         PreparedStatement pst = null;
@@ -335,13 +338,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method removeAuth.
-     *
-     * @param user String
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
-     */
     @Override
     public synchronized boolean removeAuth(String user) {
         PreparedStatement pst = null;
@@ -358,13 +354,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method updateQuitLoc.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
-     */
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
         PreparedStatement pst = null;
@@ -385,19 +374,13 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method getIps.
-     *
-     * @param ip String
-     *
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getIps(String)
-     */
     @Override
     public int getIps(String ip) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         int countIp = 0;
         try {
+            // TODO ljacqu 20151230: Simply fetch COUNT(1) and return that
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
@@ -414,13 +397,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method updateEmail.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
-     */
     @Override
     public boolean updateEmail(PlayerAuth auth) {
         PreparedStatement pst = null;
@@ -438,38 +414,6 @@ public class SQLite implements DataSource {
         return true;
     }
 
-    /**
-     * Method updateSalt.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
-     */
-    @Override
-    public boolean updateSalt(PlayerAuth auth) {
-        if (columnSalt.isEmpty()) {
-            return false;
-        }
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + "=? WHERE " + columnName + "=?;");
-            pst.setString(1, auth.getSalt());
-            pst.setString(2, auth.getNickname());
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } finally {
-            close(pst);
-        }
-        return true;
-    }
-
-    /**
-     * Method close.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#close()
-     */
     @Override
     public synchronized void close() {
         try {
@@ -479,20 +423,10 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method reload.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#reload()
-     */
     @Override
     public void reload() {
     }
 
-    /**
-     * Method close.
-     *
-     * @param st Statement
-     */
     private void close(Statement st) {
         if (st != null) {
             try {
@@ -503,11 +437,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method close.
-     *
-     * @param rs ResultSet
-     */
     private void close(ResultSet rs) {
         if (rs != null) {
             try {
@@ -518,13 +447,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAllAuthsByName.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
-     */
     @Override
     public List<String> getAllAuthsByName(PlayerAuth auth) {
         PreparedStatement pst = null;
@@ -539,7 +461,7 @@ public class SQLite implements DataSource {
             }
             return countIp;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
             return new ArrayList<>();
         } catch (NullPointerException npe) {
             return new ArrayList<>();
@@ -549,13 +471,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAllAuthsByIp.
-     *
-     * @param ip String
-     *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
-     */
     @Override
     public List<String> getAllAuthsByIp(String ip) {
         PreparedStatement pst = null;
@@ -580,13 +495,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAllAuthsByEmail.
-     *
-     * @param email String
-     *
-     * @return List<String> * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
-     */
     @Override
     public List<String> getAllAuthsByEmail(String email) {
         PreparedStatement pst = null;
@@ -611,13 +519,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method purgeBanned.
-     *
-     * @param banned List<String>
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List<String>)
-     */
     @Override
     public void purgeBanned(List<String> banned) {
         PreparedStatement pst = null;
@@ -628,29 +529,17 @@ public class SQLite implements DataSource {
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
         } finally {
             close(pst);
         }
     }
 
-    /**
-     * Method getType.
-     *
-     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType()
-     */
     @Override
     public DataSourceType getType() {
         return DataSourceType.SQLITE;
     }
 
-    /**
-     * Method isLogged.
-     *
-     * @param user String
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
-     */
     @Override
     public boolean isLogged(String user) {
         PreparedStatement pst = null;
@@ -671,13 +560,6 @@ public class SQLite implements DataSource {
         return false;
     }
 
-    /**
-     * Method setLogged.
-     *
-     * @param user String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
-     */
     @Override
     public void setLogged(String user) {
         PreparedStatement pst = null;
@@ -693,13 +575,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method setUnlogged.
-     *
-     * @param user String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
-     */
     @Override
     public void setUnlogged(String user) {
         PreparedStatement pst = null;
@@ -716,11 +591,6 @@ public class SQLite implements DataSource {
             }
     }
 
-    /**
-     * Method purgeLogged.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeLogged()
-     */
     @Override
     public void purgeLogged() {
         PreparedStatement pst = null;
@@ -736,11 +606,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAccountsRegistered.
-     *
-     * @return int * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
-     */
     @Override
     public int getAccountsRegistered() {
         int result = 0;
@@ -761,14 +626,6 @@ public class SQLite implements DataSource {
         return result;
     }
 
-    /**
-     * Method updateName.
-     *
-     * @param oldOne String
-     * @param newOne String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
-     */
     @Override
     public void updateName(String oldOne, String newOne) {
         PreparedStatement pst = null;
@@ -784,11 +641,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    /**
-     * Method getAllAuths.
-     *
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
-     */
     @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
@@ -798,17 +650,8 @@ public class SQLite implements DataSource {
             pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth;
-                if (rs.getString(columnIp).isEmpty()) {
-                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "127.0.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                } else {
-                    if (!columnSalt.isEmpty()) {
-                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                    } else {
-                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                    }
-                }
-                auths.add(pAuth);
+                PlayerAuth auth = buildAuthFromResultSet(rs);
+                auths.add(auth);
             }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -819,11 +662,6 @@ public class SQLite implements DataSource {
         return auths;
     }
 
-    /**
-     * Method getLoggedPlayers.
-     *
-     * @return List<PlayerAuth> * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
-     */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         List<PlayerAuth> auths = new ArrayList<>();
@@ -833,17 +671,8 @@ public class SQLite implements DataSource {
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             rs = pst.executeQuery();
             while (rs.next()) {
-                PlayerAuth pAuth;
-                if (rs.getString(columnIp).isEmpty()) {
-                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "127.0.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                } else {
-                    if (!columnSalt.isEmpty()) {
-                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                    } else {
-                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail), rs.getString(columnRealName));
-                    }
-                }
-                auths.add(pAuth);
+                PlayerAuth auth = buildAuthFromResultSet(rs);
+                auths.add(auth);
             }
         } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
@@ -852,5 +681,47 @@ public class SQLite implements DataSource {
             close(pst);
         }
         return auths;
+    }
+
+    @Override
+    public synchronized boolean isEmailStored(String email) {
+        String sql = "SELECT 1 FROM " + tableName + " WHERE " + columnEmail + " = ? COLLATE NOCASE;";
+        ResultSet rs = null;
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, email);
+            rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            logSqlException(e);
+        } finally {
+            close(rs);
+        }
+        return false;
+    }
+
+    private static void logSqlException(SQLException e) {
+        ConsoleLogger.showError("Error while executing SQL statement: " + StringUtils.formatException(e));
+        ConsoleLogger.writeStackTrace(e);
+    }
+
+    private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
+        String salt = !columnSalt.isEmpty() ? row.getString(columnSalt) : null;
+
+        PlayerAuth.Builder authBuilder = PlayerAuth.builder()
+            .name(row.getString(columnName))
+            .email(row.getString(columnEmail))
+            .realName(row.getString(columnRealName))
+            .password(row.getString(columnPassword), salt)
+            .lastLogin(row.getLong(columnLastLogin))
+            .locX(row.getDouble(lastlocX))
+            .locY(row.getDouble(lastlocY))
+            .locZ(row.getDouble(lastlocZ))
+            .locWorld(row.getString(lastlocWorld));
+
+        String ip = row.getString(columnIp);
+        if (!ip.isEmpty()) {
+            authBuilder.ip(ip);
+        }
+        return authBuilder.build();
     }
 }

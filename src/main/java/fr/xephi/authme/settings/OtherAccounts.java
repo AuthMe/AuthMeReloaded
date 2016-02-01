@@ -1,12 +1,12 @@
 package fr.xephi.authme.settings;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 /**
  * @author Xephi59
@@ -88,7 +88,7 @@ public class OtherAccounts extends CustomConfiguration {
      *
      * @param uuid UUID
      *
-     * @return List<String>
+     * @return StringList
      */
     public List<String> getAllPlayersByUUID(UUID uuid) {
         return this.getStringList(uuid.toString());

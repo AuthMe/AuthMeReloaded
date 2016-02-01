@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.List;
 
@@ -16,6 +17,15 @@ public interface DataSource {
      * @return boolean
      */
     boolean isAuthAvailable(String user);
+
+    /**
+     * Method getPassword.
+     *
+     * @param user String
+     *
+     * @return String
+     */
+    HashedPassword getPassword(String user);
 
     /**
      * Method getAuth.
@@ -53,6 +63,8 @@ public interface DataSource {
      */
     boolean updatePassword(PlayerAuth auth);
 
+    boolean updatePassword(String user, HashedPassword password);
+
     /**
      * Method purgeDatabase.
      *
@@ -67,7 +79,7 @@ public interface DataSource {
      *
      * @param until long
      *
-     * @return List<String>
+     * @return List of String
      */
     List<String> autoPurgeDatabase(long until);
 
@@ -103,7 +115,7 @@ public interface DataSource {
      *
      * @param auth PlayerAuth
      *
-     * @return List<String>
+     * @return List of String
      */
     List<String> getAllAuthsByName(PlayerAuth auth);
 
@@ -112,18 +124,18 @@ public interface DataSource {
      *
      * @param ip String
      *
-     * @return List<String> * @throws Exception
+     * @return List of String * @throws Exception
      */
-    List<String> getAllAuthsByIp(String ip) throws Exception;
+    List<String> getAllAuthsByIp(String ip);
 
     /**
      * Method getAllAuthsByEmail.
      *
      * @param email String
      *
-     * @return List<String> * @throws Exception
+     * @return List of String * @throws Exception
      */
-    List<String> getAllAuthsByEmail(String email) throws Exception;
+    List<String> getAllAuthsByEmail(String email);
 
     /**
      * Method updateEmail.
@@ -134,15 +146,6 @@ public interface DataSource {
      */
     boolean updateEmail(PlayerAuth auth);
 
-    /**
-     * Method updateSalt.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     */
-    boolean updateSalt(PlayerAuth auth);
-
     void close();
 
     void reload();
@@ -150,7 +153,7 @@ public interface DataSource {
     /**
      * Method purgeBanned.
      *
-     * @param banned List<String>
+     * @param banned List of String
      */
     void purgeBanned(List<String> banned);
 
@@ -204,16 +207,18 @@ public interface DataSource {
     /**
      * Method getAllAuths.
      *
-     * @return List<PlayerAuth>
+     * @return List of PlayerAuth
      */
     List<PlayerAuth> getAllAuths();
 
     /**
      * Method getLoggedPlayers.
      *
-     * @return List<PlayerAuth>
+     * @return List of PlayerAuth
      */
     List<PlayerAuth> getLoggedPlayers();
+
+    boolean isEmailStored(String email);
 
     enum DataSourceType {
         MYSQL,

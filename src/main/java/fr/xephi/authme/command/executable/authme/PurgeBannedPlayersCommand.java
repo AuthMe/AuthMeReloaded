@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.OfflinePlayer;
@@ -10,21 +10,10 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- */
-public class PurgeBannedPlayersCommand extends ExecutableCommand {
+public class PurgeBannedPlayersCommand implements ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 
@@ -35,7 +24,7 @@ public class PurgeBannedPlayersCommand extends ExecutableCommand {
         }
 
         // Purge the banned players
-        plugin.database.purgeBanned(bannedPlayers);
+        plugin.getDataSource().purgeBanned(bannedPlayers);
         if (Settings.purgeEssentialsFile && plugin.ess != null)
             plugin.dataManager.purgeEssentials(bannedPlayers);
         if (Settings.purgePlayerDat)
@@ -47,6 +36,5 @@ public class PurgeBannedPlayersCommand extends ExecutableCommand {
 
         // Show a status message
         sender.sendMessage("[AuthMe] Database has been purged correctly");
-        return true;
     }
 }

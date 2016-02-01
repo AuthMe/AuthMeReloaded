@@ -75,7 +75,7 @@ public interface PBKDF2 {
     /**
      * Allow setting of configured parameters.
      *
-     * @param parameters
+     * @param parameters PBKDF2Parameters
      */
     void setParameters(PBKDF2Parameters parameters);
 

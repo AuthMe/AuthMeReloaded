@@ -6,9 +6,18 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.security.crypts.XFBCRYPT;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 
-import java.sql.*;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,11 +48,6 @@ public class MySQL implements DataSource {
     private final List<String> columnOthers;
     private HikariDataSource ds;
 
-    /**
-     * Constructor for MySQL.
-     *
-     * @throws ClassNotFoundException * @throws SQLException * @throws PoolInitializationException
-     */
     public MySQL() throws ClassNotFoundException, SQLException, PoolInitializationException {
         this.host = Settings.getMySQLHost;
         this.port = Settings.getMySQLPort;
@@ -96,16 +100,22 @@ public class MySQL implements DataSource {
         }
     }
 
-    /**
-     * Method setConnectionArguments.
-     *
-     * @throws RuntimeException
-     */
     private synchronized void setConnectionArguments() throws RuntimeException {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
         ds.setDriverClassName("com.mysql.jdbc.Driver");
-        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database + "?rewriteBatchedStatements=true");
+        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+        ds.addDataSourceProperty("rewriteBatchedStatements", "true");
+        ds.addDataSourceProperty("jdbcCompliantTruncation", "false");
+        ds.addDataSourceProperty("cachePrepStmts", "true");
+        ds.addDataSourceProperty("prepStmtCacheSize", "250");
+        ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
+        //set utf-8 as default encoding
+        ds.addDataSourceProperty("characterEncoding", "utf8");
+        ds.addDataSourceProperty("encoding","UTF-8");
+        ds.addDataSourceProperty("useUnicode", "true");
+
         ds.setUsername(this.username);
         ds.setPassword(this.password);
         ds.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
@@ -116,11 +126,6 @@ public class MySQL implements DataSource {
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
-    /**
-     * Method reloadArguments.
-     *
-     * @throws RuntimeException
-     */
     private synchronized void reloadArguments() throws RuntimeException {
         if (ds != null) {
             ds.close();
@@ -129,20 +134,10 @@ public class MySQL implements DataSource {
         ConsoleLogger.info("Hikari ConnectionPool arguments reloaded!");
     }
 
-    /**
-     * Method getConnection.
-     *
-     * @return Connection * @throws SQLException
-     */
     private synchronized Connection getConnection() throws SQLException {
         return ds.getConnection();
     }
 
-    /**
-     * Method setupConnection.
-     *
-     * @throws SQLException
-     */
     private synchronized void setupConnection() throws SQLException {
         try (Connection con = getConnection()) {
             Statement st = con.createStatement();
@@ -185,6 +180,15 @@ public class MySQL implements DataSource {
                     + " ADD COLUMN " + columnPassword + " VARCHAR(255) NOT NULL;");
             }
             rs.close();
+
+            if (!columnSalt.isEmpty()) {
+                rs = md.getColumns(null, null, tableName, columnSalt);
+                if (!rs.next()) {
+                    st.executeUpdate("ALTER TABLE " + tableName
+                        + " ADD COLUMN " + columnSalt + " VARCHAR(255);");
+                }
+                rs.close();
+            }
 
             rs = md.getColumns(null, null, tableName, columnIp);
             if (!rs.next()) {
@@ -244,13 +248,6 @@ public class MySQL implements DataSource {
         ConsoleLogger.info("MySQL Setup finished");
     }
 
-    /**
-     * Method isAuthAvailable.
-     *
-     * @param user String
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isAuthAvailable(String)
-     */
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         try (Connection con = getConnection()) {
@@ -259,19 +256,32 @@ public class MySQL implements DataSource {
             pst.setString(1, user.toLowerCase());
             ResultSet rs = pst.executeQuery();
             return rs.next();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return false;
     }
 
-    /**
-     * Method getAuth.
-     *
-     * @param user String
-     *
-     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
-     */
+    @Override
+    public HashedPassword getPassword(String user) {
+        try (Connection con = getConnection()) {
+            String sql = "SELECT " + columnPassword + "," + columnSalt + " FROM " + tableName
+                + " WHERE " + columnName + "=?;";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, user.toLowerCase());
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                return new HashedPassword(rs.getString(columnPassword),
+                    !columnSalt.isEmpty() ? rs.getString(columnSalt) : null);
+            }
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
+        }
+        return null;
+    }
+
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         PlayerAuth pAuth;
@@ -283,13 +293,13 @@ public class MySQL implements DataSource {
             if (!rs.next()) {
                 return null;
             }
-            String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : "";
-            int group = !salt.isEmpty() && !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
+            String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
+            int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
             int id = rs.getInt(columnID);
             pAuth = PlayerAuth.builder()
                 .name(rs.getString(columnName))
                 .realName(rs.getString(columnRealName))
-                .hash(rs.getString(columnPassword))
+                .password(rs.getString(columnPassword), salt)
                 .lastLogin(rs.getLong(columnLastLogin))
                 .ip(rs.getString(columnIp))
                 .locWorld(rs.getString(lastlocWorld))
@@ -297,37 +307,28 @@ public class MySQL implements DataSource {
                 .locY(rs.getDouble(lastlocY))
                 .locZ(rs.getDouble(lastlocZ))
                 .email(rs.getString(columnEmail))
-                .salt(salt)
                 .groupId(group)
                 .build();
             rs.close();
             pst.close();
-            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                 pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
                 pst.setInt(1, id);
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     Blob blob = rs.getBlob("data");
                     byte[] bytes = blob.getBytes(1, (int) blob.length());
-                    pAuth.setHash(new String(bytes));
+                    pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
                 }
             }
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
             return null;
         }
         return pAuth;
     }
 
-    /**
-     * Method saveAuth.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#saveAuth(PlayerAuth)
-     */
     @Override
     public synchronized boolean saveAuth(PlayerAuth auth) {
         try (Connection con = getConnection()) {
@@ -336,20 +337,21 @@ public class MySQL implements DataSource {
             ResultSet rs;
             String sql;
 
-            boolean useSalt = !columnSalt.isEmpty() || !auth.getSalt().isEmpty();
+            boolean useSalt = !columnSalt.isEmpty() || !StringUtils.isEmpty(auth.getPassword().getSalt());
             sql = "INSERT INTO " + tableName + "("
                 + columnName + "," + columnPassword + "," + columnIp + ","
-                + columnLastLogin + "," + columnRealName
+                + columnLastLogin + "," + columnRealName + "," + columnEmail
                 + (useSalt ? "," + columnSalt : "")
-                + ") VALUES (?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
+                + ") VALUES (?,?,?,?,?,?" + (useSalt ? ",?" : "") + ");";
             pst = con.prepareStatement(sql);
             pst.setString(1, auth.getNickname());
-            pst.setString(2, auth.getHash());
+            pst.setString(2, auth.getPassword().getHash());
             pst.setString(3, auth.getIp());
             pst.setLong(4, auth.getLastLogin());
             pst.setString(5, auth.getRealName());
+            pst.setString(6, auth.getEmail());
             if (useSalt) {
-                pst.setString(6, auth.getSalt());
+                pst.setString(7, auth.getPassword().getSalt());
             }
             pst.executeUpdate();
             pst.close();
@@ -500,17 +502,18 @@ public class MySQL implements DataSource {
                 }
                 rs.close();
                 pst.close();
-            } else if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            } else if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                 pst = con.prepareStatement("SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     int id = rs.getInt(columnID);
-                    // Insert password in the correct table
-                    pst2 = con.prepareStatement("INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?);");
+                    sql = "INSERT INTO xf_user_authenticate (user_id, scheme_class, data) VALUES (?,?,?)";
+                    pst2 = con.prepareStatement(sql);
                     pst2.setInt(1, id);
-                    pst2.setString(2, "XenForo_Authentication_Core12");
-                    byte[] bytes = auth.getHash().getBytes();
+                    pst2.setString(2, XFBCRYPT.SCHEME_CLASS);
+                    String serializedHash = XFBCRYPT.serializeHash(auth.getPassword().getHash());
+                    byte[] bytes = serializedHash.getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
                     pst2.setBlob(3, blob);
@@ -521,41 +524,52 @@ public class MySQL implements DataSource {
                 pst.close();
             }
             return true;
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return false;
     }
 
-    /**
-     * Method updatePassword.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updatePassword(PlayerAuth)
-     */
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
+        return updatePassword(auth.getNickname(), auth.getPassword());
+    }
+
+    @Override
+    public boolean updatePassword(String user, HashedPassword password) {
+        user = user.toLowerCase();
         try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + columnPassword + "=? WHERE " + columnName + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, auth.getHash());
-            pst.setString(2, auth.getNickname());
+            boolean useSalt = !columnSalt.isEmpty();
+            PreparedStatement pst;
+            if (useSalt) {
+                String sql = String.format("UPDATE %s SET %s = ?, %s = ? WHERE %s = ?;",
+                    tableName, columnPassword, columnSalt, columnName);
+                pst = con.prepareStatement(sql);
+                pst.setString(1, password.getHash());
+                pst.setString(2, password.getSalt());
+                pst.setString(3, user);
+            } else {
+                String sql = String.format("UPDATE %s SET %s = ? WHERE %s = ?;",
+                    tableName, columnPassword, columnName);
+                pst = con.prepareStatement(sql);
+                pst.setString(1, password.getHash());
+                pst.setString(2, user);
+            }
             pst.executeUpdate();
             pst.close();
-            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
-                sql = "SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;";
+            if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
+                String sql = "SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;";
                 pst = con.prepareStatement(sql);
-                pst.setString(1, auth.getNickname());
+                pst.setString(1, user);
                 ResultSet rs = pst.executeQuery();
                 if (rs.next()) {
                     int id = rs.getInt(columnID);
                     // Insert password in the correct table
                     sql = "UPDATE xf_user_authenticate SET data=? WHERE " + columnID + "=?;";
                     PreparedStatement pst2 = con.prepareStatement(sql);
-                    byte[] bytes = auth.getHash().getBytes();
+                    String serializedHash = XFBCRYPT.serializeHash(password.getHash());
+                    byte[] bytes = serializedHash.getBytes();
                     Blob blob = con.createBlob();
                     blob.setBytes(1, bytes);
                     pst2.setBlob(1, blob);
@@ -565,7 +579,7 @@ public class MySQL implements DataSource {
                     // ...
                     sql = "UPDATE xf_user_authenticate SET scheme_class=? WHERE " + columnID + "=?;";
                     pst2 = con.prepareStatement(sql);
-                    pst2.setString(1, "XenForo_Authentication_Core12");
+                    pst2.setString(1, XFBCRYPT.SCHEME_CLASS);
                     pst2.setInt(2, id);
                     pst2.executeUpdate();
                     pst2.close();
@@ -574,21 +588,13 @@ public class MySQL implements DataSource {
                 pst.close();
             }
             return true;
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return false;
     }
 
-    /**
-     * Method updateSession.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateSession(PlayerAuth)
-     */
     @Override
     public synchronized boolean updateSession(PlayerAuth auth) {
         try (Connection con = getConnection()) {
@@ -602,21 +608,12 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
             pst.close();
             return true;
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
         }
         return false;
     }
 
-    /**
-     * Method purgeDatabase.
-     *
-     * @param until long
-     *
-     * @return int
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeDatabase(long)
-     */
     @Override
     public synchronized int purgeDatabase(long until) {
         int result = 0;
@@ -625,65 +622,54 @@ public class MySQL implements DataSource {
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setLong(1, until);
             result = pst.executeUpdate();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return result;
     }
 
-    /**
-     * Method autoPurgeDatabase.
-     *
-     * @param until long
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#autoPurgeDatabase(long)
-     */
     @Override
     public synchronized List<String> autoPurgeDatabase(long until) {
         List<String> list = new ArrayList<>();
         try (Connection con = getConnection()) {
-            String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE " + columnLastLogin + "<" + until;
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery(sql);
+            String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE " + columnLastLogin + "<?;";
+            PreparedStatement st = con.prepareStatement(sql);
+            st.setLong(1, until);
+            ResultSet rs = st.executeQuery();
             while (rs.next()) {
                 list.add(rs.getString(columnName));
             }
-            sql = "DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<" + until;
-            st.executeUpdate(sql);
+            rs.close();
+            sql = "DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;";
+            st = con.prepareStatement(sql);
+            st.setLong(1, until);
+            st.executeUpdate();
             st.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return list;
     }
 
-    /**
-     * Method removeAuth.
-     *
-     * @param user String
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#removeAuth(String)
-     */
     @Override
     public synchronized boolean removeAuth(String user) {
         user = user.toLowerCase();
         try (Connection con = getConnection()) {
             String sql;
             PreparedStatement pst;
-            if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+            if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                 sql = "SELECT " + columnID + " FROM " + tableName + " WHERE " + columnName + "=?;";
                 pst = con.prepareStatement(sql);
                 pst.setString(1, user);
                 ResultSet rs = pst.executeQuery();
                 if (rs.next()) {
                     int id = rs.getInt(columnID);
-                    sql = "DELETE FROM xf_user_authenticate WHERE " + columnID + "=" + id;
-                    Statement st = con.createStatement();
-                    st.executeUpdate(sql);
+                    sql = "DELETE FROM xf_user_authenticate WHERE " + columnID + "=?;";
+                    PreparedStatement st = con.prepareStatement(sql);
+                    st.setInt(1, id);
+                    st.executeUpdate();
                     st.close();
                 }
                 rs.close();
@@ -693,21 +679,13 @@ public class MySQL implements DataSource {
             pst.setString(1, user);
             pst.executeUpdate();
             return true;
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return false;
     }
 
-    /**
-     * Method updateQuitLoc.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateQuitLoc(PlayerAuth)
-     */
     @Override
     public synchronized boolean updateQuitLoc(PlayerAuth auth) {
         try (Connection con = getConnection()) {
@@ -723,21 +701,13 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
             pst.close();
             return true;
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return false;
     }
 
-    /**
-     * Method getIps.
-     *
-     * @param ip String
-     *
-     * @return int
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getIps(String)
-     */
     @Override
     public synchronized int getIps(String ip) {
         int countIp = 0;
@@ -751,21 +721,13 @@ public class MySQL implements DataSource {
             }
             rs.close();
             pst.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return countIp;
     }
 
-    /**
-     * Method updateEmail.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateEmail(PlayerAuth)
-     */
     @Override
     public synchronized boolean updateEmail(PlayerAuth auth) {
         try (Connection con = getConnection()) {
@@ -776,62 +738,25 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
             pst.close();
             return true;
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
             ConsoleLogger.writeStackTrace(ex);
         }
         return false;
     }
 
-    /**
-     * Method updateSalt.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return boolean
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateSalt(PlayerAuth)
-     */
-    @Override
-    public synchronized boolean updateSalt(PlayerAuth auth) {
-        if (columnSalt.isEmpty()) {
-            return false;
-        }
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + columnSalt + " =? WHERE " + columnName + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, auth.getSalt());
-            pst.setString(2, auth.getNickname());
-            pst.executeUpdate();
-            pst.close();
-            return true;
-        } catch (Exception ex) {
-            ConsoleLogger.showError(ex.getMessage());
-        }
-        return false;
-    }
-
-    /**
-     * Method reload.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#reload()
-     */
     @Override
     public void reload() {
         try {
             reloadArguments();
-        } catch (Exception e) {
-            ConsoleLogger.showError(e.getMessage());
+        } catch (Exception ex) {
+            ConsoleLogger.showError(ex.getMessage());
             ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL configuration!");
+            ConsoleLogger.writeStackTrace(ex);
             AuthMe.getInstance().stopOrUnload();
         }
     }
 
-    /**
-     * Method close.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#close()
-     */
     @Override
     public synchronized void close() {
         if (ds != null && !ds.isClosed()) {
@@ -839,15 +764,6 @@ public class MySQL implements DataSource {
         }
     }
 
-    /**
-     * Method getAllAuthsByName.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByName(PlayerAuth)
-     */
     @Override
     public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
         List<String> result = new ArrayList<>();
@@ -861,21 +777,13 @@ public class MySQL implements DataSource {
             }
             rs.close();
             pst.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return result;
     }
 
-    /**
-     * Method getAllAuthsByIp.
-     *
-     * @param ip String
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByIp(String)
-     */
     @Override
     public synchronized List<String> getAllAuthsByIp(String ip) {
         List<String> result = new ArrayList<>();
@@ -889,24 +797,15 @@ public class MySQL implements DataSource {
             }
             rs.close();
             pst.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return result;
     }
 
-    /**
-     * Method getAllAuthsByEmail.
-     *
-     * @param email String
-     *
-     * @return List
-     *
-     * @throws SQLException
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuthsByEmail(String)
-     */
     @Override
-    public synchronized List<String> getAllAuthsByEmail(String email) throws SQLException {
+    public synchronized List<String> getAllAuthsByEmail(String email) {
         List<String> countEmail = new ArrayList<>();
         try (Connection con = getConnection()) {
             String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE " + columnEmail + "=?;";
@@ -918,17 +817,13 @@ public class MySQL implements DataSource {
             }
             rs.close();
             pst.close();
-            return countEmail;
+        } catch (SQLException ex) {
+            ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
+        return countEmail;
     }
 
-    /**
-     * Method purgeBanned.
-     *
-     * @param banned List<String>
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeBanned(List)
-     */
     @Override
     public synchronized void purgeBanned(List<String> banned) {
         try (Connection con = getConnection()) {
@@ -938,28 +833,17 @@ public class MySQL implements DataSource {
                 pst.executeUpdate();
             }
             pst.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
     }
 
-    /**
-     * Method getType.
-     *
-     * @return DataSourceType * @see fr.xephi.authme.datasource.DataSource#getType()
-     */
     @Override
     public DataSourceType getType() {
         return DataSourceType.MYSQL;
     }
 
-    /**
-     * Method isLogged.
-     *
-     * @param user String
-     *
-     * @return boolean * @see fr.xephi.authme.datasource.DataSource#isLogged(String)
-     */
     @Override
     public boolean isLogged(String user) {
         boolean isLogged = false;
@@ -969,19 +853,13 @@ public class MySQL implements DataSource {
             pst.setString(1, user);
             ResultSet rs = pst.executeQuery();
             isLogged = rs.next() && (rs.getInt(columnLogged) == 1);
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return isLogged;
     }
 
-    /**
-     * Method setLogged.
-     *
-     * @param user String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#setLogged(String)
-     */
     @Override
     public void setLogged(String user) {
         try (Connection con = getConnection()) {
@@ -991,18 +869,12 @@ public class MySQL implements DataSource {
             pst.setString(2, user.toLowerCase());
             pst.executeUpdate();
             pst.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
     }
 
-    /**
-     * Method setUnlogged.
-     *
-     * @param user String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#setUnlogged(String)
-     */
     @Override
     public void setUnlogged(String user) {
         try (Connection con = getConnection()) {
@@ -1012,16 +884,12 @@ public class MySQL implements DataSource {
             pst.setString(2, user.toLowerCase());
             pst.executeUpdate();
             pst.close();
-        } catch (Exception ex) {
+        } catch (SQLException ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
     }
 
-    /**
-     * Method purgeLogged.
-     *
-     * @see fr.xephi.authme.datasource.DataSource#purgeLogged()
-     */
     @Override
     public void purgeLogged() {
         try (Connection con = getConnection()) {
@@ -1033,41 +901,28 @@ public class MySQL implements DataSource {
             pst.close();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
     }
 
-    /**
-     * Method getAccountsRegistered.
-     *
-     * @return int
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAccountsRegistered()
-     */
     @Override
     public int getAccountsRegistered() {
         int result = 0;
         try (Connection con = getConnection()) {
-            PreparedStatement pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
-            ResultSet rs = pst.executeQuery();
+            Statement st = con.createStatement();
+            ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + tableName);
             if (rs.next()) {
                 result = rs.getInt(1);
             }
             rs.close();
-            pst.close();
+            st.close();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
         return result;
     }
 
-    /**
-     * Method updateName.
-     *
-     * @param oldOne String
-     * @param newOne String
-     *
-     * @see fr.xephi.authme.datasource.DataSource#updateName(String, String)
-     */
     @Override
     public void updateName(String oldOne, String newOne) {
         try (Connection con = getConnection()) {
@@ -1078,16 +933,10 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
         } catch (Exception ex) {
             ConsoleLogger.showError(ex.getMessage());
+            ConsoleLogger.writeStackTrace(ex);
         }
     }
 
-    /**
-     * Method getAllAuths.
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAllAuths()
-     */
     @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
@@ -1096,12 +945,12 @@ public class MySQL implements DataSource {
             ResultSet rs = st.executeQuery("SELECT * FROM " + tableName);
             PreparedStatement pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
             while (rs.next()) {
-                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : "";
-                int group = !salt.isEmpty() && !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
+                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
+                int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
                 PlayerAuth pAuth = PlayerAuth.builder()
                     .name(rs.getString(columnName))
                     .realName(rs.getString(columnRealName))
-                    .hash(rs.getString(columnPassword))
+                    .password(rs.getString(columnPassword), salt)
                     .lastLogin(rs.getLong(columnLastLogin))
                     .ip(rs.getString(columnIp))
                     .locWorld(rs.getString(lastlocWorld))
@@ -1109,18 +958,17 @@ public class MySQL implements DataSource {
                     .locY(rs.getDouble(lastlocY))
                     .locZ(rs.getDouble(lastlocZ))
                     .email(rs.getString(columnEmail))
-                    .salt(salt)
                     .groupId(group)
                     .build();
 
-                if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                     int id = rs.getInt(columnID);
                     pst.setInt(1, id);
                     ResultSet rs2 = pst.executeQuery();
                     if (rs2.next()) {
                         Blob blob = rs2.getBlob("data");
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
-                        pAuth.setHash(new String(bytes));
+                        pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
                     }
                     rs2.close();
                 }
@@ -1129,19 +977,12 @@ public class MySQL implements DataSource {
             pst.close();
             rs.close();
             st.close();
-        } catch (Exception ex) {
-            ConsoleLogger.showError(ex.getMessage());
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
         return auths;
     }
 
-    /**
-     * Method getLoggedPlayers.
-     *
-     * @return List
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getLoggedPlayers()
-     */
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         List<PlayerAuth> auths = new ArrayList<>();
@@ -1150,12 +991,12 @@ public class MySQL implements DataSource {
             ResultSet rs = st.executeQuery("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             PreparedStatement pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
             while (rs.next()) {
-                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : "";
-                int group = !salt.isEmpty() && !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
+                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
+                int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
                 PlayerAuth pAuth = PlayerAuth.builder()
                     .name(rs.getString(columnName))
                     .realName(rs.getString(columnRealName))
-                    .hash(rs.getString(columnPassword))
+                    .password(rs.getString(columnPassword), salt)
                     .lastLogin(rs.getLong(columnLastLogin))
                     .ip(rs.getString(columnIp))
                     .locWorld(rs.getString(lastlocWorld))
@@ -1163,27 +1004,45 @@ public class MySQL implements DataSource {
                     .locY(rs.getDouble(lastlocY))
                     .locZ(rs.getDouble(lastlocZ))
                     .email(rs.getString(columnEmail))
-                    .salt(salt)
                     .groupId(group)
                     .build();
 
-                if (Settings.getPasswordHash == HashAlgorithm.XENFORO) {
+                if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                     int id = rs.getInt(columnID);
                     pst.setInt(1, id);
                     ResultSet rs2 = pst.executeQuery();
                     if (rs2.next()) {
                         Blob blob = rs2.getBlob("data");
                         byte[] bytes = blob.getBytes(1, (int) blob.length());
-                        pAuth.setHash(new String(bytes));
+                        pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
                     }
                     rs2.close();
                 }
                 auths.add(pAuth);
             }
-        } catch (Exception ex) {
-            ConsoleLogger.showError(ex.getMessage());
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
         return auths;
+    }
+
+    @Override
+    public synchronized boolean isEmailStored(String email) {
+        String sql = "SELECT 1 FROM " + tableName + " WHERE " + columnEmail + " = ?";
+        try (Connection con = ds.getConnection()) {
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, email);
+            ResultSet rs = pst.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+        return false;
+    }
+
+    private static void logSqlException(SQLException e) {
+        ConsoleLogger.showError("Error executing SQL query: " + StringUtils.formatException(e));
+        ConsoleLogger.writeStackTrace(e);
     }
 
 }

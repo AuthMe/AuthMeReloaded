@@ -46,22 +46,10 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
     private static final int MAIN_SIZE = 27;
     private static final int HOTBAR_SIZE = 9;
 
-    /**
-     * Constructor for AuthMeInventoryPacketAdapter.
-     *
-     * @param plugin AuthMe
-     */
     public AuthMeInventoryPacketAdapter(AuthMe plugin) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
     }
 
-    /**
-     * Method onPacketSending.
-     *
-     * @param packetEvent PacketEvent
-     *
-     * @see com.comphenix.protocol.events.PacketListener#onPacketSending(PacketEvent)
-     */
     @Override
     public void onPacketSending(PacketEvent packetEvent) {
         Player player = packetEvent.getPlayer();
@@ -82,11 +70,6 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
         ProtocolLibrary.getProtocolManager().removePacketListener(this);
     }
 
-    /**
-     * Method sendInventoryPacket.
-     *
-     * @param player Player
-     */
     public void sendInventoryPacket(Player player) {
         ProtocolManager protocolManager = ProtocolLibrary.getProtocolManager();
         PacketContainer inventoryPacket = protocolManager.createPacket(PacketType.Play.Server.WINDOW_ITEMS);

@@ -1,6 +1,5 @@
 package fr.xephi.authme.converter;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -9,27 +8,15 @@ import fr.xephi.authme.settings.Settings;
 
 /**
  */
-public class ForceFlatToSqlite implements Converter {
+public class ForceFlatToSqlite {
 
     private final DataSource data;
 
-    /**
-     * Constructor for ForceFlatToSqlite.
-     *
-     * @param data   DataSource
-     * @param plugin AuthMe
-     */
-    public ForceFlatToSqlite(DataSource data, AuthMe plugin) {
+    public ForceFlatToSqlite(DataSource data) {
         this.data = data;
     }
 
-    /**
-     * Method run.
-     *
-     * @see java.lang.Runnable#run()
-     */
-    @Override
-    public void run() {
+    public DataSource run() {
         DataSource sqlite = null;
         try {
             sqlite = new SQLite();
@@ -40,10 +27,9 @@ public class ForceFlatToSqlite implements Converter {
             Settings.setValue("DataSource.backend", "sqlite");
             ConsoleLogger.info("Database successfully converted to sqlite !");
         } catch (Exception e) {
-            ConsoleLogger.showError("An error appeared while trying to convert flatfile to sqlite ...");
-        } finally {
-            if (sqlite != null)
-                sqlite.close();
+            ConsoleLogger.showError("An error occurred while trying to convert flatfile to sqlite ...");
+            return null;
         }
+        return sqlite;
     }
 }

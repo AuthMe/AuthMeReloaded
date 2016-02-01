@@ -1,6 +1,8 @@
 package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.process.email.AsyncAddEmail;
 import fr.xephi.authme.process.email.AsyncChangeEmail;
 import fr.xephi.authme.process.join.AsynchronousJoin;
 import fr.xephi.authme.process.login.AsynchronousLogin;
@@ -33,7 +35,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousLogin(player, password, forceLogin, plugin, plugin.database).process();
+                new AsynchronousLogin(player, password, forceLogin, plugin, plugin.getDataSource()).process();
             }
         });
     }
@@ -43,7 +45,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousLogout(player, plugin, plugin.database).process();
+                new AsynchronousLogout(player, plugin, plugin.getDataSource()).process();
             }
         });
     }
@@ -53,7 +55,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncRegister(player, password, email, plugin, plugin.database).process();
+                new AsyncRegister(player, password, email, plugin, plugin.getDataSource()).process();
             }
         });
     }
@@ -73,7 +75,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousJoin(player, plugin, plugin.database).process();
+                new AsynchronousJoin(player, plugin, plugin.getDataSource()).process();
             }
 
         });
@@ -84,17 +86,18 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousQuit(player, plugin, plugin.database, isKick).process();
+                new AsynchronousQuit(player, plugin, plugin.getDataSource(), isKick).process();
             }
 
         });
     }
 
-    public void performAddEmail(final Player player, final String newEmail, final String newEmailVerify) {
+    public void performAddEmail(final Player player, final String newEmail) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                new AsyncChangeEmail(player, plugin, null, newEmail, newEmailVerify).process();
+                new AsyncAddEmail(plugin, player, newEmail, plugin.getDataSource(), PlayerCache.getInstance())
+                    .process();
             }
         });
     }
@@ -103,7 +106,7 @@ public class Management {
         sched.runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                new AsyncChangeEmail(player, plugin, oldEmail, newEmail).process();
+                new AsyncChangeEmail(player, plugin, oldEmail, newEmail, plugin.getDataSource(), PlayerCache.getInstance()).process();
             }
         });
     }

@@ -1,43 +1,23 @@
 package fr.xephi.authme.command.executable.authme;
 
-//import org.bukkit.ChatColor;
+import java.util.List;
+
+import org.bukkit.command.CommandSender;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Profiler;
-import org.bukkit.command.CommandSender;
 
-/**
- */
-public class ReloadCommand extends ExecutableCommand {
+public class ReloadCommand implements ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Profile the reload process
-        Profiler p = new Profiler(true);
-
+    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // AuthMe plugin instance
         AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        Messages m = plugin.getMessages();
-
-        // Show a status message
-        // sender.sendMessage(ChatColor.YELLOW + "Reloading AuthMeReloaded...");
 
         try {
             Settings.reload();
@@ -45,18 +25,12 @@ public class ReloadCommand extends ExecutableCommand {
             plugin.getModuleManager().reloadModules();
             plugin.setupDatabase();
         } catch (Exception e) {
+            sender.sendMessage("Error occurred during reload of AuthMe: aborting");
             ConsoleLogger.showError("Fatal error occurred! AuthMe instance ABORTED!");
             ConsoleLogger.writeStackTrace(e);
             plugin.stopOrUnload();
-            return false;
         }
 
-        // Show a status message
-        // TODO: add the profiler result
-        m.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
-
-        // AuthMeReloaded reloaded, show a status message
-        // sender.sendMessage(ChatColor.GREEN + "AuthMeReloaded has been reloaded successfully, took " + p.getTimeFormatted() + "!");
-        return true;
+        commandService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
     }
 }

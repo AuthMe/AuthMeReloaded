@@ -21,21 +21,11 @@ public class AuthMeServerListener implements Listener {
     private final AuthMe plugin;
     private final Messages m;
 
-    /**
-     * Constructor for AuthMeServerListener.
-     *
-     * @param plugin AuthMe
-     */
     public AuthMeServerListener(AuthMe plugin) {
         this.m = plugin.getMessages();
         this.plugin = plugin;
     }
 
-    /**
-     * Method onServerPing.
-     *
-     * @param event ServerListPingEvent
-     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
         if (!Settings.enableProtection) {
@@ -53,11 +43,6 @@ public class AuthMeServerListener implements Listener {
         }
     }
 
-    /**
-     * Method onPluginDisable.
-     *
-     * @param event PluginDisableEvent
-     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginDisable(PluginDisableEvent event) {
         // Make sure the plugin instance isn't null
@@ -103,11 +88,6 @@ public class AuthMeServerListener implements Listener {
         }
     }
 
-    /**
-     * Method onPluginEnable.
-     *
-     * @param event PluginEnableEvent
-     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
         // Call the onPluginEnable method in the permissions manager

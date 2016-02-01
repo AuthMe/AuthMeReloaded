@@ -1,11 +1,7 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.permission.DefaultPermission;
-import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PermissionNode;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -42,38 +38,6 @@ public class CommandPermissions {
         return this.permissionNodes;
     }
 
-    /**
-     * Check whether this command requires any permission to be executed. This is based on the getPermission() method.
-     *
-     * @param sender CommandSender
-     *
-     * @return True if this command requires any permission to be executed by a player.
-     */
-    public boolean hasPermission(CommandSender sender) {
-        // Make sure any permission node is set
-        if (permissionNodes.isEmpty()) {
-            return true;
-        }
-
-        PermissionsManager permissionsManager = AuthMe.getInstance().getPermissionsManager();
-        final boolean defaultPermission = getDefaultPermissionCommandSender(sender);
-
-        // Make sure the command sender is a player, if not use the default
-        if (!(sender instanceof Player)) {
-            return defaultPermission;
-        }
-
-        // Get the player instance
-        Player player = (Player) sender;
-
-        // Get the permissions manager, and make sure it's instance is valid
-
-        if (permissionsManager == null)
-            return false;
-
-        // Check whether the player has permission, return the result
-        return permissionsManager.hasPermission(player, this.permissionNodes, defaultPermission);
-    }
 
     /**
      * Get the default permission if the permission nodes couldn't be used.
@@ -85,24 +49,4 @@ public class CommandPermissions {
     }
 
 
-    /**
-     * Get the default permission for a specified command sender.
-     *
-     * @param sender The command sender to get the default permission for.
-     *
-     * @return True if the command sender has permission by default, false otherwise.
-     */
-    public boolean getDefaultPermissionCommandSender(CommandSender sender) {
-        switch (getDefaultPermission()) {
-            case ALLOWED:
-                return true;
-
-            case OP_ONLY:
-                return sender.isOp();
-
-            case NOT_ALLOWED:
-            default:
-                return false;
-        }
-    }
 }
