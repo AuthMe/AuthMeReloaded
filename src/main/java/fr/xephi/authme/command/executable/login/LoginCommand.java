@@ -1,30 +1,19 @@
 package fr.xephi.authme.command.executable.login;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
-import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.util.Wrapper;
-import org.bukkit.command.CommandSender;
+import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.PlayerCommand;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
+ * Login command.
  */
-public class LoginCommand extends ExecutableCommand {
+public class LoginCommand extends PlayerCommand {
 
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Make sure the current command executor is a player
-        if (!(sender instanceof Player)) {
-            return true;
-        }
-
-        // Get the necessary objects
-        final AuthMe plugin = Wrapper.getInstance().getAuthMe();
-        final Player player = (Player) sender;
-        final String password = commandArguments.get(0);
-
-        // Log the player in
-        plugin.getManagement().performLogin(player, password, false);
-        return true;
+    public void runCommand(Player player, List<String> arguments, CommandService commandService) {
+        final String password = arguments.get(0);
+        commandService.getManagement().performLogin(player, password, false);
     }
 }

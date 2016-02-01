@@ -10,9 +10,9 @@ import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.task.MessageTask;
@@ -20,7 +20,6 @@ import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -50,37 +49,38 @@ public class AsynchronousJoin {
     }
 
     public void process() {
+        if (Settings.checkVeryGames) {
+            plugin.getVerygamesIp(player);
+        }
+
         if (Utils.isUnrestricted(player)) {
             return;
         }
-
-        AuthMePlayerListener.gameMode.put(name, player.getGameMode());
 
         if (plugin.ess != null && Settings.disableSocialSpy) {
             plugin.ess.getUser(player).setSocialSpyEnabled(false);
         }
 
         final String ip = plugin.getIP(player);
-        if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip)) {
-            final GameMode gM = AuthMePlayerListener.gameMode.get(name);
+
+
+        if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip, player.getAddress().getHostName())) {
             sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                 @Override
                 public void run() {
                     AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                    player.setGameMode(gM);
                     player.kickPlayer("You are not the Owner of this account, please try another name!");
                     if (Settings.banUnsafeIp)
                         plugin.getServer().banIP(ip);
                 }
-
             });
             return;
         }
         if (Settings.getMaxJoinPerIp > 0
-                && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
-                && !ip.equalsIgnoreCase("127.0.0.1")
-                && !ip.equalsIgnoreCase("localhost")) {
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !ip.equalsIgnoreCase("127.0.0.1")
+            && !ip.equalsIgnoreCase("localhost")) {
             if (plugin.hasJoinedIp(player.getName(), ip)) {
                 sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -96,18 +96,7 @@ public class AsynchronousJoin {
         final Location spawnLoc = plugin.getSpawnLocation(player);
         final boolean isAuthAvailable = database.isAuthAvailable(name);
         if (isAuthAvailable) {
-            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                        Utils.forceGM(player);
-                    }
-
-                });
-            }
-            if (!Settings.noTeleport)
+            if (!Settings.noTeleport) {
                 if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                     sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -117,45 +106,56 @@ public class AsynchronousJoin {
                             plugin.getServer().getPluginManager().callEvent(tpEvent);
                             if (!tpEvent.isCancelled()) {
                                 if (player.isOnline() && tpEvent.getTo() != null) {
-                                    if (tpEvent.getTo().getWorld() != null)
+                                    if (tpEvent.getTo().getWorld() != null) {
                                         player.teleport(tpEvent.getTo());
+                                    }
                                 }
                             }
                         }
 
                     });
                 }
+            }
             placePlayerSafely(player, spawnLoc);
             LimboCache.getInstance().updateLimboPlayer(player);
+
             // protect inventory
             if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 plugin.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     plugin.inventoryProtector.sendInventoryPacket(player);
-                    if (!Settings.noConsoleSpam)
+                    if (!Settings.noConsoleSpam) {
                         ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + " ...");
+                    }
+                }
+            }
+
+            if (Settings.isSessionsEnabled && (PlayerCache.getInstance().isAuthenticated(name) || database.isLogged(name))) {
+                if (plugin.sessions.containsKey(name)) {
+                    plugin.sessions.get(name).cancel();
+                    plugin.sessions.remove(name);
+                }
+                PlayerAuth auth = database.getAuth(name);
+                database.setUnlogged(name);
+                PlayerCache.getInstance().removePlayer(name);
+                if (auth != null && auth.getIp().equals(ip)) {
+                    m.send(player, MessageKey.SESSION_RECONNECTION);
+                    plugin.getManagement().performLogin(player, "dontneed", true);
+                    return;
+                } else if (Settings.sessionExpireOnIpChange) {
+                    m.send(player, MessageKey.SESSION_EXPIRED);
                 }
             }
         } else {
-            if (Settings.isForceSurvivalModeEnabled && !Settings.forceOnlyAfterLogin) {
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                    @Override
-                    public void run() {
-                        AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                        Utils.forceGM(player);
-                    }
-
-                });
-            }
             if (!Settings.unRegisteredGroup.isEmpty()) {
                 Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
             }
             if (!Settings.isForcedRegistrationEnabled) {
                 return;
             }
-            if (!Settings.noTeleport)
+
+            if (!Settings.noTeleport) {
                 if (!needFirstSpawn() && Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                     sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
@@ -165,67 +165,56 @@ public class AsynchronousJoin {
                             plugin.getServer().getPluginManager().callEvent(tpEvent);
                             if (!tpEvent.isCancelled()) {
                                 if (player.isOnline() && tpEvent.getTo() != null) {
-                                    if (tpEvent.getTo().getWorld() != null)
+                                    if (tpEvent.getTo().getWorld() != null) {
                                         player.teleport(tpEvent.getTo());
+                                    }
                                 }
                             }
                         }
 
                     });
                 }
+            }
 
         }
 
         if (!LimboCache.getInstance().hasLimboPlayer(name)) {
             LimboCache.getInstance().addLimboPlayer(player);
         }
+        Utils.setGroup(player, isAuthAvailable ? GroupType.NOTLOGGEDIN : GroupType.UNREGISTERED);
 
         final int timeOut = Settings.getRegistrationTimeout * 20;
-        int msgInterval = Settings.getWarnMessageInterval;
-        if (timeOut > 0) {
-            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
-            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
-        }
 
-        Utils.setGroup(player, isAuthAvailable ? GroupType.NOTLOGGEDIN : GroupType.UNREGISTERED);
         sched.scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
                 player.setOp(false);
-                if (!Settings.isMovementAllowed) {
-                    player.setAllowFlight(true);
-                    player.setFlying(true);
+                if (Settings.isRemoveSpeedEnabled) {
+                    player.setFlySpeed(0.0f);
+                    player.setWalkSpeed(0.0f);
                 }
                 player.setNoDamageTicks(timeOut);
                 if (Settings.useEssentialsMotd) {
                     player.performCommand("motd");
                 }
                 if (Settings.applyBlindEffect) {
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
-                }
-                if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-                    player.setWalkSpeed(0.0f);
-                    player.setFlySpeed(0.0f);
+                    int blindTimeOut;
+                    // Allow infinite blindness effect
+                    if (timeOut <= 0) {
+                        blindTimeOut = 99999;
+                    } else {
+                        blindTimeOut = timeOut;
+                    }
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, blindTimeOut, 2));
                 }
             }
 
         });
 
-        if (Settings.isSessionsEnabled && isAuthAvailable && (PlayerCache.getInstance().isAuthenticated(name) || database.isLogged(name))) {
-            if (plugin.sessions.containsKey(name)) {
-                plugin.sessions.get(name).cancel();
-                plugin.sessions.remove(name);
-            }
-            PlayerAuth auth = database.getAuth(name);
-            database.setUnlogged(name);
-            PlayerCache.getInstance().removePlayer(name);
-            if (auth != null && auth.getIp().equals(ip)) {
-                m.send(player, MessageKey.SESSION_RECONNECTION);
-                plugin.getManagement().performLogin(player, "dontneed", true);
-                return;
-            } else if (Settings.sessionExpireOnIpChange) {
-                m.send(player, MessageKey.SESSION_EXPIRED);
-            }
+        int msgInterval = Settings.getWarnMessageInterval;
+        if (timeOut > 0) {
+            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
+            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
 
         String[] msg;
@@ -236,8 +225,7 @@ public class AsynchronousJoin {
                 ? m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE)
                 : m.retrieve(MessageKey.REGISTER_MESSAGE);
         }
-        if (LimboCache.getInstance().getLimboPlayer(name) != null)
-        {
+        if (LimboCache.getInstance().getLimboPlayer(name) != null) {
             BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
             LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
         }

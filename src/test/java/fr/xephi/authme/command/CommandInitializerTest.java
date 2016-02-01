@@ -1,11 +1,11 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.permission.AdminPermission;
-import fr.xephi.authme.permission.PermissionNode;
-import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.WrapperMock;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -17,12 +17,13 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.WrapperMock;
 
 /**
  * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
@@ -40,7 +41,7 @@ public class CommandInitializerTest {
     @BeforeClass
     public static void initializeCommandManager() {
         WrapperMock.createInstance();
-        commands = CommandInitializer.getBaseCommands();
+        commands = CommandInitializer.buildCommands();
     }
 
     @Test
@@ -76,7 +77,7 @@ public class CommandInitializerTest {
         BiConsumer connectionTester = new BiConsumer() {
             @Override
             public void accept(CommandDescription command, int depth) {
-                if (command.hasChildren()) {
+                if (!command.getChildren().isEmpty()) {
                     for (CommandDescription child : command.getChildren()) {
                         assertThat(command.equals(child.getParent()), equalTo(true));
                     }
@@ -222,7 +223,7 @@ public class CommandInitializerTest {
             public void accept(CommandDescription command, int depth) {
                 // Fail if the command has children and has arguments at the same time
                 // Exception: If the parent only has one child defining the help label, it is acceptable
-                if (command.hasChildren() && command.hasArguments()
+                if (!command.getChildren().isEmpty() && !command.getArguments().isEmpty()
                         && (command.getChildren().size() != 1 || !command.getChildren().get(0).hasLabel("help"))) {
                     fail("Parent command (labels='" + command.getLabels() + "') should not have any arguments");
                 }
@@ -269,6 +270,41 @@ public class CommandInitializerTest {
         walkThroughCommands(commands, adminPermissionChecker);
     }
 
+    /**
+     * Tests that multiple CommandDescription instances pointing to the same ExecutableCommand use the same
+     * count of arguments.
+     */
+    @Test
+    public void shouldPointToSameExecutableCommandWithConsistentArgumentCount() {
+        // given
+        final Map<Class<? extends ExecutableCommand>, Integer> mandatoryArguments = new HashMap<>();
+        final Map<Class<? extends ExecutableCommand>, Integer> totalArguments = new HashMap<>();
+
+        BiConsumer argChecker = new BiConsumer() {
+            @Override
+            public void accept(CommandDescription command, int depth) {
+                testCollectionForCommand(command, CommandUtils.getMinNumberOfArguments(command), mandatoryArguments);
+                testCollectionForCommand(command, CommandUtils.getMaxNumberOfArguments(command), totalArguments);
+            }
+            private void testCollectionForCommand(CommandDescription command, int argCount,
+                                                  Map<Class<? extends ExecutableCommand>, Integer> collection) {
+                final Class<? extends ExecutableCommand> clazz = command.getExecutableCommand().getClass();
+                Integer existingCount = collection.get(clazz);
+                if (existingCount != null) {
+                    String commandDescription = "Command with label '" + command.getLabels().get(0) + "' and parent '"
+                        + (command.getParent() != null ? command.getLabels().get(0) : "null") + "' ";
+                    assertThat(commandDescription + "should point to " + clazz + " with arguments consistent to others",
+                        argCount, equalTo(existingCount));
+                } else {
+                    collection.put(clazz, argCount);
+                }
+            }
+        };
+
+        // when / then
+        walkThroughCommands(commands, argChecker);
+    }
+
 
     // ------------
     // Helper methods
@@ -280,7 +316,7 @@ public class CommandInitializerTest {
     private static void walkThroughCommands(Collection<CommandDescription> commands, BiConsumer consumer, int depth) {
         for (CommandDescription command : commands) {
             consumer.accept(command, depth);
-            if (command.hasChildren()) {
+            if (!command.getChildren().isEmpty()) {
                 walkThroughCommands(command.getChildren(), consumer, depth + 1);
             }
         }

@@ -13,32 +13,13 @@ import static org.junit.Assert.fail;
 public class PlayerPermissionTest {
 
     @Test
-    public void shouldStartWithAuthMePrefix() {
+    public void shouldStartWithPlayerPrefix() {
         // given
-        String requiredPrefix = "authme.";
+        String playerBranch = "authme.player.";
 
         // when/then
         for (PlayerPermission permission : PlayerPermission.values()) {
-            if (!permission.getNode().startsWith(requiredPrefix)) {
-                fail("The permission '" + permission + "' does not start with the required prefix '" + requiredPrefix
-                    + "'");
-            }
-        }
-    }
-
-    @Test
-    public void shouldContainPlayerBranch() {
-        // given
-        String playerBranch = ".player.";
-        String adminBranch = ".admin.";
-
-        // when/then
-        for (PlayerPermission permission : PlayerPermission.values()) {
-            if (permission.getNode().contains(adminBranch)) {
-                fail("The permission '" + permission + "' should not use a node with the admin-specific branch '"
-                    + adminBranch + "'");
-
-            } else if (!permission.getNode().contains(playerBranch)) {
+            if (!permission.getNode().startsWith(playerBranch)) {
                 fail("The permission '" + permission + "' should use a node with the player-specific branch '"
                     + playerBranch + "'");
             }

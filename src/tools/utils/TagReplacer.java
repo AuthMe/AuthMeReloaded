@@ -1,7 +1,11 @@
 package utils;
 
+import fr.xephi.authme.util.StringUtils;
+
 import java.util.Date;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Class responsible for replacing template tags to actual content.
@@ -13,6 +17,9 @@ import java.util.Map;
  */
 public class TagReplacer {
 
+    private TagReplacer() {
+    }
+
     /**
      * Replace a template with default tags and custom ones supplied by a map.
      *
@@ -21,12 +28,15 @@ public class TagReplacer {
      *  any occurrences of "{foo}" to "bar".
      * @return The filled template
      */
-    public static String applyReplacements(String template, Map<String, Object> tags) {
+    public static String applyReplacements(String template, Map<String, String> tags) {
         String result = template;
-        for (Map.Entry<String, Object> tagRule : tags.entrySet()) {
-            result = result.replace("{" + tagRule.getKey() + "}", tagRule.getValue().toString());
-        }
+        for (Map.Entry<String, String> tagRule : tags.entrySet()) {
+            final String name = tagRule.getKey();
+            final String value = tagRule.getValue();
 
+            result = replaceOptionalTag(result, name, value)
+                .replace("{" + name + "}", value);
+        }
         return applyReplacements(result);
     }
 
@@ -40,6 +50,22 @@ public class TagReplacer {
         return template
             .replace("{gen_date}", new Date().toString())
             .replace("{gen_warning}", "AUTO-GENERATED FILE! Do not edit this directly");
+    }
+
+    private static String replaceOptionalTag(String text, String tagName, String tagValue) {
+        Pattern regex = Pattern.compile("\\[" + tagName + "](.*?)\\[/" + tagName + "]", Pattern.DOTALL);
+        Matcher matcher = regex.matcher(text);
+
+        if (!matcher.find()) {
+            // Couldn't find results, so just return text as it is
+            return text;
+        } else if (StringUtils.isEmpty(tagValue)) {
+            // Tag is empty, replace [tagName]some_text[/tagName] to nothing
+            return matcher.replaceAll("");
+        } else {
+            // Tag is not empty, so replace [tagName]some_text[/tagName] to some_text
+            return matcher.replaceAll(matcher.group(1));
+        }
     }
 
 

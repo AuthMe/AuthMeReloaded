@@ -1,44 +1,24 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import org.bukkit.command.CommandSender;
 
-/**
- */
-public class GetEmailCommand extends ExecutableCommand {
+import java.util.List;
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
+public class GetEmailCommand implements ExecutableCommand {
+
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Get the player name
-        String playerName = sender.getName();
-        if (commandArguments.getCount() >= 1)
-            playerName = commandArguments.get(0);
+    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+        String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
-        // Get the authenticated user
-        AuthMe plugin = AuthMe.getInstance();
-        Messages m = plugin.getMessages();
-        PlayerAuth auth = plugin.database.getAuth(playerName.toLowerCase());
+        PlayerAuth auth = commandService.getDataSource().getAuth(playerName.toLowerCase());
         if (auth == null) {
-            m.send(sender, MessageKey.UNKNOWN_USER);
-            return true;
+            commandService.send(sender, MessageKey.UNKNOWN_USER);
+        } else {
+            sender.sendMessage("[AuthMe] " + playerName + "'s email: " + auth.getEmail());
         }
-
-        // Show the email address
-        sender.sendMessage("[AuthMe] " + playerName + "'s email: " + auth.getEmail());
-        return true;
     }
 }

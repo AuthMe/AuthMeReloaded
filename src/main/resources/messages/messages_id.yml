@@ -56,3 +56,4 @@ email_exists: '&cEmail pemulihan sudah dikirim! kamu bisa membatalkan dan mengir
 country_banned: '&4Your country is banned from this server!'
 antibot_auto_enabled: '&4[AntiBotService] AntiBot diaktifkan dikarenakan banyak koneksi yg diterima!'
 antibot_auto_disabled: '&2[AntiBotService] AntiBot dimatikan setelah %m menit!'
+kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'

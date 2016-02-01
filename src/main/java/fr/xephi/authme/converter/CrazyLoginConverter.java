@@ -14,13 +14,11 @@ import java.io.IOException;
 
 /**
  * @author Xephi59
- * @version $Revision: 1.0 $
  */
 public class CrazyLoginConverter implements Converter {
 
-    public final AuthMe instance;
-    public final DataSource database;
-    public final CommandSender sender;
+    private final DataSource database;
+    private final CommandSender sender;
 
     /**
      * Constructor for CrazyLoginConverter.
@@ -29,8 +27,7 @@ public class CrazyLoginConverter implements Converter {
      * @param sender   CommandSender
      */
     public CrazyLoginConverter(AuthMe instance, CommandSender sender) {
-        this.instance = instance;
-        this.database = instance.database;
+        this.database = instance.getDataSource();
         this.sender = sender;
     }
 

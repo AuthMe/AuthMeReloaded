@@ -1,18 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.command.CommandParts;
-import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.task.TimeoutTask;
-import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
@@ -20,46 +9,47 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.task.TimeoutTask;
+import fr.xephi.authme.util.Utils;
+
 /**
  * Admin command to unregister a player.
  */
-public class UnregisterAdminCommand extends ExecutableCommand {
+public class UnregisterAdminCommand implements ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
+
     @Override
-    public boolean executeCommand(final CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
+    public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
         // AuthMe plugin instance
         final AuthMe plugin = AuthMe.getInstance();
 
-        // Messages instance
-        final Messages m = plugin.getMessages();
-
         // Get the player name
-        String playerName = commandArguments.get(0);
+        String playerName = arguments.get(0);
         String playerNameLowerCase = playerName.toLowerCase();
 
         // Make sure the user is valid
-        if (!plugin.database.isAuthAvailable(playerNameLowerCase)) {
-            m.send(sender, MessageKey.UNKNOWN_USER);
-            return true;
+        if (!commandService.getDataSource().isAuthAvailable(playerNameLowerCase)) {
+            commandService.send(sender, MessageKey.UNKNOWN_USER);
+            return;
         }
 
         // Remove the player
-        if (!plugin.database.removeAuth(playerNameLowerCase)) {
-            m.send(sender, MessageKey.ERROR);
-            return true;
+        if (!commandService.getDataSource().removeAuth(playerNameLowerCase)) {
+            commandService.send(sender, MessageKey.ERROR);
+            return;
         }
 
         // Unregister the player
-        Player target = Bukkit.getPlayer(playerNameLowerCase);
+        Player target = Utils.getPlayer(playerNameLowerCase);
         PlayerCache.getInstance().removePlayer(playerNameLowerCase);
         Utils.setGroup(target, Utils.GroupType.UNREGISTERED);
         if (target != null && target.isOnline()) {
@@ -74,20 +64,16 @@ public class UnregisterAdminCommand extends ExecutableCommand {
             }
             LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTaskId(
                 scheduler.runTaskAsynchronously(plugin,
-                    new MessageTask(plugin, playerNameLowerCase, m.retrieve(MessageKey.REGISTER_MESSAGE), interval)));
-            if (Settings.applyBlindEffect)
-                target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
-            if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
-                target.setWalkSpeed(0.0f);
-                target.setFlySpeed(0.0f);
+                    new MessageTask(plugin, playerNameLowerCase, commandService.retrieveMessage(MessageKey.REGISTER_MESSAGE), interval)));
+            if (Settings.applyBlindEffect) {
+                target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,
+                    Settings.getRegistrationTimeout * 20, 2));
             }
-            m.send(target, MessageKey.UNREGISTERED_SUCCESS);
-
+            commandService.send(target, MessageKey.UNREGISTERED_SUCCESS);
         }
 
         // Show a status message
-        m.send(sender, MessageKey.UNREGISTERED_SUCCESS);
+        commandService.send(sender, MessageKey.UNREGISTERED_SUCCESS);
         ConsoleLogger.info(playerName + " unregistered");
-        return true;
     }
 }

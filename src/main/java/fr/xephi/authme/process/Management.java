@@ -33,7 +33,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousLogin(player, password, forceLogin, plugin, plugin.database).process();
+                new AsynchronousLogin(player, password, forceLogin, plugin, plugin.getDataSource()).process();
             }
         });
     }
@@ -43,7 +43,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousLogout(player, plugin, plugin.database).process();
+                new AsynchronousLogout(player, plugin, plugin.getDataSource()).process();
             }
         });
     }
@@ -53,7 +53,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncRegister(player, password, email, plugin, plugin.database).process();
+                new AsyncRegister(player, password, email, plugin, plugin.getDataSource()).process();
             }
         });
     }
@@ -73,7 +73,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousJoin(player, plugin, plugin.database).process();
+                new AsynchronousJoin(player, plugin, plugin.getDataSource()).process();
             }
 
         });
@@ -84,7 +84,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousQuit(player, plugin, plugin.database, isKick).process();
+                new AsynchronousQuit(player, plugin, plugin.getDataSource(), isKick).process();
             }
 
         });

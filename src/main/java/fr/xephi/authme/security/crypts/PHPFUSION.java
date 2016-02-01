@@ -1,52 +1,27 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.security.HashUtils;
+import fr.xephi.authme.security.RandomString;
+import fr.xephi.authme.security.crypts.description.AsciiRestricted;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.Usage;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-/**
- */
-public class PHPFUSION implements EncryptionMethod {
+@Recommendation(Usage.DO_NOT_USE)
+@AsciiRestricted
+public class PHPFUSION extends SeparateSaltMethod {
 
-    /**
-     * Method getSHA1.
-     *
-     * @param message String
-     *
-     * @return String * @throws NoSuchAlgorithmException
-     */
-    private static String getSHA1(String message)
-        throws NoSuchAlgorithmException {
-        MessageDigest sha1 = MessageDigest.getInstance("SHA1");
-        sha1.reset();
-        sha1.update(message.getBytes());
-        byte[] digest = sha1.digest();
-        return String.format("%0" + (digest.length << 1) + "x", new BigInteger(1, digest));
-    }
-
-    /**
-     * Method getHash.
-     *
-     * @param password String
-     * @param salt     String
-     * @param name     String
-     *
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
     @Override
-    public String getHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
-        String digest = null;
+    public String computeHash(String password, String salt, String name) {
         String algo = "HmacSHA256";
-        String keyString = getSHA1(salt);
+        String keyString = HashUtils.sha1(salt);
         try {
-            SecretKeySpec key = new SecretKeySpec((keyString).getBytes("UTF-8"), algo);
+            SecretKeySpec key = new SecretKeySpec(keyString.getBytes("UTF-8"), algo);
             Mac mac = Mac.getInstance(algo);
             mac.init(key);
             byte[] bytes = mac.doFinal(password.getBytes("ASCII"));
@@ -58,28 +33,16 @@ public class PHPFUSION implements EncryptionMethod {
                 }
                 hash.append(hex);
             }
-            digest = hash.toString();
+            return hash.toString();
         } catch (UnsupportedEncodingException | InvalidKeyException | NoSuchAlgorithmException e) {
-            //ingore
+            throw new UnsupportedOperationException("Cannot create PHPFUSION hash for " + name, e);
         }
-
-        return digest;
     }
 
-    /**
-     * Method comparePassword.
-     *
-     * @param hash       String
-     * @param password   String
-     * @param playerName String
-     *
-     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
-        String salt = AuthMe.getInstance().database.getAuth(playerName).getSalt();
-        return hash.equals(getHash(password, salt, ""));
+    public String generateSalt() {
+        return RandomString.generateHex(12);
     }
+
 
 }
