@@ -9,6 +9,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 
@@ -24,8 +25,10 @@ public class AsyncRegister {
     private final AuthMe plugin;
     private final DataSource database;
     private final Messages m;
+    private final NewSetting settings;
 
-    public AsyncRegister(Player player, String password, String email, AuthMe plugin, DataSource data) {
+    public AsyncRegister(Player player, String password, String email, AuthMe plugin, DataSource data,
+                         NewSetting settings) {
         this.m = plugin.getMessages();
         this.player = player;
         this.password = password;
@@ -34,6 +37,7 @@ public class AsyncRegister {
         this.plugin = plugin;
         this.database = data;
         this.ip = plugin.getIP(player);
+        this.settings = settings;
     }
 
     private boolean preRegisterCheck() throws Exception {
@@ -137,7 +141,7 @@ public class AsyncRegister {
             plugin.getManagement().performLogin(player, "dontneed", true);
         }
         plugin.otherAccounts.addPlayer(player.getUniqueId());
-        ProcessSyncPasswordRegister sync = new ProcessSyncPasswordRegister(player, plugin);
+        ProcessSyncPasswordRegister sync = new ProcessSyncPasswordRegister(player, plugin, settings);
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, sync);
     }
 }

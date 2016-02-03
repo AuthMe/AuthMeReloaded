@@ -1,9 +1,11 @@
 package fr.xephi.authme.settings;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.io.Files;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
@@ -16,6 +18,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -31,7 +34,10 @@ public class NewSetting {
     private final File pluginFolder;
     private final File configFile;
     private FileConfiguration configuration;
+    /** The file with the localized messages based on {@link PluginSettings#MESSAGES_LANGUAGE}. */
     private File messagesFile;
+    private List<String> welcomeMessage;
+    private String emailMessage;
 
     /**
      * Constructor. Checks the given {@link FileConfiguration} object for completeness.
@@ -45,6 +51,8 @@ public class NewSetting {
         this.configFile = configFile;
         this.pluginFolder = pluginFolder;
         messagesFile = buildMessagesFile();
+        welcomeMessage = readWelcomeMessage();
+        emailMessage = readEmailMessage();
 
         PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
         if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
@@ -108,6 +116,14 @@ public class NewSetting {
      */
     public File getMessagesFile() {
         return messagesFile;
+    }
+
+    public String getEmailMessage() {
+        return emailMessage;
+    }
+
+    public List<String> getWelcomeMessage() {
+        return welcomeMessage;
     }
 
     /**
@@ -187,6 +203,54 @@ public class NewSetting {
     private File buildMessagesFileFromCode(String language) {
         return new File(pluginFolder,
             makePath("messages", "messages_" + language + ".yml"));
+    }
+
+    private List<String> readWelcomeMessage() {
+        if (getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            final File welcomeFile = new File(pluginFolder, "welcome.txt");
+            final Charset charset = Charset.forName("UTF-8");
+            if (!welcomeFile.exists()) {
+                try {
+                    Files.write(
+                        "Welcome {PLAYER} to {SERVER} server\n\nThis server uses AuthMe protection!",
+                        welcomeFile, charset);
+                } catch (IOException e) {
+                    ConsoleLogger.showError("Failed to create file '" + welcomeFile.getPath() + "': "
+                        + StringUtils.formatException(e));
+                    ConsoleLogger.writeStackTrace(e);
+                }
+            }
+            try {
+                return Files.readLines(welcomeFile, charset);
+            } catch (IOException e) {
+                ConsoleLogger.showError("Failed to read file '" + welcomeFile.getPath() + "': " +
+                    StringUtils.formatException(e));
+                ConsoleLogger.writeStackTrace(e);
+            }
+        }
+        return new ArrayList<>(0);
+    }
+
+    private String readEmailMessage() {
+        final File emailFile = new File(pluginFolder, "email.txt");
+        final Charset charset = Charset.forName("UTF-8");
+        if (!emailFile.exists()) {
+            try {
+                Files.write("", emailFile, charset);
+            } catch (IOException e) {
+                ConsoleLogger.showError("Failed to create file '" + emailFile.getPath() + "': "
+                    + StringUtils.formatException(e));
+                ConsoleLogger.writeStackTrace(e);
+            }
+        }
+        try {
+            return StringUtils.join("", Files.readLines(emailFile, charset));
+        } catch (IOException e) {
+            ConsoleLogger.showError("Failed to read file '" + emailFile.getPath() + "': " +
+                StringUtils.formatException(e));
+            ConsoleLogger.writeStackTrace(e);
+        }
+        return "";
     }
 
     private static Yaml newYaml(boolean useSingleQuotes) {

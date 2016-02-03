@@ -1,5 +1,7 @@
 package fr.xephi.authme.process.register;
 
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
@@ -30,6 +32,7 @@ public class ProcessSyncPasswordRegister implements Runnable {
     protected final String name;
     private final AuthMe plugin;
     private final Messages m;
+    private final NewSetting settings;
 
     /**
      * Constructor for ProcessSyncPasswordRegister.
@@ -37,11 +40,12 @@ public class ProcessSyncPasswordRegister implements Runnable {
      * @param player Player
      * @param plugin AuthMe
      */
-    public ProcessSyncPasswordRegister(Player player, AuthMe plugin) {
+    public ProcessSyncPasswordRegister(Player player, AuthMe plugin, NewSetting settings) {
         this.m = plugin.getMessages();
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.plugin = plugin;
+        this.settings = settings;
     }
 
     private void sendBungeeMessage() {
@@ -63,11 +67,6 @@ public class ProcessSyncPasswordRegister implements Runnable {
         }
     }
 
-    /**
-     * Method forceLogin.
-     *
-     * @param player Player
-     */
     private void forceLogin(Player player) {
         Utils.teleportToSpawn(player);
         LimboCache cache = LimboCache.getInstance();
@@ -88,11 +87,6 @@ public class ProcessSyncPasswordRegister implements Runnable {
         }
     }
 
-    /**
-     * Method run.
-     *
-     * @see java.lang.Runnable#run()
-     */
     @Override
     public void run() {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
@@ -141,11 +135,11 @@ public class ProcessSyncPasswordRegister implements Runnable {
         // Register is finish and player is logged, display welcome message
         if (Settings.useWelcomeMessage) {
             if (Settings.broadcastWelcomeMessage) {
-                for (String s : Settings.welcomeMsg) {
+                for (String s : settings.getWelcomeMessage()) {
                     plugin.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
-                for (String s : Settings.welcomeMsg) {
+                for (String s : settings.getWelcomeMessage()) {
                     player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
@@ -161,18 +155,18 @@ public class ProcessSyncPasswordRegister implements Runnable {
             sendBungeeMessage();
         }
 
-        // Register is now finish , we can force all commands
+        // Register is now finished; we can force all commands
         forceCommands();
         
         sendTo();
     }
 
     private void sendTo() {
-        if (Settings.sendPlayerTo.isEmpty())
-            return;
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Connect");
-        out.writeUTF(Settings.sendPlayerTo);
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        if (!settings.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("Connect");
+            out.writeUTF(settings.getProperty(HooksSettings.BUNGEECORD_SERVER));
+            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        }
     }
 }

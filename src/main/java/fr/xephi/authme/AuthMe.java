@@ -86,6 +86,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
 import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
 
 /**
@@ -328,12 +330,9 @@ public class AuthMe extends JavaPlugin {
      */
     private void setupMailApi() {
         // Make sure the mail API is enabled
-        if (Settings.getmailAccount.isEmpty() || Settings.getmailPassword.isEmpty()) {
-            return;
+        if (!newSettings.getProperty(MAIL_ACCOUNT).isEmpty() && !newSettings.getProperty(MAIL_PASSWORD).isEmpty()) {
+            this.mail = new SendMailSSL(this, newSettings);
         }
-
-        // Set up the mail API
-        this.mail = new SendMailSSL(this);
     }
 
     /**
@@ -483,7 +482,7 @@ public class AuthMe extends JavaPlugin {
             Graph databaseBackend = metrics.createGraph("Database backend");
 
             // Custom graphs
-            if (Settings.messageFile.exists()) {
+            if (newSettings.getMessagesFile().exists()) {
                 messagesLanguage.addPlotter(new Metrics.Plotter(Settings.messagesLanguage) {
 
                     @Override

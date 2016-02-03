@@ -36,7 +36,8 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousLogin(player, password, forceLogin, plugin, plugin.getDataSource()).process();
+                new AsynchronousLogin(player, password, forceLogin, plugin, plugin.getDataSource(), settings)
+                    .process();
             }
         });
     }
@@ -56,7 +57,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncRegister(player, password, email, plugin, plugin.getDataSource()).process();
+                new AsyncRegister(player, password, email, plugin, plugin.getDataSource(), settings).process();
             }
         });
     }

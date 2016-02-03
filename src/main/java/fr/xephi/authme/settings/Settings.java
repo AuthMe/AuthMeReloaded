@@ -1,13 +1,10 @@
 package fr.xephi.authme.settings;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -30,12 +27,10 @@ public final class Settings {
     public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
-    private static final File EMAIL_FILE = new File(PLUGIN_FOLDER, "email.html");
     private static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
     public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
     // This is not an option!
     public static boolean antiBotInAction = false;
-    public static File messageFile;
     public static List<String> allowCommands;
     public static List<String> getJoinPermissions;
     public static List<String> getUnrestrictedName;
@@ -48,7 +43,6 @@ public final class Settings {
     public static List<String> forceCommandsAsConsole;
     public static List<String> forceRegisterCommands;
     public static List<String> forceRegisterCommandsAsConsole;
-    public static List<String> welcomeMsg;
     public static List<String> unsafePasswords;
     public static List<String> emailBlacklist;
     public static List<String> emailWhitelist;
@@ -85,11 +79,10 @@ public final class Settings {
         backupWindowsPath, getRegisteredGroup,
         messagesLanguage, getMySQLlastlocX, getMySQLlastlocY,
         getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
-        getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName,
-        getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
+        getMySQLColumnId, getMySQLlastlocWorld, defaultWorld,
         getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
         spawnPriority, crazyloginFileName, getPassRegex,
-        getMySQLColumnRealName, emailOauth2Token, sendPlayerTo;
+        getMySQLColumnRealName, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
         getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
@@ -129,7 +122,6 @@ public final class Settings {
         if (exist) {
             instance.saveDefaults();
         }
-        messageFile = new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + messagesLanguage + ".yml");
     }
 
     public static void loadVariables() {
@@ -217,19 +209,14 @@ public final class Settings {
         noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam", false);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
         getmailAccount = configFile.getString("Email.mailAccount", "");
-        getmailPassword = configFile.getString("Email.mailPassword", "");
-        getmailSMTP = configFile.getString("Email.mailSMTP", "smtp.gmail.com");
         getMailPort = configFile.getInt("Email.mailPort", 465);
         getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
         getMySQLOtherUsernameColumn = configFile.getStringList("ExternalBoardOptions.mySQLOtherUsernameColumns");
         displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
         getMySQLColumnId = configFile.getString("DataSource.mySQLColumnId", "id");
-        getmailSenderName = configFile.getString("Email.mailSenderName", "");
         useCaptcha = configFile.getBoolean("Security.captcha.useCaptcha", false);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        getMailSubject = configFile.getString("Email.mailSubject", "Your new AuthMe Password");
-        getMailText = loadEmailText();
         emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
@@ -288,25 +275,8 @@ public final class Settings {
         generateImage = configFile.getBoolean("Email.generateImage", false);
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
         kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
-        emailOauth2Token = configFile.getString("Email.emailOauth2Token", "");
         sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
 
-        // Load the welcome message
-        getWelcomeMessage();
-
-    }
-
-    private static String loadEmailText() {
-        if (!EMAIL_FILE.exists()) {
-            plugin.saveResource("email.html", false);
-        }
-        try {
-            return Files.toString(EMAIL_FILE, Charsets.UTF_8);
-        } catch (IOException e) {
-            ConsoleLogger.showError("Error loading email text: " + StringUtils.formatException(e));
-            ConsoleLogger.writeStackTrace(e);
-            return "";
-        }
     }
 
     /**
@@ -385,37 +355,6 @@ public final class Settings {
         } else {
             isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
             antiBotInAction = false;
-        }
-    }
-
-    private static void getWelcomeMessage() {
-        AuthMe plugin = AuthMe.getInstance();
-        welcomeMsg = new ArrayList<>();
-        if (!useWelcomeMessage) {
-            return;
-        }
-        if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt").exists())) {
-            try {
-                FileWriter fw = new FileWriter(plugin.getDataFolder() + File.separator + "welcome.txt", true);
-                BufferedWriter w = new BufferedWriter(fw);
-                w.write("Welcome {PLAYER} on {SERVER} server");
-                w.newLine();
-                w.write("This server uses " + AuthMe.getPluginName() + " protection!");
-                w.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
-            BufferedReader br = new BufferedReader(fr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                welcomeMsg.add(line);
-            }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
