@@ -18,13 +18,19 @@ public class RestrictionSettings implements SettingsClass {
     public static final Property<Boolean> ALLOW_CHAT =
         newProperty("settings.restrictions.allowChat", false);
 
+    @Comment({
+       "Allow unlogged users to use all the commands if registration is not forced!",
+       "WARNING: use this only if you need it!)"})
+    public static final Property<Boolean> ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL =
+        newProperty("settings.restrictions.allowAllCommandsIfRegistrationIsOptional", false);
+
     @Comment("Allowed commands for unauthenticated players")
     public static final Property<List<String>> ALLOW_COMMANDS =
         newProperty(PropertyType.STRING_LIST, "settings.restrictions.allowCommands",
             "login", "register", "l", "reg", "email", "captcha");
 
     @Comment("Max number of allowed registrations per IP")
-    // TODO ljacqu 20160109: If 0 == unlimited, add this fact ot the comment
+    // TODO ljacqu 20160109: If 0 == unlimited, add this fact to the comment
     public static final Property<Integer> MAX_REGISTRATION_PER_IP =
         newProperty("settings.restrictions.maxRegPerIp", 1);
 
