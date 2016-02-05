@@ -533,40 +533,6 @@ public class AuthMe extends JavaPlugin {
             moduleManager.unloadModules();
         }
 
-        List<BukkitTask> pendingTasks = getServer().getScheduler().getPendingTasks();
-        for (Iterator<BukkitTask> iterator = pendingTasks.iterator(); iterator.hasNext();) {
-            BukkitTask pendingTask = iterator.next();
-            if (!pendingTask.getOwner().equals(this) || pendingTask.isSync()) {
-                //remove all unrelevant tasks
-                iterator.remove();
-            }
-        }
-
-        getLogger().log(Level.INFO, "Waiting for {0} tasks to finish", pendingTasks.size());
-        int progress = 0;
-        try {
-            for (BukkitTask pendingTask : pendingTasks) {
-                int maxTries = 5;
-                int taskId = pendingTask.getTaskId();
-                while (getServer().getScheduler().isCurrentlyRunning(taskId)) {
-                    if (maxTries <= 0) {
-                        getLogger().log(Level.INFO, "Async task {0} times out after to many tries", taskId);
-                        break;
-                    }
-
-                    //one second
-                    Thread.sleep(1000);
-                    maxTries--;
-                }
-
-                progress++;
-                getLogger().log(Level.INFO, "Progress: {0} / {1}", new Object[]{progress, pendingTasks.size()});
-            }
-        } catch (InterruptedException interruptedException) {
-
-        }
-
-
         // Close the database
         if (database != null) {
             database.close();
