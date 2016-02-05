@@ -77,7 +77,7 @@ public abstract class CustomConfiguration extends YamlConfiguration {
                     return true;
                 }
             } catch (Exception e) {
-                ConsoleLogger.writeStackTrace("Failed to load config from JAR", e);
+                ConsoleLogger.logException("Failed to load config from JAR", e);
             }
         }
         return false;

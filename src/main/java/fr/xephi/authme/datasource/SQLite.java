@@ -170,7 +170,7 @@ public class SQLite implements DataSource {
                     !columnSalt.isEmpty() ? rs.getString(columnSalt) : null);
             }
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            ConsoleLogger.logException("Error getting password:", ex);
         } finally {
             close(rs);
             close(pst);

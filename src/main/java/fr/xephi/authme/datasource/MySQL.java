@@ -257,7 +257,7 @@ public class MySQL implements DataSource {
             ResultSet rs = pst.executeQuery();
             return rs.next();
         } catch (SQLException ex) {
-            ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return false;
     }
@@ -275,7 +275,7 @@ public class MySQL implements DataSource {
                     !columnSalt.isEmpty() ? rs.getString(columnSalt) : null);
             }
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return null;
     }
@@ -320,7 +320,7 @@ public class MySQL implements DataSource {
                 }
             }
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
             return null;
         }
         return pAuth;
@@ -522,7 +522,7 @@ public class MySQL implements DataSource {
             }
             return true;
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return false;
     }
@@ -585,7 +585,7 @@ public class MySQL implements DataSource {
             }
             return true;
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return false;
     }
@@ -618,7 +618,7 @@ public class MySQL implements DataSource {
             pst.setLong(1, until);
             result = pst.executeUpdate();
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return result;
     }
@@ -641,7 +641,7 @@ public class MySQL implements DataSource {
             st.executeUpdate();
             st.close();
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return list;
     }
@@ -673,7 +673,7 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return false;
     }
@@ -694,7 +694,7 @@ public class MySQL implements DataSource {
             pst.close();
             return true;
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return false;
     }
@@ -713,7 +713,7 @@ public class MySQL implements DataSource {
             rs.close();
             pst.close();
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return countIp;
     }
@@ -729,7 +729,7 @@ public class MySQL implements DataSource {
             pst.close();
             return true;
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return false;
     }
@@ -739,8 +739,8 @@ public class MySQL implements DataSource {
         try {
             reloadArguments();
         } catch (Exception ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
-            ConsoleLogger.showError("Can't reconnect to MySQL database... Please check your MySQL configuration!");
+            ConsoleLogger.logException("Can't reconnect to MySQL database... " +
+                "Please check your MySQL configuration! Encountered", ex);
             AuthMe.getInstance().stopOrUnload();
         }
     }
@@ -766,7 +766,7 @@ public class MySQL implements DataSource {
             rs.close();
             pst.close();
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return result;
     }
@@ -785,7 +785,7 @@ public class MySQL implements DataSource {
             rs.close();
             pst.close();
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return result;
     }
@@ -804,7 +804,7 @@ public class MySQL implements DataSource {
             rs.close();
             pst.close();
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return countEmail;
     }
@@ -819,7 +819,7 @@ public class MySQL implements DataSource {
             }
             pst.close();
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
     }
 
@@ -838,7 +838,7 @@ public class MySQL implements DataSource {
             ResultSet rs = pst.executeQuery();
             isLogged = rs.next() && (rs.getInt(columnLogged) == 1);
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
         return isLogged;
     }
@@ -853,7 +853,7 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
             pst.close();
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
     }
 
@@ -867,7 +867,7 @@ public class MySQL implements DataSource {
             pst.executeUpdate();
             pst.close();
         } catch (SQLException ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+            logSqlException(ex);
         }
     }
 
@@ -880,8 +880,8 @@ public class MySQL implements DataSource {
             pst.setInt(2, 1);
             pst.executeUpdate();
             pst.close();
-        } catch (Exception ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
     }
 
@@ -896,8 +896,8 @@ public class MySQL implements DataSource {
             }
             rs.close();
             st.close();
-        } catch (Exception ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
         return result;
     }
@@ -910,8 +910,8 @@ public class MySQL implements DataSource {
             pst.setString(1, newOne);
             pst.setString(2, oldOne);
             pst.executeUpdate();
-        } catch (Exception ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
     }
 
@@ -955,8 +955,8 @@ public class MySQL implements DataSource {
             pst.close();
             rs.close();
             st.close();
-        } catch (Exception ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
         return auths;
     }
@@ -998,10 +998,14 @@ public class MySQL implements DataSource {
                 }
                 auths.add(pAuth);
             }
-        } catch (Exception ex) {
-        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
+        } catch (SQLException ex) {
+            logSqlException(ex);
         }
         return auths;
+    }
+
+    private static void logSqlException(SQLException e) {
+        ConsoleLogger.logException("Error during SQL operation:", e);
     }
 
 }

@@ -212,7 +212,7 @@ public class AuthMe extends JavaPlugin {
         setPluginInfos();
 
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
-        if (loadSettings()) {
+        if (!loadSettings()) {
             server.shutdown();
             setEnabled(false);
             return;
@@ -226,7 +226,8 @@ public class AuthMe extends JavaPlugin {
         try {
             setupDatabase();
         } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e.getMessage() + "\nFatal error occurred during database connection! Authme initialization ABORTED!" , e);
+            ConsoleLogger.logException("Fatal error occurred during database connection! "
+                + "Authme initialization aborted!", e);
             stopOrUnload();
             return;
         }
@@ -448,11 +449,11 @@ public class AuthMe extends JavaPlugin {
         try {
             settings = new Settings(this);
             Settings.reload();
-        } catch (Exception e) {
-            ConsoleLogger.writeStackTrace("Can't load the configuration file... Something went wrong. "
-                    + "To avoid security issues the server will shut down!", e);
-            server.shutdown();
             return true;
+        } catch (Exception e) {
+            ConsoleLogger.logException("Can't load the configuration file... Something went wrong. "
+                + "To avoid security issues the server will shut down!", e);
+            server.shutdown();
         }
         return false;
     }

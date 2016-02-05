@@ -2,6 +2,7 @@ package fr.xephi.authme;
 
 import com.google.common.base.Throwables;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Wrapper;
 
 import java.io.IOException;
@@ -33,9 +34,8 @@ public final class ConsoleLogger {
     public static void info(String message) {
         wrapper.getLogger().info(message);
         if (!Settings.useLogging) {
-            return;
+            writeLog(message);
         }
-        writeLog("" + message);
     }
 
     /**
@@ -45,10 +45,9 @@ public final class ConsoleLogger {
      */
     public static void showError(String message) {
         wrapper.getLogger().warning(message);
-        if (!Settings.useLogging) {
-            return;
+        if (Settings.useLogging) {
+            writeLog("ERROR: " + message);
         }
-        writeLog("ERROR: " + message);
     }
 
     /**
@@ -72,13 +71,22 @@ public final class ConsoleLogger {
     /**
      * Write a StackTrace into the log.
      *
-     * @param ex Exception
+     * @param th The Throwable whose stack trace should be logged
      */
-    public static void writeStackTrace(String message , Throwable ex) {
-        if (!Settings.useLogging) {
-            return;
+    public static void writeStackTrace(Throwable th) {
+        if (Settings.useLogging) {
+            writeLog(Throwables.getStackTraceAsString(th));
         }
-        writeLog(message);
-        writeLog(Throwables.getStackTraceAsString(ex));
+    }
+
+    /**
+     * Logs a Throwable with the provided message and saves the stack trace to the log file.
+     *
+     * @param message The message to accompany the exception
+     * @param th The Throwable to log
+     */
+    public static void logException(String message, Throwable th) {
+        showError(message + " " + StringUtils.formatException(th));
+        writeStackTrace(th);
     }
 }

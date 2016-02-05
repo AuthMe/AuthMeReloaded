@@ -313,7 +313,7 @@ public final class Settings {
         try {
             return Files.toString(EMAIL_FILE, Charsets.UTF_8);
         } catch (IOException e) {
-            ConsoleLogger.writeStackTrace("Error loading email text: " + StringUtils.formatException(e), e);
+            ConsoleLogger.logException("Error loading email text:", e);
             return "";
         }
     }
@@ -748,11 +748,6 @@ public final class Settings {
         }
     }
 
-    /**
-     * @param path
-     *
-     * @return
-     */
     private static boolean contains(String path) {
         return configFile.contains(path);
     }

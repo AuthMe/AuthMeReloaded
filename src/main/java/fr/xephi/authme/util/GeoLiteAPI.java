@@ -36,7 +36,7 @@ public class GeoLiteAPI {
                 plugin.getLogger().info(LICENSE);
                 return true;
             } catch (IOException e) {
-            	ConsoleLogger.writeStackTrace("Could not find/download GeoLiteAPI", e);
+            	ConsoleLogger.logException("Could not find/download GeoLiteAPI", e);
                 return false;
             }
         }
@@ -63,7 +63,7 @@ public class GeoLiteAPI {
                     output.close();
                     input.close();
                 } catch (IOException e) {
-                    ConsoleLogger.writeStackTrace("Could not download GeoLiteAPI", e);
+                    ConsoleLogger.logException("Could not download GeoLiteAPI", e);
                 }
             }
         });

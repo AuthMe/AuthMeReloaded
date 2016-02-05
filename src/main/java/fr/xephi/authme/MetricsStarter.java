@@ -39,7 +39,7 @@ public class MetricsStarter {
             metrics.start();
         } catch (final IOException e) {
           // Failed to submit the metrics data
-          ConsoleLogger.writeStackTrace("Can't start Metrics! The plugin will work anyway...", e);
+          ConsoleLogger.logException("Can't start Metrics! The plugin will work anyway...", e);
         }
     }
 }

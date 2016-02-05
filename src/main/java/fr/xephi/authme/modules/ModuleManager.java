@@ -135,7 +135,7 @@ public class ModuleManager {
                 }
 
             } catch (Exception ex) {
-                ConsoleLogger.writeStackTrace("Cannot load " + pathToJar.getName() + " jar file !", ex);
+                ConsoleLogger.logException("Cannot load " + pathToJar.getName() + " jar file!", ex);
             } finally {
                 try {
                     if (jarFile != null) {

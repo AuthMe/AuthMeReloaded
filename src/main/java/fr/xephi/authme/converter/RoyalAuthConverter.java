@@ -33,7 +33,7 @@ public class RoyalAuthConverter implements Converter {
                 PlayerAuth auth = new PlayerAuth(name, ra.getHash(), "127.0.0.1", ra.getLastLogin(), "your@email.com", o.getName());
                 data.saveAuth(auth);
             } catch (Exception e) {
-                ConsoleLogger.writeStackTrace("Error while trying to import " + o.getName() + " RoyalAuth datas", e);
+                ConsoleLogger.logException("Error while trying to import " + o.getName() + " RoyalAuth data", e);
             }
         }
     }
