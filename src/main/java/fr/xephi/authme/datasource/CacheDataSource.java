@@ -34,9 +34,9 @@ public class CacheDataSource implements DataSource {
     public CacheDataSource(DataSource src) {
         this.source = src;
         this.exec = Executors.newCachedThreadPool();
-        cachedAuths = CacheBuilder.newBuilder()
-            .expireAfterWrite(5, TimeUnit.MINUTES)
-            .removalListener(RemovalListeners.asynchronous(new RemovalListener<String, Optional<PlayerAuth>>() {
+        this.cachedAuths = CacheBuilder.newBuilder()
+            .expireAfterWrite(8, TimeUnit.MINUTES)
+            .removalListener(new RemovalListener<String, Optional<PlayerAuth>>() {
                 @Override
                 public void onRemoval(RemovalNotification<String, Optional<PlayerAuth>> removalNotification) {
                     String name = removalNotification.getKey();
@@ -44,7 +44,7 @@ public class CacheDataSource implements DataSource {
                         cachedAuths.getUnchecked(name);
                     }
                 }
-            }, exec))
+            })
             .build(
                 new CacheLoader<String, Optional<PlayerAuth>>() {
                     public Optional<PlayerAuth> load(String key) {
