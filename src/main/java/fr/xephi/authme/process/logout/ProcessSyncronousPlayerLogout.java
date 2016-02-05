@@ -49,6 +49,13 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
+    protected void restoreSpeedEffect() {
+        if (Settings.isRemoveSpeedEnabled) {
+            player.setWalkSpeed(0.0F);
+            player.setFlySpeed(0.0F);
+        }
+    }
+
     /**
      * Method run.
      *
@@ -77,6 +84,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         if (Settings.applyBlindEffect)
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
         player.setOp(false);
+        restoreSpeedEffect();
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
         if (Settings.bungee)

@@ -65,7 +65,7 @@ public final class Settings {
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
-        kickPlayersBeforeStopping,
+        kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
         customAttributes, generateImage, isRemoveSpeedEnabled, preventOtherCase;
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
         getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
@@ -189,6 +189,7 @@ public final class Settings {
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
 
+        allowAllCommandsIfRegIsOptional = configFile.getBoolean("settings.restrictions.allowAllCommandsIfRegistrationIsOptional", false);
         allowCommands = new ArrayList<>();
         allowCommands.addAll(Arrays.asList("/login", "/l", "/register", "/reg", "/email", "/captcha"));
         for (String cmd : configFile.getStringList("settings.restrictions.allowCommands")) {

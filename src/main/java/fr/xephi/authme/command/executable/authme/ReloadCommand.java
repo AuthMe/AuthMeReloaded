@@ -24,8 +24,7 @@ public class ReloadCommand implements ExecutableCommand {
             commandService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
         } catch (Exception e) {
             sender.sendMessage("Error occurred during reload of AuthMe: aborting");
-            ConsoleLogger.showError("Fatal error occurred! AuthMe instance ABORTED!");
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.logException("Aborting! Encountered exception during reload of AuthMe:", e);
             plugin.stopOrUnload();
         }
     }

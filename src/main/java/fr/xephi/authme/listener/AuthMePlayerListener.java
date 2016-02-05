@@ -108,6 +108,9 @@ public class AuthMePlayerListener implements Listener {
         if (Settings.useEssentialsMotd && cmd.equals("/motd")) {
             return;
         }
+        if(!Settings.isForcedRegistrationEnabled && Settings.allowAllCommandsIfRegIsOptional) {
+            return;
+        }
         if (Settings.allowCommands.contains(cmd)) {
             return;
         }

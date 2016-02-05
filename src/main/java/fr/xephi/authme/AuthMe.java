@@ -1,9 +1,35 @@
 package fr.xephi.authme;
 
-import com.earth2me.essentials.Essentials;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import org.apache.logging.log4j.LogManager;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
+import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
+import net.minelink.ctplus.CombatTagPlus;
+
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -58,33 +84,6 @@ import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Wrapper;
-import net.minelink.ctplus.CombatTagPlus;
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-import org.mcstats.Metrics;
-import org.mcstats.Metrics.Graph;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
@@ -213,7 +212,7 @@ public class AuthMe extends JavaPlugin {
 
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
         newSettings = createNewSetting();
-        if (loadSettings()) {
+        if (!loadSettings()) {
             server.shutdown();
             setEnabled(false);
             return;
@@ -225,9 +224,8 @@ public class AuthMe extends JavaPlugin {
         try {
             setupDatabase();
         } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError(e.getMessage());
-            ConsoleLogger.showError("Fatal error occurred during database connection! Authme initialization ABORTED!");
+            ConsoleLogger.logException("Fatal error occurred during database connection! "
+                + "Authme initialization aborted!", e);
             stopOrUnload();
             return;
         }
@@ -242,9 +240,8 @@ public class AuthMe extends JavaPlugin {
         // Setup otherAccounts file
         this.otherAccounts = OtherAccounts.getInstance();
 
-
         // Set up Metrics
-        setupMetrics();
+        MetricsStarter.setupMetrics(plugin, newSettings);
 
         // Set console filter
         setupConsoleFilter();
@@ -429,12 +426,11 @@ public class AuthMe extends JavaPlugin {
         try {
             settings = new Settings(this);
             Settings.reload();
-        } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError("Can't load the configuration file... Something went wrong. "
-                + "To avoid security issues the server will shut down!");
-            server.shutdown();
             return true;
+        } catch (Exception e) {
+            ConsoleLogger.logException("Can't load the configuration file... Something went wrong. "
+                + "To avoid security issues the server will shut down!", e);
+            server.shutdown();
         }
         return false;
     }
@@ -463,46 +459,6 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    /**
-     * Set up Metrics.
-     */
-    private void setupMetrics() {
-        try {
-            Metrics metrics = new Metrics(this);
-            Graph languageGraph = metrics.createGraph("Messages language");
-            Graph backendGraph = metrics.createGraph("Database backend");
-
-            // Custom graphs
-            if (newSettings.getMessagesFile().exists()) {
-                String messagesLanguage = newSettings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
-                languageGraph.addPlotter(new Metrics.Plotter(messagesLanguage) {
-
-                    @Override
-                    public int getValue() {
-                        return 1;
-                    }
-                });
-            }
-
-            DataSource.DataSourceType dataSource = newSettings.getProperty(DatabaseSettings.BACKEND);
-            backendGraph.addPlotter(new Metrics.Plotter(dataSource.toString()) {
-
-                @Override
-                public int getValue() {
-                    return 1;
-                }
-            });
-
-            metrics.start();
-            ConsoleLogger.info("Metrics started successfully!");
-        } catch (Exception e) {
-            // Failed to submit the metrics data
-            ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway... (Encountered "
-                + StringUtils.formatException(e) + ")");
-            ConsoleLogger.writeStackTrace(e);
-        }
-    }
-
     @Override
     public void onDisable() {
         // Save player data
@@ -515,40 +471,6 @@ public class AuthMe extends JavaPlugin {
         if (newSettings != null) {
             new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.STOP);
         }
-
-        List<BukkitTask> pendingTasks = getServer().getScheduler().getPendingTasks();
-        for (Iterator<BukkitTask> iterator = pendingTasks.iterator(); iterator.hasNext();) {
-            BukkitTask pendingTask = iterator.next();
-            if (!pendingTask.getOwner().equals(this) || pendingTask.isSync()) {
-                //remove all irrelevant tasks
-                iterator.remove();
-            }
-        }
-
-        getLogger().log(Level.INFO, "Waiting for {0} tasks to finish", pendingTasks.size());
-        int progress = 0;
-        try {
-            for (BukkitTask pendingTask : pendingTasks) {
-                int maxTries = 5;
-                int taskId = pendingTask.getTaskId();
-                while (getServer().getScheduler().isCurrentlyRunning(taskId)) {
-                    if (maxTries <= 0) {
-                        getLogger().log(Level.INFO, "Async task {0} times out after to many tries", taskId);
-                        break;
-                    }
-
-                    //one second
-                    Thread.sleep(1000);
-                    maxTries--;
-                }
-
-                progress++;
-                getLogger().log(Level.INFO, "Progress: {0} / {1}", new Object[]{progress, pendingTasks.size()});
-            }
-        } catch (InterruptedException interruptedException) {
-
-        }
-
 
         // Close the database
         if (database != null) {
