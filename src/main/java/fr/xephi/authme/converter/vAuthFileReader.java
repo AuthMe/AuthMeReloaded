@@ -53,7 +53,7 @@ class vAuthFileReader {
             }
             scanner.close();
         } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.writeStackTrace("Error while trying to import some vAuth datas", e);
         }
 
     }

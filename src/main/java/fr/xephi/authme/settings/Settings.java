@@ -313,8 +313,7 @@ public final class Settings {
         try {
             return Files.toString(EMAIL_FILE, Charsets.UTF_8);
         } catch (IOException e) {
-            ConsoleLogger.showError("Error loading email text: " + StringUtils.formatException(e));
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.writeStackTrace("Error loading email text: " + StringUtils.formatException(e), e);
             return "";
         }
     }

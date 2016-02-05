@@ -170,8 +170,7 @@ public class SQLite implements DataSource {
                     !columnSalt.isEmpty() ? rs.getString(columnSalt) : null);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            ConsoleLogger.writeStackTrace(ex);
+        	ConsoleLogger.writeStackTrace(ex.getMessage(), ex);
         } finally {
             close(rs);
             close(pst);

@@ -129,8 +129,7 @@ public class NewSetting {
             writer.flush();
             writer.close();
         } catch (IOException e) {
-            ConsoleLogger.showError("Could not save config file - " + StringUtils.formatException(e));
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.writeStackTrace("Could not save config file - " + StringUtils.formatException(e), e);
         }
     }
 

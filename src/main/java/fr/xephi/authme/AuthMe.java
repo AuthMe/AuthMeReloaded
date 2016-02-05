@@ -227,9 +227,7 @@ public class AuthMe extends JavaPlugin {
         try {
             setupDatabase();
         } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError(e.getMessage());
-            ConsoleLogger.showError("Fatal error occurred during database connection! Authme initialization ABORTED!");
+            ConsoleLogger.writeStackTrace(e.getMessage() + "\nFatal error occurred during database connection! Authme initialization ABORTED!" , e);
             stopOrUnload();
             return;
         }
@@ -452,9 +450,8 @@ public class AuthMe extends JavaPlugin {
             settings = new Settings(this);
             Settings.reload();
         } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError("Can't load the configuration file... Something went wrong. "
-                + "To avoid security issues the server will shut down!");
+            ConsoleLogger.writeStackTrace("Can't load the configuration file... Something went wrong. "
+                    + "To avoid security issues the server will shut down!", e);
             server.shutdown();
             return true;
         }
@@ -516,8 +513,7 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.info("Metrics started successfully!");
         } catch (Exception e) {
             // Failed to submit the metrics data
-            ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway...");
+            ConsoleLogger.writeStackTrace("Can't start Metrics! The plugin will work anyway...", e);
         }
     }
 

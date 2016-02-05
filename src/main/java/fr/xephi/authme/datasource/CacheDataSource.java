@@ -172,7 +172,7 @@ public class CacheDataSource implements DataSource {
             exec.shutdown();
             exec.awaitTermination(8, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.writeStackTrace("Error while closing CacheDataSource.", e);
         }
         source.close();
     }

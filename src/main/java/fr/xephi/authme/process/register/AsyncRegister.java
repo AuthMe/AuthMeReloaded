@@ -81,8 +81,7 @@ public class AsyncRegister {
                 passwordRegister();
             }
         } catch (Exception e) {
-            ConsoleLogger.showError(e.getMessage());
-            ConsoleLogger.writeStackTrace(e);
+        	ConsoleLogger.writeStackTrace(e.getMessage(), e);
             m.send(player, MessageKey.ERROR);
         }
     }

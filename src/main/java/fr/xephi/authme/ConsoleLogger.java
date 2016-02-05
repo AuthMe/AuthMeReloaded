@@ -74,10 +74,11 @@ public final class ConsoleLogger {
      *
      * @param ex Exception
      */
-    public static void writeStackTrace(Exception ex) {
+    public static void writeStackTrace(String message , Throwable ex) {
         if (!Settings.useLogging) {
             return;
         }
+        writeLog(message);
         writeLog(Throwables.getStackTraceAsString(ex));
     }
 }

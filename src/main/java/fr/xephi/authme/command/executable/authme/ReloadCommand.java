@@ -26,8 +26,7 @@ public class ReloadCommand implements ExecutableCommand {
             plugin.setupDatabase();
         } catch (Exception e) {
             sender.sendMessage("Error occurred during reload of AuthMe: aborting");
-            ConsoleLogger.showError("Fatal error occurred! AuthMe instance ABORTED!");
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.writeStackTrace("Fatal error occurred! AuthMe instance ABORTED!", e);
             plugin.stopOrUnload();
         }
 
