@@ -33,7 +33,7 @@ public final class ConsoleLogger {
      */
     public static void info(String message) {
         wrapper.getLogger().info(message);
-        if (!Settings.useLogging) {
+        if (Settings.useLogging) {
             writeLog(message);
         }
     }
