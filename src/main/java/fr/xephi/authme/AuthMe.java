@@ -179,15 +179,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Get the plugin's Settings.
-     *
-     * @return Plugin's settings.
-     */
-    public Settings getSettings() {
-        return settings;
-    }
-
-    /**
      * Get the Messages instance.
      *
      * @return Plugin's messages.
@@ -478,12 +469,13 @@ public class AuthMe extends JavaPlugin {
     private void setupMetrics() {
         try {
             Metrics metrics = new Metrics(this);
-            Graph messagesLanguage = metrics.createGraph("Messages language");
-            Graph databaseBackend = metrics.createGraph("Database backend");
+            Graph languageGraph = metrics.createGraph("Messages language");
+            Graph backendGraph = metrics.createGraph("Database backend");
 
             // Custom graphs
             if (newSettings.getMessagesFile().exists()) {
-                messagesLanguage.addPlotter(new Metrics.Plotter(Settings.messagesLanguage) {
+                String messagesLanguage = newSettings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
+                languageGraph.addPlotter(new Metrics.Plotter(messagesLanguage) {
 
                     @Override
                     public int getValue() {
@@ -491,7 +483,9 @@ public class AuthMe extends JavaPlugin {
                     }
                 });
             }
-            databaseBackend.addPlotter(new Metrics.Plotter(Settings.getDataSource.toString()) {
+
+            DataSource.DataSourceType dataSource = newSettings.getProperty(DatabaseSettings.BACKEND);
+            backendGraph.addPlotter(new Metrics.Plotter(dataSource.toString()) {
 
                 @Override
                 public int getValue() {
@@ -503,8 +497,9 @@ public class AuthMe extends JavaPlugin {
             ConsoleLogger.info("Metrics started successfully!");
         } catch (Exception e) {
             // Failed to submit the metrics data
+            ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway... (Encountered "
+                + StringUtils.formatException(e) + ")");
             ConsoleLogger.writeStackTrace(e);
-            ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway...");
         }
     }
 
@@ -884,18 +879,18 @@ public class AuthMe extends JavaPlugin {
     }
 
     public String replaceAllInfo(String message, Player player) {
-        int playersOnline = Utils.getOnlinePlayers().size();
-        message = message.replace("&", "\u00a7");
-        message = message.replace("{PLAYER}", player.getName());
-        message = message.replace("{ONLINE}", "" + playersOnline);
-        message = message.replace("{MAXPLAYERS}", "" + server.getMaxPlayers());
-        message = message.replace("{IP}", getIP(player));
-        message = message.replace("{LOGINS}", "" + PlayerCache.getInstance().getLogged());
-        message = message.replace("{WORLD}", player.getWorld().getName());
-        message = message.replace("{SERVER}", server.getServerName());
-        message = message.replace("{VERSION}", server.getBukkitVersion());
-        message = message.replace("{COUNTRY}", GeoLiteAPI.getCountryName(getIP(player)));
-        return message;
+        String playersOnline = Integer.toString(Utils.getOnlinePlayers().size());
+        return message
+            .replace("&", "\u00a7")
+            .replace("{PLAYER}", player.getName())
+            .replace("{ONLINE}", playersOnline)
+            .replace("{MAXPLAYERS}", Integer.toString(server.getMaxPlayers()))
+            .replace("{IP}", getIP(player))
+            .replace("{LOGINS}", Integer.toString(PlayerCache.getInstance().getLogged()))
+            .replace("{WORLD}", player.getWorld().getName())
+            .replace("{SERVER}", server.getServerName())
+            .replace("{VERSION}", server.getBukkitVersion())
+            .replace("{COUNTRY}", GeoLiteAPI.getCountryName(getIP(player)));
     }
 
     /**

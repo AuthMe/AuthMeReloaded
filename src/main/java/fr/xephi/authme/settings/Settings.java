@@ -8,11 +8,7 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,7 +73,7 @@ public final class Settings {
         getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
         getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup,
         backupWindowsPath, getRegisteredGroup,
-        messagesLanguage, getMySQLlastlocX, getMySQLlastlocY,
+        getMySQLlastlocX, getMySQLlastlocY,
         getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
         getMySQLColumnId, getMySQLlastlocWorld, defaultWorld,
         getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
@@ -125,7 +121,6 @@ public final class Settings {
     }
 
     public static void loadVariables() {
-        messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en").toLowerCase());
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
         isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
