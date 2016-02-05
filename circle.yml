@@ -9,7 +9,7 @@ test:
     - mvn clean install -B
   post:
     - cp ./target/AuthMe*.jar $CIRCLE_ARTIFACTS
-    - cp ./target/AuthMe-*-SNAPSHOT.jar $CIRCLE_ARTIFACTS/AuthMe.java
+    - cp ./target/AuthMe-*-SNAPSHOT.jar $CIRCLE_ARTIFACTS/AuthMe.jar
 notify:
   webhooks:
     - url: https://webhooks.gitter.im/e/7b92ac1a1741748b26bf
