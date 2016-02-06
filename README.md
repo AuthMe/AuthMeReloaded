@@ -22,7 +22,7 @@
 
 - Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr/job/AuthMeReloaded">Xephi's Jenkins</a>
 
-- JavaDocs: <a href="http://xephi.github.io/AuthMeReloaded/index.html">AuthMe Javadoc</a>
+- JavaDocs: <a href="http://ci.xephi.fr/job/AuthMeReloaded/javadoc/">AuthMe Javadoc</a>
 
 - Maven Repo: <a href="http://ci.xephi.fr/plugin/repository/everything/">AuthMe Repo</a>
 
