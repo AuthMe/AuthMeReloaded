@@ -228,7 +228,7 @@
 		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
 		<repository>
 			<id>spigot-repo</id>
-			<url>http://hub.spigotmc.org/nexus/content/groups/public</url>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
 		</repository>
 
 		<!-- EssentialsX Repo -->
@@ -359,7 +359,7 @@
 		<dependency>
 			<groupId>org.bukkit</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>${bukkitVersion}</version>
+			<version>1.8.8-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 			<optional>true</optional>
 			<exclusions>
