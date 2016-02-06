@@ -6,7 +6,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.util.Wrapper;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
 import java.io.IOException;
@@ -87,7 +87,7 @@ public final class Settings {
         getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
         antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
         getMaxJoinPerIp;
-    protected static YamlConfiguration configFile;
+    protected static FileConfiguration configFile;
     private static AuthMe plugin;
     private static Settings instance;
 
@@ -99,25 +99,8 @@ public final class Settings {
     public Settings(AuthMe pl) {
         instance = this;
         plugin = pl;
-        configFile = (YamlConfiguration) plugin.getConfig();
-    }
-
-    /**
-     * Method reload.
-     *
-     * @throws Exception if something went wrong
-     */
-    public static void reload() throws Exception {
-        plugin.getLogger().info("Loading Configuration File...");
-        boolean exist = SETTINGS_FILE.exists();
-        if (!exist) {
-            plugin.saveDefaultConfig();
-        }
-        configFile.load(SETTINGS_FILE);
+        configFile = plugin.getConfig();
         loadVariables();
-        if (exist) {
-            instance.saveDefaults();
-        }
     }
 
     public static void loadVariables() {

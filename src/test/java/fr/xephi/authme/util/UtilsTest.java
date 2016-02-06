@@ -1,6 +1,7 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
@@ -39,6 +40,7 @@ public class UtilsTest {
     public static void setUpMocks() {
         WrapperMock wrapperMock = WrapperMock.createInstance();
         authMeMock = wrapperMock.getAuthMe();
+        ConsoleLoggerTestInitializer.setupLogger();
     }
 
     @Before

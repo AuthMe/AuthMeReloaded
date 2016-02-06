@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import fr.xephi.authme.settings.SettingsMigrationService;
 import org.apache.logging.log4j.LogManager;
 
 import org.bukkit.Bukkit;
@@ -207,11 +208,21 @@ public class AuthMe extends JavaPlugin {
         // Set various instances
         server = getServer();
         plugin = this;
+        ConsoleLogger.setLogger(getLogger());
 
         setPluginInfos();
 
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
         newSettings = createNewSetting();
+        if (newSettings == null) {
+            ConsoleLogger.showError("Could not load configuration. Aborting.");
+            server.shutdown();
+            return;
+        }
+        ConsoleLogger.setLoggingOptions(newSettings.getProperty(SecuritySettings.USE_LOGGING),
+            new File(getDataFolder(), "authme.log"));
+
+        // Old settings manager
         if (!loadSettings()) {
             server.shutdown();
             setEnabled(false);
@@ -425,7 +436,6 @@ public class AuthMe extends JavaPlugin {
     private boolean loadSettings() {
         try {
             settings = new Settings(this);
-            Settings.reload();
             return true;
         } catch (Exception e) {
             ConsoleLogger.logException("Can't load the configuration file... Something went wrong. "
@@ -436,8 +446,10 @@ public class AuthMe extends JavaPlugin {
     }
 
     private NewSetting createNewSetting() {
-        File configFile = new File(getDataFolder() + "config.yml");
-        return new NewSetting(getConfig(), configFile, getDataFolder());
+        File configFile = new File(getDataFolder(), "config.yml");
+        return SettingsMigrationService.copyFileFromResource(configFile, "config.yml")
+            ? new NewSetting(configFile, getDataFolder())
+            : null;
     }
 
     /**

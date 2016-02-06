@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static fr.xephi.authme.util.StringUtils.makePath;
+import static fr.xephi.authme.settings.SettingsMigrationService.copyFileFromResource;
 
 /**
  * The new settings manager.
@@ -42,24 +42,14 @@ public class NewSetting {
     /**
      * Constructor. Checks the given {@link FileConfiguration} object for completeness.
      *
-     * @param configuration The configuration to interact with
      * @param configFile The configuration file
      * @param pluginFolder The AuthMe plugin folder
      */
-    public NewSetting(FileConfiguration configuration, File configFile, File pluginFolder) {
-        this.configuration = configuration;
+    public NewSetting(File configFile, File pluginFolder) {
+        this.configuration = YamlConfiguration.loadConfiguration(configFile);
         this.configFile = configFile;
         this.pluginFolder = pluginFolder;
-        messagesFile = buildMessagesFile();
-        welcomeMessage = readWelcomeMessage();
-        emailMessage = readEmailMessage();
-
-        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
-        if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
-            ConsoleLogger.info("Merged new config options");
-            ConsoleLogger.info("Please check your config.yml file for new settings!");
-            save(propertyMap);
-        }
+        validateAndLoadOptions();
     }
 
     /**
@@ -131,6 +121,7 @@ public class NewSetting {
      */
     public void reload() {
         configuration = YamlConfiguration.loadConfiguration(configFile);
+        validateAndLoadOptions();
     }
 
     private void save(PropertyMap propertyMap) {
@@ -185,6 +176,19 @@ public class NewSetting {
         }
     }
 
+    private void validateAndLoadOptions() {
+        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
+        if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
+            ConsoleLogger.info("Merged new config options");
+            ConsoleLogger.info("Please check your config.yml file for new settings!");
+            save(propertyMap);
+        }
+
+        messagesFile = buildMessagesFile();
+        welcomeMessage = readWelcomeMessage();
+        emailMessage = readEmailMessage();
+    }
+
     private <T> String toYaml(Property<T> property, int indent, Yaml simpleYaml, Yaml singleQuoteYaml) {
         String representation = property.toYaml(configuration, simpleYaml, singleQuoteYaml);
         return join("\n" + indent(indent), representation.split("\\n"));
@@ -196,58 +200,44 @@ public class NewSetting {
         if (messagesFile.exists()) {
             return messagesFile;
         }
-        return buildMessagesFileFromCode("en");
+
+        return copyFileFromResource(messagesFile, buildMessagesFilePathFromCode(languageCode))
+            ? messagesFile
+            : buildMessagesFileFromCode("en");
     }
 
     private File buildMessagesFileFromCode(String language) {
-        return new File(pluginFolder,
-            makePath("messages", "messages_" + language + ".yml"));
+        return new File(pluginFolder, buildMessagesFilePathFromCode(language));
+    }
+
+    private static String buildMessagesFilePathFromCode(String language) {
+        return StringUtils.makePath("messages", "messages_" + language + ".yml");
     }
 
     private List<String> readWelcomeMessage() {
         if (getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
             final File welcomeFile = new File(pluginFolder, "welcome.txt");
             final Charset charset = Charset.forName("UTF-8");
-            if (!welcomeFile.exists()) {
+            if (copyFileFromResource(welcomeFile, "welcome.txt")) {
                 try {
-                    Files.write(
-                        "Welcome {PLAYER} to {SERVER} server\n\nThis server uses AuthMe protection!",
-                        welcomeFile, charset);
+                    return Files.readLines(welcomeFile, charset);
                 } catch (IOException e) {
-                    ConsoleLogger.showError("Failed to create file '" + welcomeFile.getPath() + "': "
-                        + StringUtils.formatException(e));
-                    ConsoleLogger.writeStackTrace(e);
+                    ConsoleLogger.logException("Failed to read file '" + welcomeFile.getPath() + "':", e);
                 }
-            }
-            try {
-                return Files.readLines(welcomeFile, charset);
-            } catch (IOException e) {
-                ConsoleLogger.showError("Failed to read file '" + welcomeFile.getPath() + "': " +
-                    StringUtils.formatException(e));
-                ConsoleLogger.writeStackTrace(e);
             }
         }
         return new ArrayList<>(0);
     }
 
     private String readEmailMessage() {
-        final File emailFile = new File(pluginFolder, "email.txt");
+        final File emailFile = new File(pluginFolder, "email.html");
         final Charset charset = Charset.forName("UTF-8");
-        if (!emailFile.exists()) {
+        if (copyFileFromResource(emailFile, "email.html")) {
             try {
-                Files.write("", emailFile, charset);
+                return StringUtils.join("", Files.readLines(emailFile, charset));
             } catch (IOException e) {
-                ConsoleLogger.showError("Failed to create file '" + emailFile.getPath() + "': "
-                    + StringUtils.formatException(e));
-                ConsoleLogger.writeStackTrace(e);
+                ConsoleLogger.logException("Failed to read file '" + emailFile.getPath() + "':", e);
             }
-        }
-        try {
-            return StringUtils.join("", Files.readLines(emailFile, charset));
-        } catch (IOException e) {
-            ConsoleLogger.showError("Failed to read file '" + emailFile.getPath() + "': " +
-                StringUtils.formatException(e));
-            ConsoleLogger.writeStackTrace(e);
         }
         return "";
     }

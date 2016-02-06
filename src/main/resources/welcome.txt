@@ -1,0 +1,3 @@
+Welcome {PLAYER} on {SERVER} server
+
+This server uses AuthMeReloaded protection!
