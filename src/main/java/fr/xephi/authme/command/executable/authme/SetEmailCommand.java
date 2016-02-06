@@ -33,6 +33,9 @@ public class SetEmailCommand implements ExecutableCommand {
                 if (auth == null) {
                     commandService.send(sender, MessageKey.UNKNOWN_USER);
                     return;
+                } else if (commandService.getDataSource().isEmailStored(playerEmail)) {
+                    commandService.send(sender, MessageKey.EMAIL_ALREADY_USED_ERROR);
+                    return;
                 }
 
                 // Set the email address

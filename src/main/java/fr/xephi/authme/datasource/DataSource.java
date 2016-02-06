@@ -218,6 +218,8 @@ public interface DataSource {
      */
     List<PlayerAuth> getLoggedPlayers();
 
+    boolean isEmailStored(String email);
+
     enum DataSourceType {
         MYSQL,
         FILE,

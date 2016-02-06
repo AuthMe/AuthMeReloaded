@@ -2,6 +2,8 @@ package fr.xephi.authme.command.executable.email;
 
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -27,6 +29,7 @@ public class AddEmailCommandTest {
     @Before
     public void setUpMocks() {
         commandService = mock(CommandService.class);
+        WrapperMock.createInstance();
     }
 
     @Test
@@ -49,12 +52,14 @@ public class AddEmailCommandTest {
         AddEmailCommand command = new AddEmailCommand();
         Management management = mock(Management.class);
         given(commandService.getManagement()).willReturn(management);
+        NewSetting settings = mock(NewSetting.class);
+        given(commandService.getSettings()).willReturn(settings);
 
         // when
-        command.executeCommand(sender, Arrays.asList("mail@example", "other_example"), commandService);
+        command.executeCommand(sender, Arrays.asList("mail@example", "mail@example"), commandService);
 
         // then
-        verify(management).performAddEmail(sender, "mail@example", "other_example");
+        verify(management).performAddEmail(sender, "mail@example");
     }
 
 }

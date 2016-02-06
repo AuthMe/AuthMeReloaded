@@ -1004,6 +1004,20 @@ public class MySQL implements DataSource {
         return auths;
     }
 
+    @Override
+    public synchronized boolean isEmailStored(String email) {
+        String sql = "SELECT 1 FROM " + tableName + " WHERE " + columnEmail + " = ?";
+        try (Connection con = ds.getConnection()) {
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, email);
+            ResultSet rs = pst.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            logSqlException(e);
+        }
+        return false;
+    }
+
     private static void logSqlException(SQLException e) {
         ConsoleLogger.logException("Error during SQL operation:", e);
     }

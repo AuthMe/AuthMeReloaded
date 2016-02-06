@@ -247,4 +247,9 @@ public class CacheDataSource implements DataSource {
     public List<PlayerAuth> getLoggedPlayers() {
         return new ArrayList<>(PlayerCache.getInstance().getCache().values());
     }
+
+    @Override
+    public boolean isEmailStored(String email) {
+        return source.isEmailStored(email);
+    }
 }

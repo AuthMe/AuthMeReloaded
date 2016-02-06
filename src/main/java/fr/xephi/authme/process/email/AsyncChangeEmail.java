@@ -3,93 +3,78 @@ package fr.xephi.authme.process.email;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 /**
+ * Async task for changing the email.
  */
 public class AsyncChangeEmail {
 
     private final Player player;
-    private final AuthMe plugin;
     private final String oldEmail;
     private final String newEmail;
-    private final String newEmailVerify;
     private final Messages m;
     private final NewSetting settings;
+    private final PlayerCache playerCache;
+    private final DataSource dataSource;
 
-    public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail, String newEmailVerify,
-                            NewSetting settings) {
+    public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail, DataSource dataSource,
+                            PlayerCache playerCache, NewSetting settings) {
         this.m = plugin.getMessages();
         this.player = player;
-        this.plugin = plugin;
         this.oldEmail = oldEmail;
         this.newEmail = newEmail;
-        this.newEmailVerify = newEmailVerify;
+        this.playerCache = playerCache;
+        this.dataSource = dataSource;
         this.settings = settings;
-    }
-
-    public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail, NewSetting settings) {
-        this(player, plugin, oldEmail, newEmail, newEmail, settings);
     }
 
     public void process() {
         String playerName = player.getName().toLowerCase();
-        if (PlayerCache.getInstance().isAuthenticated(playerName)) {
-            if (!newEmail.equals(newEmailVerify)) {
-                m.send(player, MessageKey.CONFIRM_EMAIL_MESSAGE);
-                return;
-            }
-            PlayerAuth auth = PlayerCache.getInstance().getAuth(playerName);
-            String currentEmail = auth.getEmail();
-            if (oldEmail != null) {
-                if (StringUtils.isEmpty(currentEmail) || currentEmail.equals("your@email.com")) {
-                    m.send(player, MessageKey.USAGE_ADD_EMAIL);
-                    return;
-                }
-                if (!oldEmail.equals(currentEmail)) {
-                    m.send(player, MessageKey.INVALID_OLD_EMAIL);
-                    return;
-                }
-            } else {
-                if (!StringUtils.isEmpty(currentEmail) && !currentEmail.equals("your@email.com")) {
-                    m.send(player, MessageKey.USAGE_CHANGE_EMAIL);
-                    return;
-                }
-            }
-            if (!Utils.isEmailCorrect(newEmail, settings)) {
+        if (playerCache.isAuthenticated(playerName)) {
+            PlayerAuth auth = playerCache.getAuth(playerName);
+            final String currentEmail = auth.getEmail();
+
+            if (currentEmail == null) {
+                m.send(player, MessageKey.USAGE_ADD_EMAIL);
+            } else if (newEmail == null || !Utils.isEmailCorrect(newEmail, settings)) {
                 m.send(player, MessageKey.INVALID_NEW_EMAIL);
-                return;
+            } else if (!oldEmail.equals(currentEmail)) {
+                m.send(player, MessageKey.INVALID_OLD_EMAIL);
+            } else if (dataSource.isEmailStored(newEmail)) {
+                m.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
+            } else {
+                saveNewEmail(auth);
             }
-            auth.setEmail(newEmail);
-            if (!plugin.getDataSource().updateEmail(auth)) {
-                m.send(player, MessageKey.ERROR);
-                auth.setEmail(currentEmail);
-                return;
-            }
-            PlayerCache.getInstance().updatePlayer(auth);
-            if (oldEmail == null) {
-                m.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
-                player.sendMessage(auth.getEmail());
-                return;
-            }
+        } else {
+            outputUnloggedMessage();
+        }
+    }
+
+    private void saveNewEmail(PlayerAuth auth) {
+        auth.setEmail(newEmail);
+        if (dataSource.updateEmail(auth)) {
+            playerCache.updatePlayer(auth);
             m.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
         } else {
-            if (plugin.getDataSource().isAuthAvailable(playerName)) {
-                m.send(player, MessageKey.LOGIN_MESSAGE);
-            } else {
-                if (Settings.emailRegistration) {
-                    m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
-                } else {
-                    m.send(player, MessageKey.REGISTER_MESSAGE);
-                }
-            }
+            m.send(player, MessageKey.ERROR);
+            auth.setEmail(newEmail);
         }
+    }
 
+    private void outputUnloggedMessage() {
+        if (dataSource.isAuthAvailable(player.getName())) {
+            m.send(player, MessageKey.LOGIN_MESSAGE);
+        } else if (Settings.emailRegistration) {
+            m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+        } else {
+            m.send(player, MessageKey.REGISTER_MESSAGE);
+        }
     }
 }
