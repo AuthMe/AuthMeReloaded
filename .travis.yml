@@ -3,14 +3,12 @@ sudo: false
 language: java
 jdk: oraclejdk7
 
-# Disable cache to test dependency resolution
-#cache:
-#  directories:
-#    - '$HOME/.m2/repository'
+cache:
+  directories:
+    - '$HOME/.m2/repository'
 
 script:
-  #- mvn clean install -B && mvn clean -B
-  - mvn clean install
+  - mvn clean install -B -U
 
 notifications:
   webhooks:
