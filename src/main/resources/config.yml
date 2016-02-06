@@ -67,6 +67,9 @@ settings:
         # Care that this feature blocks also all the commands not
         # listed in the list below.
         allowChat: false
+        # WARNING: use this only if you need it!
+        # Allow unlogged users to use all the commands if registration is not forced!
+        allowAllCommandsIfRegistrationIsOptional: false
         # Commands allowed when a player is not authenticated
         allowCommands:
         - /login
@@ -305,6 +308,8 @@ Security:
         noConsoleSpam: false
         # Replace passwords in the console when player type a command like /login
         removePassword: true
+        # Copy AuthMe log output in a separate file as well?
+        logConsole: true
     captcha:
         # Player need to put a captcha when he fails too lot the password
         useCaptcha: false

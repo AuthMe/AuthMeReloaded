@@ -1,5 +1,7 @@
 package fr.xephi.authme.process.login;
 
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -24,6 +26,8 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 
+import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
+
 /**
  */
 public class ProcessSyncPlayerLogin implements Runnable {
@@ -36,24 +40,26 @@ public class ProcessSyncPlayerLogin implements Runnable {
     private final DataSource database;
     private final PluginManager pm;
     private final JsonCache playerCache;
+    private final NewSetting settings;
 
     /**
      * Constructor for ProcessSyncPlayerLogin.
      *
      * @param player Player
      * @param plugin AuthMe
-     * @param data   DataSource
+     * @param database   DataSource
      */
     public ProcessSyncPlayerLogin(Player player, AuthMe plugin,
-                                  DataSource data) {
+                                  DataSource database, NewSetting settings) {
         this.plugin = plugin;
-        this.database = data;
+        this.database = database;
         this.pm = plugin.getServer().getPluginManager();
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.limbo = LimboCache.getInstance().getLimboPlayer(name);
         this.auth = database.getAuth(name);
         this.playerCache = new JsonCache();
+        this.settings = settings;
     }
 
     /**
@@ -152,7 +158,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
                 }
             }
 
-            if (Settings.protectInventoryBeforeLogInEnabled) {
+            if (settings.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 restoreInventory();
             }
 
@@ -188,27 +194,27 @@ public class ProcessSyncPlayerLogin implements Runnable {
         // Login is finish, display welcome message if we use email registration
         if (Settings.useWelcomeMessage && Settings.emailRegistration)
             if (Settings.broadcastWelcomeMessage) {
-                for (String s : Settings.welcomeMsg) {
+                for (String s : settings.getWelcomeMessage()) {
                     Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
-                for (String s : Settings.welcomeMsg) {
+                for (String s : settings.getWelcomeMessage()) {
                     player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
 
-        // Login is now finish , we can force all commands
+        // Login is now finished; we can force all commands
         forceCommands();
         
         sendTo();
     }
 
     private void sendTo() {
-        if (Settings.sendPlayerTo.isEmpty())
-            return;
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Connect");
-        out.writeUTF(Settings.sendPlayerTo);
-        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        if (!settings.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("Connect");
+            out.writeUTF(settings.getProperty(HooksSettings.BUNGEECORD_SERVER));
+            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        }
     }
 }

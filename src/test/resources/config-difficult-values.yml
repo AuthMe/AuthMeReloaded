@@ -1,0 +1,29 @@
+# Test config file with some "difficult" values
+
+test:
+    duration: 20.102
+    systemName: 'A ''test'' name'
+sample:
+    ratio:
+        order: Fourth
+        fields:
+            - Australia\
+            - '	Burundi'''
+            - 'Colombia?
+
+            '''''
+        # The last element above represents "Colombia?\n''"
+version: -1337
+features:
+    boring:
+        # YAML allows both "yes"/"no" and "true"/"false" for expressing booleans
+        skip: no
+        colors:
+            - 'it''s a difficult string!'
+            - |
+                gray
+                with new lines
+        # dustLevel: 8 <-- missing property triggering rewrite
+    cool:
+        enabled: yes
+        options: []

@@ -6,8 +6,10 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 /**
@@ -20,13 +22,16 @@ public class AsyncAddEmail {
     private final Messages messages;
     private final DataSource dataSource;
     private final PlayerCache playerCache;
+    private final NewSetting settings;
 
-    public AsyncAddEmail(AuthMe plugin, Player player, String email, DataSource dataSource, PlayerCache playerCache) {
+    public AsyncAddEmail(AuthMe plugin, Player player, String email, DataSource dataSource,
+                         PlayerCache playerCache, NewSetting settings) {
         this.messages = plugin.getMessages();
         this.player = player;
         this.email = email;
         this.dataSource = dataSource;
         this.playerCache = playerCache;
+        this.settings = settings;
     }
 
     public void process() {
@@ -52,9 +57,9 @@ public class AsyncAddEmail {
         }
     }
 
-    private static boolean isEmailInvalid(String email) {
+    private boolean isEmailInvalid(String email) {
         return StringUtils.isEmpty(email) || "your@email.com".equals(email)
-            || !Settings.isEmailCorrect(email);
+            || !Utils.isEmailCorrect(email, settings);
     }
 
     private void sendUnloggedMessage(DataSource dataSource) {

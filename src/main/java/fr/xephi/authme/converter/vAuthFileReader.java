@@ -8,6 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.UUID;
 
@@ -27,7 +28,7 @@ class vAuthFileReader {
     }
 
     public void convert() {
-        final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
+        final File file = new File(plugin.getDataFolder().getParent() + File.separator + "vAuth" + File.separator + "passwords.yml");
         Scanner scanner;
         try {
             scanner = new Scanner(file);
@@ -52,8 +53,8 @@ class vAuthFileReader {
                 database.saveAuth(auth);
             }
             scanner.close();
-        } catch (Exception e) {
-            ConsoleLogger.writeStackTrace(e);
+        } catch (IOException e) {
+            ConsoleLogger.logException("Error while trying to import some vAuth data", e);
         }
 
     }
@@ -63,12 +64,10 @@ class vAuthFileReader {
     }
 
     private String getName(UUID uuid) {
-        try {
-            for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
-                if (op.getUniqueId().compareTo(uuid) == 0)
-                    return op.getName();
+        for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
+            if (op.getUniqueId().compareTo(uuid) == 0) {
+                return op.getName();
             }
-        } catch (Exception ignored) {
         }
         return null;
     }

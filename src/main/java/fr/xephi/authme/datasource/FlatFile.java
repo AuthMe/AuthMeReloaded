@@ -36,17 +36,19 @@ public class FlatFile implements DataSource {
     private final File source;
 
     public FlatFile() {
-        source = Settings.AUTH_FILE;
+        AuthMe instance = AuthMe.getInstance();
+
+        source = new File(instance.getDataFolder(), "auths.db");
         try {
             source.createNewFile();
         } catch (IOException e) {
             ConsoleLogger.showError(e.getMessage());
             if (Settings.isStopEnabled) {
                 ConsoleLogger.showError("Can't use FLAT FILE... SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
+                instance.getServer().shutdown();
             }
             if (!Settings.isStopEnabled) {
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
+                instance.getServer().getPluginManager().disablePlugin(instance);
             }
             e.printStackTrace();
         }

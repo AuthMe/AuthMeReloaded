@@ -1,42 +1,32 @@
 package fr.xephi.authme.settings;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Wrapper;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
 /**
+ * Old settings manager. See {@link NewSetting} for the new manager.
  */
 public final class Settings {
 
     public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
-    public static final File AUTH_FILE = new File(PLUGIN_FOLDER, "auths.db");
-    public static final File EMAIL_FILE = new File(PLUGIN_FOLDER, "email.html");
-    public static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
+    private static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
     public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
     // This is not an option!
     public static boolean antiBotInAction = false;
-    public static File messageFile;
     public static List<String> allowCommands;
     public static List<String> getJoinPermissions;
     public static List<String> getUnrestrictedName;
@@ -49,7 +39,6 @@ public final class Settings {
     public static List<String> forceCommandsAsConsole;
     public static List<String> forceRegisterCommands;
     public static List<String> forceRegisterCommandsAsConsole;
-    public static List<String> welcomeMsg;
     public static List<String> unsafePasswords;
     public static List<String> emailBlacklist;
     public static List<String> emailWhitelist;
@@ -66,8 +55,7 @@ public final class Settings {
         isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
         isCachingEnabled,
         isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
-        protectInventoryBeforeLogInEnabled, isBackupActivated,
-        isBackupOnStart, isBackupOnStop, isStopEnabled, reloadSupport,
+        protectInventoryBeforeLogInEnabled, isStopEnabled, reloadSupport,
         rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
         useCaptcha, emailRegistration, multiverse, bungee,
         banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
@@ -77,21 +65,20 @@ public final class Settings {
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, delayJoinLeaveMessages, noTeleport, applyBlindEffect,
-        kickPlayersBeforeStopping,
+        kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
         customAttributes, generateImage, isRemoveSpeedEnabled, preventOtherCase;
-    public static String helpHeader, getNickRegex, getUnloggedinGroup, getMySQLHost,
+    public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
         getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
         getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
         getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
         getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup,
         backupWindowsPath, getRegisteredGroup,
-        messagesLanguage, getMySQLlastlocX, getMySQLlastlocY,
+        getMySQLlastlocX, getMySQLlastlocY,
         getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
-        getmailPassword, getmailSMTP, getMySQLColumnId, getmailSenderName,
-        getMailSubject, getMailText, getMySQLlastlocWorld, defaultWorld,
+        getMySQLColumnId, getMySQLlastlocWorld, defaultWorld,
         getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
         spawnPriority, crazyloginFileName, getPassRegex,
-        getMySQLColumnRealName, emailOauth2Token, sendPlayerTo;
+        getMySQLColumnRealName, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
         getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
@@ -100,7 +87,7 @@ public final class Settings {
         getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
         antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
         getMaxJoinPerIp;
-    protected static YamlConfiguration configFile;
+    protected static FileConfiguration configFile;
     private static AuthMe plugin;
     private static Settings instance;
 
@@ -112,34 +99,11 @@ public final class Settings {
     public Settings(AuthMe pl) {
         instance = this;
         plugin = pl;
-        configFile = (YamlConfiguration) plugin.getConfig();
-    }
-
-    /**
-     * Method reload.
-     *
-     * @throws Exception if something went wrong
-     */
-    public static void reload() throws Exception {
-        plugin.getLogger().info("Loading Configuration File...");
-        boolean exist = SETTINGS_FILE.exists();
-        if (!exist) {
-            plugin.saveDefaultConfig();
-        }
-        configFile.load(SETTINGS_FILE);
-        if (exist) {
-            instance.mergeConfig();
-        }
+        configFile = plugin.getConfig();
         loadVariables();
-        if (exist) {
-            instance.saveDefaults();
-        }
-        messageFile = new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + messagesLanguage + ".yml");
     }
 
     public static void loadVariables() {
-        helpHeader = configFile.getString("settings.helpHeader", "AuthMeReloaded");
-        messagesLanguage = checkLang(configFile.getString("settings.messagesLanguage", "en").toLowerCase());
         isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
         isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
@@ -204,13 +168,11 @@ public final class Settings {
         plugin.checkProtocolLib();
 
         passwordMaxLength = configFile.getInt("settings.security.passwordMaxLength", 20);
-        isBackupActivated = configFile.getBoolean("BackupSystem.ActivateBackup", false);
-        isBackupOnStart = configFile.getBoolean("BackupSystem.OnServerStart", false);
-        isBackupOnStop = configFile.getBoolean("BackupSystem.OnServeStop", false);
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
 
+        allowAllCommandsIfRegIsOptional = configFile.getBoolean("settings.restrictions.allowAllCommandsIfRegistrationIsOptional", false);
         allowCommands = new ArrayList<>();
         allowCommands.addAll(Arrays.asList("/login", "/l", "/register", "/reg", "/email", "/captcha"));
         for (String cmd : configFile.getStringList("settings.restrictions.allowCommands")) {
@@ -226,19 +188,14 @@ public final class Settings {
         noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam", false);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
         getmailAccount = configFile.getString("Email.mailAccount", "");
-        getmailPassword = configFile.getString("Email.mailPassword", "");
-        getmailSMTP = configFile.getString("Email.mailSMTP", "smtp.gmail.com");
         getMailPort = configFile.getInt("Email.mailPort", 465);
         getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
         getMySQLOtherUsernameColumn = configFile.getStringList("ExternalBoardOptions.mySQLOtherUsernameColumns");
         displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
         getMySQLColumnId = configFile.getString("DataSource.mySQLColumnId", "id");
-        getmailSenderName = configFile.getString("Email.mailSenderName", "");
         useCaptcha = configFile.getBoolean("Security.captcha.useCaptcha", false);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        getMailSubject = configFile.getString("Email.mailSubject", "Your new AuthMe Password");
-        getMailText = loadEmailText();
         emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
@@ -297,34 +254,8 @@ public final class Settings {
         generateImage = configFile.getBoolean("Email.generateImage", false);
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
         kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
-        emailOauth2Token = configFile.getString("Email.emailOauth2Token", "");
         sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
 
-        // Load the welcome message
-        getWelcomeMessage();
-
-    }
-
-    private static String loadEmailText() {
-        if (!EMAIL_FILE.exists()) {
-            plugin.saveResource("email.html", false);
-        }
-        try {
-            return Files.toString(EMAIL_FILE, Charsets.UTF_8);
-        } catch (IOException e) {
-            ConsoleLogger.showError("Error loading email text: " + StringUtils.formatException(e));
-            ConsoleLogger.writeStackTrace(e);
-            return "";
-        }
-    }
-
-    /**
-     * @param key   the key to set
-     * @param value the value to set
-     */
-    public static void setValue(String key, Object value) {
-        instance.set(key, value);
-        save();
     }
 
     /**
@@ -358,48 +289,11 @@ public final class Settings {
     }
 
     /**
-     * Config option for setting and check restricted user by username;ip ,
-     * return false if ip and name doesn't match with player that join the
-     * server, so player has a restricted access
-     *
-     * @param name   String
-     * @param ip     String
-     * @param domain String
-     *
-     * @return boolean
-     */
-    public static boolean getRestrictedIp(String name, String ip, String domain) {
-
-        Iterator<String> iterator = getRestrictedIp.iterator();
-        boolean trueOnce = false;
-        boolean nameFound = false;
-        while (iterator.hasNext()) {
-            String[] args = iterator.next().split(";");
-            String testName = args[0];
-            String testIp = args[1];
-            if (testName.equalsIgnoreCase(name)) {
-                nameFound = true;
-                if (ip != null) {
-                    if (testIp.equalsIgnoreCase(ip)) {
-                        trueOnce = true;
-                    }
-                }
-                if (domain != null) {
-                    if (testIp.equalsIgnoreCase(domain)) {
-                        trueOnce = true;
-                    }
-                }
-            }
-        }
-        return !nameFound || trueOnce;
-    }
-
-    /**
      * Saves the configuration to disk
      *
      * @return True if saved successfully
      */
-    public static boolean save() {
+    private static boolean save() {
         try {
             configFile.save(SETTINGS_FILE);
             return true;
@@ -415,7 +309,7 @@ public final class Settings {
      *
      * @return String
      */
-    public static String checkLang(String lang) {
+    private static String checkLang(String lang) {
         if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
             ConsoleLogger.info("Set Language to: " + lang);
             return lang;
@@ -443,321 +337,6 @@ public final class Settings {
         }
     }
 
-    private static void getWelcomeMessage() {
-        AuthMe plugin = AuthMe.getInstance();
-        welcomeMsg = new ArrayList<>();
-        if (!useWelcomeMessage) {
-            return;
-        }
-        if (!(new File(plugin.getDataFolder() + File.separator + "welcome.txt").exists())) {
-            try {
-                FileWriter fw = new FileWriter(plugin.getDataFolder() + File.separator + "welcome.txt", true);
-                BufferedWriter w = new BufferedWriter(fw);
-                w.write("Welcome {PLAYER} on {SERVER} server");
-                w.newLine();
-                w.write("This server uses " + AuthMe.getPluginName() + " protection!");
-                w.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        try {
-            FileReader fr = new FileReader(plugin.getDataFolder() + File.separator + "welcome.txt");
-            BufferedReader br = new BufferedReader(fr);
-            String line;
-            while ((line = br.readLine()) != null) {
-                welcomeMsg.add(line);
-            }
-            br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Method isEmailCorrect.
-     *
-     * @param email String
-     *
-     * @return boolean
-     */
-    public static boolean isEmailCorrect(String email) {
-        if (!email.contains("@"))
-            return false;
-        if (email.equalsIgnoreCase("your@email.com"))
-            return false;
-        String emailDomain = email.split("@")[1];
-        boolean correct = true;
-        if (emailWhitelist != null && !emailWhitelist.isEmpty()) {
-            for (String domain : emailWhitelist) {
-                if (!domain.equalsIgnoreCase(emailDomain)) {
-                    correct = false;
-                } else {
-                    correct = true;
-                    break;
-                }
-            }
-            return correct;
-        }
-        if (emailBlacklist != null && !emailBlacklist.isEmpty()) {
-            for (String domain : emailBlacklist) {
-                if (domain.equalsIgnoreCase(emailDomain)) {
-                    correct = false;
-                    break;
-                }
-            }
-        }
-        return correct;
-    }
-
-    public void mergeConfig() {
-        boolean changes = false;
-        if (contains("Xenoforo.predefinedSalt")) {
-            set("Xenoforo.predefinedSalt", null);
-            changes = true;
-        }
-        if (!contains("Protection.enableProtection")) {
-            set("Protection.enableProtection", false);
-            changes = true;
-        }
-        if (!contains("settings.restrictions.removeSpeed")) {
-            set("settings.restrictions.removeSpeed", true);
-            changes = true;
-        }
-        if (!contains("Protection.countries")) {
-            countries = new ArrayList<>();
-            countries.add("US");
-            countries.add("GB");
-            set("Protection.countries", countries);
-            changes = true;
-        }
-        if (!contains("Protection.enableAntiBot")) {
-            set("Protection.enableAntiBot", false);
-            changes = true;
-        }
-        if (!contains("Protection.antiBotSensibility")) {
-            set("Protection.antiBotSensibility", 5);
-            changes = true;
-        }
-        if (!contains("Protection.antiBotDuration")) {
-            set("Protection.antiBotDuration", 10);
-            changes = true;
-        }
-        if (!contains("settings.forceCommands")) {
-            set("settings.forceCommands", new ArrayList<String>());
-            changes = true;
-        }
-        if (!contains("settings.forceCommandsAsConsole")) {
-            set("settings.forceCommandsAsConsole", new ArrayList<String>());
-            changes = true;
-        }
-        if (!contains("Email.recallPlayers")) {
-            set("Email.recallPlayers", false);
-            changes = true;
-        }
-        if (!contains("Email.delayRecall")) {
-            set("Email.delayRecall", 5);
-            changes = true;
-        }
-        if (!contains("settings.useWelcomeMessage")) {
-            set("settings.useWelcomeMessage", true);
-            changes = true;
-        }
-        if (!contains("settings.restrictions.enablePasswordConfirmation")) {
-            set("settings.restrictions.enablePasswordConfirmation", true);
-            changes = true;
-        }
-        if (contains("settings.restrictions.enablePasswordVerifier")) {
-            set("settings.restrictions.enablePasswordVerifier", null);
-            changes = true;
-        }
-        if (!contains("settings.security.unsafePasswords")) {
-            List<String> str = new ArrayList<>();
-            str.add("123456");
-            str.add("password");
-            set("settings.security.unsafePasswords", str);
-            changes = true;
-        }
-        if (!contains("Protection.countriesBlacklist")) {
-            countriesBlacklist = new ArrayList<>();
-            countriesBlacklist.add("A1");
-            set("Protection.countriesBlacklist", countriesBlacklist);
-            changes = true;
-        }
-        if (!contains("settings.helpHeader")) {
-            set("settings.helpHeader", "AuthMeReloaded");
-            changes = true;
-        }
-        if (!contains("settings.broadcastWelcomeMessage")) {
-            set("settings.broadcastWelcomeMessage", false);
-            changes = true;
-        }
-        if (!contains("settings.registration.forceKickAfterRegister")) {
-            set("settings.registration.forceKickAfterRegister", false);
-            changes = true;
-        }
-        if (!contains("settings.registration.forceLoginAfterRegister")) {
-            set("settings.registration.forceLoginAfterRegister", false);
-            changes = true;
-        }
-        if (!contains("DataSource.mySQLColumnLogged")) {
-            set("DataSource.mySQLColumnLogged", "isLogged");
-            changes = true;
-        }
-        if (!contains("settings.restrictions.spawnPriority")) {
-            set("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
-            changes = true;
-        }
-        if (!contains("settings.restrictions.maxLoginPerIp")) {
-            set("settings.restrictions.maxLoginPerIp", 0);
-            changes = true;
-        }
-        if (!contains("settings.restrictions.maxJoinPerIp")) {
-            set("settings.restrictions.maxJoinPerIp", 0);
-            changes = true;
-        }
-        if (!contains("VeryGames.enableIpCheck")) {
-            set("VeryGames.enableIpCheck", false);
-            changes = true;
-        }
-        if (configFile.getString("settings.restrictions.allowedNicknameCharacters").equals("[a-zA-Z0-9_?]*")) {
-            set("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_]*");
-            changes = true;
-        }
-        if (contains("settings.delayJoinMessage")) {
-            set("settings.delayJoinMessage", null);
-            changes = true;
-        }
-        if (!contains("settings.delayJoinLeaveMessages")) {
-            set("settings.delayJoinLeaveMessages", true);
-            changes = true;
-        }
-        if (!contains("settings.restrictions.noTeleport")) {
-            set("settings.restrictions.noTeleport", false);
-            changes = true;
-        }
-        if (contains("Converter.Rakamak.newPasswordHash")) {
-            set("Converter.Rakamak.newPasswordHash", null);
-            changes = true;
-        }
-        if (!contains("Converter.CrazyLogin.fileName")) {
-            set("Converter.CrazyLogin.fileName", "accounts.db");
-            changes = true;
-        }
-        if (!contains("settings.restrictions.allowedPasswordCharacters")) {
-            set("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
-            changes = true;
-        }
-        if (!contains("settings.applyBlindEffect")) {
-            set("settings.applyBlindEffect", false);
-            changes = true;
-        }
-        if (!contains("Email.emailBlacklisted")) {
-            set("Email.emailBlacklisted", new ArrayList<String>());
-            changes = true;
-        }
-        if (contains("Performances")) {
-            set("Performances", null);
-            changes = true;
-        }
-        if (contains("Passpartu.enablePasspartu")) {
-            set("Passpartu.enablePasspartu", null);
-            changes = true;
-        }
-        if (contains("Passpartu")) {
-            set("Passpartu", null);
-            changes = true;
-        }
-        if (!contains("Email.emailWhitelisted")) {
-            set("Email.emailWhitelisted", new ArrayList<String>());
-            changes = true;
-        }
-        if (!contains("settings.forceRegisterCommands")) {
-            set("settings.forceRegisterCommands", new ArrayList<String>());
-            changes = true;
-        }
-        if (!contains("settings.forceRegisterCommandsAsConsole")) {
-            set("settings.forceRegisterCommandsAsConsole", new ArrayList<String>());
-            changes = true;
-        }
-        if (!contains("Hooks.customAttributes")) {
-            set("Hooks.customAttributes", false);
-            changes = true;
-        }
-        if (!contains("Purge.removePermissions")) {
-            set("Purge.removePermissions", false);
-            changes = true;
-        }
-        if (contains("Hooks.notifications")) {
-            set("Hooks.notifications", null);
-            changes = true;
-        }
-        if (contains("Hooks.chestshop")) {
-            set("Hooks.chestshop", null);
-            changes = true;
-        }
-        if (contains("Hooks.legacyChestshop")) {
-            set("Hooks.legacyChestshop", null);
-            changes = true;
-        }
-        if (!contains("Email.generateImage")) {
-            set("Email.generateImage", false);
-            changes = true;
-        }
-        if (!contains("DataSource.mySQLRealName")) {
-            set("DataSource.mySQLRealName", "realname");
-            changes = true;
-        }
-
-        if (!contains("settings.preventOtherCase")) {
-            set("settings.preventOtherCase", false);
-            changes = true;
-        }
-
-        if (contains("Email.mailText")) {
-            set("Email.mailText", null);
-            ConsoleLogger.showError("Remove Email.mailText from config, we now use the email.html file");
-        }
-
-        if (!contains("Security.stop.kickPlayersBeforeStopping")) {
-            set("Security.stop.kickPlayersBeforeStopping", true);
-            changes = true;
-        }
-
-        if (!contains("Email.emailOauth2Token"))
-            set("Email.emailOauth2Token", "");
-
-        if (!contains("Hooks.sendPlayerTo")) {
-            set("Hooks.sendPlayerTo", "");
-            changes = true;
-        }
-
-        if (changes) {
-            save();
-            plugin.getLogger().warning("Merged new Config Options - I'm not an error, please don't report me");
-            plugin.getLogger().warning("Please check your config.yml file for new configs!");
-        }
-    }
-
-    /**
-     * @param path
-     *
-     * @return
-     */
-    private static boolean contains(String path) {
-        return configFile.contains(path);
-    }
-
-    // public because it's used in AuthMe at one place
-
-    /**
-     * @param path  String
-     * @param value String
-     */
-    public void set(String path, Object value) {
-        configFile.set(path, value);
-    }
-
     /**
      * Saves current configuration (plus defaults) to disk.
      * <p>
@@ -765,7 +344,7 @@ public final class Settings {
      *
      * @return True if saved successfully
      */
-    public final boolean saveDefaults() {
+    private boolean saveDefaults() {
         configFile.options()
             .copyDefaults(true)
             .copyHeader(true);

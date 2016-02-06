@@ -5,7 +5,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.custom.SecuritySettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;

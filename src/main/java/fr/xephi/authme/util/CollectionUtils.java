@@ -52,11 +52,12 @@ public final class CollectionUtils {
     }
 
     /**
-     * @param <T> element
-     * @param coll Collection
-     * @return boolean Boolean
+     * Null-safe way to check whether a collection is empty or not.
+     *
+     * @param coll The collection to verify
+     * @return True if the collection is null or empty, false otherwise
      */
-    public static <T> boolean isEmpty(Collection<T> coll) {
+    public static boolean isEmpty(Collection<?> coll) {
         return coll == null || coll.isEmpty();
     }
 

@@ -1,5 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
@@ -13,6 +14,7 @@ public class BcryptTest extends AbstractEncryptionMethodTest {
     public static void setUpSettings() {
         WrapperMock.createInstance();
         Settings.bCryptLog2Rounds = 8;
+        ConsoleLoggerTestInitializer.setupLogger();
     }
 
     public BcryptTest() {

@@ -5,7 +5,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -20,7 +20,7 @@ public class SetEmailCommand implements ExecutableCommand {
         final String playerEmail = arguments.get(1);
 
         // Validate the email address
-        if (!Settings.isEmailCorrect(playerEmail)) {
+        if (!Utils.isEmailCorrect(playerEmail, commandService.getSettings())) {
             commandService.send(sender, MessageKey.INVALID_EMAIL);
             return;
         }

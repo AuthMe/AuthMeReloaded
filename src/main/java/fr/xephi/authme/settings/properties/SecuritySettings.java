@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings.custom;
+package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.domain.Comment;
@@ -29,6 +29,10 @@ public class SecuritySettings implements SettingsClass {
     @Comment("Remove passwords from console?")
     public static final Property<Boolean> REMOVE_PASSWORD_FROM_CONSOLE =
         newProperty("Security.console.removePassword", true);
+
+    @Comment("Copy AuthMe log output in a separate file as well?")
+    public static final Property<Boolean> USE_LOGGING =
+        newProperty("Security.console.logConsole", true);
 
     @Comment("Player need to put a captcha when he fails too lot the password")
     public static final Property<Boolean> USE_CAPTCHA =

@@ -5,17 +5,13 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalListeners;
 import com.google.common.cache.RemovalNotification;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -23,7 +19,6 @@ import java.util.concurrent.TimeUnit;
 public class CacheDataSource implements DataSource {
 
     private final DataSource source;
-    private final ExecutorService exec;
     private final LoadingCache<String, Optional<PlayerAuth>> cachedAuths;
 
     /**
@@ -33,10 +28,9 @@ public class CacheDataSource implements DataSource {
      */
     public CacheDataSource(DataSource src) {
         this.source = src;
-        this.exec = Executors.newCachedThreadPool();
-        cachedAuths = CacheBuilder.newBuilder()
-            .expireAfterWrite(5, TimeUnit.MINUTES)
-            .removalListener(RemovalListeners.asynchronous(new RemovalListener<String, Optional<PlayerAuth>>() {
+        this.cachedAuths = CacheBuilder.newBuilder()
+            .expireAfterWrite(8, TimeUnit.MINUTES)
+            .removalListener(new RemovalListener<String, Optional<PlayerAuth>>() {
                 @Override
                 public void onRemoval(RemovalNotification<String, Optional<PlayerAuth>> removalNotification) {
                     String name = removalNotification.getKey();
@@ -44,7 +38,7 @@ public class CacheDataSource implements DataSource {
                         cachedAuths.getUnchecked(name);
                     }
                 }
-            }, exec))
+            })
             .build(
                 new CacheLoader<String, Optional<PlayerAuth>>() {
                     public Optional<PlayerAuth> load(String key) {
@@ -168,24 +162,13 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public synchronized void close() {
-        try {
-            exec.shutdown();
-            exec.awaitTermination(8, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            ConsoleLogger.writeStackTrace(e);
-        }
         source.close();
     }
 
     @Override
     public void reload() { // unused method
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                source.reload();
-                cachedAuths.invalidateAll();
-            }
-        });
+        source.reload();
+        cachedAuths.invalidateAll();
     }
 
     @Override
@@ -214,13 +197,8 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public synchronized void purgeBanned(final List<String> banned) {
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                source.purgeBanned(banned);
-                cachedAuths.invalidateAll(banned);
-            }
-        });
+        source.purgeBanned(banned);
+        cachedAuths.invalidateAll(banned);
     }
 
     @Override
@@ -235,33 +213,18 @@ public class CacheDataSource implements DataSource {
 
     @Override
     public void setLogged(final String user) {
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                source.setLogged(user.toLowerCase());
-            }
-        });
+        source.setLogged(user.toLowerCase());
     }
 
     @Override
     public void setUnlogged(final String user) {
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                source.setUnlogged(user.toLowerCase());
-            }
-        });
+        source.setUnlogged(user.toLowerCase());
     }
 
     @Override
     public void purgeLogged() {
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                source.purgeLogged();
-                cachedAuths.invalidateAll();
-            }
-        });
+        source.purgeLogged();
+        cachedAuths.invalidateAll();
     }
 
     @Override
@@ -270,14 +233,9 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void updateName(final String oldOne, final String newOne) {
-        exec.execute(new Runnable() {
-            @Override
-            public void run() {
-                source.updateName(oldOne, newOne);
-                cachedAuths.invalidate(oldOne);
-            }
-        });
+    public void updateName(final String oldOne, final String newOne) { // unused method
+        source.updateName(oldOne, newOne);
+        cachedAuths.invalidate(oldOne);
     }
 
     @Override

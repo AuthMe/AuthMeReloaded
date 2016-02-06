@@ -2,6 +2,7 @@ package fr.xephi.authme.util;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.util.Arrays;
 import java.util.List;
@@ -134,5 +135,14 @@ public class StringUtilsTest {
         assertThat(StringUtils.getDifference("test", "taste"), equalTo(0.4));
         assertThat(StringUtils.getDifference("test", "bear"), equalTo(0.75));
         assertThat(StringUtils.getDifference("test", "something"), greaterThan(0.88));
+    }
+
+    @Test
+    public void shouldConstructPath() {
+        // given/when
+        String result = StringUtils.makePath("path", "to", "test-file.txt");
+
+        // then
+        assertThat(result, equalTo("path" + File.separator + "to" + File.separator + "test-file.txt"));
     }
 }

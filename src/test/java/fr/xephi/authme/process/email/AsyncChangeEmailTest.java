@@ -6,6 +6,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.entity.Player;
@@ -29,6 +30,7 @@ public class AsyncChangeEmailTest {
     private Messages messages;
     private PlayerCache playerCache;
     private DataSource dataSource;
+    private NewSetting settings;
 
     @BeforeClass
     public static void setUp() {
@@ -221,6 +223,7 @@ public class AsyncChangeEmailTest {
         when(authMe.getMessages()).thenReturn(messages);
         playerCache = mock(PlayerCache.class);
         dataSource = mock(DataSource.class);
-        return new AsyncChangeEmail(player, authMe, oldEmail, newEmail, dataSource, playerCache);
+        settings = mock(NewSetting.class);
+        return new AsyncChangeEmail(player, authMe, oldEmail, newEmail, dataSource, playerCache, settings);
     }
 }

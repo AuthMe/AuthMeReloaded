@@ -49,12 +49,12 @@ public class AsynchronousJoin {
     }
 
     public void process() {
-        if (Settings.checkVeryGames) {
-            plugin.getVerygamesIp(player);
-        }
-
         if (Utils.isUnrestricted(player)) {
             return;
+        }
+
+        if (Settings.checkVeryGames) {
+            plugin.getVerygamesIp(player);
         }
 
         if (plugin.ess != null && Settings.disableSocialSpy) {
@@ -64,13 +64,13 @@ public class AsynchronousJoin {
         final String ip = plugin.getIP(player);
 
 
-        if (Settings.isAllowRestrictedIp && !Settings.getRestrictedIp(name, ip, player.getAddress().getHostName())) {
+        if (Settings.isAllowRestrictedIp && !isNameRestricted(name, ip, player.getAddress().getHostName())) {
             sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                 @Override
                 public void run() {
                     AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                    player.kickPlayer("You are not the Owner of this account, please try another name!");
+                    player.kickPlayer("You are not the owner of this account. Please try another name!");
                     if (Settings.banUnsafeIp)
                         plugin.getServer().banIP(ip);
                 }
@@ -225,7 +225,7 @@ public class AsynchronousJoin {
                 ? m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE)
                 : m.retrieve(MessageKey.REGISTER_MESSAGE);
         }
-        if (LimboCache.getInstance().getLimboPlayer(name) != null) {
+        if (msgInterval > 0 && LimboCache.getInstance().getLimboPlayer(name) != null) {
             BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
             LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
         }
@@ -280,6 +280,32 @@ public class AsynchronousJoin {
             }
 
         });
+    }
+
+    /**
+     * Return whether the name is restricted based on the restriction setting.
+     *
+     * @param name The name to check
+     * @param ip The IP address of the player
+     * @param domain The hostname of the IP address
+     * @return True if the name is restricted (IP/domain is not allowed for the given name),
+     *         false if the restrictions are met or if the name has no restrictions to it
+     */
+    private static boolean isNameRestricted(String name, String ip, String domain) {
+        boolean nameFound = false;
+        for (String entry : Settings.getRestrictedIp) {
+            String[] args = entry.split(";");
+            String testName = args[0];
+            String testIp = args[1];
+            if (testName.equalsIgnoreCase(name)) {
+                nameFound = true;
+                if ((ip != null && testIp.equals(ip))
+                    || (domain != null && testIp.equalsIgnoreCase(domain))) {
+                    return false;
+                }
+            }
+        }
+        return nameFound;
     }
 
 }

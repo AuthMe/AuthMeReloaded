@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings.custom;
+package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.domain.PropertyType;
@@ -11,7 +11,7 @@ import static fr.xephi.authme.settings.domain.Property.newProperty;
 /**
  * Sample properties for testing purposes.
  */
-class TestConfiguration implements SettingsClass {
+public final class TestConfiguration implements SettingsClass {
 
     public static final Property<Integer> DURATION_IN_SECONDS =
         newProperty("test.duration", 4);
@@ -19,8 +19,8 @@ class TestConfiguration implements SettingsClass {
     public static final Property<String> SYSTEM_NAME =
         newProperty("test.systemName", "[TestDefaultValue]");
 
-    public static final Property<Double> RATIO_LIMIT =
-        newProperty(PropertyType.DOUBLE, "sample.ratio.limit", 3.0);
+    public static final Property<TestEnum> RATIO_ORDER =
+        newProperty(TestEnum.class, "sample.ratio.order", TestEnum.SECOND);
 
     public static final Property<List<String>> RATIO_FIELDS =
         newProperty(PropertyType.STRING_LIST, "sample.ratio.fields", "a", "b", "c");
@@ -34,13 +34,17 @@ class TestConfiguration implements SettingsClass {
     public static final Property<List<String>> BORING_COLORS =
         newProperty(PropertyType.STRING_LIST, "features.boring.colors");
 
-    public static final Property<Double> DUST_LEVEL =
-        newProperty(PropertyType.DOUBLE, "features.boring.dustLevel", 0.2);
+    public static final Property<Integer> DUST_LEVEL =
+        newProperty(PropertyType.INTEGER, "features.boring.dustLevel", -1);
 
     public static final Property<Boolean> USE_COOL_FEATURES =
         newProperty("features.cool.enabled", false);
 
     public static final Property<List<String>> COOL_OPTIONS =
         newProperty(PropertyType.STRING_LIST, "features.cool.options", "Sparks", "Sprinkles");
+
+
+    private TestConfiguration() {
+    }
 
 }

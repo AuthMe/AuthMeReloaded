@@ -219,8 +219,8 @@ public class Log4JFilterTest {
 	 * Mocks a {@link Message} object and makes it return the given formatted message.
 	 *
 	 * @param formattedMessage the formatted message the mock should return
-	
-	 * @return Message mock */
+	 * @return Message mock
+     */
 	private static Message mockMessage(String formattedMessage) {
 		Message message = Mockito.mock(Message.class);
 		when(message.getFormattedMessage()).thenReturn(formattedMessage);

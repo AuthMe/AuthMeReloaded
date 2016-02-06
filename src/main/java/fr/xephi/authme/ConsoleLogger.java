@@ -1,15 +1,16 @@
 package fr.xephi.authme;
 
 import com.google.common.base.Throwables;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Wrapper;
+import fr.xephi.authme.util.StringUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.StandardOpenOption;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.logging.Logger;
 
 /**
  * The plugin's static logger.
@@ -18,11 +19,21 @@ public final class ConsoleLogger {
 
     private static final String NEW_LINE = System.getProperty("line.separator");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("[MM-dd HH:mm:ss]");
-
-    private static Wrapper wrapper = Wrapper.getInstance();
+    private static Logger logger;
+    private static boolean useLogging = false;
+    private static File logFile;
 
     private ConsoleLogger() {
         // Service class
+    }
+
+    public static void setLogger(Logger logger) {
+        ConsoleLogger.logger = logger;
+    }
+
+    public static void setLoggingOptions(boolean useLogging, File logFile) {
+        ConsoleLogger.useLogging = useLogging;
+        ConsoleLogger.logFile = logFile;
     }
 
     /**
@@ -31,11 +42,10 @@ public final class ConsoleLogger {
      * @param message String
      */
     public static void info(String message) {
-        wrapper.getLogger().info(message);
-        if (!Settings.useLogging) {
-            return;
+        logger.info(message);
+        if (useLogging) {
+            writeLog(message);
         }
-        writeLog("" + message);
     }
 
     /**
@@ -44,11 +54,10 @@ public final class ConsoleLogger {
      * @param message String
      */
     public static void showError(String message) {
-        wrapper.getLogger().warning(message);
-        if (!Settings.useLogging) {
-            return;
+        logger.warning(message);
+        if (useLogging) {
+            writeLog("ERROR: " + message);
         }
-        writeLog("ERROR: " + message);
     }
 
     /**
@@ -62,7 +71,7 @@ public final class ConsoleLogger {
             dateTime = DATE_FORMAT.format(new Date());
         }
         try {
-            Files.write(Settings.LOG_FILE.toPath(), (dateTime + ": " + message + NEW_LINE).getBytes(),
+            Files.write(logFile.toPath(), (dateTime + ": " + message + NEW_LINE).getBytes(),
                 StandardOpenOption.APPEND,
                 StandardOpenOption.CREATE);
         } catch (IOException ignored) {
@@ -72,12 +81,22 @@ public final class ConsoleLogger {
     /**
      * Write a StackTrace into the log.
      *
-     * @param ex Exception
+     * @param th The Throwable whose stack trace should be logged
      */
-    public static void writeStackTrace(Exception ex) {
-        if (!Settings.useLogging) {
-            return;
+    public static void writeStackTrace(Throwable th) {
+        if (useLogging) {
+            writeLog(Throwables.getStackTraceAsString(th));
         }
-        writeLog(Throwables.getStackTraceAsString(ex));
+    }
+
+    /**
+     * Logs a Throwable with the provided message and saves the stack trace to the log file.
+     *
+     * @param message The message to accompany the exception
+     * @param th The Throwable to log
+     */
+    public static void logException(String message, Throwable th) {
+        showError(message + " " + StringUtils.formatException(th));
+        writeStackTrace(th);
     }
 }

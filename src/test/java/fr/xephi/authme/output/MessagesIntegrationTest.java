@@ -1,10 +1,11 @@
 package fr.xephi.authme.output;
 
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -28,6 +29,12 @@ public class MessagesIntegrationTest {
     private static final String YML_TEST_FILE = "messages_test.yml";
     private Messages messages;
 
+    @BeforeClass
+    public static void setup() {
+        WrapperMock.createInstance();
+        ConsoleLoggerTestInitializer.setupLogger();
+    }
+
     /**
      * Loads the messages in the file {@code messages_test.yml} in the test resources folder.
      * The file does not contain all messages defined in {@link MessageKey} and its contents
@@ -35,17 +42,12 @@ public class MessagesIntegrationTest {
      */
     @Before
     public void setUpMessages() {
-        WrapperMock.createInstance();
-
-        Settings.messagesLanguage = "en";
         URL url = getClass().getClassLoader().getResource(YML_TEST_FILE);
         if (url == null) {
             throw new RuntimeException("File '" + YML_TEST_FILE + "' could not be loaded");
         }
 
-        Settings.messageFile = new File(url.getFile());
-        Settings.messagesLanguage = "en";
-        messages = Messages.getInstance();
+        messages = new Messages(new File(url.getFile()));
     }
 
     @Test
