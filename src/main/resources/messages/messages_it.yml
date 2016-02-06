@@ -57,3 +57,4 @@ country_banned: 'Il tuo paese è bandito da questo server!'
 antibot_auto_enabled: 'Il servizio di AntiBot è stato automaticamente abilitato a seguito delle numerose connessioni!'
 antibot_auto_disabled: "Il servizio di AntiBot è stato automaticamente disabilitato dopo %m Minuti, sperando che l'attacco sia finito!"
 kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+two_factor_create: '&2Your secret code is %code'

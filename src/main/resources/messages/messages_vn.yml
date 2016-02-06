@@ -57,3 +57,4 @@ password_error_nick: '&cYou can''t use your name as password, please choose anot
 password_error_unsafe: '&cThe chosen password isn''t safe, please choose another one...'
 kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
 email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
+two_factor_create: '&2Your secret code is %code'

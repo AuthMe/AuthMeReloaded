@@ -1,7 +1,7 @@
 unknown_user: '&fUtilizador não existente na base de dados'
 unsafe_spawn: '&fA sua localização na saída não é segura, será tele-portado para a Spawn'
 not_logged_in: '&cNão autenticado!'
-reg_voluntarily: '&fPode registar o seu nickname no servidor com o comando "/register password ConfirmePassword"' 
+reg_voluntarily: '&fPode registar o seu nickname no servidor com o comando "/register password ConfirmePassword"'
 usage_log: '&cUse: /login password'
 wrong_pwd: '&cPassword errada!'
 unregistered: '&cRegisto eliminado com sucesso!'
@@ -58,3 +58,4 @@ antibot_auto_enabled: '[AuthMe] AntiBotMod activado automaticamente devido a um 
 antibot_auto_disabled: '[AuthMe] AntiBotMod desactivado automaticamente após %m minutos, esperamos que a invasão tenha parado'
 kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
 email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
+two_factor_create: '&2Your secret code is %code'

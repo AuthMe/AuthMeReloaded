@@ -57,3 +57,4 @@ antibot_auto_enabled: '&a[AuthMe] AntiBot-режим автоматически 
 antibot_auto_disabled: '&a[AuthMe] AntiBot-режим автоматичски отключен после %m мин. Надеюсь атака закончилась'
 kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
 email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
+two_factor_create: '&2Your secret code is %code'
