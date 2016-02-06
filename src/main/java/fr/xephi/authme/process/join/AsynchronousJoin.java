@@ -225,7 +225,7 @@ public class AsynchronousJoin {
                 ? m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE)
                 : m.retrieve(MessageKey.REGISTER_MESSAGE);
         }
-        if (LimboCache.getInstance().getLimboPlayer(name) != null) {
+        if (msgInterval > 0 && LimboCache.getInstance().getLimboPlayer(name) != null) {
             BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
             LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
         }

@@ -229,7 +229,7 @@
 		<!-- SpigotMC Repo (Bukkit and SpigotAPI) -->
 		<repository>
 			<id>spigot-repo</id>
-			<url>http://hub.spigotmc.org/nexus/content/groups/public</url>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
 		</repository>
 
 		<!-- EssentialsX Repo -->
