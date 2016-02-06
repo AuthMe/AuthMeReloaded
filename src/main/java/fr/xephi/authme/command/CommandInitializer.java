@@ -133,7 +133,7 @@ public final class CommandInitializer {
         // Register the getemail command
         CommandDescription.builder()
             .parent(AUTHME_BASE)
-            .labels("getemail", "getmail", "email", "mail")
+            .labels("email", "mail", "getemail", "getmail")
             .description("Display player's email")
             .detailedDescription("Display the email address of the specified player if set.")
             .withArgument("player", "Player name", true)
@@ -144,7 +144,7 @@ public final class CommandInitializer {
         // Register the setemail command
         CommandDescription.builder()
             .parent(AUTHME_BASE)
-            .labels("chgemail", "chgmail", "setemail", "setmail")
+            .labels("setemail", "setmail", "chgemail", "chgmail")
             .description("Change player's email")
             .detailedDescription("Change the email address of the specified player.")
             .withArgument("player", "Player name", false)

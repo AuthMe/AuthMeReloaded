@@ -8,7 +8,6 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
@@ -40,11 +39,11 @@ public class AsyncChangeEmail {
         String playerName = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);
-            String currentEmail = auth.getEmail();
+            final String currentEmail = auth.getEmail();
 
             if (currentEmail == null) {
                 m.send(player, MessageKey.USAGE_ADD_EMAIL);
-            } else if (isEmailInvalid(newEmail)) {
+            } else if (newEmail == null || !Utils.isEmailCorrect(newEmail, settings)) {
                 m.send(player, MessageKey.INVALID_NEW_EMAIL);
             } else if (!oldEmail.equals(currentEmail)) {
                 m.send(player, MessageKey.INVALID_OLD_EMAIL);
@@ -56,11 +55,6 @@ public class AsyncChangeEmail {
         } else {
             outputUnloggedMessage();
         }
-    }
-
-    private boolean isEmailInvalid(String email) {
-        return StringUtils.isEmpty(email) || "your@email.com".equals(email)
-            || !Utils.isEmailCorrect(email, settings);
     }
 
     private void saveNewEmail(PlayerAuth auth) {

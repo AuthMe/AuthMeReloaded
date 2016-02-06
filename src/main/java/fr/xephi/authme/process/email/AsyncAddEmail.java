@@ -8,7 +8,6 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
@@ -24,7 +23,7 @@ public class AsyncAddEmail {
     private final PlayerCache playerCache;
     private final NewSetting settings;
 
-    public AsyncAddEmail(AuthMe plugin, Player player, String email, DataSource dataSource,
+    public AsyncAddEmail(Player player, AuthMe plugin, String email, DataSource dataSource,
                          PlayerCache playerCache, NewSetting settings) {
         this.messages = plugin.getMessages();
         this.player = player;
@@ -39,11 +38,11 @@ public class AsyncAddEmail {
 
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);
-            String currentEmail = auth.getEmail();
+            final String currentEmail = auth.getEmail();
 
-            if (currentEmail != null && !"your@mail.com".equals(currentEmail)) {
+            if (currentEmail != null && !"your@email.com".equals(currentEmail)) {
                 messages.send(player, MessageKey.USAGE_CHANGE_EMAIL);
-            } else if (isEmailInvalid(email)) {
+            } else if (!Utils.isEmailCorrect(email, settings)) {
                 messages.send(player, MessageKey.INVALID_EMAIL);
             } else if (dataSource.isEmailStored(email)) {
                 messages.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
@@ -55,11 +54,6 @@ public class AsyncAddEmail {
         } else {
             sendUnloggedMessage(dataSource);
         }
-    }
-
-    private boolean isEmailInvalid(String email) {
-        return StringUtils.isEmpty(email) || "your@email.com".equals(email)
-            || !Utils.isEmailCorrect(email, settings);
     }
 
     private void sendUnloggedMessage(DataSource dataSource) {

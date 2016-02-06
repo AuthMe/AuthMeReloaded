@@ -187,7 +187,7 @@ public class AsyncAddEmailTest {
         dataSource = mock(DataSource.class);
         playerCache = mock(PlayerCache.class);
         settings = mock(NewSetting.class);
-        return new AsyncAddEmail(authMe, player, email, dataSource, playerCache, settings);
+        return new AsyncAddEmail(player, authMe, email, dataSource, playerCache, settings);
     }
 
 }
