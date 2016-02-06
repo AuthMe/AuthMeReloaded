@@ -1,13 +1,11 @@
 package fr.xephi.authme.settings.domain;
 
 import org.bukkit.configuration.file.FileConfiguration;
-
-import java.util.List;
-
-import static java.util.Arrays.asList;
+import org.yaml.snakeyaml.Yaml;
 
 /**
  * Enum property type.
+ *
  * @param <E> The enum class
  */
 class EnumPropertyType<E extends Enum<E>> extends PropertyType<E> {
@@ -29,14 +27,14 @@ class EnumPropertyType<E extends Enum<E>> extends PropertyType<E> {
     }
 
     @Override
-    protected List<String> asYaml(E value) {
-        return asList("'" + value + "'");
-    }
-
-    @Override
     public boolean contains(Property<E> property, FileConfiguration configuration) {
         return super.contains(property, configuration)
             && mapToEnum(configuration.getString(property.getPath())) != null;
+    }
+
+    @Override
+    public String toYaml(E value, Yaml simpleYaml, Yaml singleQuoteYaml) {
+        return singleQuoteYaml.dump(value.name());
     }
 
     private E mapToEnum(String value) {

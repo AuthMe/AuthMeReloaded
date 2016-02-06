@@ -6,7 +6,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.settings.custom.SecuritySettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.entity.Player;
 

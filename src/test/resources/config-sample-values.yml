@@ -6,7 +6,7 @@ test:
     systemName: 'Custom sys name'
 sample:
     ratio:
-        limit: -4.1
+        order: 'first'
         fields:
             - 'Australia'
             - 'Burundi'
@@ -18,7 +18,7 @@ features:
         colors:
             - 'beige'
             - 'gray'
-        dustLevel: 0.81
+        dustLevel: 2
     cool:
         enabled: true
         options:

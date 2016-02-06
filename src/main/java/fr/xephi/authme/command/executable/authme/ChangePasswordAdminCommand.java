@@ -8,8 +8,8 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.custom.RestrictionSettings;
-import fr.xephi.authme.settings.custom.SecuritySettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;

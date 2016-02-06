@@ -1,16 +1,21 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 
+import fr.xephi.authme.settings.properties.EmailSettings;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -35,6 +40,7 @@ public class UtilsTest {
     public static void setUpMocks() {
         WrapperMock wrapperMock = WrapperMock.createInstance();
         authMeMock = wrapperMock.getAuthMe();
+        ConsoleLoggerTestInitializer.setupLogger();
     }
 
     @Before
@@ -90,6 +96,95 @@ public class UtilsTest {
 
         // then
         assertThat(players, hasSize(2));
+    }
+
+    // ----------------
+    // Tests for Utils#isEmailCorrect()
+    // ----------------
+    @Test
+    public void shouldAcceptEmailWithEmptyLists() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.EMPTY_LIST);
+
+        // when
+        boolean result = Utils.isEmailCorrect("test@example.org", settings);
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldAcceptEmailWithWhitelist() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
+            .willReturn(Arrays.asList("domain.tld", "example.com"));
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.EMPTY_LIST);
+
+        // when
+        boolean result = Utils.isEmailCorrect("TesT@Example.com", settings);
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldRejectEmailNotInWhitelist() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
+            .willReturn(Arrays.asList("domain.tld", "example.com"));
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.EMPTY_LIST);
+
+        // when
+        boolean result = Utils.isEmailCorrect("email@other-domain.abc", settings);
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
+    @Test
+    public void shouldAcceptEmailNotInBlacklist() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
+            .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
+
+        // when
+        boolean result = Utils.isEmailCorrect("sample@valid-name.tld", settings);
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldRejectEmailInBlacklist() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
+            .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
+
+        // when
+        boolean result = Utils.isEmailCorrect("sample@a-Test-name.tld", settings);
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
+    @Test
+    public void shouldRejectInvalidEmail() {
+        // given/when/then
+        assertThat(Utils.isEmailCorrect("invalidinput", mock(NewSetting.class)), equalTo(false));
+    }
+
+    @Test
+    public void shouldRejectDefaultEmail() {
+        // given/when/then
+        assertThat(Utils.isEmailCorrect("your@email.com", mock(NewSetting.class)), equalTo(false));
     }
 
     // Note: This method is used through reflections

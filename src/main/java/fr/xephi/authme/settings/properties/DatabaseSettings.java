@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings.custom;
+package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.domain.Comment;

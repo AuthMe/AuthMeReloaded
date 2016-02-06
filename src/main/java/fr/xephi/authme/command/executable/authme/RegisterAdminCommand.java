@@ -7,7 +7,7 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.custom.SecuritySettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 

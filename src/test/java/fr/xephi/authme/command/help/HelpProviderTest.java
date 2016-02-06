@@ -6,7 +6,6 @@ import fr.xephi.authme.command.FoundResultStatus;
 import fr.xephi.authme.command.TestCommandsUtil;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -40,22 +39,22 @@ import static org.mockito.Mockito.mock;
  */
 public class HelpProviderTest {
 
+    private static final String HELP_HEADER = "Help";
+    private static Set<CommandDescription> commands;
     private HelpProvider helpProvider;
     private PermissionsManager permissionsManager;
     private CommandSender sender;
-    private static Set<CommandDescription> commands;
 
     @BeforeClass
     public static void setUpCommands() {
         WrapperMock.createInstance();
-        Settings.helpHeader = "Help";
         commands = TestCommandsUtil.generateCommands();
     }
 
     @Before
     public void setUpHelpProvider() {
         permissionsManager = mock(PermissionsManager.class);
-        helpProvider = new HelpProvider(permissionsManager);
+        helpProvider = new HelpProvider(permissionsManager, HELP_HEADER);
         sender = mock(CommandSender.class);
     }
 
@@ -70,7 +69,7 @@ public class HelpProviderTest {
 
         // then
         assertThat(lines, hasSize(5));
-        assertThat(lines.get(0), containsString(Settings.helpHeader + " HELP"));
+        assertThat(lines.get(0), containsString(HELP_HEADER + " HELP"));
         assertThat(removeColors(lines.get(1)), containsString("Command: /authme login <password>"));
         assertThat(removeColors(lines.get(2)), containsString("Short description: login cmd"));
         assertThat(removeColors(lines.get(3)), equalTo("Detailed description:"));
@@ -88,7 +87,7 @@ public class HelpProviderTest {
 
         // then
         assertThat(lines, hasSize(4));
-        assertThat(lines.get(0), containsString(Settings.helpHeader + " HELP"));
+        assertThat(lines.get(0), containsString(HELP_HEADER + " HELP"));
         assertThat(removeColors(lines.get(1)), equalTo("Arguments:"));
         assertThat(removeColors(lines.get(2)), containsString("password: 'password' argument description"));
         assertThat(removeColors(lines.get(3)), containsString("confirmation: 'confirmation' argument description"));
@@ -279,7 +278,7 @@ public class HelpProviderTest {
 
         // then
         assertThat(lines, hasSize(2));
-        assertThat(lines.get(0), containsString(Settings.helpHeader + " HELP"));
+        assertThat(lines.get(0), containsString(HELP_HEADER + " HELP"));
         assertThat(removeColors(lines.get(1)), containsString("Command: /authme register <password> <confirmation>"));
     }
 

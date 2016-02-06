@@ -97,6 +97,7 @@
 				<directory>src/main/resources/</directory>
 				<includes>
 					<include>email.html</include>
+                    <include>welcome.txt</include>
 				</includes>
 			</resource>
 			<resource>

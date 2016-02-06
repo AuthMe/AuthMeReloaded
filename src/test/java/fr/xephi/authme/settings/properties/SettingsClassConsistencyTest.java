@@ -1,4 +1,4 @@
-package fr.xephi.authme.settings.custom;
+package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.domain.Property;
@@ -25,7 +25,7 @@ import static org.junit.Assert.fail;
  */
 public class SettingsClassConsistencyTest {
 
-    private static final String SETTINGS_FOLDER = "src/main/java/fr/xephi/authme/settings/custom";
+    private static final String SETTINGS_FOLDER = "src/main/java/fr/xephi/authme/settings/properties";
     private static List<Class<? extends SettingsClass>> classes;
 
     @BeforeClass

@@ -1,26 +1,25 @@
 package fr.xephi.authme;
 
-import java.io.IOException;
-
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import org.mcstats.Metrics;
 import org.mcstats.Metrics.Graph;
 
-import fr.xephi.authme.settings.Settings;
+import java.io.IOException;
 
 public class MetricsStarter {
 
-    public AuthMe plugin;
-
-    public MetricsStarter(final AuthMe plugin) {
-        this.plugin = plugin;
+    private MetricsStarter() {
     }
 
-    public void setupMetrics() {
+    public static void setupMetrics(AuthMe plugin, NewSetting settings) {
         try {
             final Metrics metrics = new Metrics(plugin);
 
-            final Graph messagesLanguage = metrics.createGraph("Messages Language");
-            messagesLanguage.addPlotter(new Metrics.Plotter(Settings.messagesLanguage) {
+            final Graph languageGraph = metrics.createGraph("Messages Language");
+            final String messagesLanguage = settings.getProperty(PluginSettings.MESSAGES_LANGUAGE);
+            languageGraph.addPlotter(new Metrics.Plotter(messagesLanguage) {
                 @Override
                 public int getValue() {
                     return 1;
@@ -28,7 +27,8 @@ public class MetricsStarter {
             });
 
             final Graph databaseBackend = metrics.createGraph("Database Backend");
-            databaseBackend.addPlotter(new Metrics.Plotter(Settings.getDataSource.toString()) {
+            final String dataSource = settings.getProperty(DatabaseSettings.BACKEND).toString();
+            databaseBackend.addPlotter(new Metrics.Plotter(dataSource) {
                 @Override
                 public int getValue() {
                     return 1;
@@ -37,7 +37,7 @@ public class MetricsStarter {
 
             // Submit metrics
             metrics.start();
-        } catch (final IOException e) {
+        } catch (IOException e) {
           // Failed to submit the metrics data
           ConsoleLogger.logException("Can't start Metrics! The plugin will work anyway...", e);
         }

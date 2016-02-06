@@ -1,5 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 
@@ -9,8 +10,9 @@ import org.junit.BeforeClass;
 public class XFBCRYPTTest extends AbstractEncryptionMethodTest {
 
     @BeforeClass
-    public static void setUpWrapper() {
+    public static void setup() {
         WrapperMock.createInstance();
+        ConsoleLoggerTestInitializer.setupLogger();
     }
 
     public XFBCRYPTTest() {

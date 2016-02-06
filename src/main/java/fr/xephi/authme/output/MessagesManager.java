@@ -1,8 +1,8 @@
 package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.CustomConfiguration;
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 
@@ -12,7 +12,10 @@ import java.io.File;
  * This class is used within {@link Messages}, which offers a high-level interface for accessing
  * or sending messages from a properties file.
  */
-class MessagesManager extends CustomConfiguration {
+class MessagesManager {
+
+    private final YamlConfiguration configuration;
+    private final String fileName;
 
     /**
      * Constructor for Messages.
@@ -20,8 +23,8 @@ class MessagesManager extends CustomConfiguration {
      * @param file the configuration file
      */
     MessagesManager(File file) {
-        super(file);
-        load();
+        this.fileName = file.getName();
+        this.configuration = YamlConfiguration.loadConfiguration(file);
     }
 
     /**
@@ -31,24 +34,22 @@ class MessagesManager extends CustomConfiguration {
      *
      * @return The message
      */
-    String[] retrieve(String key) {
-        String message = (String) get(key);
+    public String[] retrieve(String key) {
+        String message = configuration.getString(key);
         if (message != null) {
             return formatMessage(message);
         }
 
         // Message is null: log key not being found and send error back as message
         String retrievalError = "Error getting message with key '" + key + "'. ";
-        ConsoleLogger.showError(retrievalError + "Please verify your config file at '"
-            + getConfigFile().getName() + "'");
+        ConsoleLogger.showError(retrievalError + "Please verify your config file at '" + fileName + "'");
         return new String[]{
             retrievalError + "Please contact the admin to verify or update the AuthMe messages file."};
     }
 
-    static String[] formatMessage(String message) {
+    private static String[] formatMessage(String message) {
         String[] lines = message.split("&n");
         for (int i = 0; i < lines.length; ++i) {
-            // We don't initialize a StringBuilder here because mostly we will only have one entry
             lines[i] = ChatColor.translateAlternateColorCodes('&', lines[i]);
         }
         return lines;

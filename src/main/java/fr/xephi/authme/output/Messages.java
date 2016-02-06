@@ -1,8 +1,9 @@
 package fr.xephi.authme.output;
 
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
+
+import java.io.File;
 
 /**
  * Class for retrieving and sending translatable messages to players.
@@ -11,27 +12,15 @@ import org.bukkit.command.CommandSender;
  */
 public class Messages {
 
-    private static Messages singleton;
-    private final String language;
     private MessagesManager manager;
 
-
-    private Messages(String language, MessagesManager manager) {
-        this.language = language;
-        this.manager = manager;
-    }
-
     /**
-     * Get the instance of Messages.
+     * Constructor.
      *
-     * @return The Messages instance
+     * @param messageFile The messages file to use
      */
-    public static Messages getInstance() {
-        if (singleton == null) {
-            MessagesManager manager = new MessagesManager(Settings.messageFile);
-            singleton = new Messages(Settings.messagesLanguage, manager);
-        }
-        return singleton;
+    public Messages(File messageFile) {
+        manager = new MessagesManager(messageFile);
     }
 
     /**
@@ -60,7 +49,8 @@ public class Messages {
         String message = retrieveSingle(key);
         String[] tags = key.getTags();
         if (replacements.length != tags.length) {
-            throw new RuntimeException("Given replacement size does not match the tags in message key '" + key + "'");
+            throw new IllegalStateException(
+                "Given replacement size does not match the tags in message key '" + key + "'");
         }
 
         for (int i = 0; i < tags.length; ++i) {
@@ -80,9 +70,6 @@ public class Messages {
      * @return The message split by new lines
      */
     public String[] retrieve(MessageKey key) {
-        if (!Settings.messagesLanguage.equalsIgnoreCase(language)) {
-            reloadManager();
-        }
         return manager.retrieve(key.getKey());
     }
 
@@ -100,8 +87,8 @@ public class Messages {
     /**
      * Reload the messages manager.
      */
-    public void reloadManager() {
-        manager = new MessagesManager(Settings.messageFile);
+    public void reload(File messagesFile) {
+        manager = new MessagesManager(messagesFile);
     }
 
 }

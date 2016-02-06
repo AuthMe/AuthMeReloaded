@@ -308,6 +308,8 @@ Security:
         noConsoleSpam: false
         # Replace passwords in the console when player type a command like /login
         removePassword: true
+        # Copy AuthMe log output in a separate file as well?
+        logConsole: true
     captcha:
         # Player need to put a captcha when he fails too lot the password
         useCaptcha: false

@@ -8,8 +8,8 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.custom.NewSetting;
-import fr.xephi.authme.settings.custom.SecuritySettings;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.settings.domain.Property;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,6 +18,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -93,19 +94,6 @@ public class CommandServiceTest {
         // then
         assertThat(result, equalTo(givenResult));
         verify(commandMapper).mapPartsToCommand(sender, commandParts);
-    }
-
-    @Test
-    @Ignore
-    public void shouldRunTaskInAsync() {
-        // given
-        Runnable runnable = mock(Runnable.class);
-
-        // when
-        commandService.runTaskAsynchronously(runnable);
-
-        // then
-        // TODO ljacqu 20151226: AuthMe#getServer() is final, i.e. not mockable
     }
 
     @Test
@@ -193,10 +181,40 @@ public class CommandServiceTest {
         given(settings.getProperty(property)).willReturn(7);
 
         // when
-        int result = settings.getProperty(property);
+        int result = commandService.getProperty(property);
 
         // then
         assertThat(result, equalTo(7));
         verify(settings).getProperty(property);
+    }
+
+    @Test
+    public void shouldReloadMessages() {
+        // given
+        File file = new File("some/bogus-file.test");
+
+        // when
+        commandService.reloadMessages(file);
+
+        // then
+        verify(messages).reload(file);
+    }
+
+    @Test
+    public void shouldReturnSettings() {
+        // given/when
+        NewSetting result = commandService.getSettings();
+
+        // then
+        assertThat(result, equalTo(settings));
+    }
+
+    @Test
+    public void shouldReturnAuthMe() {
+        // given/when
+        AuthMe result = commandService.getAuthMe();
+
+        // then
+        assertThat(result, equalTo(authMe));
     }
 }

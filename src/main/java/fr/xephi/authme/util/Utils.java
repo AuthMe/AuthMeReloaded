@@ -7,8 +7,10 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 
+import fr.xephi.authme.settings.properties.EmailSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -19,6 +21,7 @@ import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Utility class for various operations used in the codebase.
@@ -252,6 +255,30 @@ public final class Utils {
                 player.teleport(tpEvent.getTo());
             }
         }
+    }
+
+    public static boolean isEmailCorrect(String email, NewSetting settings) {
+        if (!email.contains("@") || "your@email.com".equalsIgnoreCase(email)) {
+            return false;
+        }
+        final String emailDomain = email.split("@")[1];
+
+        List<String> whitelist = settings.getProperty(EmailSettings.DOMAIN_WHITELIST);
+        if (!CollectionUtils.isEmpty(whitelist)) {
+            return containsIgnoreCase(whitelist, emailDomain);
+        }
+
+        List<String> blacklist = settings.getProperty(EmailSettings.DOMAIN_BLACKLIST);
+        return CollectionUtils.isEmpty(blacklist) || !containsIgnoreCase(blacklist, emailDomain);
+    }
+
+    private static boolean containsIgnoreCase(Collection<String> coll, String needle) {
+        for (String entry : coll) {
+            if (entry.equalsIgnoreCase(needle)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

@@ -1,7 +1,7 @@
-package fr.xephi.authme.settings.custom;
+package fr.xephi.authme.settings;
 
-import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.MemorySection;
@@ -34,16 +34,14 @@ public class ConfigFileConsistencyTest {
         // given
         URL url = this.getClass().getResource(CONFIG_FILE);
         File configFile = new File(url.getFile());
-        NewSetting settings = new NewSetting(YamlConfiguration.loadConfiguration(configFile), new File("bogus"), null);
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
 
         // when
-        boolean result = settings.containsAllSettings(SettingsFieldRetriever.getAllPropertyFields());
+        boolean result = SettingsMigrationService.containsAllSettings(
+            configuration, SettingsFieldRetriever.getAllPropertyFields());
 
         // then
         if (!result) {
-            FileConfiguration configuration =
-                (FileConfiguration) ReflectionTestUtils.getFieldValue(NewSetting.class, settings, "configuration");
-
             Set<String> knownProperties = getAllKnownPropertyPaths();
             List<String> missingProperties = new ArrayList<>();
             for (String path : knownProperties) {
