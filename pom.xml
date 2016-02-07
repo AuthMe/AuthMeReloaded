@@ -399,7 +399,7 @@
 		<dependency>
 			<groupId>ru.tehkode</groupId>
 			<artifactId>PermissionsEx</artifactId>
-			<version>1.23.1</version>
+			<version>1.23.4</version>
 			<scope>provided</scope>
 			<exclusions>
 				<exclusion>
