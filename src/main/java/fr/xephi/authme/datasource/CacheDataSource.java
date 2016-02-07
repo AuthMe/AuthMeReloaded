@@ -41,6 +41,7 @@ public class CacheDataSource implements DataSource {
             })
             .build(
                 new CacheLoader<String, Optional<PlayerAuth>>() {
+                    @Override
                     public Optional<PlayerAuth> load(String key) {
                         return Optional.fromNullable(source.getAuth(key));
                     }
@@ -62,15 +63,6 @@ public class CacheDataSource implements DataSource {
         return source.getPassword(user);
     }
 
-    /**
-     * Method getAuth.
-     *
-     * @param user String
-     *
-     * @return PlayerAuth
-     *
-     * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
-     */
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         user = user.toLowerCase();

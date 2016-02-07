@@ -18,6 +18,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Timestamp;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -149,7 +151,7 @@ public class MySQL implements DataSource {
                 + columnRealName + " VARCHAR(255) NOT NULL,"
                 + columnPassword + " VARCHAR(255) NOT NULL,"
                 + columnIp + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1',"
-                + columnLastLogin + " BIGINT NOT NULL DEFAULT '" + System.currentTimeMillis() + "',"
+                + columnLastLogin + " TIMESTAMP NOT NULL DEFAULT current_timestamp,"
                 + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0',"
                 + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0',"
                 + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0',"
@@ -200,7 +202,9 @@ public class MySQL implements DataSource {
             rs = md.getColumns(null, null, tableName, columnLastLogin);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + columnLastLogin + " BIGINT;");
+                    + " ADD COLUMN " + columnLastLogin + " TIMESTAMP NOT NULL DEFAULT current_timestamp;");
+            } else {
+                migrateLastLoginColumnToTimestamp(con, rs);
             }
             rs.close();
 
@@ -245,7 +249,7 @@ public class MySQL implements DataSource {
 
             st.close();
         }
-        ConsoleLogger.info("MySQL Setup finished");
+        ConsoleLogger.info("MySQL setup finished");
     }
 
     @Override
@@ -291,22 +295,8 @@ public class MySQL implements DataSource {
             if (!rs.next()) {
                 return null;
             }
-            String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
-            int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
             int id = rs.getInt(columnID);
-            pAuth = PlayerAuth.builder()
-                .name(rs.getString(columnName))
-                .realName(rs.getString(columnRealName))
-                .password(rs.getString(columnPassword), salt)
-                .lastLogin(rs.getLong(columnLastLogin))
-                .ip(rs.getString(columnIp))
-                .locWorld(rs.getString(lastlocWorld))
-                .locX(rs.getDouble(lastlocX))
-                .locY(rs.getDouble(lastlocY))
-                .locZ(rs.getDouble(lastlocZ))
-                .email(rs.getString(columnEmail))
-                .groupId(group)
-                .build();
+            pAuth = buildAuthFromResultSet(rs);
             rs.close();
             pst.close();
             if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
@@ -344,7 +334,7 @@ public class MySQL implements DataSource {
             pst.setString(1, auth.getNickname());
             pst.setString(2, auth.getPassword().getHash());
             pst.setString(3, auth.getIp());
-            pst.setLong(4, auth.getLastLogin());
+            pst.setTimestamp(4, new Timestamp(auth.getLastLogin()));
             pst.setString(5, auth.getRealName());
             pst.setString(6, auth.getEmail());
             if (useSalt) {
@@ -923,22 +913,7 @@ public class MySQL implements DataSource {
             ResultSet rs = st.executeQuery("SELECT * FROM " + tableName);
             PreparedStatement pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
             while (rs.next()) {
-                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
-                int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
-                PlayerAuth pAuth = PlayerAuth.builder()
-                    .name(rs.getString(columnName))
-                    .realName(rs.getString(columnRealName))
-                    .password(rs.getString(columnPassword), salt)
-                    .lastLogin(rs.getLong(columnLastLogin))
-                    .ip(rs.getString(columnIp))
-                    .locWorld(rs.getString(lastlocWorld))
-                    .locX(rs.getDouble(lastlocX))
-                    .locY(rs.getDouble(lastlocY))
-                    .locZ(rs.getDouble(lastlocZ))
-                    .email(rs.getString(columnEmail))
-                    .groupId(group)
-                    .build();
-
+                PlayerAuth pAuth = buildAuthFromResultSet(rs);
                 if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                     int id = rs.getInt(columnID);
                     pst.setInt(1, id);
@@ -969,22 +944,7 @@ public class MySQL implements DataSource {
             ResultSet rs = st.executeQuery("SELECT * FROM " + tableName + " WHERE " + columnLogged + "=1;");
             PreparedStatement pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + columnID + "=?;");
             while (rs.next()) {
-                String salt = !columnSalt.isEmpty() ? rs.getString(columnSalt) : null;
-                int group = !columnGroup.isEmpty() ? rs.getInt(columnGroup) : -1;
-                PlayerAuth pAuth = PlayerAuth.builder()
-                    .name(rs.getString(columnName))
-                    .realName(rs.getString(columnRealName))
-                    .password(rs.getString(columnPassword), salt)
-                    .lastLogin(rs.getLong(columnLastLogin))
-                    .ip(rs.getString(columnIp))
-                    .locWorld(rs.getString(lastlocWorld))
-                    .locX(rs.getDouble(lastlocX))
-                    .locY(rs.getDouble(lastlocY))
-                    .locZ(rs.getDouble(lastlocZ))
-                    .email(rs.getString(columnEmail))
-                    .groupId(group)
-                    .build();
-
+                PlayerAuth pAuth = buildAuthFromResultSet(rs);
                 if (Settings.getPasswordHash == HashAlgorithm.XFBCRYPT) {
                     int id = rs.getInt(columnID);
                     pst.setInt(1, id);
@@ -1016,6 +976,55 @@ public class MySQL implements DataSource {
             logSqlException(e);
         }
         return false;
+    }
+
+    private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
+        String salt = columnSalt.isEmpty() ? null : row.getString(columnSalt);
+        int group = columnGroup.isEmpty() ? -1 : row.getInt(columnGroup);
+        return PlayerAuth.builder()
+            .name(row.getString(columnName))
+            .realName(row.getString(columnRealName))
+            .password(row.getString(columnPassword), salt)
+            .lastLogin(row.getTimestamp(columnLastLogin).getTime())
+            .ip(row.getString(columnIp))
+            .locWorld(row.getString(lastlocWorld))
+            .locX(row.getDouble(lastlocX))
+            .locY(row.getDouble(lastlocY))
+            .locZ(row.getDouble(lastlocZ))
+            .email(row.getString(columnEmail))
+            .groupId(group)
+            .build();
+    }
+
+    private void migrateLastLoginColumnToTimestamp(Connection con, ResultSet rs) throws SQLException {
+        final int columnType = rs.getInt("DATA_TYPE");
+        if (columnType == Types.BIGINT) {
+            ConsoleLogger.info("Migrating lastlogin column from bigint to timestamp");
+            final String lastLoginOld = columnLastLogin + "_old";
+
+            // Rename lastlogin to lastlogin_old
+            String sql = String.format("ALTER TABLE %s CHANGE COLUMN %s %s BIGINT",
+                tableName, columnLastLogin, lastLoginOld);
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.execute();
+
+            // Create lastlogin column
+            sql = String.format("ALTER TABLE %s ADD COLUMN %s " +
+                "TIMESTAMP NOT NULL DEFAULT current_timestamp AFTER %s",
+                tableName, columnLastLogin, columnIp);
+            con.prepareStatement(sql).execute();
+
+            // Set values of lastlogin based on lastlogin_old
+            sql = String.format("UPDATE %s SET %s = FROM_UNIXTIME(%s)",
+                tableName, columnLastLogin, lastLoginOld);
+            con.prepareStatement(sql).execute();
+
+            // Drop lastlogin_old
+            sql = String.format("ALTER TABLE %s DROP COLUMN %s",
+                tableName, lastLoginOld);
+            con.prepareStatement(sql).execute();
+            ConsoleLogger.info("Finished migration of lastlogin (bigint to timestamp)");
+        }
     }
 
     private static void logSqlException(SQLException e) {

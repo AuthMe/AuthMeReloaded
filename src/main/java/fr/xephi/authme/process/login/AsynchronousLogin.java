@@ -63,7 +63,7 @@ public class AsynchronousLogin {
         this.settings = settings;
     }
 
-    protected boolean needsCaptcha() {
+    private boolean needsCaptcha() {
         if (Settings.useCaptcha) {
             if (!plugin.captcha.containsKey(name)) {
                 plugin.captcha.putIfAbsent(name, 1);
@@ -87,7 +87,7 @@ public class AsynchronousLogin {
      *
      * @return PlayerAuth
      */
-    protected PlayerAuth preAuth() {
+    private PlayerAuth preAuth() {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
@@ -153,7 +153,6 @@ public class AsynchronousLogin {
                 .name(name)
                 .realName(realName)
                 .ip(ip)
-                .lastLogin(new Date().getTime())
                 .email(email)
                 .password(pAuth.getPassword())
                 .build();
@@ -221,14 +220,12 @@ public class AsynchronousLogin {
     }
 
     public void displayOtherAccounts(PlayerAuth auth) {
-        if (!Settings.displayOtherAccounts) {
+        if (!Settings.displayOtherAccounts || auth == null) {
             return;
         }
-        if (auth == null) {
-            return;
-        }
+
         List<String> auths = this.database.getAllAuthsByName(auth);
-        if (auths.isEmpty() || auths.size() == 1) {
+        if (auths.size() < 2) {
             return;
         }
         String message = "[AuthMe] " + StringUtils.join(", ", auths) + ".";

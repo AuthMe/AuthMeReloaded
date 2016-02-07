@@ -1,6 +1,6 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.BackupSettings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -80,7 +80,7 @@ public class PerformBackup {
     }
 
     public boolean doBackup() {
-        DataSource.DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
+        DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
         switch (dataSourceType) {
             case FILE:
                 return fileBackup("auths.db");
@@ -112,14 +112,10 @@ public class PerformBackup {
                     ConsoleLogger.info("Backup created successfully.");
                     return true;
                 } else {
-                    ConsoleLogger.showError("Could not create the backup!");
+                    ConsoleLogger.showError("Could not create the backup! (Windows)");
                 }
-            } catch (IOException e) {
-                ConsoleLogger.showError("Error during backup: " + StringUtils.formatException(e));
-                ConsoleLogger.writeStackTrace(e);
-            } catch (InterruptedException e) {
-                ConsoleLogger.showError("Backup was interrupted: " + StringUtils.formatException(e));
-                ConsoleLogger.writeStackTrace(e);
+            } catch (IOException | InterruptedException e) {
+                ConsoleLogger.logException("Error during Windows backup:", e);
             }
         } else {
             String executeCmd = "mysqldump -u " + dbUserName + " -p" + dbPassword + " " + dbName + " --tables " + tblname + " -r " + path + ".sql";
@@ -133,12 +129,8 @@ public class PerformBackup {
                 } else {
                     ConsoleLogger.showError("Could not create the backup!");
                 }
-            } catch (IOException e) {
-                ConsoleLogger.showError("Error during backup: " + StringUtils.formatException(e));
-                ConsoleLogger.writeStackTrace(e);
-            } catch (InterruptedException e) {
-                ConsoleLogger.showError("Backup was interrupted: " + StringUtils.formatException(e));
-                ConsoleLogger.writeStackTrace(e);
+            } catch (IOException | InterruptedException e) {
+                ConsoleLogger.logException("Error during backup:", e);
             }
         }
         return false;

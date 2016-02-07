@@ -220,9 +220,4 @@ public interface DataSource {
 
     boolean isEmailStored(String email);
 
-    enum DataSourceType {
-        MYSQL,
-        FILE,
-        SQLITE
-    }
 }

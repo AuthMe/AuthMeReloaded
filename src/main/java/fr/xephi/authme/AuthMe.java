@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.apache.logging.log4j.LogManager;
 
@@ -534,7 +535,7 @@ public class AuthMe extends JavaPlugin {
             });
         }
 
-        if (Settings.getDataSource == DataSource.DataSourceType.FILE) {
+        if (Settings.getDataSource == DataSourceType.FILE) {
             ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, it will be changed " +
                 "to SQLite... Connection will be impossible until conversion is done!");
             ForceFlatToSqlite converter = new ForceFlatToSqlite(database, newSettings);

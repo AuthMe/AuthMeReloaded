@@ -43,7 +43,7 @@ public class AsyncRegister {
         this.settings = settings;
     }
 
-    private boolean preRegisterCheck() throws Exception {
+    private boolean preRegisterCheck() {
         String passLow = password.toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
@@ -86,18 +86,12 @@ public class AsyncRegister {
     }
 
     public void process() {
-        try {
-            if (!preRegisterCheck()) {
-                return;
-            }
+        if (preRegisterCheck()) {
             if (email != null && !email.isEmpty()) {
                 emailRegister();
             } else {
                 passwordRegister();
             }
-        } catch (Exception e) {
-            ConsoleLogger.logException("Error during async register process", e);
-            m.send(player, MessageKey.ERROR);
         }
     }
 
@@ -130,7 +124,7 @@ public class AsyncRegister {
 
     }
 
-    private void passwordRegister() throws Exception {
+    private void passwordRegister() {
         final HashedPassword hashedPassword = plugin.getPasswordSecurity().computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)

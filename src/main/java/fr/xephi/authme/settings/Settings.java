@@ -2,8 +2,7 @@ package fr.xephi.authme.settings;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DataSource.DataSourceType;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -281,10 +280,10 @@ public final class Settings {
     private static DataSourceType getDataSource() {
         String key = "DataSource.backend";
         try {
-            return DataSource.DataSourceType.valueOf(configFile.getString(key, "sqlite").toUpperCase());
+            return DataSourceType.valueOf(configFile.getString(key, "sqlite").toUpperCase());
         } catch (IllegalArgumentException ex) {
             ConsoleLogger.showError("Unknown database backend; defaulting to SQLite database");
-            return DataSource.DataSourceType.SQLITE;
+            return DataSourceType.SQLITE;
         }
     }
 

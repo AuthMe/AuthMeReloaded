@@ -64,9 +64,9 @@ public class SQLite implements DataSource {
         try {
             this.connect();
             this.setup();
-        } catch (ClassNotFoundException | SQLException cnf) {
-            ConsoleLogger.showError("Can't use SQLITE... !");
-            throw cnf;
+        } catch (ClassNotFoundException | SQLException ex) {
+            ConsoleLogger.logException("Error during SQLite initialization:", ex);
+            throw ex;
         }
     }
 
@@ -102,7 +102,7 @@ public class SQLite implements DataSource {
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnLastLogin);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLastLogin + " BIGINT DEFAULT '0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLastLogin + " TIMESTAMP DEFAULT current_timestamp;");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
@@ -124,7 +124,7 @@ public class SQLite implements DataSource {
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnLogged);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLogged + " BIGINT DEFAULT '0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLogged + " INT DEFAULT '0';");
             }
             rs.close();
             rs = con.getMetaData().getColumns(null, null, tableName, columnRealName);
@@ -178,13 +178,6 @@ public class SQLite implements DataSource {
         return null;
     }
 
-    /**
-     * Method getAuth.
-     *
-     * @param user String
-     *
-     * @return PlayerAuth * @see fr.xephi.authme.datasource.DataSource#getAuth(String)
-     */
     @Override
     public synchronized PlayerAuth getAuth(String user) {
         PreparedStatement pst = null;

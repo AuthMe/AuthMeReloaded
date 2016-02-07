@@ -5,7 +5,7 @@ import org.bukkit.command.CommandSender;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource.DataSourceType;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.output.MessageKey;
 

@@ -1,6 +1,6 @@
 package fr.xephi.authme.settings.properties;
 
-import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.settings.domain.Comment;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.domain.SettingsClass;
@@ -11,8 +11,8 @@ public class DatabaseSettings implements SettingsClass {
 
     @Comment({"What type of database do you want to use?",
             "Valid values: sqlite, mysql"})
-    public static final Property<DataSource.DataSourceType> BACKEND =
-        newProperty(DataSource.DataSourceType.class, "DataSource.backend", DataSource.DataSourceType.SQLITE);
+    public static final Property<DataSourceType> BACKEND =
+        newProperty(DataSourceType.class, "DataSource.backend", DataSourceType.SQLITE);
 
     @Comment("Enable database caching, should improve database performance")
     public static final Property<Boolean> USE_CACHING =
