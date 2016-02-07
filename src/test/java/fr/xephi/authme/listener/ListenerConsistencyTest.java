@@ -27,7 +27,8 @@ public final class ListenerConsistencyTest {
     private static final Set<String> CANCELED_EXCEPTIONS = Sets.newHashSet("AuthMePlayerListener#onPlayerJoin",
         "AuthMePlayerListener#onPreLogin", "AuthMePlayerListener#onPlayerLogin",
         "AuthMePlayerListener#onPlayerQuit", "AuthMeServerListener#onPluginDisable",
-        "AuthMeServerListener#onServerPing", "AuthMeServerListener#onPluginEnable");
+        "AuthMeServerListener#onServerPing", "AuthMeServerListener#onPluginEnable",
+        "AuthMeServerListener#onJoinMessage");
 
     @Test
     public void shouldSetIgnoreCancelledToTrue() {
