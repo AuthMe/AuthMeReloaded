@@ -28,7 +28,7 @@ public final class ListenerConsistencyTest {
         "AuthMePlayerListener#onPreLogin", "AuthMePlayerListener#onPlayerLogin",
         "AuthMePlayerListener#onPlayerQuit", "AuthMeServerListener#onPluginDisable",
         "AuthMeServerListener#onServerPing", "AuthMeServerListener#onPluginEnable",
-        "AuthMeServerListener#onJoinMessage");
+        "AuthMePlayerListener#onJoinMessage");
 
     @Test
     public void shouldSetIgnoreCancelledToTrue() {
