@@ -10,7 +10,7 @@ import org.bukkit.event.player.PlayerEditBookEvent;
  */
 public class AuthMePlayerListener16 implements Listener {
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerEditBook(PlayerEditBookEvent event) {
         if (ListenerService.shouldCancelEvent(event)) {
             event.setCancelled(true);
