@@ -59,3 +59,4 @@ email_exists: '&cUm email de recuperação já foi enviado! Você pode reenviar 
 country_banned: '&4Seu país foi banido do servidor! Your country is banned from this server!'
 antibot_auto_enabled: '&4[AntiBotService] AntiBot ativado devido ao grande número de conexões!'
 antibot_auto_disabled: '&2[AntiBotService] AntiBot desativado após %m minutos!'
+two_factor_create: '&2Your secret code is %code'

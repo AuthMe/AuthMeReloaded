@@ -60,3 +60,4 @@ antibot_auto_enabled: '&8[&6用戶系統&8] 防止機械人程序已因應現時
 antibot_auto_disabled: '&8[&6用戶系統&8] 不正常連接數已減少，防止機械人程序將於 %m 分鐘後停止。'
 kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
 email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
+two_factor_create: '&2Your secret code is %code'

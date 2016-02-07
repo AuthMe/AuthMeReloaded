@@ -123,8 +123,9 @@ public enum MessageKey {
 
     ANTIBOT_AUTO_DISABLED_MESSAGE("antibot_auto_disabled", "%m"),
 
-    EMAIL_ALREADY_USED_ERROR("email_already_used");
+    EMAIL_ALREADY_USED_ERROR("email_already_used"),
 
+    TWO_FACTOR_CREATE("two_factor_create", "%code", "%url");
 
     private String key;
     private String[] tags;

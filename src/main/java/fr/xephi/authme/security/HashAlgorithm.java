@@ -29,6 +29,7 @@ public enum HashAlgorithm {
     SHA1(fr.xephi.authme.security.crypts.SHA1.class),
     SHA256(fr.xephi.authme.security.crypts.SHA256.class),
     SHA512(fr.xephi.authme.security.crypts.SHA512.class),
+    TWO_FACTOR(fr.xephi.authme.security.crypts.TwoFactor.class),
     SMF(fr.xephi.authme.security.crypts.SMF.class),
     WBB3(fr.xephi.authme.security.crypts.WBB3.class),
     WBB4(fr.xephi.authme.security.crypts.WBB4.class),

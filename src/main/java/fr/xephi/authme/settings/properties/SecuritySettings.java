@@ -9,6 +9,7 @@ import java.util.List;
 
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 import static fr.xephi.authme.settings.domain.PropertyType.STRING_LIST;
+import static fr.xephi.authme.settings.domain.Property.newProperty;
 
 public class SecuritySettings implements SettingsClass {
 
