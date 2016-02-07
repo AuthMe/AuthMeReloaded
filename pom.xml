@@ -274,11 +274,12 @@
 			<url>http://ci.xephi.fr/plugin/repository/everything/</url>
 		</repository>
 
-		<!-- PermissionsEx Repo -->
+		<!-- PermissionsEx Repo (NOW HOSTED ON XEPHI REPO due to connectio issues)
 		<repository>
 			<id>pex-repo</id>
 			<url>https://pex-repo.aoeu.xyz//</url>
 		</repository>
+		 -->
 	</repositories>
 
 	<dependencies>
