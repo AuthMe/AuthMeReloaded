@@ -14,7 +14,8 @@
 - Build status: [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/55bab9e8653762002000190a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55bab9e8653762002000190a)
 
 - Build status (CircleCI): [![Circle CI](https://circleci.com/gh/Xephi/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/Xephi/AuthMeReloaded)
-- Alternative Dev Build download link (via CircleCi): <a href="https://circleci-tkn.rhcloud.com/api/v1/project/AuthMe-Team/AuthMeReloaded/tree/master/latest/artifacts/AuthMe.jar">Download</a> 
+- Alternative Dev Build download link (via CircleCi): <a href="https://circleci-tkn.rhcloud.com/api/v1/project/AuthMe-Team/AuthMeReloaded/tree/master/latest/artifacts/AuthMe.jar">Download</a>
+- JitPack (just in case): [![](https://jitpack.io/v/AuthMe-Team/AuthMeReloaded.svg)](https://jitpack.io/#AuthMe-Team/AuthMeReloaded)
 
 - Code Coverage: [![Coverage Status](https://coveralls.io/repos/AuthMe-Team/AuthMeReloaded/badge.svg?branch=master&service=github)](https://coveralls.io/github/AuthMe-Team/AuthMeReloaded?branch=master)
 
