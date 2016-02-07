@@ -213,14 +213,6 @@
 					<docencoding>UTF-8</docencoding>
 					<docfilessubdirs>true</docfilessubdirs>
 				</configuration>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                    </execution>
-                </executions>
 			</plugin>
 		</plugins>
 	</build>
