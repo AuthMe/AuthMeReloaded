@@ -277,7 +277,7 @@
 		<!-- PermissionsEx Repo -->
 		<repository>
 			<id>pex-repo</id>
-			<url>http://pex-repo.aoeu.xyz/</url>
+			<url>https://pex-repo.aoeu.xyz//</url>
 		</repository>
 	</repositories>
 
