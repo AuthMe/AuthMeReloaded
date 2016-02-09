@@ -52,6 +52,7 @@
 
 		<!-- Project Properties -->
 		<pluginName>AuthMe</pluginName>
+		<jarName>${pluginName}-${project.version}</jarName>
 		<mainClass>fr.xephi.authme.AuthMe</mainClass>
 		<pluginAuthors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</pluginAuthors>
 		<buildNumber>Unknown</buildNumber>
@@ -78,7 +79,7 @@
 	</profiles>
 
 	<build>
-		<finalName>AuthMe-${project.version}</finalName>
+		<finalName>${jarName}-noshade</finalName>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<testSourceDirectory>src/test/java</testSourceDirectory>
 
@@ -137,47 +138,77 @@
 				</configuration>
 			</plugin>
 
-			<!-- TODO: we need also to relocate the other libs -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
 				<version>2.4.3</version>
-				<configuration>
-					<createDependencyReducedPom>false</createDependencyReducedPom>
-					<minimizeJar>false</minimizeJar>
-					<relocations>
-						<relocation>
-							<pattern>org.mcstats</pattern>
-							<shadedPattern>fr.xephi.authme</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.google.gson</pattern>
-							<shadedPattern>fr.xephi.authme.libs.gson</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.zaxxer.hikari</pattern>
-							<shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.slf4j</pattern>
-							<shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.maxmind.geoip</pattern>
-							<shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>net.ricecode.similarity</pattern>
-							<shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
-						</relocation>
-					</relocations>
-				</configuration>
+                <configuration>
+                    <createDependencyReducedPom>false</createDependencyReducedPom>
+                    <minimizeJar>false</minimizeJar>
+                    <relocations>
+                        <relocation>
+                            <pattern>org.mcstats</pattern>
+                            <shadedPattern>fr.xephi.authme</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.apache</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.apache</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>javax</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.javax</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.sun</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.sun</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.google</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.zaxxer.hikari</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>org.slf4j</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>com.maxmind.geoip</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
+                        </relocation>
+                        <relocation>
+                            <pattern>net.ricecode.similarity</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
+                        </relocation>
+                    </relocations>
+                </configuration>
 				<executions>
 					<execution>
+                        <id>spigot-shade</id>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
 						</goals>
+                        <configuration>
+                            <outputFile>target/${jarName}-spigot.jar</outputFile>
+                            <artifactSet>
+                                <excludes>
+                                    <exclude>com.google.guava:guava</exclude>
+                                </excludes>
+                            </artifactSet>
+                        </configuration>
+					</execution>
+					<execution>
+                        <id>legacy-shade</id>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+                        <configuration>
+                            <outputFile>target/${jarName}-legacy.jar</outputFile>
+                        </configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -325,6 +356,15 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- Guava (required to provide 1.7.10 and below compatibility) -->
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>17.0</version>
+			<scope>compile</scope>
+			<optional>true</optional>
+		</dependency>
+
 		<!-- Maxmind GeoIp API -->
 		<dependency>
 			<groupId>com.maxmind.geoip</groupId>
@@ -372,6 +412,10 @@
 				<exclusion>
 					<artifactId>persistence-api</artifactId>
 					<groupId>javax.persistence</groupId>
+				</exclusion>
+				<exclusion>
+					<artifactId>guava</artifactId>
+					<groupId>com.google.guava</groupId>
 				</exclusion>
 			</exclusions>
 		</dependency>
