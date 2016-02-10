@@ -2,18 +2,17 @@
 <p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
 <hr>
 
-####Development history:
-[![Gource AuthMe History Video](http://img.youtube.com/vi/hJRzNfYyd9k/hqdefault.jpg)](https://www.youtube.com/watch?v=hJRzNfYyd9k)
-
 #####Development tools:
 
 - DEVELOPMENT TEAM REPO (<strong>please send PRs here!</strong>): <a href="https://github.com/AuthMe-Team/AuthMeReloaded">Github Development Page</a>
 
 - Developers ChatRoom: [![Join the chat at https://gitter.im/Xephi/AuthMeReloaded](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/Xephi/AuthMeReloaded?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-- Build status: [![Build Status](https://travis-ci.org/Xephi/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/Xephi/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/55bab9e8653762002000190a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55bab9e8653762002000190a)
+- Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr/job/AuthMeReloaded">Xephi's Jenkins</a>
 
-- Build status (CircleCI): [![Circle CI](https://circleci.com/gh/Xephi/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/Xephi/AuthMeReloaded)
+- Build status: [![Build Status](https://travis-ci.org/AuthMe-Team/AuthMeReloaded.svg?branch=master)](https://travis-ci.org/AuthMe-Team/AuthMeReloaded) [![Dependency Status](https://www.versioneye.com/user/projects/55bab9e8653762002000190a/badge.svg?style=flat)](https://www.versioneye.com/user/projects/55bab9e8653762002000190a)
+
+- Build status (CircleCI): [![Circle CI](https://circleci.com/gh/AuthMe-Team/AuthMeReloaded.svg?style=svg)](https://circleci.com/gh/AuthMe-Team/AuthMeReloaded)
 - Alternative Dev Build download link (via CircleCi): <a href="https://circleci-tkn.rhcloud.com/api/v1/project/AuthMe-Team/AuthMeReloaded/tree/master/latest/artifacts/AuthMe.jar">Download</a>
 - JitPack (just in case): [![](https://jitpack.io/v/AuthMe-Team/AuthMeReloaded.svg)](https://jitpack.io/#AuthMe-Team/AuthMeReloaded)
 
@@ -21,9 +20,7 @@
 
 - Issue Tracking : [![Stories in Ready](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=ready&title=Ready)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in Bugs](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=bugs&title=Bugs)](https://waffle.io/Xephi/AuthMeReloaded) [![Stories in In%20Progress](https://badge.waffle.io/Xephi/AuthMeReloaded.png?label=in%20progress&title=In%20Progress)](https://waffle.io/Xephi/AuthMeReloaded)
 
-- Build Server (<strong>DEVELOPMENT BUILDS</strong>): <a href="http://ci.xephi.fr/job/AuthMeReloaded">Xephi's Jenkins</a>
-
-- JavaDocs: <a href="http://ci.xephi.fr/job/AuthMeReloaded/javadoc/">AuthMe Javadoc</a>
+- JavaDoc: <a href="http://ci.xephi.fr/job/AuthMeReloaded/javadoc/">AuthMe Javadoc</a>
 
 - Maven Repo: <a href="http://ci.xephi.fr/plugin/repository/everything/">AuthMe Repo</a>
 
@@ -36,6 +33,9 @@ McStats: http://mcstats.org/plugin/AuthMe
 <img src="http://i.mcstats.org/AuthMe/Rank.borderless.png">
 
 <img src="http://i.mcstats.org/AuthMe/Version+Demographics.borderless.png">
+
+#####Development history:
+[![Gource AuthMe History Video](http://img.youtube.com/vi/hJRzNfYyd9k/hqdefault.jpg)](https://www.youtube.com/watch?v=hJRzNfYyd9k)
 
 <hr>
 
@@ -84,6 +84,7 @@ typing commands or using the inventory. It can also kick players with uncommonly
     <li>Xenforo: XFBCRYPT</li>
     <li>MyBB: MYBB</li>
     <li>IPB3: IPB3</li>
+    <li>IPB4: IPB4</li>
     <li>PhpFusion: PHPFUSION</li>
     <li>Joomla: JOOMLA</li>
     <li>WBB3: WBB3*</li>

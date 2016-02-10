@@ -1,13 +1,18 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 
+/**
+ * Test for {@link IPB4}.
+ */
 public class IPB4Test extends AbstractEncryptionMethodTest {
 
     @BeforeClass
     public static void setUpSettings() {
         WrapperMock.createInstance();
+        ConsoleLoggerTestInitializer.setupLogger();
     }
 
     public IPB4Test() {

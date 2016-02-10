@@ -44,6 +44,22 @@ public class RandomStringTest {
         }
     }
 
+    @Test
+    public void shouldGenerateRandomLowerUpperString() {
+        // given
+        int[] lengths = {0, 1, 17, 143, 1808};
+        Pattern badChars = Pattern.compile(".*[^0-9a-zA-Z].*");
+
+        // when / then
+        for (int length : lengths) {
+            String result = RandomString.generateHex(length);
+            assertThat("Result '" + result + "' should have length " + length,
+                result.length(), equalTo(length));
+            assertThat("Result '" + result + "' should only have characters a-z, A-Z, 0-9",
+                badChars.matcher(result).matches(), equalTo(false));
+        }
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void shouldThrowForInvalidLength() {
         // given/when
