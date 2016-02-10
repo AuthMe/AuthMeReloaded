@@ -1,19 +1,24 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.util.StringUtils;
 
-import java.security.SecureRandom;
 
-
+/**
+ * Implementation for IPB4 (Invision Power Board 4).
+ * <p>
+ * The hash uses standard BCrypt with 13 as log<sub>2</sub> number of rounds. Additionally,
+ * IPB4 requires that the salt be stored additionally in the column "members_pass_hash"
+ * (even though BCrypt hashes already have the salt in the result).
+ */
 @Recommendation(Usage.DOES_NOT_WORK)
-@HasSalt(value = SaltType.TEXT)
+@HasSalt(value = SaltType.TEXT, length = 22)
 public class IPB4 implements EncryptionMethod {
-    private SecureRandom random = new SecureRandom();
 
     @Override
     public String computeHash(String password, String salt, String name) {
@@ -38,16 +43,7 @@ public class IPB4 implements EncryptionMethod {
 
     @Override
     public String generateSalt() {
-        StringBuilder sb = new StringBuilder(22);
-        for (int i = 0; i < 22; i++) {
-            char chr;
-            do {
-                chr = (char) (random.nextInt((122 - 48) + 1) + 48);
-            }
-            while ((chr >= 58 && chr <= 64) || (chr >= 91 && chr <= 96));
-            sb.append(chr);
-        }
-        return sb.toString();
+        return RandomString.generateLowerUpper(22);
     }
 
     @Override
