@@ -186,7 +186,7 @@ settings:
         # Example unLoggedinGroup: NotLogged
         unLoggedinGroup: unLoggedinGroup
         # possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB,
-        # MYBB, IPB3, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,
+        # MYBB, IPB3, IPB4, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,
         # DOUBLEMD5, PBKDF2, PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM(for developpers only)
         passwordHash: SHA256
         # salt length for the SALTED2MD5 MD5(MD5(password)+salt)
@@ -260,7 +260,7 @@ settings:
     # If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI
     preventOtherCase: false
 ExternalBoardOptions:
-    # MySQL column for the salt , needed for some forum/cms support
+    # MySQL column for the salt, needed for some forum/cms support
     mySQLColumnSalt: ''
     # MySQL column for the group, needed for some forum/cms support
     mySQLColumnGroup: ''
@@ -275,7 +275,7 @@ ExternalBoardOptions:
     bCryptLog2Round: 10
     # phpBB prefix defined during phpbb installation process
     phpbbTablePrefix: 'phpbb_'
-    # phpBB activated group id , 2 is default registered group defined by phpbb
+    # phpBB activated group id, 2 is default registered group defined by phpbb
     phpbbActivatedGroupId: 2
     # WordPress prefix defined during WordPress installation process
     wordpressTablePrefix: 'wp_'
