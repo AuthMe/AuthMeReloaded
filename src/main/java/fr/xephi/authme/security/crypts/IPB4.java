@@ -1,9 +1,6 @@
-package fr.xephi.authme.security.crypts.description;
+package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.security.crypts.BCryptService;
-import fr.xephi.authme.security.crypts.EncryptionMethod;
-import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.StringUtils;
 
 import java.security.SecureRandom;
