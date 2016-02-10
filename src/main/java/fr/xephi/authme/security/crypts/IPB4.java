@@ -12,7 +12,7 @@ import java.security.SecureRandom;
 @Recommendation(Usage.DOES_NOT_WORK)
 @HasSalt(value = SaltType.TEXT)
 public class IPB4 implements EncryptionMethod {
-    SecureRandom random = new SecureRandom();
+    private SecureRandom random = new SecureRandom();
 
     @Override
     public String computeHash(String password, String salt, String name) {
