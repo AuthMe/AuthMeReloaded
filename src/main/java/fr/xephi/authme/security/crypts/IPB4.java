@@ -1,6 +1,10 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.security.crypts.description.Usage;
 import fr.xephi.authme.util.StringUtils;
 
 import java.security.SecureRandom;
