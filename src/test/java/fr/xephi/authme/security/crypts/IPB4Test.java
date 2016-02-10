@@ -1,6 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.security.crypts.description.IPB4;
 import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 
