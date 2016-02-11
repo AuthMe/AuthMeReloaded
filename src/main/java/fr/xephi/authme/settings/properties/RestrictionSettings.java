@@ -132,7 +132,7 @@ public class RestrictionSettings implements SettingsClass {
 
     @Comment("Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.")
     public static final Property<Boolean> DENY_TABCOMPLETE_BEFORE_LOGIN =
-        newProperty("settings.restrictions.DenyTabcompleteBeforeLogin", true);
+        newProperty("settings.restrictions.DenyTabCompleteBeforeLogin", true);
 
     @Comment("Should we hide the tablist before logging in? Requires ProtocolLib.")
     public static final Property<Boolean> HIDE_TABLIST_BEFORE_LOGIN =

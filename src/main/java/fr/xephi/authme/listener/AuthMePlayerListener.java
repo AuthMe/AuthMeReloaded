@@ -196,7 +196,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (Settings.removeJoinMessage) {
-            event.setJoinMessage((String)null);
+            event.setJoinMessage(null);
             return;
         }
         if (!Settings.delayJoinMessage) {
@@ -210,7 +210,7 @@ public class AuthMePlayerListener implements Listener {
         if (joinMsg == null) {
             return;
         }
-        event.setJoinMessage((String)null);
+        event.setJoinMessage(null);
         joinMessage.put(name, joinMsg);
     }
 
@@ -366,7 +366,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (Settings.removeLeaveMessage) {
-            event.setQuitMessage((String)null);
+            event.setQuitMessage(null);
         }
 
         plugin.getManagement().performQuit(player, false);
@@ -391,7 +391,7 @@ public class AuthMePlayerListener implements Listener {
 
     /*
      * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-     * TODO #360: npc status can be used to bypass security!!!
+     * Note #360: npc status can be used to bypass security!!!
      * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
      */
 

@@ -1,15 +1,18 @@
 package fr.xephi.authme.settings;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,8 +26,6 @@ public final class Settings {
     public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
-    private static final File SETTINGS_FILE = new File(PLUGIN_FOLDER, "config.yml");
-    public static final File LOG_FILE = new File(PLUGIN_FOLDER, "authme.log");
     // This is not an option!
     public static boolean antiBotInAction = false;
     public static List<String> allowCommands;
@@ -105,7 +106,7 @@ public final class Settings {
     }
 
     public static void loadVariables() {
-        isPermissionCheckEnabled = configFile.getBoolean("permission.EnablePermissionCheck", false);
+        isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
         isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
         isTeleportToSpawnEnabled = configFile.getBoolean("settings.restrictions.teleportUnAuthedToSpawn", false);
@@ -132,16 +133,16 @@ public final class Settings {
         isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
         isForceSurvivalModeEnabled = configFile.getBoolean("settings.GameMode.ForceSurvivalMode", false);
         getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp", 1);
-        getPasswordHash = getPasswordHash();
-        getUnloggedinGroup = configFile.getString("settings.security.unLoggedinGroup", "unLoggedInGroup");
-        getDataSource = getDataSource();
-        isCachingEnabled = configFile.getBoolean("DataSource.caching", true);
-        getMySQLHost = configFile.getString("DataSource.mySQLHost", "127.0.0.1");
-        getMySQLPort = configFile.getString("DataSource.mySQLPort", "3306");
-        getMySQLUsername = configFile.getString("DataSource.mySQLUsername", "authme");
-        getMySQLPassword = configFile.getString("DataSource.mySQLPassword", "12345");
-        getMySQLDatabase = configFile.getString("DataSource.mySQLDatabase", "authme");
-        getMySQLTablename = configFile.getString("DataSource.mySQLTablename", "authme");
+        getPasswordHash = load(SecuritySettings.PASSWORD_HASH);
+        getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
+        getDataSource = load(DatabaseSettings.BACKEND);
+        isCachingEnabled = load(DatabaseSettings.USE_CACHING);
+        getMySQLHost = load(DatabaseSettings.MYSQL_HOST);
+        getMySQLPort = load(DatabaseSettings.MYSQL_PORT);
+        getMySQLUsername = load(DatabaseSettings.MYSQL_USERNAME);
+        getMySQLPassword = load(DatabaseSettings.MYSQL_PASSWORD);
+        getMySQLDatabase = load(DatabaseSettings.MYSQL_DATABASE);
+        getMySQLTablename = load(DatabaseSettings.MYSQL_TABLE);
         getMySQLColumnEmail = configFile.getString("DataSource.mySQLColumnEmail", "email");
         getMySQLColumnName = configFile.getString("DataSource.mySQLColumnName", "username");
         getMySQLColumnPassword = configFile.getString("DataSource.mySQLColumnPassword", "password");
@@ -163,15 +164,15 @@ public final class Settings {
         }
 
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
-        enablePasswordConfirmation = configFile.getBoolean("settings.restrictions.enablePasswordConfirmation", true);
+        enablePasswordConfirmation = load(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION);
 
-        protectInventoryBeforeLogInEnabled = configFile.getBoolean("settings.restrictions.ProtectInventoryBeforeLogIn", true);
-        denyTabcompleteBeforeLogin = configFile.getBoolean("settings.restrictions.DenyTabcompleteBeforeLogin", true);
-        hideTablistBeforeLogin = configFile.getBoolean("settings.restrictions.DenyTabcompleteBeforeLogin", true);
+        protectInventoryBeforeLogInEnabled = load(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
+        denyTabcompleteBeforeLogin = load(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
+        hideTablistBeforeLogin = load(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN);
 
         plugin.checkProtocolLib();
 
-        passwordMaxLength = configFile.getInt("settings.security.passwordMaxLength", 20);
+        passwordMaxLength = load(SecuritySettings.MAX_PASSWORD_LENGTH);
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
@@ -245,9 +246,9 @@ public final class Settings {
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
-        removeJoinMessage = configFile.getBoolean("settings.removeJoineMessage", false);
-        removeLeaveMessage = configFile.getBoolean("settings.removeLeaveMessage", false);
-        delayJoinMessage = configFile.getBoolean("settings.delayJoineMessage", false);
+        removeJoinMessage = load(RegistrationSettings.REMOVE_JOIN_MESSAGE);
+        removeLeaveMessage = load(RegistrationSettings.REMOVE_LEAVE_MESSAGE);
+        delayJoinMessage = load(RegistrationSettings.DELAY_JOIN_MESSAGE);
         noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
@@ -262,70 +263,6 @@ public final class Settings {
         kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
         sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
 
-    }
-
-    /**
-     * Method getPasswordHash.
-     *
-     * @return HashAlgorithm
-     */
-    private static HashAlgorithm getPasswordHash() {
-        String key = "settings.security.passwordHash";
-        try {
-            return HashAlgorithm.valueOf(configFile.getString(key, "SHA256").toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            ConsoleLogger.showError("Unknown Hash Algorithm; defaulting to SHA256");
-            return HashAlgorithm.SHA256;
-        }
-    }
-
-    /**
-     * Method getDataSource.
-     *
-     * @return DataSourceType
-     */
-    private static DataSourceType getDataSource() {
-        String key = "DataSource.backend";
-        try {
-            return DataSource.DataSourceType.valueOf(configFile.getString(key, "sqlite").toUpperCase());
-        } catch (IllegalArgumentException ex) {
-            ConsoleLogger.showError("Unknown database backend; defaulting to SQLite database");
-            return DataSource.DataSourceType.SQLITE;
-        }
-    }
-
-    /**
-     * Saves the configuration to disk
-     *
-     * @return True if saved successfully
-     */
-    private static boolean save() {
-        try {
-            configFile.save(SETTINGS_FILE);
-            return true;
-        } catch (IOException ex) {
-            return false;
-        }
-    }
-
-    /**
-     * Method checkLang.
-     *
-     * @param lang String
-     *
-     * @return String
-     */
-    private static String checkLang(String lang) {
-        if (new File(PLUGIN_FOLDER, "messages" + File.separator + "messages_" + lang + ".yml").exists()) {
-            ConsoleLogger.info("Set Language to: " + lang);
-            return lang;
-        }
-        if (AuthMe.class.getResourceAsStream("/messages/messages_" + lang + ".yml") != null) {
-            ConsoleLogger.info("Set Language to: " + lang);
-            return lang;
-        }
-        ConsoleLogger.info("Language file not found for " + lang + ", set to default language: en !");
-        return "en";
     }
 
     /**
@@ -344,20 +281,13 @@ public final class Settings {
     }
 
     /**
-     * Saves current configuration (plus defaults) to disk.
-     * <p>
-     * If defaults and configuration are empty, saves blank file.
+     * Load the value via the new Property setup for temporary support within this old settings manager.
      *
-     * @return True if saved successfully
+     * @param property The property to load
+     * @param <T> The property type
+     * @return The config value of the property
      */
-    private boolean saveDefaults() {
-        configFile.options()
-            .copyDefaults(true)
-            .copyHeader(true);
-        boolean success = save();
-        configFile.options()
-            .copyDefaults(false)
-            .copyHeader(false);
-        return success;
+    private static <T> T load(Property<T> property) {
+        return property.getFromFile(configFile);
     }
 }

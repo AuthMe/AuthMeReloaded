@@ -135,9 +135,9 @@ settings:
         # Should we protect the player inventory before logging in? Requires ProtocolLib.
         ProtectInventoryBeforeLogIn: true
         # Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.
-        DenyTabcompleteBeforeLogIn: true
+        DenyTabCompleteBeforeLogin: true
         # Should we hide the tablist before logging in? Requires ProtocolLib.
-        HideTablistBeforeLogIn: true
+        HideTablistBeforeLogin: true
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
@@ -256,8 +256,12 @@ settings:
     useWelcomeMessage: true
     # Do we need to broadcast the welcome message to all server or only to the player? set true for server or false for player
     broadcastWelcomeMessage: false
-    # Do we need to delay the join/leave message to be displayed only when the player is authenticated ?
-    delayJoinLeaveMessages: true
+    # Should we delay the join message and display it once the player has logged in?
+    delayJoinMessage: true
+    # Should we remove join messages altogether?
+    removeJoinMessage: true
+    # Should we remove leave messages?
+    removeLeaveMessage: true
     # Do we need to add potion effect Blinding before login/register?
     applyBlindEffect: false
     # Do we need to prevent people to login with another case?
