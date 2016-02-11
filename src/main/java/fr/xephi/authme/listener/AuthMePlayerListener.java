@@ -191,7 +191,15 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoinMessage(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        if (player == null || !Settings.delayJoinLeaveMessages) {
+        if (player == null) {
+            return;
+        }
+
+        if (Settings.removeJoinMessage) {
+            event.setJoinMessage((String)null);
+            return;
+        }
+        if (!Settings.delayJoinMessage) {
             return;
         }
 
@@ -357,7 +365,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (Settings.delayJoinLeaveMessages && !Utils.checkAuth(player)) {
+        if (Settings.removeLeaveMessage) {
             event.setQuitMessage((String)null);
         }
 

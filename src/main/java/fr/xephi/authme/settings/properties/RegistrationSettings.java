@@ -81,8 +81,15 @@ public class RegistrationSettings implements SettingsClass {
         newProperty("settings.broadcastWelcomeMessage", false);
 
     @Comment("Do we need to delay the join/leave message to be displayed only when the player is authenticated?")
-    public static final Property<Boolean> DELAY_JOIN_LEAVE_MESSAGES =
-        newProperty("settings.delayJoinLeaveMessages", true);
+    public static final Property<Boolean> DELAY_JOIN_MESSAGE =
+        newProperty("settings.delayJoinMessage", false);
+
+    // TODO: comments!
+    public static final Property<Boolean> REMOVE_JOIN_MESSAGE =
+            newProperty("settings.removeJoinMessages", false);
+
+    public static final Property<Boolean> REMOVE_LEAVE_MESSAGE =
+            newProperty("settings.removeLeaveMessages", false);
 
     @Comment("Do we need to add potion effect Blinding before login/reigster?")
     public static final Property<Boolean> APPLY_BLIND_EFFECT =
