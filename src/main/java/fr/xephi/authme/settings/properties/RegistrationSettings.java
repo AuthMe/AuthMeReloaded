@@ -86,10 +86,10 @@ public class RegistrationSettings implements SettingsClass {
 
     // TODO: comments!
     public static final Property<Boolean> REMOVE_JOIN_MESSAGE =
-            newProperty("settings.removeJoinMessages", false);
+            newProperty("settings.removeJoinMessage", false);
 
     public static final Property<Boolean> REMOVE_LEAVE_MESSAGE =
-            newProperty("settings.removeLeaveMessages", false);
+            newProperty("settings.removeLeaveMessage", false);
 
     @Comment("Do we need to add potion effect Blinding before login/reigster?")
     public static final Property<Boolean> APPLY_BLIND_EFFECT =

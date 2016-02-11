@@ -64,7 +64,8 @@ public final class Settings {
         purgeLimitedCreative, purgeAntiXray, purgePermissions,
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
-        checkVeryGames, removeJoinMessage, removeLeaveMessage, delayJoinMessage, noTeleport, applyBlindEffect,
+        checkVeryGames, removeJoinMessage, removeLeaveMessage, delayJoinMessage,
+        noTeleport, applyBlindEffect, hideTablistBeforeLogin, denyTabcompleteBeforeLogin,
         kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
         customAttributes, generateImage, isRemoveSpeedEnabled, preventOtherCase;
     public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
@@ -165,6 +166,9 @@ public final class Settings {
         enablePasswordConfirmation = configFile.getBoolean("settings.restrictions.enablePasswordConfirmation", true);
 
         protectInventoryBeforeLogInEnabled = configFile.getBoolean("settings.restrictions.ProtectInventoryBeforeLogIn", true);
+        denyTabcompleteBeforeLogin = configFile.getBoolean("settings.restrictions.DenyTabcompleteBeforeLogin", true);
+        hideTablistBeforeLogin = configFile.getBoolean("settings.restrictions.DenyTabcompleteBeforeLogin", true);
+
         plugin.checkProtocolLib();
 
         passwordMaxLength = configFile.getInt("settings.security.passwordMaxLength", 20);
