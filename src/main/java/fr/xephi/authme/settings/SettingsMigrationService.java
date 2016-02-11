@@ -46,8 +46,12 @@ public final class SettingsMigrationService {
             configuration.set(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");
             changes = true;
         }
-        changes = changes || performMailTextToFileMigration(configuration, pluginFolder)
-            || migrateJoinLeaveMessages(configuration);
+
+        // Note ljacqu 20160211: Concatenating migration methods with | instead of the usual ||
+        // ensures that all migrations will be performed
+        changes = changes
+            | performMailTextToFileMigration(configuration, pluginFolder)
+            | migrateJoinLeaveMessages(configuration);
 
         return changes;
     }
