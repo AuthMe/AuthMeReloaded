@@ -1,7 +1,11 @@
 package fr.xephi.authme.output;
 
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.util.StringUtils;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 
@@ -12,15 +16,19 @@ import java.io.File;
  */
 public class Messages {
 
-    private MessagesManager manager;
+    private FileConfiguration configuration;
+    private String fileName;
+    private File defaultFile;
+    private FileConfiguration defaultConfiguration;
 
     /**
      * Constructor.
      *
      * @param messageFile The messages file to use
      */
-    public Messages(File messageFile) {
-        manager = new MessagesManager(messageFile);
+    public Messages(File messageFile, File defaultFile) {
+        initializeFile(messageFile);
+        this.defaultFile = defaultFile;
     }
 
     /**
@@ -30,7 +38,7 @@ public class Messages {
      * @param key The key of the message to send
      */
     public void send(CommandSender sender, MessageKey key) {
-        String[] lines = manager.retrieve(key.getKey());
+        String[] lines = retrieve(key);
         for (String line : lines) {
             sender.sendMessage(line);
         }
@@ -38,7 +46,7 @@ public class Messages {
 
     /**
      * Send the given message code to the player with the given tag replacements. Note that this method
-     * issues an exception if the number of supplied replacements doesn't correspond to the number of tags
+     * logs an error if the number of supplied replacements doesn't correspond to the number of tags
      * the message key contains.
      *
      * @param sender The entity to send the message to
@@ -48,13 +56,13 @@ public class Messages {
     public void send(CommandSender sender, MessageKey key, String... replacements) {
         String message = retrieveSingle(key);
         String[] tags = key.getTags();
-        if (replacements.length != tags.length) {
-            throw new IllegalStateException(
-                "Given replacement size does not match the tags in message key '" + key + "'");
-        }
-
-        for (int i = 0; i < tags.length; ++i) {
-            message = message.replace(tags[i], replacements[i]);
+        if (replacements.length == tags.length) {
+            for (int i = 0; i < tags.length; ++i) {
+                message = message.replace(tags[i], replacements[i]);
+            }
+        } else {
+            ConsoleLogger.showError("Invalid number of replacements for message key '" + key + "'");
+            send(sender, key);
         }
 
         for (String line : message.split("\n")) {
@@ -66,11 +74,18 @@ public class Messages {
      * Retrieve the message from the text file and return it split by new line as an array.
      *
      * @param key The message key to retrieve
-     *
      * @return The message split by new lines
      */
     public String[] retrieve(MessageKey key) {
-        return manager.retrieve(key.getKey());
+        final String code = key.getKey();
+        String message = configuration.getString(code);
+
+        if (message == null) {
+            ConsoleLogger.showError("Error getting message with key '" + code + "'. "
+                + "Please verify your config file at '" + fileName + "'");
+            return formatMessage(getDefault(code));
+        }
+        return formatMessage(message);
     }
 
     /**
@@ -88,7 +103,38 @@ public class Messages {
      * Reload the messages manager.
      */
     public void reload(File messagesFile) {
-        manager = new MessagesManager(messagesFile);
+        initializeFile(messagesFile);
+    }
+
+    private void initializeFile(File messageFile) {
+        this.configuration = YamlConfiguration.loadConfiguration(messageFile);
+        this.fileName = messageFile.getName();
+    }
+
+    private String getDefault(String code) {
+        if (defaultFile == null) {
+            return getDefaultErrorMessage(code);
+        }
+
+        if (defaultConfiguration == null) {
+            defaultConfiguration = YamlConfiguration.loadConfiguration(defaultFile);
+        }
+        String message = defaultConfiguration.getString(code);
+        return (message == null)
+            ? "Error retrieving message '" + code + "'"
+            : message;
+    }
+
+    private static String getDefaultErrorMessage(String code) {
+        return "Error retrieving message '" + code + "'";
+    }
+
+    private static String[] formatMessage(String message) {
+        String[] lines = message.split("&n");
+        for (int i = 0; i < lines.length; ++i) {
+            lines[i] = ChatColor.translateAlternateColorCodes('&', lines[i]);
+        }
+        return lines;
     }
 
 }

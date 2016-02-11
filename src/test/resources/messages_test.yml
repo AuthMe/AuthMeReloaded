@@ -1,3 +1,5 @@
+# Sample messages file
+
 unknown_user: 'This test message&nincludes&nsome new lines'
 unsafe_spawn: '&cHere we have&bdefined some colors &dand some other &lthings'
 not_logged_in: 'Apostrophes '' should be loaded correctly, don''t you think?'
