@@ -39,6 +39,7 @@ public class ProcessSyncPasswordRegister implements Runnable {
      *
      * @param player Player
      * @param plugin AuthMe
+     * @param settings The plugin settings
      */
     public ProcessSyncPasswordRegister(Player player, AuthMe plugin, NewSetting settings) {
         this.m = plugin.getMessages();

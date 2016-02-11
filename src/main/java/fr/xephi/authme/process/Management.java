@@ -26,6 +26,7 @@ public class Management {
      * Constructor for Management.
      *
      * @param plugin AuthMe
+     * @param settings The plugin settings
      */
     public Management(AuthMe plugin, NewSetting settings) {
         this.plugin = plugin;

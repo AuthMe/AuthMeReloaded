@@ -47,7 +47,8 @@ public class ProcessSyncPlayerLogin implements Runnable {
      *
      * @param player Player
      * @param plugin AuthMe
-     * @param database   DataSource
+     * @param database DataSource
+     * @param settings The plugin settings
      */
     public ProcessSyncPlayerLogin(Player player, AuthMe plugin,
                                   DataSource database, NewSetting settings) {

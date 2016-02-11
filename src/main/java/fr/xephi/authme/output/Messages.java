@@ -11,8 +11,6 @@ import java.io.File;
 
 /**
  * Class for retrieving and sending translatable messages to players.
- * This class detects when the language settings have changed and will
- * automatically update to use a new language file.
  */
 public class Messages {
 
@@ -25,6 +23,7 @@ public class Messages {
      * Constructor.
      *
      * @param messageFile The messages file to use
+     * @param defaultFile The file with messages to use as default if missing
      */
     public Messages(File messageFile, File defaultFile) {
         initializeFile(messageFile);

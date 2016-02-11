@@ -36,6 +36,7 @@ public class PerformBackup {
      * Constructor for PerformBackup.
      *
      * @param instance AuthMe
+     * @param settings The plugin settings
      */
     public PerformBackup(AuthMe instance, NewSetting settings) {
         this.dataFolder = instance.getDataFolder();

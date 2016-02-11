@@ -113,7 +113,7 @@ public final class SettingsMigrationService {
     }
 
     /**
-     * Detected deprecated {@code settings.delayJoinLeaveMessages} and inform user of new "remove join messages"
+     * Detect deprecated {@code settings.delayJoinLeaveMessages} and inform user of new "remove join messages"
      * and "remove leave messages" settings.
      *
      * @param configuration The file configuration
