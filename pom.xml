@@ -182,8 +182,8 @@
                             <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
                         </relocation>
                         <relocation>
-                            <pattern>com.google</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
+                            <pattern>com.google.gson</pattern>
+                            <shadedPattern>fr.xephi.authme.libs.google.gson</shadedPattern>
                         </relocation>
                     </relocations>
                 </configuration>
@@ -210,6 +210,16 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <relocations>
+                                <relocation>
+                                    <pattern>com.google.thirdparty</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.google.thirdparty</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.google.commons</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.google.commons</shadedPattern>
+                                </relocation>
+                            </relocations>
                             <outputFile>target/${jarName}-legacy.jar</outputFile>
                         </configuration>
                     </execution>
@@ -296,13 +306,6 @@
             <id>xephi-repo</id>
             <url>http://ci.xephi.fr/plugin/repository/everything/</url>
         </repository>
-
-        <!-- PermissionsEx Repo (NOW HOSTED ON XEPHI REPO due to connectio issues)
-        <repository>
-            <id>pex-repo</id>
-            <url>https://pex-repo.aoeu.xyz//</url>
-        </repository>
-         -->
     </repositories>
 
     <dependencies>
