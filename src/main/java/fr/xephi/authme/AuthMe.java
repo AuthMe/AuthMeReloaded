@@ -60,6 +60,7 @@ import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
 import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
+import fr.xephi.authme.listener.AuthMeTablistPacketAdapter;
 import fr.xephi.authme.mail.SendMailSSL;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
@@ -132,6 +133,7 @@ public class AuthMe extends JavaPlugin {
     public CombatTagPlus combatTagPlus;
     public AuthMeInventoryPacketAdapter inventoryProtector;
     public AuthMeTabCompletePacketAdapter tabComplete;
+    public AuthMeTablistPacketAdapter tablistHider;
 
     /*
      *  Maps and stuff
@@ -664,9 +666,13 @@ public class AuthMe extends JavaPlugin {
             inventoryProtector.unregister();
             inventoryProtector = null;
         }
-        if (tabComplete == null) {
+        if (tabComplete == null && newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN)) {
             tabComplete = new AuthMeTabCompletePacketAdapter(this);
             tabComplete.register();
+        }
+        if (tablistHider == null && newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN)) {
+            tablistHider = new AuthMeTablistPacketAdapter(this);
+            tablistHider.register();
         }
     }
 

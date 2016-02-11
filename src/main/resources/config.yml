@@ -132,8 +132,12 @@ settings:
         # when it's true, registration require that kind of command:
         # /register <password> <confirmPassword>
         enablePasswordConfirmation: true
-        # Should we protect the player inventory before logging in?
+        # Should we protect the player inventory before logging in? Requires ProtocolLib.
         ProtectInventoryBeforeLogIn: true
+        # Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.
+        DenyTabcompleteBeforeLogIn: true
+        # Should we hide the tablist before logging in? Requires ProtocolLib.
+        HideTablistBeforeLogIn: true
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true

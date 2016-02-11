@@ -202,7 +202,7 @@ public class AuthMePlayerListener implements Listener {
         if (joinMsg == null) {
             return;
         }
-        event.setJoinMessage(null);
+        event.setJoinMessage((String)null);
         joinMessage.put(name, joinMsg);
     }
 
@@ -358,7 +358,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (Settings.delayJoinLeaveMessages && !Utils.checkAuth(player)) {
-            event.setQuitMessage(null);
+            event.setQuitMessage((String)null);
         }
 
         plugin.getManagement().performQuit(player, false);
