@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xmlns="http://maven.apache.org/POM/4.0.0"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.xephi</groupId>
@@ -138,54 +138,14 @@
                 </configuration>
             </plugin>
             <plugin>
+                <!--Relocate all lib we use in order to fix class loading errors if we use different versions
+                than already loaded libs (i.e. by Mojang -> gson)-->
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
                 <version>2.4.3</version>
                 <configuration>
                     <createDependencyReducedPom>false</createDependencyReducedPom>
-                    <minimizeJar>false</minimizeJar>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.mcstats</pattern>
-                            <shadedPattern>fr.xephi.authme</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.apache</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.apache</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>javax.mail</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.javax.mail</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>javax.activation</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.javax.activation</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.sun</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.sun</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.zaxxer.hikari</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>org.slf4j</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.maxmind.geoip</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>net.ricecode.similarity</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
-                        </relocation>
-                        <relocation>
-                            <pattern>com.google.gson</pattern>
-                            <shadedPattern>fr.xephi.authme.libs.google.gson</shadedPattern>
-                        </relocation>
-                    </relocations>
+                    <minimizeJar>false</minimizeJar>´
                 </configuration>
                 <executions>
                     <execution>
@@ -200,6 +160,49 @@
                                     <exclude>com.google.guava:guava</exclude>
                                 </excludes>
                             </artifactSet>
+                            <relocations>
+                                <!--We use a newer version of gson so include it to the jar and reference to the new version-->
+                                <relocation>
+                                    <pattern>com.google.gson</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.mcstats</pattern>
+                                    <shadedPattern>fr.xephi.authme</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.apache</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.mail</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.javax.mail</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.activation</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.javax.activation</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.sun</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.sun</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.maxmind.geoip</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.ricecode.similarity</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
+                                </relocation>
+                            </relocations>
                             <outputFile>target/${jarName}-spigot.jar</outputFile>
                         </configuration>
                     </execution>
@@ -210,14 +213,47 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
+                            <!--Include all google libraries, because they are not avaialbe before 1.8-->
                             <relocations>
                                 <relocation>
-                                    <pattern>com.google.thirdparty</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.google.thirdparty</shadedPattern>
+                                    <pattern>com.google</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
                                 </relocation>
                                 <relocation>
-                                    <pattern>com.google.commons</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.google.commons</shadedPattern>
+                                    <pattern>org.mcstats</pattern>
+                                    <shadedPattern>fr.xephi.authme</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.apache</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.apache</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.mail</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.javax.mail</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.activation</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.javax.activation</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.sun</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.sun</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.zaxxer.hikari</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>org.slf4j</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.slf4j</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>com.maxmind.geoip</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.geoip</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>net.ricecode.similarity</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
                                 </relocation>
                             </relocations>
                             <outputFile>target/${jarName}-legacy.jar</outputFile>
