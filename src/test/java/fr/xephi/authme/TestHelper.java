@@ -12,7 +12,7 @@ public final class TestHelper {
     }
 
     /**
-     * Return a {@link File} to an existing file from the main (non-test) resources folder.
+     * Return a {@link File} to a file in the JAR's resources (main or test).
      *
      * @param path The absolute path to the file
      * @return The project file

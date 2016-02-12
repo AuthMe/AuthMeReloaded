@@ -19,6 +19,7 @@ import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -248,5 +249,22 @@ public class MessagesIntegrationTest {
 
         // then
         assertThat(message, containsString("Error retrieving message"));
+    }
+
+    @Test
+    public void shouldLoadOtherFile() {
+        // given
+        MessageKey key = MessageKey.WRONG_PASSWORD;
+        // assumption: message comes back as defined in messages_test.yml
+        assumeThat(messages.retrieveSingle(key), equalTo("§cWrong password!"));
+
+        // when
+        messages.reload(TestHelper.getJarFile("/messages_test2.yml"));
+
+        // then
+        assertThat(messages.retrieveSingle(key), equalTo("test2 - wrong password"));
+        // check that default message handling still works
+        assertThat(messages.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE),
+            equalTo("Message from default file"));
     }
 }

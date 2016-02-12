@@ -16,7 +16,7 @@ public class Messages {
 
     private FileConfiguration configuration;
     private String fileName;
-    private File defaultFile;
+    private final File defaultFile;
     private FileConfiguration defaultConfiguration;
 
     /**
@@ -91,7 +91,6 @@ public class Messages {
      * Retrieve the message from the text file.
      *
      * @param key The message key to retrieve
-     *
      * @return The message from the file
      */
     public String retrieveSingle(MessageKey key) {
@@ -100,6 +99,8 @@ public class Messages {
 
     /**
      * Reload the messages manager.
+     *
+     * @param messagesFile The new file to load messages from
      */
     public void reload(File messagesFile) {
         initializeFile(messagesFile);
@@ -119,9 +120,7 @@ public class Messages {
             defaultConfiguration = YamlConfiguration.loadConfiguration(defaultFile);
         }
         String message = defaultConfiguration.getString(code);
-        return (message == null)
-            ? "Error retrieving message '" + code + "'"
-            : message;
+        return message == null ? getDefaultErrorMessage(code) : message;
     }
 
     private static String getDefaultErrorMessage(String code) {
