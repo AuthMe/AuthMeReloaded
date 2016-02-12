@@ -2,65 +2,38 @@ package fr.xephi.authme.events;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 /**
- * This event is call when AuthMe try to teleport a player
- *
- * @author Xephi59
- * @version $Revision: 1.0 $
+ * This event is fired before AuthMe teleports a player for general purposes.
  */
-public class AuthMeTeleportEvent extends CustomEvent {
+public class AuthMeTeleportEvent extends AbstractTeleportEvent {
 
-    private final Player player;
-    private Location to;
-    private final Location from;
+    private static final HandlerList handlers = new HandlerList();
 
     /**
-     * Constructor for AuthMeTeleportEvent.
+     * Constructor.
      *
-     * @param player Player
-     * @param to     Location
+     * @param player The player
+     * @param to The teleport destination
      */
     public AuthMeTeleportEvent(Player player, Location to) {
-        this.player = player;
-        this.from = player.getLocation();
-        this.to = to;
+        super(false, player, to);
     }
 
     /**
-     * Method getPlayer.
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
      *
-     * @return Player
+     * @return The list of handlers
      */
-    public Player getPlayer() {
-        return player;
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
-    /**
-     * Method getTo.
-     *
-     * @return Location
-     */
-    public Location getTo() {
-        return to;
-    }
-
-    /**
-     * Method setTo.
-     *
-     * @param to Location
-     */
-    public void setTo(Location to) {
-        this.to = to;
-    }
-
-    /**
-     * Method getFrom.
-     *
-     * @return Location
-     */
-    public Location getFrom() {
-        return from;
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
 }

@@ -1,98 +1,84 @@
 package fr.xephi.authme.events;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * This event is call just after store inventory into cache and will empty the
- * player inventory.
- *
- * @author Xephi59
- * @version $Revision: 1.0 $
+ * This event is called before the inventory data of a player is suppressed,
+ * i.e. the inventory of the player is not displayed until he has authenticated.
  */
-public class ProtectInventoryEvent extends CustomEvent {
+public class ProtectInventoryEvent extends CustomEvent implements Cancellable {
 
-    private final ItemStack[] storedinventory;
-    private final ItemStack[] storedarmor;
-    private ItemStack[] emptyInventory = null;
-    private ItemStack[] emptyArmor = null;
+    private static final HandlerList handlers = new HandlerList();
+    private final ItemStack[] storedInventory;
+    private final ItemStack[] storedArmor;
     private final Player player;
+    private boolean isCancelled;
 
     /**
-     * Constructor for ProtectInventoryEvent.
+     * Constructor.
      *
-     * @param player Player
+     * @param player The player
      */
     public ProtectInventoryEvent(Player player) {
         super(true);
         this.player = player;
-        this.storedinventory = player.getInventory().getContents();
-        this.storedarmor = player.getInventory().getArmorContents();
-        this.emptyInventory = new ItemStack[36];
-        this.emptyArmor = new ItemStack[4];
+        this.storedInventory = player.getInventory().getContents();
+        this.storedArmor = player.getInventory().getArmorContents();
     }
 
     /**
-     * Method getStoredInventory.
+     * Return the inventory of the player.
      *
-     * @return ItemStack[]
+     * @return The player's inventory
      */
     public ItemStack[] getStoredInventory() {
-        return this.storedinventory;
+        return storedInventory;
     }
 
     /**
-     * Method getStoredArmor.
+     * Return the armor of the player.
      *
-     * @return ItemStack[]
+     * @return The player's armor
      */
     public ItemStack[] getStoredArmor() {
-        return this.storedarmor;
+        return storedArmor;
     }
 
     /**
-     * Method getPlayer.
+     * Return the player whose inventory will be hidden.
      *
-     * @return Player
+     * @return The player associated with this event
      */
     public Player getPlayer() {
-        return this.player;
+        return player;
+    }
+
+    @Override
+    public void setCancelled(boolean isCancelled) {
+        this.isCancelled = isCancelled;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return isCancelled;
     }
 
     /**
-     * Method setNewInventory.
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
      *
-     * @param emptyInventory ItemStack[]
+     * @return The list of handlers
      */
-    public void setNewInventory(ItemStack[] emptyInventory) {
-        this.emptyInventory = emptyInventory;
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
-    /**
-     * Method getEmptyInventory.
-     *
-     * @return ItemStack[]
-     */
-    public ItemStack[] getEmptyInventory() {
-        return this.emptyInventory;
-    }
-
-    /**
-     * Method setNewArmor.
-     *
-     * @param emptyArmor ItemStack[]
-     */
-    public void setNewArmor(ItemStack[] emptyArmor) {
-        this.emptyArmor = emptyArmor;
-    }
-
-    /**
-     * Method getEmptyArmor.
-     *
-     * @return ItemStack[]
-     */
-    public ItemStack[] getEmptyArmor() {
-        return this.emptyArmor;
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
 }

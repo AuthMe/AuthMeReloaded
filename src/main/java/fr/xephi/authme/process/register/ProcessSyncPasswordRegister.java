@@ -120,7 +120,7 @@ public class ProcessSyncPasswordRegister implements Runnable {
         }
 
         // The LoginEvent now fires (as intended) after everything is processed
-        plugin.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
+        plugin.getServer().getPluginManager().callEvent(new LoginEvent(player));
         player.saveData();
 
         if (!Settings.noConsoleSpam) {

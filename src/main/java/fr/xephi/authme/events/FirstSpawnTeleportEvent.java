@@ -2,67 +2,40 @@ package fr.xephi.authme.events;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 /**
- * Called if a player is teleported to the authme first spawn
- *
- * @author Xephi59
- * @version $Revision: 1.0 $
+ * Event that is called if a player is teleported to the AuthMe first spawn, i.e. to the
+ * spawn location for players who have never played before.
  */
-public class FirstSpawnTeleportEvent extends CustomEvent {
+public class FirstSpawnTeleportEvent extends AbstractTeleportEvent {
 
-    private final Player player;
-    private Location to;
-    private final Location from;
+    private static final HandlerList handlers = new HandlerList();
 
     /**
-     * Constructor for FirstSpawnTeleportEvent.
+     * Constructor.
      *
-     * @param player Player
-     * @param from   Location
-     * @param to     Location
+     * @param player The player
+     * @param from The location the player is being teleported away from
+     * @param to The teleport destination
      */
     public FirstSpawnTeleportEvent(Player player, Location from, Location to) {
-        super(true);
-        this.player = player;
-        this.from = from;
-        this.to = to;
+        super(true, player, from, to);
     }
 
     /**
-     * Method getPlayer.
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
      *
-     * @return Player
+     * @return The list of handlers
      */
-    public Player getPlayer() {
-        return player;
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
-    /**
-     * Method getTo.
-     *
-     * @return Location
-     */
-    public Location getTo() {
-        return to;
-    }
-
-    /**
-     * Method setTo.
-     *
-     * @param to Location
-     */
-    public void setTo(Location to) {
-        this.to = to;
-    }
-
-    /**
-     * Method getFrom.
-     *
-     * @return Location
-     */
-    public Location getFrom() {
-        return from;
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
 }
