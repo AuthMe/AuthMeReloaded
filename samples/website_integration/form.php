@@ -17,19 +17,19 @@ $pass = get_from_post_or_empty('password');
 
 $was_successful = false;
 if ($user && $pass) {
-	require_once('integration.php');
-	if (authme_check_password($user, $pass)) {
-		printf('<h1>Hello, %s!</h1>', htmlspecialchars($user));
-		echo 'Successful login. Nice to have you back!'
-			. '<br /><a href="form.php">Back to form</a>';
-		$was_successful = true;
-	} else {
-		echo '<h1>Error</h1> Invalid username or password.';
-	}
+    require_once('integration.php');
+    if (authme_check_password($user, $pass)) {
+        printf('<h1>Hello, %s!</h1>', htmlspecialchars($user));
+        echo 'Successful login. Nice to have you back!'
+            . '<br /><a href="form.php">Back to form</a>';
+        $was_successful = true;
+    } else {
+        echo '<h1>Error</h1> Invalid username or password.';
+    }
 }
 
 if (!$was_successful) {
-	echo '<h1>Login sample</h1>
+    echo '<h1>Login sample</h1>
 This is a demo form for AuthMe website integration. Enter your AuthMe login details
 into the following form to test it.
 <form method="post">
@@ -42,9 +42,9 @@ into the following form to test it.
 }
 
 function get_from_post_or_empty($index_name) {
-	return trim(
-		filter_input(INPUT_POST, $index_name, FILTER_UNSAFE_RAW, FILTER_REQUIRE_SCALAR | FILTER_FLAG_STRIP_LOW)
-		    ?: '');
+    return trim(
+        filter_input(INPUT_POST, $index_name, FILTER_UNSAFE_RAW, FILTER_REQUIRE_SCALAR | FILTER_FLAG_STRIP_LOW)
+            ?: '');
 }
 ?>
 

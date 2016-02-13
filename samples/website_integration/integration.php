@@ -34,13 +34,13 @@ function authme_check_password($username, $password) {
  */
 function authme_get_hash($username) {
     // Add here your database host, username, password and database name
-	$mysqli = new mysqli('HOST', 'USER', 'PWD', 'DB');
-	$authme_table = 'authme';
+    $mysqli = new mysqli('HOST', 'USER', 'PWD', 'DB');
+    $authme_table = 'authme';
 
-	if (mysqli_connect_error()) {
-	    printf('Could not connect to AuthMe database. Errno: %d, error: "%s"',
-	        mysqli_connect_errno(), mysqli_connect_error());
-	} else {
+    if (mysqli_connect_error()) {
+        printf('Could not connect to AuthMe database. Errno: %d, error: "%s"',
+            mysqli_connect_errno(), mysqli_connect_error());
+    } else {
         $stmt = $mysqli->prepare("SELECT password FROM $authme_table WHERE username = ?");
         $stmt->bind_param('s', $username);
         $stmt->execute();
@@ -48,7 +48,7 @@ function authme_get_hash($username) {
         if ($stmt->fetch()) {
             return $password;
         }
-	}
+    }
     return null;
 }
 
