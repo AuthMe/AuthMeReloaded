@@ -28,8 +28,7 @@ import fr.xephi.authme.util.Utils.GroupType;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
-/**
- */
+
 public class ProcessSyncPlayerLogin implements Runnable {
 
     private final LimboPlayer limbo;
@@ -47,7 +46,8 @@ public class ProcessSyncPlayerLogin implements Runnable {
      *
      * @param player Player
      * @param plugin AuthMe
-     * @param database   DataSource
+     * @param database DataSource
+     * @param settings The plugin settings
      */
     public ProcessSyncPlayerLogin(Player player, AuthMe plugin,
                                   DataSource database, NewSetting settings) {
@@ -62,24 +62,19 @@ public class ProcessSyncPlayerLogin implements Runnable {
         this.settings = settings;
     }
 
-    /**
-     * Method getLimbo.
-     *
-     * @return LimboPlayer
-     */
     public LimboPlayer getLimbo() {
         return limbo;
     }
 
-    protected void restoreOpState() {
+    private void restoreOpState() {
         player.setOp(limbo.getOperator());
     }
 
-    protected void packQuitLocation() {
+    private void packQuitLocation() {
         Utils.packCoords(auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), player);
     }
 
-    protected void teleportBackFromSpawn() {
+    private void teleportBackFromSpawn() {
         AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, limbo.getLoc());
         pm.callEvent(tpEvent);
         if (!tpEvent.isCancelled() && tpEvent.getTo() != null) {
@@ -87,7 +82,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
         }
     }
 
-    protected void teleportToSpawn() {
+    private void teleportToSpawn() {
         Location spawnL = plugin.getSpawnLocation(player);
         SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnL, true);
         pm.callEvent(tpEvent);
@@ -96,14 +91,14 @@ public class ProcessSyncPlayerLogin implements Runnable {
         }
     }
 
-    protected void restoreSpeedEffects() {
+    private void restoreSpeedEffects() {
         if (Settings.isRemoveSpeedEnabled) {
             player.setWalkSpeed(0.2F);
             player.setFlySpeed(0.1F);
         }
     }
 
-    protected void restoreInventory() {
+    private void restoreInventory() {
         RestoreInventoryEvent event = new RestoreInventoryEvent(player);
         pm.callEvent(event);
         if (!event.isCancelled() && plugin.inventoryProtector != null) {
@@ -111,7 +106,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
         }
     }
 
-    protected void forceCommands() {
+    private void forceCommands() {
         for (String command : Settings.forceCommands) {
             player.performCommand(command.replace("%p", player.getName()));
         }
@@ -120,7 +115,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
         }
     }
 
-    protected void sendBungeeMessage() {
+    private void sendBungeeMessage() {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF("ALL");
@@ -129,11 +124,6 @@ public class ProcessSyncPlayerLogin implements Runnable {
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
-    /**
-     * Method run.
-     *
-     * @see java.lang.Runnable#run()
-     */
     @Override
     public void run() {
         // Limbo contains the State of the Player before /login
@@ -174,8 +164,9 @@ public class ProcessSyncPlayerLogin implements Runnable {
         if (jm != null) {
             if (!jm.isEmpty()) {
                 for (Player p : Utils.getOnlinePlayers()) {
-                    if (p.isOnline())
+                    if (p.isOnline()) {
                         p.sendMessage(jm);
+                    }
                 }
             }
             AuthMePlayerListener.joinMessage.remove(name);
@@ -187,12 +178,13 @@ public class ProcessSyncPlayerLogin implements Runnable {
         }
 
         // The Login event now fires (as intended) after everything is processed
-        Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
+        Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player));
         player.saveData();
-        if (Settings.bungee)
+        if (Settings.bungee) {
             sendBungeeMessage();
+        }
         // Login is finish, display welcome message if we use email registration
-        if (Settings.useWelcomeMessage && Settings.emailRegistration)
+        if (Settings.useWelcomeMessage && Settings.emailRegistration) {
             if (Settings.broadcastWelcomeMessage) {
                 for (String s : settings.getWelcomeMessage()) {
                     Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
@@ -202,6 +194,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
                     player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
+        }
 
         // Login is now finished; we can force all commands
         forceCommands();

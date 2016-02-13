@@ -5,80 +5,40 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * This event is called when a player login or register through AuthMe. The
- * boolean 'isLogin' will be false if, and only if, login/register failed.
- *
- * @author Xephi59
- * @version $Revision: 1.0 $
+ * Event fired when a player has successfully logged in or registered.
  */
-public class LoginEvent extends Event {
+public class LoginEvent extends CustomEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    private Player player;
-    private boolean isLogin;
+    private final Player player;
 
     /**
-     * Constructor for LoginEvent.
+     * Constructor.
      *
-     * @param player  Player
-     * @param isLogin boolean
+     * @param player The player
      */
-    public LoginEvent(Player player, boolean isLogin) {
+    public LoginEvent(Player player) {
         this.player = player;
-        this.isLogin = isLogin;
     }
 
     /**
-     * Method getHandlerList.
+     * Return the player that has successfully logged in or registered.
      *
-     * @return HandlerList
+     * @return The player
+     */
+    public Player getPlayer() {
+        return player;
+    }
+
+    /**
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
+     *
+     * @return The list of handlers
      */
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    /**
-     * Method getPlayer.
-     *
-     * @return Player
-     */
-    public Player getPlayer() {
-        return this.player;
-    }
-
-    /**
-     * Method setPlayer.
-     *
-     * @param player Player
-     */
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    /**
-     * Method isLogin.
-     *
-     * @return boolean
-     */
-    public boolean isLogin() {
-        return isLogin;
-    }
-
-    /**
-     * Method setLogin.
-     *
-     * @param isLogin boolean
-     */
-    @Deprecated
-    public void setLogin(boolean isLogin) {
-        this.isLogin = isLogin;
-    }
-
-    /**
-     * Method getHandlers.
-     *
-     * @return HandlerList
-     */
     @Override
     public HandlerList getHandlers() {
         return handlers;

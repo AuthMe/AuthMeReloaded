@@ -2,79 +2,51 @@ package fr.xephi.authme.events;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 /**
- * Called if a player is teleported to a specific spawn
- *
- * @author Xephi59
- * @version $Revision: 1.0 $
+ * Called if a player is teleported to a specific spawn upon joining or logging in.
  */
-public class SpawnTeleportEvent extends CustomEvent {
+public class SpawnTeleportEvent extends AbstractTeleportEvent {
 
-    private final Player player;
-    private Location to;
-    private final Location from;
+    private static final HandlerList handlers = new HandlerList();
     private final boolean isAuthenticated;
 
     /**
-     * Constructor for SpawnTeleportEvent.
+     * Constructor.
      *
-     * @param player          Player
-     * @param from            Location
-     * @param to              Location
-     * @param isAuthenticated boolean
+     * @param player The player
+     * @param from The location the player is being teleported away from
+     * @param to The teleport destination
+     * @param isAuthenticated Whether or not the player is logged in
      */
-    public SpawnTeleportEvent(Player player, Location from, Location to,
-                              boolean isAuthenticated) {
-        this.player = player;
-        this.from = from;
-        this.to = to;
+    public SpawnTeleportEvent(Player player, Location from, Location to, boolean isAuthenticated) {
+        super(false, player, from, to);
         this.isAuthenticated = isAuthenticated;
     }
 
     /**
-     * Method getPlayer.
+     * Return whether or not the player is authenticated.
      *
-     * @return Player
-     */
-    public Player getPlayer() {
-        return player;
-    }
-
-    /**
-     * Method getTo.
-     *
-     * @return Location
-     */
-    public Location getTo() {
-        return to;
-    }
-
-    /**
-     * Method setTo.
-     *
-     * @param to Location
-     */
-    public void setTo(Location to) {
-        this.to = to;
-    }
-
-    /**
-     * Method getFrom.
-     *
-     * @return Location
-     */
-    public Location getFrom() {
-        return from;
-    }
-
-    /**
-     * Method isAuthenticated.
-     *
-     * @return boolean
+     * @return true if the player is logged in, false otherwise
      */
     public boolean isAuthenticated() {
         return isAuthenticated;
+    }
+
+    /**
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
+     *
+     * @return The list of handlers
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
 }

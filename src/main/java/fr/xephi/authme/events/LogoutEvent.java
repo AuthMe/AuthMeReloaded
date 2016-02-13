@@ -5,57 +5,42 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * This event is called when a player logout through AuthMe.
- *
- * @author Xephi59
- * @version $Revision: 1.0 $
+ * This event is called when a player logs out through AuthMe, i.e. only when the player
+ * has executed the {@code /logout} command. This event is not fired if a player simply
+ * leaves the server.
  */
-public class LogoutEvent extends Event {
+public class LogoutEvent extends CustomEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    private Player player;
+    private final Player player;
 
     /**
-     * Constructor for LogoutEvent.
+     * Constructor.
      *
-     * @param player Player
+     * @param player The player
      */
     public LogoutEvent(Player player) {
         this.player = player;
     }
 
     /**
-     * Method getHandlerList.
+     * Return the player who logged out.
      *
-     * @return HandlerList
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    /**
-     * Method getPlayer.
-     *
-     * @return Player
+     * @return The player
      */
     public Player getPlayer() {
         return this.player;
     }
 
     /**
-     * Method setPlayer.
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
      *
-     * @param player Player
+     * @return The list of handlers
      */
-    public void setPlayer(Player player) {
-        this.player = player;
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
-    /**
-     * Method getHandlers.
-     *
-     * @return HandlerList
-     */
     @Override
     public HandlerList getHandlers() {
         return handlers;

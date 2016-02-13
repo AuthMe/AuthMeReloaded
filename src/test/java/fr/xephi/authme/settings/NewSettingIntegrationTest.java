@@ -12,12 +12,12 @@ import org.junit.Test;
 
 import java.io.File;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static fr.xephi.authme.TestHelper.getJarFile;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -29,18 +29,18 @@ import static org.junit.Assume.assumeThat;
 public class NewSettingIntegrationTest {
 
     /** File name of the sample config including all {@link TestConfiguration} values. */
-    private static final String COMPLETE_FILE = "config-sample-values.yml";
+    private static final String COMPLETE_FILE = "/config-sample-values.yml";
     /** File name of the sample config missing certain {@link TestConfiguration} values. */
-    private static final String INCOMPLETE_FILE = "config-incomplete-sample.yml";
+    private static final String INCOMPLETE_FILE = "/config-incomplete-sample.yml";
     /** File name for testing difficult values. */
-    private static final String DIFFICULT_FILE = "config-difficult-values.yml";
+    private static final String DIFFICULT_FILE = "/config-difficult-values.yml";
 
     private static PropertyMap propertyMap = generatePropertyMap();
 
     @Test
     public void shouldLoadAndReadAllProperties() {
         // given
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(getConfigFile(COMPLETE_FILE));
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(getJarFile(COMPLETE_FILE));
         File file = new File("unused");
 
         // when / then
@@ -67,7 +67,7 @@ public class NewSettingIntegrationTest {
     @Test
     public void shouldWriteMissingProperties() {
         // given/when
-        File file = getConfigFile(INCOMPLETE_FILE);
+        File file = getJarFile(INCOMPLETE_FILE);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         assumeThat(configuration.contains(TestConfiguration.BORING_COLORS.getPath()), equalTo(false));
         // Expectation: File is rewritten to since it does not have all configurations
@@ -100,7 +100,7 @@ public class NewSettingIntegrationTest {
     @Test
     public void shouldProperlyExportAnyValues() {
         // given
-        File file = getConfigFile(DIFFICULT_FILE);
+        File file = getJarFile(DIFFICULT_FILE);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         assumeThat(configuration.contains(TestConfiguration.DUST_LEVEL.getPath()), equalTo(false));
 
@@ -145,19 +145,6 @@ public class NewSettingIntegrationTest {
                 + entry.getValue() + " but found " + settings.getProperty(entry.getKey()),
                 settings.getProperty(entry.getKey()), equalTo(entry.getValue()));
         }
-    }
-
-    /**
-     * Return a {@link File} instance to an existing file in the target/test-classes folder.
-     *
-     * @return The generated File
-     */
-    private File getConfigFile(String file) {
-        URL url = getClass().getClassLoader().getResource(file);
-        if (url == null) {
-            throw new IllegalStateException("File '" + file + "' could not be loaded");
-        }
-        return new File(url.getFile());
     }
 
     /**

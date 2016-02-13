@@ -8,18 +8,10 @@ import java.util.Random;
  */
 public final class RandomString {
 
-    private static final char[] chars = new char[36];
+    private static final String CHARS = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     private static final Random RANDOM = new SecureRandom();
     private static final int HEX_MAX_INDEX = 16;
-
-    static {
-        for (int idx = 0; idx < 10; ++idx) {
-            chars[idx] = (char) ('0' + idx);
-        }
-        for (int idx = 10; idx < 36; ++idx) {
-            chars[idx] = (char) ('a' + idx - 10);
-        }
-    }
+    private static final int LOWER_ALPHANUMERIC_INDEX = 36;
 
     private RandomString() {
     }
@@ -31,7 +23,7 @@ public final class RandomString {
      * @return The random string
      */
     public static String generate(int length) {
-        return generate(length, chars.length);
+        return generate(length, LOWER_ALPHANUMERIC_INDEX);
     }
 
     /**
@@ -45,13 +37,24 @@ public final class RandomString {
         return generate(length, HEX_MAX_INDEX);
     }
 
+    /**
+     * Generate a random string with digits and lowercase and uppercase letters. The result of this
+     * method matches the pattern [0-9a-zA-Z].
+     *
+     * @param length The length of the random string to generate
+     * @return The random string
+     */
+    public static String generateLowerUpper(int length) {
+        return generate(length, CHARS.length());
+    }
+
     private static String generate(int length, int maxIndex) {
         if (length < 0) {
             throw new IllegalArgumentException("Length must be positive but was " + length);
         }
         StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; ++i) {
-            sb.append(chars[RANDOM.nextInt(maxIndex)]);
+            sb.append(CHARS.charAt(RANDOM.nextInt(maxIndex)));
         }
         return sb.toString();
     }

@@ -13,6 +13,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 
+import static fr.xephi.authme.settings.properties.RegistrationSettings.DELAY_JOIN_MESSAGE;
+import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_JOIN_MESSAGE;
+import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_LEAVE_MESSAGE;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS;
 import static java.lang.String.format;
 
@@ -43,9 +46,12 @@ public final class SettingsMigrationService {
             configuration.set(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");
             changes = true;
         }
-        changes = changes || performMailTextToFileMigration(configuration, pluginFolder);
 
-        return changes;
+        // Note ljacqu 20160211: Concatenating migration methods with | instead of the usual ||
+        // ensures that all migrations will be performed
+        return changes
+            | performMailTextToFileMigration(configuration, pluginFolder)
+            | migrateJoinLeaveMessages(configuration);
     }
 
     @VisibleForTesting
@@ -61,8 +67,7 @@ public final class SettingsMigrationService {
     private static boolean hasDeprecatedProperties(FileConfiguration configuration) {
         String[] deprecatedProperties = {
             "Converter.Rakamak.newPasswordHash", "Hooks.chestshop", "Hooks.legacyChestshop", "Hooks.notifications",
-            "Passpartu", "Performances", "settings.delayJoinMessage", "settings.restrictions.enablePasswordVerifier",
-            "Xenoforo.predefinedSalt"};
+            "Passpartu", "Performances", "settings.restrictions.enablePasswordVerifier", "Xenoforo.predefinedSalt"};
         for (String deprecatedPath : deprecatedProperties) {
             if (configuration.contains(deprecatedPath)) {
                 return true;
@@ -103,6 +108,33 @@ public final class SettingsMigrationService {
         }
         return true;
     }
+
+    /**
+     * Detect deprecated {@code settings.delayJoinLeaveMessages} and inform user of new "remove join messages"
+     * and "remove leave messages" settings.
+     *
+     * @param configuration The file configuration
+     * @return True if the configuration has changed, false otherwise
+     */
+    private static boolean migrateJoinLeaveMessages(FileConfiguration configuration) {
+        final String oldDelayJoinPath = "settings.delayJoinLeaveMessages";
+        if (configuration.contains(oldDelayJoinPath)) {
+            ConsoleLogger.info("Detected deprecated property " + oldDelayJoinPath);
+            ConsoleLogger.info(String.format("Note that we now also have the settings %s and %s",
+                REMOVE_JOIN_MESSAGE.getPath(), REMOVE_LEAVE_MESSAGE.getPath()));
+            if (!configuration.contains(DELAY_JOIN_MESSAGE.getPath())) {
+                configuration.set(DELAY_JOIN_MESSAGE.getPath(), true);
+                ConsoleLogger.info("Renamed " + oldDelayJoinPath + " to " + DELAY_JOIN_MESSAGE.getPath());
+            }
+            return true;
+        }
+        return false;
+    }
+
+
+    // -------
+    // Utilities
+    // -------
 
     /**
      * Copy a resource file (from the JAR) to the given file if it doesn't exist.

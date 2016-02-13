@@ -1,0 +1,5 @@
+# Simulates a default file
+
+wrong_pwd: 'This message is overridden in messages_test.yml'
+reg_only: 'Message from default file'
+logged_in: '&cYou''re already logged in!'

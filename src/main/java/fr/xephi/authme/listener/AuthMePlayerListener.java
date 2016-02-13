@@ -188,7 +188,33 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onJoinMessage(PlayerJoinEvent event) {
+        final Player player = event.getPlayer();
+        if (player == null) {
+            return;
+        }
+
+        if (Settings.removeJoinMessage) {
+            event.setJoinMessage(null);
+            return;
+        }
+        if (!Settings.delayJoinMessage) {
+            return;
+        }
+
+        String name = player.getName().toLowerCase();
+        String joinMsg = event.getJoinMessage();
+
+        // Remove the join message while the player isn't logging in
+        if (joinMsg == null) {
+            return;
+        }
+        event.setJoinMessage(null);
+        joinMessage.put(name, joinMsg);
+    }
+
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         if (player == null) {
@@ -198,15 +224,6 @@ public class AuthMePlayerListener implements Listener {
         if (Settings.isForceSurvivalModeEnabled
             && !player.hasPermission(PlayerPermission.BYPASS_FORCE_SURVIVAL.getNode())) {
             player.setGameMode(GameMode.SURVIVAL);
-        }
-
-        String name = player.getName().toLowerCase();
-        String joinMsg = event.getJoinMessage();
-
-        // Remove the join message while the player isn't logging in
-        if (Settings.delayJoinLeaveMessages && joinMsg != null) {
-            event.setJoinMessage(null);
-            joinMessage.put(name, joinMsg);
         }
 
         // Shedule login task so works after the prelogin
@@ -348,7 +365,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (Settings.delayJoinLeaveMessages && !Utils.checkAuth(player)) {
+        if (Settings.removeLeaveMessage) {
             event.setQuitMessage(null);
         }
 
@@ -374,11 +391,11 @@ public class AuthMePlayerListener implements Listener {
 
     /*
      * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-     * TODO #360: npc status can be used to bypass security!!!
+     * Note #360: npc status can be used to bypass security!!!
      * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
      */
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if (shouldCancelEvent(event)) {
             event.setCancelled(true);
@@ -392,14 +409,14 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
         if (shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
         final Player player = (Player) event.getPlayer();
 
@@ -491,14 +508,14 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerShear(PlayerShearEntityEvent event) {
         if (shouldCancelEvent(event)) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerFish(PlayerFishEvent event) {
         if (shouldCancelEvent(event)) {
             event.setCancelled(true);

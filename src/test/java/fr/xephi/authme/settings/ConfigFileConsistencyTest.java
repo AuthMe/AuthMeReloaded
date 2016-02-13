@@ -1,5 +1,6 @@
 package fr.xephi.authme.settings;
 
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
@@ -32,8 +33,7 @@ public class ConfigFileConsistencyTest {
     @Test
     public void shouldHaveAllConfigs() throws IOException {
         // given
-        URL url = this.getClass().getResource(CONFIG_FILE);
-        File configFile = new File(url.getFile());
+        File configFile = TestHelper.getJarFile(CONFIG_FILE);
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
 
         // when

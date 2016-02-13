@@ -3,7 +3,6 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.TestConfiguration;
 import fr.xephi.authme.settings.properties.TestEnum;
-import fr.xephi.authme.settings.propertymap.PropertyMap;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
@@ -13,6 +12,8 @@ import java.io.File;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyDouble;
@@ -30,19 +31,19 @@ public class NewSettingTest {
     @Test
     public void shouldLoadAllConfigs() {
         // given
-        YamlConfiguration file = mock(YamlConfiguration.class);
-        given(file.getString(anyString(), anyString())).willAnswer(withDefaultArgument());
-        given(file.getBoolean(anyString(), anyBoolean())).willAnswer(withDefaultArgument());
-        given(file.getDouble(anyString(), anyDouble())).willAnswer(withDefaultArgument());
-        given(file.getInt(anyString(), anyInt())).willAnswer(withDefaultArgument());
+        YamlConfiguration configuration = mock(YamlConfiguration.class);
+        given(configuration.getString(anyString(), anyString())).willAnswer(withDefaultArgument());
+        given(configuration.getBoolean(anyString(), anyBoolean())).willAnswer(withDefaultArgument());
+        given(configuration.getDouble(anyString(), anyDouble())).willAnswer(withDefaultArgument());
+        given(configuration.getInt(anyString(), anyInt())).willAnswer(withDefaultArgument());
 
-        setReturnValue(file, TestConfiguration.VERSION_NUMBER, 20);
-        setReturnValue(file, TestConfiguration.SKIP_BORING_FEATURES, true);
-        setReturnValue(file, TestConfiguration.RATIO_ORDER, TestEnum.THIRD);
-        setReturnValue(file, TestConfiguration.SYSTEM_NAME, "myTestSys");
+        setReturnValue(configuration, TestConfiguration.VERSION_NUMBER, 20);
+        setReturnValue(configuration, TestConfiguration.SKIP_BORING_FEATURES, true);
+        setReturnValue(configuration, TestConfiguration.RATIO_ORDER, TestEnum.THIRD);
+        setReturnValue(configuration, TestConfiguration.SYSTEM_NAME, "myTestSys");
 
         // when / then
-        NewSetting settings = new NewSetting(file, new File("conf.txt"), (PropertyMap) null);
+        NewSetting settings = new NewSetting(configuration, null, null);
 
         assertThat(settings.getProperty(TestConfiguration.VERSION_NUMBER), equalTo(20));
         assertThat(settings.getProperty(TestConfiguration.SKIP_BORING_FEATURES), equalTo(true));
@@ -52,6 +53,20 @@ public class NewSettingTest {
         assertDefaultValue(TestConfiguration.DURATION_IN_SECONDS, settings);
         assertDefaultValue(TestConfiguration.DUST_LEVEL, settings);
         assertDefaultValue(TestConfiguration.COOL_OPTIONS, settings);
+    }
+
+    @Test
+    public void shouldReturnDefaultFile() {
+        // given
+        YamlConfiguration configuration = mock(YamlConfiguration.class);
+        NewSetting settings = new NewSetting(configuration, null, null);
+
+        // when
+        File defaultFile = settings.getDefaultMessagesFile();
+
+        // then
+        assertThat(defaultFile, not(nullValue()));
+        assertThat(defaultFile.exists(), equalTo(true));
     }
 
     private static <T> void setReturnValue(YamlConfiguration config, Property<T> property, T value) {

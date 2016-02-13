@@ -80,18 +80,17 @@ public class AsynchronousJoin {
         if (Settings.getMaxJoinPerIp > 0
             && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !ip.equalsIgnoreCase("127.0.0.1")
-            && !ip.equalsIgnoreCase("localhost")) {
-            if (plugin.hasJoinedIp(player.getName(), ip)) {
-                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+            && !ip.equalsIgnoreCase("localhost")
+            && plugin.hasJoinedIp(player.getName(), ip)) {
+            sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
-                    @Override
-                    public void run() {
-                        player.kickPlayer("A player with the same IP is already in game!");
-                    }
+                @Override
+                public void run() {
+                    player.kickPlayer("A player with the same IP is already in game!");
+                }
 
-                });
-                return;
-            }
+            });
+            return;
         }
         final Location spawnLoc = plugin.getSpawnLocation(player);
         final boolean isAuthAvailable = database.isAuthAvailable(name);
@@ -104,12 +103,9 @@ public class AsynchronousJoin {
                         public void run() {
                             SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
                             plugin.getServer().getPluginManager().callEvent(tpEvent);
-                            if (!tpEvent.isCancelled()) {
-                                if (player.isOnline() && tpEvent.getTo() != null) {
-                                    if (tpEvent.getTo().getWorld() != null) {
-                                        player.teleport(tpEvent.getTo());
-                                    }
-                                }
+                            if (!tpEvent.isCancelled() && player.isOnline() && tpEvent.getTo() != null
+                                && tpEvent.getTo().getWorld() != null) {
+                                player.teleport(tpEvent.getTo());
                             }
                         }
 
@@ -155,25 +151,21 @@ public class AsynchronousJoin {
                 return;
             }
 
-            if (!Settings.noTeleport) {
-                if (!needFirstSpawn() && Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
-                    sched.scheduleSyncDelayedTask(plugin, new Runnable() {
+            if (!Settings.noTeleport && !needFirstSpawn() && Settings.isTeleportToSpawnEnabled
+                || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
+                sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
-                        @Override
-                        public void run() {
-                            SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
-                            plugin.getServer().getPluginManager().callEvent(tpEvent);
-                            if (!tpEvent.isCancelled()) {
-                                if (player.isOnline() && tpEvent.getTo() != null) {
-                                    if (tpEvent.getTo().getWorld() != null) {
-                                        player.teleport(tpEvent.getTo());
-                                    }
-                                }
-                            }
-                        }
+                    @Override
+                    public void run() {
+                    SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
+                    plugin.getServer().getPluginManager().callEvent(tpEvent);
+                    if (!tpEvent.isCancelled() && player.isOnline() && tpEvent.getTo() != null
+                        && tpEvent.getTo().getWorld() != null) {
+                        player.teleport(tpEvent.getTo());
+                    }
+                    }
 
-                    });
-                }
+                });
             }
 
         }

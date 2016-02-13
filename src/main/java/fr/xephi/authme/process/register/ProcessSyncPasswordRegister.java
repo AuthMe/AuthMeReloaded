@@ -39,6 +39,7 @@ public class ProcessSyncPasswordRegister implements Runnable {
      *
      * @param player Player
      * @param plugin AuthMe
+     * @param settings The plugin settings
      */
     public ProcessSyncPasswordRegister(Player player, AuthMe plugin, NewSetting settings) {
         this.m = plugin.getMessages();
@@ -119,7 +120,7 @@ public class ProcessSyncPasswordRegister implements Runnable {
         }
 
         // The LoginEvent now fires (as intended) after everything is processed
-        plugin.getServer().getPluginManager().callEvent(new LoginEvent(player, true));
+        plugin.getServer().getPluginManager().callEvent(new LoginEvent(player));
         player.saveData();
 
         if (!Settings.noConsoleSpam) {

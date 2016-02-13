@@ -1,67 +1,27 @@
 package fr.xephi.authme.events;
 
-import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 
 /**
- * @author Xephi59
- * @version $Revision: 1.0 $
+ * The parent of all AuthMe events.
  */
-public class CustomEvent extends Event implements Cancellable {
+public abstract class CustomEvent extends Event {
 
-    private static final HandlerList handlers = new HandlerList();
-    private boolean isCancelled;
-
+    /**
+     * Constructor.
+     */
     public CustomEvent() {
         super(false);
     }
 
     /**
-     * Constructor for CustomEvent.
+     * Constructor, specifying whether the event is asynchronous or not.
      *
-     * @param b boolean
+     * @param isAsync {@code true} to fire the event asynchronously, false otherwise
+     * @see Event#Event(boolean)
      */
-    public CustomEvent(boolean b) {
-        super(b);
-    }
-
-    /**
-     * Method getHandlerList.
-     *
-     * @return HandlerList
-     */
-    public static HandlerList getHandlerList() {
-        return handlers;
-    }
-
-    /**
-     * Method getHandlers.
-     *
-     * @return HandlerList
-     */
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    /**
-     * Method isCancelled.
-     *
-     * @return boolean * @see org.bukkit.event.Cancellable#isCancelled()
-     */
-    public boolean isCancelled() {
-        return this.isCancelled;
-    }
-
-    /**
-     * Method setCancelled.
-     *
-     * @param cancelled boolean
-     *
-     * @see org.bukkit.event.Cancellable#setCancelled(boolean)
-     */
-    public void setCancelled(boolean cancelled) {
-        this.isCancelled = cancelled;
+    public CustomEvent(boolean isAsync) {
+        super(isAsync);
     }
 
 }

@@ -5,21 +5,19 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * This event is call when a player try to /login
- *
- * @author Xephi59
- * @version $Revision: 1.0 $
+ * This event is called when a player uses the /login command with correct credentials.
+ * {@link #setCanLogin(boolean) {@code event.setCanLogin(false)}} prevents the player from logging in.
  */
-public class AuthMeAsyncPreLoginEvent extends Event {
+public class AuthMeAsyncPreLoginEvent extends CustomEvent {
 
     private static final HandlerList handlers = new HandlerList();
     private final Player player;
     private boolean canLogin = true;
 
     /**
-     * Constructor for AuthMeAsyncPreLoginEvent.
+     * Constructor.
      *
-     * @param player Player
+     * @param player The player
      */
     public AuthMeAsyncPreLoginEvent(Player player) {
         super(true);
@@ -27,37 +25,41 @@ public class AuthMeAsyncPreLoginEvent extends Event {
     }
 
     /**
-     * Method getPlayer.
+     * Return the player concerned by this event.
      *
-     * @return Player
+     * @return The player who executed a valid {@code /login} command
      */
     public Player getPlayer() {
         return player;
     }
 
     /**
-     * Method canLogin.
+     * Return whether the player is allowed to log in.
      *
-     * @return boolean
+     * @return True if the player can log in, false otherwise
      */
     public boolean canLogin() {
         return canLogin;
     }
 
     /**
-     * Method setCanLogin.
+     * Define whether or not the player may log in.
      *
-     * @param canLogin boolean
+     * @param canLogin True to allow the player to log in; false to prevent him
      */
     public void setCanLogin(boolean canLogin) {
         this.canLogin = canLogin;
     }
 
     /**
-     * Method getHandlers.
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
      *
-     * @return HandlerList
+     * @return The list of handlers
      */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
     @Override
     public HandlerList getHandlers() {
         return handlers;
