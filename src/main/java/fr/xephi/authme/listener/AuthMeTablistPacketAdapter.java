@@ -18,7 +18,7 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
 	}
 
 	@Override
-    public void onPacketReceiving(PacketEvent event)
+    public void onPacketSending(PacketEvent event)
     {
       if (event.getPacketType() == PacketType.Play.Server.PLAYER_INFO) {
         try
