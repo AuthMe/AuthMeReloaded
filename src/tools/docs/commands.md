@@ -70,7 +70,7 @@ brackets; optional arguments are enclosed in square brackets (`[ ]`).
 - **/captcha** &lt;captcha>: Captcha command for AuthMeReloaded.
 <br />Requires `authme.player.captcha`
 - **/captcha help** [query]: View detailed help pages about AuthMeReloaded captcha commands.
-- **/converter** &lt;job>: Converter command for AuthMeReloaded.
+- **/authme converter** &lt;job>: Converter command for AuthMeReloaded.
 <br />Requires `authme.admin.converter`
-- **/converter help** [query]: View detailed help pages about AuthMeReloaded converter commands.
+- **/authme converter help** [query]: View detailed help pages about AuthMeReloaded converter commands.
 
