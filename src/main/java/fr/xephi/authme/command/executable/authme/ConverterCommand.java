@@ -1,4 +1,4 @@
-package fr.xephi.authme.command.executable.converter;
+package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;

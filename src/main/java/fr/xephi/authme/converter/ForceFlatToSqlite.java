@@ -7,8 +7,6 @@ import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.util.StringUtils;
-
 import java.sql.SQLException;
 
 /**

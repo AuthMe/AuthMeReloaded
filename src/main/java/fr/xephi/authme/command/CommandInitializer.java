@@ -5,6 +5,7 @@ import fr.xephi.authme.command.executable.HelpCommand;
 import fr.xephi.authme.command.executable.authme.AccountsCommand;
 import fr.xephi.authme.command.executable.authme.AuthMeCommand;
 import fr.xephi.authme.command.executable.authme.ChangePasswordAdminCommand;
+import fr.xephi.authme.command.executable.authme.ConverterCommand;
 import fr.xephi.authme.command.executable.authme.FirstSpawnCommand;
 import fr.xephi.authme.command.executable.authme.ForceLoginCommand;
 import fr.xephi.authme.command.executable.authme.GetEmailCommand;
@@ -24,7 +25,6 @@ import fr.xephi.authme.command.executable.authme.UnregisterAdminCommand;
 import fr.xephi.authme.command.executable.authme.VersionCommand;
 import fr.xephi.authme.command.executable.captcha.CaptchaCommand;
 import fr.xephi.authme.command.executable.changepassword.ChangePasswordCommand;
-import fr.xephi.authme.command.executable.converter.ConverterCommand;
 import fr.xephi.authme.command.executable.email.AddEmailCommand;
 import fr.xephi.authme.command.executable.email.ChangeEmailCommand;
 import fr.xephi.authme.command.executable.email.EmailBaseCommand;
@@ -383,7 +383,7 @@ public final class CommandInitializer {
 
         // Register the base converter command
         CommandDescription CONVERTER_BASE = CommandDescription.builder()
-            .parent(null)
+            .parent(AUTHME_BASE)
             .labels("converter", "convert", "conv")
             .description("Converter Command")
             .detailedDescription("Converter command for AuthMeReloaded.")
