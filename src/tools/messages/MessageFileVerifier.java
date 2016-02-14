@@ -1,16 +1,21 @@
 package messages;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.util.StringUtils;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import utils.FileUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -20,8 +25,6 @@ import java.util.Set;
  * all keys and that it doesn't have any unknown ones.
  */
 public class MessageFileVerifier {
-
-    private static final String NEW_LINE = "\n";
 
     private final String messagesFile;
     private final Set<String> unknownKeys = new HashSet<>();
@@ -69,47 +72,30 @@ public class MessageFileVerifier {
     }
 
     private void verifyKeys() {
-        List<MessageKey> messageKeys = getAllMessageKeys();
-        List<String> fileLines = readFileLines();
-        for (String line : fileLines) {
-            // Skip comments and empty lines
-            if (!line.startsWith("#") && !line.trim().isEmpty()) {
-                processKeyInFile(line, messageKeys);
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(new File(messagesFile));
+
+        // Check known keys (their existence + presence of all tags)
+        for (MessageKey messageKey : MessageKey.values()) {
+            final String key = messageKey.getKey();
+            if (configuration.isString(key)) {
+                checkTagsInMessage(messageKey, configuration.getString(key));
+            } else {
+                missingKeys.put(key, false);
             }
         }
 
-        // All keys that remain are keys that are absent in the file
-        for (MessageKey missingKey : messageKeys) {
-            missingKeys.put(missingKey.getKey(), false);
-        }
-    }
-
-    private void processKeyInFile(String line, List<MessageKey> messageKeys) {
-        if (line.indexOf(':') == -1) {
-            System.out.println("Skipping line in unknown format: '" + line + "'");
-            return;
-        }
-
-        final String readKey = line.substring(0, line.indexOf(':'));
-        boolean foundKey = false;
-        for (Iterator<MessageKey> it = messageKeys.iterator(); it.hasNext(); ) {
-            MessageKey messageKey = it.next();
-            if (messageKey.getKey().equals(readKey)) {
-                checkTagsInMessage(readKey, line.substring(line.indexOf(':')), messageKey.getTags());
-                it.remove();
-                foundKey = true;
-                break;
+        // Check FileConfiguration for all of its keys to find unknown keys
+        for (String key : configuration.getValues(true).keySet()) {
+            if (!messageKeyExists(key)) {
+                unknownKeys.add(key);
             }
         }
-        if (!foundKey) {
-            unknownKeys.add(readKey);
-        }
     }
 
-    private void checkTagsInMessage(String key, String message, String[] tags) {
-        for (String tag : tags) {
+    private void checkTagsInMessage(MessageKey messageKey, String message) {
+        for (String tag : messageKey.getTags()) {
             if (!message.contains(tag)) {
-                missingTags.put(key, tag);
+                missingTags.put(messageKey.getKey(), tag);
             }
         }
     }
@@ -119,54 +105,90 @@ public class MessageFileVerifier {
      *
      * @param defaultMessages The collection of default messages
      */
-    public void addMissingKeys(Map<String, String> defaultMessages) {
+    public void addMissingKeys(FileConfiguration defaultMessages) {
+        final List<String> fileLines = new ArrayList<>(
+            Arrays.asList(FileUtils.readFromFile(messagesFile).split("\\n")));
+
         List<String> keysToAdd = new ArrayList<>();
         for (Map.Entry<String, Boolean> entry : missingKeys.entrySet()) {
-            if (Boolean.FALSE.equals(entry.getValue()) && defaultMessages.get(entry.getKey()) != null) {
-                keysToAdd.add(entry.getKey());
+            final String key = entry.getKey();
+
+            if (Boolean.FALSE.equals(entry.getValue()) && defaultMessages.get(key) != null) {
+                keysToAdd.add(key);
             }
         }
 
-        // We know that all keys in keysToAdd are safe to retrieve and write
-        StringBuilder sb = new StringBuilder(NEW_LINE);
+        // Add missing keys as comments to the bottom of the file
         for (String keyToAdd : keysToAdd) {
-            sb.append(keyToAdd).append(":").append(defaultMessages.get(keyToAdd)).append(NEW_LINE);
-            missingKeys.put(keyToAdd, true);
+            int indexOfComment = Iterables.indexOf(fileLines, isCommentFor(keyToAdd));
+            if (indexOfComment != -1) {
+                // Comment for keyToAdd already exists, so remove it since we're going to add it
+                fileLines.remove(indexOfComment);
+            }
+            String comment = commentForKey(keyToAdd) + "'" +
+                defaultMessages.getString(keyToAdd).replace("'", "''") + "'";
+            fileLines.add(comment);
+            missingKeys.put(keyToAdd, Boolean.TRUE);
         }
-        FileUtils.appendToFile(messagesFile, sb.toString());
-    }
 
-    private static List<MessageKey> getAllMessageKeys() {
-        return new ArrayList<>(Arrays.asList(MessageKey.values()));
+        // Add a comment above messages missing a tag
+        for (Map.Entry<String, Collection<String>> entry : missingTags.asMap().entrySet()) {
+            final String key = entry.getKey();
+            addCommentForMissingTags(fileLines, key, entry.getValue());
+        }
+
+        FileUtils.writeToFile(messagesFile, StringUtils.join("\n", fileLines));
     }
 
     /**
-     * Read all lines from the messages file and skip empty lines and comment lines.
-     * This method appends lines starting with two spaces to the previously read line,
-     * akin to a YAML parser.
+     * Add a comment above a message to note the tags the message is missing. Removes
+     * any similar comment that may already be above the message.
+     *
+     * @param fileLines The lines of the file (to modify)
+     * @param key The key of the message
+     * @param tags The missing tags
      */
-    private List<String> readFileLines() {
-        String[] rawLines = FileUtils.readFromFile(messagesFile).split("\\n");
-        List<String> lines = new ArrayList<>();
-        for (String line : rawLines) {
-            // Skip comments and empty lines
-            if (!line.startsWith("#") && !StringUtils.isEmpty(line)) {
-                // Line is indented, i.e. it needs to be appended to the previous line
-                if (line.startsWith("  ")) {
-                    appendToLastElement(lines, line.substring(1));
-                } else {
-                    lines.add(line);
+    private void addCommentForMissingTags(List<String> fileLines, final String key, Collection<String> tags) {
+        int indexForComment = Iterables.indexOf(fileLines, isCommentFor(key));
+        if (indexForComment == -1) {
+            indexForComment = Iterables.indexOf(fileLines, new Predicate<String>() {
+                @Override
+                public boolean apply(String input) {
+                    return input.startsWith(key + ": ");
                 }
+            });
+            if (indexForComment == -1) {
+                System.err.println("Error adding comment for key '" + key + "': couldn't find entry in file lines");
+                return;
             }
+        } else {
+            fileLines.remove(indexForComment);
         }
-        return lines;
+
+        String tagWord = tags.size() > 1 ? "tags" : "tag";
+        fileLines.add(indexForComment, commentForKey(key)
+            + String.format("Missing %s %s", tagWord, StringUtils.join(", ", tags)));
     }
 
-    private static void appendToLastElement(List<String> list, String text) {
-        if (list.isEmpty()) {
-            throw new IllegalStateException("List cannot be empty!");
+    private static String commentForKey(String key) {
+        return String.format("# TODO %s: ", key);
+    }
+
+    private static Predicate<String> isCommentFor(final String key) {
+        return new Predicate<String>() {
+            @Override
+            public boolean apply(String input) {
+                return input.startsWith(commentForKey(key));
+            }
+        };
+    }
+
+    private static boolean messageKeyExists(String key) {
+        for (MessageKey messageKey : MessageKey.values()) {
+            if (messageKey.getKey().equals(key)) {
+                return true;
+            }
         }
-        int lastIndex = list.size() - 1;
-        list.set(lastIndex, list.get(lastIndex).concat(text));
+        return false;
     }
 }

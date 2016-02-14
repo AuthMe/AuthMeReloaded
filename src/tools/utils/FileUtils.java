@@ -24,7 +24,7 @@ public final class FileUtils {
         writeToFile(destinationFile, result);
     }
 
-    private static void writeToFile(String outputFile, String contents) {
+    public static void writeToFile(String outputFile, String contents) {
         try {
             Files.write(Paths.get(outputFile), contents.getBytes());
         } catch (IOException e) {

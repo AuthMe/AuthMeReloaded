@@ -2,14 +2,14 @@ package messages;
 
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.util.StringUtils;
-import utils.FileUtils;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
@@ -29,6 +29,8 @@ public final class VerifyMessagesTask implements ToolTask {
     private static final Pattern MESSAGE_FILE_PATTERN = Pattern.compile("messages_[a-z]{2,7}\\.yml");
     /** Tag that is replaced to the messages folder in user input. */
     private static final String SOURCES_TAG = "{msgdir}";
+    /** File to get default messages from (assumes that it is complete). */
+    private static final String DEFAULT_MESSAGES_FILE = MESSAGES_FOLDER + "messages_en.yml";
 
     @Override
     public String getTaskName() {
@@ -43,13 +45,7 @@ public final class VerifyMessagesTask implements ToolTask {
         String inputFile = scanner.nextLine();
 
         System.out.println("Add any missing keys to files? ['y' = yes]");
-        boolean addMissingKeys = "y".equals(scanner.nextLine());
-
-        // Set up needed objects
-        Map<String, String> defaultMessages = null;
-        if (addMissingKeys) {
-            defaultMessages = constructDefaultMessages();
-        }
+        boolean addMissingKeys = "y".equalsIgnoreCase(scanner.nextLine());
 
         List<File> messageFiles;
         if (StringUtils.isEmpty(inputFile)) {
@@ -57,6 +53,11 @@ public final class VerifyMessagesTask implements ToolTask {
         } else {
             File customFile = new File(inputFile.replace(SOURCES_TAG, MESSAGES_FOLDER));
             messageFiles = Collections.singletonList(customFile);
+        }
+
+        FileConfiguration defaultMessages = null;
+        if (addMissingKeys) {
+            defaultMessages = YamlConfiguration.loadConfiguration(new File(DEFAULT_MESSAGES_FILE));
         }
 
         // Verify the given files
@@ -92,19 +93,18 @@ public final class VerifyMessagesTask implements ToolTask {
         }
     }
 
-    private static void verifyFileAndAddKeys(MessageFileVerifier verifier, Map<String, String> defaultMessages) {
+    private static void verifyFileAndAddKeys(MessageFileVerifier verifier, FileConfiguration defaultMessages) {
         Map<String, Boolean> missingKeys = verifier.getMissingKeys();
-        if (!missingKeys.isEmpty()) {
+        if (!missingKeys.isEmpty() || !verifier.getMissingTags().isEmpty()) {
             verifier.addMissingKeys(defaultMessages);
-            missingKeys = verifier.getMissingKeys();
             List<String> addedKeys = getKeysWithValue(Boolean.TRUE, missingKeys);
             System.out.println("  Added missing keys " + addedKeys);
 
             List<String> unsuccessfulKeys = getKeysWithValue(Boolean.FALSE, missingKeys);
             if (!unsuccessfulKeys.isEmpty()) {
-                System.out.println("  Warning! Could not add all missing keys (problem with loading " +
+                System.err.println("  Warning! Could not add all missing keys (problem with loading " +
                     "default messages?)");
-                System.out.println("  Could not add keys " + unsuccessfulKeys);
+                System.err.println("  Could not add keys " + unsuccessfulKeys);
             }
         }
 
@@ -117,24 +117,6 @@ public final class VerifyMessagesTask implements ToolTask {
         for (Map.Entry<String, String> entry : missingTags.entries()) {
             System.out.println("  Missing tag '" + entry.getValue() + "' in entry with key '" + entry.getKey() + "'");
         }
-    }
-
-    private static Map<String, String> constructDefaultMessages() {
-        String defaultMessagesFile = MESSAGES_FOLDER + "messages_en.yml";
-        List<String> lines = FileUtils.readLinesFromFile(defaultMessagesFile);
-        Map<String, String> messages = new HashMap<>(lines.size());
-        for (String line : lines) {
-            if (line.startsWith("#") || line.trim().isEmpty()) {
-                continue;
-            }
-            if (line.indexOf(':') == -1 || line.indexOf(':') == line.length() - 1) {
-                System.out.println("Warning! Unknown format in default messages file for line '" + line + "'");
-            } else {
-                String key = line.substring(0, line.indexOf(':'));
-                messages.put(key, line.substring(line.indexOf(':') + 1));
-            }
-        }
-        return messages;
     }
 
     private static <K, V> List<K> getKeysWithValue(V value, Map<K, V> map) {
