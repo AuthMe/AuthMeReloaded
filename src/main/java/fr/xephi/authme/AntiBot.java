@@ -1,8 +1,8 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Wrapper;
 import org.bukkit.Bukkit;
@@ -73,7 +73,7 @@ public class AntiBot {
         if (antiBotStatus == AntiBotStatus.ACTIVE || antiBotStatus == AntiBotStatus.DISABLED) {
             return;
         }
-        if (plugin.getPermissionsManager().hasPermission(player, PlayerPermission.BYPASS_ANTIBOT)) {
+        if (plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.BYPASS_ANTIBOT)) {
             return;
         }
 

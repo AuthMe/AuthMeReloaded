@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sat Dec 05 21:18:25 CET 2015. See permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sun Feb 14 14:11:28 CET 2016. See permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -19,15 +19,16 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.admin.purgelastpos** – Administrator command to purge the last position of a user.
 - **authme.admin.register** – Administrator command to register a new user.
 - **authme.admin.reload** – Administrator command to reload the plugin configuration.
+- **authme.admin.seeotheraccounts** – Permission to see the other accounts of the players that log in.
 - **authme.admin.setfirstspawn** – Administrator command to set the first AuthMe spawn.
 - **authme.admin.setspawn** – Administrator command to set the AuthMe spawn.
 - **authme.admin.spawn** – Administrator command to teleport to the AuthMe spawn.
 - **authme.admin.switchantibot** – Administrator command to toggle the AntiBot protection status.
 - **authme.admin.unregister** – Administrator command to unregister an existing user.
+- **authme.allowmultipleaccounts** – Permission to be able to register multiple accounts.
+- **authme.bypassantibot** – Permission node to bypass AntiBot protection.
+- **authme.bypassforcesurvival** – Permission for users to bypass force-survival mode.
 - **authme.player.*** – Permission to use all player (non-admin) commands.
-- **authme.player.allow2accounts** – Permission for users to allow two accounts.
-- **authme.player.bypassantibot** – Permission node to bypass AntiBot protection.
-- **authme.player.bypassforcesurvival** – Permission for users to bypass force-survival mode.
 - **authme.player.canbeforced** – Permission for users a login can be forced to.
 - **authme.player.captcha** – Command permission to use captcha.
 - **authme.player.changepassword** – Command permission to change the password.
@@ -37,7 +38,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.player.login** – Command permission to login.
 - **authme.player.logout** – Command permission to logout.
 - **authme.player.register** – Command permission to register.
-- **authme.player.seeotheraccounts** – Permission for user to see other accounts.
+- **authme.player.seeownaccounts** – Permission to use to see own other accounts.
 - **authme.player.unregister** – Command permission to unregister.
-- **authme.player.vip** – Permission node to identify VIP users.
+- **authme.vip** – Permission node to identify VIP users.
 
