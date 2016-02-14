@@ -587,14 +587,14 @@ public class MySQL implements DataSource {
                 + columnIp + "=?, " + columnLastLogin + "=?, " + columnRealName + "=? WHERE " + columnName + "=?;";
             PreparedStatement pst = con.prepareStatement(sql);
             pst.setString(1, auth.getIp());
-            pst.setLong(2, auth.getLastLogin());
+            pst.setTimestamp(2, new Timestamp(auth.getLastLogin()));
             pst.setString(3, auth.getRealName());
             pst.setString(4, auth.getNickname());
             pst.executeUpdate();
             pst.close();
             return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
         }
         return false;
     }
@@ -985,7 +985,7 @@ public class MySQL implements DataSource {
             .name(row.getString(columnName))
             .realName(row.getString(columnRealName))
             .password(row.getString(columnPassword), salt)
-            .lastLogin(row.getTimestamp(columnLastLogin).getTime())
+            .lastLogin(safeGetTimestamp(row))
             .ip(row.getString(columnIp))
             .locWorld(row.getString(lastlocWorld))
             .locX(row.getDouble(lastlocX))
@@ -994,6 +994,21 @@ public class MySQL implements DataSource {
             .email(row.getString(columnEmail))
             .groupId(group)
             .build();
+    }
+
+    /**
+     * Retrieve the last login timestamp in a safe way.
+     *
+     * @param row The ResultSet to read
+     * @return The timestamp (as number of milliseconds since 1970-01-01 00:00:00 GMT)
+     */
+    private long safeGetTimestamp(ResultSet row) {
+        try {
+            return row.getTimestamp(columnLastLogin).getTime();
+        } catch (SQLException e) {
+            ConsoleLogger.logException("Could not get timestamp from resultSet. Defaulting to current time", e);
+        }
+        return System.currentTimeMillis();
     }
 
     private void migrateLastLoginColumnToTimestamp(Connection con, ResultSet rs) throws SQLException {
