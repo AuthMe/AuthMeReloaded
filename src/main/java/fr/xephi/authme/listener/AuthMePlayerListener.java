@@ -13,6 +13,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
@@ -222,7 +223,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         if (Settings.isForceSurvivalModeEnabled
-            && !player.hasPermission(PlayerPermission.BYPASS_FORCE_SURVIVAL.getNode())) {
+            && !player.hasPermission(PlayerStatePermission.BYPASS_FORCE_SURVIVAL.getNode())) {
             player.setGameMode(GameMode.SURVIVAL);
         }
 
@@ -295,7 +296,7 @@ public class AuthMePlayerListener implements Listener {
         PermissionsManager permsMan = plugin.getPermissionsManager();
 
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
-            if (permsMan.hasPermission(player, PlayerPermission.IS_VIP)) {
+            if (permsMan.hasPermission(player, PlayerStatePermission.IS_VIP)) {
                 int playersOnline = Utils.getOnlinePlayers().size();
                 if (playersOnline > plugin.getServer().getMaxPlayers()) {
                     event.allow();

@@ -28,7 +28,7 @@ public enum DefaultPermission {
     /**
      *  Return the textual representation.
      *  
-     *  @return String
+     *  @return The textual representation
      */
     public String getTitle() {
         return title;

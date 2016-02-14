@@ -8,6 +8,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
@@ -75,7 +76,7 @@ public class AsyncRegister {
             m.send(player, MessageKey.NAME_ALREADY_REGISTERED);
             return false;
         } else if (Settings.getmaxRegPerIp > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !ip.equalsIgnoreCase("127.0.0.1")
             && !ip.equalsIgnoreCase("localhost")
             && database.getAllAuthsByIp(ip).size() >= Settings.getmaxRegPerIp) {
@@ -97,7 +98,7 @@ public class AsyncRegister {
 
     private void emailRegister() {
         if (Settings.getmaxRegPerEmail > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
             m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
             return;

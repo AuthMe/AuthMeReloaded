@@ -12,11 +12,4 @@ public interface PermissionNode {
      */
     String getNode();
 
-    /**
-     * Return the wildcard node that also grants the permission.
-     *
-     * @return The wildcard permission node (e.g. "authme.player.*")
-     */
-    PermissionNode getWildcardNode();
-
 }

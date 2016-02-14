@@ -13,6 +13,7 @@ import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.task.MessageTask;
@@ -78,7 +79,7 @@ public class AsynchronousJoin {
             return;
         }
         if (Settings.getMaxJoinPerIp > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !ip.equalsIgnoreCase("127.0.0.1")
             && !ip.equalsIgnoreCase("localhost")
             && plugin.hasJoinedIp(player.getName(), ip)) {

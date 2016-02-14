@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 import fr.xephi.authme.datasource.DataSourceType;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import org.apache.logging.log4j.LogManager;
 
@@ -68,7 +69,6 @@ import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -707,7 +707,7 @@ public class AuthMe extends JavaPlugin {
     // Select the player to kick when a vip player joins the server when full
     public Player generateKickPlayer(Collection<? extends Player> collection) {
         for (Player player : collection) {
-            if (!getPermissionsManager().hasPermission(player, PlayerPermission.IS_VIP)) {
+            if (!getPermissionsManager().hasPermission(player, PlayerStatePermission.IS_VIP)) {
                 return player;
             }
         }

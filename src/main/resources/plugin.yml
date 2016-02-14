@@ -14,32 +14,32 @@ softdepend:
     - EssentialsSpawn
     - ProtocolLib
 commands:
+    authme:
+        description: AuthMe op commands
+        usage: '/authme reload|register playername password|changepassword playername password|unregister playername|version'
     register:
         description: Register an account
-        usage: /register password confirmpassword
-        aliases: reg
+        usage: /register <password> <confirmpassword>
+        aliases: [reg]
     login:
-        description: Login into a account
-        usage: /login password
-        aliases: l
+        description: Login command
+        usage: /login <password>
+        aliases: [l,log]
     changepassword:
-        description: Change password of a account
-        usage: /changepassword oldPassword newPassword
+        description: Change password of an account
+        usage: /changepassword <oldPassword> <newPassword>
     logout:
         description: Logout
         usage: /logout
     unregister:
-        description: unregister your account
-        usage: /unregister password
-    authme:
-        description: AuthMe op commands
-        usage: '/authme reload|register playername password|changepassword playername password|unregister playername|version'
+        description: Unregister your account
+        usage: /unregister <password>
     email:
         description: Add Email or recover password
         usage: '/email add your@email.com your@email.com|change oldEmail newEmail|recovery your@email.com'
     captcha:
-        description: Captcha
-        usage: /captcha theCaptcha
+        description: Captcha command
+        usage: /captcha <code>
     converter:
         description: Converter from different other auth plugins
         usage: /converter <datatype>
@@ -114,6 +114,9 @@ permissions:
     authme.admin.purgebannedplayers:
         description: Administrator command to purge all data associated with banned players.
         default: op
+    authme.admin.seeotheraccounts:
+        description: Permission for user to see other accounts.
+        default: op
     authme.admin.switchantibot:
         description: Administrator command to toggle the AntiBot protection status.
         default: op
@@ -126,9 +129,6 @@ permissions:
     authme.player.*:
         description: Permission to use all player (non-admin) commands.
         children:
-            authme.player.allow2accounts: true
-            authme.player.bypassantibot: true
-            authme.player.bypassforcesurvival: true
             authme.player.canbeforced: true
             authme.player.captcha: true
             authme.player.changepassword: true
@@ -138,16 +138,15 @@ permissions:
             authme.player.login: true
             authme.player.logout: true
             authme.player.register: true
-            authme.player.seeotheraccounts: true
             authme.player.unregister: true
-            authme.player.vip: true
             authme.player.seeownaccounts: true
-    authme.player.bypassantibot:
-        description: Permission node to bypass AntiBot protection.
+    authme.player.email:
+        description: Gives access to player email commands
         default: false
-    authme.player.vip:
-        description: Permission node to identify VIP users.
-        default: false
+        children:
+            authme.player.email.add: true
+            authme.player.email.change: true
+            authme.player.email.recover: true
     authme.player.login:
         description: Command permission to login.
         default: true
@@ -178,15 +177,15 @@ permissions:
     authme.player.canbeforced:
         description: Permission for users a login can be forced to.
         default: false
-    authme.player.bypassforcesurvival:
-        description: Permission for users to bypass force-survival mode.
+    authme.vip:
+        description: Allow vip slot when the server is full
         default: false
-    authme.player.allow2accounts:
-        description: Permission for users to allow two accounts.
+    authme.bypassantibot:
+        description: Bypass the AntiBot check
         default: false
-    authme.player.seeotheraccounts:
-        description: Permission for user to see other accounts.
+    authme.allowmultipleaccounts:
+        description: Allow more accounts for same ip
         default: false
-    authme.player.seeownaccounts:
-        description: Permission for user to see own other accounts.
+    authme.bypassforcesurvival:
+        description: Bypass all ForceSurvival features
         default: false

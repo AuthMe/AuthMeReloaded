@@ -7,7 +7,9 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
+import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -117,7 +119,7 @@ public class AsynchronousLogin {
         }
 
         if (Settings.getMaxLoginPerIp > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerPermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
             if (plugin.isLoggedIp(name, ip)) {
                 m.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
@@ -230,7 +232,7 @@ public class AsynchronousLogin {
         }
         String message = "[AuthMe] " + StringUtils.join(", ", auths) + ".";
         for (Player player : Utils.getOnlinePlayers()) {
-            if (plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OTHER_ACCOUNTS)
+            if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)
             		|| (player.getName().equals(this.player.getName())
             				&& plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
