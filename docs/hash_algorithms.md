@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Thu Dec 31 13:41:44 CET 2015. See hashmethods/hash_algorithms.tpl.md -->
+<!-- File auto-generated on Sun Feb 14 19:00:32 CET 2016. See hashmethods/hash_algorithms.tpl.md -->
 
 ## Hash Algorithms
 AuthMe supports the following hash algorithms for storing your passwords safely.
@@ -12,6 +12,7 @@ BCRYPT2Y | Recommended | 60 |  | | Text | 22 |
 CRAZYCRYPT1 | Do not use | 128 |  | | Username |  | 
 DOUBLEMD5 | Do not use | 32 |  | | None |  | 
 IPB3 | Acceptable | 32 |  | | Text | 5 | Y
+IPB4 | Does not work | 60 |  | | Text | 22 | Y
 JOOMLA | Recommended | 65 |  | | Text | 32 | 
 MD5 | Do not use | 32 |  | | None |  | 
 MD5VB | Acceptable | 56 |  | | Text | 16 | 
@@ -27,11 +28,13 @@ SHA1 | Do not use | 40 |  | | None |  |
 SHA256 | Recommended | 86 |  | | Text | 16 | 
 SHA512 | Do not use | 128 |  | | None |  | 
 SMF | Do not use | 40 |  | | Username |  | 
+TWO_FACTOR | Does not work | 16 |  | | None |  | 
 WBB3 | Acceptable | 40 |  | | Text | 40 | Y
-WBB4 | Does not work | 60 |  | | Text | 8 | 
+WBB4 | Recommended | 60 |  | | Text | 8 | 
 WHIRLPOOL | Do not use | 128 |  | | None |  | 
-WORDPRESS | Do not use | 34 |  | | Text | 9 | 
+WORDPRESS | Acceptable | 34 |  | | Text | 9 | 
 XAUTH | Recommended | 140 |  | | Text | 12 | 
+XFBCRYPT |  | 60 |  | |  |  | 
 CUSTOM |  |  |  |  |  |  |  |
 
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
@@ -76,3 +79,7 @@ If this column is empty when the salt type is "Text", it typically means the sal
 ##### Separate
 If denoted with a **y**, it means that the salt is stored in a separate column in the database. This is neither good
 or bad.
+
+---
+
+This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Sun Feb 14 19:00:32 CET 2016

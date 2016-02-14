@@ -11,8 +11,10 @@ import java.util.regex.Pattern;
  * Class responsible for replacing template tags to actual content.
  * For all files, the following tags are defined:
  * <ul>
- *   <li>{gen_date} – the generation date</li>
+ *   <li>{gen_date}    – the generation date</li>
  *   <li>{gen_warning} - warning not to edit the generated file directly</li>
+ *   <li>{gen_footer}  - info footer with a link to the dev repo so users can find the most up-to-date
+ *                       version (in case the page is viewed on a fork)</li>
  * </ul>
  */
 public class TagReplacer {
@@ -47,9 +49,13 @@ public class TagReplacer {
      * @return The filled template
      */
     public static String applyReplacements(String template) {
+        String curDate = new Date().toString();
         return template
-            .replace("{gen_date}", new Date().toString())
-            .replace("{gen_warning}", "AUTO-GENERATED FILE! Do not edit this directly");
+            .replace("{gen_date}", curDate)
+            .replace("{gen_warning}", "AUTO-GENERATED FILE! Do not edit this directly")
+            .replace("{gen_footer}", "---\n\nThis page was automatically generated on the"
+                + " [AuthMe-Team/AuthMeReloaded repository](" + ToolsConstants.DOCS_FOLDER_URL + ")"
+                + " on " + curDate);
     }
 
     private static String replaceOptionalTag(String text, String tagName, String tagValue) {

@@ -5,3 +5,5 @@
 The following are the permission nodes that are currently supported by the latest dev builds.
 
 {permissions}
+
+{gen_footer}

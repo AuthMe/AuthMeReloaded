@@ -6,3 +6,5 @@ You can use the following commands to use the features of AuthMe. Mandatory argu
 brackets; optional arguments are enclosed in square brackets (`[ ]`).
 
 {commands}
+
+{gen_footer}

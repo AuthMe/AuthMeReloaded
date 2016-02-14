@@ -59,3 +59,4 @@ antibot_auto_enabled: '&4[AntiBotService] AntiBot enabled due to the huge number
 antibot_auto_disabled: '&2[AntiBotService] AntiBot disabled disabled after %m minutes!'
 email_already_used: '&4The email address is already being used'
 two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
+not_owner_error: 'You are not the owner of this account. Please try another name!'

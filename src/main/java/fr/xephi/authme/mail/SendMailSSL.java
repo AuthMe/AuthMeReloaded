@@ -46,8 +46,7 @@ public class SendMailSSL {
                 try {
                     email = initializeMail(auth, settings);
                 } catch (EmailException e) {
-                    ConsoleLogger.showError("Failed to create email with the given settings: "
-                        + StringUtils.formatException(e));
+                    ConsoleLogger.logException("Failed to create email with the given settings:", e);
                     return;
                 }
 
@@ -59,8 +58,8 @@ public class SendMailSSL {
                         file = generateImage(auth, plugin, newPass);
                         content = embedImageIntoEmailContent(file, email, content);
                     } catch (IOException | EmailException e) {
-                        ConsoleLogger.showError("Unable to send new password as image for email " + auth.getEmail()
-                            + ": " + StringUtils.formatException(e));
+                        ConsoleLogger.logException(
+                            "Unable to send new password as image for email " + auth.getEmail() + ":", e);
                     }
                 }
 
@@ -114,15 +113,14 @@ public class SendMailSSL {
             email.setHtmlMsg(content);
             email.setTextMsg(content);
         } catch (EmailException e) {
-            ConsoleLogger.showError("Your email.html config contains an error and cannot be sent: "
-                + StringUtils.formatException(e));
+            ConsoleLogger.logException("Your email.html config contains an error and cannot be sent:", e);
             return false;
         }
         try {
             email.send();
             return true;
         } catch (EmailException e) {
-            ConsoleLogger.showError("Failed to send a mail to " + email.getToAddresses() + ": " + e.getMessage());
+            ConsoleLogger.logException("Failed to send a mail to " + email.getToAddresses() + ":", e);
             return false;
         }
     }

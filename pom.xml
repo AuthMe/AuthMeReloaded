@@ -170,6 +170,7 @@
                                     <pattern>org.mcstats</pattern>
                                     <shadedPattern>fr.xephi.authme</shadedPattern>
                                 </relocation>
+                                <!--
                                 <relocation>
                                     <pattern>org.apache</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.apache</shadedPattern>
@@ -186,6 +187,7 @@
                                     <pattern>com.sun</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.sun</shadedPattern>
                                 </relocation>
+                                -->
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
@@ -223,6 +225,7 @@
                                     <pattern>org.mcstats</pattern>
                                     <shadedPattern>fr.xephi.authme</shadedPattern>
                                 </relocation>
+                                <!--
                                 <relocation>
                                     <pattern>org.apache</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.apache</shadedPattern>
@@ -239,6 +242,7 @@
                                     <pattern>com.sun</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.sun</shadedPattern>
                                 </relocation>
+                                -->
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>

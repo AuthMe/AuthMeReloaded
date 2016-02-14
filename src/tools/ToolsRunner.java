@@ -5,9 +5,9 @@ import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.TreeMap;
 
 /**
  * Runner for executing tool tasks.
@@ -25,7 +25,7 @@ public final class ToolsRunner {
     public static void main(String... args) {
         // Collect tasks and show them
         File toolsFolder = new File(ToolsConstants.TOOLS_SOURCE_ROOT);
-        Map<String, ToolTask> tasks = new HashMap<>();
+        Map<String, ToolTask> tasks = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         collectTasksInDirectory(toolsFolder, tasks);
         listAllTasks(tasks);
 

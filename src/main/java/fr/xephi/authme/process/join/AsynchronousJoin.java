@@ -70,7 +70,7 @@ public class AsynchronousJoin {
                 @Override
                 public void run() {
                     AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                    player.kickPlayer("You are not the owner of this account. Please try another name!");
+                    player.kickPlayer(m.retrieveSingle(MessageKey.NOT_OWNER_ERROR));
                     if (Settings.banUnsafeIp)
                         plugin.getServer().banIP(ip);
                 }

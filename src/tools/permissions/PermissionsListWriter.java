@@ -1,6 +1,6 @@
 package permissions;
 
-import utils.ANewMap;
+import com.google.common.collect.ImmutableMap;
 import utils.FileUtils;
 import utils.TagReplacer;
 import utils.ToolTask;
@@ -31,8 +31,8 @@ public class PermissionsListWriter implements ToolTask {
 
         boolean writeToFile = false;
         if (includeDescription) {
-            System.out.println("Write to file? [Enter 'y' for yes]");
-            writeToFile = matches("y", scanner);
+            System.out.println("Write to file? [Enter 'n' for no]");
+            writeToFile = !matches("n", scanner);
         }
 
         if (!includeDescription) {
@@ -47,7 +47,7 @@ public class PermissionsListWriter implements ToolTask {
     private static void generateAndWriteFile() {
         final String permissionsTagValue = generatePermissionsList();
 
-        Map<String, String> tags = ANewMap.with("permissions", permissionsTagValue).build();
+        Map<String, String> tags = ImmutableMap.of("permissions", permissionsTagValue);
         FileUtils.generateFileFromTemplate(
             ToolsConstants.TOOLS_SOURCE_ROOT + "permissions/permission_nodes.tpl.md", PERMISSIONS_OUTPUT_FILE, tags);
         System.out.println("Wrote to '" + PERMISSIONS_OUTPUT_FILE + "'");
@@ -62,10 +62,9 @@ public class PermissionsListWriter implements ToolTask {
         StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<String, String> entry : permissions.entrySet()) {
-            Map<String, String> tags = ANewMap
-                .with("node", entry.getKey())
-                .and("description", entry.getValue())
-                .build();
+            Map<String, String> tags = ImmutableMap.of(
+                "node", entry.getKey(),
+                "description", entry.getValue());
             sb.append(TagReplacer.applyReplacements(template, tags));
         }
         return sb.toString();

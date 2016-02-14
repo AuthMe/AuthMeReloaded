@@ -58,4 +58,7 @@ antibot_auto_enabled: '[AuthMe] AntiBotMod a été activé automatiquement à ca
 antibot_auto_disabled: '[AuthMe] AntiBotMod a été désactivé automatiquement après %m minutes, espérons que l''invasion soit arrêtée!'
 kick_antibot: 'AntiBotMod est activé ! Veuillez attendre quelques minutes avant de joindre le serveur.'
 email_exists: '&cUn email de restauration a déjà été envoyé ! Vous pouvez le jeter et vous en faire envoyez un nouveau en utilisant :'
+# TODO two_factor_create: Missing tag %url
 two_factor_create: '&2Votre code secret est %code'
+# TODO email_already_used: '&4The email address is already being used'
+# TODO not_owner_error: 'You are not the owner of this account. Please try another name!'
