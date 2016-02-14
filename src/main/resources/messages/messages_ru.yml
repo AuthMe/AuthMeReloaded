@@ -55,3 +55,7 @@ email_send: '[AuthMe] Письмо с инструкциями для восст
 country_banned: 'Вход с IP-адресов вашей страны воспрещен на этом сервере'
 antibot_auto_enabled: '&a[AuthMe] AntiBot-режим автоматически включен из-за большого количества входов!'
 antibot_auto_disabled: '&a[AuthMe] AntiBot-режим автоматичски отключен после %m мин. Надеюсь атака закончилась'
+# TODO email_already_used: '&4The email address is already being used'
+# TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+# TODO email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
+# TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'

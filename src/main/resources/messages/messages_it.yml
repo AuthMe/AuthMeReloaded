@@ -59,3 +59,4 @@ antibot_auto_enabled: 'Il servizio di AntiBot è stato automaticamente abilitato
 antibot_auto_disabled: "Il servizio di AntiBot è stato automaticamente disabilitato dopo %m Minuti, sperando che l'attacco sia finito!"
 kick_antibot: 'Il servizio di AntiBot è attualmente attivo! Devi aspettare qualche minuto prima di poter entrare nel server.'
 two_factor_create: '&2Il tuo codice segreto è: &f%code&n&2Puoi anche scannerizzare il codice QR da qui: &f%url'
+# TODO email_already_used: '&4The email address is already being used'
