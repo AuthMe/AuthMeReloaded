@@ -60,3 +60,4 @@ kick_antibot: 'AntiBotMod ist aktiviert! Bitte warte einige Minuten, bevor du di
 # TODO two_factor_create: Missing tag %url
 two_factor_create: '&2Dein geheimer Code ist %code'
 # TODO email_already_used: '&4The email address is already being used'
+# TODO not_owner_error: 'You are not the owner of this account. Please try another name!'

@@ -125,7 +125,9 @@ public enum MessageKey {
 
     EMAIL_ALREADY_USED_ERROR("email_already_used"),
 
-    TWO_FACTOR_CREATE("two_factor_create", "%code", "%url");
+    TWO_FACTOR_CREATE("two_factor_create", "%code", "%url"),
+
+    NOT_OWNER_ERROR("not_owner_error");
 
     private String key;
     private String[] tags;

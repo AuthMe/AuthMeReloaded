@@ -62,3 +62,4 @@ antibot_auto_disabled: '&2[AntiBotService] AntiBot desativado após %m minutos!'
 # TODO two_factor_create: Missing tag %url
 two_factor_create: '&2Seu código secreto é %code'
 # TODO email_already_used: '&4The email address is already being used'
+# TODO not_owner_error: 'You are not the owner of this account. Please try another name!'

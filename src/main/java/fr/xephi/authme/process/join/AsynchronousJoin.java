@@ -12,7 +12,6 @@ import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.Spawn;
@@ -71,7 +70,7 @@ public class AsynchronousJoin {
                 @Override
                 public void run() {
                     AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                    player.kickPlayer("You are not the owner of this account. Please try another name!");
+                    player.kickPlayer(m.retrieveSingle(MessageKey.NOT_OWNER_ERROR));
                     if (Settings.banUnsafeIp)
                         plugin.getServer().banIP(ip);
                 }
