@@ -164,16 +164,14 @@ public class SQLite implements DataSource {
             rs = pst.executeQuery();
             if (rs.next()) {
                 return buildAuthFromResultSet(rs);
-            } else {
-                return null;
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return null;
+            logSqlException(ex);
         } finally {
             close(rs);
             close(pst);
         }
+        return null;
     }
 
     @Override
@@ -210,8 +208,7 @@ public class SQLite implements DataSource {
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
@@ -241,13 +238,13 @@ public class SQLite implements DataSource {
                 pst.setString(2, user);
             }
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -260,29 +257,25 @@ public class SQLite implements DataSource {
             pst.setString(3, auth.getRealName());
             pst.setString(4, auth.getNickname());
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
-        return true;
+        return false;
     }
 
     @Override
     public int purgeDatabase(long until) {
-        PreparedStatement pst = null;
-        try {
-
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;");
+        String sql = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setLong(1, until);
             return pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
-        } finally {
-            close(pst);
+            logSqlException(ex);
         }
+        return 0;
     }
 
     @Override
@@ -299,12 +292,12 @@ public class SQLite implements DataSource {
             }
             return list;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
+            logSqlException(ex);
         } finally {
             close(rs);
             close(pst);
         }
+        return new ArrayList<>();
     }
 
     @Override
@@ -314,13 +307,13 @@ public class SQLite implements DataSource {
             pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
             pst.setString(1, user);
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -334,13 +327,13 @@ public class SQLite implements DataSource {
             pst.setString(4, auth.getWorld());
             pst.setString(5, auth.getNickname());
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -358,29 +351,26 @@ public class SQLite implements DataSource {
             }
             return countIp;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
+            logSqlException(ex);
         } finally {
             close(rs);
             close(pst);
         }
+        return 0;
     }
 
     @Override
     public boolean updateEmail(PlayerAuth auth) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.EMAIL + "=? WHERE " + col.NAME + "=?;");
+        String sql = "UPDATE " + tableName + " SET " + col.EMAIL + "=? WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } finally {
-            close(pst);
+            logSqlException(ex);
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -388,7 +378,7 @@ public class SQLite implements DataSource {
         try {
             con.close();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
         }
     }
 
@@ -401,7 +391,7 @@ public class SQLite implements DataSource {
             try {
                 st.close();
             } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
+                logSqlException(ex);
             }
         }
     }
@@ -411,7 +401,7 @@ public class SQLite implements DataSource {
             try {
                 rs.close();
             } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
+                logSqlException(ex);
             }
         }
     }
@@ -420,24 +410,24 @@ public class SQLite implements DataSource {
     public List<String> getAllAuthsByName(PlayerAuth auth) {
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<>();
+        List<String> names = new ArrayList<>();
         try {
+            // TODO ljacqu 20160214: Use SELECT name if only the name is required
             pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + col.IP + "=?;");
             pst.setString(1, auth.getIp());
             rs = pst.executeQuery();
             while (rs.next()) {
-                countIp.add(rs.getString(col.NAME));
+                names.add(rs.getString(col.NAME));
             }
-            return countIp;
+            return names;
         } catch (SQLException ex) {
             logSqlException(ex);
-            return new ArrayList<>();
-        } catch (NullPointerException npe) {
-            return new ArrayList<>();
+
         } finally {
             close(rs);
             close(pst);
         }
+        return new ArrayList<>();
     }
 
     @Override
@@ -454,14 +444,12 @@ public class SQLite implements DataSource {
             }
             return countIp;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
-        } catch (NullPointerException npe) {
-            return new ArrayList<>();
+            logSqlException(ex);
         } finally {
             close(rs);
             close(pst);
         }
+        return new ArrayList<>();
     }
 
     @Override
@@ -478,14 +466,12 @@ public class SQLite implements DataSource {
             }
             return countEmail;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
-        } catch (NullPointerException npe) {
-            return new ArrayList<>();
-        } finally {
+            logSqlException(ex);
+        }  finally {
             close(rs);
             close(pst);
         }
+        return new ArrayList<>();
     }
 
     @Override
@@ -520,8 +506,7 @@ public class SQLite implements DataSource {
             if (rs.next())
                 return (rs.getInt(col.IS_LOGGED) == 1);
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(rs);
             close(pst);
@@ -538,7 +523,7 @@ public class SQLite implements DataSource {
             pst.setString(2, user);
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
         } finally {
             close(pst);
         }
@@ -554,7 +539,7 @@ public class SQLite implements DataSource {
                 pst.setString(2, user);
                 pst.executeUpdate();
             } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
+                logSqlException(ex);
             } finally {
                 close(pst);
             }
@@ -569,7 +554,7 @@ public class SQLite implements DataSource {
             pst.setInt(2, 1);
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
         } finally {
             close(pst);
         }
@@ -577,22 +562,20 @@ public class SQLite implements DataSource {
 
     @Override
     public int getAccountsRegistered() {
-        int result = 0;
         PreparedStatement pst = null;
         ResultSet rs;
         try {
             pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
             rs = pst.executeQuery();
             if (rs != null && rs.next()) {
-                result = rs.getInt(1);
+                return rs.getInt(1);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return result;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
-        return result;
+        return 0;
     }
 
     @Override
@@ -604,7 +587,7 @@ public class SQLite implements DataSource {
             pst.setString(2, oldOne);
             pst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
         } finally {
             close(pst);
         }
@@ -623,8 +606,7 @@ public class SQLite implements DataSource {
                 auths.add(auth);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
@@ -644,8 +626,7 @@ public class SQLite implements DataSource {
                 auths.add(auth);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
@@ -669,8 +650,7 @@ public class SQLite implements DataSource {
     }
 
     private static void logSqlException(SQLException e) {
-        ConsoleLogger.showError("Error while executing SQL statement: " + StringUtils.formatException(e));
-        ConsoleLogger.writeStackTrace(e);
+        ConsoleLogger.logException("Error while executing SQL statement:", e);
     }
 
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
