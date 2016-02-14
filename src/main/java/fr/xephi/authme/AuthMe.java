@@ -244,8 +244,8 @@ public class AuthMe extends JavaPlugin {
             return;
         }
 
-        passwordSecurity = new PasswordSecurity(getDataSource(), Settings.getPasswordHash,
-            Bukkit.getPluginManager(), Settings.supportOldPassword);
+        passwordSecurity = new PasswordSecurity(getDataSource(), newSettings.getProperty(SecuritySettings.PASSWORD_HASH),
+            Bukkit.getPluginManager(), newSettings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH));
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
@@ -516,10 +516,10 @@ public class AuthMe extends JavaPlugin {
                 database = new FlatFile();
                 break;
             case MYSQL:
-                database = new MySQL();
+                database = new MySQL(newSettings);
                 break;
             case SQLITE:
-                database = new SQLite();
+                database = new SQLite(newSettings);
                 isSQLite = true;
                 break;
         }

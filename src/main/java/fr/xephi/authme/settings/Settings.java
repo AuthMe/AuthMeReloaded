@@ -32,7 +32,6 @@ public final class Settings {
     public static List<String> getJoinPermissions;
     public static List<String> getUnrestrictedName;
     public static List<String> getRestrictedIp;
-    public static List<String> getMySQLOtherUsernameColumn;
     public static List<String> getForcedWorlds;
     public static List<String> countries;
     public static List<String> countriesBlacklist;
@@ -54,7 +53,6 @@ public final class Settings {
         isMovementAllowed, isKickNonRegisteredEnabled,
         isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
         isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
-        isCachingEnabled,
         isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
         protectInventoryBeforeLogInEnabled, isStopEnabled, reloadSupport,
         rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
@@ -69,18 +67,12 @@ public final class Settings {
         noTeleport, applyBlindEffect, hideTablistBeforeLogin, denyTabcompleteBeforeLogin,
         kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
         customAttributes, generateImage, isRemoveSpeedEnabled, preventOtherCase;
-    public static String getNickRegex, getUnloggedinGroup, getMySQLHost,
-        getMySQLPort, getMySQLUsername, getMySQLPassword, getMySQLDatabase,
-        getMySQLTablename, getMySQLColumnName, getMySQLColumnPassword,
-        getMySQLColumnIp, getMySQLColumnLastLogin, getMySQLColumnSalt,
-        getMySQLColumnGroup, getMySQLColumnEmail, unRegisteredGroup,
+    public static String getNickRegex, getUnloggedinGroup,
+        getMySQLColumnGroup, unRegisteredGroup,
         backupWindowsPath, getRegisteredGroup,
-        getMySQLlastlocX, getMySQLlastlocY,
-        getMySQLlastlocZ, rakamakUsers, rakamakUsersIp, getmailAccount,
-        getMySQLColumnId, getMySQLlastlocWorld, defaultWorld,
-        getPhpbbPrefix, getWordPressPrefix, getMySQLColumnLogged,
-        spawnPriority, crazyloginFileName, getPassRegex,
-        getMySQLColumnRealName, sendPlayerTo;
+        rakamakUsers, rakamakUsersIp, getmailAccount, defaultWorld,
+        getPhpbbPrefix, getWordPressPrefix,
+        spawnPriority, crazyloginFileName, getPassRegex, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
         getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
@@ -136,25 +128,7 @@ public final class Settings {
         getPasswordHash = load(SecuritySettings.PASSWORD_HASH);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getDataSource = load(DatabaseSettings.BACKEND);
-        isCachingEnabled = load(DatabaseSettings.USE_CACHING);
-        getMySQLHost = load(DatabaseSettings.MYSQL_HOST);
-        getMySQLPort = load(DatabaseSettings.MYSQL_PORT);
-        getMySQLUsername = load(DatabaseSettings.MYSQL_USERNAME);
-        getMySQLPassword = load(DatabaseSettings.MYSQL_PASSWORD);
-        getMySQLDatabase = load(DatabaseSettings.MYSQL_DATABASE);
-        getMySQLTablename = load(DatabaseSettings.MYSQL_TABLE);
-        getMySQLColumnEmail = configFile.getString("DataSource.mySQLColumnEmail", "email");
-        getMySQLColumnName = configFile.getString("DataSource.mySQLColumnName", "username");
-        getMySQLColumnPassword = configFile.getString("DataSource.mySQLColumnPassword", "password");
-        getMySQLColumnIp = configFile.getString("DataSource.mySQLColumnIp", "ip");
-        getMySQLColumnLastLogin = configFile.getString("DataSource.mySQLColumnLastLogin", "lastlogin");
-        getMySQLColumnSalt = configFile.getString("ExternalBoardOptions.mySQLColumnSalt");
         getMySQLColumnGroup = configFile.getString("ExternalBoardOptions.mySQLColumnGroup", "");
-        getMySQLlastlocX = configFile.getString("DataSource.mySQLlastlocX", "x");
-        getMySQLlastlocY = configFile.getString("DataSource.mySQLlastlocY", "y");
-        getMySQLlastlocZ = configFile.getString("DataSource.mySQLlastlocZ", "z");
-        getMySQLlastlocWorld = configFile.getString("DataSource.mySQLlastlocWorld", "world");
-        getMySQLColumnRealName = configFile.getString("DataSource.mySQLRealName", "realname");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
 
@@ -195,9 +169,7 @@ public final class Settings {
         getmailAccount = configFile.getString("Email.mailAccount", "");
         getMailPort = configFile.getInt("Email.mailPort", 465);
         getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
-        getMySQLOtherUsernameColumn = configFile.getStringList("ExternalBoardOptions.mySQLOtherUsernameColumns");
         displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
-        getMySQLColumnId = configFile.getString("DataSource.mySQLColumnId", "id");
         useCaptcha = configFile.getBoolean("Security.captcha.useCaptcha", false);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
@@ -241,7 +213,6 @@ public final class Settings {
         broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
         forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
         forceRegLogin = configFile.getBoolean("settings.registration.forceLoginAfterRegister", false);
-        getMySQLColumnLogged = configFile.getString("DataSource.mySQLColumnLogged", "isLogged");
         spawnPriority = configFile.getString("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);

@@ -51,8 +51,8 @@ public class ConverterCommand implements ExecutableCommand {
                 converter = new vAuthConverter(plugin, sender);
                 break;
             case SQLITETOSQL:
-            	converter = new SqliteToSql(plugin, sender);
-            	break;
+                converter = new SqliteToSql(plugin, sender, commandService.getSettings());
+                break;
             default:
                 break;
         }

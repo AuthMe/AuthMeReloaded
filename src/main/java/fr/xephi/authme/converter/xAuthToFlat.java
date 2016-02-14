@@ -4,8 +4,10 @@ import de.luricos.bukkit.xAuth.database.DatabaseTables;
 import de.luricos.bukkit.xAuth.utils.xAuthLog;
 import de.luricos.bukkit.xAuth.xAuth;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.util.CollectionUtils;
 import org.bukkit.command.CommandSender;
 
 import java.io.File;
@@ -22,12 +24,6 @@ class xAuthToFlat {
     private final DataSource database;
     private final CommandSender sender;
 
-    /**
-     * Constructor for xAuthToFlat.
-     *
-     * @param instance AuthMe
-     * @param sender   CommandSender
-     */
     public xAuthToFlat(AuthMe instance, CommandSender sender) {
         this.instance = instance;
         this.database = instance.getDataSource();
@@ -39,12 +35,13 @@ class xAuthToFlat {
             sender.sendMessage("[AuthMe] xAuth plugin not found");
             return false;
         }
-        if (!(new File(instance.getDataFolder().getParent() + File.separator + "xAuth" + File.separator + "xAuth.h2.db").exists())) {
+        File xAuthDb = new File(instance.getDataFolder().getParent(), "xAuth" + File.separator + "xAuth.h2.db");
+        if (!xAuthDb.exists()) {
             sender.sendMessage("[AuthMe] xAuth H2 database not found, checking for MySQL or SQLite data...");
         }
         List<Integer> players = getXAuthPlayers();
-        if (players == null || players.isEmpty()) {
-            sender.sendMessage("[AuthMe] Error while import xAuthPlayers");
+        if (CollectionUtils.isEmpty(players)) {
+            sender.sendMessage("[AuthMe] Error while importing xAuthPlayers: did not find any players");
             return false;
         }
         sender.sendMessage("[AuthMe] Starting import...");
@@ -59,7 +56,9 @@ class xAuthToFlat {
             }
             sender.sendMessage("[AuthMe] Successfully converted from xAuth database");
         } catch (Exception e) {
-            sender.sendMessage("[AuthMe] An error has been thrown while import xAuth database, the import hadn't fail but can be not complete ");
+            sender.sendMessage("[AuthMe] An error has occurred while importing the xAuth database."
+                + " The import may have succeeded partially.");
+            ConsoleLogger.logException("Error during xAuth database import", e);
         }
         return true;
     }

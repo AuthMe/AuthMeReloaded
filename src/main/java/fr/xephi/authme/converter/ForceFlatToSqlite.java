@@ -26,7 +26,7 @@ public class ForceFlatToSqlite {
 
     public DataSource run() {
         try {
-            DataSource sqlite = new SQLite();
+            DataSource sqlite = new SQLite(settings);
             for (PlayerAuth auth : database.getAllAuths()) {
                 auth.setRealName("Player");
                 sqlite.saveAuth(auth);
@@ -36,9 +36,7 @@ public class ForceFlatToSqlite {
             ConsoleLogger.info("Database successfully converted to sqlite!");
             return sqlite;
         } catch (SQLException | ClassNotFoundException e) {
-            ConsoleLogger.showError("An error occurred while trying to convert flatfile to sqlite: "
-                + StringUtils.formatException(e));
-            ConsoleLogger.writeStackTrace(e);
+            ConsoleLogger.logException("Could not convert from Flatfile to SQLite:", e);
         }
         return null;
     }
