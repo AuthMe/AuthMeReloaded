@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 /**
  */
 public class CryptPBKDF2Django implements EncryptionMethod {
+    final Integer DEFAULT_ITERATIONS = 24000;
 
     /**
      * Method getHash.
@@ -22,8 +23,8 @@ public class CryptPBKDF2Django implements EncryptionMethod {
     @Override
     public String getHash(String password, String salt, String name)
         throws NoSuchAlgorithmException {
-        String result = "pbkdf2_sha256$15000$" + salt + "$";
-        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), 15000);
+        String result = "pbkdf2_sha256$" + DEFAULT_ITERATIONS.toString() + "$" + salt + "$";
+        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), DEFAULT_ITERATIONS);
         PBKDF2Engine engine = new PBKDF2Engine(params);
 
         return result + String.valueOf(DatatypeConverter.printBase64Binary(engine.deriveKey(password, 32)));
@@ -42,9 +43,10 @@ public class CryptPBKDF2Django implements EncryptionMethod {
     public boolean comparePassword(String hash, String password,
                                    String playerName) throws NoSuchAlgorithmException {
         String[] line = hash.split("\\$");
+        int iterations = Integer.parseInt(line[1]);
         String salt = line[2];
         byte[] derivedKey = DatatypeConverter.parseBase64Binary(line[3]);
-        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), 15000, derivedKey);
+        PBKDF2Parameters params = new PBKDF2Parameters("HmacSHA256", "ASCII", salt.getBytes(), iterations, derivedKey);
         PBKDF2Engine engine = new PBKDF2Engine(params);
         return engine.verifyKey(password);
     }
