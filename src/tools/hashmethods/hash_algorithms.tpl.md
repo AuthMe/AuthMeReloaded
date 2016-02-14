@@ -51,3 +51,5 @@ If this column is empty when the salt type is "Text", it typically means the sal
 ##### Separate
 If denoted with a **y**, it means that the salt is stored in a separate column in the database. This is neither good
 or bad.
+
+{gen_footer}

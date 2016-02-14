@@ -1,12 +1,12 @@
 package commands;
 
+import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
-import utils.ANewMap;
 import utils.FileUtils;
 import utils.TagReplacer;
 import utils.ToolTask;
@@ -38,19 +38,18 @@ public class CommandPageCreater implements ToolTask {
         FileUtils.generateFileFromTemplate(
             ToolsConstants.TOOLS_SOURCE_ROOT + "commands/commands.tpl.md",
             OUTPUT_FILE,
-            ANewMap.with("commands", commandsResult.toString()).build());
+            ImmutableMap.of("commands", commandsResult.toString()));
         System.out.println("Wrote to '" + OUTPUT_FILE + "' with " + baseCommands.size() + " base commands.");
     }
 
     private static void addCommandsInfo(StringBuilder sb, Collection<CommandDescription> commands,
                                         final String template) {
         for (CommandDescription command : commands) {
-            Map<String, String> tags = ANewMap
-                .with("command", CommandUtils.constructCommandPath(command))
-                .and("description", command.getDetailedDescription())
-                .and("arguments", formatArguments(command.getArguments()))
-                .and("permissions", formatPermissions(command.getCommandPermissions()))
-                .build();
+            Map<String, String> tags = ImmutableMap.of(
+                "command", CommandUtils.constructCommandPath(command),
+                "description", command.getDetailedDescription(),
+                "arguments", formatArguments(command.getArguments()),
+                "permissions", formatPermissions(command.getCommandPermissions()));
             sb.append(TagReplacer.applyReplacements(template, tags));
 
             if (!command.getChildren().isEmpty()) {

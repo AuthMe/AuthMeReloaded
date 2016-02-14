@@ -16,7 +16,7 @@ import java.util.Set;
 import static com.google.common.collect.Sets.newHashSet;
 
 /**
- * Gathers information on {@link fr.xephi.authme.security.crypts.EncryptionMethod} implementations based on
+ * Gathers information on {@link EncryptionMethod} implementations based on
  * the annotations in {@link fr.xephi.authme.security.crypts.description}.
  */
 public class EncryptionMethodInfoGatherer {

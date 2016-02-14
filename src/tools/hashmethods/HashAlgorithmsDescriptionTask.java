@@ -1,9 +1,9 @@
 package hashmethods;
 
+import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
-import utils.ANewMap;
 import utils.FileUtils;
 import utils.TagReplacer;
 import utils.ToolTask;
@@ -36,7 +36,7 @@ public class HashAlgorithmsDescriptionTask implements ToolTask {
         final String methodRows = constructMethodRows(descriptions);
 
         // Write to the docs file
-        Map<String, String> tags = ANewMap.with("method_rows", methodRows).build();
+        Map<String, String> tags = ImmutableMap.of("method_rows", methodRows);
         FileUtils.generateFileFromTemplate(CUR_FOLDER + "hash_algorithms.tpl.md", OUTPUT_FILE, tags);
     }
 
@@ -45,14 +45,14 @@ public class HashAlgorithmsDescriptionTask implements ToolTask {
         StringBuilder result = new StringBuilder();
         for (Map.Entry<HashAlgorithm, MethodDescription> entry : descriptions.entrySet()) {
             MethodDescription description = entry.getValue();
-            Map<String, String> tags = ANewMap
-                .with("name",            asString(entry.getKey()))
-                .and("recommendation",   asString(description.getUsage()))
-                .and("hash_length",      asString(description.getHashLength()))
-                .and("ascii_restricted", asString(description.isAsciiRestricted()))
-                .and("salt_type",        asString(description.getSaltType()))
-                .and("salt_length",      asString(description.getSaltLength()))
-                .and("separate_salt",    asString(description.hasSeparateSalt()))
+            Map<String, String> tags = ImmutableMap.<String, String>builder()
+                .put("name",             asString(entry.getKey()))
+                .put("recommendation",   asString(description.getUsage()))
+                .put("hash_length",      asString(description.getHashLength()))
+                .put("ascii_restricted", asString(description.isAsciiRestricted()))
+                .put("salt_type",        asString(description.getSaltType()))
+                .put("salt_length",      asString(description.getSaltLength()))
+                .put("separate_salt",    asString(description.hasSeparateSalt()))
                 .build();
             result.append(TagReplacer.applyReplacements(rowTemplate, tags));
         }

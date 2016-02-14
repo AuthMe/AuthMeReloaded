@@ -1,5 +1,5 @@
 <!-- AUTO-GENERATED FILE! Do not edit this directly -->
-<!-- File auto-generated on Sun Feb 14 14:11:28 CET 2016. See permissions/permission_nodes.tpl.md -->
+<!-- File auto-generated on Sun Feb 14 19:00:34 CET 2016. See permissions/permission_nodes.tpl.md -->
 
 ## AuthMe Permission Nodes
 The following are the permission nodes that are currently supported by the latest dev builds.
@@ -42,3 +42,7 @@ The following are the permission nodes that are currently supported by the lates
 - **authme.player.unregister** – Command permission to unregister.
 - **authme.vip** – Permission node to identify VIP users.
 
+
+---
+
+This page was automatically generated on the [AuthMe-Team/AuthMeReloaded repository](https://github.com/AuthMe-Team/AuthMeReloaded/tree/master/docs/) on Sun Feb 14 19:00:34 CET 2016
