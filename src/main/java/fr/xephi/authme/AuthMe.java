@@ -1,38 +1,9 @@
 package fr.xephi.authme;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-
+import com.earth2me.essentials.Essentials;
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import fr.xephi.authme.datasource.DataSourceType;
-import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.SettingsMigrationService;
-import org.apache.logging.log4j.LogManager;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.World;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-
-import com.earth2me.essentials.Essentials;
 import com.onarandombox.MultiverseCore.MultiverseCore;
-import net.minelink.ctplus.CombatTagPlus;
-
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -49,6 +20,7 @@ import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
@@ -69,6 +41,7 @@ import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -76,6 +49,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -87,9 +61,33 @@ import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Wrapper;
+import net.minelink.ctplus.CombatTagPlus;
+import org.apache.logging.log4j.LogManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.World;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
+import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
 import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
 
 /**
@@ -118,7 +116,11 @@ public class AuthMe extends JavaPlugin {
     private PasswordSecurity passwordSecurity;
     private DataSource database;
 
-    // Public Instances
+    /*
+     * Public Instances
+     * TODO: Encapsulation
+     */
+
     public NewAPI api;
     public SendMailSSL mail;
     public DataManager dataManager;
@@ -313,7 +315,7 @@ public class AuthMe extends JavaPlugin {
         autoPurge();
 
         // Start Email recall task if needed
-        recallEmail();
+        scheduleRecallEmailTask();
 
         // Show settings warnings
         showSettingsWarnings();
@@ -797,21 +799,19 @@ public class AuthMe extends JavaPlugin {
         return player.getWorld().getSpawnLocation();
     }
 
-    private void recallEmail() {
-        if (!Settings.recallEmail)
+    private void scheduleRecallEmailTask() {
+        if (!newSettings.getProperty(RECALL_PLAYERS)) {
             return;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-
+        }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
             @Override
             public void run() {
-                for (Player player : Utils.getOnlinePlayers()) {
-                    if (player.isOnline()) {
-                        String name = player.getName().toLowerCase();
-                        if (database.isAuthAvailable(name) && PlayerCache.getInstance().isAuthenticated(name)) {
-                            String email = database.getAuth(name).getEmail();
-                            if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com")) {
-                                messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
-                            }
+                for (PlayerAuth auth : database.getLoggedPlayers()) {
+                    String email = auth.getEmail();
+                    if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com")) {
+                        Player player = Utils.getPlayer(auth.getRealName());
+                        if (player != null) {
+                            messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
                         }
                     }
                 }
