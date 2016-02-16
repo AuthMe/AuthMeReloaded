@@ -717,6 +717,11 @@ public class FlatFile implements DataSource {
     }
 
     @Override
+    public boolean updateRealName(String user, String realName) {
+        return false;
+    }
+
+    @Override
     public List<PlayerAuth> getAllAuths() {
         BufferedReader br = null;
         List<PlayerAuth> auths = new ArrayList<>();

@@ -886,6 +886,21 @@ public class MySQL implements DataSource {
     }
 
     @Override
+    public boolean updateRealName(String user, String realName) {
+        try (Connection con = getConnection()) {
+            String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, realName);
+            pst.setString(2, user);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return false;
+    }
+
+    @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
         try (Connection con = getConnection()) {

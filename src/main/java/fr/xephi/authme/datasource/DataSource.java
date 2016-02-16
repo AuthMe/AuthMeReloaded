@@ -204,6 +204,7 @@ public interface DataSource {
      */
     void updateName(String oldOne, String newOne);
 
+    boolean updateRealName(String user, String realName);
     /**
      * Method getAllAuths.
      *
