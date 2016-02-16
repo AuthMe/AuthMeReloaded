@@ -1,47 +1,52 @@
 package fr.xephi.authme.util;
 
-import com.maxmind.geoip.LookupService;
-import fr.xephi.authme.AuthMe;
+import com.maxmind.geoip2.DatabaseReader;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.Bukkit;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
 
 public class GeoLiteAPI {
 
-    private static final String LICENSE = "[LICENSE] This product uses data from the GeoLite API created by MaxMind, " +
-        "available at http://www.maxmind.com";
-    private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry" +
-        "/GeoIP.dat.gz";
-    private static final AuthMe plugin = AuthMe.getInstance();
-    private static LookupService lookupService;
+    private static final String LICENSE = "[LICENSE] This product includes GeoLite2 data created by MaxMind," +
+        " available from http://www.maxmind.com";
+    private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz";
+    private static DatabaseReader databaseReader;
+    private static Thread downloadTask;
 
     /**
      * Download (if absent) the GeoIpLite data file and then try to load it.
      *
      * @return True if the data is available, false otherwise.
      */
-    public static boolean isDataAvailable() {
-        if (lookupService != null) {
+    public synchronized static boolean isDataAvailable() {
+        if (downloadTask != null && downloadTask.isAlive()) {
+            return false;
+        }
+        if (databaseReader != null) {
             return true;
         }
-        final File data = new File(Settings.PLUGIN_FOLDER, "GeoIP.dat");
+        final File data = new File(Settings.PLUGIN_FOLDER, "GeoLite2-Country.mmdb");
         if (data.exists()) {
             try {
-                lookupService = new LookupService(data);
-                plugin.getLogger().info(LICENSE);
+                databaseReader = new DatabaseReader.Builder(data).build();
+                ConsoleLogger.info(LICENSE);
                 return true;
             } catch (IOException e) {
-            	ConsoleLogger.logException("Could not find/download GeoLiteAPI", e);
+                ConsoleLogger.logException("Failed to load GeoLiteAPI database", e);
                 return false;
             }
         }
         // Ok, let's try to download the data file!
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        downloadTask = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
@@ -63,10 +68,11 @@ public class GeoLiteAPI {
                     output.close();
                     input.close();
                 } catch (IOException e) {
-                    ConsoleLogger.logException("Could not download GeoLiteAPI", e);
+                    ConsoleLogger.logException("Could not download GeoLiteAPI database", e);
                 }
             }
         });
+        downloadTask.start();
         return false;
     }
 
@@ -79,7 +85,11 @@ public class GeoLiteAPI {
      */
     public static String getCountryCode(String ip) {
         if (isDataAvailable()) {
-            return lookupService.getCountry(ip).getCode();
+            try {
+                return databaseReader.country(InetAddress.getByName(ip)).getCountry().getIsoCode();
+            } catch (Exception e) {
+                ConsoleLogger.logException("Error while getting country code", e);
+            }
         }
         return "--";
     }
@@ -93,7 +103,11 @@ public class GeoLiteAPI {
      */
     public static String getCountryName(String ip) {
         if (isDataAvailable()) {
-            return lookupService.getCountry(ip).getName();
+            try {
+                return databaseReader.country(InetAddress.getByName(ip)).getCountry().getName();
+            } catch (Exception e) {
+                ConsoleLogger.logException("Error while getting country name", e);
+            }
         }
         return "N/A";
     }
