@@ -12,6 +12,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 public class GeoLiteAPI {
@@ -35,6 +36,10 @@ public class GeoLiteAPI {
             return true;
         }
         final File data = new File(Settings.PLUGIN_FOLDER, "GeoLite2-Country.mmdb");
+        boolean dataIsOld = (System.currentTimeMillis() - data.lastModified()) > TimeUnit.DAYS.toMillis(30);
+        if (dataIsOld && !data.delete()) {
+            ConsoleLogger.showError("Failed to delete GeoLiteAPI database");
+        }
         if (data.exists()) {
             try {
                 databaseReader = new DatabaseReader.Builder(data).build();
