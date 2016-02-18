@@ -89,11 +89,11 @@ public class GeoLiteAPI {
      * @return String
      */
     public static String getCountryCode(String ip) {
-        if (isDataAvailable()) {
+        if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
             try {
                 return databaseReader.country(InetAddress.getByName(ip)).getCountry().getIsoCode();
             } catch (Exception e) {
-                ConsoleLogger.logException("Error while getting country code", e);
+                ConsoleLogger.writeStackTrace(e);
             }
         }
         return "--";
@@ -107,11 +107,11 @@ public class GeoLiteAPI {
      * @return String
      */
     public static String getCountryName(String ip) {
-        if (isDataAvailable()) {
+        if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
             try {
                 return databaseReader.country(InetAddress.getByName(ip)).getCountry().getName();
             } catch (Exception e) {
-                ConsoleLogger.logException("Error while getting country name", e);
+                ConsoleLogger.writeStackTrace(e);
             }
         }
         return "N/A";
