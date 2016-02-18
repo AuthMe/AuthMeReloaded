@@ -12,7 +12,6 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
@@ -109,7 +108,7 @@ public class AuthMePlayerListener implements Listener {
         if (Settings.useEssentialsMotd && cmd.equals("/motd")) {
             return;
         }
-        if(!Settings.isForcedRegistrationEnabled && Settings.allowAllCommandsIfRegIsOptional) {
+        if (!Settings.isForcedRegistrationEnabled && Settings.allowAllCommandsIfRegIsOptional) {
             return;
         }
         if (Settings.allowCommands.contains(cmd)) {
@@ -255,18 +254,20 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        String playerIP = event.getAddress().getHostAddress();
-        if (auth == null && Settings.enableProtection) {
-            String countryCode = GeoLiteAPI.getCountryCode(playerIP);
-            if (!Settings.countriesBlacklist.isEmpty() && Settings.countriesBlacklist.contains(countryCode)) {
-                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                return;
-            }
-            if (!Settings.countries.isEmpty() && !Settings.countries.contains(countryCode)) {
-                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                return;
+        if (auth == null) {
+            if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()) {
+                String playerIP = event.getAddress().getHostAddress();
+                String countryCode = GeoLiteAPI.getCountryCode(playerIP);
+                if (Settings.countriesBlacklist.contains(countryCode)) {
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                    event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                    return;
+                }
+                if (Settings.enableProtection && !Settings.countries.contains(countryCode)) {
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                    event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                    return;
+                }
             }
         }
 
