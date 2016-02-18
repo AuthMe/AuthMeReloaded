@@ -84,7 +84,7 @@ public class GeoLiteAPI {
     /**
      * Get the country code of the given IP address.
      *
-     * @param ip textual IP address address to lookup.
+     * @param ip textual IP address to lookup.
      *
      * @return two-character ISO 3166-1 alpha code for the country.
      */
@@ -102,7 +102,7 @@ public class GeoLiteAPI {
     /**
      * Get the country name of the given IP address.
      *
-     * @param ip textual IP address address to lookup.
+     * @param ip textual IP address to lookup.
      *
      * @return The name of the country.
      */
