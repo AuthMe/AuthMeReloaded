@@ -109,7 +109,6 @@ public class AuthMe extends JavaPlugin {
     private Management management;
     private CommandHandler commandHandler = null;
     private PermissionsManager permsMan = null;
-    private Settings settings;
     private NewSetting newSettings;
     private Messages messages;
     private JsonCache playerBackup;
@@ -190,6 +189,15 @@ public class AuthMe extends JavaPlugin {
      */
     public Messages getMessages() {
         return messages;
+    }
+
+    /**
+     * Get the plugin's NewSetting instance.
+     *
+     * @return NewSetting.
+     */
+    public NewSetting getSettings() {
+        return newSettings;
     }
 
     // Get version and build number of the plugin
@@ -440,7 +448,7 @@ public class AuthMe extends JavaPlugin {
      */
     private boolean loadSettings() {
         try {
-            settings = new Settings(this);
+            new Settings(this);
             return true;
         } catch (Exception e) {
             ConsoleLogger.logException("Can't load the configuration file... Something went wrong. "
