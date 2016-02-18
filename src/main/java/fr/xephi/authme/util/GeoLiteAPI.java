@@ -84,9 +84,9 @@ public class GeoLiteAPI {
     /**
      * Get the country code of the given IP address.
      *
-     * @param ip Ip address
+     * @param ip textual IP address address to lookup.
      *
-     * @return String
+     * @return two-character ISO 3166-1 alpha code for the country.
      */
     public static String getCountryCode(String ip) {
         if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
@@ -102,9 +102,9 @@ public class GeoLiteAPI {
     /**
      * Get the country name of the given IP address.
      *
-     * @param ip Ip address
+     * @param ip textual IP address address to lookup.
      *
-     * @return String
+     * @return The name of the country.
      */
     public static String getCountryName(String ip) {
         if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
