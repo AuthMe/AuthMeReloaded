@@ -12,7 +12,6 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
@@ -109,7 +108,7 @@ public class AuthMePlayerListener implements Listener {
         if (Settings.useEssentialsMotd && cmd.equals("/motd")) {
             return;
         }
-        if(!Settings.isForcedRegistrationEnabled && Settings.allowAllCommandsIfRegIsOptional) {
+        if (!Settings.isForcedRegistrationEnabled && Settings.allowAllCommandsIfRegIsOptional) {
             return;
         }
         if (Settings.allowCommands.contains(cmd)) {
@@ -250,8 +249,7 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
             if (realName.isEmpty() || realName.equals("Player")) {
-                auth.setRealName(event.getName());
-                plugin.getDataSource().saveAuth(auth);
+                plugin.getDataSource().updateRealName(event.getName().toLowerCase(), event.getName());
             }
         }
 

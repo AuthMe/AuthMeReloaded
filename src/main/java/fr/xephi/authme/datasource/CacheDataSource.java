@@ -231,6 +231,15 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public boolean updateRealName(String user, String realName) {
+        boolean result = source.updateRealName(user, realName);
+        if (result) {
+            cachedAuths.refresh(user);
+        }
+        return result;
+    }
+
+    @Override
     public List<PlayerAuth> getAllAuths() {
         return source.getAllAuths();
     }

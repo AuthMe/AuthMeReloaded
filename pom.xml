@@ -346,6 +346,12 @@
             <id>xephi-repo</id>
             <url>http://ci.xephi.fr/plugin/repository/everything/</url>
         </repository>
+
+        <!-- PermissionsEx Repo (Re-added, since Xephi's repo was down) -->
+        <repository>
+            <id>pex-repo</id>
+            <url>https://pex-repo.aoeu.xyz/</url>
+        </repository>
     </repositories>
 
     <dependencies>
@@ -486,7 +492,7 @@
         <dependency>
             <groupId>ru.tehkode</groupId>
             <artifactId>PermissionsEx</artifactId>
-            <version>1.23.4</version>
+            <version>1.23.1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
