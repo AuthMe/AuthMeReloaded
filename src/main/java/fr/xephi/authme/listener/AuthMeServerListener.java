@@ -32,14 +32,15 @@ public class AuthMeServerListener implements Listener {
             return;
         }
 
-        String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-        if (!Settings.countriesBlacklist.isEmpty() && Settings.countriesBlacklist.contains(countryCode)) {
-            event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-            return;
-        }
-
-        if (!Settings.countries.isEmpty() && !Settings.countries.contains(countryCode)) {
-            event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+        if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()){
+            String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            if( Settings.countriesBlacklist.contains(countryCode)) {
+                event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
+            }
+            if (!Settings.countries.contains(countryCode)) {
+                event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+            }
         }
     }
 

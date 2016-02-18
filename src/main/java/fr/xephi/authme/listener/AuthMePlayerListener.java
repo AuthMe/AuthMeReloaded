@@ -253,18 +253,20 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        String playerIP = event.getAddress().getHostAddress();
-        if (auth == null && Settings.enableProtection) {
-            String countryCode = GeoLiteAPI.getCountryCode(playerIP);
-            if (!Settings.countriesBlacklist.isEmpty() && Settings.countriesBlacklist.contains(countryCode)) {
-                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                return;
-            }
-            if (!Settings.countries.isEmpty() && !Settings.countries.contains(countryCode)) {
-                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                return;
+        if (auth == null) {
+            if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()) {
+                String playerIP = event.getAddress().getHostAddress();
+                String countryCode = GeoLiteAPI.getCountryCode(playerIP);
+                if (Settings.countriesBlacklist.contains(countryCode)) {
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                    event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                    return;
+                }
+                if (Settings.enableProtection && !Settings.countries.contains(countryCode)) {
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                    event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                    return;
+                }
             }
         }
 

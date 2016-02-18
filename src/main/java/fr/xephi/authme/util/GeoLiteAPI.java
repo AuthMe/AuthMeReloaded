@@ -84,16 +84,16 @@ public class GeoLiteAPI {
     /**
      * Get the country code of the given IP address.
      *
-     * @param ip Ip address
+     * @param ip textual IP address to lookup.
      *
-     * @return String
+     * @return two-character ISO 3166-1 alpha code for the country.
      */
     public static String getCountryCode(String ip) {
-        if (isDataAvailable()) {
+        if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
             try {
                 return databaseReader.country(InetAddress.getByName(ip)).getCountry().getIsoCode();
             } catch (Exception e) {
-                ConsoleLogger.logException("Error while getting country code", e);
+                ConsoleLogger.writeStackTrace(e);
             }
         }
         return "--";
@@ -102,16 +102,16 @@ public class GeoLiteAPI {
     /**
      * Get the country name of the given IP address.
      *
-     * @param ip Ip address
+     * @param ip textual IP address to lookup.
      *
-     * @return String
+     * @return The name of the country.
      */
     public static String getCountryName(String ip) {
-        if (isDataAvailable()) {
+        if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
             try {
                 return databaseReader.country(InetAddress.getByName(ip)).getCountry().getName();
             } catch (Exception e) {
-                ConsoleLogger.logException("Error while getting country name", e);
+                ConsoleLogger.writeStackTrace(e);
             }
         }
         return "N/A";
