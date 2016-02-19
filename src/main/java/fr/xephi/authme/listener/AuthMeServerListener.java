@@ -28,17 +28,13 @@ public class AuthMeServerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
-        if (!Settings.enableProtection) {
-            return;
-        }
-
         if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()){
             String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if( Settings.countriesBlacklist.contains(countryCode)) {
                 event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
                 return;
             }
-            if (!Settings.countries.contains(countryCode)) {
+            if (Settings.enableProtection && !Settings.countries.contains(countryCode)) {
                 event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
             }
         }
