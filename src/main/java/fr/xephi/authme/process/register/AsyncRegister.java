@@ -1,13 +1,11 @@
 package fr.xephi.authme.process.register;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
