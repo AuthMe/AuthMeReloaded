@@ -269,6 +269,17 @@ public final class CommandInitializer {
             .executableCommand(new VersionCommand())
             .build();
 
+        CommandDescription.builder()
+            .parent(AUTHME_BASE)
+            .labels("converter", "convert", "conv")
+            .description("Converter Command")
+            .detailedDescription("Converter command for AuthMeReloaded.")
+            .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / " +
+                "royalauth / vauth / sqlitetosql", false)
+            .permissions(OP_ONLY, AdminPermission.CONVERTER)
+            .executableCommand(new ConverterCommand())
+            .build();
+
         // Register the base login command
         final CommandDescription LOGIN_BASE = CommandDescription.builder()
             .parent(null)
@@ -381,18 +392,6 @@ public final class CommandInitializer {
             .executableCommand(new CaptchaCommand())
             .build();
 
-        // Register the base converter command
-        CommandDescription CONVERTER_BASE = CommandDescription.builder()
-            .parent(AUTHME_BASE)
-            .labels("converter", "convert", "conv")
-            .description("Converter Command")
-            .detailedDescription("Converter command for AuthMeReloaded.")
-            .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / " +
-                "royalauth / vauth / sqlitetosql", false)
-            .permissions(OP_ONLY, AdminPermission.CONVERTER)
-            .executableCommand(new ConverterCommand())
-            .build();
-
         Set<CommandDescription> baseCommands = ImmutableSet.of(
             AUTHME_BASE,
             LOGIN_BASE,
@@ -401,8 +400,7 @@ public final class CommandInitializer {
             UNREGISTER_BASE,
             CHANGE_PASSWORD_BASE,
             EMAIL_BASE,
-            CAPTCHA_BASE,
-            CONVERTER_BASE);
+            CAPTCHA_BASE);
 
         setHelpOnAllBases(baseCommands);
         return baseCommands;
