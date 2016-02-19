@@ -16,7 +16,6 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -48,8 +47,8 @@ public class AccountsCommandTest {
         // given
         given(sender.getName()).willReturn("Tester");
         List<String> arguments = Collections.EMPTY_LIST;
-        given(dataSource.getAuth("tester")).willReturn(mock(PlayerAuth.class));
-        given(dataSource.getAllAuthsByName(any(PlayerAuth.class))).willReturn(Arrays.asList("Toaster", "Pester"));
+        given(dataSource.getAuth("tester")).willReturn(authWithIp("123.45.67.89"));
+        given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Arrays.asList("Toaster", "Pester"));
 
         // when
         command.executeCommand(sender, arguments, service);
@@ -81,7 +80,7 @@ public class AccountsCommandTest {
         // given
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(mock(PlayerAuth.class));
-        given(dataSource.getAllAuthsByName(any(PlayerAuth.class))).willReturn(Collections.EMPTY_LIST);
+        given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.EMPTY_LIST);
 
         // when
         command.executeCommand(sender, arguments, service);
@@ -96,8 +95,8 @@ public class AccountsCommandTest {
     public void shouldReturnSingleAccountMessage() {
         // given
         List<String> arguments = Collections.singletonList("SomeUser");
-        given(dataSource.getAuth("someuser")).willReturn(mock(PlayerAuth.class));
-        given(dataSource.getAllAuthsByName(any(PlayerAuth.class))).willReturn(Collections.singletonList("SomeUser"));
+        given(dataSource.getAuth("someuser")).willReturn(authWithIp("56.78.90.123"));
+        given(dataSource.getAllAuthsByIp("56.78.90.123")).willReturn(Collections.singletonList("SomeUser"));
 
         // when
         command.executeCommand(sender, arguments, service);
@@ -168,5 +167,12 @@ public class AccountsCommandTest {
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
         verify(sender, times(expectedCount)).sendMessage(captor.capture());
         return captor.getAllValues().toArray(new String[expectedCount]);
+    }
+
+    private static PlayerAuth authWithIp(String ip) {
+        return PlayerAuth.builder()
+            .name("Test")
+            .ip(ip)
+            .build();
     }
 }

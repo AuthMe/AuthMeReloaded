@@ -5,8 +5,7 @@ import fr.xephi.authme.settings.properties.TestConfiguration;
 import fr.xephi.authme.settings.properties.TestEnum;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 
 import java.io.File;
 
@@ -32,10 +31,10 @@ public class NewSettingTest {
     public void shouldLoadAllConfigs() {
         // given
         YamlConfiguration configuration = mock(YamlConfiguration.class);
-        given(configuration.getString(anyString(), anyString())).willAnswer(withDefaultArgument());
-        given(configuration.getBoolean(anyString(), anyBoolean())).willAnswer(withDefaultArgument());
-        given(configuration.getDouble(anyString(), anyDouble())).willAnswer(withDefaultArgument());
-        given(configuration.getInt(anyString(), anyInt())).willAnswer(withDefaultArgument());
+        given(configuration.getString(anyString(), anyString())).willAnswer(new ReturnsArgumentAt(1));
+        given(configuration.getBoolean(anyString(), anyBoolean())).willAnswer(new ReturnsArgumentAt(1));
+        given(configuration.getDouble(anyString(), anyDouble())).willAnswer(new ReturnsArgumentAt(1));
+        given(configuration.getInt(anyString(), anyInt())).willAnswer(new ReturnsArgumentAt(1));
 
         setReturnValue(configuration, TestConfiguration.VERSION_NUMBER, 20);
         setReturnValue(configuration, TestConfiguration.SKIP_BORING_FEATURES, true);
@@ -87,16 +86,6 @@ public class NewSettingTest {
     private static void assertDefaultValue(Property<?> property, NewSetting setting) {
         assertThat(property.getPath() + " has default value",
             setting.getProperty(property).equals(property.getDefaultValue()), equalTo(true));
-    }
-
-    private static <T> Answer<T> withDefaultArgument() {
-        return new Answer<T>() {
-            @Override
-            public T answer(InvocationOnMock invocation) throws Throwable {
-                // Return the second parameter -> the default
-                return (T) invocation.getArguments()[1];
-            }
-        };
     }
 
 }

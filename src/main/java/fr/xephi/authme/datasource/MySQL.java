@@ -562,35 +562,19 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized boolean updateSession(PlayerAuth auth) {
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET "
-                + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "UPDATE " + tableName + " SET "
+            + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, auth.getIp());
             pst.setTimestamp(2, new Timestamp(auth.getLastLogin()));
             pst.setString(3, auth.getRealName());
             pst.setString(4, auth.getNickname());
             pst.executeUpdate();
-            pst.close();
             return true;
         } catch (SQLException ex) {
             logSqlException(ex);
         }
         return false;
-    }
-
-    @Override
-    public synchronized int purgeDatabase(long until) {
-        int result = 0;
-        try (Connection con = getConnection()) {
-            String sql = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setLong(1, until);
-            result = pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return result;
     }
 
     @Override
@@ -670,25 +654,6 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized int getIps(String ip) {
-        int countIp = 0;
-        try (Connection con = getConnection()) {
-            String sql = "SELECT COUNT(*) FROM " + tableName + " WHERE " + col.IP + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, ip);
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                countIp = rs.getInt(1);
-            }
-            rs.close();
-            pst.close();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return countIp;
-    }
-
-    @Override
     public synchronized boolean updateEmail(PlayerAuth auth) {
         try (Connection con = getConnection()) {
             String sql = "UPDATE " + tableName + " SET " + col.EMAIL + " =? WHERE " + col.NAME + "=?;";
@@ -720,25 +685,6 @@ public class MySQL implements DataSource {
         if (ds != null && !ds.isClosed()) {
             ds.close();
         }
-    }
-
-    @Override
-    public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
-        List<String> result = new ArrayList<>();
-        try (Connection con = getConnection()) {
-            String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.IP + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
-            pst.setString(1, auth.getIp());
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                result.add(rs.getString(col.NAME));
-            }
-            rs.close();
-            pst.close();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return result;
     }
 
     @Override

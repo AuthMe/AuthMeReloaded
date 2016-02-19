@@ -267,18 +267,6 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public int purgeDatabase(long until) {
-        String sql = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-        try (PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setLong(1, until);
-            return pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-        return 0;
-    }
-
-    @Override
     public List<String> autoPurgeDatabase(long until) {
         PreparedStatement pst = null;
         ResultSet rs = null;
@@ -337,29 +325,6 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public int getIps(String ip) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        int countIp = 0;
-        try {
-            // TODO ljacqu 20151230: Simply fetch COUNT(1) and return that
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + col.IP + "=?;");
-            pst.setString(1, ip);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                countIp++;
-            }
-            return countIp;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        } finally {
-            close(rs);
-            close(pst);
-        }
-        return 0;
-    }
-
-    @Override
     public boolean updateEmail(PlayerAuth auth) {
         String sql = "UPDATE " + tableName + " SET " + col.EMAIL + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
@@ -407,36 +372,12 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public List<String> getAllAuthsByName(PlayerAuth auth) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        List<String> names = new ArrayList<>();
-        try {
-            // TODO ljacqu 20160214: Use SELECT name if only the name is required
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + col.IP + "=?;");
-            pst.setString(1, auth.getIp());
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                names.add(rs.getString(col.NAME));
-            }
-            return names;
-        } catch (SQLException ex) {
-            logSqlException(ex);
-
-        } finally {
-            close(rs);
-            close(pst);
-        }
-        return new ArrayList<>();
-    }
-
-    @Override
     public List<String> getAllAuthsByIp(String ip) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         List<String> countIp = new ArrayList<>();
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + col.IP + "=?;");
+            pst = con.prepareStatement("SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.IP + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
             while (rs.next()) {

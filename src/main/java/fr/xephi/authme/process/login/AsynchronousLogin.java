@@ -225,7 +225,7 @@ public class AsynchronousLogin {
             return;
         }
 
-        List<String> auths = this.database.getAllAuthsByName(auth);
+        List<String> auths = this.database.getAllAuthsByIp(auth.getIp());
         if (auths.size() < 2) {
             return;
         }
