@@ -1,6 +1,6 @@
 package fr.xephi.authme.util;
 
-import com.maxmind.geoip2.DatabaseReader;
+import com.maxmind.geoip.LookupService;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
 
@@ -9,18 +9,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 public class GeoLiteAPI {
-
-    private static final String LICENSE = "[LICENSE] This product includes GeoLite2 data created by MaxMind," +
-        " available from http://www.maxmind.com";
-    private static final String GEOIP_URL = "http://geolite.maxmind.com/download/geoip/database/GeoLite2-Country.mmdb.gz";
-    private static DatabaseReader databaseReader;
+    private static final String LICENSE =
+        "[LICENSE] This product uses data from the GeoLite API created by MaxMind, available at http://www.maxmind.com";
+    private static final String GEOIP_URL =
+        "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
+    private static LookupService lookupService;
     private static Thread downloadTask;
 
     /**
@@ -32,17 +31,17 @@ public class GeoLiteAPI {
         if (downloadTask != null && downloadTask.isAlive()) {
             return false;
         }
-        if (databaseReader != null) {
+        if (lookupService != null) {
             return true;
         }
-        final File data = new File(Settings.PLUGIN_FOLDER, "GeoLite2-Country.mmdb");
+        final File data = new File(Settings.PLUGIN_FOLDER, "GeoIP.dat");
         boolean dataIsOld = (System.currentTimeMillis() - data.lastModified()) > TimeUnit.DAYS.toMillis(30);
         if (dataIsOld && !data.delete()) {
             ConsoleLogger.showError("Failed to delete GeoLiteAPI database");
         }
         if (data.exists()) {
             try {
-                databaseReader = new DatabaseReader.Builder(data).build();
+                lookupService = new LookupService(data);
                 ConsoleLogger.info(LICENSE);
                 return true;
             } catch (IOException e) {
@@ -90,11 +89,7 @@ public class GeoLiteAPI {
      */
     public static String getCountryCode(String ip) {
         if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
-            try {
-                return databaseReader.country(InetAddress.getByName(ip)).getCountry().getIsoCode();
-            } catch (Exception e) {
-                ConsoleLogger.writeStackTrace(e);
-            }
+            return lookupService.getCountry(ip).getCode();
         }
         return "--";
     }
@@ -108,11 +103,7 @@ public class GeoLiteAPI {
      */
     public static String getCountryName(String ip) {
         if (!"127.0.0.1".equals(ip) && isDataAvailable()) {
-            try {
-                return databaseReader.country(InetAddress.getByName(ip)).getCountry().getName();
-            } catch (Exception e) {
-                ConsoleLogger.writeStackTrace(e);
-            }
+            return lookupService.getCountry(ip).getName();
         }
         return "N/A";
     }
