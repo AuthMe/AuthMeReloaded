@@ -1,6 +1,6 @@
 <?php
 /*****************************************************************************
- * AuthMe website integration logic                                          *
+ * AuthMe website integration logic for SHA256                               *
  * --------------------------------                                          *
  * Check with authme_check_password() whether the received username and      *
  * password match the AuthMe MySQL database. Don't forget to adjust the      *
