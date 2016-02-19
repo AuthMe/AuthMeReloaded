@@ -847,6 +847,21 @@ public class MySQL implements DataSource {
     }
 
     @Override
+    public boolean updateIp(String user, String ip) {
+        try (Connection con = getConnection()) {
+            String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
+            PreparedStatement pst = con.prepareStatement(sql);
+            pst.setString(1, ip);
+            pst.setString(2, user);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return false;
+    }
+
+    @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
         try (Connection con = getConnection()) {

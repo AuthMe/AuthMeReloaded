@@ -217,6 +217,15 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public boolean updateIp(String user, String ip) {
+        boolean result = source.updateIp(user, ip);
+        if (result) {
+            cachedAuths.refresh(user);
+        }
+        return result;
+    }
+
+    @Override
     public List<PlayerAuth> getAllAuths() {
         return source.getAllAuths();
     }

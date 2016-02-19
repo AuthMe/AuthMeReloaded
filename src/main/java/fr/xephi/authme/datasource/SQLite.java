@@ -549,6 +549,20 @@ public class SQLite implements DataSource {
     }
 
     @Override
+    public boolean updateIp(String user, String ip) {
+        String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
+        try(PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, ip);
+            pst.setString(2, user);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return false;
+    }
+
+    @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
         PreparedStatement pst = null;
