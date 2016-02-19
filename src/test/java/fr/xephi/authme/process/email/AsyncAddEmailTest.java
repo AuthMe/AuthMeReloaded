@@ -1,6 +1,7 @@
 package fr.xephi.authme.process.email;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -35,6 +36,7 @@ public class AsyncAddEmailTest {
     @BeforeClass
     public static void setUp() {
         WrapperMock.createInstance();
+        ConsoleLoggerTestInitializer.setupLogger();
     }
 
     // Clean up the fields to ensure that no test uses elements of another test
