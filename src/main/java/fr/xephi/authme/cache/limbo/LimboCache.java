@@ -82,7 +82,11 @@ public class LimboCache {
      */
     public void deleteLimboPlayer(String name) {
         checkNotNull(name);
-        cache.remove(name.toLowerCase());
+        name = name.toLowerCase();
+        if (cache.containsKey(name)) {
+            cache.get(name).clearTask();
+            cache.remove(name);
+        }
     }
 
     /**
