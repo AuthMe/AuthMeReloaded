@@ -1,7 +1,6 @@
 package fr.xephi.authme.command.executable.logout;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
@@ -10,29 +9,30 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
+import org.mockito.ArgumentCaptor;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
-import static org.mockito.Matchers.any;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for {@link LogoutCommand}.
  */
 public class LogoutCommandTest {
 
-    private static Management managementMock;
+    private CommandService commandService;
 
     @Before
     public void initializeAuthMeMock() {
-        WrapperMock wrapper = WrapperMock.createInstance();
-        AuthMe pluginMock = wrapper.getAuthMe();
-
+        WrapperMock.createInstance();
         Settings.captchaLength = 10;
-        managementMock = mock(Management.class);
-        Mockito.when(pluginMock.getManagement()).thenReturn(managementMock);
+        commandService = mock(CommandService.class);
     }
 
     @Test
@@ -42,10 +42,13 @@ public class LogoutCommandTest {
         LogoutCommand command = new LogoutCommand();
 
         // when
-        command.executeCommand(sender, new CommandParts(new ArrayList<String>()), new CommandParts(new ArrayList<String>()));
+        command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
-        Mockito.verify(managementMock, never()).performLogout(any(Player.class));
+        verify(commandService, never()).getManagement();
+        ArgumentCaptor<String> messageCaptor = ArgumentCaptor.forClass(String.class);
+        verify(sender).sendMessage(messageCaptor.capture());
+        assertThat(messageCaptor.getValue(), containsString("only for players"));
     }
 
     @Test
@@ -53,12 +56,14 @@ public class LogoutCommandTest {
         // given
         Player sender = mock(Player.class);
         LogoutCommand command = new LogoutCommand();
+        Management management = mock(Management.class);
+        given(commandService.getManagement()).willReturn(management);
 
         // when
-        command.executeCommand(sender, new CommandParts(new ArrayList<String>()), new CommandParts("password"));
+        command.executeCommand(sender, Collections.singletonList("password"), commandService);
 
         // then
-        Mockito.verify(managementMock).performLogout(sender);
+        verify(management).performLogout(sender);
     }
 
 }

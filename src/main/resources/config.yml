@@ -8,8 +8,6 @@ DataSource:
     mySQLHost: 127.0.0.1
     # Database Port
     mySQLPort: '3306'
-    # MySql Max Connections
-    mySQLMaxConections: 8
     # Username about Database Connection Infos
     mySQLUsername: authme
     # Password about Database Connection Infos
@@ -69,6 +67,9 @@ settings:
         # Care that this feature blocks also all the commands not
         # listed in the list below.
         allowChat: false
+        # WARNING: use this only if you need it!
+        # Allow unlogged users to use all the commands if registration is not forced!
+        allowAllCommandsIfRegistrationIsOptional: false
         # Commands allowed when a player is not authenticated
         allowCommands:
         - /login
@@ -104,7 +105,7 @@ settings:
         #   - playername;127.0.0.1
         AllowedRestrictedUser:
         - playername;127.0.0.1
-        # Should unregistered players be kicked immediatly?
+        # Should unregistered players be kicked immediately?
         kickNonRegistered: false
         # Should players be kicked on wrong password?
         kickOnWrongPassword: false
@@ -130,9 +131,13 @@ settings:
         # Enable double check of password when you register
         # when it's true, registration require that kind of command:
         # /register <password> <confirmPassword>
-        enablePasswordVerifier: true
-        # Should we protect the player inventory before logging in?
+        enablePasswordConfirmation: true
+        # Should we protect the player inventory before logging in? Requires ProtocolLib.
         ProtectInventoryBeforeLogIn: true
+        # Should we deny the tabcomplete feature before logging in? Requires ProtocolLib.
+        DenyTabCompleteBeforeLogin: true
+        # Should we hide the tablist before logging in? Requires ProtocolLib.
+        HideTablistBeforeLogin: true
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
@@ -152,19 +157,16 @@ settings:
         maxJoinPerIp: 0
         # AuthMe will NEVER teleport players !
         noTeleport: false
-        # Regex sintax for allowed Chars in passwords.
+        # Regex syntax for allowed Chars in passwords.
         allowedPasswordCharacters: '[\x21-\x7E]*'
     GameMode:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false
-        # if player join with CreativeMode and ForceSurvivalMode: true
-        # inventory will be wipped
-        ResetInventoryIfCreative: false
-        # Do we need to force the survival mode ONLY after /login process ?
-        ForceOnlyAfterLogin: false
     security:
-        # minimum Length of password
+        # Minimum length of password
         minPasswordLength: 5
+        # Maximum length of password
+        passwordMaxLength: 30
         # this is very important options,
         # every time player join the server,
         # if they are registered, AuthMe will switch him
@@ -188,15 +190,14 @@ settings:
         # Example unLoggedinGroup: NotLogged
         unLoggedinGroup: unLoggedinGroup
         # possible values: MD5, SHA1, SHA256, WHIRLPOOL, XAUTH, MD5VB, PHPBB,
-        # PLAINTEXT ( unhashed password),
-        # MYBB, IPB3, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,
+        # MYBB, IPB3, IPB4, PHPFUSION, SMF, XENFORO, SALTED2MD5, JOOMLA, BCRYPT, WBB3, SHA512,
         # DOUBLEMD5, PBKDF2, PBKDF2DJANGO, WORDPRESS, ROYALAUTH, CUSTOM(for developpers only)
         passwordHash: SHA256
         # salt length for the SALTED2MD5 MD5(MD5(password)+salt)
         doubleMD5SaltLength: 8
-        # If password checking return false , do we need to check with all
-        # other password algorithm to check an old password ?
-        # AuthMe will update the password to the new passwordHash !
+        # If password checking return false, do we need to check with all
+        # other password algorithm to check an old password?
+        # AuthMe will update the password to the new passwordHash!
         supportOldPasswordHash: false
         # Cancel unsafe passwords for being used, put them on lowercase!
         #unsafePasswords:
@@ -217,19 +218,19 @@ settings:
         # Only registered and logged in players can play.
         # See restrictions for exceptions
         force: true
-        # Does we replace password registration by an Email registration method ?
+        # Do we replace password registration by an email registration method?
         enableEmailRegistrationSystem: false
         # Enable double check of email when you register
         # when it's true, registration require that kind of command:
         # /register <email> <confirmEmail>
         doubleEmailCheck: false
-        # Do we force kicking player after a successful registration ?
+        # Do we force kicking player after a successful registration?
         # Do not use with login feature below
         forceKickAfterRegister: false
-        # Does AuthMe need to enforce a /login after a successful registration ?
+        # Does AuthMe need to enforce a /login after a successful registration?
         forceLoginAfterRegister: false
     unrestrictions:
-        # below you can list all your account name, that
+        # below you can list all account names that
         # AuthMe will ignore for registration or login, configure it
         # at your own risk!! Remember that if you are going to add
         # nickname with [], you have to delimit name with ' '.
@@ -255,15 +256,19 @@ settings:
     useWelcomeMessage: true
     # Do we need to broadcast the welcome message to all server or only to the player? set true for server or false for player
     broadcastWelcomeMessage: false
-    # Do we need to delay the join/leave message to be displayed only when the player is authenticated ?
-    delayJoinLeaveMessages: true
-    # Do we need to add potion effect Blinding before login/register ?
+    # Should we delay the join message and display it once the player has logged in?
+    delayJoinMessage: true
+    # Should we remove join messages altogether?
+    removeJoinMessage: true
+    # Should we remove leave messages?
+    removeLeaveMessage: true
+    # Do we need to add potion effect Blinding before login/register?
     applyBlindEffect: false
-    # Do we need to prevent people to login without another case ?
-    # Xephi is registered, also Xephi can login, but not XEPHI/xephi/XePhI
+    # Do we need to prevent people to login with another case?
+    # If Xephi is registered, then Xephi can login, but not XEPHI/xephi/XePhI
     preventOtherCase: false
 ExternalBoardOptions:
-    # MySQL column for the salt , needed for some forum/cms support
+    # MySQL column for the salt, needed for some forum/cms support
     mySQLColumnSalt: ''
     # MySQL column for the group, needed for some forum/cms support
     mySQLColumnGroup: ''
@@ -278,7 +283,7 @@ ExternalBoardOptions:
     bCryptLog2Round: 10
     # phpBB prefix defined during phpbb installation process
     phpbbTablePrefix: 'phpbb_'
-    # phpBB activated group id , 2 is default registered group defined by phpbb
+    # phpBB activated group id, 2 is default registered group defined by phpbb
     phpbbActivatedGroupId: 2
     # WordPress prefix defined during WordPress installation process
     wordpressTablePrefix: 'wp_'
@@ -311,6 +316,8 @@ Security:
         noConsoleSpam: false
         # Replace passwords in the console when player type a command like /login
         removePassword: true
+        # Copy AuthMe log output in a separate file as well?
+        logConsole: true
     captcha:
         # Player need to put a captcha when he fails too lot the password
         useCaptcha: false
@@ -318,6 +325,10 @@ Security:
         maxLoginTry: 5
         # Captcha length
         captchaLength: 5
+    stop:
+        # Kick players before stopping the server, that allow us to save position of players, and all needed
+        # information correctly without any corruption.
+        kickPlayersBeforeStopping: true
 Converter:
     Rakamak:
         # Rakamak file name
@@ -344,11 +355,9 @@ Email:
     RecoveryPasswordLength: 8
     # Email subject of password get
     mailSubject: 'Your new AuthMe Password'
-    # Email text here
-    mailText: 'Dear <playername>, <br /><br /> This is your new AuthMe password for the server <br /><br /> <servername> : <br /><br /> <generatedpass><br /><image><br />Do not forget to change password after login! <br /> /changepassword <generatedpass> newPassword'
     # Like maxRegPerIp but with email
     maxRegPerEmail: 1
-    # Recall players to add an email ?
+    # Recall players to add an email?
     recallPlayers: false
     # Delay in minute for the recall scheduler
     delayRecall: 5
@@ -357,35 +366,39 @@ Email:
     - 10minutemail.com
     # WhiteList only these domains for emails
     emailWhitelisted: []
-    # Do we need to send new password draw in an image ?
+    # Do we need to send new password draw in an image?
     generateImage: false
+    # The email OAuth 2 token (leave empty if not used)
+    emailOauth2Token: ''
 Hooks:
     # Do we need to hook with multiverse for spawn checking?
     multiverse: true
-    # Do we need to hook with BungeeCord for get the real Player ip ?
+    # Do we need to hook with BungeeCord ?
     bungeecord: false
-    # Do we need to disable Essentials SocialSpy on join ?
+    # Send player to this BungeeCord server after register/login
+    sendPlayerTo: ''
+    # Do we need to disable Essentials SocialSpy on join?
     disableSocialSpy: true
-    # Do we need to force /motd Essentials command on join ?
+    # Do we need to force /motd Essentials command on join?
     useEssentialsMotd: false
-    # Do we need to cache custom Attributes ?
+    # Do we need to cache custom Attributes?
     customAttributes: false
 Purge:
-    # On Enable , does AuthMe need to purge automatically old accounts unused ?
+    # If enabled, AuthMe automatically purges old, unused accounts
     useAutoPurge: false
     # Number of Days an account become Unused
     daysBeforeRemovePlayer: 60
-    # Do we need to remove the player.dat file during purge process ?
+    # Do we need to remove the player.dat file during purge process?
     removePlayerDat: false
-    # Do we need to remove the Essentials/users/player.yml file during purge process ?
+    # Do we need to remove the Essentials/users/player.yml file during purge process?
     removeEssentialsFile: false
     # World where are players.dat stores
     defaultWorld: 'world'
-    # Do we need to remove LimitedCreative/inventories/player.yml , player_creative.yml files during purge process ?
+    # Do we need to remove LimitedCreative/inventories/player.yml, player_creative.yml files during purge process ?
     removeLimitedCreativesInventories: false
-    # Do we need to remove the AntiXRayData/PlayerData/player file during purge process ?
+    # Do we need to remove the AntiXRayData/PlayerData/player file during purge process?
     removeAntiXRayFile: false
-    # Do we need to remove permissions ?
+    # Do we need to remove permissions?
     removePermissions: false
 Protection:
     # Enable some servers protection ( country based login, antibot )
@@ -395,7 +408,7 @@ Protection:
     countries:
     - 'US'
     - 'GB'
-    # Countries blacklisted automatically ( without any needed to enable protection )
+    # Countries blacklisted automatically (without any needed to enable protection)
     # PLEASE USE QUOTES!
     countriesBlacklist:
     - 'A1'

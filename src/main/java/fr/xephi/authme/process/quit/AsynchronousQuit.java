@@ -6,7 +6,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
@@ -23,7 +22,6 @@ public class AsynchronousQuit {
     protected final Player player;
     private final String name;
     private boolean isOp = false;
-    private boolean isFlying = false;
     private boolean needToChange = false;
     private boolean isKick = false;
 
@@ -63,13 +61,12 @@ public class AsynchronousQuit {
             database.updateSession(auth);
         }
 
-        if (LimboCache.getInstance().hasLimboPlayer(name)) {
-            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+        if (limbo != null) {
             if (limbo.getGroup() != null && !limbo.getGroup().isEmpty())
                 Utils.addNormal(player, limbo.getGroup());
             needToChange = true;
             isOp = limbo.getOperator();
-            isFlying = limbo.isFlying();
             if (limbo.getTimeoutTaskId() != null)
                 limbo.getTimeoutTaskId().cancel();
             if (limbo.getMessageTaskId() != null)
@@ -78,25 +75,37 @@ public class AsynchronousQuit {
         }
         if (Settings.isSessionsEnabled && !isKick) {
             if (Settings.getSessionTimeout != 0) {
-                BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
+                if (plugin.isEnabled()) {
+                    BukkitTask task = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 
-                    @Override
-                    public void run() {
-                        PlayerCache.getInstance().removePlayer(name);
-                        if (database.isLogged(name))
-                            database.setUnlogged(name);
-                        plugin.sessions.remove(name);
-                    }
+                        @Override
+                        public void run() {
+                            postLogout();
+                        }
 
-                }, Settings.getSessionTimeout * 20 * 60);
-                plugin.sessions.put(name, task);
+                    }, Settings.getSessionTimeout * 20 * 60);
+
+                    plugin.sessions.put(name, task);
+                } else {
+                    //plugin is disable we canno schedule more tasks so run it directly here
+                    postLogout();
+                }
             }
         } else {
             PlayerCache.getInstance().removePlayer(name);
             database.setUnlogged(name);
         }
 
-        AuthMePlayerListener.gameMode.remove(name);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, isFlying, needToChange));
+        plugin.realIp.remove(name);
+        if (plugin.isEnabled()) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
+        }
+    }
+
+    private void postLogout() {
+        PlayerCache.getInstance().removePlayer(name);
+        if (database.isLogged(name))
+            database.setUnlogged(name);
+        plugin.sessions.remove(name);
     }
 }

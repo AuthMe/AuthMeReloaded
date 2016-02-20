@@ -6,9 +6,9 @@ package fr.xephi.authme.command;
 public class CommandArgumentDescription {
 
     /**
-     * Argument label (one-word description of the argument).
+     * Argument name (one-word description of the argument).
      */
-    private final String label;
+    private final String name;
     /**
      * Argument description.
      */
@@ -21,23 +21,23 @@ public class CommandArgumentDescription {
     /**
      * Constructor.
      *
-     * @param label       The argument label.
+     * @param name        The argument name.
      * @param description The argument description.
      * @param isOptional  True if the argument is optional, false otherwise.
      */
-    public CommandArgumentDescription(String label, String description, boolean isOptional) {
-        this.label = label;
+    public CommandArgumentDescription(String name, String description, boolean isOptional) {
+        this.name = name;
         this.description = description;
         this.isOptional = isOptional;
     }
 
     /**
-     * Get the argument label.
+     * Get the argument name.
      *
-     * @return Argument label.
+     * @return Argument name.
      */
-    public String getLabel() {
-        return this.label;
+    public String getName() {
+        return this.name;
     }
 
     /**

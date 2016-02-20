@@ -1,13 +1,11 @@
 package fr.xephi.authme.permission;
 
-import com.nijiko.permissions.Group;
-import com.nijiko.permissions.PermissionHandler;
-import com.nijikokun.bukkit.Permissions.Permissions;
-import de.bananaco.bpermissions.api.ApiLayer;
-import de.bananaco.bpermissions.api.CalculableType;
-import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.util.CollectionUtils;
-import net.milkbowl.vault.permission.Permission;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
+
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.bukkit.Bukkit;
@@ -20,24 +18,25 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
+
+import de.bananaco.bpermissions.api.ApiLayer;
+import de.bananaco.bpermissions.api.CalculableType;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.util.CollectionUtils;
+import net.milkbowl.vault.permission.Permission;
 import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
 /**
+ * <p>
  * PermissionsManager.
- * <p/>
+ * </p><p>
  * A permissions manager, to manage and use various permissions systems.
  * This manager supports dynamic plugin hooking and various other features.
- * <p/>
+ * </p><p>
  * Written by Tim Visée.
- *
+ * </p>
  * @author Tim Visée, http://timvisee.com
  * @version 0.2.1
  */
@@ -67,10 +66,6 @@ public class PermissionsManager implements PermissionsService {
      * Essentials group manager instance.
      */
     private GroupManager groupManagerPerms;
-    /**
-     * Permissions manager instance for the legacy permissions system.
-     */
-    private PermissionHandler defaultPerms;
     /**
      * zPermissions service instance.
      */
@@ -213,20 +208,6 @@ public class PermissionsManager implements PermissionsService {
             System.out.println("[" + plugin.getName() + "] Error while hooking into Vault Permissions!");
         }
 
-        // Permissions, check if it's available
-        try {
-            Plugin testPerms = pm.getPlugin("Permissions");
-            if (testPerms != null) {
-                permsType = PermissionsSystemType.PERMISSIONS;
-                this.defaultPerms = ((Permissions) testPerms).getHandler();
-                System.out.println("[" + plugin.getName() + "] Hooked into Permissions!");
-                return PermissionsSystemType.PERMISSIONS;
-            }
-        } catch (Exception ex) {
-            // An error occurred, show a warning message
-            System.out.println("[" + plugin.getName() + "] Error while hooking into Permissions!");
-        }
-
         // No recognized permissions system found
         permsType = PermissionsSystemType.NONE;
         System.out.println("[" + plugin.getName() + "] No supported permissions system found! Permissions disabled!");
@@ -271,8 +252,7 @@ public class PermissionsManager implements PermissionsService {
         // Check if any known permissions system is enabling
         if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
             pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
-            pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
-            pluginName.equals("Permissions")) {
+            pluginName.equals("zPermissions") || pluginName.equals("Vault")) {
             this.log.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
             setup();
         }
@@ -291,8 +271,7 @@ public class PermissionsManager implements PermissionsService {
         // Is the WorldGuard plugin disabled
         if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
             pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
-            pluginName.equals("zPermissions") || pluginName.equals("Vault") ||
-            pluginName.equals("Permissions")) {
+            pluginName.equals("zPermissions") || pluginName.equals("Vault")) {
             this.log.info(pluginName + " plugin disabled, updating hooks!");
             setup();
         }
@@ -301,21 +280,25 @@ public class PermissionsManager implements PermissionsService {
 
 
     /**
-     * Check if the player has permission for the given permissions node. If no permissions system is used,
-     * the player has to be OP in order to have the permission.
+     * Check if the command sender has permission for the given permissions node. If no permissions system is used or
+     * if the sender is not a player (e.g. console user), the player has to be OP in order to have the permission.
      *
-     * @param player    The player.
+     * @param sender         The command sender.
      * @param permissionNode The permissions node to verify.
      *
-     * @return True if the player has the permission, false otherwise.
+     * @return True if the sender has the permission, false otherwise.
      */
-    public boolean hasPermission(Player player, PermissionNode permissionNode) {
-        return hasPermission(player, permissionNode, player.isOp());
+    public boolean hasPermission(CommandSender sender, PermissionNode permissionNode) {
+        return hasPermission(sender, permissionNode, sender.isOp());
     }
 
-    public boolean hasPermission(Player player, PermissionNode permissionNode, boolean def) {
-        return hasPermission(player, permissionNode.getNode(), def)
-            || hasPermission(player, permissionNode.getWildcardNode().getNode(), def);
+    public boolean hasPermission(CommandSender sender, PermissionNode permissionNode, boolean def) {
+        if (!(sender instanceof Player)) {
+            return def;
+        }
+
+        Player player = (Player) sender;
+        return hasPermission(player, permissionNode.getNode(), def);
     }
 
     public boolean hasPermission(Player player, Iterable<PermissionNode> nodes, boolean def) {
@@ -327,15 +310,17 @@ public class PermissionsManager implements PermissionsService {
         return true;
     }
 
-    public boolean hasPermission(Player player, CommandDescription command) {
+    public boolean hasPermission(CommandSender sender, CommandDescription command) {
         if (command.getCommandPermissions() == null
             || CollectionUtils.isEmpty(command.getCommandPermissions().getPermissionNodes())) {
             return true;
         }
 
         DefaultPermission defaultPermission = command.getCommandPermissions().getDefaultPermission();
-        boolean def = evaluateDefaultPermission(defaultPermission, player);
-        return hasPermission(player, command.getCommandPermissions().getPermissionNodes(), def);
+        boolean def = evaluateDefaultPermission(defaultPermission, sender);
+        return (sender instanceof Player)
+            ? hasPermission((Player) sender, command.getCommandPermissions().getPermissionNodes(), def)
+            : def;
     }
 
     public static boolean evaluateDefaultPermission(DefaultPermission defaultPermission, CommandSender sender) {
@@ -398,10 +383,6 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return vaultPerms.has(player, permsNode);
 
-            case PERMISSIONS:
-                // Permissions
-                return this.defaultPerms.has(player, permsNode);
-
             case NONE:
                 // Not hooked into any permissions system, return default
                 return def;
@@ -434,11 +415,6 @@ public class PermissionsManager implements PermissionsService {
             case VAULT:
                 // Vault
                 return vaultPerms.hasGroupSupport();
-
-            case PERMISSIONS:
-                // Legacy permissions
-                // FIXME: Supported by plugin, but addGroup and removeGroup haven't been implemented correctly yet!
-                return false;
 
             case NONE:
                 // Not hooked into any permissions system, return false
@@ -493,18 +469,6 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return Arrays.asList(vaultPerms.getPlayerGroups(player));
 
-            case PERMISSIONS:
-                // Permissions
-                // Create a list to put the groups in
-                List<String> groups = new ArrayList<>();
-
-                // Get the groups and add each to the list
-                for (Group group : this.defaultPerms.getGroups(player.getName()))
-                    groups.add(group.getName());
-
-                // Return the groups
-                return groups;
-
             case NONE:
                 // Not hooked into any permissions system, return an empty list
                 return new ArrayList<>();
@@ -532,7 +496,6 @@ public class PermissionsManager implements PermissionsService {
             case PERMISSIONS_EX:
             case PERMISSIONS_BUKKIT:
             case B_PERMISSIONS:
-            case PERMISSIONS: // FIXME: Is this correct for PERMISSIONS?
                 // Get the groups of the player
                 List<String> groups = getGroups(player);
 
@@ -612,10 +575,6 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return vaultPerms.playerInGroup(player, groupName);
 
-            case PERMISSIONS:
-                // Permissions
-                return this.defaultPerms.inGroup(player.getWorld().getName(), player.getName(), groupName);
-
             case NONE:
                 // Not hooked into any permissions system, return an empty list
                 return false;
@@ -672,11 +631,6 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
-
-            case PERMISSIONS:
-                // Permissions
-                // FIXME: Add this method!
-                //return this.defaultPerms.group
 
             case NONE:
                 // Not hooked into any permissions system, return false
@@ -758,11 +712,6 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 vaultPerms.playerRemoveGroup(player, groupName);
                 return true;
-
-            case PERMISSIONS:
-                // Permissions
-                // FIXME: Add this method!
-                //return this.defaultPerms.group
 
             case NONE:
                 // Not hooked into any permissions system, return false
@@ -852,11 +801,6 @@ public class PermissionsManager implements PermissionsService {
                 removeAllGroups(player);
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
-
-            case PERMISSIONS:
-                // Permissions
-                // FIXME: Add this method!
-                //return this.defaultPerms.group
 
             case NONE:
                 // Not hooked into any permissions system, return false

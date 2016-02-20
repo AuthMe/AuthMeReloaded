@@ -1,9 +1,10 @@
 package fr.xephi.authme.command;
 
-import java.util.List;
-
-import fr.xephi.authme.util.CollectionUtils;
+import com.google.common.collect.Lists;
 import fr.xephi.authme.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class CommandUtils {
 
@@ -23,35 +24,33 @@ public final class CommandUtils {
 
     /**
      * Provide a textual representation of a list of labels to show it as a command. For example, a list containing
-     * the items ["authme", "register", "player"] it will return "authme register player".
+     * the items ["authme", "register", "player"] will return "authme register player".
      *
      * @param labels The labels to format
+     *
      * @return The space-separated labels
      */
     public static String labelsToString(Iterable<String> labels) {
         return StringUtils.join(" ", labels);
     }
 
-    public static double getDifference(List<String> labels1, List<String> labels2, boolean fullCompare) {
-        // Make sure the other reference is correct
-        if (labels1 == null || labels2 == null) {
-            return -1;
+    public static String constructCommandPath(CommandDescription command) {
+        StringBuilder sb = new StringBuilder();
+        String prefix = "/";
+        for (CommandDescription ancestor : constructParentList(command)) {
+            sb.append(prefix).append(ancestor.getLabels().get(0));
+            prefix = " ";
         }
-
-        // Get the range to use
-        int range = Math.min(labels1.size(), labels2.size());
-
-        // Get and the difference
-        if (fullCompare) {
-            return StringUtils.getDifference(CommandUtils.labelsToString(labels1), CommandUtils.labelsToString(labels2));
-        }
-        return StringUtils.getDifference(
-            labelsToString(CollectionUtils.getRange(labels1, range - 1, 1)),
-            labelsToString(CollectionUtils.getRange(labels2, range - 1, 1)));
+        return sb.toString();
     }
 
-
-
-
-
+    public static List<CommandDescription> constructParentList(CommandDescription command) {
+        List<CommandDescription> commands = new ArrayList<>();
+        CommandDescription currentCommand = command;
+        while (currentCommand != null) {
+            commands.add(currentCommand);
+            currentCommand = currentCommand.getParent();
+        }
+        return Lists.reverse(commands);
+    }
 }

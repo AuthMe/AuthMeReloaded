@@ -5,26 +5,21 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- * <p>
- * This event is called when we need to compare or get an hash password, for set
- * a custom EncryptionMethod
- * </p>
- *
- * @author Xephi59
- * @version $Revision: 1.0 $
- * @see fr.xephi.authme.security.crypts.EncryptionMethod
+ * This event is called when we need to compare or hash a password for a player and allows
+ * third-party listeners to change the encryption method. This is typically
+ * done with the {@link fr.xephi.authme.security.HashAlgorithm#CUSTOM} setting.
  */
-public class PasswordEncryptionEvent extends Event {
+public class PasswordEncryptionEvent extends CustomEvent {
 
     private static final HandlerList handlers = new HandlerList();
-    private EncryptionMethod method = null;
-    private String playerName = "";
+    private EncryptionMethod method;
+    private String playerName;
 
     /**
-     * Constructor for PasswordEncryptionEvent.
+     * Constructor.
      *
-     * @param method     EncryptionMethod
-     * @param playerName String
+     * @param method The method used to encrypt the password
+     * @param playerName The name of the player
      */
     public PasswordEncryptionEvent(EncryptionMethod method, String playerName) {
         super(false);
@@ -33,46 +28,41 @@ public class PasswordEncryptionEvent extends Event {
     }
 
     /**
-     * Method getHandlerList.
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
      *
-     * @return HandlerList
+     * @return The list of handlers
      */
     public static HandlerList getHandlerList() {
         return handlers;
     }
 
-    /**
-     * Method getHandlers.
-     *
-     * @return HandlerList
-     */
     @Override
     public HandlerList getHandlers() {
         return handlers;
     }
 
     /**
-     * Method getMethod.
+     * Return the encryption method used to hash the password.
      *
-     * @return EncryptionMethod
+     * @return The encryption method
      */
     public EncryptionMethod getMethod() {
         return method;
     }
 
     /**
-     * Method setMethod.
+     * Set the encryption method to hash the password with.
      *
-     * @param method EncryptionMethod
+     * @param method The encryption method to use
      */
     public void setMethod(EncryptionMethod method) {
         this.method = method;
     }
 
     /**
-     * Method getPlayerName.
+     * Return the name of the player the event has been fired for.
      *
-     * @return String
+     * @return The player name
      */
     public String getPlayerName() {
         return playerName;

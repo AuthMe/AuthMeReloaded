@@ -1,66 +1,59 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
-/**
- */
-public class SetEmailCommand extends ExecutableCommand {
+import java.util.List;
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
+public class SetEmailCommand implements ExecutableCommand {
+
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        Messages m = plugin.getMessages();
-
+    public void executeCommand(final CommandSender sender, List<String> arguments,
+                               final CommandService commandService) {
         // Get the player name and email address
-        String playerName = commandArguments.get(0);
-        String playerEmail = commandArguments.get(1);
+        final String playerName = arguments.get(0);
+        final String playerEmail = arguments.get(1);
 
         // Validate the email address
-        if (!Settings.isEmailCorrect(playerEmail)) {
-            m.send(sender, MessageKey.INVALID_EMAIL);
-            return true;
+        if (!Utils.isEmailCorrect(playerEmail, commandService.getSettings())) {
+            commandService.send(sender, MessageKey.INVALID_EMAIL);
+            return;
         }
 
-        // Validate the user
-        PlayerAuth auth = plugin.database.getAuth(playerName.toLowerCase());
-        if (auth == null) {
-            m.send(sender, MessageKey.UNKNOWN_USER);
-            return true;
-        }
+        commandService.runTaskAsynchronously(new Runnable() {
+            @Override
+            public void run() {
+                // Validate the user
+                PlayerAuth auth = commandService.getDataSource().getAuth(playerName);
+                if (auth == null) {
+                    commandService.send(sender, MessageKey.UNKNOWN_USER);
+                    return;
+                } else if (commandService.getDataSource().isEmailStored(playerEmail)) {
+                    commandService.send(sender, MessageKey.EMAIL_ALREADY_USED_ERROR);
+                    return;
+                }
 
-        // Set the email address
-        auth.setEmail(playerEmail);
-        if (!plugin.database.updateEmail(auth)) {
-            m.send(sender, MessageKey.ERROR);
-            return true;
-        }
+                // Set the email address
+                auth.setEmail(playerEmail);
+                if (!commandService.getDataSource().updateEmail(auth)) {
+                    commandService.send(sender, MessageKey.ERROR);
+                    return;
+                }
 
-        // Update the player cache
-        if (PlayerCache.getInstance().getAuth(playerName.toLowerCase()) != null)
-            PlayerCache.getInstance().updatePlayer(auth);
+                // Update the player cache
+                if (PlayerCache.getInstance().getAuth(playerName) != null) {
+                    PlayerCache.getInstance().updatePlayer(auth);
+                }
 
-        // Show a status message
-        m.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
-        return true;
+                // Show a status message
+                commandService.send(sender, MessageKey.EMAIL_CHANGED_SUCCESS);
+
+            }
+        });
     }
 }

@@ -100,10 +100,10 @@ public enum AdminPermission implements PermissionNode {
      */
     RELOAD("authme.admin.reload"),
 
-	/**
-	 * Give access to all admin commands.
-	 */
-	ADMIN_ALL("authme.admin.*");
+    /**
+     * Permission to see the other accounts of the players that log in.
+     */
+    SEE_OTHER_ACCOUNTS("authme.admin.seeotheraccounts");
 
     /**
      * The permission node.
@@ -124,8 +124,4 @@ public enum AdminPermission implements PermissionNode {
         return node;
     }
 
-    @Override
-    public PermissionNode getWildcardNode() {
-        return ADMIN_ALL;
-    }
 }

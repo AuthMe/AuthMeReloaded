@@ -1,15 +1,16 @@
 package fr.xephi.authme.security.pbkdf2;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
 /**
- * Default PRF implementation based on standard javax.crypt.Mac mechanisms.
  * <p>
- * <hr />
+ * Default PRF implementation based on standard javax.crypt.Mac mechanisms.
+ * </p>
  * <p>
  * A free Java implementation of Password Based Key Derivation Function 2 as
  * defined by RFC 2898. Copyright (c) 2007 Matthias G&auml;rtner
@@ -63,12 +64,6 @@ public class MacBasedPRF implements PRF {
         }
     }
 
-    /**
-     * Constructor for MacBasedPRF.
-     *
-     * @param macAlgorithm String
-     * @param provider     String
-     */
     public MacBasedPRF(String macAlgorithm, String provider) {
         this.macAlgorithm = macAlgorithm;
         try {
@@ -79,34 +74,18 @@ public class MacBasedPRF implements PRF {
         }
     }
 
-    /**
-     * Method doFinal.
-     *
-     * @param M byte[]
-     *
-     * @return byte[] * @see fr.xephi.authme.security.pbkdf2.PRF#doFinal(byte[])
-     */
+    @Override
     public byte[] doFinal(byte[] M) {
         byte[] r = mac.doFinal(M);
         return r;
     }
 
-    /**
-     * Method getHLen.
-     *
-     * @return int * @see fr.xephi.authme.security.pbkdf2.PRF#getHLen()
-     */
+    @Override
     public int getHLen() {
         return hLen;
     }
 
-    /**
-     * Method init.
-     *
-     * @param P byte[]
-     *
-     * @see fr.xephi.authme.security.pbkdf2.PRF#init(byte[])
-     */
+    @Override
     public void init(byte[] P) {
         try {
             mac.init(new SecretKeySpec(P, macAlgorithm));

@@ -1,49 +1,41 @@
 package fr.xephi.authme.converter;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.datasource.SQLite;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import java.sql.SQLException;
 
 /**
+ * Mandatory migration from the deprecated flat file datasource to SQLite.
  */
-public class ForceFlatToSqlite implements Converter {
+public class ForceFlatToSqlite {
 
-    private final DataSource data;
+    private final DataSource database;
+    private final NewSetting settings;
 
-    /**
-     * Constructor for ForceFlatToSqlite.
-     *
-     * @param data   DataSource
-     * @param plugin AuthMe
-     */
-    public ForceFlatToSqlite(DataSource data, AuthMe plugin) {
-        this.data = data;
+    public ForceFlatToSqlite(DataSource database, NewSetting settings) {
+        this.database = database;
+        this.settings = settings;
     }
 
-    /**
-     * Method run.
-     *
-     * @see java.lang.Runnable#run()
-     */
-    @Override
-    public void run() {
-        DataSource sqlite = null;
+    public DataSource run() {
         try {
-            sqlite = new SQLite();
-            for (PlayerAuth auth : data.getAllAuths()) {
+            DataSource sqlite = new SQLite(settings);
+            for (PlayerAuth auth : database.getAllAuths()) {
                 auth.setRealName("Player");
                 sqlite.saveAuth(auth);
             }
-            Settings.setValue("DataSource.backend", "sqlite");
-            ConsoleLogger.info("Database successfully converted to sqlite !");
-        } catch (Exception e) {
-            ConsoleLogger.showError("An error appeared while trying to convert flatfile to sqlite ...");
-        } finally {
-            if (sqlite != null)
-                sqlite.close();
+            settings.setProperty(DatabaseSettings.BACKEND, DataSourceType.SQLITE);
+            settings.save();
+            ConsoleLogger.info("Database successfully converted to sqlite!");
+            return sqlite;
+        } catch (SQLException | ClassNotFoundException e) {
+            ConsoleLogger.logException("Could not convert from Flatfile to SQLite:", e);
         }
+        return null;
     }
 }

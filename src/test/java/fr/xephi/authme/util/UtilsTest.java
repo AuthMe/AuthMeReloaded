@@ -1,17 +1,22 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.GameMode;
+
+import fr.xephi.authme.settings.properties.EmailSettings;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -36,6 +41,7 @@ public class UtilsTest {
     public static void setUpMocks() {
         WrapperMock wrapperMock = WrapperMock.createInstance();
         authMeMock = wrapperMock.getAuthMe();
+        ConsoleLoggerTestInitializer.setupLogger();
     }
 
     @Before
@@ -48,35 +54,6 @@ public class UtilsTest {
 
         permissionsManagerMock = mock(PermissionsManager.class);
         when(authMeMock.getPermissionsManager()).thenReturn(permissionsManagerMock);
-    }
-
-    @Test
-    public void shouldForceSurvivalGameMode() {
-        // given
-        Player player = mock(Player.class);
-        given(permissionsManagerMock.hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)).willReturn(false);
-
-        // when
-        Utils.forceGM(player);
-
-        // then
-        verify(authMeMock).getPermissionsManager();
-        verify(player).setGameMode(GameMode.SURVIVAL);
-    }
-
-    @Test
-    public void shouldNotForceGameModeForUserWithBypassPermission() {
-        // given
-        Player player = mock(Player.class);
-        given(permissionsManagerMock.hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL)).willReturn(true);
-
-        // when
-        Utils.forceGM(player);
-
-        // then
-        verify(authMeMock).getPermissionsManager();
-        verify(permissionsManagerMock).hasPermission(player, PlayerPermission.BYPASS_FORCE_SURVIVAL);
-        verify(player, never()).setGameMode(any(GameMode.class));
     }
 
     @Test
@@ -94,6 +71,10 @@ public class UtilsTest {
     }
 
     @Test
+    @Ignore
+    // TODO ljacqu 20160206: Running this test with all others results in an error
+    // because Utils is used elsewhere. The AuthMe field is set in a static block
+    // so creating the WrapperMock here will have no effect
     public void shouldNotAddToNormalGroupIfPermManagerIsNull() {
         // given
         Settings.isPermissionCheckEnabled = true;
@@ -122,8 +103,96 @@ public class UtilsTest {
         assertThat(players, hasSize(2));
     }
 
+    // ----------------
+    // Tests for Utils#isEmailCorrect()
+    // ----------------
+    @Test
+    public void shouldAcceptEmailWithEmptyLists() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.EMPTY_LIST);
+
+        // when
+        boolean result = Utils.isEmailCorrect("test@example.org", settings);
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldAcceptEmailWithWhitelist() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
+            .willReturn(Arrays.asList("domain.tld", "example.com"));
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.EMPTY_LIST);
+
+        // when
+        boolean result = Utils.isEmailCorrect("TesT@Example.com", settings);
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldRejectEmailNotInWhitelist() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
+            .willReturn(Arrays.asList("domain.tld", "example.com"));
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.EMPTY_LIST);
+
+        // when
+        boolean result = Utils.isEmailCorrect("email@other-domain.abc", settings);
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
+    @Test
+    public void shouldAcceptEmailNotInBlacklist() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
+            .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
+
+        // when
+        boolean result = Utils.isEmailCorrect("sample@valid-name.tld", settings);
+
+        // then
+        assertThat(result, equalTo(true));
+    }
+
+    @Test
+    public void shouldRejectEmailInBlacklist() {
+        // given
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
+            .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
+
+        // when
+        boolean result = Utils.isEmailCorrect("sample@a-Test-name.tld", settings);
+
+        // then
+        assertThat(result, equalTo(false));
+    }
+
+    @Test
+    public void shouldRejectInvalidEmail() {
+        // given/when/then
+        assertThat(Utils.isEmailCorrect("invalidinput", mock(NewSetting.class)), equalTo(false));
+    }
+
+    @Test
+    public void shouldRejectDefaultEmail() {
+        // given/when/then
+        assertThat(Utils.isEmailCorrect("your@email.com", mock(NewSetting.class)), equalTo(false));
+    }
+
     // Note: This method is used through reflections
-    @SuppressWarnings("unused")
     public static Player[] onlinePlayersImpl() {
         return new Player[]{
             mock(Player.class), mock(Player.class)

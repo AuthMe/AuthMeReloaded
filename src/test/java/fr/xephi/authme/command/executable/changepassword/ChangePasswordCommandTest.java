@@ -1,12 +1,11 @@
 package fr.xephi.authme.command.executable.changepassword;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.ChangePasswordTask;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.Server;
@@ -17,14 +16,19 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static java.util.Arrays.asList;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.Matchers.anyInt;
-import static org.mockito.Mockito.*;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.eq;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link ChangePasswordCommand}.
@@ -32,20 +36,20 @@ import static org.mockito.Mockito.*;
 public class ChangePasswordCommandTest {
 
     private WrapperMock wrapperMock;
-    private Messages messagesMock;
     private PlayerCache cacheMock;
+    private CommandService commandService;
 
     @Before
     public void setUpMocks() {
         wrapperMock = WrapperMock.createInstance();
-        messagesMock = wrapperMock.getMessages();
         cacheMock = wrapperMock.getPlayerCache();
+        commandService = mock(CommandService.class);
 
+        when(commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).thenReturn(2);
+        when(commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).thenReturn(50);
         // Only allow passwords with alphanumerical characters for the test
-        Settings.getPassRegex = "[a-zA-Z0-9]+";
-        Settings.getPasswordMinLen = 2;
-        Settings.passwordMaxLength = 50;
-        Settings.unsafePasswords = Collections.EMPTY_LIST;
+        when(commandService.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).thenReturn("[a-zA-Z0-9]+");
+        when(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).thenReturn(Collections.EMPTY_LIST);
     }
 
     @Test
@@ -53,13 +57,11 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        CommandParts arguments = mock(CommandParts.class);
 
         // when
-        command.executeCommand(sender, newParts(), arguments);
+        command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
-        verify(arguments, never()).get(anyInt());
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -70,10 +72,10 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, newParts(), new CommandParts("pass"));
+        command.executeCommand(sender, Arrays.asList("pass", "pass"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.NOT_LOGGED_IN);
+        verify(commandService).send(sender, MessageKey.NOT_LOGGED_IN);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -84,10 +86,10 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, newParts(), newParts("old123", "!pass"));
+        command.executeCommand(sender, Arrays.asList("old123", "!pass"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
+        verify(commandService).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -99,10 +101,10 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, newParts(), newParts("old_", "Tester"));
+        command.executeCommand(sender, Arrays.asList("old_", "Tester"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
+        verify(commandService).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -111,13 +113,13 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("abc12", true);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        Settings.passwordMaxLength = 3;
+        given(commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(3);
 
         // when
-        command.executeCommand(sender, newParts(), newParts("12", "test"));
+        command.executeCommand(sender, Arrays.asList("12", "test"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
+        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -126,13 +128,13 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("abc12", true);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        Settings.getPasswordMinLen = 7;
+        given(commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(7);
 
         // when
-        command.executeCommand(sender, newParts(), newParts("oldverylongpassword", "tester"));
+        command.executeCommand(sender, Arrays.asList("oldverylongpassword", "tester"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
+        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -141,13 +143,14 @@ public class ChangePasswordCommandTest {
         // given
         CommandSender sender = initPlayerWithName("player", true);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        Settings.unsafePasswords = asList("test", "abc123");
+        given(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS))
+            .willReturn(Arrays.asList("test", "abc123"));
 
         // when
-        command.executeCommand(sender, newParts(), newParts("oldpw", "abc123"));
+        command.executeCommand(sender, Arrays.asList("oldpw", "abc123"), commandService);
 
         // then
-        verify(messagesMock).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
+        verify(commandService).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
         assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
@@ -158,12 +161,12 @@ public class ChangePasswordCommandTest {
         ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
-        command.executeCommand(sender, newParts(), newParts("abc123", "abc123"));
+        command.executeCommand(sender, Arrays.asList("abc123", "abc123"), commandService);
 
         // then
-        verify(messagesMock, never()).send(eq(sender), any(MessageKey.class));
+        verify(commandService, never()).send(eq(sender), any(MessageKey.class));
         ArgumentCaptor<ChangePasswordTask> taskCaptor = ArgumentCaptor.forClass(ChangePasswordTask.class);
-        verify(wrapperMock.getScheduler()).runTaskAsynchronously(any(AuthMe.class), taskCaptor.capture());
+        verify(commandService).runTaskAsynchronously(taskCaptor.capture());
         ChangePasswordTask task = taskCaptor.getValue();
         assertThat((String) ReflectionTestUtils.getFieldValue(ChangePasswordTask.class, task, "newPassword"),
             equalTo("abc123"));
@@ -174,10 +177,6 @@ public class ChangePasswordCommandTest {
         when(player.getName()).thenReturn(name);
         when(cacheMock.isAuthenticated(name)).thenReturn(loggedIn);
         return player;
-    }
-
-    private static CommandParts newParts(String... parts) {
-        return new CommandParts(Arrays.asList(parts));
     }
 
 }

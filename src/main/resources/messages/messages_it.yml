@@ -1,3 +1,4 @@
+#Lingua Italiana creata da Maxetto e sgdc3.
 unknown_user: 'L''utente non è presente nel database.'
 unsafe_spawn: 'Il tuo punto di disconnessione risulta ostruito o insicuro, sei stato teletrasportato al punto di rigenerazione!'
 not_logged_in: '&cNon hai ancora eseguito l''autenticazione!'
@@ -37,7 +38,7 @@ name_len: '&cIl tuo nome utente è troppo corto o troppo lungo!'
 regex: '&cIl tuo nome utente contiene caratteri non consentiti. I caratteri consentiti sono: REG_EX'
 add_email: '&cPer poter recuperare la password in futuro, aggiungi un indirizzo email al tuo account con il comando: "/email add <tuaEmail> <confermaEmail>"'
 recovery_email: '&cHai dimenticato la tua password? Puoi recuperarla eseguendo il comando: "/email recovery <tuaEmail>"'
-usage_captcha: '&cAbbiamo bisogno che tu inserisca un captcha, perfavore scrivi: "/captcha THE_CAPTCHA"'
+usage_captcha: '&cAbbiamo bisogno che tu inserisca un captcha, perfavore scrivi: "/captcha <theCaptcha>"'
 wrong_captcha: '&cCaptcha sbagliato, perfavore riprova con il comando: "/captcha THE_CAPTCHA"'
 valid_captcha: '&cIl captcha inserito è valido!'
 kick_forvip: '&cUn utente VIP è entrato mentre il server era pieno e ha preso il tuo posto!'
@@ -56,3 +57,7 @@ email_exists: 'Il tuo account ha già un''indirizzo email configurato. Se vuoi, 
 country_banned: 'Il tuo paese è bandito da questo server!'
 antibot_auto_enabled: 'Il servizio di AntiBot è stato automaticamente abilitato a seguito delle numerose connessioni!'
 antibot_auto_disabled: "Il servizio di AntiBot è stato automaticamente disabilitato dopo %m Minuti, sperando che l'attacco sia finito!"
+kick_antibot: 'Il servizio di AntiBot è attualmente attivo! Devi aspettare qualche minuto prima di poter entrare nel server.'
+two_factor_create: '&2Il tuo codice segreto è: &f%code&n&2Puoi anche scannerizzare il codice QR da qui: &f%url'
+# TODO email_already_used: '&4The email address is already being used'
+# TODO not_owner_error: 'You are not the owner of this account. Please try another name!'

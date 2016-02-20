@@ -1,15 +1,14 @@
 package fr.xephi.authme.command;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.util.CollectionUtils;
-import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import fr.xephi.authme.util.StringUtils;
 
 /**
  * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
@@ -18,77 +17,74 @@ import java.util.Set;
 public class CommandHandler {
 
     /**
-     * The threshold for assuming an existing command. If the difference is below this value, we assume
-     * that the user meant the similar command and we will run it.
-     */
-    private static final double ASSUME_COMMAND_THRESHOLD = 0.12;
-
-    /**
      * The threshold for suggesting a similar command. If the difference is below this value, we will
      * ask the player whether he meant the similar command.
      */
     private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
 
-    private final Set<CommandDescription> commands;
+    private final CommandService commandService;
 
     /**
      * Create a command handler.
-     *
-     * @param commands The collection of available AuthMe commands
+     * 
+     * @param commandService The CommandService instance
      */
-    public CommandHandler(Set<CommandDescription> commands) {
-        this.commands = commands;
+    public CommandHandler(CommandService commandService) {
+        this.commandService = commandService;
     }
 
     /**
      * Map a command that was invoked to the proper {@link CommandDescription} or return a useful error
      * message upon failure.
      *
-     * @param sender             The command sender (Bukkit).
+     * @param sender             The command sender.
      * @param bukkitCommandLabel The command label (Bukkit).
      * @param bukkitArgs         The command arguments (Bukkit).
      *
      * @return True if the command was executed, false otherwise.
      */
     public boolean processCommand(CommandSender sender, String bukkitCommandLabel, String[] bukkitArgs) {
-        List<String> commandArgs = skipEmptyArguments(bukkitArgs);
-        // Add the Bukkit command label to the front so we get a list like [authme, register, pass, passConfirm]
-        commandArgs.add(0, bukkitCommandLabel);
+        // Add the Bukkit command label to the front so we get a list like [authme, register, bobby, mysecret]
+        List<String> parts = skipEmptyArguments(bukkitArgs);
+        parts.add(0, bukkitCommandLabel);
 
-        // TODO: remove commandParts
-        CommandParts commandReference = new CommandParts(commandArgs);
+        FoundCommandResult result = commandService.mapPartsToCommand(sender, parts);
+        handleCommandResult(sender, result);
+        return !FoundResultStatus.MISSING_BASE_COMMAND.equals(result.getResultStatus());
+    }
 
-        // Get a suitable command for this reference, and make sure it isn't null
-        FoundCommandResult result = findCommand(commandReference);
-        if (result == null) {
-            // TODO ljacqu 20151204: Log more information to the console (bukkitCommandLabel)
-            sender.sendMessage(ChatColor.DARK_RED + "Failed to parse " + AuthMe.getPluginName() + " command!");
-            return false;
+    private void handleCommandResult(CommandSender sender, FoundCommandResult result) {
+        switch (result.getResultStatus()) {
+            case SUCCESS:
+                executeCommand(sender, result);
+                break;
+            case MISSING_BASE_COMMAND:
+                sender.sendMessage(ChatColor.DARK_RED + "Failed to parse " + AuthMe.getPluginName() + " command!");
+                break;
+            case INCORRECT_ARGUMENTS:
+                sendImproperArgumentsMessage(sender, result);
+                break;
+            case UNKNOWN_LABEL:
+                sendUnknownCommandMessage(sender, result);
+                break;
+            case NO_PERMISSION:
+                sendPermissionDeniedError(sender);
+                break;
+            default:
+                throw new IllegalStateException("Unknown result status '" + result.getResultStatus() + "'");
         }
+    }
 
-
-        String baseCommand = commandArgs.get(0);
-
-        // Make sure the difference between the command reference and the actual command isn't too big
-        final double commandDifference = result.getDifference();
-        if (commandDifference <= ASSUME_COMMAND_THRESHOLD) {
-
-            // Show a message when the command handler is assuming a command
-            if (commandDifference > 0) {
-                sendCommandAssumptionMessage(sender, result, commandReference);
-            }
-
-            if (!result.hasPermission(sender)) {
-                sender.sendMessage(ChatColor.DARK_RED + "You don't have permission to use this command!");
-            } else if (!result.hasProperArguments()) {
-                sendImproperArgumentsMessage(sender, result, commandReference, baseCommand);
-            } else {
-                return result.executeCommand(sender);
-            }
-        } else {
-            sendUnknownCommandMessage(sender, commandDifference, result, baseCommand);
-        }
-        return true;
+    /**
+     * Execute the command for the given command sender.
+     *
+     * @param sender The sender which initiated the command
+     * @param result The mapped result
+     */
+    private void executeCommand(CommandSender sender, FoundCommandResult result) {
+        ExecutableCommand executableCommand = result.getCommandDescription().getExecutableCommand();
+        List<String> arguments = result.getArguments();
+        executableCommand.executeCommand(sender, arguments, commandService);
     }
 
     /**
@@ -98,7 +94,7 @@ public class CommandHandler {
      * @return List of the items that are not empty
      */
     private static List<String> skipEmptyArguments(String[] args) {
-        List<String> cleanArguments = new ArrayList<>(args.length);
+        List<String> cleanArguments = new ArrayList<>();
         for (String argument : args) {
             if (!StringUtils.isEmpty(argument)) {
                 cleanArguments.add(argument);
@@ -107,131 +103,46 @@ public class CommandHandler {
         return cleanArguments;
     }
 
-
-    private static CommandDescription mapToBase(String commandLabel) {
-        for (CommandDescription command : CommandInitializer.getBaseCommands()) {
-            if (command.getLabels().contains(commandLabel)) {
-                return command;
-            }
-        }
-        return null;
-    }
-
     /**
-     * Find the best suitable command for the specified reference.
-     *
-     * @param queryReference The query reference to find a command for.
-     *
-     * @return The command found, or null.
-     */
-    public FoundCommandResult findCommand(CommandParts queryReference) {
-        // Make sure the command reference is valid
-        if (queryReference.getCount() <= 0)
-            return null;
-
-        for (CommandDescription commandDescription : commands) {
-            // Check whether there's a command description available for the
-            // current command
-            if (!commandDescription.isSuitableLabel(queryReference))
-                continue;
-
-            // Find the command reference, return the result
-            return commandDescription.findCommand(queryReference);
-        }
-
-        // No applicable command description found, return false
-        return null;
-    }
-
-    /**
-     * Find the best suitable command for the specified reference.
-     *
-     * @param commandParts The query reference to find a command for.
-     *
-     * @return The command found, or null.
-     */
-    private CommandDescription findCommand(List<String> commandParts) {
-        // Make sure the command reference is valid
-        if (commandParts.isEmpty()) {
-            return null;
-        }
-
-        // TODO ljacqu 20151129: Since we only use .contains() on the CommandDescription#labels after init, change
-        // the type to set for faster lookup
-        Iterable<CommandDescription> commandsToScan = CommandInitializer.getBaseCommands();
-        CommandDescription result = null;
-        for (String label : commandParts) {
-            result = findLabel(label, commandsToScan);
-            if (result == null) {
-                return null;
-            }
-            commandsToScan = result.getChildren();
-        }
-        return result;
-    }
-
-    private static CommandDescription findLabel(String label, Iterable<CommandDescription> commands) {
-        if (commands == null) {
-            return null;
-        }
-        for (CommandDescription command : commands) {
-            if (command.getLabels().contains(label)) { // TODO ljacqu should be case-insensitive
-                return command;
-            }
-        }
-        return null;
-    }
-
-    /**
-     * Show an "unknown command" to the user and suggests an existing command if its similarity is within
+     * Show an "unknown command" message to the user and suggest an existing command if its similarity is within
      * the defined threshold.
      *
      * @param sender The command sender
-     * @param commandDifference The difference between the invoked command and the existing one
      * @param result The command that was found during the mapping process
-     * @param baseCommand The base command (TODO: This is probably already in FoundCommandResult)
      */
-    private static void sendUnknownCommandMessage(CommandSender sender, double commandDifference,
-                                                  FoundCommandResult result, String baseCommand) {
-        CommandParts commandReference = result.getCommandReference();
+    private static void sendUnknownCommandMessage(CommandSender sender, FoundCommandResult result) {
         sender.sendMessage(ChatColor.DARK_RED + "Unknown command!");
 
-
         // Show a command suggestion if available and the difference isn't too big
-        if (commandDifference < SUGGEST_COMMAND_THRESHOLD && result.getCommandDescription() != null) {
-            sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD + "/"
-                + result.getCommandDescription().getCommandReference(commandReference) + ChatColor.YELLOW + "?");
+        if (result.getDifference() <= SUGGEST_COMMAND_THRESHOLD && result.getCommandDescription() != null) {
+            sender.sendMessage(ChatColor.YELLOW + "Did you mean " + ChatColor.GOLD
+                + CommandUtils.constructCommandPath(result.getCommandDescription()) + ChatColor.YELLOW + "?");
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + baseCommand + " help"
-            + ChatColor.YELLOW + " to view help.");
+        sender.sendMessage(ChatColor.YELLOW + "Use the command " + ChatColor.GOLD + "/" + result.getLabels().get(0)
+            + " help" + ChatColor.YELLOW + " to view help.");
     }
 
-    private static void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result,
-                                                     CommandParts commandReference, String baseCommand) {
-        // Get the command and the suggested command reference
-        List<String> suggestedCommandReference =
-            result.getCommandDescription().getCommandReference(commandReference).getList();
-        List<String> helpCommandReference = CollectionUtils.getRange(suggestedCommandReference, 1);
-
-        // Show the invalid arguments warning
-        sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
+    private void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result) {
+        CommandDescription command = result.getCommandDescription();
+        if (!commandService.getPermissionsManager().hasPermission(sender, command)) {
+            sendPermissionDeniedError(sender);
+            return;
+        }
 
         // Show the command argument help
-        HelpProvider.showHelp(sender, commandReference, new CommandParts(suggestedCommandReference),
-            true, false, true, false, false, false);
+        sender.sendMessage(ChatColor.DARK_RED + "Incorrect command arguments!");
+        commandService.outputHelp(sender, result, HelpProvider.SHOW_ARGUMENTS);
 
-        // Show the command to use for detailed help
-        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE + "/" + baseCommand
-            + " help " + CommandUtils.labelsToString(helpCommandReference));
+        List<String> labels = result.getLabels();
+        String childLabel = labels.size() >= 2 ? labels.get(1) : "";
+        sender.sendMessage(ChatColor.GOLD + "Detailed help: " + ChatColor.WHITE
+            + "/" + labels.get(0) + " help " + childLabel);
     }
 
-    private static void sendCommandAssumptionMessage(CommandSender sender, FoundCommandResult result,
-                                                     CommandParts commandReference) {
-        List<String> assumedCommandParts =
-            result.getCommandDescription().getCommandReference(commandReference).getList();
-
-        sender.sendMessage(ChatColor.DARK_RED + "Unknown command, assuming " + ChatColor.GOLD + "/"
-            + CommandUtils.labelsToString(assumedCommandParts) + ChatColor.DARK_RED + "!");
+    // TODO ljacqu 20151212: Remove me once I am a MessageKey
+    private static void sendPermissionDeniedError(CommandSender sender) {
+        sender.sendMessage(ChatColor.DARK_RED + "You don't have permission to use this command!");
     }
+
 }

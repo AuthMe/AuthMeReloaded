@@ -6,16 +6,6 @@ package fr.xephi.authme.permission;
 public enum PlayerPermission implements PermissionNode {
 
     /**
-     * Permission node to bypass AntiBot protection.
-     */
-    BYPASS_ANTIBOT("authme.player.bypassantibot"),
-
-    /**
-     * Permission node to identify VIP users.
-     */
-    IS_VIP("authme.player.vip"),
-
-    /**
      * Command permission to login.
      */
     LOGIN("authme.player.login"),
@@ -65,25 +55,10 @@ public enum PlayerPermission implements PermissionNode {
      */
     CAN_LOGIN_BE_FORCED("authme.player.canbeforced"),
 
-    /**
-     * Permission for users to bypass force-survival mode.
-     */
-    BYPASS_FORCE_SURVIVAL("authme.player.bypassforcesurvival"),
-
-    /**
-     * Permission for users to allow two accounts.
-     */
-    ALLOW_MULTIPLE_ACCOUNTS("authme.player.allow2accounts"),
-
-    /**
-     * Permission for user to see other accounts.
-     */
-    SEE_OTHER_ACCOUNTS("authme.player.seeotheraccounts"),
-
 	/**
-	 * Permission to use all player (non-admin) commands.
+	 * Permission to use to see own other accounts.
 	 */
-	PLAYER_ALL("authme.player.*");
+	SEE_OWN_ACCOUNTS("authme.player.seeownaccounts");
 
     /**
      * The permission node.
@@ -104,8 +79,4 @@ public enum PlayerPermission implements PermissionNode {
         return node;
     }
 
-    @Override
-    public PermissionNode getWildcardNode() {
-        return PLAYER_ALL;
-    }
 }

@@ -1,7 +1,6 @@
 #       Korean translate by wolfwork        #
 #           wolfdate25@gmail.com            #
 #         16.08.2014 Thanks for use         #
-
 unknown_user: '&f사용자가 데이터베이스에 존재하지 않습니다'
 unsafe_spawn: '&f당신이 종료한 위치는 안전하지 않았습니다, 세계의 소환지점으로 이동합니다'
 not_logged_in: '&c접속되어있지 않습니다!'
@@ -12,8 +11,6 @@ unregistered: '&c성공적으로 탈퇴했습니다!'
 reg_disabled: '&c가입이 비활성화 되어있습니다'
 valid_session: '&c세션 로그인'
 login: '&c성공적인 접속입니다!'
-password_error_nick: '&fYou can''t use your name as password'
-password_error_unsafe: '&fYou can''t use unsafe passwords'
 vb_nonActiv: '&f당신의 계정은 아직 활성화되어있지 않습니다, 당신의 이메일을 확인해보세요!'
 user_regged: '&c사용자이름은 이미 가입했습니다'
 usage_reg: '&c사용법: /register 비밀번호 비밀번호확인'
@@ -60,3 +57,9 @@ email_exists: '[AuthMe] 당신의 계정에 이미 이메일이 존재합니다.
 country_banned: '당신의 국가는 이 서버에서 차단당했습니다'
 antibot_auto_enabled: '[AuthMe] 봇차단모드가 연결 개수 때문에 자동적으로 활성화됩니다!'
 antibot_auto_disabled: '[AuthMe] 봇차단모드가 %m 분 후에 자동적으로 비활성화됩니다'
+# TODO email_already_used: '&4The email address is already being used'
+# TODO password_error_nick: '&cYou can''t use your name as password, please choose another one...'
+# TODO password_error_unsafe: '&cThe chosen password isn''t safe, please choose another one...'
+# TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+# TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
+# TODO not_owner_error: 'You are not the owner of this account. Please try another name!'

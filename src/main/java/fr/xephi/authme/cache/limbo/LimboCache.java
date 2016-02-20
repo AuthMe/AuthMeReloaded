@@ -4,11 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.backup.DataFileCache;
 import fr.xephi.authme.cache.backup.JsonCache;
-import fr.xephi.authme.events.ResetInventoryEvent;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.Settings;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -56,10 +52,8 @@ public class LimboCache {
     public void addLimboPlayer(Player player) {
         String name = player.getName().toLowerCase();
         Location loc = player.getLocation();
-        GameMode gameMode = player.getGameMode();
         boolean operator = false;
         String playerGroup = "";
-        boolean flying = false;
 
         // Get the permissions manager, and make sure it's valid
         PermissionsManager permsMan = this.plugin.getPermissionsManager();
@@ -72,35 +66,20 @@ public class LimboCache {
             if (cache != null) {
                 playerGroup = cache.getGroup();
                 operator = cache.getOperator();
-                flying = cache.isFlying();
             }
         } else {
             operator = player.isOp();
-            flying = player.isFlying();
 
             // Check whether groups are supported
             if (permsMan.hasGroupSupport())
                 playerGroup = permsMan.getPrimaryGroup(player);
         }
 
-        if (Settings.isForceSurvivalModeEnabled) {
-            if (Settings.isResetInventoryIfCreative && gameMode == GameMode.CREATIVE) {
-                ResetInventoryEvent event = new ResetInventoryEvent(player);
-                Bukkit.getServer().getPluginManager().callEvent(event);
-                if (!event.isCancelled()) {
-                    player.getInventory().clear();
-                    player.sendMessage("Your inventory has been cleaned!");
-                }
-            }
-            if (gameMode == GameMode.CREATIVE) {
-                flying = false;
-            }
-            gameMode = GameMode.SURVIVAL;
-        }
         if (player.isDead()) {
             loc = plugin.getSpawnLocation(player);
         }
-        cache.put(name, new LimboPlayer(name, loc, gameMode, operator, playerGroup, flying));
+
+        cache.put(name, new LimboPlayer(name, loc, operator, playerGroup));
     }
 
     /**

@@ -4,8 +4,7 @@ import net.ricecode.similarity.LevenshteinDistanceStrategy;
 import net.ricecode.similarity.StringSimilarityService;
 import net.ricecode.similarity.StringSimilarityServiceImpl;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.File;
 import java.util.Arrays;
 
 /**
@@ -39,12 +38,12 @@ public final class StringUtils {
     }
 
     /**
-     * Returns whether the given string contains any of the provided elements.
+     * Return whether the given string contains any of the provided elements.
      *
-     * @param str    the string to analyze
-     * @param pieces the items to check the string for
+     * @param str    The string to analyze
+     * @param pieces The items to check the string for
      *
-     * @return true if the string contains at least one of the items
+     * @return True if the string contains at least one of the items
      */
     public static boolean containsAny(String str, String... pieces) {
         if (str == null) {
@@ -62,21 +61,21 @@ public final class StringUtils {
      * Null-safe method for checking whether a string is empty. Note that the string
      * is trimmed, so this method also considers a string with whitespace as empty.
      *
-     * @param str the string to verify
+     * @param str The string to verify
      *
-     * @return true if the string is empty, false otherwise
+     * @return True if the string is empty, false otherwise
      */
     public static boolean isEmpty(String str) {
         return str == null || str.trim().isEmpty();
     }
 
     /**
-     * Joins a list of elements into a single string with the specified delimiter.
+     * Join a list of elements into a single string with the specified delimiter.
      *
-     * @param delimiter the delimiter to use
-     * @param elements  the elements to join
+     * @param delimiter The delimiter to use
+     * @param elements  The elements to join
      *
-     * @return a new String that is composed of the elements separated by the delimiter
+     * @return A new String that is composed of the elements separated by the delimiter
      */
     public static String join(String delimiter, Iterable<String> elements) {
         if (delimiter == null) {
@@ -97,34 +96,15 @@ public final class StringUtils {
     }
 
     /**
-     * Joins a list of elements into a single string with the specified delimiter.
+     * Join a list of elements into a single string with the specified delimiter.
      *
-     * @param delimiter the delimiter to use
-     * @param elements  the elements to join
+     * @param delimiter The delimiter to use
+     * @param elements  The elements to join
      *
-     * @return a new String that is composed of the elements separated by the delimiter
+     * @return A new String that is composed of the elements separated by the delimiter
      */
     public static String join(String delimiter, String... elements) {
         return join(delimiter, Arrays.asList(elements));
-    }
-
-    /**
-     * Get a full stack trace of an exception as a string.
-     *
-     * @param exception The exception.
-     *
-     * @return Stack trace as a string.
-     */
-    public static String getStackTrace(Exception exception) {
-        // Create a string and print writer to print the stack trace into
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-
-        // Print the stack trace into the print writer
-        exception.printStackTrace(printWriter);
-
-        // Return the result as a string
-        return stringWriter.toString();
     }
 
     /**
@@ -136,6 +116,17 @@ public final class StringUtils {
      */
     public static String formatException(Throwable th) {
         return "[" + th.getClass().getSimpleName() + "]: " + th.getMessage();
+    }
+
+    /**
+     * Construct a file path from the given elements, i.e. separate the given elements by the file separator.
+     *
+     * @param elements The elements to create a path with
+     *
+     * @return The created path
+     */
+    public static String makePath(String... elements) {
+        return join(File.separator, elements);
     }
 
 }

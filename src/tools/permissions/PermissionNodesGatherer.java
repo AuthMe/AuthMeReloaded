@@ -3,6 +3,7 @@ package permissions;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PlayerPermission;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import utils.FileUtils;
 import utils.ToolsConstants;
 
@@ -53,8 +54,13 @@ public class PermissionNodesGatherer {
      */
     public Map<String, String> gatherNodesWithJavaDoc() {
         Map<String, String> result = new TreeMap<>();
+        result.put("authme.admin.*", "Give access to all admin commands.");
+        result.put("authme.player.*", "Permission to use all player (non-admin) commands.");
+        // TODO ljacqu 20160109: Add authme.player.email manual description?
+
         addDescriptionsForClass(PlayerPermission.class, result);
         addDescriptionsForClass(AdminPermission.class, result);
+        addDescriptionsForClass(PlayerStatePermission.class, result);
         return result;
     }
 
@@ -89,7 +95,7 @@ public class PermissionNodesGatherer {
      * Return the Java source code for the given implementation of {@link PermissionNode}.
      *
      * @param clazz The clazz to the get the source for
-     * @param <T> The concrete class
+     * @param <T> The concrete type
      * @return Source code of the file
      */
     private static <T extends Enum<T> & PermissionNode> String getSourceForClass(Class<T> clazz) {

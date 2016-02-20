@@ -7,3 +7,10 @@ general:
 test:
   override:
     - mvn clean install -B
+  post:
+    - cp ./target/AuthMe-*-SNAPSHOT-spigot.jar $CIRCLE_ARTIFACTS
+    - cp ./target/AuthMe-*-SNAPSHOT-legacy.jar $CIRCLE_ARTIFACTS
+    - cp ./target/AuthMe-*-SNAPSHOT-spigot.jar $CIRCLE_ARTIFACTS/AuthMe.jar
+notify:
+  webhooks:
+    - url: https://webhooks.gitter.im/e/7b92ac1a1741748b26bf

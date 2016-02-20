@@ -1,45 +1,33 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.permission.PlayerPermission;
-import org.bukkit.Bukkit;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
+ * Forces the login of a player, i.e. logs the player in without the need of a (correct) password.
  */
-public class ForceLoginCommand extends ExecutableCommand {
+public class ForceLoginCommand implements ExecutableCommand {
 
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
+    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // Get the player query
-        String playerName = sender.getName();
-        if (commandArguments.getCount() >= 1)
-            playerName = commandArguments.get(0);
+        String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
-        // Command logic
-        try {
-            @SuppressWarnings("deprecation")
-            Player player = Bukkit.getPlayer(playerName);
-            if (player == null || !player.isOnline()) {
-                sender.sendMessage("Player needs to be online!");
-                return true;
-            }
-            if (!plugin.getPermissionsManager().hasPermission(player, PlayerPermission.CAN_LOGIN_BE_FORCED)) {
-                sender.sendMessage("You cannot force login for the player " + playerName + "!");
-                return true;
-            }
-            plugin.getManagement().performLogin(player, "dontneed", true);
+        Player player = Utils.getPlayer(playerName);
+        if (player == null || !player.isOnline()) {
+            sender.sendMessage("Player needs to be online!");
+        } else if (!commandService.getPermissionsManager()
+            .hasPermission(player, PlayerPermission.CAN_LOGIN_BE_FORCED)) {
+            sender.sendMessage("You cannot force login for the player " + playerName + "!");
+        } else {
+            commandService.getManagement().performLogin(player, "dontneed", true);
             sender.sendMessage("Force Login for " + playerName + " performed!");
-        } catch (Exception e) {
-            sender.sendMessage("An error occurred while trying to get that player!");
         }
-
-        return true;
     }
 }

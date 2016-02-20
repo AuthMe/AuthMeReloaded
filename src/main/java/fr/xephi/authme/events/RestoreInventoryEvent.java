@@ -1,52 +1,60 @@
 package fr.xephi.authme.events;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.Cancellable;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 /**
- * This event restore the inventory.
- *
- * @author Xephi59
- * @version $Revision: 1.0 $
+ * This event is fired when the inventory of a player is restored
+ * (the inventory data is no longer hidden from the user).
  */
-public class RestoreInventoryEvent extends CustomEvent {
+public class RestoreInventoryEvent extends CustomEvent implements Cancellable {
 
-    private Player player;
+    private static final HandlerList handlers = new HandlerList();
+    private final Player player;
+    private boolean isCancelled;
 
     /**
-     * Constructor for RestoreInventoryEvent.
+     * Constructor.
      *
-     * @param player Player
+     * @param player The player
      */
     public RestoreInventoryEvent(Player player) {
         this.player = player;
     }
 
     /**
-     * Constructor for RestoreInventoryEvent.
-     *
-     * @param player Player
-     * @param async  boolean
-     */
-    public RestoreInventoryEvent(Player player, boolean async) {
-        super(async);
-        this.player = player;
-    }
-
-    /**
-     * Method getPlayer.
+     * Return the player whose inventory will be restored.
      *
      * @return Player
      */
     public Player getPlayer() {
-        return this.player;
+        return player;
+    }
+
+    @Override
+    public boolean isCancelled() {
+        return isCancelled;
+    }
+
+    @Override
+    public void setCancelled(boolean isCancelled) {
+        this.isCancelled = isCancelled;
     }
 
     /**
-     * Method setPlayer.
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
      *
-     * @param player Player
+     * @return The list of handlers
      */
-    public void setPlayer(Player player) {
-        this.player = player;
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
 }

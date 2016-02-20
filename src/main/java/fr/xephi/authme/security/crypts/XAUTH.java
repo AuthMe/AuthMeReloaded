@@ -1,19 +1,12 @@
 package fr.xephi.authme.security.crypts;
 
-import java.security.NoSuchAlgorithmException;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.Usage;
 
-/**
- */
-public class XAUTH implements EncryptionMethod {
+@Recommendation(Usage.RECOMMENDED)
+public class XAUTH extends HexSaltedMethod {
 
-    /**
-     * Method getWhirlpool.
-     *
-     * @param message String
-     *
-     * @return String
-     */
-    public static String getWhirlpool(String message) {
+    private static String getWhirlpool(String message) {
         WHIRLPOOL w = new WHIRLPOOL();
         byte[] digest = new byte[WHIRLPOOL.DIGESTBYTES];
         w.NESSIEinit();
@@ -22,38 +15,27 @@ public class XAUTH implements EncryptionMethod {
         return WHIRLPOOL.display(digest);
     }
 
-    /**
-     * Method getHash.
-     *
-     * @param password String
-     * @param salt     String
-     * @param name     String
-     *
-     * @return String * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#getHash(String, String, String)
-     */
     @Override
-    public String getHash(String password, String salt, String name)
-        throws NoSuchAlgorithmException {
+    public String computeHash(String password, String salt, String name) {
         String hash = getWhirlpool(salt + password).toLowerCase();
         int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
         return hash.substring(0, saltPos) + salt + hash.substring(saltPos);
     }
 
-    /**
-     * Method comparePassword.
-     *
-     * @param hash       String
-     * @param password   String
-     * @param playerName String
-     *
-     * @return boolean * @throws NoSuchAlgorithmException * @see fr.xephi.authme.security.crypts.EncryptionMethod#comparePassword(String, String, String)
-     */
     @Override
-    public boolean comparePassword(String hash, String password,
-                                   String playerName) throws NoSuchAlgorithmException {
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String playerName) {
+        String hash = hashedPassword.getHash();
         int saltPos = (password.length() >= hash.length() ? hash.length() - 1 : password.length());
+        if (saltPos + 12 > hash.length()) {
+            return false;
+        }
         String salt = hash.substring(saltPos, saltPos + 12);
-        return hash.equals(getHash(password, salt, ""));
+        return hash.equals(computeHash(password, salt, null));
+    }
+
+    @Override
+    public int getSaltLength() {
+        return 12;
     }
 
 }

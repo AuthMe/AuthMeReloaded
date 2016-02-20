@@ -1,43 +1,20 @@
 package fr.xephi.authme.listener;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerEditBookEvent;
 
 /**
+ * Listener of player events for events introduced in Minecraft 1.6.
  */
 public class AuthMePlayerListener16 implements Listener {
 
-    public final AuthMe plugin;
-
-    /**
-     * Constructor for AuthMePlayerListener16.
-     *
-     * @param plugin AuthMe
-     */
-    public AuthMePlayerListener16(AuthMe plugin) {
-        this.plugin = plugin;
-    }
-
-    /**
-     * Method onPlayerEditBook.
-     *
-     * @param event PlayerEditBookEvent
-     */
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerEditBook(PlayerEditBookEvent event) {
-        if (Utils.checkAuth(event.getPlayer())) {
-            return;
+        if (ListenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        // TODO: npc status can be used to bypass security!!!
-        if (Utils.isNPC(event.getPlayer())) {
-            return;
-        }
-        event.setCancelled(true);
     }
 
 }

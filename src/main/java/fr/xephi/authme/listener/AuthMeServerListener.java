@@ -21,43 +21,25 @@ public class AuthMeServerListener implements Listener {
     private final AuthMe plugin;
     private final Messages m;
 
-    /**
-     * Constructor for AuthMeServerListener.
-     *
-     * @param plugin AuthMe
-     */
     public AuthMeServerListener(AuthMe plugin) {
         this.m = plugin.getMessages();
         this.plugin = plugin;
     }
 
-    /**
-     * Method onServerPing.
-     *
-     * @param event ServerListPingEvent
-     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
-        if (!Settings.enableProtection) {
-            return;
-        }
-
-        String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-        if (!Settings.countriesBlacklist.isEmpty() && Settings.countriesBlacklist.contains(countryCode)) {
-            event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-            return;
-        }
-
-        if (!Settings.countries.isEmpty() && !Settings.countries.contains(countryCode)) {
-            event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+        if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()){
+            String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            if( Settings.countriesBlacklist.contains(countryCode)) {
+                event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
+            }
+            if (Settings.enableProtection && !Settings.countries.contains(countryCode)) {
+                event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+            }
         }
     }
 
-    /**
-     * Method onPluginDisable.
-     *
-     * @param event PluginDisableEvent
-     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginDisable(PluginDisableEvent event) {
         // Make sure the plugin instance isn't null
@@ -103,11 +85,6 @@ public class AuthMeServerListener implements Listener {
         }
     }
 
-    /**
-     * Method onPluginEnable.
-     *
-     * @param event PluginEnableEvent
-     */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
         // Call the onPluginEnable method in the permissions manager

@@ -1,62 +1,34 @@
 package fr.xephi.authme.command.executable.authme;
 
-//import org.bukkit.ChatColor;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.command.CommandParts;
+import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.Profiler;
 import org.bukkit.command.CommandSender;
 
+import java.util.List;
+
 /**
+ * The reload command.
  */
-public class ReloadCommand extends ExecutableCommand {
+public class ReloadCommand implements ExecutableCommand {
 
-    /**
-     * Execute the command.
-     *
-     * @param sender           The command sender.
-     * @param commandReference The command reference.
-     * @param commandArguments The command arguments.
-     *
-     * @return True if the command was executed successfully, false otherwise.
-     */
     @Override
-    public boolean executeCommand(CommandSender sender, CommandParts commandReference, CommandParts commandArguments) {
-        // Profile the reload process
-        Profiler p = new Profiler(true);
-
-        // AuthMe plugin instance
-        AuthMe plugin = AuthMe.getInstance();
-
-        // Messages instance
-        Messages m = plugin.getMessages();
-
-        // Show a status message
-        // sender.sendMessage(ChatColor.YELLOW + "Reloading AuthMeReloaded...");
-
+    public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
+        AuthMe plugin = commandService.getAuthMe();
         try {
-            Settings.reload();
-            Messages.getInstance().reloadManager();
-            plugin.getModuleManager().reloadModules();
-            plugin.setupDatabase();
+            commandService.getSettings().reload();
+            commandService.reloadMessages(commandService.getSettings().getMessagesFile());
+            // TODO #432: We should not reload only certain plugin entities but actually reinitialize all elements,
+            // i.e. here in the future we might not have setupDatabase() but Authme.onEnable(), maybe after
+            // a call to some destructor method
+            plugin.setupDatabase(commandService.getSettings());
+            commandService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
         } catch (Exception e) {
-            ConsoleLogger.showError("Fatal error occurred! AuthMe instance ABORTED!");
-            ConsoleLogger.writeStackTrace(e);
+            sender.sendMessage("Error occurred during reload of AuthMe: aborting");
+            ConsoleLogger.logException("Aborting! Encountered exception during reload of AuthMe:", e);
             plugin.stopOrUnload();
-            return false;
         }
-
-        // Show a status message
-        // TODO: add the profiler result
-        m.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
-
-        // AuthMeReloaded reloaded, show a status message
-        // sender.sendMessage(ChatColor.GREEN + "AuthMeReloaded has been reloaded successfully, took " + p.getTimeFormatted() + "!");
-        return true;
     }
 }

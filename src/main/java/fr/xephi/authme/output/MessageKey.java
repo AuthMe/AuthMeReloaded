@@ -79,15 +79,15 @@ public enum MessageKey {
 
     INVALID_NAME_LENGTH("name_len"),
 
-    INVALID_NAME_CHARACTERS("regex"),
+    INVALID_NAME_CHARACTERS("regex", "REG_EX"),
 
     ADD_EMAIL_MESSAGE("add_email"),
 
     FORGOT_PASSWORD_MESSAGE("recovery_email"),
 
-    USAGE_CAPTCHA("usage_captcha"),
+    USAGE_CAPTCHA("usage_captcha", "<theCaptcha>"),
 
-    CAPTCHA_WRONG_ERROR("wrong_captcha"),
+    CAPTCHA_WRONG_ERROR("wrong_captcha", "THE_CAPTCHA"),
 
     CAPTCHA_SUCCESS("valid_captcha"),
 
@@ -96,6 +96,8 @@ public enum MessageKey {
     KICK_FULL_SERVER("kick_fullserver"),
 
     USAGE_ADD_EMAIL("usage_email_add"),
+
+    USAGE_CHANGE_EMAIL("usage_email_change"),
 
     USAGE_RECOVER_EMAIL("usage_email_recovery"),
 
@@ -119,16 +121,37 @@ public enum MessageKey {
 
     ANTIBOT_AUTO_ENABLED_MESSAGE("antibot_auto_enabled"),
 
-    ANTIBOT_AUTO_DISABLED_MESSAGE("antibot_auto_disabled");
+    ANTIBOT_AUTO_DISABLED_MESSAGE("antibot_auto_disabled", "%m"),
 
+    EMAIL_ALREADY_USED_ERROR("email_already_used"),
+
+    TWO_FACTOR_CREATE("two_factor_create", "%code", "%url"),
+
+    NOT_OWNER_ERROR("not_owner_error");
 
     private String key;
+    private String[] tags;
 
-    MessageKey(String key) {
+    MessageKey(String key, String... tags) {
         this.key = key;
+        this.tags = tags;
     }
 
+    /**
+     * Return the key used in the messages file.
+     *
+     * @return The key
+     */
     public String getKey() {
         return key;
+    }
+
+    /**
+     * Return a list of tags (texts) that are replaced with actual content in AuthMe.
+     *
+     * @return List of tags
+     */
+    public String[] getTags() {
+        return tags;
     }
 }

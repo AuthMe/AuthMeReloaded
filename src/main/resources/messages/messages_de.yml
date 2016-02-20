@@ -56,3 +56,8 @@ email_exists: '&cEine Wiederherstellungs-Email wurde bereits versandt! Nutze fol
 country_banned: '&4Dein Land ist gesperrt'
 antibot_auto_enabled: '&4[AntiBotService] AntiBotMod wurde aufgrund hoher Netzauslastung automatisch aktiviert!'
 antibot_auto_disabled: '&2[AntiBotService] AntiBotMod wurde nach %m Minuten deaktiviert, hoffentlich ist die Invasion vorbei'
+kick_antibot: 'AntiBotMod ist aktiviert! Bitte warte einige Minuten, bevor du dich mit dem Server verbindest'
+# TODO two_factor_create: Missing tag %url
+two_factor_create: '&2Dein geheimer Code ist %code'
+# TODO email_already_used: '&4The email address is already being used'
+# TODO not_owner_error: 'You are not the owner of this account. Please try another name!'
