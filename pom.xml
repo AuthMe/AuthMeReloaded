@@ -61,7 +61,7 @@
         <javaVersion>1.7</javaVersion>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
+        <bukkitVersion>1.9-pre1-SNAPSHOT</bukkitVersion>
     </properties>
 
     <profiles>
