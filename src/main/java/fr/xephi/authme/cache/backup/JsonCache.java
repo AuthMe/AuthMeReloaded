@@ -2,7 +2,15 @@ package fr.xephi.authme.cache.backup;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
@@ -30,12 +38,6 @@ public class JsonCache {
             .create();
     }
 
-    /**
-     * Method createCache.
-     *
-     * @param player     Player
-     * @param playerData DataFileCache
-     */
     public void createCache(Player player, DataFileCache playerData) {
         if (player == null) {
             return;
@@ -65,13 +67,6 @@ public class JsonCache {
         }
     }
 
-    /**
-     * Method readCache.
-     *
-     * @param player Player
-     *
-     * @return DataFileCache
-     */
     public DataFileCache readCache(Player player) {
         String path;
         try {
@@ -94,11 +89,6 @@ public class JsonCache {
         }
     }
 
-    /**
-     * Method removeCache.
-     *
-     * @param player Player
-     */
     public void removeCache(Player player) {
         String path;
         try {
@@ -115,13 +105,6 @@ public class JsonCache {
         }
     }
 
-    /**
-     * Method doesCacheExist.
-     *
-     * @param player Player
-     *
-     * @return boolean
-     */
     public boolean doesCacheExist(Player player) {
         String path;
         try {
@@ -133,57 +116,39 @@ public class JsonCache {
         return file.exists();
     }
 
-    /**
-     */
-    private static class PlayerDataDeserializer implements JsonDeserializer<DataFileCache> {
-        /**
-         * Method deserialize.
-         *
-         * @param jsonElement                JsonElement
-         * @param type                       Type
-         * @param jsonDeserializationContext JsonDeserializationContext
-         *
-         * @return DataFileCache * @throws JsonParseException * @see com.google.gson.JsonDeserializer#deserialize(JsonElement, Type, JsonDeserializationContext)
-         */
+    private class PlayerDataDeserializer implements JsonDeserializer<DataFileCache> {
         @Override
         public DataFileCache deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             if (jsonObject == null) {
                 return null;
             }
-            JsonElement e;
             String group = null;
             boolean operator = false;
+            boolean fly = false;
 
+            JsonElement e;
             if ((e = jsonObject.get("group")) != null) {
                 group = e.getAsString();
             }
             if ((e = jsonObject.get("operator")) != null) {
                 operator = e.getAsBoolean();
             }
+            if ((e = jsonObject.get("fly")) != null) {
+                fly = e.getAsBoolean();
+            }
 
-            return new DataFileCache(group, operator);
+            return new DataFileCache(group, operator, fly);
         }
     }
 
-    /**
-     */
     private class PlayerDataSerializer implements JsonSerializer<DataFileCache> {
-        /**
-         * Method serialize.
-         *
-         * @param dataFileCache            DataFileCache
-         * @param type                     Type
-         * @param jsonSerializationContext JsonSerializationContext
-         *
-         * @return JsonElement
-         */
         @Override
         public JsonElement serialize(DataFileCache dataFileCache, Type type, JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("group", dataFileCache.getGroup());
             jsonObject.addProperty("operator", dataFileCache.getOperator());
-
+            jsonObject.addProperty("fly", dataFileCache.isFlyEnabled());
             return jsonObject;
         }
     }

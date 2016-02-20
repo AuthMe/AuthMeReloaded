@@ -53,6 +53,7 @@ public class LimboCache {
         String name = player.getName().toLowerCase();
         Location loc = player.getLocation();
         boolean operator = false;
+        boolean flyEnabled = false;
         String playerGroup = "";
 
         // Get the permissions manager, and make sure it's valid
@@ -66,30 +67,22 @@ public class LimboCache {
             if (cache != null) {
                 playerGroup = cache.getGroup();
                 operator = cache.getOperator();
+                flyEnabled = cache.isFlyEnabled();
             }
         } else {
             operator = player.isOp();
 
             // Check whether groups are supported
-            if (permsMan.hasGroupSupport())
+            if (permsMan.hasGroupSupport()) {
                 playerGroup = permsMan.getPrimaryGroup(player);
+            }
         }
 
         if (player.isDead()) {
             loc = plugin.getSpawnLocation(player);
         }
 
-        cache.put(name, new LimboPlayer(name, loc, operator, playerGroup));
-    }
-
-    /**
-     * Method addLimboPlayer.
-     *
-     * @param player Player
-     * @param group  String
-     */
-    public void addLimboPlayer(Player player, String group) {
-        cache.put(player.getName().toLowerCase(), new LimboPlayer(player.getName().toLowerCase(), group));
+        cache.put(name, new LimboPlayer(name, loc, operator, playerGroup, flyEnabled));
     }
 
     /**

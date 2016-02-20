@@ -6,6 +6,7 @@ public class DataFileCache {
 
     private final String group;
     private final boolean operator;
+    private final boolean flyEnabled;
 
     /**
      * Constructor for DataFileCache.
@@ -13,9 +14,10 @@ public class DataFileCache {
      * @param group    String
      * @param operator boolean
      */
-    public DataFileCache(String group, boolean operator) {
+    public DataFileCache(String group, boolean operator, boolean flyEnabled) {
         this.group = group;
         this.operator = operator;
+        this.flyEnabled = flyEnabled;
     }
 
     /**
@@ -34,5 +36,9 @@ public class DataFileCache {
      */
     public boolean getOperator() {
         return operator;
+    }
+
+    public boolean isFlyEnabled() {
+        return flyEnabled;
     }
 }
