@@ -677,13 +677,19 @@ public class AuthMe extends JavaPlugin {
             inventoryProtector.unregister();
             inventoryProtector = null;
         }
-        if (tabComplete == null && newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN)) {
+        if (newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN) && tabComplete == null) {
             tabComplete = new AuthMeTabCompletePacketAdapter(this);
             tabComplete.register();
+        } else if (inventoryProtector != null) {
+            tabComplete.unregister();
+            tabComplete = null;
         }
-        if (tablistHider == null && newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN)) {
+        if (newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && tablistHider == null) {
             tablistHider = new AuthMeTablistPacketAdapter(this);
             tablistHider.register();
+        } else if (inventoryProtector != null) {
+            tablistHider.unregister();
+            tablistHider = null;
         }
     }
 

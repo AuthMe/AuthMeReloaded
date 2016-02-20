@@ -6,32 +6,27 @@ import com.comphenix.protocol.events.ListenerPriority;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.FieldAccessException;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
 public class AuthMeTablistPacketAdapter extends PacketAdapter {
 
-	public AuthMeTablistPacketAdapter(AuthMe plugin) {
-		super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO);
-	}
+    public AuthMeTablistPacketAdapter(AuthMe plugin) {
+        super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO);
+    }
 
-	@Override
-    public void onPacketSending(PacketEvent event)
-    {
-      if (event.getPacketType() == PacketType.Play.Server.PLAYER_INFO) {
-        try
-        {
-          if (!PlayerCache.getInstance().isAuthenticated(event.getPlayer().getName().toLowerCase())) {
-            event.setCancelled(true);
-          }
+    @Override
+    public void onPacketSending(PacketEvent event) {
+        if (event.getPacketType() == PacketType.Play.Server.PLAYER_INFO) {
+            try {
+                if (!PlayerCache.getInstance().isAuthenticated(event.getPlayer().getName().toLowerCase())) {
+                    event.setCancelled(true);
+                }
+            } catch (FieldAccessException e) {
+                ConsoleLogger.showError("Couldn't access field.");
+            }
         }
-        catch (FieldAccessException e)
-        {
-          ConsoleLogger.showError("Couldn't access field.");
-        }
-      }
     }
 
     public void register() {
