@@ -2,6 +2,8 @@ package fr.xephi.authme.process.login;
 
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -92,7 +94,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
     }
 
     private void restoreSpeedEffects() {
-        if (Settings.isRemoveSpeedEnabled) {
+        if (settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
             player.setWalkSpeed(0.2F);
             player.setFlySpeed(0.1F);
         }
@@ -173,19 +175,19 @@ public class ProcessSyncPlayerLogin implements Runnable {
         }
 
         restoreSpeedEffects();
-        if (Settings.applyBlindEffect) {
+        if (settings.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
 
         // The Login event now fires (as intended) after everything is processed
         Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player));
         player.saveData();
-        if (Settings.bungee) {
+        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
             sendBungeeMessage();
         }
-        // Login is finish, display welcome message if we use email registration
-        if (Settings.useWelcomeMessage && Settings.emailRegistration) {
-            if (Settings.broadcastWelcomeMessage) {
+        // Login is done, display welcome message
+        if (settings.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            if (settings.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
                 for (String s : settings.getWelcomeMessage()) {
                     Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
