@@ -122,7 +122,7 @@ typing commands or using the inventory. It can also kick players with uncommonly
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/web-site-integration/">Website Integration</a>
 </li><li><a href="https://raw.githubusercontent.com/Xephi/AuthMeReloaded/master/src/main/resources/config.yml">Click here for an example of the Config file</a>
 </li><li><a href="http://dev.bukkit.org/server-mods/authme-reloaded/pages/how-to-import-database-from-rakamak/">How to convert from Rakamak</a>
-</li><li>Convert from FlatFile (auths.db but not the sqlite one) to MySQL: /converter
+</li><li>Convert from FlatFile (auths.db but not the sqlite one) to MySQL: /authme converter
 </li></ul>
 <hr>
 

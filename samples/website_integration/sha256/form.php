@@ -1,5 +1,5 @@
 <!--
-  This is a demo page for AuthMe website integration.
+  This is a demo page for AuthMe website integration with SHA256.
   See integration.php for the PHP code you need.
 -->
 <!DOCTYPE html>
@@ -36,7 +36,7 @@ into the following form to test it.
  <table>
    <tr><td>Name</td><td><input type="text" value="' . htmlspecialchars($user) . '" name="username" /></td></tr>
    <tr><td>Pass</td><td><input type="password" value="' . htmlspecialchars($pass) . '" name="password" /></td></tr>
-   <tr><td colspan="2"><input type="submit" value=" Log in " />
+   <tr><td colspan="2"><input type="submit" value=" Log in " /></td></tr>
  </table>
 </form>';
 }

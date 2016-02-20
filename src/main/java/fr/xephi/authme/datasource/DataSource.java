@@ -6,146 +6,132 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import java.util.List;
 
 /**
+ * Interface for manipulating {@link PlayerAuth} objects from a data source.
  */
 public interface DataSource {
 
     /**
-     * Method isAuthAvailable.
+     * Return whether there is a record for the given username.
      *
-     * @param user String
+     * @param user The username to look up
      *
-     * @return boolean
+     * @return True if there is a record, false otherwise
      */
     boolean isAuthAvailable(String user);
 
     /**
-     * Method getPassword.
+     * Return the hashed password of the player.
      *
-     * @param user String
+     * @param user The user whose password should be retrieve
      *
-     * @return String
+     * @return The password hash of the player
      */
     HashedPassword getPassword(String user);
 
     /**
-     * Method getAuth.
+     * Retrieve the entire PlayerAuth object associated with the username.
      *
-     * @param user String
+     * @param user The user to retrieve
      *
-     * @return PlayerAuth
+     * @return The PlayerAuth object for the given username
      */
     PlayerAuth getAuth(String user);
 
     /**
-     * Method saveAuth.
+     * Save a new PlayerAuth object.
      *
-     * @param auth PlayerAuth
+     * @param auth The new PlayerAuth to persist
      *
-     * @return boolean
+     * @return True upon success, false upon failure
      */
     boolean saveAuth(PlayerAuth auth);
 
     /**
-     * Method updateSession.
+     * Update the session of a record (IP, last login, real name).
      *
-     * @param auth PlayerAuth
+     * @param auth The PlayerAuth object to update in the database
      *
-     * @return boolean
+     * @return True upon success, false upon failure
      */
     boolean updateSession(PlayerAuth auth);
 
     /**
-     * Method updatePassword.
+     * Update the password of the given PlayerAuth object.
      *
-     * @param auth PlayerAuth
+     * @param auth The PlayerAuth whose password should be updated
      *
-     * @return boolean
+     * @return True upon success, false upon failure
      */
     boolean updatePassword(PlayerAuth auth);
 
+    /**
+     * Update the password of the given player.
+     *
+     * @param user     The user whose password should be updated
+     * @param password The new password
+     *
+     * @return True upon success, false upon failure
+     */
     boolean updatePassword(String user, HashedPassword password);
 
     /**
-     * Method purgeDatabase.
+     * Purge all records in the database whose last login was longer ago than
+     * the given time.
      *
-     * @param until long
+     * @param until The minimum last login
      *
-     * @return int
-     */
-    int purgeDatabase(long until);
-
-    /**
-     * Method autoPurgeDatabase.
-     *
-     * @param until long
-     *
-     * @return List of String
+     * @return The account names that have been removed
      */
     List<String> autoPurgeDatabase(long until);
 
     /**
-     * Method removeAuth.
+     * Remove a user record from the database.
      *
-     * @param user String
+     * @param user The user to remove
      *
-     * @return boolean
+     * @return True upon success, false upon failure
      */
     boolean removeAuth(String user);
 
     /**
-     * Method updateQuitLoc.
+     * Update the quit location of a PlayerAuth.
      *
-     * @param auth PlayerAuth
+     * @param auth The entry whose quit location should be updated
      *
-     * @return boolean
+     * @return True upon success, false upon failure
      */
     boolean updateQuitLoc(PlayerAuth auth);
 
     /**
-     * Method getIps.
+     * Return all usernames associated with the given IP address.
      *
-     * @param ip String
+     * @param ip The IP address to look up
      *
-     * @return int
-     */
-    int getIps(String ip);
-
-    /**
-     * Method getAllAuthsByName.
-     *
-     * @param auth PlayerAuth
-     *
-     * @return List of String
-     */
-    List<String> getAllAuthsByName(PlayerAuth auth);
-
-    /**
-     * Method getAllAuthsByIp.
-     *
-     * @param ip String
-     *
-     * @return List of String * @throws Exception
+     * @return Usernames associated with the given IP address
      */
     List<String> getAllAuthsByIp(String ip);
 
     /**
-     * Method getAllAuthsByEmail.
+     * Return all usernames associated with the given email address.
      *
-     * @param email String
+     * @param email The email address to look up
      *
-     * @return List of String * @throws Exception
+     * @return Users using the given email address
      */
     List<String> getAllAuthsByEmail(String email);
 
     /**
-     * Method updateEmail.
+     * Update the email of the PlayerAuth in the data source.
      *
-     * @param auth PlayerAuth
+     * @param auth The PlayerAuth whose email should be updated
      *
-     * @return boolean
+     * @return True upon success, false upon failure
      */
     boolean updateEmail(PlayerAuth auth);
 
+    /**
+     * Close the underlying connections to the data source.
+     */
     void close();
 
     void reload();
@@ -205,6 +191,9 @@ public interface DataSource {
     void updateName(String oldOne, String newOne);
 
     boolean updateRealName(String user, String realName);
+
+    boolean updateIp(String user, String ip);
+
     /**
      * Method getAllAuths.
      *

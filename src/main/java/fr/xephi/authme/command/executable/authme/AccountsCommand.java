@@ -30,7 +30,7 @@ public class AccountsCommand implements ExecutableCommand {
                         return;
                     }
 
-                    List<String> accountList = commandService.getDataSource().getAllAuthsByName(auth);
+                    List<String> accountList = commandService.getDataSource().getAllAuthsByIp(auth.getIp());
                     if (accountList.isEmpty()) {
                         commandService.send(sender, MessageKey.USER_NOT_REGISTERED);
                     } else if (accountList.size() == 1) {

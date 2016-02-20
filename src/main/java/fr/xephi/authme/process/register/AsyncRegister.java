@@ -1,19 +1,18 @@
 package fr.xephi.authme.process.register;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -21,11 +20,11 @@ import org.bukkit.entity.Player;
  */
 public class AsyncRegister {
 
-    protected final Player player;
-    protected final String name;
-    protected final String password;
+    private final Player player;
+    private final String name;
+    private final String password;
     private final String ip;
-    private String email = "";
+    private final String email;
     private final AuthMe plugin;
     private final DataSource database;
     private final Messages m;
@@ -88,7 +87,7 @@ public class AsyncRegister {
 
     public void process() {
         if (preRegisterCheck()) {
-            if (email != null && !email.isEmpty()) {
+            if (!StringUtils.isEmpty(email)) {
                 emailRegister();
             } else {
                 passwordRegister();

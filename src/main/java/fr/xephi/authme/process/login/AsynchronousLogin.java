@@ -7,12 +7,12 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -23,7 +23,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -143,7 +142,7 @@ public class AsynchronousLogin {
 
         if (pAuth.getIp().equals("127.0.0.1") && !pAuth.getIp().equals(ip)) {
             pAuth.setIp(ip);
-            database.saveAuth(pAuth);
+            database.updateIp(pAuth.getNickname(), ip);
         }
 
         String email = pAuth.getEmail();
@@ -226,7 +225,7 @@ public class AsynchronousLogin {
             return;
         }
 
-        List<String> auths = this.database.getAllAuthsByName(auth);
+        List<String> auths = this.database.getAllAuthsByIp(auth.getIp());
         if (auths.size() < 2) {
             return;
         }

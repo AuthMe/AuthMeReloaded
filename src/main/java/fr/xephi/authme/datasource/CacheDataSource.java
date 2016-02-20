@@ -116,24 +116,6 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public int getIps(String ip) {
-        return source.getIps(ip);
-    }
-
-    @Override
-    public int purgeDatabase(long until) {
-        int cleared = source.purgeDatabase(until);
-        if (cleared > 0) {
-            for (Optional<PlayerAuth> auth : cachedAuths.asMap().values()) {
-                if (auth.isPresent() && auth.get().getLastLogin() < until) {
-                    cachedAuths.invalidate(auth.get().getNickname());
-                }
-            }
-        }
-        return cleared;
-    }
-
-    @Override
     public List<String> autoPurgeDatabase(long until) {
         List<String> cleared = source.autoPurgeDatabase(until);
         for (String name : cleared) {
@@ -170,11 +152,6 @@ public class CacheDataSource implements DataSource {
             cachedAuths.refresh(auth.getNickname());
         }
         return result;
-    }
-
-    @Override
-    public synchronized List<String> getAllAuthsByName(PlayerAuth auth) {
-        return source.getAllAuthsByName(auth);
     }
 
     @Override
@@ -233,6 +210,15 @@ public class CacheDataSource implements DataSource {
     @Override
     public boolean updateRealName(String user, String realName) {
         boolean result = source.updateRealName(user, realName);
+        if (result) {
+            cachedAuths.refresh(user);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean updateIp(String user, String ip) {
+        boolean result = source.updateIp(user, ip);
         if (result) {
             cachedAuths.refresh(user);
         }

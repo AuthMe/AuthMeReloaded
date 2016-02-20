@@ -279,82 +279,6 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public int getIps(String ip) {
-        BufferedReader br = null;
-        int countIp = 0;
-        try {
-            br = new BufferedReader(new FileReader(source));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] args = line.split(":");
-                if (args.length > 3 && args[2].equals(ip)) {
-                    countIp++;
-                }
-            }
-            return countIp;
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
-        } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
-    }
-
-    @Override
-    public int purgeDatabase(long until) {
-        BufferedReader br = null;
-        BufferedWriter bw = null;
-        ArrayList<String> lines = new ArrayList<>();
-        int cleared = 0;
-        try {
-            br = new BufferedReader(new FileReader(source));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] args = line.split(":");
-                if (args.length >= 4) {
-                    if (Long.parseLong(args[3]) >= until) {
-                        lines.add(line);
-                        continue;
-                    }
-                }
-                cleared++;
-            }
-            bw = new BufferedWriter(new FileWriter(source));
-            for (String l : lines) {
-                bw.write(l + "\n");
-            }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return cleared;
-        } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return cleared;
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
-        return cleared;
-    }
-
-    @Override
     public List<String> autoPurgeDatabase(long until) {
         BufferedReader br = null;
         BufferedWriter bw = null;
@@ -533,36 +457,6 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public List<String> getAllAuthsByName(PlayerAuth auth) {
-        BufferedReader br = null;
-        List<String> countIp = new ArrayList<>();
-        try {
-            br = new BufferedReader(new FileReader(source));
-            String line;
-            while ((line = br.readLine()) != null) {
-                String[] args = line.split(":");
-                if (args.length > 3 && args[2].equals(auth.getIp())) {
-                    countIp.add(args[0]);
-                }
-            }
-            return countIp;
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
-        } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
-        } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
-        }
-    }
-
-    @Override
     public List<String> getAllAuthsByIp(String ip) {
         BufferedReader br = null;
         List<String> countIp = new ArrayList<>();
@@ -719,6 +613,11 @@ public class FlatFile implements DataSource {
     @Override
     public boolean updateRealName(String user, String realName) {
         return false;
+    }
+
+    @Override
+    public boolean updateIp(String user, String ip) {
+        throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
     @Override

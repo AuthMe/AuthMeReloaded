@@ -1,6 +1,7 @@
 package fr.xephi.authme.process.email;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -48,8 +49,13 @@ public class AsyncAddEmail {
                 messages.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
                 auth.setEmail(email);
-                playerCache.updatePlayer(auth);
-                messages.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+                if (dataSource.updateEmail(auth)) {
+                    playerCache.updatePlayer(auth);
+                    messages.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+                } else {
+                    ConsoleLogger.showError("Could not save email for player '" + player + "'");
+                    messages.send(player, MessageKey.ERROR);
+                }
             }
         } else {
             sendUnloggedMessage(dataSource);

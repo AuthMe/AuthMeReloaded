@@ -16,7 +16,7 @@ softdepend:
 commands:
     authme:
         description: AuthMe op commands
-        usage: '/authme reload|register playername password|changepassword playername password|unregister playername|version'
+        usage: '/authme reload|register playername password|changepassword playername password|unregister playername|version|converter'
     register:
         description: Register an account
         usage: /register <password> <confirmpassword>
@@ -40,9 +40,6 @@ commands:
     captcha:
         description: Captcha command
         usage: /captcha <code>
-    converter:
-        description: Converter from different other auth plugins
-        usage: /converter <datatype>
 permissions:
     authme.admin.*:
         description: Give access to all admin commands.

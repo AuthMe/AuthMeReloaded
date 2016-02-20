@@ -1,6 +1,7 @@
 package fr.xephi.authme.process.email;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -35,6 +36,7 @@ public class AsyncAddEmailTest {
     @BeforeClass
     public static void setUp() {
         WrapperMock.createInstance();
+        ConsoleLoggerTestInitializer.setupLogger();
     }
 
     // Clean up the fields to ensure that no test uses elements of another test
@@ -56,14 +58,36 @@ public class AsyncAddEmailTest {
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("tester")).willReturn(auth);
         given(dataSource.isEmailStored("my.mail@example.org")).willReturn(false);
+        given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(true);
 
         // when
         process.process();
 
         // then
+        verify(dataSource).updateEmail(auth);
         verify(messages).send(player, MessageKey.EMAIL_ADDED_SUCCESS);
         verify(auth).setEmail("my.mail@example.org");
         verify(playerCache).updatePlayer(auth);
+    }
+
+    @Test
+    public void shouldReturnErrorWhenMailCannotBeSaved() {
+        // given
+        AsyncAddEmail process = createProcess("my.mail@example.org");
+        given(player.getName()).willReturn("testEr");
+        given(playerCache.isAuthenticated("tester")).willReturn(true);
+        PlayerAuth auth = mock(PlayerAuth.class);
+        given(auth.getEmail()).willReturn(null);
+        given(playerCache.getAuth("tester")).willReturn(auth);
+        given(dataSource.isEmailStored("my.mail@example.org")).willReturn(false);
+        given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(false);
+
+        // when
+        process.process();
+
+        // then
+        verify(dataSource).updateEmail(auth);
+        verify(messages).send(player, MessageKey.ERROR);
     }
 
     @Test
