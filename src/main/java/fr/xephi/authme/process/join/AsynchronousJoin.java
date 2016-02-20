@@ -64,15 +64,16 @@ public class AsynchronousJoin {
         final String ip = plugin.getIP(player);
 
 
-        if (Settings.isAllowRestrictedIp && !isNameRestricted(name, ip, player.getAddress().getHostName())) {
+        if (Settings.isAllowRestrictedIp && isNameRestricted(name, ip, player.getAddress().getHostName())) {
             sched.scheduleSyncDelayedTask(plugin, new Runnable() {
 
                 @Override
                 public void run() {
                     AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
                     player.kickPlayer(m.retrieveSingle(MessageKey.NOT_OWNER_ERROR));
-                    if (Settings.banUnsafeIp)
+                    if (Settings.banUnsafeIp) {
                         plugin.getServer().banIP(ip);
+                    }
                 }
             });
             return;
