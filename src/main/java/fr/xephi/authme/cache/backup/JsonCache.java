@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 
-/**
- */
 public class JsonCache {
 
     private final Gson gson;
@@ -32,13 +30,13 @@ public class JsonCache {
             ConsoleLogger.showError("Failed to create cache directory.");
         }
         gson = new GsonBuilder()
-            .registerTypeAdapter(DataFileCache.class, new PlayerDataSerializer())
-            .registerTypeAdapter(DataFileCache.class, new PlayerDataDeserializer())
+            .registerTypeAdapter(PlayerData.class, new PlayerDataSerializer())
+            .registerTypeAdapter(PlayerData.class, new PlayerDataDeserializer())
             .setPrettyPrinting()
             .create();
     }
 
-    public void createCache(Player player, DataFileCache playerData) {
+    public void createCache(Player player, PlayerData playerData) {
         if (player == null) {
             return;
         }
@@ -67,7 +65,7 @@ public class JsonCache {
         }
     }
 
-    public DataFileCache readCache(Player player) {
+    public PlayerData readCache(Player player) {
         String path;
         try {
             path = player.getUniqueId().toString();
@@ -82,7 +80,7 @@ public class JsonCache {
 
         try {
             String str = Files.toString(file, Charsets.UTF_8);
-            return gson.fromJson(str, DataFileCache.class);
+            return gson.fromJson(str, PlayerData.class);
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -116,9 +114,9 @@ public class JsonCache {
         return file.exists();
     }
 
-    private class PlayerDataDeserializer implements JsonDeserializer<DataFileCache> {
+    private class PlayerDataDeserializer implements JsonDeserializer<PlayerData> {
         @Override
-        public DataFileCache deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public PlayerData deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             if (jsonObject == null) {
                 return null;
@@ -138,17 +136,18 @@ public class JsonCache {
                 fly = e.getAsBoolean();
             }
 
-            return new DataFileCache(group, operator, fly);
+            return new PlayerData(group, operator, fly);
         }
     }
 
-    private class PlayerDataSerializer implements JsonSerializer<DataFileCache> {
+    private class PlayerDataSerializer implements JsonSerializer<PlayerData> {
         @Override
-        public JsonElement serialize(DataFileCache dataFileCache, Type type, JsonSerializationContext jsonSerializationContext) {
+        public JsonElement serialize(PlayerData playerData, Type type,
+                                     JsonSerializationContext jsonSerializationContext) {
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("group", dataFileCache.getGroup());
-            jsonObject.addProperty("operator", dataFileCache.getOperator());
-            jsonObject.addProperty("fly", dataFileCache.isFlyEnabled());
+            jsonObject.addProperty("group", playerData.getGroup());
+            jsonObject.addProperty("operator", playerData.getOperator());
+            jsonObject.addProperty("fly", playerData.isFlyEnabled());
             return jsonObject;
         }
     }
