@@ -234,66 +234,72 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized boolean isAuthAvailable(String user) {
-        try (Connection con = getConnection()) {
-            String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        ResultSet rs = null;
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user.toLowerCase());
-            ResultSet rs = pst.executeQuery();
+            rs = pst.executeQuery();
             return rs.next();
         } catch (SQLException ex) {
             logSqlException(ex);
+        } finally {
+            close(rs);
         }
         return false;
     }
 
     @Override
     public HashedPassword getPassword(String user) {
-        try (Connection con = getConnection()) {
-            String sql = "SELECT " + col.PASSWORD + "," + col.SALT + " FROM " + tableName
-                + " WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "SELECT " + col.PASSWORD + "," + col.SALT + " FROM " + tableName
+            + " WHERE " + col.NAME + "=?;";
+        ResultSet rs = null;
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user.toLowerCase());
-            ResultSet rs = pst.executeQuery();
+            rs = pst.executeQuery();
             if (rs.next()) {
                 return new HashedPassword(rs.getString(col.PASSWORD),
                     !col.SALT.isEmpty() ? rs.getString(col.SALT) : null);
             }
         } catch (SQLException ex) {
             logSqlException(ex);
+        } finally {
+            close(rs);
         }
         return null;
     }
 
     @Override
     public synchronized PlayerAuth getAuth(String user) {
-        PlayerAuth pAuth;
-        try (Connection con = getConnection()) {
-            String sql = "SELECT * FROM " + tableName + " WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "SELECT * FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        PlayerAuth auth;
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user.toLowerCase());
-            ResultSet rs = pst.executeQuery();
-            if (!rs.next()) {
-                return null;
+            int id;
+            try (ResultSet rs = pst.executeQuery()) {
+                if (!rs.next()) {
+                    return null;
+                }
+                id = rs.getInt(col.ID);
+                auth = buildAuthFromResultSet(rs);
             }
-            int id = rs.getInt(col.ID);
-            pAuth = buildAuthFromResultSet(rs);
-            rs.close();
-            pst.close();
             if (hashAlgorithm == HashAlgorithm.XFBCRYPT) {
-                pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + col.ID + "=?;");
-                pst.setInt(1, id);
-                rs = pst.executeQuery();
-                if (rs.next()) {
-                    Blob blob = rs.getBlob("data");
-                    byte[] bytes = blob.getBytes(1, (int) blob.length());
-                    pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
+                try (PreparedStatement pst2 = con.prepareStatement(
+                    "SELECT data FROM xf_user_authenticate WHERE " + col.ID + "=?;")) {
+                    pst2.setInt(1, id);
+                    try (ResultSet rs = pst2.executeQuery()) {
+                        if (rs.next()) {
+                            Blob blob = rs.getBlob("data");
+                            byte[] bytes = blob.getBytes(1, (int) blob.length());
+                            auth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
+                        }
+                    }
                 }
             }
+            return auth;
         } catch (SQLException ex) {
             logSqlException(ex);
-            return null;
         }
-        return pAuth;
+        return null;
     }
 
     @Override
@@ -580,20 +586,19 @@ public class MySQL implements DataSource {
     @Override
     public synchronized List<String> autoPurgeDatabase(long until) {
         List<String> list = new ArrayList<>();
-        try (Connection con = getConnection()) {
-            String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-            PreparedStatement st = con.prepareStatement(sql);
-            st.setLong(1, until);
-            ResultSet rs = st.executeQuery();
-            while (rs.next()) {
-                list.add(rs.getString(col.NAME));
+        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        try (Connection con = getConnection();
+             PreparedStatement selectPst = con.prepareStatement(select);
+             PreparedStatement deletePst = con.prepareStatement(delete)) {
+            selectPst.setLong(1, until);
+            try (ResultSet rs = selectPst.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getString(col.NAME));
+                }
             }
-            rs.close();
-            sql = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
-            st = con.prepareStatement(sql);
-            st.setLong(1, until);
-            st.executeUpdate();
-            st.close();
+            deletePst.setLong(1, until);
+            deletePst.executeUpdate();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -634,18 +639,16 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized boolean updateQuitLoc(PlayerAuth auth) {
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName
-                + " SET " + col.LASTLOC_X + " =?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=?"
-                + " WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "UPDATE " + tableName
+            + " SET " + col.LASTLOC_X + " =?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=?"
+            + " WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
             pst.setDouble(3, auth.getQuitLocZ());
             pst.setString(4, auth.getWorld());
             pst.setString(5, auth.getNickname());
             pst.executeUpdate();
-            pst.close();
             return true;
         } catch (SQLException ex) {
             logSqlException(ex);
@@ -655,13 +658,11 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized boolean updateEmail(PlayerAuth auth) {
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + col.EMAIL + " =? WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "UPDATE " + tableName + " SET " + col.EMAIL + " =? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
-            pst.close();
             return true;
         } catch (SQLException ex) {
             logSqlException(ex);
@@ -690,16 +691,14 @@ public class MySQL implements DataSource {
     @Override
     public synchronized List<String> getAllAuthsByIp(String ip) {
         List<String> result = new ArrayList<>();
-        try (Connection con = getConnection()) {
-            String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.IP + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.IP + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, ip);
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                result.add(rs.getString(col.NAME));
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    result.add(rs.getString(col.NAME));
+                }
             }
-            rs.close();
-            pst.close();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -708,32 +707,29 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized List<String> getAllAuthsByEmail(String email) {
-        List<String> countEmail = new ArrayList<>();
-        try (Connection con = getConnection()) {
-            String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.EMAIL + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        List<String> emails = new ArrayList<>();
+        String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.EMAIL + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, email);
-            ResultSet rs = pst.executeQuery();
-            while (rs.next()) {
-                countEmail.add(rs.getString(col.NAME));
+            try (ResultSet rs = pst.executeQuery()) {
+                while (rs.next()) {
+                    emails.add(rs.getString(col.NAME));
+                }
             }
-            rs.close();
-            pst.close();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
-        return countEmail;
+        return emails;
     }
 
     @Override
     public synchronized void purgeBanned(List<String> banned) {
-        try (Connection con = getConnection()) {
-            PreparedStatement pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
+        String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : banned) {
                 pst.setString(1, name);
                 pst.executeUpdate();
             }
-            pst.close();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -746,28 +742,25 @@ public class MySQL implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        boolean isLogged = false;
-        try (Connection con = getConnection()) {
-            String sql = "SELECT " + col.IS_LOGGED + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "SELECT " + col.IS_LOGGED + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
-            ResultSet rs = pst.executeQuery();
-            isLogged = rs.next() && (rs.getInt(col.IS_LOGGED) == 1);
+            try (ResultSet rs = pst.executeQuery()) {
+                return rs.next() && (rs.getInt(col.IS_LOGGED) == 1);
+            }
         } catch (SQLException ex) {
             logSqlException(ex);
         }
-        return isLogged;
+        return false;
     }
 
     @Override
     public void setLogged(String user) {
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 1);
             pst.setString(2, user.toLowerCase());
             pst.executeUpdate();
-            pst.close();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -775,13 +768,11 @@ public class MySQL implements DataSource {
 
     @Override
     public void setUnlogged(String user) {
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 0);
             pst.setString(2, user.toLowerCase());
             pst.executeUpdate();
-            pst.close();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -789,13 +780,11 @@ public class MySQL implements DataSource {
 
     @Override
     public void purgeLogged() {
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.IS_LOGGED + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.IS_LOGGED + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 0);
             pst.setInt(2, 1);
             pst.executeUpdate();
-            pst.close();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -804,14 +793,13 @@ public class MySQL implements DataSource {
     @Override
     public int getAccountsRegistered() {
         int result = 0;
-        try (Connection con = getConnection()) {
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM " + tableName);
+        String sql = "SELECT COUNT(*) FROM " + tableName;
+        try (Connection con = getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
             if (rs.next()) {
                 result = rs.getInt(1);
             }
-            rs.close();
-            st.close();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -820,9 +808,8 @@ public class MySQL implements DataSource {
 
     @Override
     public void updateName(String oldOne, String newOne) {
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + col.NAME + "=? WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "UPDATE " + tableName + " SET " + col.NAME + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, newOne);
             pst.setString(2, oldOne);
             pst.executeUpdate();
@@ -833,9 +820,8 @@ public class MySQL implements DataSource {
 
     @Override
     public boolean updateRealName(String user, String realName) {
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, realName);
             pst.setString(2, user);
             pst.executeUpdate();
@@ -848,9 +834,8 @@ public class MySQL implements DataSource {
 
     @Override
     public boolean updateIp(String user, String ip) {
-        try (Connection con = getConnection()) {
-            String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, ip);
             pst.setString(2, user);
             pst.executeUpdate();
@@ -1000,6 +985,16 @@ public class MySQL implements DataSource {
 
     private static void logSqlException(SQLException e) {
         ConsoleLogger.logException("Error during SQL operation:", e);
+    }
+
+    private static void close(ResultSet rs) {
+        if (rs != null) {
+            try {
+                rs.close();
+            } catch (SQLException e) {
+                ConsoleLogger.logException("Could not close ResultSet", e);
+            }
+        }
     }
 
 }
