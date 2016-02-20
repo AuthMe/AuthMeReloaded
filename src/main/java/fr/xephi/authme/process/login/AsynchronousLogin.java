@@ -220,7 +220,7 @@ public class AsynchronousLogin {
         }
     }
 
-    public void displayOtherAccounts(PlayerAuth auth) {
+    private void displayOtherAccounts(PlayerAuth auth) {
         if (!Settings.displayOtherAccounts || auth == null) {
             return;
         }
