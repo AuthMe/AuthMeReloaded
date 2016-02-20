@@ -20,7 +20,7 @@ public class BackupSettings implements SettingsClass {
     public static final Property<Boolean> ON_SERVER_STOP =
         newProperty("BackupSystem.OnServerStop", true);
 
-    @Comment(" Windows only mysql installation Path")
+    @Comment("Windows only mysql installation Path")
     public static final Property<String> MYSQL_WINDOWS_PATH =
         newProperty("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
 
