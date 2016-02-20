@@ -8,6 +8,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 /**
  * Class for retrieving and sending translatable messages to players.
@@ -16,7 +18,7 @@ public class Messages {
 
     private FileConfiguration configuration;
     private String fileName;
-    private final File defaultFile;
+    private final String defaultFile;
     private FileConfiguration defaultConfiguration;
 
     /**
@@ -25,7 +27,7 @@ public class Messages {
      * @param messageFile The messages file to use
      * @param defaultFile The file with messages to use as default if missing
      */
-    public Messages(File messageFile, File defaultFile) {
+    public Messages(File messageFile, String defaultFile) {
         initializeFile(messageFile);
         this.defaultFile = defaultFile;
     }
@@ -117,7 +119,8 @@ public class Messages {
         }
 
         if (defaultConfiguration == null) {
-            defaultConfiguration = YamlConfiguration.loadConfiguration(defaultFile);
+            InputStream stream = Messages.class.getResourceAsStream(defaultFile);
+            defaultConfiguration = YamlConfiguration.loadConfiguration(new InputStreamReader(stream));
         }
         String message = defaultConfiguration.getString(code);
         return message == null ? getDefaultErrorMessage(code) : message;

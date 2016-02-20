@@ -18,7 +18,6 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -110,18 +109,12 @@ public class NewSetting {
     }
 
     /**
-     * Return the default messages file within the JAR that should contain all messages.
+     * Return the path to the default messages file within the JAR.
      *
-     * @return The default messages file, or {@code null} if it could not be retrieved
+     * @return The default messages file path
      */
-    public File getDefaultMessagesFile() {
-        String defaultFilePath = "/messages/messages_en.yml";
-        URL url = NewSetting.class.getResource(defaultFilePath);
-        if (url == null) {
-            return null;
-        }
-        File file = new File(url.getFile());
-        return file.exists() ? file : null;
+    public String getDefaultMessagesFile() {
+        return "/messages/messages_en.yml";
     }
 
     public String getEmailMessage() {

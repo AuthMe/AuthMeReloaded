@@ -50,8 +50,7 @@ public class MessagesIntegrationTest {
     @Before
     public void setUpMessages() {
         File testFile = TestHelper.getJarFile(YML_TEST_FILE);
-        File defaultFile = TestHelper.getJarFile(YML_DEFAULT_TEST_FILE);
-        messages = new Messages(testFile, defaultFile);
+        messages = new Messages(testFile, YML_DEFAULT_TEST_FILE);
     }
 
     @Test
