@@ -2,6 +2,7 @@ package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.process.email.AsyncAddEmail;
 import fr.xephi.authme.process.email.AsyncChangeEmail;
 import fr.xephi.authme.process.join.AsynchronousJoin;
@@ -20,18 +21,25 @@ public class Management {
 
     private final AuthMe plugin;
     private final BukkitScheduler sched;
+    private final ProcessService processService;
+    private final DataSource dataSource;
+    private final PlayerCache playerCache;
     private final NewSetting settings;
 
     /**
      * Constructor for Management.
      *
      * @param plugin AuthMe
-     * @param settings The plugin settings
      */
-    public Management(AuthMe plugin, NewSetting settings) {
+    public Management(AuthMe plugin, ProcessService processService, DataSource dataSource, PlayerCache playerCache) {
         this.plugin = plugin;
         this.sched = this.plugin.getServer().getScheduler();
-        this.settings = settings;
+        this.processService = processService;
+        this.dataSource = dataSource;
+        this.playerCache = playerCache;
+
+        // FIXME don't pass settings anymore -> go through the service in the processes
+        this.settings = processService.getSettings();
     }
 
     public void performLogin(final Player player, final String password, final boolean forceLogin) {
@@ -39,7 +47,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousLogin(player, password, forceLogin, plugin, plugin.getDataSource(), settings)
+                new AsynchronousLogin(player, password, forceLogin, plugin, dataSource, settings)
                     .process();
             }
         });
@@ -60,7 +68,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsyncRegister(player, password, email, plugin, plugin.getDataSource(), settings).process();
+                new AsyncRegister(player, password, email, plugin, dataSource, settings).process();
             }
         });
     }
@@ -80,7 +88,7 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousJoin(player, plugin, plugin.getDataSource()).process();
+                new AsynchronousJoin(player, plugin, dataSource).process();
             }
 
         });
@@ -91,28 +99,26 @@ public class Management {
 
             @Override
             public void run() {
-                new AsynchronousQuit(player, plugin, plugin.getDataSource(), isKick).process();
+                new AsynchronousQuit(player, plugin, dataSource, isKick).process();
             }
 
         });
     }
 
     public void performAddEmail(final Player player, final String newEmail) {
-        sched.runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                new AsyncAddEmail(player, plugin, newEmail, plugin.getDataSource(),
-                    PlayerCache.getInstance(), settings).process();
-            }
-        });
+        runTask(new AsyncAddEmail(player, newEmail, dataSource, playerCache, processService));
     }
 
     public void performChangeEmail(final Player player, final String oldEmail, final String newEmail) {
         sched.runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                new AsyncChangeEmail(player, plugin, oldEmail, newEmail, plugin.getDataSource(), PlayerCache.getInstance(), settings).process();
+                new AsyncChangeEmail(player, plugin, oldEmail, newEmail, dataSource, playerCache, settings).process();
             }
         });
+    }
+
+    private void runTask(Process process) {
+        sched.runTaskAsynchronously(plugin, process);
     }
 }

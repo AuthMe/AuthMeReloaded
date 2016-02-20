@@ -53,12 +53,12 @@ public class ChangePasswordTask implements Runnable {
 
                     @Override
                     public void run() {
-                            ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                            out.writeUTF("Forward");
-                            out.writeUTF("ALL");
-                            out.writeUTF("AuthMe");
-                            out.writeUTF("changepassword;" + name + ";" + hash + ";" + salt);
-                            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+                        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                        out.writeUTF("Forward");
+                        out.writeUTF("ALL");
+                        out.writeUTF("AuthMe");
+                        out.writeUTF("changepassword;" + name + ";" + hash + ";" + salt);
+                        player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
                     }
                 });
             }

@@ -60,7 +60,7 @@ public final class Settings {
         useCaptcha, emailRegistration, multiverse, bungee,
         banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
         disableSocialSpy, useEssentialsMotd, usePurge,
-        purgePlayerDat, purgeEssentialsFile, supportOldPassword,
+        purgePlayerDat, purgeEssentialsFile,
         purgeLimitedCreative, purgeAntiXray, purgePermissions,
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
@@ -72,19 +72,16 @@ public final class Settings {
         getMySQLColumnGroup, unRegisteredGroup,
         backupWindowsPath, getRegisteredGroup,
         rakamakUsers, rakamakUsersIp, getmailAccount, defaultWorld,
-        getPhpbbPrefix, getWordPressPrefix,
         spawnPriority, crazyloginFileName, getPassRegex, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
         getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
         getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
         getMailPort, maxLoginTry, captchaLength, saltLength,
-        getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
+        getmaxRegPerEmail, bCryptLog2Rounds,
         antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
         getMaxJoinPerIp;
     protected static FileConfiguration configFile;
-    private static AuthMe plugin;
-    private static Settings instance;
 
     /**
      * Constructor for Settings.
@@ -92,13 +89,11 @@ public final class Settings {
      * @param pl AuthMe
      */
     public Settings(AuthMe pl) {
-        instance = this;
-        plugin = pl;
-        configFile = plugin.getConfig();
+        configFile = pl.getConfig();
         loadVariables();
     }
 
-    public static void loadVariables() {
+    private static void loadVariables() {
         isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
         isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
@@ -172,7 +167,7 @@ public final class Settings {
         useCaptcha = configFile.getBoolean("Security.captcha.useCaptcha", false);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
+        emailRegistration = load(RegistrationSettings.USE_EMAIL_REGISTRATION);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = load(HooksSettings.MULTIVERSE);
@@ -190,10 +185,6 @@ public final class Settings {
         purgePlayerDat = configFile.getBoolean("Purge.removePlayerDat", false);
         purgeEssentialsFile = configFile.getBoolean("Purge.removeEssentialsFile", false);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
-        getPhpbbPrefix = configFile.getString("ExternalBoardOptions.phpbbTablePrefix", "phpbb_");
-        getPhpbbGroup = configFile.getInt("ExternalBoardOptions.phpbbActivatedGroupId", 2);
-        supportOldPassword = configFile.getBoolean("settings.security.supportOldPasswordHash", false);
-        getWordPressPrefix = configFile.getString("ExternalBoardOptions.wordpressTablePrefix", "wp_");
         purgeLimitedCreative = configFile.getBoolean("Purge.removeLimitedCreativesInventories", false);
         purgeAntiXray = configFile.getBoolean("Purge.removeAntiXRayFile", false);
         purgePermissions = configFile.getBoolean("Purge.removePermissions", false);

@@ -42,6 +42,7 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
@@ -304,7 +305,8 @@ public class AuthMe extends JavaPlugin {
         setupApi();
 
         // Set up the management
-        management = new Management(this, newSettings);
+        ProcessService processService = new ProcessService(newSettings, messages);
+        management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
         setupBungeeCordHook();
