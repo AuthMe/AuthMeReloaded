@@ -98,7 +98,7 @@ public class AsyncRegister {
     private void emailRegister() {
         if (Settings.getmaxRegPerEmail > 0
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            && database.getAllAuthsByEmail(email).size() >= Settings.getmaxRegPerEmail) {
+            && database.countAuthsByEmail(email) >= Settings.getmaxRegPerEmail) {
             m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
             return;
         }

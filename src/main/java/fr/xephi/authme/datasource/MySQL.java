@@ -706,20 +706,19 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByEmail(String email) {
-        List<String> emails = new ArrayList<>();
-        String sql = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.EMAIL + "=?;";
+    public synchronized int countAuthsByEmail(String email) {
+        String sql = "SELECT COUNT(1) FROM " + tableName + " WHERE UPPER(" + col.EMAIL + ") = UPPER(?)";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, email);
             try (ResultSet rs = pst.executeQuery()) {
-                while (rs.next()) {
-                    emails.add(rs.getString(col.NAME));
+                if (rs.next()) {
+                    return rs.getInt(1);
                 }
             }
         } catch (SQLException ex) {
             logSqlException(ex);
         }
-        return emails;
+        return 0;
     }
 
     @Override
@@ -907,12 +906,12 @@ public class MySQL implements DataSource {
 
     @Override
     public synchronized boolean isEmailStored(String email) {
-        String sql = "SELECT 1 FROM " + tableName + " WHERE " + col.EMAIL + " = ?";
-        try (Connection con = ds.getConnection()) {
-            PreparedStatement pst = con.prepareStatement(sql);
+        String sql = "SELECT 1 FROM " + tableName + " WHERE UPPER(" + col.EMAIL + ") = UPPER(?)";
+        try (Connection con = ds.getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, email);
-            ResultSet rs = pst.executeQuery();
-            return rs.next();
+            try (ResultSet rs = pst.executeQuery()) {
+                return rs.next();
+            }
         } catch (SQLException e) {
             logSqlException(e);
         }

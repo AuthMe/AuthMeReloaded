@@ -138,6 +138,39 @@ public class SQLiteIntegrationTest {
         assertThat(userAuth.getPassword(), equalToHash("b28c32f624a4eb161d6adc9acb5bfc5b", "f750ba32"));
     }
 
+    @Test
+    public void shouldFindIfEmailExists() {
+        // given
+        DataSource dataSource = new SQLite(settings, con, false);
+
+        // when
+        boolean isUserMailPresent = dataSource.isEmailStored("user@example.org");
+        boolean isUserMailPresentCaseInsensitive = dataSource.isEmailStored("user@example.ORG");
+        boolean isInvalidMailPresent = dataSource.isEmailStored("not-in-database@example.com");
+
+        // then
+        assertThat(isUserMailPresent, equalTo(true));
+        assertThat(isUserMailPresentCaseInsensitive, equalTo(true));
+        assertThat(isInvalidMailPresent, equalTo(false));
+    }
+
+    @Test
+    public void shouldCountAuthsByEmail() {
+        // given
+        DataSource dataSource = new SQLite(settings, con, false);
+
+        // when
+        int userMailCount = dataSource.countAuthsByEmail("user@example.ORG");
+        int invalidMailCount = dataSource.countAuthsByEmail("not.in.db@example.com");
+        dataSource.saveAuth(PlayerAuth.builder().name("Test").email("user@EXAMPLE.org").build());
+        int newUserCount = dataSource.countAuthsByEmail("user@Example.org");
+
+        // then
+        assertThat(userMailCount, equalTo(1));
+        assertThat(invalidMailCount, equalTo(0));
+        assertThat(newUserCount, equalTo(2));
+    }
+
     private static <T> void set(Property<T> property, T value) {
         when(settings.getProperty(property)).thenReturn(value);
     }
