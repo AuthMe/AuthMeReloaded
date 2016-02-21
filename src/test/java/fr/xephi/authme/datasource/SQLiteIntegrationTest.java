@@ -36,7 +36,7 @@ import static org.mockito.Mockito.when;
  */
 public class SQLiteIntegrationTest {
 
-    /** Mock for a settings instance. */
+    /** Mock of a settings instance. */
     private static NewSetting settings;
     /** Collection of SQL statements to execute for initialization of a test. */
     private static String[] sqlInitialize;
@@ -70,7 +70,7 @@ public class SQLiteIntegrationTest {
     }
 
     @Before
-    public void initializeConnectionAndTable() throws SQLException, ClassNotFoundException {
+    public void initializeConnectionAndTable() throws SQLException {
         silentClose(con);
         Connection connection = DriverManager.getConnection("jdbc:sqlite::memory:");
         try (Statement st = connection.createStatement()) {
@@ -88,14 +88,14 @@ public class SQLiteIntegrationTest {
         DataSource dataSource = new SQLite(settings, con, false);
 
         // when
-        boolean bobby = dataSource.isAuthAvailable("bobby");
-        boolean chris = dataSource.isAuthAvailable("chris");
-        boolean user = dataSource.isAuthAvailable("USER");
+        boolean isBobbyAvailable = dataSource.isAuthAvailable("bobby");
+        boolean isChrisAvailable = dataSource.isAuthAvailable("chris");
+        boolean isUserAvailable = dataSource.isAuthAvailable("USER");
 
         // then
-        assertThat(bobby, equalTo(true));
-        assertThat(chris, equalTo(false));
-        assertThat(user, equalTo(true));
+        assertThat(isBobbyAvailable, equalTo(true));
+        assertThat(isChrisAvailable, equalTo(false));
+        assertThat(isUserAvailable, equalTo(true));
     }
 
     @Test
@@ -109,8 +109,7 @@ public class SQLiteIntegrationTest {
         HashedPassword userPassword = dataSource.getPassword("user");
 
         // then
-        assertThat(bobbyPassword, equalToHash(
-            "$SHA$11aa0706173d7272$dbba96681c2ae4e0bfdf226d70fbbc5e4ee3d8071faa613bc533fe8a64817d10"));
+        assertThat(bobbyPassword, equalToHash("$SHA$11aa0706173d7272$dbba966"));
         assertThat(invalidPassword, nullValue());
         assertThat(userPassword, equalToHash("b28c32f624a4eb161d6adc9acb5bfc5b", "f750ba32"));
     }
@@ -131,8 +130,7 @@ public class SQLiteIntegrationTest {
         assertThat(bobbyAuth, hasAuthBasicData("bobby", "Bobby", "your@email.com", "123.45.67.89"));
         assertThat(bobbyAuth, hasAuthLocation(1.05, 2.1, 4.2, "world"));
         assertThat(bobbyAuth.getLastLogin(), equalTo(1449136800L));
-        assertThat(bobbyAuth.getPassword(), equalToHash(
-            "$SHA$11aa0706173d7272$dbba96681c2ae4e0bfdf226d70fbbc5e4ee3d8071faa613bc533fe8a64817d10"));
+        assertThat(bobbyAuth.getPassword(), equalToHash("$SHA$11aa0706173d7272$dbba966"));
 
         assertThat(userAuth, hasAuthBasicData("user", "user", "user@example.org", "34.56.78.90"));
         assertThat(userAuth, hasAuthLocation(124.1, 76.3, -127.8, "nether"));

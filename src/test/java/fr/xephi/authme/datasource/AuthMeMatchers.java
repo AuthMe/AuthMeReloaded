@@ -2,9 +2,9 @@ package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 
 import java.util.Objects;
 
@@ -21,14 +21,10 @@ public final class AuthMeMatchers {
     }
 
     public static Matcher<? super HashedPassword> equalToHash(final String hash, final String salt) {
-        return new BaseMatcher<HashedPassword>() {
+        return new TypeSafeMatcher<HashedPassword>() {
             @Override
-            public boolean matches(Object item) {
-                if (item instanceof HashedPassword) {
-                    HashedPassword input = (HashedPassword) item;
-                    return Objects.equals(hash, input.getHash()) && Objects.equals(salt, input.getSalt());
-                }
-                return false;
+            public boolean matchesSafely(HashedPassword item) {
+                return Objects.equals(hash, item.getHash()) && Objects.equals(salt, item.getSalt());
             }
 
             @Override
@@ -44,17 +40,13 @@ public final class AuthMeMatchers {
 
     public static Matcher<? super PlayerAuth> hasAuthBasicData(final String name, final String realName,
                                                                final String email, final String ip) {
-        return new BaseMatcher<PlayerAuth>() {
+        return new TypeSafeMatcher<PlayerAuth>() {
             @Override
-            public boolean matches(Object item) {
-                if (item instanceof PlayerAuth) {
-                    PlayerAuth input = (PlayerAuth) item;
-                    return Objects.equals(name, input.getNickname())
-                        && Objects.equals(realName, input.getRealName())
-                        && Objects.equals(email, input.getEmail())
-                        && Objects.equals(ip, input.getIp());
-                }
-                return false;
+            public boolean matchesSafely(PlayerAuth item) {
+                return Objects.equals(name, item.getNickname())
+                    && Objects.equals(realName, item.getRealName())
+                    && Objects.equals(email, item.getEmail())
+                    && Objects.equals(ip, item.getIp());
             }
 
             @Override
@@ -67,17 +59,13 @@ public final class AuthMeMatchers {
 
     public static Matcher<? super PlayerAuth> hasAuthLocation(final double x, final double y, final double z,
                                                               final String world) {
-        return new BaseMatcher<PlayerAuth>() {
+        return new TypeSafeMatcher<PlayerAuth>() {
             @Override
-            public boolean matches(Object item) {
-                if (item instanceof PlayerAuth) {
-                    PlayerAuth input = (PlayerAuth) item;
-                    return Objects.equals(x, input.getQuitLocX())
-                        && Objects.equals(y, input.getQuitLocY())
-                        && Objects.equals(z, input.getQuitLocZ())
-                        && Objects.equals(world, input.getWorld());
-                }
-                return false;
+            public boolean matchesSafely(PlayerAuth item) {
+                return Objects.equals(x, item.getQuitLocX())
+                    && Objects.equals(y, item.getQuitLocY())
+                    && Objects.equals(z, item.getQuitLocZ())
+                    && Objects.equals(world, item.getWorld());
             }
 
             @Override

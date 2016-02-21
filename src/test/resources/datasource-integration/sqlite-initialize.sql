@@ -17,6 +17,6 @@ CREATE TABLE authme (
 );
 
 INSERT INTO authme (id, username, password, ip, lastlogin, x, y, z, world, email, isLogged, realname, salt)
-VALUES (1,'bobby','$SHA$11aa0706173d7272$dbba96681c2ae4e0bfdf226d70fbbc5e4ee3d8071faa613bc533fe8a64817d10','123.45.67.89',1449136800,1.05,2.1,4.2,'world','your@email.com',0,'Bobby',NULL);
+VALUES (1,'bobby','$SHA$11aa0706173d7272$dbba966','123.45.67.89',1449136800,1.05,2.1,4.2,'world','your@email.com',0,'Bobby',NULL);
 INSERT INTO authme (id, username, password, ip, lastlogin, x, y, z, world, email, isLogged, realname, salt)
 VALUES (NULL,'user','b28c32f624a4eb161d6adc9acb5bfc5b','34.56.78.90',1453242857,124.1,76.3,-127.8,'nether','user@example.org',0,'user','f750ba32');
