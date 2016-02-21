@@ -1,9 +1,8 @@
 package fr.xephi.authme.cache.limbo;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.backup.DataFileCache;
 import fr.xephi.authme.cache.backup.JsonCache;
+import fr.xephi.authme.cache.backup.PlayerData;
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -19,7 +18,7 @@ public class LimboCache {
     private volatile static LimboCache singleton;
     public final ConcurrentHashMap<String, LimboPlayer> cache;
     public final AuthMe plugin;
-    private final JsonCache playerData;
+    private final JsonCache jsonCache;
 
     /**
      * Constructor for LimboCache.
@@ -29,7 +28,7 @@ public class LimboCache {
     private LimboCache(AuthMe plugin) {
         this.plugin = plugin;
         this.cache = new ConcurrentHashMap<>();
-        this.playerData = new JsonCache();
+        this.jsonCache = new JsonCache();
     }
 
     /**
@@ -52,44 +51,28 @@ public class LimboCache {
     public void addLimboPlayer(Player player) {
         String name = player.getName().toLowerCase();
         Location loc = player.getLocation();
-        boolean operator = false;
+        boolean operator = player.isOp();
+        boolean flyEnabled = player.getAllowFlight();
         String playerGroup = "";
+        PermissionsManager permsMan = plugin.getPermissionsManager();
+        if (permsMan.hasGroupSupport()) {
+            playerGroup = permsMan.getPrimaryGroup(player);
+        }
 
-        // Get the permissions manager, and make sure it's valid
-        PermissionsManager permsMan = this.plugin.getPermissionsManager();
-        if (permsMan == null)
-            ConsoleLogger.showError("Unable to access permissions manager!");
-        assert permsMan != null;
-
-        if (playerData.doesCacheExist(player)) {
-            DataFileCache cache = playerData.readCache(player);
+        if (jsonCache.doesCacheExist(player)) {
+            PlayerData cache = jsonCache.readCache(player);
             if (cache != null) {
                 playerGroup = cache.getGroup();
                 operator = cache.getOperator();
+                flyEnabled = cache.isFlyEnabled();
             }
-        } else {
-            operator = player.isOp();
-
-            // Check whether groups are supported
-            if (permsMan.hasGroupSupport())
-                playerGroup = permsMan.getPrimaryGroup(player);
         }
 
         if (player.isDead()) {
             loc = plugin.getSpawnLocation(player);
         }
 
-        cache.put(name, new LimboPlayer(name, loc, operator, playerGroup));
-    }
-
-    /**
-     * Method addLimboPlayer.
-     *
-     * @param player Player
-     * @param group  String
-     */
-    public void addLimboPlayer(Player player, String group) {
-        cache.put(player.getName().toLowerCase(), new LimboPlayer(player.getName().toLowerCase(), group));
+        cache.put(name, new LimboPlayer(name, loc, operator, playerGroup, flyEnabled));
     }
 
     /**
@@ -99,7 +82,11 @@ public class LimboCache {
      */
     public void deleteLimboPlayer(String name) {
         checkNotNull(name);
-        cache.remove(name.toLowerCase());
+        name = name.toLowerCase();
+        if (cache.containsKey(name)) {
+            cache.get(name).clearTask();
+            cache.remove(name);
+        }
     }
 
     /**
