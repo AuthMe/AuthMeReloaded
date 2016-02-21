@@ -654,15 +654,16 @@ public class AuthMe extends JavaPlugin {
                 Settings.protectInventoryBeforeLogInEnabled = false;
                 newSettings.setProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN, false);
             }
+            if (inventoryProtector != null) {
+                inventoryProtector.unregister();
+                inventoryProtector = null;
+            }
             return;
         }
-
+        
         if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN) && inventoryProtector == null) {
             inventoryProtector = new AuthMeInventoryPacketAdapter(this);
             inventoryProtector.register();
-        } else if (inventoryProtector != null) {
-            inventoryProtector.unregister();
-            inventoryProtector = null;
         }
         if (tabComplete == null && newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN)) {
             tabComplete = new AuthMeTabCompletePacketAdapter(this);
