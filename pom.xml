@@ -376,6 +376,13 @@
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
+        <!-- JDBC driver for datasource integration tests -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.8.11.2</version>
+            <scope>test</scope>
+        </dependency>
 
         <!-- Log4J Logger (required by the console filter) -->
         <dependency>

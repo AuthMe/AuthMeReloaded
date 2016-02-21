@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -43,6 +44,21 @@ public class SQLite implements DataSource {
         } catch (ClassNotFoundException | SQLException ex) {
             ConsoleLogger.logException("Error during SQLite initialization:", ex);
             throw ex;
+        }
+    }
+
+    @VisibleForTesting
+    SQLite(NewSetting settings, Connection connection, boolean executeSetup) {
+        this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
+        this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
+        this.col = new Columns(settings);
+        this.con = connection;
+        if (executeSetup) {
+            try {
+                setup();
+            } catch (SQLException e) {
+                throw new IllegalStateException(e);
+            }
         }
     }
 
