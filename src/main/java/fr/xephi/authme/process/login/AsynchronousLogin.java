@@ -105,7 +105,7 @@ public class AsynchronousLogin {
                 } else {
                     msg = m.retrieve(MessageKey.REGISTER_MESSAGE);
                 }
-                BukkitTask msgT = Bukkit.getScheduler().runTaskAsynchronously(plugin,
+                BukkitTask msgT = Bukkit.getScheduler().runTask(plugin,
                     new MessageTask(plugin, name, msg, settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
                 LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
             }

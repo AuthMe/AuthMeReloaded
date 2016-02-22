@@ -1,16 +1,7 @@
 package fr.xephi.authme.process.register;
 
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.properties.HooksSettings;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -19,10 +10,17 @@ import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
@@ -37,8 +35,8 @@ public class ProcessSyncPasswordRegister implements Runnable {
     /**
      * Constructor for ProcessSyncPasswordRegister.
      *
-     * @param player Player
-     * @param plugin AuthMe
+     * @param player   Player
+     * @param plugin   AuthMe
      * @param settings The plugin settings
      */
     public ProcessSyncPasswordRegister(Player player, AuthMe plugin, NewSetting settings) {
@@ -77,11 +75,10 @@ public class ProcessSyncPasswordRegister implements Runnable {
         BukkitScheduler sched = plugin.getServer().getScheduler();
         BukkitTask task;
         if (delay != 0) {
-            task = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), delay);
+            task = sched.runTaskLater(plugin, new TimeoutTask(plugin, name, player), delay);
             cache.getLimboPlayer(name).setTimeoutTaskId(task);
         }
-        task = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name,
-            m.retrieve(MessageKey.LOGIN_MESSAGE), interval));
+        task = sched.runTask(plugin, new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
         cache.getLimboPlayer(name).setMessageTaskId(task);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -158,7 +155,7 @@ public class ProcessSyncPasswordRegister implements Runnable {
 
         // Register is now finished; we can force all commands
         forceCommands();
-        
+
         sendTo();
     }
 

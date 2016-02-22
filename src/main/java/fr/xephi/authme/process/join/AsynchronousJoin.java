@@ -205,20 +205,20 @@ public class AsynchronousJoin {
 
         int msgInterval = Settings.getWarnMessageInterval;
         if (timeOut > 0) {
-            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
+            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name, player), timeOut);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
 
-        String[] msg;
+        MessageKey msg;
         if (isAuthAvailable) {
-            msg = m.retrieve(MessageKey.LOGIN_MESSAGE);
+            msg = MessageKey.LOGIN_MESSAGE;
         } else {
             msg = Settings.emailRegistration
-                ? m.retrieve(MessageKey.REGISTER_EMAIL_MESSAGE)
-                : m.retrieve(MessageKey.REGISTER_MESSAGE);
+                ? MessageKey.REGISTER_EMAIL_MESSAGE
+                : MessageKey.REGISTER_MESSAGE;
         }
         if (msgInterval > 0 && LimboCache.getInstance().getLimboPlayer(name) != null) {
-            BukkitTask msgTask = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, msg, msgInterval));
+            BukkitTask msgTask = sched.runTask(plugin, new MessageTask(plugin, name, msg, msgInterval));
             LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
         }
     }
