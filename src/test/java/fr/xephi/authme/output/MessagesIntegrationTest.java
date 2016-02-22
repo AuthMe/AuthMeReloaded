@@ -266,4 +266,16 @@ public class MessagesIntegrationTest {
         assertThat(messages.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE),
             equalTo("Message from default file"));
     }
+
+    @Test
+    public void shouldRetrieveMessageWithReplacements() {
+        // given
+        MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
+
+        // when
+        String result = messages.retrieveSingle(key, "24680");
+
+        // then
+        assertThat(result, equalTo("Use /captcha 24680 to solve the captcha"));
+    }
 }
