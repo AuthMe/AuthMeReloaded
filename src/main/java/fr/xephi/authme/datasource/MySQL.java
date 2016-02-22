@@ -22,7 +22,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
@@ -131,7 +130,7 @@ public class MySQL implements DataSource {
                 + col.REAL_NAME + " VARCHAR(255) NOT NULL,"
                 + col.PASSWORD + " VARCHAR(255) NOT NULL,"
                 + col.IP + " VARCHAR(40) NOT NULL DEFAULT '127.0.0.1',"
-                + col.LAST_LOGIN + " TIMESTAMP NOT NULL DEFAULT current_timestamp,"
+                + col.LAST_LOGIN + " BIGINT NOT NULL DEFAULT 0,"
                 + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0',"
                 + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0',"
                 + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0',"
@@ -182,9 +181,9 @@ public class MySQL implements DataSource {
             rs = md.getColumns(null, null, tableName, col.LAST_LOGIN);
             if (!rs.next()) {
                 st.executeUpdate("ALTER TABLE " + tableName
-                    + " ADD COLUMN " + col.LAST_LOGIN + " TIMESTAMP NOT NULL DEFAULT current_timestamp;");
+                    + " ADD COLUMN " + col.LAST_LOGIN + " BIGINT NOT NULL DEFAULT 0;");
             } else {
-                migrateLastLoginColumnToTimestamp(con, rs);
+                migrateLastLoginColumnToBigInt(con, rs);
             }
             rs.close();
 
@@ -320,7 +319,7 @@ public class MySQL implements DataSource {
             pst.setString(1, auth.getNickname());
             pst.setString(2, auth.getPassword().getHash());
             pst.setString(3, auth.getIp());
-            pst.setTimestamp(4, new Timestamp(auth.getLastLogin()));
+            pst.setLong(4, auth.getLastLogin());
             pst.setString(5, auth.getRealName());
             pst.setString(6, auth.getEmail());
             if (useSalt) {
@@ -572,7 +571,7 @@ public class MySQL implements DataSource {
             + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, auth.getIp());
-            pst.setTimestamp(2, new Timestamp(auth.getLastLogin()));
+            pst.setLong(2, auth.getLastLogin());
             pst.setString(3, auth.getRealName());
             pst.setString(4, auth.getNickname());
             pst.executeUpdate();
@@ -925,7 +924,7 @@ public class MySQL implements DataSource {
             .name(row.getString(col.NAME))
             .realName(row.getString(col.REAL_NAME))
             .password(row.getString(col.PASSWORD), salt)
-            .lastLogin(safeGetTimestamp(row))
+            .lastLogin(row.getLong(col.LAST_LOGIN))
             .ip(row.getString(col.IP))
             .locWorld(row.getString(col.LASTLOC_WORLD))
             .locX(row.getDouble(col.LASTLOC_X))
@@ -937,24 +936,15 @@ public class MySQL implements DataSource {
     }
 
     /**
-     * Retrieve the last login timestamp in a safe way.
+     * Check if the lastlogin column is of type timestamp and, if so, revert it to the bigint format.
      *
-     * @param row The ResultSet to read
-     * @return The timestamp (as number of milliseconds since 1970-01-01 00:00:00 GMT)
+     * @param con Connection to the database
+     * @param rs ResultSet containing meta data for the lastlogin column
      */
-    private long safeGetTimestamp(ResultSet row) {
-        try {
-            return row.getTimestamp(col.LAST_LOGIN).getTime();
-        } catch (SQLException e) {
-            ConsoleLogger.logException("Could not get timestamp from resultSet. Defaulting to current time", e);
-        }
-        return System.currentTimeMillis();
-    }
-
-    private void migrateLastLoginColumnToTimestamp(Connection con, ResultSet rs) throws SQLException {
+    private void migrateLastLoginColumnToBigInt(Connection con, ResultSet rs) throws SQLException {
         final int columnType = rs.getInt("DATA_TYPE");
-        if (columnType == Types.BIGINT) {
-            ConsoleLogger.info("Migrating lastlogin column from bigint to timestamp");
+        if (columnType == Types.TIMESTAMP) {
+            ConsoleLogger.info("Migrating lastlogin column from timestamp to bigint");
             final String lastLoginOld = col.LAST_LOGIN + "_old";
 
             // Rename lastlogin to lastlogin_old
@@ -965,12 +955,12 @@ public class MySQL implements DataSource {
 
             // Create lastlogin column
             sql = String.format("ALTER TABLE %s ADD COLUMN %s "
-                    + "TIMESTAMP NOT NULL DEFAULT current_timestamp AFTER %s",
+                    + "BIGINT NOT NULL DEFAULT 0 AFTER %s",
                 tableName, col.LAST_LOGIN, col.IP);
             con.prepareStatement(sql).execute();
 
             // Set values of lastlogin based on lastlogin_old
-            sql = String.format("UPDATE %s SET %s = FROM_UNIXTIME(%s)",
+            sql = String.format("UPDATE %s SET %s = UNIX_TIMESTAMP(%s)",
                 tableName, col.LAST_LOGIN, lastLoginOld);
             con.prepareStatement(sql).execute();
 
@@ -978,7 +968,7 @@ public class MySQL implements DataSource {
             sql = String.format("ALTER TABLE %s DROP COLUMN %s",
                 tableName, lastLoginOld);
             con.prepareStatement(sql).execute();
-            ConsoleLogger.info("Finished migration of lastlogin (bigint to timestamp)");
+            ConsoleLogger.info("Finished migration of lastlogin (timestamp to bigint)");
         }
     }
 
