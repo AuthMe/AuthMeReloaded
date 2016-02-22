@@ -743,25 +743,9 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Return the spawn location of a player
+    @Deprecated
     public Location getSpawnLocation(Player player) {
-        World world = player.getWorld();
-        String[] spawnPriority = Settings.spawnPriority.split(",");
-        Location spawnLoc = world.getSpawnLocation();
-        for (int i = spawnPriority.length - 1; i >= 0; i--) {
-            String s = spawnPriority[i];
-            if (s.equalsIgnoreCase("default") && getDefaultSpawn(world) != null)
-                spawnLoc = getDefaultSpawn(world);
-            if (s.equalsIgnoreCase("multiverse") && getMultiverseSpawn(world) != null)
-                spawnLoc = getMultiverseSpawn(world);
-            if (s.equalsIgnoreCase("essentials") && getEssentialsSpawn() != null)
-                spawnLoc = getEssentialsSpawn();
-            if (s.equalsIgnoreCase("authme") && getAuthMeSpawn(player) != null)
-                spawnLoc = getAuthMeSpawn(player);
-        }
-        if (spawnLoc == null) {
-            spawnLoc = world.getSpawnLocation();
-        }
-        return spawnLoc;
+        return Spawn.getInstance().getSpawnLocation(player);
     }
 
     // Return the default spawn point of a world
