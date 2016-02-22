@@ -8,7 +8,6 @@ import com.google.gson.JsonDeserializationContext;
 import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import fr.xephi.authme.ConsoleLogger;
@@ -41,14 +40,8 @@ public class JsonCache {
             return;
         }
 
-        String path;
-        try {
-            path = player.getUniqueId().toString();
-        } catch (Exception | Error e) {
-            path = player.getName().toLowerCase();
-        }
-
-        File file = new File(cacheDir, path + File.separator + "cache.json");
+        String name = player.getName().toLowerCase();
+        File file = new File(cacheDir, name + File.separator + "cache.json");
         if (file.exists()) {
             return;
         }
@@ -61,19 +54,13 @@ public class JsonCache {
             Files.touch(file);
             Files.write(data, file, Charsets.UTF_8);
         } catch (IOException e) {
-            e.printStackTrace();
+            ConsoleLogger.writeStackTrace(e);
         }
     }
 
     public PlayerData readCache(Player player) {
-        String path;
-        try {
-            path = player.getUniqueId().toString();
-        } catch (Exception | Error e) {
-            path = player.getName().toLowerCase();
-        }
-
-        File file = new File(cacheDir, path + File.separator + "cache.json");
+        String name = player.getName().toLowerCase();
+        File file = new File(cacheDir, name + File.separator + "cache.json");
         if (!file.exists()) {
             return null;
         }
@@ -81,20 +68,15 @@ public class JsonCache {
         try {
             String str = Files.toString(file, Charsets.UTF_8);
             return gson.fromJson(str, PlayerData.class);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            ConsoleLogger.writeStackTrace(e);
             return null;
         }
     }
 
     public void removeCache(Player player) {
-        String path;
-        try {
-            path = player.getUniqueId().toString();
-        } catch (Exception | Error e) {
-            path = player.getName().toLowerCase();
-        }
-        File file = new File(cacheDir, path);
+        String name = player.getName().toLowerCase();
+        File file = new File(cacheDir, name);
         if (file.exists()) {
             purgeDirectory(file);
             if (!file.delete()) {
@@ -104,19 +86,15 @@ public class JsonCache {
     }
 
     public boolean doesCacheExist(Player player) {
-        String path;
-        try {
-            path = player.getUniqueId().toString();
-        } catch (Exception | Error e) {
-            path = player.getName().toLowerCase();
-        }
-        File file = new File(cacheDir, path + File.separator + "cache.json");
+        String name = player.getName().toLowerCase();
+        File file = new File(cacheDir, name + File.separator + "cache.json");
         return file.exists();
     }
 
     private class PlayerDataDeserializer implements JsonDeserializer<PlayerData> {
         @Override
-        public PlayerData deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
+        public PlayerData deserialize(JsonElement jsonElement, Type type,
+                                      JsonDeserializationContext context) {
             JsonObject jsonObject = jsonElement.getAsJsonObject();
             if (jsonObject == null) {
                 return null;
@@ -143,7 +121,7 @@ public class JsonCache {
     private class PlayerDataSerializer implements JsonSerializer<PlayerData> {
         @Override
         public JsonElement serialize(PlayerData playerData, Type type,
-                                     JsonSerializationContext jsonSerializationContext) {
+                                     JsonSerializationContext context) {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("group", playerData.getGroup());
             jsonObject.addProperty("operator", playerData.getOperator());
