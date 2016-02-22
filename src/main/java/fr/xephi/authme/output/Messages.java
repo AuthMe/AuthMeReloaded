@@ -55,17 +55,7 @@ public class Messages {
      * @param replacements The replacements to apply for the tags
      */
     public void send(CommandSender sender, MessageKey key, String... replacements) {
-        String message = retrieveSingle(key);
-        String[] tags = key.getTags();
-        if (replacements.length == tags.length) {
-            for (int i = 0; i < tags.length; ++i) {
-                message = message.replace(tags[i], replacements[i]);
-            }
-        } else {
-            ConsoleLogger.showError("Invalid number of replacements for message key '" + key + "'");
-            send(sender, key);
-        }
-
+        String message = retrieveSingle(key, replacements);
         for (String line : message.split("\n")) {
             sender.sendMessage(line);
         }
@@ -97,6 +87,27 @@ public class Messages {
      */
     public String retrieveSingle(MessageKey key) {
         return StringUtils.join("\n", retrieve(key));
+    }
+
+    /**
+     * Retrieve the given message code with the given tag replacements. Note that this method
+     * logs an error if the number of supplied replacements doesn't correspond to the number of tags
+     * the message key contains.
+     *
+     * @param key The key of the message to send
+     * @param replacements The replacements to apply for the tags
+     */
+    public String retrieveSingle(MessageKey key, String... replacements) {
+        String message = retrieveSingle(key);
+        String[] tags = key.getTags();
+        if (replacements.length == tags.length) {
+            for (int i = 0; i < tags.length; ++i) {
+                message = message.replace(tags[i], replacements[i]);
+            }
+        } else {
+            ConsoleLogger.showError("Invalid number of replacements for message key '" + key + "'");
+        }
+        return message;
     }
 
     /**
