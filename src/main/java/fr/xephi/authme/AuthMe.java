@@ -77,6 +77,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -496,11 +497,41 @@ public class AuthMe extends JavaPlugin {
         if (newSettings != null) {
             new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.STOP);
         }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<Integer> pendingTasks = new ArrayList<>();
+                for (BukkitTask pendingTask : getServer().getScheduler().getPendingTasks()) {
+                    if (pendingTask.getOwner().equals(plugin) && !pendingTask.isSync()) {
+                        pendingTasks.add(pendingTask.getTaskId());
+                    }
+                }
+                ConsoleLogger.info("Waiting for " + pendingTasks.size() + " tasks to finish");
+                int progress = 0;
+                for (int taskId : pendingTasks) {
+                    int maxTries = 5;
+                    while (getServer().getScheduler().isCurrentlyRunning(taskId)) {
+                        if (maxTries <= 0) {
+                            ConsoleLogger.info("Async task " + taskId + " times out after to many tries");
+                            break;
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        maxTries--;
+                    }
+
+                    progress++;
+                    ConsoleLogger.info("Progress: " + progress + " / " + pendingTasks.size());
+                }
+                if (database != null) {
+                    database.close();
+                }
+            }
+        }, "AuthMe-DataSource#close").start();
 
         // Close the database
-        if (database != null) {
-            database.close();
-        }
 
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
@@ -666,6 +697,7 @@ public class AuthMe extends JavaPlugin {
                 ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
                 newSettings.setProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN, false);
+                newSettings.save();
             }
             return;
         }
