@@ -74,10 +74,9 @@ public class Spawn extends CustomConfiguration {
 
     public Location getSpawn() {
         try {
-            String worldName;
-            World world;
-            if (StringUtils.isEmpty(worldName = getString("spawn.world")) ||
-                (world = Bukkit.getWorld(worldName)) == null) {
+            String worldName = getString("spawn.world");
+            World world = Bukkit.getWorld(worldName);
+            if (StringUtils.isEmpty(worldName) || world == null) {
                 return null;
             }
             return new Location(world, getDouble("spawn.x"), getDouble("spawn.y"), getDouble("spawn.z"),
@@ -107,11 +106,11 @@ public class Spawn extends CustomConfiguration {
     // Return the spawn location of a player
     public Location getSpawnLocation(Player player) {
         AuthMe plugin = AuthMe.getInstance();
-        World world;
-        if (plugin == null || player == null || (world = player.getWorld()) == null) {
+        if (plugin == null || player == null || player.getWorld() == null) {
             return null;
         }
 
+        World world = player.getWorld();
         Location spawnLoc = null;
         for (String priority : spawnPriority) {
             switch (priority.toLowerCase()) {
