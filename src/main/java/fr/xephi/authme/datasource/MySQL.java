@@ -81,6 +81,19 @@ public class MySQL implements DataSource {
         }
     }
 
+    MySQL(NewSetting settings, HikariDataSource hikariDataSource) {
+        this.host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
+        this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
+        this.username = settings.getProperty(DatabaseSettings.MYSQL_USERNAME);
+        this.password = settings.getProperty(DatabaseSettings.MYSQL_PASSWORD);
+        this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
+        this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
+        this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
+        this.col = new Columns(settings);
+        this.hashAlgorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
+        ds = hikariDataSource;
+    }
+
     private synchronized void setConnectionArguments() throws RuntimeException {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");

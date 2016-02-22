@@ -48,18 +48,11 @@ public class SQLite implements DataSource {
     }
 
     @VisibleForTesting
-    SQLite(NewSetting settings, Connection connection, boolean executeSetup) {
+    SQLite(NewSetting settings, Connection connection) {
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
         this.con = connection;
-        if (executeSetup) {
-            try {
-                setup();
-            } catch (SQLException e) {
-                throw new IllegalStateException(e);
-            }
-        }
     }
 
     private synchronized void connect() throws ClassNotFoundException, SQLException {
