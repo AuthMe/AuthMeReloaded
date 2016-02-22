@@ -137,6 +137,7 @@ public class CacheDataSource implements DataSource {
     @Override
     public synchronized void close() {
         source.close();
+        cachedAuths.invalidateAll();
     }
 
     @Override
