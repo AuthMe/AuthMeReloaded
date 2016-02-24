@@ -57,7 +57,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         Path sqlInitFile = TestHelper.getJarPath("/datasource-integration/sql-initialize.sql");
         // Note ljacqu 20160221: It appears that we can only run one statement per Statement.execute() so we split
         // the SQL file by ";\n" as to get the individual statements
-        sqlInitialize = new String(Files.readAllBytes(sqlInitFile)).split(";\\n");
+        sqlInitialize = new String(Files.readAllBytes(sqlInitFile)).split(";(\\r?)\\n");
     }
 
     @Before
