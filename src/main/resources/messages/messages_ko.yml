@@ -61,5 +61,6 @@ antibot_auto_disabled: '[AuthMe] 봇차단모드가 %m 분 후에 자동적으�
 # TODO password_error_nick: '&cYou can''t use your name as password, please choose another one...'
 # TODO password_error_unsafe: '&cThe chosen password isn''t safe, please choose another one...'
 # TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+# TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
 # TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
 # TODO not_owner_error: 'You are not the owner of this account. Please try another name!'

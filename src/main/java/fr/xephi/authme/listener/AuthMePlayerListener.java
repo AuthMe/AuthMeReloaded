@@ -17,7 +17,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -243,9 +242,7 @@ public class AuthMePlayerListener implements Listener {
             String realName = auth.getRealName();
             if (!realName.isEmpty() && !realName.equals("Player") && !realName.equals(event.getName())) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                // TODO: Add a message like : MessageKey.INVALID_NAME_CASE
-                event.setKickMessage("You should join using username: " + ChatColor.AQUA + realName +
-                    ChatColor.RESET + "\nnot: " + ChatColor.RED + event.getName());
+                event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CASE, realName, event.getName()));
                 return;
             }
             if (realName.isEmpty() || realName.equals("Player")) {

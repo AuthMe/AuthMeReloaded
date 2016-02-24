@@ -55,6 +55,7 @@ antibot_auto_enabled: '&4[AntiBotService] AntiBot diaktifkan dikarenakan banyak 
 antibot_auto_disabled: '&2[AntiBotService] AntiBot dimatikan setelah %m menit!'
 # TODO email_already_used: '&4The email address is already being used'
 # TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
+# TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
 # TODO country_banned: '&4Your country is banned from this server!'
 # TODO usage_unreg: '&cUsage: /unregister <password>'
 # TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'

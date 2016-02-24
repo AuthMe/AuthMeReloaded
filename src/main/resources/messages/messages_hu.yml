@@ -58,5 +58,6 @@ antibot_auto_enabled: '&4[AntiBot] Az AntiBot védelem bekapcsolt a nagy számú
 antibot_auto_disabled: '&2[AntiBot] Az AntiBot kikapcsol %m múlva!'
 kick_antibot: 'Az AntiBot védelem bekapcsolva! Kérünk várj pár másodpercet a csatlakozáshoz.'
 # TODO email_already_used: '&4The email address is already being used'
+# TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
 # TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
 # TODO not_owner_error: 'You are not the owner of this account. Please try another name!'

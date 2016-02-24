@@ -63,5 +63,6 @@ antibot_auto_disabled: '&8[&6用戶系統&8] 防止機械人程序檢查到不�
 # TODO email_already_used: '&4The email address is already being used'
 # TODO kick_antibot: 'AntiBot protection mode is enabled! You have to wait some minutes before joining the server.'
 # TODO email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
+# TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
 # TODO two_factor_create: '&2Your secret code is %code. You can scan it from here %url'
 # TODO not_owner_error: 'You are not the owner of this account. Please try another name!'
