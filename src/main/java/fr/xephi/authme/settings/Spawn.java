@@ -23,13 +23,13 @@ public class Spawn extends CustomConfiguration {
 
     private Spawn() {
         super(new File(Settings.PLUGIN_FOLDER, "spawn.yml"));
-        reload();
+        load();
+        save();
+        spawnPriority = Settings.spawnPriority.split(",");
     }
 
     public static void reload() {
-        getInstance().load();
-        getInstance().save();
-        spawnPriority = Settings.spawnPriority.split(",");
+        spawn = new Spawn();
     }
 
     /**

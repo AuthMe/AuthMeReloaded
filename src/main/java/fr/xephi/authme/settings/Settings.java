@@ -145,8 +145,6 @@ public final class Settings {
         denyTabcompleteBeforeLogin = load(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
         hideTablistBeforeLogin = load(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN);
 
-        plugin.checkProtocolLib();
-
         passwordMaxLength = load(SecuritySettings.MAX_PASSWORD_LENGTH);
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
