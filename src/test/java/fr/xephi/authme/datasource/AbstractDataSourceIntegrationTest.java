@@ -4,10 +4,13 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.junit.Test;
 
+import java.util.List;
+
 import static fr.xephi.authme.datasource.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.datasource.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.datasource.AuthMeMatchers.hasAuthLocation;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 
@@ -98,13 +101,104 @@ public abstract class AbstractDataSourceIntegrationTest {
         // when
         int userMailCount = dataSource.countAuthsByEmail("user@example.ORG");
         int invalidMailCount = dataSource.countAuthsByEmail("not.in.db@example.com");
-        dataSource.saveAuth(PlayerAuth.builder().name("Test").email("user@EXAMPLE.org").build());
+        boolean response = dataSource.saveAuth(
+            PlayerAuth.builder().name("Test").email("user@EXAMPLE.org").build());
         int newUserCount = dataSource.countAuthsByEmail("user@Example.org");
 
         // then
         assertThat(userMailCount, equalTo(1));
         assertThat(invalidMailCount, equalTo(0));
+        assertThat(response, equalTo(true));
         assertThat(newUserCount, equalTo(2));
+    }
+
+    @Test
+    public void shouldReturnAllAuths() {
+        // given
+        DataSource dataSource = getDataSource();
+
+        // when
+        List<PlayerAuth> authList = dataSource.getAllAuths();
+        boolean response = dataSource.saveAuth(
+            PlayerAuth.builder().name("Test").email("user@EXAMPLE.org").build());
+        List<PlayerAuth> newAuthList = dataSource.getAllAuths();
+
+        // then
+        assertThat(response, equalTo(true));
+        assertThat(authList, hasSize(2));
+        assertThat(newAuthList, hasSize(3));
+        boolean hasBobby = false;
+        for (PlayerAuth auth : authList) {
+            if (auth.getNickname().equals("bobby")) {
+                hasBobby = true;
+                break;
+            }
+        }
+        assertThat(hasBobby, equalTo(true));
+    }
+
+    @Test
+    public void shouldUpdatePassword() {
+        // given
+        DataSource dataSource = getDataSource();
+        HashedPassword newHash = new HashedPassword("new_hash");
+
+        // when
+        boolean response1 = dataSource.updatePassword("user", newHash);
+        boolean response2 = dataSource.updatePassword("non-existent-name", new HashedPassword("sd"));
+
+        // then
+        assertThat(response1 && response2, equalTo(true));
+        assertThat(dataSource.getPassword("user"), equalToHash(newHash));
+    }
+
+    @Test
+    public void shouldRemovePlayerAuth() {
+        // given
+        DataSource dataSource = getDataSource();
+
+        // when
+        boolean response1 = dataSource.removeAuth("bobby");
+        boolean response2 = dataSource.removeAuth("does-not-exist");
+
+        // then
+        assertThat(response1 && response2, equalTo(true));
+        assertThat(dataSource.getAuth("bobby"), nullValue());
+        assertThat(dataSource.isAuthAvailable("bobby"), equalTo(false));
+    }
+
+    @Test
+    public void shouldUpdateSession() {
+        // given
+        DataSource dataSource = getDataSource();
+        PlayerAuth bobby = PlayerAuth.builder()
+            .name("bobby").realName("BOBBY").lastLogin(123L)
+            .ip("12.12.12.12").build();
+
+        // when
+        boolean response = dataSource.updateSession(bobby);
+
+        // then
+        assertThat(response, equalTo(true));
+        PlayerAuth result = dataSource.getAuth("bobby");
+        assertThat(result, hasAuthBasicData("bobby", "BOBBY", "your@email.com", "12.12.12.12"));
+        assertThat(result.getLastLogin(), equalTo(123L));
+    }
+
+    @Test
+    public void shouldUpdateLastLoc() {
+        // given
+        DataSource dataSource = getDataSource();
+        PlayerAuth user = PlayerAuth.builder()
+            .name("user").locX(143).locY(-42.12).locZ(29.47)
+            .locWorld("the_end").build();
+
+        // when
+        boolean response = dataSource.updateQuitLoc(user);
+
+        // then
+        assertThat(response, equalTo(true));
+        assertThat(dataSource.getAuth("user"), hasAuthLocation(143, -42.12, 29.47, "the_end"));
     }
 
 }
