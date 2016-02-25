@@ -104,15 +104,14 @@ public class AuthMe extends JavaPlugin {
     // Private Instances
     private static AuthMe plugin;
     private static Server server;
-    private Management management;
-    private CommandHandler commandHandler = null;
-    private PermissionsManager permsMan = null;
-    private NewSetting newSettings;
-    private Messages messages;
-    private JsonCache playerBackup;
-    private PasswordSecurity passwordSecurity;
-    private DataSource database;
-
+    /*
+     *  Maps and stuff
+     *  TODO: Clean up and Move into a manager
+     */
+    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
     /*
      * Public Instances
      * TODO #432: Encapsulation
@@ -122,7 +121,6 @@ public class AuthMe extends JavaPlugin {
     public DataManager dataManager;
     public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
-
     /*
      * Plugin Hooks
      * TODO: Move into modules
@@ -133,15 +131,14 @@ public class AuthMe extends JavaPlugin {
     public AuthMeInventoryPacketAdapter inventoryProtector;
     public AuthMeTabCompletePacketAdapter tabComplete;
     public AuthMeTablistPacketAdapter tablistHider;
-
-    /*
-     *  Maps and stuff
-     *  TODO: Clean up and Move into a manager
-     */
-    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
+    private Management management;
+    private CommandHandler commandHandler = null;
+    private PermissionsManager permsMan = null;
+    private NewSetting newSettings;
+    private Messages messages;
+    private JsonCache playerBackup;
+    private PasswordSecurity passwordSecurity;
+    private DataSource database;
 
     /**
      * Get the plugin's instance.
@@ -667,14 +664,14 @@ public class AuthMe extends JavaPlugin {
         if (newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN) && tabComplete == null) {
             tabComplete = new AuthMeTabCompletePacketAdapter(this);
             tabComplete.register();
-        } else if (inventoryProtector != null) {
+        } else if (tabComplete != null) {
             tabComplete.unregister();
             tabComplete = null;
         }
         if (newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && tablistHider == null) {
             tablistHider = new AuthMeTablistPacketAdapter(this);
             tablistHider.register();
-        } else if (inventoryProtector != null) {
+        } else if (tablistHider != null) {
             tablistHider.unregister();
             tablistHider = null;
         }
