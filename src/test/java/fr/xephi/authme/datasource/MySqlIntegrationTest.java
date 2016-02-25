@@ -30,8 +30,8 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
     /** Mock of a settings instance. */
     private static NewSetting settings;
-    /** Collection of SQL statements to execute for initialization of a test. */
-    private static String[] sqlInitialize;
+    /** SQL statement to execute before running a test. */
+    private static String sqlInitialize;
     /** Connection to the H2 test database. */
     private HikariDataSource hikariSource;
 
@@ -56,7 +56,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         ConsoleLoggerTestInitializer.setupLogger();
 
         Path sqlInitFile = TestHelper.getJarPath("/datasource-integration/sql-initialize.sql");
-        sqlInitialize = new String(Files.readAllBytes(sqlInitFile)).split(";\\n");
+        sqlInitialize = new String(Files.readAllBytes(sqlInitFile));
     }
 
     @Before
@@ -73,9 +73,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
 
         try (Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS authme");
-            for (String statement : sqlInitialize) {
-                st.execute(statement);
-            }
+            st.execute(sqlInitialize);
         }
         hikariSource = ds;
     }

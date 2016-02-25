@@ -17,21 +17,26 @@ public final class AuthMeMatchers {
     }
 
     public static Matcher<? super HashedPassword> equalToHash(final String hash) {
-        return equalToHash(hash, null);
+        return equalToHash(new HashedPassword(hash));
     }
 
     public static Matcher<? super HashedPassword> equalToHash(final String hash, final String salt) {
+        return equalToHash(new HashedPassword(hash, salt));
+    }
+
+    public static Matcher<? super HashedPassword> equalToHash(final HashedPassword hash) {
         return new TypeSafeMatcher<HashedPassword>() {
             @Override
             public boolean matchesSafely(HashedPassword item) {
-                return Objects.equals(hash, item.getHash()) && Objects.equals(salt, item.getSalt());
+                return Objects.equals(hash.getHash(), item.getHash())
+                    && Objects.equals(hash.getSalt(), item.getSalt());
             }
 
             @Override
             public void describeTo(Description description) {
-                String representation = "'" + hash + "'";
-                if (salt != null) {
-                    representation += ", '" + salt + "'";
+                String representation = "'" + hash.getHash() + "'";
+                if (hash.getSalt() != null) {
+                    representation += ", '" + hash.getSalt() + "'";
                 }
                 description.appendValue("HashedPassword(" + representation + ")");
             }
