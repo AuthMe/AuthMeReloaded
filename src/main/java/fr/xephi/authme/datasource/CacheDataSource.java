@@ -60,6 +60,10 @@ public class CacheDataSource implements DataSource {
             });
     }
 
+    public LoadingCache<String, Optional<PlayerAuth>> getCachedAuths() {
+        return cachedAuths;
+    }
+
     @Override
     public synchronized boolean isAuthAvailable(String user) {
         return getAuth(user) != null;

@@ -5,6 +5,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
@@ -87,6 +88,10 @@ public class AsynchronousQuit {
         plugin.realIp.remove(name);
         if (plugin.isEnabled()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
+        }
+        // remove player from cache
+        if (database instanceof CacheDataSource) {
+            ((CacheDataSource) database).getCachedAuths().invalidate(name);
         }
     }
 
