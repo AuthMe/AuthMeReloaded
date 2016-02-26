@@ -64,7 +64,6 @@ import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -546,6 +545,7 @@ public class AuthMe extends JavaPlugin {
      * Sets up the data source.
      *
      * @param settings The settings instance
+     *
      * @see AuthMe#database
      */
     public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException {
@@ -775,42 +775,6 @@ public class AuthMe extends JavaPlugin {
     @Deprecated
     public Location getSpawnLocation(Player player) {
         return Spawn.getInstance().getSpawnLocation(player);
-    }
-
-    // Return the default spawn point of a world
-    private Location getDefaultSpawn(World world) {
-        return world.getSpawnLocation();
-    }
-
-    // Return the multiverse spawn point of a world
-    private Location getMultiverseSpawn(World world) {
-        if (multiverse != null && Settings.multiverse) {
-            try {
-                return multiverse.getMVWorldManager().getMVWorld(world).getSpawnLocation();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    // Return the essentials spawn point
-    private Location getEssentialsSpawn() {
-        if (essentialsSpawn != null) {
-            return essentialsSpawn;
-        }
-        return null;
-    }
-
-    // Return the AuthMe spawn point
-    private Location getAuthMeSpawn(Player player) {
-        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore())
-            && (Spawn.getInstance().getFirstSpawn() != null)) {
-            return Spawn.getInstance().getFirstSpawn();
-        } else if (Spawn.getInstance().getSpawn() != null) {
-            return Spawn.getInstance().getSpawn();
-        }
-        return player.getWorld().getSpawnLocation();
     }
 
     private void scheduleRecallEmailTask() {
