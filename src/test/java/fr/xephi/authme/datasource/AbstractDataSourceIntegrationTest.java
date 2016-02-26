@@ -4,15 +4,18 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static fr.xephi.authme.datasource.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.datasource.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.datasource.AuthMeMatchers.hasAuthLocation;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assume.assumeThat;
 
 /**
  * Abstract class for data source integration tests.
@@ -199,6 +202,94 @@ public abstract class AbstractDataSourceIntegrationTest {
         // then
         assertThat(response, equalTo(true));
         assertThat(dataSource.getAuth("user"), hasAuthLocation(143, -42.12, 29.47, "the_end"));
+    }
+
+    @Test
+    public void shouldDeletePlayers() {
+        // given
+        DataSource dataSource = getDataSource();
+        List<String> playersToDelete = Arrays.asList("bobby", "doesNotExist");
+        assumeThat(dataSource.getAccountsRegistered(), equalTo(2));
+
+        // when
+        dataSource.purgeBanned(playersToDelete);
+
+        // then
+        assertThat(dataSource.getAccountsRegistered(), equalTo(1));
+        assertThat(dataSource.isAuthAvailable("bobby"), equalTo(false));
+        assertThat(dataSource.isAuthAvailable("user"), equalTo(true));
+    }
+
+    @Test
+    public void shouldUpdateEmail() {
+        // given
+        DataSource dataSource = getDataSource();
+        String email = "new-user@mail.tld";
+        PlayerAuth userAuth = PlayerAuth.builder().name("user").email(email).build();
+        PlayerAuth invalidAuth = PlayerAuth.builder().name("invalid").email("addr@example.com").build();
+
+        // when
+        boolean response1 = dataSource.updateEmail(userAuth);
+        boolean response2 = dataSource.updateEmail(invalidAuth);
+
+        // then
+        assertThat(response1 && response2, equalTo(true));
+        assertThat(dataSource.getAllAuths(), hasItem(hasAuthBasicData("user", "user", email, "34.56.78.90")));
+    }
+
+    @Test
+    public void shouldUpdateIp() {
+        // given
+        DataSource dataSource = getDataSource();
+        String ip = "250.230.67.73";
+
+        // when
+        boolean response1 = dataSource.updateIp("bobby", ip);
+        boolean response2 = dataSource.updateIp("bogus", "123.123.123.123");
+
+
+        // then
+        assertThat(response1 && response2, equalTo(true));
+        assertThat(dataSource.getAllAuths(), hasItem(hasAuthBasicData("bobby", "Bobby", "your@email.com", ip)));
+    }
+
+    @Test
+    public void shouldCountAuths() {
+        // given
+        DataSource dataSource = getDataSource();
+
+        // when
+        int initialCount = dataSource.getAccountsRegistered();
+        for (int i = 0; i < 4; ++i) {
+            dataSource.saveAuth(PlayerAuth.builder().name("test-" + i).build());
+        }
+        int endCount = dataSource.getAccountsRegistered();
+
+        // then
+        assertThat(initialCount, equalTo(2));
+        assertThat(endCount, equalTo(6));
+    }
+
+    @Test
+    public void shouldGetAllUsersByIp() {
+        // given
+        DataSource dataSource = getDataSource();
+
+        // when
+        List<String> initialList = dataSource.getAllAuthsByIp("123.45.67.89");
+        List<String> emptyList = dataSource.getAllAuthsByIp("8.8.8.8");
+        for (int i = 0; i < 3; ++i) {
+            dataSource.saveAuth(PlayerAuth.builder().name("test-" + i).ip("123.45.67.89").build());
+        }
+        List<String> updatedList = dataSource.getAllAuthsByIp("123.45.67.89");
+
+        // then
+        assertThat(initialList, hasSize(1));
+        assertThat(initialList.get(0), equalTo("bobby"));
+        assertThat(emptyList, hasSize(0));
+        assertThat(updatedList, hasSize(4));
+        assertThat(updatedList, hasItem(equalTo("bobby")));
+        assertThat(updatedList, hasItem(equalTo("test-1")));
     }
 
 }

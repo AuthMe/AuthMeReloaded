@@ -524,21 +524,6 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public void updateName(String oldOne, String newOne) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.NAME + "=? WHERE " + col.NAME + "=?;");
-            pst.setString(1, newOne);
-            pst.setString(2, oldOne);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        } finally {
-            close(pst);
-        }
-    }
-
-    @Override
     public boolean updateRealName(String user, String realName) {
         String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try(PreparedStatement pst = con.prepareStatement(sql)) {

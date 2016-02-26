@@ -600,14 +600,6 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public void updateName(String oldOne, String newOne) {
-        PlayerAuth auth = this.getAuth(oldOne);
-        auth.setNickname(newOne);
-        this.saveAuth(auth);
-        this.removeAuth(oldOne);
-    }
-
-    @Override
     public boolean updateRealName(String user, String realName) {
         return false;
     }

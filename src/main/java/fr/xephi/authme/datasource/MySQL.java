@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 import fr.xephi.authme.AuthMe;
@@ -81,6 +82,7 @@ public class MySQL implements DataSource {
         }
     }
 
+    @VisibleForTesting
     MySQL(NewSetting settings, HikariDataSource hikariDataSource) {
         this.host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
         this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
@@ -815,18 +817,6 @@ public class MySQL implements DataSource {
             logSqlException(ex);
         }
         return result;
-    }
-
-    @Override
-    public void updateName(String oldOne, String newOne) {
-        String sql = "UPDATE " + tableName + " SET " + col.NAME + "=? WHERE " + col.NAME + "=?;";
-        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, newOne);
-            pst.setString(2, oldOne);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
     }
 
     @Override

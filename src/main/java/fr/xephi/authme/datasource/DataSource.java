@@ -169,14 +169,6 @@ public interface DataSource {
      */
     int getAccountsRegistered();
 
-    /**
-     * Method updateName.
-     *
-     * @param oldOne String
-     * @param newOne String
-     */
-    void updateName(String oldOne, String newOne);
-
     boolean updateRealName(String user, String realName);
 
     boolean updateIp(String user, String ip);

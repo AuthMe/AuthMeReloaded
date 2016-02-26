@@ -225,12 +225,6 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void updateName(final String oldOne, final String newOne) { // unused method
-        source.updateName(oldOne, newOne);
-        cachedAuths.invalidate(oldOne);
-    }
-
-    @Override
     public boolean updateRealName(String user, String realName) {
         boolean result = source.updateRealName(user, realName);
         if (result) {
