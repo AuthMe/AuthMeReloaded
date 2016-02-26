@@ -35,7 +35,7 @@ public final class TestConfiguration implements SettingsClass {
         newProperty(PropertyType.STRING_LIST, "features.boring.colors");
 
     public static final Property<Integer> DUST_LEVEL =
-        newProperty(PropertyType.INTEGER, "features.boring.dustLevel", -1);
+        newProperty("features.boring.dustLevel", -1);
 
     public static final Property<Boolean> USE_COOL_FEATURES =
         newProperty("features.cool.enabled", false);

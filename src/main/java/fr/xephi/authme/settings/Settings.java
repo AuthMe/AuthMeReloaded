@@ -5,6 +5,7 @@ import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -144,8 +145,6 @@ public final class Settings {
         denyTabcompleteBeforeLogin = load(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
         hideTablistBeforeLogin = load(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN);
 
-        plugin.checkProtocolLib();
-
         passwordMaxLength = load(SecuritySettings.MAX_PASSWORD_LENGTH);
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
@@ -176,7 +175,7 @@ public final class Settings {
         emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
-        multiverse = configFile.getBoolean("Hooks.multiverse", true);
+        multiverse = load(HooksSettings.MULTIVERSE);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
@@ -213,7 +212,7 @@ public final class Settings {
         broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
         forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
         forceRegLogin = configFile.getBoolean("settings.registration.forceLoginAfterRegister", false);
-        spawnPriority = configFile.getString("settings.restrictions.spawnPriority", "authme,essentials,multiverse,default");
+        spawnPriority = load(RestrictionSettings.SPAWN_PRIORITY);
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
         checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);

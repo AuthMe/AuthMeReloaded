@@ -7,7 +7,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -55,17 +56,19 @@ public class NewSettingTest {
     }
 
     @Test
-    public void shouldReturnDefaultFile() {
+    public void shouldReturnDefaultFile() throws IOException {
         // given
         YamlConfiguration configuration = mock(YamlConfiguration.class);
         NewSetting settings = new NewSetting(configuration, null, null);
 
         // when
-        File defaultFile = settings.getDefaultMessagesFile();
+        String defaultFile = settings.getDefaultMessagesFile();
 
         // then
         assertThat(defaultFile, not(nullValue()));
-        assertThat(defaultFile.exists(), equalTo(true));
+        InputStream stream = this.getClass().getResourceAsStream(defaultFile);
+        assertThat(stream, not(nullValue()));
+        assertThat(stream.read(), not(equalTo(0)));
     }
 
     private static <T> void setReturnValue(YamlConfiguration config, Property<T> property, T value) {

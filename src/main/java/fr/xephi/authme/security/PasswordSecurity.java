@@ -113,7 +113,7 @@ public class PasswordSecurity {
      */
     private static EncryptionMethod initializeEncryptionMethodWithoutEvent(HashAlgorithm algorithm) {
         try {
-            return HashAlgorithm.CUSTOM.equals(algorithm)
+            return HashAlgorithm.CUSTOM.equals(algorithm) || HashAlgorithm.PLAINTEXT.equals(algorithm)
                 ? null
                 : algorithm.getClazz().newInstance();
         } catch (InstantiationException | IllegalAccessException e) {

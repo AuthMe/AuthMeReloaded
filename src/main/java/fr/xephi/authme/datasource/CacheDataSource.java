@@ -179,8 +179,8 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized List<String> getAllAuthsByEmail(final String email) {
-        return source.getAllAuthsByEmail(email);
+    public synchronized int countAuthsByEmail(final String email) {
+        return source.countAuthsByEmail(email);
     }
 
     @Override

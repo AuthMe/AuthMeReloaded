@@ -17,7 +17,6 @@ import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.CommandMapper;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
@@ -43,9 +42,8 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
@@ -58,9 +56,9 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
+import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.Wrapper;
 import net.minelink.ctplus.CombatTagPlus;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
@@ -77,6 +75,7 @@ import org.bukkit.scheduler.BukkitTask;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -106,27 +105,23 @@ public class AuthMe extends JavaPlugin {
     // Private Instances
     private static AuthMe plugin;
     private static Server server;
-    private static Wrapper wrapper = Wrapper.getInstance();
-    private Management management;
-    private CommandHandler commandHandler = null;
-    private PermissionsManager permsMan = null;
-    private NewSetting newSettings;
-    private Messages messages;
-    private JsonCache playerBackup;
-    private PasswordSecurity passwordSecurity;
-    private DataSource database;
-
+    /*
+     *  Maps and stuff
+     *  TODO: Clean up and Move into a manager
+     */
+    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
     /*
      * Public Instances
-     * TODO: Encapsulation
+     * TODO #432: Encapsulation
      */
-
     public NewAPI api;
     public SendMailSSL mail;
     public DataManager dataManager;
     public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
-
     /*
      * Plugin Hooks
      * TODO: Move into modules
@@ -137,15 +132,14 @@ public class AuthMe extends JavaPlugin {
     public AuthMeInventoryPacketAdapter inventoryProtector;
     public AuthMeTabCompletePacketAdapter tabComplete;
     public AuthMeTablistPacketAdapter tablistHider;
-
-    /*
-     *  Maps and stuff
-     *  TODO: Clean up and Move into a manager
-     */
-    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
+    private Management management;
+    private CommandHandler commandHandler = null;
+    private PermissionsManager permsMan = null;
+    private NewSetting newSettings;
+    private Messages messages;
+    private JsonCache playerBackup;
+    private PasswordSecurity passwordSecurity;
+    private DataSource database;
 
     /**
      * Get the plugin's instance.
@@ -247,7 +241,7 @@ public class AuthMe extends JavaPlugin {
 
         // Connect to the database and setup tables
         try {
-            setupDatabase();
+            setupDatabase(newSettings);
         } catch (Exception e) {
             ConsoleLogger.logException("Fatal error occurred during database connection! "
                 + "Authme initialization aborted!", e);
@@ -255,6 +249,7 @@ public class AuthMe extends JavaPlugin {
             return;
         }
 
+        MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
         passwordSecurity = new PasswordSecurity(getDataSource(), newSettings.getProperty(SecuritySettings.PASSWORD_HASH),
             Bukkit.getPluginManager(), newSettings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH));
 
@@ -547,25 +542,42 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    public void setupDatabase() throws Exception {
-        if (database != null)
-            database.close();
-        // Backend MYSQL - FILE - SQLITE - SQLITEHIKARI
-        boolean isSQLite = false;
-        switch (newSettings.getProperty(DatabaseSettings.BACKEND)) {
-            case FILE:
-                database = new FlatFile();
-                break;
-            case MYSQL:
-                database = new MySQL(newSettings);
-                break;
-            case SQLITE:
-                database = new SQLite(newSettings);
-                isSQLite = true;
-                break;
+    /**
+     * Sets up the data source.
+     *
+     * @param settings The settings instance
+     * @see AuthMe#database
+     */
+    public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException {
+        if (this.database != null) {
+            this.database.close();
         }
 
-        if (isSQLite) {
+        DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
+        DataSource dataSource;
+        switch (dataSourceType) {
+            case FILE:
+                dataSource = new FlatFile();
+                break;
+            case MYSQL:
+                dataSource = new MySQL(settings);
+                break;
+            case SQLITE:
+                dataSource = new SQLite(settings);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
+        }
+
+        DataSource convertedSource = MigrationService.convertFlatfileToSqlite(newSettings, dataSource);
+        dataSource = convertedSource == null ? dataSource : convertedSource;
+
+        if (newSettings.getProperty(DatabaseSettings.USE_CACHING)) {
+            dataSource = new CacheDataSource(dataSource);
+        }
+
+        database = dataSource;
+        if (DataSourceType.SQLITE == dataSourceType) {
             server.getScheduler().runTaskAsynchronously(this, new Runnable() {
                 @Override
                 public void run() {
@@ -576,34 +588,6 @@ public class AuthMe extends JavaPlugin {
                     }
                 }
             });
-        }
-
-        if (Settings.getDataSource == DataSourceType.FILE) {
-            ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated, it will be changed " +
-                "to SQLite... Connection will be impossible until conversion is done!");
-            ForceFlatToSqlite converter = new ForceFlatToSqlite(database, newSettings);
-            DataSource source = converter.run();
-            if (source != null) {
-                database = source;
-            }
-        }
-
-        // TODO: Move this to another place maybe ?
-        if (HashAlgorithm.PLAINTEXT == newSettings.getProperty(SecuritySettings.PASSWORD_HASH)) {
-            ConsoleLogger.showError("Your HashAlgorithm has been detected as plaintext and is now deprecated; " +
-                "it will be changed and hashed now to the AuthMe default hashing method");
-            for (PlayerAuth auth : database.getAllAuths()) {
-                HashedPassword hashedPassword = passwordSecurity.computeHash(
-                    HashAlgorithm.SHA256, auth.getPassword().getHash(), auth.getNickname());
-                auth.setPassword(hashedPassword);
-                database.updatePassword(auth);
-            }
-            newSettings.setProperty(SecuritySettings.PASSWORD_HASH, HashAlgorithm.SHA256);
-            newSettings.save();
-        }
-
-        if (newSettings.getProperty(DatabaseSettings.USE_CACHING)) {
-            database = new CacheDataSource(database);
         }
     }
 
@@ -712,14 +696,14 @@ public class AuthMe extends JavaPlugin {
         if (newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN) && tabComplete == null) {
             tabComplete = new AuthMeTabCompletePacketAdapter(this);
             tabComplete.register();
-        } else if (inventoryProtector != null) {
+        } else if (tabComplete != null) {
             tabComplete.unregister();
             tabComplete = null;
         }
         if (newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && tablistHider == null) {
             tablistHider = new AuthMeTablistPacketAdapter(this);
             tablistHider.register();
-        } else if (inventoryProtector != null) {
+        } else if (tablistHider != null) {
             tablistHider.unregister();
             tablistHider = null;
         }
@@ -788,25 +772,9 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Return the spawn location of a player
+    @Deprecated
     public Location getSpawnLocation(Player player) {
-        World world = player.getWorld();
-        String[] spawnPriority = Settings.spawnPriority.split(",");
-        Location spawnLoc = world.getSpawnLocation();
-        for (int i = spawnPriority.length - 1; i >= 0; i--) {
-            String s = spawnPriority[i];
-            if (s.equalsIgnoreCase("default") && getDefaultSpawn(world) != null)
-                spawnLoc = getDefaultSpawn(world);
-            if (s.equalsIgnoreCase("multiverse") && getMultiverseSpawn(world) != null)
-                spawnLoc = getMultiverseSpawn(world);
-            if (s.equalsIgnoreCase("essentials") && getEssentialsSpawn() != null)
-                spawnLoc = getEssentialsSpawn();
-            if (s.equalsIgnoreCase("authme") && getAuthMeSpawn(player) != null)
-                spawnLoc = getAuthMeSpawn(player);
-        }
-        if (spawnLoc == null) {
-            spawnLoc = world.getSpawnLocation();
-        }
-        return spawnLoc;
+        return Spawn.getInstance().getSpawnLocation(player);
     }
 
     // Return the default spawn point of a world
@@ -948,7 +916,7 @@ public class AuthMe extends JavaPlugin {
                              String commandLabel, String[] args) {
         // Make sure the command handler has been initialized
         if (commandHandler == null) {
-            wrapper.getLogger().severe("AuthMe command handler is not available");
+            getLogger().severe("AuthMe command handler is not available");
             return false;
         }
 

@@ -14,7 +14,6 @@ public interface DataSource {
      * Return whether there is a record for the given username.
      *
      * @param user The username to look up
-     *
      * @return True if there is a record, false otherwise
      */
     boolean isAuthAvailable(String user);
@@ -23,7 +22,6 @@ public interface DataSource {
      * Return the hashed password of the player.
      *
      * @param user The user whose password should be retrieve
-     *
      * @return The password hash of the player
      */
     HashedPassword getPassword(String user);
@@ -32,7 +30,6 @@ public interface DataSource {
      * Retrieve the entire PlayerAuth object associated with the username.
      *
      * @param user The user to retrieve
-     *
      * @return The PlayerAuth object for the given username
      */
     PlayerAuth getAuth(String user);
@@ -41,7 +38,6 @@ public interface DataSource {
      * Save a new PlayerAuth object.
      *
      * @param auth The new PlayerAuth to persist
-     *
      * @return True upon success, false upon failure
      */
     boolean saveAuth(PlayerAuth auth);
@@ -50,7 +46,6 @@ public interface DataSource {
      * Update the session of a record (IP, last login, real name).
      *
      * @param auth The PlayerAuth object to update in the database
-     *
      * @return True upon success, false upon failure
      */
     boolean updateSession(PlayerAuth auth);
@@ -59,7 +54,6 @@ public interface DataSource {
      * Update the password of the given PlayerAuth object.
      *
      * @param auth The PlayerAuth whose password should be updated
-     *
      * @return True upon success, false upon failure
      */
     boolean updatePassword(PlayerAuth auth);
@@ -67,9 +61,8 @@ public interface DataSource {
     /**
      * Update the password of the given player.
      *
-     * @param user     The user whose password should be updated
+     * @param user The user whose password should be updated
      * @param password The new password
-     *
      * @return True upon success, false upon failure
      */
     boolean updatePassword(String user, HashedPassword password);
@@ -79,7 +72,6 @@ public interface DataSource {
      * the given time.
      *
      * @param until The minimum last login
-     *
      * @return The account names that have been removed
      */
     List<String> autoPurgeDatabase(long until);
@@ -88,7 +80,6 @@ public interface DataSource {
      * Remove a user record from the database.
      *
      * @param user The user to remove
-     *
      * @return True upon success, false upon failure
      */
     boolean removeAuth(String user);
@@ -97,7 +88,6 @@ public interface DataSource {
      * Update the quit location of a PlayerAuth.
      *
      * @param auth The entry whose quit location should be updated
-     *
      * @return True upon success, false upon failure
      */
     boolean updateQuitLoc(PlayerAuth auth);
@@ -106,25 +96,22 @@ public interface DataSource {
      * Return all usernames associated with the given IP address.
      *
      * @param ip The IP address to look up
-     *
      * @return Usernames associated with the given IP address
      */
     List<String> getAllAuthsByIp(String ip);
 
     /**
-     * Return all usernames associated with the given email address.
+     * Return the number of accounts associated with the given email address.
      *
      * @param email The email address to look up
-     *
-     * @return Users using the given email address
+     * @return Number of accounts using the given email address
      */
-    List<String> getAllAuthsByEmail(String email);
+    int countAuthsByEmail(String email);
 
     /**
      * Update the email of the PlayerAuth in the data source.
      *
      * @param auth The PlayerAuth whose email should be updated
-     *
      * @return True upon success, false upon failure
      */
     boolean updateEmail(PlayerAuth auth);

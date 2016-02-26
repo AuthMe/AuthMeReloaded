@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -44,6 +45,14 @@ public class SQLite implements DataSource {
             ConsoleLogger.logException("Error during SQLite initialization:", ex);
             throw ex;
         }
+    }
+
+    @VisibleForTesting
+    SQLite(NewSetting settings, Connection connection) {
+        this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
+        this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
+        this.col = new Columns(settings);
+        this.con = connection;
     }
 
     private synchronized void connect() throws ClassNotFoundException, SQLException {
@@ -341,7 +350,8 @@ public class SQLite implements DataSource {
     @Override
     public synchronized void close() {
         try {
-            con.close();
+        	if (con != null && !con.isClosed())
+        		con.close();
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -394,25 +404,19 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public List<String> getAllAuthsByEmail(String email) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        List<String> countEmail = new ArrayList<>();
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + col.EMAIL + "=?;");
+    public int countAuthsByEmail(String email) {
+        String sql = "SELECT COUNT(1) FROM " + tableName + " WHERE " + col.EMAIL + " = ? COLLATE NOCASE;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, email);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                countEmail.add(rs.getString(col.NAME));
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
-            return countEmail;
         } catch (SQLException ex) {
             logSqlException(ex);
-        }  finally {
-            close(rs);
-            close(pst);
         }
-        return new ArrayList<>();
+        return 0;
     }
 
     @Override

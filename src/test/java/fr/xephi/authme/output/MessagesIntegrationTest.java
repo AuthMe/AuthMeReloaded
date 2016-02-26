@@ -50,8 +50,7 @@ public class MessagesIntegrationTest {
     @Before
     public void setUpMessages() {
         File testFile = TestHelper.getJarFile(YML_TEST_FILE);
-        File defaultFile = TestHelper.getJarFile(YML_DEFAULT_TEST_FILE);
-        messages = new Messages(testFile, defaultFile);
+        messages = new Messages(testFile, YML_DEFAULT_TEST_FILE);
     }
 
     @Test
@@ -266,5 +265,17 @@ public class MessagesIntegrationTest {
         // check that default message handling still works
         assertThat(messages.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE),
             equalTo("Message from default file"));
+    }
+
+    @Test
+    public void shouldRetrieveMessageWithReplacements() {
+        // given
+        MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
+
+        // when
+        String result = messages.retrieveSingle(key, "24680");
+
+        // then
+        assertThat(result, equalTo("Use /captcha 24680 to solve the captcha"));
     }
 }

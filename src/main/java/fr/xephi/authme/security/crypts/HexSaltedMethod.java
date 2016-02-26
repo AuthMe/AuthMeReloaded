@@ -11,7 +11,7 @@ import fr.xephi.authme.security.crypts.description.Usage;
  * and store the salt with the hash itself.
  */
 @Recommendation(Usage.ACCEPTABLE)
-@HasSalt(SaltType.TEXT) // See saltLength() for length
+@HasSalt(SaltType.TEXT) // See getSaltLength() for length
 public abstract class HexSaltedMethod implements EncryptionMethod {
 
     public abstract int getSaltLength();
