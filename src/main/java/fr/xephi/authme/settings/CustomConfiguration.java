@@ -82,4 +82,13 @@ public abstract class CustomConfiguration extends YamlConfiguration {
         }
         return false;
     }
+
+    public boolean containsAll(String... paths) {
+        for (String path : paths) {
+            if (!contains(path)) {
+                return false;
+            }
+        }
+        return true;
+    }
 }
