@@ -52,14 +52,13 @@ public class ProcessSyncEmailRegister implements Runnable {
         int msgInterval = Settings.getWarnMessageInterval;
 
         BukkitScheduler sched = plugin.getServer().getScheduler();
-        if (time != 0 && limbo != null) {
-            limbo.getTimeoutTaskId().cancel();
-            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), time);
-            limbo.setTimeoutTaskId(id);
-        }
+
         if (limbo != null) {
-            limbo.getMessageTaskId().cancel();
-            BukkitTask nwMsg = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.retrieve(MessageKey.LOGIN_MESSAGE), msgInterval));
+            if (time != 0) {
+                BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name, player), time);
+                limbo.setTimeoutTaskId(id);
+            }
+            BukkitTask nwMsg = sched.runTask(plugin, new MessageTask(plugin, name, m.retrieve(MessageKey.LOGIN_MESSAGE), msgInterval));
             limbo.setMessageTaskId(nwMsg);
         }
 

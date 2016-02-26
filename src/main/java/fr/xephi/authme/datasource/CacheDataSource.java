@@ -4,14 +4,19 @@ import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
-import com.google.common.cache.RemovalListener;
-import com.google.common.cache.RemovalNotification;
+import com.google.common.util.concurrent.ListenableFuture;
+import com.google.common.util.concurrent.ListeningExecutorService;
+import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -20,6 +25,7 @@ public class CacheDataSource implements DataSource {
 
     private final DataSource source;
     private final LoadingCache<String, Optional<PlayerAuth>> cachedAuths;
+    private final ListeningExecutorService executorService;
 
     /**
      * Constructor for CacheDataSource.
@@ -27,25 +33,35 @@ public class CacheDataSource implements DataSource {
      * @param src DataSource
      */
     public CacheDataSource(DataSource src) {
-        this.source = src;
-        this.cachedAuths = CacheBuilder.newBuilder()
-            .expireAfterWrite(8, TimeUnit.MINUTES)
-            .removalListener(new RemovalListener<String, Optional<PlayerAuth>>() {
+        source = src;
+        executorService = MoreExecutors.listeningDecorator(
+            Executors.newCachedThreadPool(new ThreadFactoryBuilder()
+                .setDaemon(true)
+                .setNameFormat("AuthMe-CacheLoader")
+                .build())
+        );
+        cachedAuths = CacheBuilder.newBuilder()
+            .refreshAfterWrite(8, TimeUnit.MINUTES)
+            .build(new CacheLoader<String, Optional<PlayerAuth>>() {
                 @Override
-                public void onRemoval(RemovalNotification<String, Optional<PlayerAuth>> removalNotification) {
-                    String name = removalNotification.getKey();
-                    if (PlayerCache.getInstance().isAuthenticated(name)) {
-                        cachedAuths.getUnchecked(name);
-                    }
+                public Optional<PlayerAuth> load(String key) {
+                    return Optional.fromNullable(source.getAuth(key));
                 }
-            })
-            .build(
-                new CacheLoader<String, Optional<PlayerAuth>>() {
-                    @Override
-                    public Optional<PlayerAuth> load(String key) {
-                        return Optional.fromNullable(source.getAuth(key));
-                    }
-                });
+
+                @Override
+                public ListenableFuture<Optional<PlayerAuth>> reload(final String key, Optional<PlayerAuth> oldValue) {
+                    return executorService.submit(new Callable<Optional<PlayerAuth>>() {
+                        @Override
+                        public Optional<PlayerAuth> call() {
+                            return load(key);
+                        }
+                    });
+                }
+            });
+    }
+
+    public LoadingCache<String, Optional<PlayerAuth>> getCachedAuths() {
+        return cachedAuths;
     }
 
     @Override
@@ -137,6 +153,13 @@ public class CacheDataSource implements DataSource {
     @Override
     public synchronized void close() {
         source.close();
+        cachedAuths.invalidateAll();
+        executorService.shutdown();
+        try {
+            executorService.awaitTermination(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            ConsoleLogger.writeStackTrace(e);
+        }
     }
 
     @Override

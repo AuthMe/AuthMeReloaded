@@ -64,7 +64,6 @@ import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -76,6 +75,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -491,11 +491,41 @@ public class AuthMe extends JavaPlugin {
         if (newSettings != null) {
             new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.STOP);
         }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<Integer> pendingTasks = new ArrayList<>();
+                for (BukkitTask pendingTask : getServer().getScheduler().getPendingTasks()) {
+                    if (pendingTask.getOwner().equals(plugin) && !pendingTask.isSync()) {
+                        pendingTasks.add(pendingTask.getTaskId());
+                    }
+                }
+                ConsoleLogger.info("Waiting for " + pendingTasks.size() + " tasks to finish");
+                int progress = 0;
+                for (int taskId : pendingTasks) {
+                    int maxTries = 5;
+                    while (getServer().getScheduler().isCurrentlyRunning(taskId)) {
+                        if (maxTries <= 0) {
+                            ConsoleLogger.info("Async task " + taskId + " times out after to many tries");
+                            break;
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        maxTries--;
+                    }
+
+                    progress++;
+                    ConsoleLogger.info("Progress: " + progress + " / " + pendingTasks.size());
+                }
+                if (database != null) {
+                    database.close();
+                }
+            }
+        }, "AuthMe-DataSource#close").start();
 
         // Close the database
-        if (database != null) {
-            database.close();
-        }
 
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
@@ -515,6 +545,7 @@ public class AuthMe extends JavaPlugin {
      * Sets up the data source.
      *
      * @param settings The settings instance
+     *
      * @see AuthMe#database
      */
     public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException {
@@ -650,6 +681,7 @@ public class AuthMe extends JavaPlugin {
                 ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
                 newSettings.setProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN, false);
+                newSettings.save();
             }
             return;
         }
@@ -743,42 +775,6 @@ public class AuthMe extends JavaPlugin {
     @Deprecated
     public Location getSpawnLocation(Player player) {
         return Spawn.getInstance().getSpawnLocation(player);
-    }
-
-    // Return the default spawn point of a world
-    private Location getDefaultSpawn(World world) {
-        return world.getSpawnLocation();
-    }
-
-    // Return the multiverse spawn point of a world
-    private Location getMultiverseSpawn(World world) {
-        if (multiverse != null && Settings.multiverse) {
-            try {
-                return multiverse.getMVWorldManager().getMVWorld(world).getSpawnLocation();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    // Return the essentials spawn point
-    private Location getEssentialsSpawn() {
-        if (essentialsSpawn != null) {
-            return essentialsSpawn;
-        }
-        return null;
-    }
-
-    // Return the AuthMe spawn point
-    private Location getAuthMeSpawn(Player player) {
-        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore())
-            && (Spawn.getInstance().getFirstSpawn() != null)) {
-            return Spawn.getInstance().getFirstSpawn();
-        } else if (Spawn.getInstance().getSpawn() != null) {
-            return Spawn.getInstance().getSpawn();
-        }
-        return player.getWorld().getSpawnLocation();
     }
 
     private void scheduleRecallEmailTask() {
