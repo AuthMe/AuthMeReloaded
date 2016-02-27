@@ -548,6 +548,8 @@ public class AuthMe extends JavaPlugin {
      * @param settings The settings instance
      *
      * @see AuthMe#database
+     * @throws ClassNotFoundException if no driver could be found for the datasource
+     * @throws SQLException when initialization of a SQL datasource failed
      */
     public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException {
         if (this.database != null) {

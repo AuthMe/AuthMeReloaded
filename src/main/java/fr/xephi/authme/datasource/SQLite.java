@@ -30,8 +30,9 @@ public class SQLite implements DataSource {
     /**
      * Constructor for SQLite.
      *
-     * @throws ClassNotFoundException Exception
-     * @throws SQLException           Exception
+     * @param settings The settings instance
+     * @throws ClassNotFoundException if no driver could be found for the datasource
+     * @throws SQLException when initialization of a SQL datasource failed
      */
     public SQLite(NewSetting settings) throws ClassNotFoundException, SQLException {
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
