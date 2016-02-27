@@ -1,14 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import java.util.List;
-
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -20,6 +11,14 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
+
+import java.util.List;
 
 /**
  * Admin command to unregister a player.
@@ -55,19 +54,20 @@ public class UnregisterAdminCommand implements ExecutableCommand {
         if (target != null && target.isOnline()) {
             Utils.teleportToSpawn(target);
             LimboCache.getInstance().addLimboPlayer(target);
-            int delay = Settings.getRegistrationTimeout * 20;
+            int timeOut = Settings.getRegistrationTimeout * 20;
             int interval = Settings.getWarnMessageInterval;
             BukkitScheduler scheduler = sender.getServer().getScheduler();
-            if (delay != 0) {
-                BukkitTask id = scheduler.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, playerNameLowerCase, target), delay);
+            if (timeOut != 0) {
+                BukkitTask id = scheduler.runTaskLater(plugin, new TimeoutTask(plugin, playerNameLowerCase, target), timeOut);
                 LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTaskId(id);
             }
             LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTaskId(
-                scheduler.runTaskAsynchronously(plugin,
-                    new MessageTask(plugin, playerNameLowerCase, commandService.retrieveMessage(MessageKey.REGISTER_MESSAGE), interval)));
+                scheduler.runTask(
+                    plugin, new MessageTask(plugin, playerNameLowerCase, MessageKey.REGISTER_MESSAGE, interval)
+                )
+            );
             if (Settings.applyBlindEffect) {
-                target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS,
-                    Settings.getRegistrationTimeout * 20, 2));
+                target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
             }
             commandService.send(target, MessageKey.UNREGISTERED_SUCCESS);
         }

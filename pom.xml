@@ -61,7 +61,7 @@
         <javaVersion>1.7</javaVersion>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkitVersion>1.8.8-R0.1-SNAPSHOT</bukkitVersion>
+        <bukkitVersion>1.9-pre1-SNAPSHOT</bukkitVersion>
     </properties>
 
     <profiles>
@@ -305,10 +305,10 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
         </repository>
 
-        <!-- EssentialsX Repo -->
+        <!-- Essentials Repo -->
         <repository>
             <id>ess-repo</id>
-            <url>http://ci.drtshock.net/plugin/repository/everything</url>
+            <url>http://repo.ess3.net/content/groups/essentials</url>
         </repository>
 
         <!-- CombatTagPlus Repo -->
@@ -375,6 +375,19 @@
             <version>1.7.16</version>
             <scope>compile</scope>
             <optional>true</optional>
+        </dependency>
+        <!-- JDBC drivers for datasource integration tests -->
+        <dependency>
+            <groupId>org.xerial</groupId>
+            <artifactId>sqlite-jdbc</artifactId>
+            <version>3.8.11.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.191</version>
+            <scope>test</scope>
         </dependency>
 
         <!-- Log4J Logger (required by the console filter) -->
@@ -651,16 +664,20 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- EssentialsX plugin, http://www.spigotmc.org/resources/essentialsx.9089/ -->
+        <!-- Essentials plugin -->
         <dependency>
             <groupId>net.ess3</groupId>
-            <artifactId>EssentialsX</artifactId>
-            <version>2.0.1-SNAPSHOT</version>
+            <artifactId>Essentials</artifactId>
+            <version>2.13-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.spigotmc</groupId>
-                    <artifactId>spigot-api</artifactId>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
                 </exclusion>
             </exclusions>
             <optional>true</optional>

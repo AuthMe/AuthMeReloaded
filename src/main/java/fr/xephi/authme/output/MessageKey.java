@@ -127,7 +127,9 @@ public enum MessageKey {
 
     TWO_FACTOR_CREATE("two_factor_create", "%code", "%url"),
 
-    NOT_OWNER_ERROR("not_owner_error");
+    NOT_OWNER_ERROR("not_owner_error"),
+    
+    INVALID_NAME_CASE("invalid_name_case", "%valid", "%invalid");
 
     private String key;
     private String[] tags;

@@ -101,12 +101,12 @@ public interface DataSource {
     List<String> getAllAuthsByIp(String ip);
 
     /**
-     * Return all usernames associated with the given email address.
+     * Return the number of accounts associated with the given email address.
      *
      * @param email The email address to look up
-     * @return Users using the given email address
+     * @return Number of accounts using the given email address
      */
-    List<String> getAllAuthsByEmail(String email);
+    int countAuthsByEmail(String email);
 
     /**
      * Update the email of the PlayerAuth in the data source.
@@ -168,14 +168,6 @@ public interface DataSource {
      * @return int
      */
     int getAccountsRegistered();
-
-    /**
-     * Method updateName.
-     *
-     * @param oldOne String
-     * @param newOne String
-     */
-    void updateName(String oldOne, String newOne);
 
     boolean updateRealName(String user, String realName);
 

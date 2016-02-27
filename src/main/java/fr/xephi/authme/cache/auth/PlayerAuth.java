@@ -1,11 +1,10 @@
 package fr.xephi.authme.cache.auth;
 
-import static com.google.common.base.Objects.firstNonNull;
-import static com.google.common.base.Preconditions.checkNotNull;
-
+import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.Location;
 
-import fr.xephi.authme.security.crypts.HashedPassword;
+import static com.google.common.base.Objects.firstNonNull;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 
 /**
@@ -90,20 +89,6 @@ public class PlayerAuth {
      *
      * @param nickname  String
      * @param hash      String
-     * @param salt      String
-     * @param ip        String
-     * @param lastLogin long
-     * @param realName  String
-     */
-    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, String realName) {
-        this(nickname, new HashedPassword(hash, salt), -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
-    }
-
-    /**
-     * Constructor for PlayerAuth.
-     *
-     * @param nickname  String
-     * @param hash      String
      * @param ip        String
      * @param lastLogin long
      * @param x         double
@@ -122,44 +107,6 @@ public class PlayerAuth {
      * Constructor for PlayerAuth.
      *
      * @param nickname  String
-     * @param hash      String
-     * @param salt      String
-     * @param ip        String
-     * @param lastLogin long
-     * @param x         double
-     * @param y         double
-     * @param z         double
-     * @param world     String
-     * @param email     String
-     * @param realName  String
-     */
-    public PlayerAuth(String nickname, String hash, String salt, String ip, long lastLogin, double x, double y,
-                      double z, String world, String email, String realName) {
-        this(nickname, new HashedPassword(hash, salt), -1, ip, lastLogin,
-             x, y, z, world, email, realName);
-    }
-
-    /**
-     * Constructor for PlayerAuth.
-     *
-     * @param nickname  String
-     * @param hash      String
-     * @param salt      String
-     * @param groupId   int
-     * @param ip        String
-     * @param lastLogin long
-     * @param realName  String
-     */
-    public PlayerAuth(String nickname, String hash, String salt, int groupId, String ip,
-                      long lastLogin, String realName) {
-        this(nickname, new HashedPassword(hash, salt), groupId, ip, lastLogin,
-             0, 0, 0, "world", "your@email.com", realName);
-    }
-
-    /**
-     * Constructor for PlayerAuth.
-     *
-     * @param nickname  String
      * @param password  String
      * @param groupId   int
      * @param ip        String
@@ -171,8 +118,8 @@ public class PlayerAuth {
      * @param email     String
      * @param realName  String
      */
-    public PlayerAuth(String nickname, HashedPassword password, int groupId, String ip, long lastLogin,
-                      double x, double y, double z, String world, String email, String realName) {
+    private PlayerAuth(String nickname, HashedPassword password, int groupId, String ip, long lastLogin,
+                       double x, double y, double z, String world, String email, String realName) {
         this.nickname = nickname.toLowerCase();
         this.password = password;
         this.ip = ip;

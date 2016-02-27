@@ -73,12 +73,11 @@ public class AsynchronousUnregister {
                 int interval = Settings.getWarnMessageInterval;
                 BukkitScheduler scheduler = plugin.getServer().getScheduler();
                 if (timeOut != 0) {
-                    BukkitTask id = scheduler.runTaskLaterAsynchronously(plugin,
-                        new TimeoutTask(plugin, name, player), timeOut);
+                    BukkitTask id = scheduler.runTaskLater(plugin, new TimeoutTask(plugin, name, player), timeOut);
                     limboPlayer.setTimeoutTaskId(id);
                 }
-                limboPlayer.setMessageTaskId(scheduler.runTaskAsynchronously(plugin,
-                        new MessageTask(plugin, name, m.retrieve(MessageKey.REGISTER_MESSAGE), interval)));
+                limboPlayer.setMessageTaskId(scheduler.runTask(plugin,
+                    new MessageTask(plugin, name, MessageKey.REGISTER_MESSAGE, interval)));
                 m.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                 return;

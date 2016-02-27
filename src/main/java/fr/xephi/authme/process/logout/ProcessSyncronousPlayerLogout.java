@@ -74,21 +74,24 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         int interval = Settings.getWarnMessageInterval;
         BukkitScheduler sched = player.getServer().getScheduler();
         if (timeOut != 0) {
-            BukkitTask id = sched.runTaskLaterAsynchronously(plugin, new TimeoutTask(plugin, name, player), timeOut);
+            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name, player), timeOut);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        BukkitTask msgT = sched.runTaskAsynchronously(plugin, new MessageTask(plugin, name, m.retrieve(MessageKey.LOGIN_MESSAGE), interval));
+        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
-        if (player.isInsideVehicle() && player.getVehicle() != null)
+        if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
-        if (Settings.applyBlindEffect)
-            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Settings.getRegistrationTimeout * 20, 2));
+        }
+        if (Settings.applyBlindEffect) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
+        }
         player.setOp(false);
         restoreSpeedEffect();
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
-        if (Settings.bungee)
+        if (Settings.bungee) {
             sendBungeeMessage();
+        }
         m.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");
     }

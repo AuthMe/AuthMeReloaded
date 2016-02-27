@@ -487,25 +487,21 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public List<String> getAllAuthsByEmail(String email) {
+    public int countAuthsByEmail(String email) {
         BufferedReader br = null;
-        List<String> countEmail = new ArrayList<>();
+        int countEmail = 0;
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args.length > 8 && args[8].equals(email)) {
-                    countEmail.add(args[0]);
+                    ++countEmail;
                 }
             }
             return countEmail;
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<>();
         } finally {
             if (br != null) {
                 try {
@@ -514,6 +510,7 @@ public class FlatFile implements DataSource {
                 }
             }
         }
+        return 0;
     }
 
     @Override
@@ -600,14 +597,6 @@ public class FlatFile implements DataSource {
             }
         }
         return result;
-    }
-
-    @Override
-    public void updateName(String oldOne, String newOne) {
-        PlayerAuth auth = this.getAuth(oldOne);
-        auth.setNickname(newOne);
-        this.saveAuth(auth);
-        this.removeAuth(oldOne);
     }
 
     @Override

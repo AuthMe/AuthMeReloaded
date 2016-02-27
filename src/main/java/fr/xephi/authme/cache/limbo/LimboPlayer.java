@@ -8,37 +8,20 @@ import org.bukkit.scheduler.BukkitTask;
 public class LimboPlayer {
 
     private final String name;
+    private final boolean fly;
     private Location loc = null;
     private BukkitTask timeoutTaskId = null;
     private BukkitTask messageTaskId = null;
     private boolean operator = false;
-    private String group = "";
+    private String group;
 
-    /**
-     * Constructor for LimboPlayer.
-     *
-     * @param name     String
-     * @param loc      Location
-     * @param operator boolean
-     * @param group    String
-     */
-    public LimboPlayer(String name, Location loc,
-                       boolean operator, String group) {
+    public LimboPlayer(String name, Location loc, boolean operator,
+                       String group, boolean fly) {
         this.name = name;
         this.loc = loc;
         this.operator = operator;
         this.group = group;
-    }
-
-    /**
-     * Constructor for LimboPlayer.
-     *
-     * @param name  String
-     * @param group String
-     */
-    public LimboPlayer(String name, String group) {
-        this.name = name;
-        this.group = group;
+        this.fly = fly;
     }
 
     /**
@@ -77,11 +60,10 @@ public class LimboPlayer {
         return group;
     }
 
-    /**
-     * Method getTimeoutTaskId.
-     *
-     * @return BukkitTask
-     */
+    public boolean isFly() {
+        return fly;
+    }
+
     public BukkitTask getTimeoutTaskId() {
         return timeoutTaskId;
     }
@@ -121,7 +103,6 @@ public class LimboPlayer {
 
     /**
      * Method clearTask.
-     *
      */
     public void clearTask() {
         if (messageTaskId != null) {
