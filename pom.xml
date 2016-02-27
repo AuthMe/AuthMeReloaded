@@ -127,7 +127,27 @@
             </testResource>
         </testResources>
 
+        <pluginManagement>
+            <plugins>
+                <!-- Lambda expressions for Java 6 and 7 -->
+                <plugin>
+                    <groupId>net.orfjackal.retrolambda</groupId>
+                    <artifactId>retrolambda-maven-plugin</artifactId>
+                    <version>2.1.0</version>
+                    <executions>
+                        <execution>
+                            <goals>
+                                <goal>process-main</goal>
+                                <goal>process-test</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
         <plugins>
+            <!-- Maven Java Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -137,6 +157,7 @@
                     <target>${javaVersion}</target>
                 </configuration>
             </plugin>
+            <!-- Libs Shading and Relocation -->
             <plugin>
                 <!--Relocate all lib we use in order to fix class loading errors if we use different versions
                 than already loaded libs (i.e. by Mojang -> gson)-->
@@ -265,6 +286,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Test coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
@@ -278,6 +300,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Coveralls data -->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
@@ -355,6 +378,13 @@
     </repositories>
 
     <dependencies>
+        <!-- Lombok expressions -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.6</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Database Connection Pool -->
         <dependency>
             <groupId>com.zaxxer</groupId>
