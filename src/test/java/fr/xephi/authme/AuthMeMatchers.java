@@ -1,4 +1,4 @@
-package fr.xephi.authme.datasource;
+package fr.xephi.authme;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.crypts.HashedPassword;
