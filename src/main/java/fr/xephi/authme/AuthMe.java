@@ -50,6 +50,7 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -786,7 +787,7 @@ public class AuthMe extends JavaPlugin {
             public void run() {
                 for (PlayerAuth auth : database.getLoggedPlayers()) {
                     String email = auth.getEmail();
-                    if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com")) {
+                    if (StringUtils.isEmpty(email) || email.equalsIgnoreCase("your@email.com")) {
                         Player player = Utils.getPlayer(auth.getRealName());
                         if (player != null) {
                             messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
@@ -794,7 +795,7 @@ public class AuthMe extends JavaPlugin {
                     }
                 }
             }
-        }, 1, 1200 * Settings.delayRecall);
+        }, 1, 1200 * newSettings.getProperty(EmailSettings.DELAY_RECALL));
     }
 
     public String replaceAllInfo(String message, Player player) {

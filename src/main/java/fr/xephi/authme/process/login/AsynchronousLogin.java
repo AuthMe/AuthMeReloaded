@@ -175,7 +175,7 @@ public class AsynchronousLogin {
             displayOtherAccounts(auth);
 
             if (Settings.recallEmail && (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email))) {
-                m.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+                m.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
 
             if (!Settings.noConsoleSpam) {
@@ -232,8 +232,8 @@ public class AsynchronousLogin {
         String message = "[AuthMe] " + StringUtils.join(", ", auths) + ".";
         for (Player player : Utils.getOnlinePlayers()) {
             if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)
-            		|| (player.getName().equals(this.player.getName())
-            				&& plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
+                    || (player.getName().equals(this.player.getName())
+                            && plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
                 player.sendMessage(message);
             }
