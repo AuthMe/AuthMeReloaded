@@ -351,8 +351,9 @@ public class SQLite implements DataSource {
     @Override
     public synchronized void close() {
         try {
-        	if (con != null && !con.isClosed())
-        		con.close();
+            if (con != null && !con.isClosed()) {
+                con.close();
+            }
         } catch (SQLException ex) {
             logSqlException(ex);
         }

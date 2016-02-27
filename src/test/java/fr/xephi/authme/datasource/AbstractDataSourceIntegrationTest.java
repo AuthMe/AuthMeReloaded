@@ -286,4 +286,18 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(updatedList, hasItem(equalTo("test-1")));
     }
 
+    @Test
+    public void shouldUpdateRealName() {
+        // given
+        DataSource dataSource = getDataSource();
+
+        // when
+        boolean response1 = dataSource.updateRealName("bobby", "BOBBY");
+        boolean response2 = dataSource.updateRealName("notExists", "NOTEXISTS");
+
+        // then
+        assertThat(response1 && response2, equalTo(true));
+        assertThat(dataSource.getAuth("bobby"), hasAuthBasicData("bobby", "BOBBY", "your@email.com", "123.45.67.89"));
+    }
+
 }

@@ -211,7 +211,7 @@ public final class Settings {
         countriesBlacklist = configFile.getStringList("Protection.countriesBlacklist");
         broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
         forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
-        forceRegLogin = configFile.getBoolean("settings.registration.forceLoginAfterRegister", false);
+        forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
         spawnPriority = load(RestrictionSettings.SPAWN_PRIORITY);
         getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
         getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
