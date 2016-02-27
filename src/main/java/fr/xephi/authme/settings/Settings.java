@@ -84,7 +84,6 @@ public final class Settings {
         getMaxJoinPerIp;
     protected static FileConfiguration configFile;
     private static AuthMe plugin;
-    private static Settings instance;
 
     /**
      * Constructor for Settings.
@@ -92,7 +91,6 @@ public final class Settings {
      * @param pl AuthMe
      */
     public Settings(AuthMe pl) {
-        instance = this;
         plugin = pl;
         configFile = plugin.getConfig();
         loadVariables();
