@@ -167,7 +167,7 @@
                 <configuration>
                     <forkCount>3</forkCount>
                     <reuseForks>true</reuseForks>
-                    <argLine>-client -Xmx512M -Dfile.encoding=UTF-8 ${argLine}</argLine>
+                    <argLine>-Xmx512M -Dfile.encoding=UTF-8 ${argLine}</argLine>
                 </configuration>
             </plugin>
             <!-- Libs Shading and Relocation -->
