@@ -64,7 +64,7 @@ public class RestrictionSettings implements SettingsClass {
 
     @Comment({
         "To activate the restricted user feature you need",
-        "to enable this option and configure the AllowedRestrctedUser field."})
+        "to enable this option and configure the AllowedRestrictedUser field."})
     public static final Property<Boolean> ENABLE_RESTRICTED_USERS =
         newProperty("settings.restrictions.AllowRestrictedUser", false);
 

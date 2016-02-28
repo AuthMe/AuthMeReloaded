@@ -305,7 +305,7 @@ public class AuthMe extends JavaPlugin {
         setupApi();
 
         // Set up the management
-        ProcessService processService = new ProcessService(newSettings, messages);
+        ProcessService processService = new ProcessService(newSettings, messages, this);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
@@ -859,15 +859,6 @@ public class AuthMe extends JavaPlugin {
                 count++;
         }
         return count >= Settings.getMaxLoginPerIp;
-    }
-
-    public boolean hasJoinedIp(String name, String ip) {
-        int count = 0;
-        for (Player player : Utils.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
-                count++;
-        }
-        return count >= Settings.getMaxJoinPerIp;
     }
 
     /**

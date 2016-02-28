@@ -84,14 +84,7 @@ public class Management {
     }
 
     public void performJoin(final Player player) {
-        sched.runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                new AsynchronousJoin(player, plugin, dataSource).process();
-            }
-
-        });
+        runTask(new AsynchronousJoin(player, plugin, dataSource, playerCache, processService));
     }
 
     public void performQuit(final Player player, final boolean isKick) {
