@@ -167,7 +167,9 @@ public abstract class AbstractResourceClosingTest {
      * Verify that all AutoCloseables that have been created during the method execution have been closed.
      */
     private void verifyHaveMocksBeenClosed() {
-        System.out.println("Found " + closeables.size() + " resources");
+        if (closeables.isEmpty()) {
+            System.out.println("Note: detected no AutoCloseables for method '" + method.getName() + "'");
+        }
         try {
             for (AutoCloseable autoCloseable : closeables) {
                 verify(autoCloseable).close();
