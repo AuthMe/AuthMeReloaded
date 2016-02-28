@@ -1,40 +1,38 @@
 package fr.xephi.authme.process.email;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 /**
  * Async task to add an email to an account.
  */
-public class AsyncAddEmail {
+public class AsyncAddEmail implements Process {
 
     private final Player player;
     private final String email;
-    private final Messages messages;
+    private final ProcessService service;
     private final DataSource dataSource;
     private final PlayerCache playerCache;
-    private final NewSetting settings;
 
-    public AsyncAddEmail(Player player, AuthMe plugin, String email, DataSource dataSource,
-                         PlayerCache playerCache, NewSetting settings) {
-        this.messages = plugin.getMessages();
+    public AsyncAddEmail(Player player, String email, DataSource dataSource, PlayerCache playerCache,
+                         ProcessService service) {
         this.player = player;
         this.email = email;
         this.dataSource = dataSource;
         this.playerCache = playerCache;
-        this.settings = settings;
+        this.service = service;
     }
 
-    public void process() {
+    @Override
+    public void run() {
         String playerName = player.getName().toLowerCase();
 
         if (playerCache.isAuthenticated(playerName)) {
@@ -42,19 +40,19 @@ public class AsyncAddEmail {
             final String currentEmail = auth.getEmail();
 
             if (currentEmail != null && !"your@email.com".equals(currentEmail)) {
-                messages.send(player, MessageKey.USAGE_CHANGE_EMAIL);
-            } else if (!Utils.isEmailCorrect(email, settings)) {
-                messages.send(player, MessageKey.INVALID_EMAIL);
+                service.send(player, MessageKey.USAGE_CHANGE_EMAIL);
+            } else if (!Utils.isEmailCorrect(email, service.getSettings())) {
+                service.send(player, MessageKey.INVALID_EMAIL);
             } else if (dataSource.isEmailStored(email)) {
-                messages.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
+                service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
                 auth.setEmail(email);
                 if (dataSource.updateEmail(auth)) {
                     playerCache.updatePlayer(auth);
-                    messages.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+                    service.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
                 } else {
                     ConsoleLogger.showError("Could not save email for player '" + player + "'");
-                    messages.send(player, MessageKey.ERROR);
+                    service.send(player, MessageKey.ERROR);
                 }
             }
         } else {
@@ -64,11 +62,11 @@ public class AsyncAddEmail {
 
     private void sendUnloggedMessage(DataSource dataSource) {
         if (dataSource.isAuthAvailable(player.getName())) {
-            messages.send(player, MessageKey.LOGIN_MESSAGE);
-        } else if (Settings.emailRegistration) {
-            messages.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+            service.send(player, MessageKey.LOGIN_MESSAGE);
+        } else if (service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)) {
+            service.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
         } else {
-            messages.send(player, MessageKey.REGISTER_MESSAGE);
+            service.send(player, MessageKey.REGISTER_MESSAGE);
         }
     }
 
