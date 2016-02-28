@@ -1,5 +1,8 @@
 package fr.xephi.authme.process.register;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -13,8 +16,6 @@ import fr.xephi.authme.security.crypts.TwoFactor;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.StringUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 /**
  */
@@ -71,6 +72,7 @@ public class AsyncRegister {
         }
 
         //check this in both possiblities so don't use 'else if'
+        Integer size = 0;
         if (database.isAuthAvailable(name)) {
             m.send(player, MessageKey.NAME_ALREADY_REGISTERED);
             return false;
@@ -78,8 +80,8 @@ public class AsyncRegister {
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !ip.equalsIgnoreCase("127.0.0.1")
             && !ip.equalsIgnoreCase("localhost")
-            && database.getAllAuthsByIp(ip).size() >= Settings.getmaxRegPerIp) {
-            m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
+            && (size = database.getAllAuthsByIp(ip).size()) >= Settings.getmaxRegPerIp) {
+            m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, size.toString());
             return false;
         }
         return true;
@@ -96,10 +98,11 @@ public class AsyncRegister {
     }
 
     private void emailRegister() {
+        Integer size = 0;
         if (Settings.getmaxRegPerEmail > 0
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            && database.countAuthsByEmail(email) >= Settings.getmaxRegPerEmail) {
-            m.send(player, MessageKey.MAX_REGISTER_EXCEEDED);
+            && (size = database.countAuthsByEmail(email)) >= Settings.getmaxRegPerEmail) {
+            m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, size.toString());
             return;
         }
         final HashedPassword hashedPassword = plugin.getPasswordSecurity().computeHash(password, name);

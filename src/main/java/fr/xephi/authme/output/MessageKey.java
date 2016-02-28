@@ -41,7 +41,7 @@ public enum MessageKey {
 
     REGISTER_EMAIL_MESSAGE("reg_email_msg"),
 
-    MAX_REGISTER_EXCEEDED("max_reg"),
+    MAX_REGISTER_EXCEEDED("max_reg", "%acc_nb"),
 
     USAGE_REGISTER("usage_reg"),
 
