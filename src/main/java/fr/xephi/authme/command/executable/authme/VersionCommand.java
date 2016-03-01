@@ -3,14 +3,14 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
+import fr.xephi.authme.util.Utils;
 
 import java.util.List;
 
-import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
+import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 public class VersionCommand implements ExecutableCommand {
 
@@ -73,7 +73,7 @@ public class VersionCommand implements ExecutableCommand {
     private static boolean isPlayerOnline(String minecraftName) {
         // Note ljacqu 20151121: Generally you should use Utils#getOnlinePlayers to retrieve the list of online players.
         // If it's only used in a for-each loop such as here, it's fine. For other purposes, go through the Utils class.
-        for (Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : Utils.getOnlinePlayers()) {
             if (player.getName().equalsIgnoreCase(minecraftName)) {
                 return true;
             }
