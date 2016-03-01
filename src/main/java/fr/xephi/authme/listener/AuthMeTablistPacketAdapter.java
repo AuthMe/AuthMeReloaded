@@ -30,15 +30,10 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
     }
 
     public void register() {
-        // TODO:
-        // FIXME:
-        // This listener hides every player not only from the tablist... From everything! (Invisible players issue)
-        // WE NEED ALSO TO RESEND THE DATA AFTER THE PLAYER LOGIN
-        ConsoleLogger.info("The HideTablistBeforeLogin feature is currently unavariable due to stability issues!");
-        //ProtocolLibrary.getProtocolManager().addPacketListener(this);
+        ProtocolLibrary.getProtocolManager().addPacketListener(this);
     }
 
     public void unregister() {
-        //ProtocolLibrary.getProtocolManager().removePacketListener(this);
+        ProtocolLibrary.getProtocolManager().removePacketListener(this);
     }
 }
