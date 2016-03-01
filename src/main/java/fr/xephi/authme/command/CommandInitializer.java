@@ -92,7 +92,7 @@ public final class CommandInitializer {
             .description("Enforce login player")
             .detailedDescription("Enforce the specified player to login.")
             .withArgument("player", "Online player name", true)
-            .permissions(OP_ONLY, PlayerPermission.CAN_LOGIN_BE_FORCED)
+            .permissions(OP_ONLY, AdminPermission.FORCE_LOGIN)
             .executableCommand(new ForceLoginCommand())
             .build();
 
