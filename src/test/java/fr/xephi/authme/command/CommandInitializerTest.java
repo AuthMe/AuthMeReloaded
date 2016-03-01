@@ -1,14 +1,13 @@
 package fr.xephi.authme.command;
 
-import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.PermissionNode;
+import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.WrapperMock;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,13 +16,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import fr.xephi.authme.permission.AdminPermission;
-import fr.xephi.authme.permission.PermissionNode;
-import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.WrapperMock;
+import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
@@ -241,15 +239,11 @@ public class CommandInitializerTest {
     public void shouldNotHavePlayerPermissionIfDefaultsToOpOnly() {
         // given
         BiConsumer adminPermissionChecker = new BiConsumer() {
-            // The only exception to this check is the force login command, which should default to OP_ONLY
-            // but semantically it is a player permission
-            final List<String> forceLoginLabels = Arrays.asList("forcelogin", "login");
-
             @Override
             public void accept(CommandDescription command, int depth) {
                 CommandPermissions permissions = command.getCommandPermissions();
                 if (permissions != null && OP_ONLY.equals(permissions.getDefaultPermission())) {
-                    if (!hasAdminNode(permissions) && !command.getLabels().equals(forceLoginLabels)) {
+                    if (!hasAdminNode(permissions)) {
                         fail("The command with labels " + command.getLabels() + " has OP_ONLY default "
                             + "permission but no permission node on admin level");
                     }
