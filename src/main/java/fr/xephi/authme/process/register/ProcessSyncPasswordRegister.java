@@ -9,42 +9,34 @@ import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
-public class ProcessSyncPasswordRegister implements Runnable {
+public class ProcessSyncPasswordRegister implements Process {
 
     protected final Player player;
     protected final String name;
     private final AuthMe plugin;
-    private final Messages m;
-    private final NewSetting settings;
+    private final ProcessService service;
 
-    /**
-     * Constructor for ProcessSyncPasswordRegister.
-     *
-     * @param player   Player
-     * @param plugin   AuthMe
-     * @param settings The plugin settings
-     */
-    public ProcessSyncPasswordRegister(Player player, AuthMe plugin, NewSetting settings) {
-        this.m = plugin.getMessages();
+    public ProcessSyncPasswordRegister(Player player, AuthMe plugin, ProcessService service) {
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.plugin = plugin;
-        this.settings = settings;
+        this.service = service;
     }
 
     private void sendBungeeMessage() {
@@ -70,15 +62,14 @@ public class ProcessSyncPasswordRegister implements Runnable {
         Utils.teleportToSpawn(player);
         LimboCache cache = LimboCache.getInstance();
         cache.updateLimboPlayer(player);
-        int delay = Settings.getRegistrationTimeout * 20;
-        int interval = Settings.getWarnMessageInterval;
-        BukkitScheduler sched = plugin.getServer().getScheduler();
+        int delay = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
+        int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         BukkitTask task;
         if (delay != 0) {
-            task = sched.runTaskLater(plugin, new TimeoutTask(plugin, name, player), delay);
+            task = service.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), delay);
             cache.getLimboPlayer(name).setTimeoutTaskId(task);
         }
-        task = sched.runTask(plugin, new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
+        task = service.runTask(new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
         cache.getLimboPlayer(name).setMessageTaskId(task);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -106,13 +97,13 @@ public class ProcessSyncPasswordRegister implements Runnable {
             Utils.setGroup(player, Utils.GroupType.REGISTERED);
         }
 
-        m.send(player, MessageKey.REGISTER_SUCCESS);
+        service.send(player, MessageKey.REGISTER_SUCCESS);
 
         if (!Settings.getmailAccount.isEmpty()) {
-            m.send(player, MessageKey.ADD_EMAIL_MESSAGE);
+            service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
         }
 
-        if (Settings.applyBlindEffect) {
+        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
 
@@ -121,23 +112,23 @@ public class ProcessSyncPasswordRegister implements Runnable {
         player.saveData();
 
         if (!Settings.noConsoleSpam) {
-            ConsoleLogger.info(player.getName() + " registered " + plugin.getIP(player));
+            ConsoleLogger.info(player.getName() + " registered " + service.getIpAddressManager().getPlayerIp(player));
         }
 
         // Kick Player after Registration is enabled, kick the player
         if (Settings.forceRegKick) {
-            player.kickPlayer(m.retrieveSingle(MessageKey.REGISTER_SUCCESS));
+            player.kickPlayer(service.retrieveSingleMessage(MessageKey.REGISTER_SUCCESS));
             return;
         }
 
         // Register is finish and player is logged, display welcome message
-        if (Settings.useWelcomeMessage) {
-            if (Settings.broadcastWelcomeMessage) {
-                for (String s : settings.getWelcomeMessage()) {
+        if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
+                for (String s : service.getSettings().getWelcomeMessage()) {
                     plugin.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
-                for (String s : settings.getWelcomeMessage()) {
+                for (String s : service.getSettings().getWelcomeMessage()) {
                     player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
@@ -160,10 +151,10 @@ public class ProcessSyncPasswordRegister implements Runnable {
     }
 
     private void sendTo() {
-        if (!settings.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
+        if (!service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("Connect");
-            out.writeUTF(settings.getProperty(HooksSettings.BUNGEECORD_SERVER));
+            out.writeUTF(service.getProperty(HooksSettings.BUNGEECORD_SERVER));
             player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
         }
     }

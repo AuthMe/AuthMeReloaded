@@ -158,7 +158,7 @@ public final class Settings {
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
-        noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam", false);
+        noConsoleSpam = load(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
         getmailAccount = configFile.getString("Email.mailAccount", "");
         getMailPort = configFile.getInt("Email.mailPort", 465);
@@ -197,10 +197,10 @@ public final class Settings {
         forceCommandsAsConsole = configFile.getStringList("settings.forceCommandsAsConsole");
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         delayRecall = configFile.getInt("Email.delayRecall", 5);
-        useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
+        useWelcomeMessage = load(RegistrationSettings.USE_WELCOME_MESSAGE);
         unsafePasswords = configFile.getStringList("settings.security.unsafePasswords");
         countriesBlacklist = configFile.getStringList("Protection.countriesBlacklist");
-        broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
+        broadcastWelcomeMessage = load(RegistrationSettings.BROADCAST_WELCOME_MESSAGE);
         forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
         forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
         spawnPriority = load(RestrictionSettings.SPAWN_PRIORITY);

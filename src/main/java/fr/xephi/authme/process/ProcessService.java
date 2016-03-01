@@ -1,6 +1,7 @@
 package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.manager.IpAddressManager;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
@@ -17,11 +18,13 @@ public class ProcessService {
     private final NewSetting settings;
     private final Messages messages;
     private final AuthMe authMe;
+    private final IpAddressManager ipAddressManager;
 
-    public ProcessService(NewSetting settings, Messages messages, AuthMe authMe) {
+    public ProcessService(NewSetting settings, Messages messages, AuthMe authMe, IpAddressManager ipAddressManager) {
         this.settings = settings;
         this.messages = messages;
         this.authMe = authMe;
+        this.ipAddressManager = ipAddressManager;
     }
 
     public <T> T getProperty(Property<T> property) {
@@ -36,7 +39,15 @@ public class ProcessService {
         messages.send(sender, key);
     }
 
-    public String retrieveMessage(MessageKey key) {
+    public void send(CommandSender sender, MessageKey key, String... replacements) {
+        messages.send(sender, key, replacements);
+    }
+
+    public String[] retrieveMessage(MessageKey key) {
+        return messages.retrieve(key);
+    }
+
+    public String retrieveSingleMessage(MessageKey key) {
         return messages.retrieveSingle(key);
     }
 
@@ -58,6 +69,10 @@ public class ProcessService {
 
     public AuthMe getAuthMe() {
         return authMe;
+    }
+
+    public IpAddressManager getIpAddressManager() {
+        return ipAddressManager;
     }
 
 }

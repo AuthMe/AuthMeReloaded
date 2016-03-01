@@ -3,6 +3,7 @@ package fr.xephi.authme.command;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.manager.IpAddressManager;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -41,6 +42,7 @@ public class CommandServiceTest {
     private CommandService commandService;
     private PermissionsManager permissionsManager;
     private NewSetting settings;
+    private IpAddressManager ipAddressManager;
 
     @Before
     public void setUpService() {
@@ -51,8 +53,9 @@ public class CommandServiceTest {
         passwordSecurity = mock(PasswordSecurity.class);
         permissionsManager = mock(PermissionsManager.class);
         settings = mock(NewSetting.class);
-        commandService = new CommandService(
-            authMe, commandMapper, helpProvider, messages, passwordSecurity, permissionsManager, settings);
+        ipAddressManager = mock(IpAddressManager.class);
+        commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
+            permissionsManager, settings, ipAddressManager);
     }
 
     @Test
@@ -215,5 +218,14 @@ public class CommandServiceTest {
 
         // then
         assertThat(result, equalTo(authMe));
+    }
+
+    @Test
+    public void shouldReturnIpAddressManager() {
+        // given/when
+        IpAddressManager ipManager = commandService.getIpAddressManager();
+
+        // then
+        assertThat(ipManager, equalTo(ipAddressManager));
     }
 }

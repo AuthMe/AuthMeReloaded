@@ -43,14 +43,7 @@ public class Management {
     }
 
     public void performLogin(final Player player, final String password, final boolean forceLogin) {
-        sched.runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                new AsynchronousLogin(player, password, forceLogin, plugin, dataSource, settings)
-                    .process();
-            }
-        });
+        runTask(new AsynchronousLogin(player, password, forceLogin, plugin, dataSource, processService));
     }
 
     public void performLogout(final Player player) {
@@ -64,23 +57,11 @@ public class Management {
     }
 
     public void performRegister(final Player player, final String password, final String email) {
-        sched.runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                new AsyncRegister(player, password, email, plugin, dataSource, settings).process();
-            }
-        });
+        runTask(new AsyncRegister(player, password, email, plugin, dataSource, processService));
     }
 
     public void performUnregister(final Player player, final String password, final boolean force) {
-        sched.runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                new AsynchronousUnregister(player, password, force, plugin).process();
-            }
-        });
+        runTask(new AsynchronousUnregister(player, password, force, plugin, processService));
     }
 
     public void performJoin(final Player player) {
@@ -88,14 +69,7 @@ public class Management {
     }
 
     public void performQuit(final Player player, final boolean isKick) {
-        sched.runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                new AsynchronousQuit(player, plugin, dataSource, isKick).process();
-            }
-
-        });
+        runTask(new AsynchronousQuit(player, plugin, dataSource, isKick, processService));
     }
 
     public void performAddEmail(final Player player, final String newEmail) {
@@ -103,12 +77,7 @@ public class Management {
     }
 
     public void performChangeEmail(final Player player, final String oldEmail, final String newEmail) {
-        sched.runTaskAsynchronously(plugin, new Runnable() {
-            @Override
-            public void run() {
-                new AsyncChangeEmail(player, plugin, oldEmail, newEmail, dataSource, playerCache, settings).process();
-            }
-        });
+        runTask(new AsyncChangeEmail(player, plugin, oldEmail, newEmail, dataSource, playerCache, settings));
     }
 
     private void runTask(Process process) {

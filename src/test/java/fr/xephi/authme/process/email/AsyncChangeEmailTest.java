@@ -57,7 +57,7 @@ public class AsyncChangeEmailTest {
         given(dataSource.updateEmail(auth)).willReturn(true);
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource).updateEmail(auth);
@@ -76,7 +76,7 @@ public class AsyncChangeEmailTest {
         given(dataSource.updateEmail(auth)).willReturn(false);
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource).updateEmail(auth);
@@ -94,7 +94,7 @@ public class AsyncChangeEmailTest {
         given(playerCache.getAuth("bobby")).willReturn(auth);
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
@@ -112,7 +112,7 @@ public class AsyncChangeEmailTest {
         given(playerCache.getAuth("bobby")).willReturn(auth);
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
@@ -130,7 +130,7 @@ public class AsyncChangeEmailTest {
         given(playerCache.getAuth("bobby")).willReturn(auth);
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
@@ -149,7 +149,7 @@ public class AsyncChangeEmailTest {
         given(dataSource.isEmailStored("new@example.com")).willReturn(true);
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
@@ -166,7 +166,7 @@ public class AsyncChangeEmailTest {
         given(dataSource.isAuthAvailable("Bobby")).willReturn(true);
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
@@ -184,7 +184,7 @@ public class AsyncChangeEmailTest {
         Settings.emailRegistration = true;
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));
@@ -202,7 +202,7 @@ public class AsyncChangeEmailTest {
         Settings.emailRegistration = false;
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource, never()).updateEmail(any(PlayerAuth.class));

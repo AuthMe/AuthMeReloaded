@@ -7,7 +7,10 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
@@ -15,7 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-public class AsynchronousQuit {
+public class AsynchronousQuit implements Process {
 
     private final AuthMe plugin;
     private final DataSource database;
@@ -23,26 +26,28 @@ public class AsynchronousQuit {
     private final String name;
     private boolean isOp = false;
     private boolean needToChange = false;
-    private boolean isKick = false;
+    private final boolean isKick;
+    private final ProcessService service;
 
-    public AsynchronousQuit(Player p, AuthMe plugin, DataSource database,
-                            boolean isKick) {
+    public AsynchronousQuit(Player p, AuthMe plugin, DataSource database, boolean isKick, ProcessService service) {
         this.player = p;
         this.plugin = plugin;
         this.database = database;
         this.name = p.getName().toLowerCase();
         this.isKick = isKick;
+        this.service = service;
     }
 
-    public void process() {
+    @Override
+    public void run() {
         if (player == null || Utils.isUnrestricted(player)) {
             return;
         }
 
-        String ip = plugin.getIP(player);
+        String ip = service.getIpAddressManager().getPlayerIp(player);
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
-            if (Settings.isSaveQuitLocationEnabled) {
+            if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
                 Location loc = player.getLocation();
                 PlayerAuth auth = PlayerAuth.builder()
                     .name(name).location(loc)
@@ -76,7 +81,7 @@ public class AsynchronousQuit {
 
                     plugin.sessions.put(name, task);
                 } else {
-                    //plugin is disable we canno schedule more tasks so run it directly here
+                    //plugin is disabled; we cannot schedule more tasks so run it directly here
                     postLogout();
                 }
             }
@@ -85,7 +90,7 @@ public class AsynchronousQuit {
             database.setUnlogged(name);
         }
 
-        plugin.realIp.remove(name);
+        service.getIpAddressManager().removeCache(player.getName());
         if (plugin.isEnabled()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
         }

@@ -59,15 +59,11 @@ public class AsynchronousJoin implements Process {
             return;
         }
 
-        if (service.getProperty(HooksSettings.ENABLE_VERYGAMES_IP_CHECK)) {
-            plugin.getVerygamesIp(player);
-        }
-
         if (plugin.ess != null && service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
             plugin.ess.getUser(player).setSocialSpyEnabled(false);
         }
 
-        final String ip = plugin.getIP(player);
+        final String ip = service.getIpAddressManager().getPlayerIp(player);
 
 
         if (isNameRestricted(name, ip, player.getAddress().getHostName(), service.getSettings())) {
@@ -75,7 +71,7 @@ public class AsynchronousJoin implements Process {
                 @Override
                 public void run() {
                     AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
-                    player.kickPlayer(service.retrieveMessage(MessageKey.NOT_OWNER_ERROR));
+                    player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
                     if (Settings.banUnsafeIp) {
                         plugin.getServer().banIP(ip);
                     }
@@ -87,7 +83,7 @@ public class AsynchronousJoin implements Process {
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !"127.0.0.1".equalsIgnoreCase(ip)
             && !"localhost".equalsIgnoreCase(ip)
-            && hasJoinedIp(player.getName(), ip, service.getSettings(), service.getAuthMe())) {
+            && hasJoinedIp(player.getName(), ip, service.getSettings())) {
             service.scheduleSyncDelayedTask(new Runnable() {
                 @Override
                 public void run() {
@@ -295,11 +291,13 @@ public class AsynchronousJoin implements Process {
         return nameFound;
     }
 
-    private boolean hasJoinedIp(String name, String ip, NewSetting settings, AuthMe authMe) {
+    private boolean hasJoinedIp(String name, String ip, NewSetting settings) {
         int count = 0;
         for (Player player : Utils.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(authMe.getIP(player)) && !player.getName().equalsIgnoreCase(name))
+            if (ip.equalsIgnoreCase(service.getIpAddressManager().getPlayerIp(player))
+                && !player.getName().equalsIgnoreCase(name)) {
                 count++;
+            }
         }
         return count >= settings.getProperty(RestrictionSettings.MAX_JOIN_PER_IP);
     }

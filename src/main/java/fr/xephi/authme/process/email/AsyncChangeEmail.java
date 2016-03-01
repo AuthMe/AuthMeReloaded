@@ -6,6 +6,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.process.Process;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.Utils;
@@ -14,7 +15,7 @@ import org.bukkit.entity.Player;
 /**
  * Async task for changing the email.
  */
-public class AsyncChangeEmail {
+public class AsyncChangeEmail implements Process {
 
     private final Player player;
     private final String oldEmail;
@@ -35,7 +36,8 @@ public class AsyncChangeEmail {
         this.settings = settings;
     }
 
-    public void process() {
+    @Override
+    public void run() {
         String playerName = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);
