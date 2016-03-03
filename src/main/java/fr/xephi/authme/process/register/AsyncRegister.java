@@ -74,18 +74,19 @@ public class AsyncRegister {
         }
 
         //check this in both possiblities so don't use 'else if'
-        Integer size = 0;
-        Integer maxReg = Settings.getmaxRegPerIp;
         if (database.isAuthAvailable(name)) {
             m.send(player, MessageKey.NAME_ALREADY_REGISTERED);
             return false;
-        } else if (Settings.getmaxRegPerIp > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
+        } else if(Settings.getmaxRegPerIp > 0
             && !ip.equalsIgnoreCase("127.0.0.1")
             && !ip.equalsIgnoreCase("localhost")
-            && (size = database.getAllAuthsByIp(ip).size()) >= maxReg) {
-            m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, maxReg.toString(), size.toString());
-            return false;
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
+            Integer maxReg = Settings.getmaxRegPerIp;
+            List<String> otherAccounts = database.getAllAuthsByIp(ip);
+            if (otherAccounts.size() >= maxReg) {
+                m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, maxReg.toString(), Integer.toString(otherAccounts.size()), otherAccounts.toString());
+                return false;
+            }
         }
         return true;
     }
@@ -101,7 +102,10 @@ public class AsyncRegister {
     }
 
     private void emailRegister() {
-        if(Settings.getmaxRegPerEmail > 0 && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
+        if(Settings.getmaxRegPerEmail > 0
+            && !ip.equalsIgnoreCase("127.0.0.1")
+            && !ip.equalsIgnoreCase("localhost")
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
             Integer maxReg = Settings.getmaxRegPerIp;
             List<String> otherAccounts = database.getAllAuthsByIp(ip);
             if (otherAccounts.size() >= maxReg) {
