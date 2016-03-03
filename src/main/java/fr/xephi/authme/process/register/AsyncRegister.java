@@ -1,5 +1,7 @@
 package fr.xephi.authme.process.register;
 
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -99,13 +101,13 @@ public class AsyncRegister {
     }
 
     private void emailRegister() {
-        Integer maxReg = Settings.getmaxRegPerIp;
-        Integer size = 0;
-        if (Settings.getmaxRegPerEmail > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            && (size = database.getAllAuthsByIp(ip).size()) >= maxReg) {
-            m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, maxReg.toString(), size.toString());
-            return;
+        if(Settings.getmaxRegPerEmail > 0 && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
+            Integer maxReg = Settings.getmaxRegPerIp;
+            List<String> otherAccounts = database.getAllAuthsByIp(ip);
+            if (otherAccounts.size() >= maxReg) {
+                m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, maxReg.toString(), Integer.toString(otherAccounts.size()), otherAccounts.toString());
+                return;
+            }
         }
         final HashedPassword hashedPassword = plugin.getPasswordSecurity().computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
