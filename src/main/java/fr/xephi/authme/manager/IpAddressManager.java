@@ -60,7 +60,7 @@ public class IpAddressManager {
         ipCache.remove(player.toLowerCase());
     }
 
-    // returns null if IP could not be looked up --> expect that it won't be cached
+    // returns null if IP could not be looked up
     private String getVeryGamesIp(final String plainIp, final int port) {
         final String sUrl = String.format("http://monitor-1.verygames.net/api/?action=ipclean-real-ip"
             + "&out=raw&ip=%s&port=%d", plainIp, port);
