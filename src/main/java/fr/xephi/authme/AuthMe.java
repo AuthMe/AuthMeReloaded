@@ -46,7 +46,6 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.Spawn;
@@ -121,7 +120,6 @@ public class AuthMe extends JavaPlugin {
     public NewAPI api;
     public SendMailSSL mail;
     public DataManager dataManager;
-    public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
     /*
      * Plugin Hooks
@@ -257,9 +255,6 @@ public class AuthMe extends JavaPlugin {
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
         commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings);
-
-        // Setup otherAccounts file
-        this.otherAccounts = OtherAccounts.getInstance();
 
         // Set up Metrics
         MetricsStarter.setupMetrics(plugin, newSettings);

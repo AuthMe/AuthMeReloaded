@@ -157,7 +157,6 @@ public class AsyncRegister {
             plugin.getManagement().performLogin(player, "dontneed", true);
         }
 
-        plugin.otherAccounts.addPlayer(player.getUniqueId());
         ProcessSyncPasswordRegister sync = new ProcessSyncPasswordRegister(player, plugin, settings);
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, sync);
 

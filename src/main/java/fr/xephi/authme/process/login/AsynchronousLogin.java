@@ -185,7 +185,6 @@ public class AsynchronousLogin {
             // makes player isLoggedin via API
             PlayerCache.getInstance().addPlayer(auth);
             database.setLogged(name);
-            plugin.otherAccounts.addPlayer(player.getUniqueId());
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end
