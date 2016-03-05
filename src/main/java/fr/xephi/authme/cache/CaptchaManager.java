@@ -1,4 +1,4 @@
-package fr.xephi.authme.manager;
+package fr.xephi.authme.cache;
 
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.NewSetting;

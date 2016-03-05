@@ -33,7 +33,7 @@ import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
 import fr.xephi.authme.listener.AuthMeTablistPacketAdapter;
 import fr.xephi.authme.mail.SendMailSSL;
-import fr.xephi.authme.manager.IpAddressManager;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;

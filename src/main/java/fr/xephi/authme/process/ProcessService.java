@@ -1,7 +1,7 @@
 package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.manager.IpAddressManager;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;

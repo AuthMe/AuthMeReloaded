@@ -1,4 +1,4 @@
-package fr.xephi.authme.manager;
+package fr.xephi.authme.cache;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;

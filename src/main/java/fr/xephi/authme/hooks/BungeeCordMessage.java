@@ -7,7 +7,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.manager.IpAddressManager;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;

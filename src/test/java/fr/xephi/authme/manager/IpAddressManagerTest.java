@@ -1,5 +1,6 @@
 package fr.xephi.authme.manager;
 
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import org.bukkit.entity.Player;

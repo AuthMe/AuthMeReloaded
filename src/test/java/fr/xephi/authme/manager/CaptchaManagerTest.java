@@ -1,5 +1,6 @@
 package fr.xephi.authme.manager;
 
+import fr.xephi.authme.cache.CaptchaManager;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.junit.Test;

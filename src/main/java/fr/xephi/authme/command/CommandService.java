@@ -3,7 +3,7 @@ package fr.xephi.authme.command;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.manager.IpAddressManager;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
