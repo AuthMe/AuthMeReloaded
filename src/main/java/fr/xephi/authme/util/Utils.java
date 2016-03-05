@@ -154,8 +154,7 @@ public final class Utils {
 
     public static boolean isUnrestricted(Player player) {
         return Settings.isAllowRestrictedIp
-            && !Settings.getUnrestrictedName.isEmpty()
-            && (Settings.getUnrestrictedName.contains(player.getName().toLowerCase()));
+            && Settings.getUnrestrictedName.contains(player.getName().toLowerCase());
     }
 
     public static void packCoords(double x, double y, double z, String w, final Player pl) {
@@ -216,8 +215,7 @@ public final class Utils {
                 ConsoleLogger.showError("Unknown list of online players of type " + type);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            ConsoleLogger.showError("Could not retrieve list of online players: ["
-                + e.getClass().getName() + "] " + e.getMessage());
+            ConsoleLogger.logException("Could not retrieve list of online players:", e);
         }
         return Collections.emptyList();
     }

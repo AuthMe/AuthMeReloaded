@@ -96,6 +96,7 @@ public class Messages {
      *
      * @param key The key of the message to send
      * @param replacements The replacements to apply for the tags
+     * @return The message from the file with replacements
      */
     public String retrieveSingle(MessageKey key, String... replacements) {
         String message = retrieveSingle(key);
@@ -111,7 +112,7 @@ public class Messages {
     }
 
     /**
-     * Reload the messages manager.
+     * Reset the messages manager to retrieve messages from the given file instead of the current one.
      *
      * @param messagesFile The new file to load messages from
      */

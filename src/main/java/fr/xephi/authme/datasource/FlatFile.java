@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -42,7 +43,7 @@ public class FlatFile implements DataSource {
         try {
             source.createNewFile();
         } catch (IOException e) {
-            ConsoleLogger.showError(e.getMessage());
+            ConsoleLogger.logException("Cannot open flatfile", e);
             if (Settings.isStopEnabled) {
                 ConsoleLogger.showError("Can't use FLAT FILE... SHUTDOWN...");
                 instance.getServer().shutdown();
@@ -50,8 +51,12 @@ public class FlatFile implements DataSource {
             if (!Settings.isStopEnabled) {
                 instance.getServer().getPluginManager().disablePlugin(instance);
             }
-            e.printStackTrace();
         }
+    }
+
+    @VisibleForTesting
+    public FlatFile(File source) {
+        this.source = source;
     }
 
     @Override
@@ -600,16 +605,8 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public void updateName(String oldOne, String newOne) {
-        PlayerAuth auth = this.getAuth(oldOne);
-        auth.setNickname(newOne);
-        this.saveAuth(auth);
-        this.removeAuth(oldOne);
-    }
-
-    @Override
     public boolean updateRealName(String user, String realName) {
-        return false;
+        throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
     @Override
@@ -626,33 +623,25 @@ public class FlatFile implements DataSource {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
-                switch (args.length) {
-                    case 2:
-                        auths.add(new PlayerAuth(args[0], args[1], "192.168.0.1", 0, "your@email.com", args[0]));
-                        break;
-                    case 3:
-                        auths.add(new PlayerAuth(args[0], args[1], args[2], 0, "your@email.com", args[0]));
-                        break;
-                    case 4:
-                        auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), "your@email.com", args[0]));
-                        break;
-                    case 7:
-                        auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "unavailableworld", "your@email.com", args[0]));
-                        break;
-                    case 8:
-                        auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]));
-                        break;
-                    case 9:
-                        auths.add(new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]));
-                        break;
+                // We expect to encounter 2, 3, 4, 7, 8 or 9 fields. Ignore the line otherwise
+                if (args.length >= 2 && args.length != 5 && args.length != 6 && args.length <= 9) {
+                    PlayerAuth.Builder builder = PlayerAuth.builder()
+                        .name(args[0]).realName(args[0])
+                        .password(args[1], null);
+                    if (args.length >= 3)   builder.ip(args[2]);
+                    if (args.length >= 4)   builder.lastLogin(Long.parseLong(args[3]));
+                    if (args.length >= 7) {
+                        builder.locX(Double.parseDouble(args[4]))
+                            .locY(Double.parseDouble(args[5]))
+                            .locZ(Double.parseDouble(args[6]));
+                    }
+                    if (args.length >= 8)   builder.locWorld(args[7]);
+                    if (args.length >= 9)   builder.email(args[8]);
+                    auths.add(builder.build());
                 }
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
         } catch (IOException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
+            ConsoleLogger.logException("Error while getting auths from flatfile:", ex);
         } finally {
             if (br != null) {
                 try {
@@ -666,7 +655,7 @@ public class FlatFile implements DataSource {
 
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
-        return new ArrayList<>();
+        throw new UnsupportedOperationException("Flat file no longer supported");
     }
 
     @Override

@@ -1,14 +1,13 @@
 package fr.xephi.authme.process.email;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.entity.Player;
 import org.junit.After;
@@ -27,11 +26,10 @@ import static org.mockito.Mockito.when;
  */
 public class AsyncAddEmailTest {
 
-    private Messages messages;
     private Player player;
     private DataSource dataSource;
     private PlayerCache playerCache;
-    private NewSetting settings;
+    private ProcessService service;
 
     @BeforeClass
     public static void setUp() {
@@ -42,10 +40,10 @@ public class AsyncAddEmailTest {
     // Clean up the fields to ensure that no test uses elements of another test
     @After
     public void removeFieldValues() {
-        messages = null;
         player = null;
         dataSource = null;
         playerCache = null;
+        service = null;
     }
 
     @Test
@@ -61,11 +59,11 @@ public class AsyncAddEmailTest {
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(true);
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource).updateEmail(auth);
-        verify(messages).send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+        verify(service).send(player, MessageKey.EMAIL_ADDED_SUCCESS);
         verify(auth).setEmail("my.mail@example.org");
         verify(playerCache).updatePlayer(auth);
     }
@@ -83,11 +81,11 @@ public class AsyncAddEmailTest {
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(false);
 
         // when
-        process.process();
+        process.run();
 
         // then
         verify(dataSource).updateEmail(auth);
-        verify(messages).send(player, MessageKey.ERROR);
+        verify(service).send(player, MessageKey.ERROR);
     }
 
     @Test
@@ -102,10 +100,10 @@ public class AsyncAddEmailTest {
         given(dataSource.isEmailStored("some.mail@example.org")).willReturn(false);
 
         // when
-        process.process();
+        process.run();
 
         // then
-        verify(messages).send(player, MessageKey.USAGE_CHANGE_EMAIL);
+        verify(service).send(player, MessageKey.USAGE_CHANGE_EMAIL);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
     }
 
@@ -121,10 +119,10 @@ public class AsyncAddEmailTest {
         given(dataSource.isEmailStored("invalid_mail")).willReturn(false);
 
         // when
-        process.process();
+        process.run();
 
         // then
-        verify(messages).send(player, MessageKey.INVALID_EMAIL);
+        verify(service).send(player, MessageKey.INVALID_EMAIL);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
     }
 
@@ -140,10 +138,10 @@ public class AsyncAddEmailTest {
         given(dataSource.isEmailStored("player@mail.tld")).willReturn(true);
 
         // when
-        process.process();
+        process.run();
 
         // then
-        verify(messages).send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
+        verify(service).send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
     }
 
@@ -156,10 +154,10 @@ public class AsyncAddEmailTest {
         given(dataSource.isAuthAvailable("Username12")).willReturn(true);
 
         // when
-        process.process();
+        process.run();
 
         // then
-        verify(messages).send(player, MessageKey.LOGIN_MESSAGE);
+        verify(service).send(player, MessageKey.LOGIN_MESSAGE);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
     }
 
@@ -170,13 +168,13 @@ public class AsyncAddEmailTest {
         given(player.getName()).willReturn("user");
         given(playerCache.isAuthenticated("user")).willReturn(false);
         given(dataSource.isAuthAvailable("user")).willReturn(false);
-        Settings.emailRegistration = true;
+        given(service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
 
         // when
-        process.process();
+        process.run();
 
         // then
-        verify(messages).send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+        verify(service).send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
     }
 
@@ -187,13 +185,13 @@ public class AsyncAddEmailTest {
         given(player.getName()).willReturn("user");
         given(playerCache.isAuthenticated("user")).willReturn(false);
         given(dataSource.isAuthAvailable("user")).willReturn(false);
-        Settings.emailRegistration = false;
+        given(service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(false);
 
         // when
-        process.process();
+        process.run();
 
         // then
-        verify(messages).send(player, MessageKey.REGISTER_MESSAGE);
+        verify(service).send(player, MessageKey.REGISTER_MESSAGE);
         verify(playerCache, never()).updatePlayer(any(PlayerAuth.class));
     }
 
@@ -204,14 +202,12 @@ public class AsyncAddEmailTest {
      * @return The created process
      */
     private AsyncAddEmail createProcess(String email) {
-        messages = mock(Messages.class);
-        AuthMe authMe = mock(AuthMe.class);
-        when(authMe.getMessages()).thenReturn(messages);
         player = mock(Player.class);
         dataSource = mock(DataSource.class);
         playerCache = mock(PlayerCache.class);
-        settings = mock(NewSetting.class);
-        return new AsyncAddEmail(player, authMe, email, dataSource, playerCache, settings);
+        service = mock(ProcessService.class);
+        when(service.getSettings()).thenReturn(mock(NewSetting.class));
+        return new AsyncAddEmail(player, email, dataSource, playerCache, service);
     }
 
 }

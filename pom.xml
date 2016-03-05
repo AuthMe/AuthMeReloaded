@@ -48,22 +48,25 @@
     </prerequisites>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <!-- Project Properties -->
+        <projectEncoding>UTF-8</projectEncoding>
+        <project.build.sourceEncoding>${projectEncoding}</project.build.sourceEncoding>
+        <project.build.outputEncoding>${projectEncoding}</project.build.outputEncoding>
+        <jdkVersion>1.7</jdkVersion>
+        <testJreVersion>1.7</testJreVersion>
+
+        <!-- Output properties -->
         <pluginName>AuthMe</pluginName>
         <jarName>${pluginName}-${project.version}</jarName>
-        <mainClass>fr.xephi.authme.AuthMe</mainClass>
+        <mainClass>${project.groupId}.${project.artifactId}.${pluginName}</mainClass>
         <pluginAuthors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</pluginAuthors>
         <buildNumber>Unknown</buildNumber>
 
-        <!-- Change Compiler Version (JDK) HERE! -->
-        <javaVersion>1.7</javaVersion>
-
         <!-- Change Bukkit Version HERE! -->
-        <bukkitVersion>1.9-pre1-SNAPSHOT</bukkitVersion>
+        <bukkitVersion>1.9-SNAPSHOT</bukkitVersion>
     </properties>
 
+    <!-- Jenkins profile (add the real buildNumber to the version string) -->
     <profiles>
         <profile>
             <id>jenkins</id>
@@ -86,31 +89,19 @@
         <resources>
             <resource>
                 <targetPath>.</targetPath>
-                <filtering>true</filtering>
-                <directory>src/main/resources/</directory>
-                <includes>
-                    <include>plugin.yml</include>
-                </includes>
-            </resource>
-            <resource>
-                <targetPath>.</targetPath>
-                <filtering>true</filtering>
-                <directory>src/main/resources/</directory>
-                <includes>
-                    <include>email.html</include>
-                    <include>welcome.txt</include>
-                </includes>
-            </resource>
-            <resource>
-                <targetPath>.</targetPath>
                 <filtering>false</filtering>
+                <directory>.</directory>
+                <includes>
+                    <include>LICENSE</include>
+                </includes>
+            </resource>
+            <resource>
+                <targetPath>.</targetPath>
+                <filtering>true</filtering>
                 <directory>src/main/resources/</directory>
                 <includes>
-                    <include>*.yml</include>
+                    <include>*</include>
                 </includes>
-                <excludes>
-                    <exclude>plugin.yml</exclude>
-                </excludes>
             </resource>
             <resource>
                 <targetPath>./messages/</targetPath>
@@ -128,15 +119,28 @@
         </testResources>
 
         <plugins>
+            <!-- Maven Java Compiler -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.5.1</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>${javaVersion}</target>
+                    <source>${jdkVersion}</source>
+                    <target>${jdkVersion}</target>
+                    <testSource>${testJreVersion}</testSource>
+                    <testTarget>${testJreVersion}</testTarget>
                 </configuration>
             </plugin>
+            <!-- Test Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.19.1</version>
+                <configuration>
+                    <argLine>-Dfile.encoding=${projectEncoding} ${argLine}</argLine>
+                </configuration>
+            </plugin>
+            <!-- Libs Shading and Relocation -->
             <plugin>
                 <!--Relocate all lib we use in order to fix class loading errors if we use different versions
                 than already loaded libs (i.e. by Mojang -> gson)-->
@@ -161,33 +165,11 @@
                                 </excludes>
                             </artifactSet>
                             <relocations>
-                                <!--We use a newer version of gson so include it to the jar and reference to the new version-->
+                                <!-- We use a newer version of gson so we need to include it! -->
                                 <relocation>
                                     <pattern>com.google.gson</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>org.mcstats</pattern>
-                                    <shadedPattern>fr.xephi.authme</shadedPattern>
-                                </relocation>
-                                <!--
-                                <relocation>
-                                    <pattern>org.apache</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.apache</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.mail</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.javax.mail</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.activation</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.javax.activation</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.sun</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.sun</shadedPattern>
-                                </relocation>
-                                -->
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
@@ -203,6 +185,11 @@
                                 <relocation>
                                     <pattern>net.ricecode.similarity</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
+                                </relocation>
+                                <!-- MCStats.org metrics -->
+                                <relocation>
+                                    <pattern>org.mcstats</pattern>
+                                    <shadedPattern>fr.xephi.authme</shadedPattern>
                                 </relocation>
                             </relocations>
                             <outputFile>target/${jarName}-spigot.jar</outputFile>
@@ -215,34 +202,12 @@
                             <goal>shade</goal>
                         </goals>
                         <configuration>
-                            <!--Include all google libraries, because they are not avaialbe before 1.8-->
+                            <!-- Include all google libraries, because they are not available before 1.8 -->
                             <relocations>
                                 <relocation>
                                     <pattern>com.google</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.google</shadedPattern>
                                 </relocation>
-                                <relocation>
-                                    <pattern>org.mcstats</pattern>
-                                    <shadedPattern>fr.xephi.authme</shadedPattern>
-                                </relocation>
-                                <!--
-                                <relocation>
-                                    <pattern>org.apache</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.apache</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.mail</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.javax.mail</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>javax.activation</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.javax.activation</shadedPattern>
-                                </relocation>
-                                <relocation>
-                                    <pattern>com.sun</pattern>
-                                    <shadedPattern>fr.xephi.authme.libs.sun</shadedPattern>
-                                </relocation>
-                                -->
                                 <relocation>
                                     <pattern>com.zaxxer.hikari</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.hikari</shadedPattern>
@@ -259,16 +224,22 @@
                                     <pattern>net.ricecode.similarity</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
                                 </relocation>
+                                <!-- MCStats.org metrics -->
+                                <relocation>
+                                    <pattern>org.mcstats</pattern>
+                                    <shadedPattern>fr.xephi.authme</shadedPattern>
+                                </relocation>
                             </relocations>
                             <outputFile>target/${jarName}-legacy.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+            <!-- Test coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.7.5.201505241946</version>
+                <version>0.7.6.201602180812</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -278,11 +249,12 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Coveralls data -->
             <plugin>
                 <groupId>org.eluder.coveralls</groupId>
                 <artifactId>coveralls-maven-plugin</artifactId>
                 <version>4.1.0</version>
-                <!-- Token is provided by mvn command -->
+                <!-- The secret token is provided by console! -->
             </plugin>
             <!-- Javadocs settings -->
             <plugin>
@@ -292,7 +264,10 @@
                 <configuration>
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
+                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
                     <docfilessubdirs>true</docfilessubdirs>
+                    <show>public</show>
+                    <failOnError>false</failOnError>
                 </configuration>
             </plugin>
         </plugins>
@@ -305,10 +280,10 @@
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
         </repository>
 
-        <!-- EssentialsX Repo -->
+        <!-- Essentials Repo -->
         <repository>
             <id>ess-repo</id>
-            <url>http://ci.drtshock.net/plugin/repository/everything</url>
+            <url>http://repo.ess3.net/content/groups/essentials</url>
         </repository>
 
         <!-- CombatTagPlus Repo -->
@@ -359,7 +334,7 @@
         <dependency>
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
-            <version>2.4.3</version>
+            <version>2.4.5-SNAPSHOT</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -372,7 +347,7 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-jdk14</artifactId>
-            <version>1.7.16</version>
+            <version>1.7.18</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -413,7 +388,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.6.1</version>
+            <version>2.6.2</version>
             <scope>compile</scope>
             <optional>true</optional>
         </dependency>
@@ -664,16 +639,20 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- EssentialsX plugin, http://www.spigotmc.org/resources/essentialsx.9089/ -->
+        <!-- Essentials plugin -->
         <dependency>
             <groupId>net.ess3</groupId>
-            <artifactId>EssentialsX</artifactId>
-            <version>2.0.1-SNAPSHOT</version>
+            <artifactId>Essentials</artifactId>
+            <version>2.13-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
-                    <groupId>org.spigotmc</groupId>
-                    <artifactId>spigot-api</artifactId>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.bukkit</groupId>
+                    <artifactId>craftbukkit</artifactId>
                 </exclusion>
             </exclusions>
             <optional>true</optional>
@@ -683,7 +662,7 @@
         <dependency>
             <groupId>net.minelink</groupId>
             <artifactId>CombatTagPlus</artifactId>
-            <version>1.2.1-SNAPSHOT</version>
+            <version>1.2.2-SNAPSHOT</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>

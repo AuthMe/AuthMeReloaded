@@ -30,8 +30,9 @@ public class SQLite implements DataSource {
     /**
      * Constructor for SQLite.
      *
-     * @throws ClassNotFoundException Exception
-     * @throws SQLException           Exception
+     * @param settings The settings instance
+     * @throws ClassNotFoundException if no driver could be found for the datasource
+     * @throws SQLException when initialization of a SQL datasource failed
      */
     public SQLite(NewSetting settings) throws ClassNotFoundException, SQLException {
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
@@ -350,8 +351,9 @@ public class SQLite implements DataSource {
     @Override
     public synchronized void close() {
         try {
-        	if (con != null && !con.isClosed())
-        		con.close();
+            if (con != null && !con.isClosed()) {
+                con.close();
+            }
         } catch (SQLException ex) {
             logSqlException(ex);
         }
@@ -421,17 +423,14 @@ public class SQLite implements DataSource {
 
     @Override
     public void purgeBanned(List<String> banned) {
-        PreparedStatement pst = null;
-        try {
+        String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : banned) {
-                pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
                 pst.setString(1, name);
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
     }
 
@@ -507,35 +506,15 @@ public class SQLite implements DataSource {
 
     @Override
     public int getAccountsRegistered() {
-        PreparedStatement pst = null;
-        ResultSet rs;
-        try {
-            pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
-            rs = pst.executeQuery();
-            if (rs != null && rs.next()) {
+        String sql = "SELECT COUNT(*) FROM " + tableName + ";";
+        try (PreparedStatement pst = con.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
+            if (rs.next()) {
                 return rs.getInt(1);
             }
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
         return 0;
-    }
-
-    @Override
-    public void updateName(String oldOne, String newOne) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.NAME + "=? WHERE " + col.NAME + "=?;");
-            pst.setString(1, newOne);
-            pst.setString(2, oldOne);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        } finally {
-            close(pst);
-        }
     }
 
     @Override
@@ -569,19 +548,14 @@ public class SQLite implements DataSource {
     @Override
     public List<PlayerAuth> getAllAuths() {
         List<PlayerAuth> auths = new ArrayList<>();
-        PreparedStatement pst = null;
-        ResultSet rs;
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
-            rs = pst.executeQuery();
+        String sql = "SELECT * FROM " + tableName + ";";
+        try (PreparedStatement pst = con.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
             while (rs.next()) {
                 PlayerAuth auth = buildAuthFromResultSet(rs);
                 auths.add(auth);
             }
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
         return auths;
     }
@@ -589,19 +563,14 @@ public class SQLite implements DataSource {
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         List<PlayerAuth> auths = new ArrayList<>();
-        PreparedStatement pst = null;
-        ResultSet rs;
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + col.IS_LOGGED + "=1;");
-            rs = pst.executeQuery();
+        String sql = "SELECT * FROM " + tableName + " WHERE " + col.IS_LOGGED + "=1;";
+        try (PreparedStatement pst = con.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
             while (rs.next()) {
                 PlayerAuth auth = buildAuthFromResultSet(rs);
                 auths.add(auth);
             }
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(pst);
         }
         return auths;
     }

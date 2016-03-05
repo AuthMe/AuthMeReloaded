@@ -60,7 +60,7 @@ public final class Settings {
         useCaptcha, emailRegistration, multiverse, bungee,
         banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
         disableSocialSpy, useEssentialsMotd, usePurge,
-        purgePlayerDat, purgeEssentialsFile, supportOldPassword,
+        purgePlayerDat, purgeEssentialsFile,
         purgeLimitedCreative, purgeAntiXray, purgePermissions,
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
@@ -72,19 +72,16 @@ public final class Settings {
         getMySQLColumnGroup, unRegisteredGroup,
         backupWindowsPath, getRegisteredGroup,
         rakamakUsers, rakamakUsersIp, getmailAccount, defaultWorld,
-        getPhpbbPrefix, getWordPressPrefix,
         spawnPriority, crazyloginFileName, getPassRegex, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
         getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
         getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
         getMailPort, maxLoginTry, captchaLength, saltLength,
-        getmaxRegPerEmail, bCryptLog2Rounds, getPhpbbGroup,
+        getmaxRegPerEmail, bCryptLog2Rounds,
         antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
         getMaxJoinPerIp;
     protected static FileConfiguration configFile;
-    private static AuthMe plugin;
-    private static Settings instance;
 
     /**
      * Constructor for Settings.
@@ -92,29 +89,27 @@ public final class Settings {
      * @param pl AuthMe
      */
     public Settings(AuthMe pl) {
-        instance = this;
-        plugin = pl;
-        configFile = plugin.getConfig();
+        configFile = pl.getConfig();
         loadVariables();
     }
 
-    public static void loadVariables() {
+    private static void loadVariables() {
         isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
         isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
-        isTeleportToSpawnEnabled = configFile.getBoolean("settings.restrictions.teleportUnAuthedToSpawn", false);
-        getWarnMessageInterval = configFile.getInt("settings.registration.messageInterval", 5);
-        isSessionsEnabled = configFile.getBoolean("settings.sessions.enabled", false);
+        isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
+        getWarnMessageInterval = load(RegistrationSettings.MESSAGE_INTERVAL);
+        isSessionsEnabled = load(PluginSettings.SESSIONS_ENABLED);
         getSessionTimeout = configFile.getInt("settings.sessions.timeout", 10);
-        getRegistrationTimeout = configFile.getInt("settings.restrictions.timeout", 30);
-        isChatAllowed = configFile.getBoolean("settings.restrictions.allowChat", false);
+        getRegistrationTimeout = load(RestrictionSettings.TIMEOUT);
+        isChatAllowed = load(RestrictionSettings.ALLOW_CHAT);
         getMaxNickLength = configFile.getInt("settings.restrictions.maxNicknameLength", 20);
         getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
         getPasswordMinLen = configFile.getInt("settings.security.minPasswordLength", 4);
         getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
         nickPattern = Pattern.compile(getNickRegex);
-        isAllowRestrictedIp = configFile.getBoolean("settings.restrictions.AllowRestrictedUser", false);
-        getRestrictedIp = configFile.getStringList("settings.restrictions.AllowedRestrictedUser");
+        isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
+        getRestrictedIp = load(RestrictionSettings.ALLOWED_RESTRICTED_USERS);
         isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
         isRemoveSpeedEnabled = configFile.getBoolean("settings.restrictions.removeSpeed", true);
         getMovementRadius = configFile.getInt("settings.restrictions.allowedMovementRadius", 100);
@@ -172,7 +167,7 @@ public final class Settings {
         useCaptcha = configFile.getBoolean("Security.captcha.useCaptcha", false);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        emailRegistration = configFile.getBoolean("settings.registration.enableEmailRegistrationSystem", false);
+        emailRegistration = load(RegistrationSettings.USE_EMAIL_REGISTRATION);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = load(HooksSettings.MULTIVERSE);
@@ -190,10 +185,6 @@ public final class Settings {
         purgePlayerDat = configFile.getBoolean("Purge.removePlayerDat", false);
         purgeEssentialsFile = configFile.getBoolean("Purge.removeEssentialsFile", false);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
-        getPhpbbPrefix = configFile.getString("ExternalBoardOptions.phpbbTablePrefix", "phpbb_");
-        getPhpbbGroup = configFile.getInt("ExternalBoardOptions.phpbbActivatedGroupId", 2);
-        supportOldPassword = configFile.getBoolean("settings.security.supportOldPasswordHash", false);
-        getWordPressPrefix = configFile.getString("ExternalBoardOptions.wordpressTablePrefix", "wp_");
         purgeLimitedCreative = configFile.getBoolean("Purge.removeLimitedCreativesInventories", false);
         purgeAntiXray = configFile.getBoolean("Purge.removeAntiXRayFile", false);
         purgePermissions = configFile.getBoolean("Purge.removePermissions", false);
@@ -211,15 +202,15 @@ public final class Settings {
         countriesBlacklist = configFile.getStringList("Protection.countriesBlacklist");
         broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
         forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
-        forceRegLogin = configFile.getBoolean("settings.registration.forceLoginAfterRegister", false);
+        forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
         spawnPriority = load(RestrictionSettings.SPAWN_PRIORITY);
-        getMaxLoginPerIp = configFile.getInt("settings.restrictions.maxLoginPerIp", 0);
-        getMaxJoinPerIp = configFile.getInt("settings.restrictions.maxJoinPerIp", 0);
-        checkVeryGames = configFile.getBoolean("VeryGames.enableIpCheck", false);
+        getMaxLoginPerIp = load(RestrictionSettings.MAX_LOGIN_PER_IP);
+        getMaxJoinPerIp = load(RestrictionSettings.MAX_JOIN_PER_IP);
+        checkVeryGames = load(HooksSettings.ENABLE_VERYGAMES_IP_CHECK);
         removeJoinMessage = load(RegistrationSettings.REMOVE_JOIN_MESSAGE);
         removeLeaveMessage = load(RegistrationSettings.REMOVE_LEAVE_MESSAGE);
         delayJoinMessage = load(RegistrationSettings.DELAY_JOIN_MESSAGE);
-        noTeleport = configFile.getBoolean("settings.restrictions.noTeleport", false);
+        noTeleport = load(RestrictionSettings.NO_TELEPORT);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
         applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);

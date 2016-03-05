@@ -1,5 +1,6 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
 import fr.xephi.authme.AuthMe;
@@ -41,6 +42,10 @@ public class MySQL implements DataSource {
     private final HashAlgorithm hashAlgorithm;
     private HikariDataSource ds;
 
+    private final String phpBbPrefix;
+    private final int phpBbGroup;
+    private final String wordpressPrefix;
+
     public MySQL(NewSetting settings) throws ClassNotFoundException, SQLException, PoolInitializationException {
         this.host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
         this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
@@ -51,6 +56,9 @@ public class MySQL implements DataSource {
         this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
         this.col = new Columns(settings);
         this.hashAlgorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
+        this.phpBbPrefix = settings.getProperty(HooksSettings.PHPBB_TABLE_PREFIX);
+        this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
+        this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
 
         // Set the connection arguments (and check if connection is ok)
         try {
@@ -81,6 +89,7 @@ public class MySQL implements DataSource {
         }
     }
 
+    @VisibleForTesting
     MySQL(NewSetting settings, HikariDataSource hikariDataSource) {
         this.host = settings.getProperty(DatabaseSettings.MYSQL_HOST);
         this.port = settings.getProperty(DatabaseSettings.MYSQL_PORT);
@@ -91,6 +100,9 @@ public class MySQL implements DataSource {
         this.columnOthers = settings.getProperty(HooksSettings.MYSQL_OTHER_USERNAME_COLS);
         this.col = new Columns(settings);
         this.hashAlgorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
+        this.phpBbPrefix = settings.getProperty(HooksSettings.PHPBB_TABLE_PREFIX);
+        this.phpBbGroup = settings.getProperty(HooksSettings.PHPBB_ACTIVATED_GROUP_ID);
+        this.wordpressPrefix = settings.getProperty(HooksSettings.WORDPRESS_TABLE_PREFIX);
         ds = hikariDataSource;
     }
 
@@ -359,10 +371,10 @@ public class MySQL implements DataSource {
                 if (rs.next()) {
                     int id = rs.getInt(col.ID);
                     // Insert player in phpbb_user_group
-                    sql = "INSERT INTO " + Settings.getPhpbbPrefix
+                    sql = "INSERT INTO " + phpBbPrefix
                         + "user_group (group_id, user_id, group_leader, user_pending) VALUES (?,?,?,?);";
                     pst2 = con.prepareStatement(sql);
-                    pst2.setInt(1, Settings.getPhpbbGroup);
+                    pst2.setInt(1, phpBbGroup);
                     pst2.setInt(2, id);
                     pst2.setInt(3, 0);
                     pst2.setInt(4, 0);
@@ -380,7 +392,7 @@ public class MySQL implements DataSource {
                     sql = "UPDATE " + tableName + " SET " + tableName
                         + ".group_id=? WHERE " + col.NAME + "=?;";
                     pst2 = con.prepareStatement(sql);
-                    pst2.setInt(1, Settings.getPhpbbGroup);
+                    pst2.setInt(1, phpBbGroup);
                     pst2.setString(2, auth.getNickname());
                     pst2.executeUpdate();
                     pst2.close();
@@ -403,7 +415,7 @@ public class MySQL implements DataSource {
                     pst2.executeUpdate();
                     pst2.close();
                     // Increment num_users
-                    sql = "UPDATE " + Settings.getPhpbbPrefix
+                    sql = "UPDATE " + phpBbPrefix
                         + "config SET config_value = config_value + 1 WHERE config_name = 'num_users';";
                     pst2 = con.prepareStatement(sql);
                     pst2.executeUpdate();
@@ -417,7 +429,7 @@ public class MySQL implements DataSource {
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     int id = rs.getInt(col.ID);
-                    sql = "INSERT INTO " + Settings.getWordPressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);";
+                    sql = "INSERT INTO " + wordpressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);";
                     pst2 = con.prepareStatement(sql);
                     // First Name
                     pst2.setInt(1, id);
@@ -620,31 +632,32 @@ public class MySQL implements DataSource {
     @Override
     public synchronized boolean removeAuth(String user) {
         user = user.toLowerCase();
-        try (Connection con = getConnection()) {
-            String sql;
-            PreparedStatement pst;
+        String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        PreparedStatement xfSelect = null;
+        PreparedStatement xfDelete = null;
+        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             if (hashAlgorithm == HashAlgorithm.XFBCRYPT) {
                 sql = "SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
-                pst = con.prepareStatement(sql);
-                pst.setString(1, user);
-                ResultSet rs = pst.executeQuery();
-                if (rs.next()) {
-                    int id = rs.getInt(col.ID);
-                    sql = "DELETE FROM xf_user_authenticate WHERE " + col.ID + "=?;";
-                    PreparedStatement st = con.prepareStatement(sql);
-                    st.setInt(1, id);
-                    st.executeUpdate();
-                    st.close();
+                xfSelect = con.prepareStatement(sql);
+                xfSelect.setString(1, user);
+                try (ResultSet rs = xfSelect.executeQuery()) {
+                    if (rs.next()) {
+                        int id = rs.getInt(col.ID);
+                        sql = "DELETE FROM xf_user_authenticate WHERE " + col.ID + "=?;";
+                        xfDelete = con.prepareStatement(sql);
+                        xfDelete.setInt(1, id);
+                        xfDelete.executeUpdate();
+                    }
                 }
-                rs.close();
-                pst.close();
             }
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
             pst.setString(1, user);
             pst.executeUpdate();
             return true;
         } catch (SQLException ex) {
             logSqlException(ex);
+        } finally {
+            close(xfSelect);
+            close(xfDelete);
         }
         return false;
     }
@@ -818,18 +831,6 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void updateName(String oldOne, String newOne) {
-        String sql = "UPDATE " + tableName + " SET " + col.NAME + "=? WHERE " + col.NAME + "=?;";
-        try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, newOne);
-            pst.setString(2, oldOne);
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            logSqlException(ex);
-        }
-    }
-
-    @Override
     public boolean updateRealName(String user, String realName) {
         String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
@@ -891,22 +892,24 @@ public class MySQL implements DataSource {
     @Override
     public List<PlayerAuth> getLoggedPlayers() {
         List<PlayerAuth> auths = new ArrayList<>();
-        try (Connection con = getConnection()) {
-            Statement st = con.createStatement();
-            ResultSet rs = st.executeQuery("SELECT * FROM " + tableName + " WHERE " + col.IS_LOGGED + "=1;");
-            PreparedStatement pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + col.ID + "=?;");
+        String sql = "SELECT * FROM " + tableName + " WHERE " + col.IS_LOGGED + "=1;";
+        try (Connection con = getConnection();
+             Statement st = con.createStatement();
+             ResultSet rs = st.executeQuery(sql)) {
             while (rs.next()) {
                 PlayerAuth pAuth = buildAuthFromResultSet(rs);
                 if (hashAlgorithm == HashAlgorithm.XFBCRYPT) {
-                    int id = rs.getInt(col.ID);
-                    pst.setInt(1, id);
-                    ResultSet rs2 = pst.executeQuery();
-                    if (rs2.next()) {
-                        Blob blob = rs2.getBlob("data");
-                        byte[] bytes = blob.getBytes(1, (int) blob.length());
-                        pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
+                    try (PreparedStatement pst = con.prepareStatement("SELECT data FROM xf_user_authenticate WHERE " + col.ID + "=?;")) {
+                        int id = rs.getInt(col.ID);
+                        pst.setInt(1, id);
+                        ResultSet rs2 = pst.executeQuery();
+                        if (rs2.next()) {
+                            Blob blob = rs2.getBlob("data");
+                            byte[] bytes = blob.getBytes(1, (int) blob.length());
+                            pAuth.setPassword(new HashedPassword(XFBCRYPT.getHashFromBlob(bytes)));
+                        }
+                        rs2.close();
                     }
-                    rs2.close();
                 }
                 auths.add(pAuth);
             }
@@ -990,12 +993,22 @@ public class MySQL implements DataSource {
     }
 
     private static void close(ResultSet rs) {
-        if (rs != null) {
-            try {
+        try {
+            if (rs != null && !rs.isClosed()) {
                 rs.close();
-            } catch (SQLException e) {
-                ConsoleLogger.logException("Could not close ResultSet", e);
             }
+        } catch (SQLException e) {
+            ConsoleLogger.logException("Could not close ResultSet", e);
+        }
+    }
+
+    private static void close(PreparedStatement pst) {
+        try {
+            if (pst != null && !pst.isClosed()) {
+                pst.close();
+            }
+        } catch (SQLException e) {
+            ConsoleLogger.logException("Could not close PreparedStatement", e);
         }
     }
 

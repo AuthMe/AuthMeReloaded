@@ -39,7 +39,7 @@ public class RegistrationSettings implements SettingsClass {
         newProperty("settings.registration.doubleEmailCheck", false);
 
     @Comment({
-        "Do we force kicking player after a successful registration?",
+        "Do we force kick a player after a successful registration?",
         "Do not use with login feature below"})
     public static final Property<Boolean> FORCE_KICK_AFTER_REGISTER =
         newProperty("settings.registration.forceKickAfterRegister", false);

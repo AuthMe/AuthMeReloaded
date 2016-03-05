@@ -42,14 +42,15 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -64,7 +65,6 @@ import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -76,6 +76,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -104,15 +105,14 @@ public class AuthMe extends JavaPlugin {
     // Private Instances
     private static AuthMe plugin;
     private static Server server;
-    private Management management;
-    private CommandHandler commandHandler = null;
-    private PermissionsManager permsMan = null;
-    private NewSetting newSettings;
-    private Messages messages;
-    private JsonCache playerBackup;
-    private PasswordSecurity passwordSecurity;
-    private DataSource database;
-
+    /*
+     *  Maps and stuff
+     *  TODO: Clean up and Move into a manager
+     */
+    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
     /*
      * Public Instances
      * TODO #432: Encapsulation
@@ -120,9 +120,7 @@ public class AuthMe extends JavaPlugin {
     public NewAPI api;
     public SendMailSSL mail;
     public DataManager dataManager;
-    public OtherAccounts otherAccounts;
     public Location essentialsSpawn;
-
     /*
      * Plugin Hooks
      * TODO: Move into modules
@@ -133,15 +131,14 @@ public class AuthMe extends JavaPlugin {
     public AuthMeInventoryPacketAdapter inventoryProtector;
     public AuthMeTabCompletePacketAdapter tabComplete;
     public AuthMeTablistPacketAdapter tablistHider;
-
-    /*
-     *  Maps and stuff
-     *  TODO: Clean up and Move into a manager
-     */
-    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
+    private Management management;
+    private CommandHandler commandHandler = null;
+    private PermissionsManager permsMan = null;
+    private NewSetting newSettings;
+    private Messages messages;
+    private JsonCache playerBackup;
+    private PasswordSecurity passwordSecurity;
+    private DataSource database;
 
     /**
      * Get the plugin's instance.
@@ -259,9 +256,6 @@ public class AuthMe extends JavaPlugin {
         permsMan = initializePermissionsManager();
         commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings);
 
-        // Setup otherAccounts file
-        this.otherAccounts = OtherAccounts.getInstance();
-
         // Set up Metrics
         MetricsStarter.setupMetrics(plugin, newSettings);
 
@@ -306,7 +300,8 @@ public class AuthMe extends JavaPlugin {
         setupApi();
 
         // Set up the management
-        management = new Management(this, newSettings);
+        ProcessService processService = new ProcessService(newSettings, messages, this);
+        management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
         setupBungeeCordHook();
@@ -494,11 +489,41 @@ public class AuthMe extends JavaPlugin {
         if (newSettings != null) {
             new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.STOP);
         }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<Integer> pendingTasks = new ArrayList<>();
+                for (BukkitTask pendingTask : getServer().getScheduler().getPendingTasks()) {
+                    if (pendingTask.getOwner().equals(plugin) && !pendingTask.isSync()) {
+                        pendingTasks.add(pendingTask.getTaskId());
+                    }
+                }
+                ConsoleLogger.info("Waiting for " + pendingTasks.size() + " tasks to finish");
+                int progress = 0;
+                for (int taskId : pendingTasks) {
+                    int maxTries = 5;
+                    while (getServer().getScheduler().isCurrentlyRunning(taskId)) {
+                        if (maxTries <= 0) {
+                            ConsoleLogger.info("Async task " + taskId + " times out after to many tries");
+                            break;
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        maxTries--;
+                    }
+
+                    progress++;
+                    ConsoleLogger.info("Progress: " + progress + " / " + pendingTasks.size());
+                }
+                if (database != null) {
+                    database.close();
+                }
+            }
+        }, "AuthMe-DataSource#close").start();
 
         // Close the database
-        if (database != null) {
-            database.close();
-        }
 
         // Disabled correctly
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
@@ -518,7 +543,10 @@ public class AuthMe extends JavaPlugin {
      * Sets up the data source.
      *
      * @param settings The settings instance
+     *
      * @see AuthMe#database
+     * @throws ClassNotFoundException if no driver could be found for the datasource
+     * @throws SQLException when initialization of a SQL datasource failed
      */
     public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException {
         if (this.database != null) {
@@ -653,6 +681,7 @@ public class AuthMe extends JavaPlugin {
                 ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
                 newSettings.setProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN, false);
+                newSettings.save();
             }
             return;
         }
@@ -667,14 +696,14 @@ public class AuthMe extends JavaPlugin {
         if (newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN) && tabComplete == null) {
             tabComplete = new AuthMeTabCompletePacketAdapter(this);
             tabComplete.register();
-        } else if (inventoryProtector != null) {
+        } else if (tabComplete != null) {
             tabComplete.unregister();
             tabComplete = null;
         }
         if (newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && tablistHider == null) {
             tablistHider = new AuthMeTablistPacketAdapter(this);
             tablistHider.register();
-        } else if (inventoryProtector != null) {
+        } else if (tablistHider != null) {
             tablistHider.unregister();
             tablistHider = null;
         }
@@ -748,42 +777,6 @@ public class AuthMe extends JavaPlugin {
         return Spawn.getInstance().getSpawnLocation(player);
     }
 
-    // Return the default spawn point of a world
-    private Location getDefaultSpawn(World world) {
-        return world.getSpawnLocation();
-    }
-
-    // Return the multiverse spawn point of a world
-    private Location getMultiverseSpawn(World world) {
-        if (multiverse != null && Settings.multiverse) {
-            try {
-                return multiverse.getMVWorldManager().getMVWorld(world).getSpawnLocation();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
-    }
-
-    // Return the essentials spawn point
-    private Location getEssentialsSpawn() {
-        if (essentialsSpawn != null) {
-            return essentialsSpawn;
-        }
-        return null;
-    }
-
-    // Return the AuthMe spawn point
-    private Location getAuthMeSpawn(Player player) {
-        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore())
-            && (Spawn.getInstance().getFirstSpawn() != null)) {
-            return Spawn.getInstance().getFirstSpawn();
-        } else if (Spawn.getInstance().getSpawn() != null) {
-            return Spawn.getInstance().getSpawn();
-        }
-        return player.getWorld().getSpawnLocation();
-    }
-
     private void scheduleRecallEmailTask() {
         if (!newSettings.getProperty(RECALL_PLAYERS)) {
             return;
@@ -793,7 +786,7 @@ public class AuthMe extends JavaPlugin {
             public void run() {
                 for (PlayerAuth auth : database.getLoggedPlayers()) {
                     String email = auth.getEmail();
-                    if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com")) {
+                    if (StringUtils.isEmpty(email) || email.equalsIgnoreCase("your@email.com")) {
                         Player player = Utils.getPlayer(auth.getRealName());
                         if (player != null) {
                             messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
@@ -801,7 +794,7 @@ public class AuthMe extends JavaPlugin {
                     }
                 }
             }
-        }, 1, 1200 * Settings.delayRecall);
+        }, 1, 1200 * newSettings.getProperty(EmailSettings.DELAY_RECALL));
     }
 
     public String replaceAllInfo(String message, Player player) {
@@ -861,15 +854,6 @@ public class AuthMe extends JavaPlugin {
                 count++;
         }
         return count >= Settings.getMaxLoginPerIp;
-    }
-
-    public boolean hasJoinedIp(String name, String ip) {
-        int count = 0;
-        for (Player player : Utils.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
-                count++;
-        }
-        return count >= Settings.getMaxJoinPerIp;
     }
 
     /**

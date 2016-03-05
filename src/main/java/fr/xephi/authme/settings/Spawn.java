@@ -2,7 +2,6 @@ package fr.xephi.authme.settings;
 
 import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Bukkit;
@@ -73,34 +72,32 @@ public class Spawn extends CustomConfiguration {
     }
 
     public Location getSpawn() {
-        try {
+        if (containsAll("spawn.world", "spawn.x", "spawn.y", "spawn.z", "spawn.yaw", "spawn.pitch")) {
             String worldName = getString("spawn.world");
             World world = Bukkit.getWorld(worldName);
-            if (StringUtils.isEmpty(worldName) || world == null) {
-                return null;
+            if (!StringUtils.isEmpty(worldName) && world != null) {
+                return new Location(
+                    world, getDouble("spawn.x"), getDouble("spawn.y"), getDouble("spawn.z"),
+                    Float.parseFloat(getString("spawn.yaw")), Float.parseFloat(getString("spawn.pitch"))
+                );
             }
-            return new Location(world, getDouble("spawn.x"), getDouble("spawn.y"), getDouble("spawn.z"),
-                Float.parseFloat(getString("spawn.yaw")), Float.parseFloat(getString("spawn.pitch")));
-        } catch (NumberFormatException e) {
-            ConsoleLogger.writeStackTrace(e);
-            return null;
         }
+        return null;
     }
 
     public Location getFirstSpawn() {
-        try {
-            String worldName;
-            World world;
-            if (StringUtils.isEmpty(worldName = getString("firstspawn.world")) ||
-                (world = Bukkit.getWorld(worldName)) == null) {
-                return null;
+        if (containsAll("firstspawn.world", "firstspawn.x", "firstspawn.y",
+            "firstspawn.z", "firstspawn.yaw", "firstspawn.pitch")) {
+            String worldName = getString("firstspawn.world");
+            World world = Bukkit.getWorld(worldName);
+            if (!StringUtils.isEmpty(worldName) && world != null) {
+                return new Location(
+                    world, getDouble("firstspawn.x"), getDouble("firstspawn.y"), getDouble("firstspawn.z"),
+                    Float.parseFloat(getString("firstspawn.yaw")), Float.parseFloat(getString("firstspawn.pitch"))
+                );
             }
-            return new Location(world, getDouble("firstspawn.x"), getDouble("firstspawn.y"), getDouble("firstspawn.z"),
-                Float.parseFloat(getString("firstspawn.yaw")), Float.parseFloat(getString("firstspawn.pitch")));
-        } catch (NumberFormatException e) {
-            ConsoleLogger.writeStackTrace(e);
-            return null;
         }
+        return null;
     }
 
     // Return the spawn location of a player

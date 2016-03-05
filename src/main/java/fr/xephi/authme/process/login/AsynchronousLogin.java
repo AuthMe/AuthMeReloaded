@@ -105,7 +105,7 @@ public class AsynchronousLogin {
                 } else {
                     msg = m.retrieve(MessageKey.REGISTER_MESSAGE);
                 }
-                BukkitTask msgT = Bukkit.getScheduler().runTaskAsynchronously(plugin,
+                BukkitTask msgT = Bukkit.getScheduler().runTask(plugin,
                     new MessageTask(plugin, name, msg, settings.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
                 LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
             }
@@ -175,7 +175,7 @@ public class AsynchronousLogin {
             displayOtherAccounts(auth);
 
             if (Settings.recallEmail && (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email))) {
-                m.send(player, MessageKey.EMAIL_ADDED_SUCCESS);
+                m.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
 
             if (!Settings.noConsoleSpam) {
@@ -185,7 +185,6 @@ public class AsynchronousLogin {
             // makes player isLoggedin via API
             PlayerCache.getInstance().addPlayer(auth);
             database.setLogged(name);
-            plugin.otherAccounts.addPlayer(player.getUniqueId());
 
             // As the scheduling executes the Task most likely after the current
             // task, we schedule it in the end
@@ -232,8 +231,8 @@ public class AsynchronousLogin {
         String message = "[AuthMe] " + StringUtils.join(", ", auths) + ".";
         for (Player player : Utils.getOnlinePlayers()) {
             if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)
-            		|| (player.getName().equals(this.player.getName())
-            				&& plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
+                    || (player.getName().equals(this.player.getName())
+                            && plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
                 player.sendMessage(message);
             }

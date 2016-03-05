@@ -5,34 +5,26 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-/**
- */
 public class AsynchronousQuit {
 
-    protected final AuthMe plugin;
-    protected final DataSource database;
-    protected final Player player;
+    private final AuthMe plugin;
+    private final DataSource database;
+    private final Player player;
     private final String name;
     private boolean isOp = false;
     private boolean needToChange = false;
     private boolean isKick = false;
 
-    /**
-     * Constructor for AsynchronousQuit.
-     *
-     * @param p        Player
-     * @param plugin   AuthMe
-     * @param database DataSource
-     * @param isKick   boolean
-     */
     public AsynchronousQuit(Player p, AuthMe plugin, DataSource database,
                             boolean isKick) {
         this.player = p;
@@ -43,9 +35,7 @@ public class AsynchronousQuit {
     }
 
     public void process() {
-        if (player == null)
-            return;
-        if (Utils.isUnrestricted(player)) {
+        if (player == null || Utils.isUnrestricted(player)) {
             return;
         }
 
@@ -54,7 +44,9 @@ public class AsynchronousQuit {
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             if (Settings.isSaveQuitLocationEnabled) {
                 Location loc = player.getLocation();
-                PlayerAuth auth = new PlayerAuth(name, loc.getX(), loc.getY(), loc.getZ(), loc.getWorld().getName(), player.getName());
+                PlayerAuth auth = PlayerAuth.builder()
+                    .name(name).location(loc)
+                    .realName(player.getName()).build();
                 database.updateQuitLoc(auth);
             }
             PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis(), player.getName());
@@ -63,14 +55,11 @@ public class AsynchronousQuit {
 
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (limbo != null) {
-            if (limbo.getGroup() != null && !limbo.getGroup().isEmpty())
+            if (!StringUtils.isEmpty(limbo.getGroup())) {
                 Utils.addNormal(player, limbo.getGroup());
+            }
             needToChange = true;
             isOp = limbo.getOperator();
-            if (limbo.getTimeoutTaskId() != null)
-                limbo.getTimeoutTaskId().cancel();
-            if (limbo.getMessageTaskId() != null)
-                limbo.getMessageTaskId().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
         }
         if (Settings.isSessionsEnabled && !isKick) {
@@ -100,12 +89,15 @@ public class AsynchronousQuit {
         if (plugin.isEnabled()) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
         }
+        // remove player from cache
+        if (database instanceof CacheDataSource) {
+            ((CacheDataSource) database).getCachedAuths().invalidate(name);
+        }
     }
 
     private void postLogout() {
         PlayerCache.getInstance().removePlayer(name);
-        if (database.isLogged(name))
-            database.setUnlogged(name);
+        database.setUnlogged(name);
         plugin.sessions.remove(name);
     }
 }
