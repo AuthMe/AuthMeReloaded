@@ -242,6 +242,8 @@ public class AuthMe extends JavaPlugin {
         try {
             setupDatabase(newSettings);
         } catch (Exception e) {
+            ConsoleLogger.showError("If you are using CraftBukkit/Spigot 1.9 please add the "
+                + "-Dfile.encoding=UTF-8 argument in your server startup script!");
             ConsoleLogger.logException("Fatal error occurred during database connection! "
                 + "Authme initialization aborted!", e);
             stopOrUnload();
