@@ -1,6 +1,5 @@
 package fr.xephi.authme.listener;
 
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -16,22 +15,11 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.projectiles.ProjectileSource;
 
-import java.lang.reflect.Method;
-
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 
 public class AuthMeEntityListener implements Listener {
 
-    private static Method getShooter;
-    private static boolean shooterIsProjectileSource;
-
-    public AuthMeEntityListener() {
-        try {
-            Method m = Projectile.class.getDeclaredMethod("getShooter");
-            shooterIsProjectileSource = m.getReturnType() != LivingEntity.class;
-        } catch (Exception ignored) {
-        }
-    }
+    public AuthMeEntityListener() {}
 
     // TODO #360: npc status can be used to bypass security!!!
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
@@ -96,22 +84,12 @@ public class AuthMeEntityListener implements Listener {
 
         Player player = null;
         Projectile projectile = event.getEntity();
-        if (shooterIsProjectileSource) {
+        if (projectile != null && (projectile.getShooter() instanceof ProjectileSource)) {
             ProjectileSource shooter = projectile.getShooter();
             if (shooter == null || !(shooter instanceof Player)) {
                 return;
             }
             player = (Player) shooter;
-        } else {
-            // TODO ljacqu 20151220: Invoking getShooter() with null but method isn't static
-            try {
-                if (getShooter == null) {
-                    getShooter = Projectile.class.getMethod("getShooter");
-                }
-                Object obj = getShooter.invoke(null);
-                player = (Player) obj;
-            } catch (Exception ignored) {
-            }
         }
 
         if (ListenerService.shouldCancelEvent(player)) {
