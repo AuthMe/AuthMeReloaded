@@ -12,7 +12,6 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import org.bukkit.command.CommandSender;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -161,15 +160,6 @@ public class CommandService {
      */
     public String[] retrieveMessage(MessageKey key) {
         return messages.retrieve(key);
-    }
-
-    /**
-     * Change the messages instance to retrieve messages from the given file.
-     *
-     * @param file The new file to read messages from
-     */
-    public void reloadMessages(File file) {
-        messages.reload(file);
     }
 
     /**

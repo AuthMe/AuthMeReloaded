@@ -420,10 +420,6 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public void reload() {
-    }
-
-    @Override
     public boolean updateEmail(PlayerAuth auth) {
         if (!isAuthAvailable(auth.getNickname())) {
             return false;
