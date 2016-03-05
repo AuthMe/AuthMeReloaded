@@ -1,5 +1,10 @@
 package fr.xephi.authme.process.register;
 
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -70,17 +75,19 @@ public class AsyncRegister implements Process {
         }
 
         //check this in both possibilities so don't use 'else if'
-        int size;
         if (database.isAuthAvailable(name)) {
             service.send(player, MessageKey.NAME_ALREADY_REGISTERED);
             return false;
-        } else if (Settings.getmaxRegPerIp > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
+        } else if(Settings.getmaxRegPerIp > 0
             && !ip.equalsIgnoreCase("127.0.0.1")
             && !ip.equalsIgnoreCase("localhost")
-            && (size = database.getAllAuthsByIp(ip).size()) >= Settings.getmaxRegPerIp) {
-            service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(size));
-            return false;
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
+            Integer maxReg = Settings.getmaxRegPerIp;
+            List<String> otherAccounts = database.getAllAuthsByIp(ip);
+            if (otherAccounts.size() >= maxReg) {
+                m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, maxReg.toString(), Integer.toString(otherAccounts.size()), otherAccounts.toString());
+                return false;
+            }
         }
         return true;
     }
@@ -97,12 +104,16 @@ public class AsyncRegister implements Process {
     }
 
     private void emailRegister() {
-        int size;
-        if (Settings.getmaxRegPerEmail > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            && (size = database.countAuthsByEmail(email)) >= Settings.getmaxRegPerEmail) {
-            service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(size));
-            return;
+        if(Settings.getmaxRegPerEmail > 0
+            && !ip.equalsIgnoreCase("127.0.0.1")
+            && !ip.equalsIgnoreCase("localhost")
+            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
+            Integer maxReg = Settings.getmaxRegPerIp;
+            List<String> otherAccounts = database.getAllAuthsByIp(ip);
+            if (otherAccounts.size() >= maxReg) {
+                m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, maxReg.toString(), Integer.toString(otherAccounts.size()), otherAccounts.toString());
+                return;
+            }
         }
         final HashedPassword hashedPassword = plugin.getPasswordSecurity().computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
@@ -148,7 +159,6 @@ public class AsyncRegister implements Process {
             plugin.getManagement().performLogin(player, "dontneed", true);
         }
 
-        plugin.otherAccounts.addPlayer(player.getUniqueId());
         ProcessSyncPasswordRegister sync = new ProcessSyncPasswordRegister(player, plugin, service);
         service.scheduleSyncDelayedTask(sync);
 

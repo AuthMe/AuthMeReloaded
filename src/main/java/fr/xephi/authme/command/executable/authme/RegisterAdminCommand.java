@@ -22,8 +22,8 @@ public class RegisterAdminCommand implements ExecutableCommand {
     public void executeCommand(final CommandSender sender, List<String> arguments,
                                final CommandService commandService) {
         // Get the player name and password
-        final String playerName = arguments.get(0).toLowerCase();
-        final String playerPass = arguments.get(1).toLowerCase();
+        final String playerName = arguments.get(0);
+        final String playerPass = arguments.get(1);
         final String playerNameLowerCase = playerName.toLowerCase();
         final String playerPassLowerCase = playerPass.toLowerCase();
 

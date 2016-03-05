@@ -58,7 +58,7 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 #####"The best authentication plugin for the Bukkit/Spigot API!"
 
-<p>Prevent username stealing on your server! Fully compatible with UUIDs and Craftbukkit/Spigot 1.8.X!<br>
+<p>Prevent username stealing on your server!<br>
 Use it to secure your Offline mode server or to increase your Online mode server's protection!</p>
 
 <p>AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>
