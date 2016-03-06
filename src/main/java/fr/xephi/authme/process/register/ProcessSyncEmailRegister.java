@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -17,10 +18,10 @@ import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
-public class ProcessSyncEmailRegister implements Runnable {
+public class ProcessSyncEmailRegister implements Process {
 
-    protected final Player player;
-    protected final String name;
+    private final Player player;
+    private final String name;
     private final ProcessService service;
 
     /**

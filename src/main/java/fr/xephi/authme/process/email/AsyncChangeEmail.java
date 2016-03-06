@@ -1,14 +1,12 @@
 package fr.xephi.authme.process.email;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.process.Process;
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
@@ -20,20 +18,18 @@ public class AsyncChangeEmail implements Process {
     private final Player player;
     private final String oldEmail;
     private final String newEmail;
-    private final Messages m;
-    private final NewSetting settings;
+    private final ProcessService service;
     private final PlayerCache playerCache;
     private final DataSource dataSource;
 
-    public AsyncChangeEmail(Player player, AuthMe plugin, String oldEmail, String newEmail, DataSource dataSource,
-                            PlayerCache playerCache, NewSetting settings) {
-        this.m = plugin.getMessages();
+    public AsyncChangeEmail(Player player, String oldEmail, String newEmail, DataSource dataSource,
+                            PlayerCache playerCache, ProcessService service) {
         this.player = player;
         this.oldEmail = oldEmail;
         this.newEmail = newEmail;
         this.playerCache = playerCache;
         this.dataSource = dataSource;
-        this.settings = settings;
+        this.service = service;
     }
 
     @Override
@@ -44,13 +40,13 @@ public class AsyncChangeEmail implements Process {
             final String currentEmail = auth.getEmail();
 
             if (currentEmail == null) {
-                m.send(player, MessageKey.USAGE_ADD_EMAIL);
-            } else if (newEmail == null || !Utils.isEmailCorrect(newEmail, settings)) {
-                m.send(player, MessageKey.INVALID_NEW_EMAIL);
+                service.send(player, MessageKey.USAGE_ADD_EMAIL);
+            } else if (newEmail == null || !Utils.isEmailCorrect(newEmail, service.getSettings())) {
+                service.send(player, MessageKey.INVALID_NEW_EMAIL);
             } else if (!oldEmail.equals(currentEmail)) {
-                m.send(player, MessageKey.INVALID_OLD_EMAIL);
+                service.send(player, MessageKey.INVALID_OLD_EMAIL);
             } else if (dataSource.isEmailStored(newEmail)) {
-                m.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
+                service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
                 saveNewEmail(auth);
             }
@@ -63,20 +59,20 @@ public class AsyncChangeEmail implements Process {
         auth.setEmail(newEmail);
         if (dataSource.updateEmail(auth)) {
             playerCache.updatePlayer(auth);
-            m.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
+            service.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
         } else {
-            m.send(player, MessageKey.ERROR);
+            service.send(player, MessageKey.ERROR);
             auth.setEmail(newEmail);
         }
     }
 
     private void outputUnloggedMessage() {
         if (dataSource.isAuthAvailable(player.getName())) {
-            m.send(player, MessageKey.LOGIN_MESSAGE);
-        } else if (Settings.emailRegistration) {
-            m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+            service.send(player, MessageKey.LOGIN_MESSAGE);
+        } else if (service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)) {
+            service.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
         } else {
-            m.send(player, MessageKey.REGISTER_MESSAGE);
+            service.send(player, MessageKey.REGISTER_MESSAGE);
         }
     }
 }

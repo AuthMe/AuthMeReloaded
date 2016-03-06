@@ -1,10 +1,5 @@
 package fr.xephi.authme.process.register;
 
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -21,6 +16,8 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  */
@@ -82,10 +79,11 @@ public class AsyncRegister implements Process {
             && !ip.equalsIgnoreCase("127.0.0.1")
             && !ip.equalsIgnoreCase("localhost")
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
-            Integer maxReg = Settings.getmaxRegPerIp;
+            int maxReg = Settings.getmaxRegPerIp;
             List<String> otherAccounts = database.getAllAuthsByIp(ip);
             if (otherAccounts.size() >= maxReg) {
-                m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, maxReg.toString(), Integer.toString(otherAccounts.size()), otherAccounts.toString());
+                service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxReg),
+                    Integer.toString(otherAccounts.size()), StringUtils.join(", ", otherAccounts.toString()));
                 return false;
             }
         }
@@ -104,18 +102,19 @@ public class AsyncRegister implements Process {
     }
 
     private void emailRegister() {
-        if(Settings.getmaxRegPerEmail > 0
+        if (Settings.getmaxRegPerEmail > 0
             && !ip.equalsIgnoreCase("127.0.0.1")
             && !ip.equalsIgnoreCase("localhost")
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
-            Integer maxReg = Settings.getmaxRegPerIp;
+            int maxReg = Settings.getmaxRegPerIp;
             List<String> otherAccounts = database.getAllAuthsByIp(ip);
             if (otherAccounts.size() >= maxReg) {
-                m.send(player, MessageKey.MAX_REGISTER_EXCEEDED, maxReg.toString(), Integer.toString(otherAccounts.size()), otherAccounts.toString());
+                service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxReg),
+                    Integer.toString(otherAccounts.size()), StringUtils.join(", ", otherAccounts.toString()));
                 return;
             }
         }
-        final HashedPassword hashedPassword = plugin.getPasswordSecurity().computeHash(password, name);
+        final HashedPassword hashedPassword = service.computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
@@ -133,12 +132,12 @@ public class AsyncRegister implements Process {
         database.updateSession(auth);
         plugin.mail.main(auth, password);
         ProcessSyncEmailRegister sync = new ProcessSyncEmailRegister(player, service);
-        plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, sync);
+        service.scheduleSyncDelayedTask(sync);
 
     }
 
     private void passwordRegister() {
-        final HashedPassword hashedPassword = plugin.getPasswordSecurity().computeHash(password, name);
+        final HashedPassword hashedPassword = service.computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
@@ -163,7 +162,7 @@ public class AsyncRegister implements Process {
         service.scheduleSyncDelayedTask(sync);
 
         //give the user the secret code to setup their app code generation
-        if (Settings.getPasswordHash == HashAlgorithm.TWO_FACTOR) {
+        if (service.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
             String qrCodeUrl = TwoFactor.getQRBarcodeURL(player.getName(), Bukkit.getIp(), hashedPassword.getHash());
             service.send(player, MessageKey.TWO_FACTOR_CREATE, hashedPassword.getHash(), qrCodeUrl);
         }

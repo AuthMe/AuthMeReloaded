@@ -52,6 +52,7 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.CollectionUtils;
@@ -301,7 +302,8 @@ public class AuthMe extends JavaPlugin {
         setupApi();
 
         // Set up the management
-        ProcessService processService = new ProcessService(newSettings, messages, this, ipAddressManager);
+        ProcessService processService = new ProcessService(newSettings, messages, this, ipAddressManager,
+            passwordSecurity);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
@@ -751,26 +753,26 @@ public class AuthMe extends JavaPlugin {
 
     // Purge inactive players from the database, as defined in the configuration
     private void autoPurge() {
-        if (!Settings.usePurge) {
+        if (!newSettings.getProperty(PurgeSettings.USE_AUTO_PURGE)) {
             return;
         }
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -(Settings.purgeDelay));
+        calendar.add(Calendar.DATE, -newSettings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER));
         long until = calendar.getTimeInMillis();
         List<String> cleared = database.autoPurgeDatabase(until);
         if (CollectionUtils.isEmpty(cleared)) {
             return;
         }
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
-        if (Settings.purgeEssentialsFile && this.ess != null)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && this.ess != null)
             dataManager.purgeEssentials(cleared);
-        if (Settings.purgePlayerDat)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             dataManager.purgeDat(cleared);
-        if (Settings.purgeLimitedCreative)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
             dataManager.purgeLimitedCreative(cleared);
-        if (Settings.purgeAntiXray)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
             dataManager.purgeAntiXray(cleared);
-        if (Settings.purgePermissions)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_PERMISSIONS))
             dataManager.purgePermissions(cleared);
     }
 

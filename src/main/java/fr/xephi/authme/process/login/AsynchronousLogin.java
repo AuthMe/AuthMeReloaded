@@ -15,6 +15,7 @@ import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
@@ -98,7 +99,7 @@ public class AsynchronousLogin implements Process {
             return null;
         }
 
-        if (!Settings.getMySQLColumnGroup.isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
+        if (!service.getProperty(DatabaseSettings.MYSQL_COL_GROUP).isEmpty() && pAuth.getGroupId() == Settings.getNonActivatedGroup) {
             service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
             return null;
         }
@@ -146,7 +147,7 @@ public class AsynchronousLogin implements Process {
                 .build();
             database.updateSession(auth);
 
-            if (Settings.useCaptcha) {
+            if (service.getProperty(SecuritySettings.USE_CAPTCHA)) {
                 if (plugin.captcha.containsKey(name)) {
                     plugin.captcha.remove(name);
                 }

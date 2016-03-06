@@ -7,37 +7,40 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
  */
-public class ProcessSyncronousPlayerLogout implements Runnable {
+public class ProcessSynchronousPlayerLogout implements Process {
 
-    protected final Player player;
-    protected final AuthMe plugin;
-    protected final String name;
-    private final Messages m;
+    private final Player player;
+    private final AuthMe plugin;
+    private final String name;
+    private final ProcessService service;
 
     /**
-     * Constructor for ProcessSyncronousPlayerLogout.
+     * Constructor for ProcessSynchronousPlayerLogout.
      *
      * @param player Player
      * @param plugin AuthMe
+     * @param service The process service
      */
-    public ProcessSyncronousPlayerLogout(Player player, AuthMe plugin) {
-        this.m = plugin.getMessages();
+    public ProcessSynchronousPlayerLogout(Player player, AuthMe plugin, ProcessService service) {
         this.player = player;
         this.plugin = plugin;
         this.name = player.getName().toLowerCase();
+        this.service = service;
     }
 
     protected void sendBungeeMessage() {
@@ -56,11 +59,6 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         }
     }
 
-    /**
-     * Method run.
-     *
-     * @see java.lang.Runnable#run()
-     */
     @Override
     public void run() {
         if (plugin.sessions.containsKey(name)) {
@@ -70,19 +68,18 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         if (Settings.protectInventoryBeforeLogInEnabled) {
             plugin.inventoryProtector.sendBlankInventoryPacket(player);
         }
-        int timeOut = Settings.getRegistrationTimeout * 20;
-        int interval = Settings.getWarnMessageInterval;
-        BukkitScheduler sched = player.getServer().getScheduler();
+        int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
+        int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         if (timeOut != 0) {
-            BukkitTask id = sched.runTaskLater(plugin, new TimeoutTask(plugin, name, player), timeOut);
+            BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
         }
-        BukkitTask msgT = sched.runTask(plugin, new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
+        BukkitTask msgT = service.runTask(new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgT);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
         }
-        if (Settings.applyBlindEffect) {
+        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
         }
         player.setOp(false);
@@ -92,7 +89,7 @@ public class ProcessSyncronousPlayerLogout implements Runnable {
         if (Settings.bungee) {
             sendBungeeMessage();
         }
-        m.send(player, MessageKey.LOGOUT_SUCCESS);
+        service.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");
     }
 

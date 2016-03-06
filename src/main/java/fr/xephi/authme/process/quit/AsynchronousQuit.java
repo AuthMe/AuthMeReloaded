@@ -13,7 +13,6 @@ import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
@@ -54,7 +53,12 @@ public class AsynchronousQuit implements Process {
                     .realName(player.getName()).build();
                 database.updateQuitLoc(auth);
             }
-            PlayerAuth auth = new PlayerAuth(name, ip, System.currentTimeMillis(), player.getName());
+            PlayerAuth auth = PlayerAuth.builder()
+                .name(name)
+                .realName(player.getName())
+                .ip(ip)
+                .lastLogin(System.currentTimeMillis())
+                .build();
             database.updateSession(auth);
         }
 
@@ -92,7 +96,7 @@ public class AsynchronousQuit implements Process {
 
         service.getIpAddressManager().removeCache(player.getName());
         if (plugin.isEnabled()) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
+            service.scheduleSyncDelayedTask(new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
         }
         // remove player from cache
         if (database instanceof CacheDataSource) {

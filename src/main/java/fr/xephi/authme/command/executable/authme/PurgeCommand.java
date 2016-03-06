@@ -3,7 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PurgeSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -15,7 +15,7 @@ public class PurgeCommand implements ExecutableCommand {
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // AuthMe plugin instance
-        AuthMe plugin = AuthMe.getInstance();
+        AuthMe plugin = commandService.getAuthMe();
 
         // Get the days parameter
         String daysStr = arguments.get(0);
@@ -47,13 +47,13 @@ public class PurgeCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");
 
         // Purge other data
-        if (Settings.purgeEssentialsFile && plugin.ess != null)
+        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && plugin.ess != null)
             plugin.dataManager.purgeEssentials(purged);
-        if (Settings.purgePlayerDat)
+        if (commandService.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             plugin.dataManager.purgeDat(purged);
-        if (Settings.purgeLimitedCreative)
+        if (commandService.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
             plugin.dataManager.purgeLimitedCreative(purged);
-        if (Settings.purgeAntiXray)
+        if (commandService.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
             plugin.dataManager.purgeAntiXray(purged);
 
         // Show a status message

@@ -22,7 +22,7 @@ public class IpAddressManagerTest {
     @Test
     public void shouldRetrieveFromCache() {
         // given
-        IpAddressManager ipAddressManager = new IpAddressManager(mockSettings(false));
+        IpAddressManager ipAddressManager = new IpAddressManager(mockSettings(true));
         ipAddressManager.addCache("Test", "my test IP");
 
         // when

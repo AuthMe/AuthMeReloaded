@@ -55,10 +55,10 @@ public enum PlayerPermission implements PermissionNode {
      */
     CAN_LOGIN_BE_FORCED("authme.player.canbeforced"),
 
-	/**
-	 * Permission to use to see own other accounts.
-	 */
-	SEE_OWN_ACCOUNTS("authme.player.seeownaccounts");
+    /**
+     * Permission to use to see own other accounts.
+     */
+    SEE_OWN_ACCOUNTS("authme.player.seeownaccounts");
 
     /**
      * The permission node.

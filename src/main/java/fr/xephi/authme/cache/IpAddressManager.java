@@ -17,10 +17,10 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class IpAddressManager {
 
-    /** Cache for IP lookups per player. */
-    private final ConcurrentHashMap<String, String> ipCache;
     /** Whether or not to use the VeryGames API for IP lookups. */
     private final boolean useVeryGamesIpCheck;
+    /** Cache for lookups via the VeryGames API. */
+    private final ConcurrentHashMap<String, String> ipCache;
 
     /**
      * Constructor.
@@ -32,32 +32,52 @@ public class IpAddressManager {
         this.ipCache = new ConcurrentHashMap<>();
     }
 
+    /**
+     * Return the player's IP address. If enabled in the settings, the IP address returned by the
+     * VeryGames API will be returned.
+     *
+     * @param player The player to look up
+     * @return The IP address of the player
+     */
     public String getPlayerIp(Player player) {
-        final String playerName = player.getName().toLowerCase();
-        final String cachedValue = ipCache.get(playerName);
-        if (cachedValue != null) {
-            return cachedValue;
-        }
-
-        final String plainIp = player.getAddress().getAddress().getHostAddress();
         if (useVeryGamesIpCheck) {
+            final String playerName = player.getName().toLowerCase();
+            final String cachedValue = ipCache.get(playerName);
+            if (cachedValue != null) {
+                return cachedValue;
+            }
+
+            final String plainIp = player.getAddress().getAddress().getHostAddress();
             String veryGamesResult = getVeryGamesIp(plainIp, player.getAddress().getPort());
             if (veryGamesResult != null) {
                 ipCache.put(playerName, veryGamesResult);
                 return veryGamesResult;
             }
-        } else {
-            ipCache.put(playerName, plainIp);
         }
-        return plainIp;
+        return player.getAddress().getAddress().getHostAddress();
     }
 
+    /**
+     * Add a player to the IP address cache.
+     *
+     * @param player The player to add or update the cache entry for
+     * @param ip The IP address to add
+     */
     public void addCache(String player, String ip) {
-        ipCache.put(player.toLowerCase(), ip);
+        if (useVeryGamesIpCheck) {
+            ipCache.put(player.toLowerCase(), ip);
+        }
     }
 
+    /**
+     * Remove a player's cache entry.
+     *
+     * @param player The player to remove
+     */
     public void removeCache(String player) {
-        ipCache.remove(player.toLowerCase());
+        if (useVeryGamesIpCheck) {
+            ipCache.remove(player.toLowerCase());
+        }
     }
 
     // returns null if IP could not be looked up

@@ -3,7 +3,7 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PurgeSettings;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 
@@ -15,7 +15,7 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
+        final AuthMe plugin = commandService.getAuthMe();
 
         // Get the list of banned players
         List<String> bannedPlayers = new ArrayList<>();
@@ -25,13 +25,13 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
 
         // Purge the banned players
         plugin.getDataSource().purgeBanned(bannedPlayers);
-        if (Settings.purgeEssentialsFile && plugin.ess != null)
+        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && plugin.ess != null)
             plugin.dataManager.purgeEssentials(bannedPlayers);
-        if (Settings.purgePlayerDat)
+        if (commandService.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             plugin.dataManager.purgeDat(bannedPlayers);
-        if (Settings.purgeLimitedCreative)
+        if (commandService.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
             plugin.dataManager.purgeLimitedCreative(bannedPlayers);
-        if (Settings.purgeAntiXray)
+        if (commandService.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
             plugin.dataManager.purgeAntiXray(bannedPlayers);
 
         // Show a status message

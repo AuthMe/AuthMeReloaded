@@ -11,7 +11,6 @@ import fr.xephi.authme.process.logout.AsynchronousLogout;
 import fr.xephi.authme.process.quit.AsynchronousQuit;
 import fr.xephi.authme.process.register.AsyncRegister;
 import fr.xephi.authme.process.unregister.AsynchronousUnregister;
-import fr.xephi.authme.settings.NewSetting;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -24,22 +23,13 @@ public class Management {
     private final ProcessService processService;
     private final DataSource dataSource;
     private final PlayerCache playerCache;
-    private final NewSetting settings;
 
-    /**
-     * Constructor for Management.
-     *
-     * @param plugin AuthMe
-     */
     public Management(AuthMe plugin, ProcessService processService, DataSource dataSource, PlayerCache playerCache) {
         this.plugin = plugin;
         this.sched = this.plugin.getServer().getScheduler();
         this.processService = processService;
         this.dataSource = dataSource;
         this.playerCache = playerCache;
-
-        // FIXME don't pass settings anymore -> go through the service in the processes
-        this.settings = processService.getSettings();
     }
 
     public void performLogin(final Player player, final String password, final boolean forceLogin) {
@@ -47,13 +37,7 @@ public class Management {
     }
 
     public void performLogout(final Player player) {
-        sched.runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                new AsynchronousLogout(player, plugin, plugin.getDataSource()).process();
-            }
-        });
+        runTask(new AsynchronousLogout(player, plugin, dataSource, processService));
     }
 
     public void performRegister(final Player player, final String password, final String email) {
@@ -77,7 +61,7 @@ public class Management {
     }
 
     public void performChangeEmail(final Player player, final String oldEmail, final String newEmail) {
-        runTask(new AsyncChangeEmail(player, plugin, oldEmail, newEmail, dataSource, playerCache, settings));
+        runTask(new AsyncChangeEmail(player, oldEmail, newEmail, dataSource, playerCache, processService));
     }
 
     private void runTask(Process process) {

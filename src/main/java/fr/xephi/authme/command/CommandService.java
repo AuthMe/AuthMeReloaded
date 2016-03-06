@@ -41,6 +41,7 @@ public class CommandService {
      * @param passwordSecurity The Password Security instance
      * @param permissionsManager The permissions manager
      * @param settings The settings manager
+     * @param ipAddressManager The IP address manager
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,

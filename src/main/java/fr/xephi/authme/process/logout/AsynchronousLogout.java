@@ -6,22 +6,22 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
 
 /**
  */
-public class AsynchronousLogout {
+public class AsynchronousLogout implements Process {
 
-    protected final Player player;
-    protected final String name;
-    protected final AuthMe plugin;
-    protected final DataSource database;
-    protected boolean canLogout = true;
-    private final Messages m;
+    private final Player player;
+    private final String name;
+    private final AuthMe plugin;
+    private final DataSource database;
+    private boolean canLogout = true;
+    private final ProcessService service;
 
     /**
      * Constructor for AsynchronousLogout.
@@ -29,29 +29,30 @@ public class AsynchronousLogout {
      * @param player   Player
      * @param plugin   AuthMe
      * @param database DataSource
+     * @param service  The process service
      */
-    public AsynchronousLogout(Player player, AuthMe plugin, DataSource database) {
-        this.m = plugin.getMessages();
+    public AsynchronousLogout(Player player, AuthMe plugin, DataSource database, ProcessService service) {
         this.player = player;
         this.plugin = plugin;
         this.database = database;
         this.name = player.getName().toLowerCase();
+        this.service = service;
     }
 
     private void preLogout() {
         if (!PlayerCache.getInstance().isAuthenticated(name)) {
-            m.send(player, MessageKey.NOT_LOGGED_IN);
+            service.send(player, MessageKey.NOT_LOGGED_IN);
             canLogout = false;
         }
     }
 
-    public void process() {
+    @Override
+    public void run() {
         preLogout();
         if (!canLogout) {
             return;
         }
         final Player p = player;
-        BukkitScheduler scheduler = p.getServer().getScheduler();
         PlayerAuth auth = PlayerCache.getInstance().getAuth(name);
         database.updateSession(auth);
         auth.setQuitLocX(p.getLocation().getX());
@@ -62,7 +63,7 @@ public class AsynchronousLogout {
 
         PlayerCache.getInstance().removePlayer(name);
         database.setUnlogged(name);
-        scheduler.scheduleSyncDelayedTask(plugin, new Runnable() {
+        service.scheduleSyncDelayedTask(new Runnable() {
             @Override
             public void run() {
                 Utils.teleportToSpawn(p);
@@ -73,6 +74,6 @@ public class AsynchronousLogout {
         }
         LimboCache.getInstance().addLimboPlayer(player);
         Utils.setGroup(player, GroupType.NOTLOGGEDIN);
-        scheduler.scheduleSyncDelayedTask(plugin, new ProcessSyncronousPlayerLogout(p, plugin));
+        service.scheduleSyncDelayedTask(new ProcessSynchronousPlayerLogout(p, plugin, service));
     }
 }
