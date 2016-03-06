@@ -376,7 +376,7 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings);
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager);
 
         // Download and load GeoIp.dat file if absent
         GeoLiteAPI.isDataAvailable();
@@ -401,11 +401,12 @@ public class AuthMe extends JavaPlugin {
 
         dataManager = new DataManager(this);
 
-        ProcessService processService = new ProcessService(newSettings, messages, this);
+        ProcessService processService = new ProcessService(newSettings, messages, this,
+            ipAddressManager, passwordSecurity);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
-        setupBungeeCordHook();
+        setupBungeeCordHook(newSettings, ipAddressManager);
 
         // Reload support hook
         reloadSupportHook();
