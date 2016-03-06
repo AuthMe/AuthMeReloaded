@@ -3,7 +3,6 @@ package fr.xephi.authme.datasource;
 import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -693,17 +692,6 @@ public class MySQL implements DataSource {
             logSqlException(ex);
         }
         return false;
-    }
-
-    @Override
-    public void reload() {
-        try {
-            reloadArguments();
-        } catch (Exception ex) {
-            ConsoleLogger.logException("Can't reconnect to MySQL database... " +
-                "Please check your MySQL configuration! Encountered", ex);
-            AuthMe.getInstance().stopOrUnload();
-        }
     }
 
     @Override

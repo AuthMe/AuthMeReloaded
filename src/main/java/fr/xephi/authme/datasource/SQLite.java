@@ -359,10 +359,6 @@ public class SQLite implements DataSource {
         }
     }
 
-    @Override
-    public void reload() {
-    }
-
     private void close(Statement st) {
         if (st != null) {
             try {

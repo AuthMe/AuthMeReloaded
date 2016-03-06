@@ -163,12 +163,6 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public void reload() { // unused method
-        source.reload();
-        cachedAuths.invalidateAll();
-    }
-
-    @Override
     public synchronized boolean updateEmail(final PlayerAuth auth) {
         boolean result = source.updateEmail(auth);
         if (result) {

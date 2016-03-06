@@ -10,15 +10,14 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -188,18 +187,6 @@ public class CommandServiceTest {
         // then
         assertThat(result, equalTo(7));
         verify(settings).getProperty(property);
-    }
-
-    @Test
-    public void shouldReloadMessages() {
-        // given
-        File file = new File("some/bogus-file.test");
-
-        // when
-        commandService.reloadMessages(file);
-
-        // then
-        verify(messages).reload(file);
     }
 
     @Test

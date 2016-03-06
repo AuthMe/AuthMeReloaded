@@ -121,8 +121,6 @@ public interface DataSource {
      */
     void close();
 
-    void reload();
-
     /**
      * Method purgeBanned.
      *
