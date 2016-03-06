@@ -17,6 +17,7 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.util.StringUtils;
@@ -88,13 +89,13 @@ public class AsynchronousLogin implements Process {
         if (pAuth == null) {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
             if (LimboCache.getInstance().hasLimboPlayer(name)) {
-                LimboCache.getInstance().getLimboPlayer(name).getMessageTaskId().cancel();
+                LimboCache.getInstance().getLimboPlayer(name).getMessageTask().cancel();
                 String[] msg = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
                     ? service.retrieveMessage(MessageKey.REGISTER_EMAIL_MESSAGE)
                     : service.retrieveMessage(MessageKey.REGISTER_MESSAGE);
                 BukkitTask messageTask = service.runTask(
                     new MessageTask(plugin, name, msg, service.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
-                LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(messageTask);
+                LimboCache.getInstance().getLimboPlayer(name).setMessageTask(messageTask);
             }
             return null;
         }
@@ -128,7 +129,7 @@ public class AsynchronousLogin implements Process {
             return;
         }
 
-        if (pAuth.getIp().equals("127.0.0.1") && !pAuth.getIp().equals(ip)) {
+        if ("127.0.0.1".equals(pAuth.getIp()) && !pAuth.getIp().equals(ip)) {
             pAuth.setIp(ip);
             database.updateIp(pAuth.getNickname(), ip);
         }
@@ -181,19 +182,20 @@ public class AsynchronousLogin implements Process {
             ProcessSyncPlayerLogin syncPlayerLogin = new ProcessSyncPlayerLogin(
                 player, plugin, database, service.getSettings());
             if (syncPlayerLogin.getLimbo() != null) {
-                if (syncPlayerLogin.getLimbo().getTimeoutTaskId() != null) {
-                    syncPlayerLogin.getLimbo().getTimeoutTaskId().cancel();
+                if (syncPlayerLogin.getLimbo().getTimeoutTask() != null) {
+                    syncPlayerLogin.getLimbo().getTimeoutTask().cancel();
                 }
-                if (syncPlayerLogin.getLimbo().getMessageTaskId() != null) {
-                    syncPlayerLogin.getLimbo().getMessageTaskId().cancel();
+                if (syncPlayerLogin.getLimbo().getMessageTask() != null) {
+                    syncPlayerLogin.getLimbo().getMessageTask().cancel();
                 }
             }
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, syncPlayerLogin);
         } else if (player.isOnline()) {
-            if (!Settings.noConsoleSpam)
+            if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                 ConsoleLogger.info(realName + " used the wrong password");
-            if (Settings.isKickOnWrongPasswordEnabled) {
-                Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            }
+            if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
+                service.scheduleSyncDelayedTask(new Runnable() {
                     @Override
                     public void run() {
                         player.kickPlayer(service.retrieveSingleMessage(MessageKey.WRONG_PASSWORD));

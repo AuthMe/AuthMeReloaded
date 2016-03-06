@@ -75,9 +75,9 @@ public class AsynchronousUnregister implements Process {
                 BukkitScheduler scheduler = plugin.getServer().getScheduler();
                 if (timeOut != 0) {
                     BukkitTask id = scheduler.runTaskLater(plugin, new TimeoutTask(plugin, name, player), timeOut);
-                    limboPlayer.setTimeoutTaskId(id);
+                    limboPlayer.setTimeoutTask(id);
                 }
-                limboPlayer.setMessageTaskId(scheduler.runTask(plugin,
+                limboPlayer.setMessageTask(scheduler.runTask(plugin,
                     new MessageTask(plugin, name, MessageKey.REGISTER_MESSAGE, interval)));
                 service.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");

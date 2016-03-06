@@ -49,11 +49,11 @@ public class ProcessSyncEmailRegister implements Process {
         if (limbo != null) {
             if (time != 0) {
                 BukkitTask id = service.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), time);
-                limbo.setTimeoutTaskId(id);
+                limbo.setTimeoutTask(id);
             }
             BukkitTask messageTask = service.runTask(new MessageTask(
                 service.getAuthMe(), name, service.retrieveMessage(MessageKey.LOGIN_MESSAGE), msgInterval));
-            limbo.setMessageTaskId(messageTask);
+            limbo.setMessageTask(messageTask);
         }
 
         player.saveData();

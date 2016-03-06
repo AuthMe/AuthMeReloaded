@@ -60,9 +60,9 @@ public class UnregisterAdminCommand implements ExecutableCommand {
             BukkitScheduler scheduler = sender.getServer().getScheduler();
             if (timeOut != 0) {
                 BukkitTask id = scheduler.runTaskLater(plugin, new TimeoutTask(plugin, playerNameLowerCase, target), timeOut);
-                LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTaskId(id);
+                LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTask(id);
             }
-            LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTaskId(
+            LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTask(
                 scheduler.runTask(
                     plugin, new MessageTask(plugin, playerNameLowerCase, MessageKey.REGISTER_MESSAGE, interval)
                 )

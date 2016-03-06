@@ -64,8 +64,6 @@ public class AsynchronousJoin implements Process {
         }
 
         final String ip = service.getIpAddressManager().getPlayerIp(player);
-
-
         if (isNameRestricted(name, ip, player.getAddress().getHostName(), service.getSettings())) {
             service.scheduleSyncDelayedTask(new Runnable() {
                 @Override
@@ -196,7 +194,7 @@ public class AsynchronousJoin implements Process {
         int msgInterval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         if (registrationTimeout > 0) {
             BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), registrationTimeout);
-            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTaskId(id);
+            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTask(id);
         }
 
         MessageKey msg;
@@ -209,7 +207,7 @@ public class AsynchronousJoin implements Process {
         }
         if (msgInterval > 0 && LimboCache.getInstance().getLimboPlayer(name) != null) {
             BukkitTask msgTask = service.runTask(new MessageTask(plugin, name, msg, msgInterval));
-            LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(msgTask);
+            LimboCache.getInstance().getLimboPlayer(name).setMessageTask(msgTask);
         }
     }
 

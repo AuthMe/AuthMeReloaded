@@ -49,7 +49,7 @@ public class MessageTask implements Runnable {
                 }
                 BukkitTask nextTask = plugin.getServer().getScheduler().runTaskLater(plugin, this, interval * 20);
                 if (LimboCache.getInstance().hasLimboPlayer(name)) {
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nextTask);
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTask(nextTask);
                 }
                 return;
             }

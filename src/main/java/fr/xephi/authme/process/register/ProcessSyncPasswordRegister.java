@@ -67,10 +67,10 @@ public class ProcessSyncPasswordRegister implements Process {
         BukkitTask task;
         if (delay != 0) {
             task = service.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), delay);
-            cache.getLimboPlayer(name).setTimeoutTaskId(task);
+            cache.getLimboPlayer(name).setTimeoutTask(task);
         }
         task = service.runTask(new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
-        cache.getLimboPlayer(name).setMessageTaskId(task);
+        cache.getLimboPlayer(name).setMessageTask(task);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
         }

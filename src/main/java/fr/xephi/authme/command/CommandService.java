@@ -1,6 +1,7 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.cache.IpAddressManager;
@@ -188,6 +189,10 @@ public class CommandService {
 
     public IpAddressManager getIpAddressManager() {
         return ipAddressManager;
+    }
+
+    public PlayerCache getPlayerCache() {
+        return PlayerCache.getInstance();
     }
 
 }

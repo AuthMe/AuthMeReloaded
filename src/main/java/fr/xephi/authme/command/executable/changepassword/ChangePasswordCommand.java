@@ -8,7 +8,6 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.ChangePasswordTask;
-import fr.xephi.authme.util.Wrapper;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -24,8 +23,7 @@ public class ChangePasswordCommand extends PlayerCommand {
         String newPassword = arguments.get(1);
 
         String name = player.getName().toLowerCase();
-        Wrapper wrapper = Wrapper.getInstance();
-        final PlayerCache playerCache = wrapper.getPlayerCache();
+        final PlayerCache playerCache = commandService.getPlayerCache();
         if (!playerCache.isAuthenticated(name)) {
             commandService.send(player, MessageKey.NOT_LOGGED_IN);
             return;

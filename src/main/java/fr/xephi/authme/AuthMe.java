@@ -815,8 +815,8 @@ public class AuthMe extends JavaPlugin {
             }
 
             Utils.addNormal(player, limbo.getGroup());
-            player.setOp(limbo.getOperator());
-            limbo.getTimeoutTaskId().cancel();
+            player.setOp(limbo.isOperator());
+            limbo.getTimeoutTask().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (this.playerBackup.doesCacheExist(player)) {
                 this.playerBackup.removeCache(player);

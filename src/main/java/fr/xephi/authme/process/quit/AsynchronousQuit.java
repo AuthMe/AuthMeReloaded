@@ -68,7 +68,7 @@ public class AsynchronousQuit implements Process {
                 Utils.addNormal(player, limbo.getGroup());
             }
             needToChange = true;
-            isOp = limbo.getOperator();
+            isOp = limbo.isOperator();
             LimboCache.getInstance().deleteLimboPlayer(name);
         }
         if (Settings.isSessionsEnabled && !isKick) {

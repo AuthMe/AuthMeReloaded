@@ -10,7 +10,6 @@ import org.mockito.Mockito;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Class returning mocks for all calls in {@link Wrapper}.
@@ -34,11 +33,6 @@ public class WrapperMock extends Wrapper {
         WrapperMock instance = new WrapperMock();
         Wrapper.setSingleton(instance);
         return instance;
-    }
-
-    @Override
-    public Logger getLogger() {
-        return getMock(Logger.class);
     }
 
     @Override
