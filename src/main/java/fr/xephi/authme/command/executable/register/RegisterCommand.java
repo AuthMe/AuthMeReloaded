@@ -23,7 +23,7 @@ public class RegisterCommand extends PlayerCommand {
             return;
         }
 
-        if (arguments.isEmpty() || Settings.enablePasswordConfirmation && arguments.size() < 2) {
+        if (arguments.isEmpty() || Settings.enablePasswordConfirmation && arguments.size() < 3) {
             commandService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }
@@ -46,12 +46,17 @@ public class RegisterCommand extends PlayerCommand {
             return;
         }
 
-        if (arguments.size() > 1 && Settings.enablePasswordConfirmation && !arguments.get(0).equals(arguments.get(1))) {
+        if (Settings.enablePasswordConfirmation && !arguments.get(0).equals(arguments.get(1))) {
             commandService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
             return;
         }
 
-        management.performRegister(player, arguments.get(0), "");
+        if (!Utils.isEmailCorrect(arguments.get(2), commandService.getSettings())) {
+            commandService.send(player, MessageKey.INVALID_EMAIL);
+            return;
+        }
+
+        management.performRegister(player, arguments.get(0), arguments.get(2));
     }
 
     @Override

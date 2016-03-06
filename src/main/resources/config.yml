@@ -42,6 +42,13 @@ DataSource:
     mySQLRealName: realname
     # Enable this when you allow registration through a website
     mySQLWebsite: false
+    # MyBB settings
+    mySQLMyBBIP: 127.0.0.1
+    mySQLMyBBPort: 3306
+    mySQLMyBBDatabase: mybb
+    mySQLMyBBUsername: root
+    mySQLMyBBPassword: ""
+    mySQLMyBBTable: mybb_forousers
 settings:
     # The name shown in the help messages.
     helpHeader: AuthMeReloaded

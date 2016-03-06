@@ -25,6 +25,7 @@ import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.EssSpawn;
+import fr.xephi.authme.integration.MybbAPI;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
@@ -241,6 +242,7 @@ public class AuthMe extends JavaPlugin {
         // Connect to the database and setup tables
         try {
             setupDatabase(newSettings);
+            MybbAPI.getInstance();
         } catch (Exception e) {
             ConsoleLogger.logException("Fatal error occurred during database connection! "
                 + "Authme initialization aborted!", e);

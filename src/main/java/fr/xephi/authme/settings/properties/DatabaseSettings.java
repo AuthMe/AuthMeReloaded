@@ -102,6 +102,31 @@ public class DatabaseSettings implements SettingsClass {
     public static final Property<Boolean> MYSQL_WEBSITE =
         newProperty("DataSource.mySQLWebsite", false);
 
+    // MyBB
+    @Comment("Enable this when you allow mybb integration")
+    public static final Property<String> MYSQL_MYBB_IP =
+        newProperty("DataSource.mySQLMyBBIP", "127.0.0.1");
+
+    @Comment("Enable this when you allow mybb integration")
+    public static final Property<String> MYSQL_MYBB_PORT =
+        newProperty("DataSource.mySQLMyBBPort", "3306");
+
+    @Comment("Enable this when you allow mybb integration")
+    public static final Property<String> MYSQL_MYBB_DATABASE =
+        newProperty("DataSource.mySQLMyBBDatabase", "");
+
+    @Comment("Enable this when you allow mybb integration")
+    public static final Property<String> MYSQL_MYBB_USERNAME =
+        newProperty("DataSource.mySQLMyBBUsername", "root");
+
+    @Comment("Enable this when you allow mybb integration")
+    public static final Property<String> MYSQL_MYBB_PASSWORD =
+        newProperty("DataSource.mySQLMyBBPassword", "");
+
+    @Comment("Enable this when you allow mybb integration")
+    public static final Property<String> MYSQL_MYBB_TABLE =
+        newProperty("DataSource.mySQLMyBBTable", "");
+
     private DatabaseSettings() {
     }
 

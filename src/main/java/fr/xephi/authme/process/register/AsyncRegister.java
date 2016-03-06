@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.integration.MybbAPI;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -87,7 +88,7 @@ public class AsyncRegister {
 
     public void process() {
         if (preRegisterCheck()) {
-            if (!StringUtils.isEmpty(email)) {
+            if (Settings.emailRegistration && !StringUtils.isEmpty(email)) {
                 emailRegister();
             } else {
                 passwordRegister();
@@ -121,7 +122,6 @@ public class AsyncRegister {
         plugin.mail.main(auth, password);
         ProcessSyncEmailRegister sync = new ProcessSyncEmailRegister(player, plugin);
         plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, sync);
-
     }
 
     private void passwordRegister() {
@@ -131,6 +131,7 @@ public class AsyncRegister {
             .realName(player.getName())
             .password(hashedPassword)
             .ip(ip)
+            .email(email)
             .location(player.getLocation())
             .build();
 
@@ -155,5 +156,7 @@ public class AsyncRegister {
             String qrCodeUrl = TwoFactor.getQRBarcodeURL(player.getName(), Bukkit.getIp(), hashedPassword.getHash());
             m.send(player, MessageKey.TWO_FACTOR_CREATE, hashedPassword.getHash(), qrCodeUrl);
         }
+
+        MybbAPI.getInstance().register(auth, password, email);
     }
 }
