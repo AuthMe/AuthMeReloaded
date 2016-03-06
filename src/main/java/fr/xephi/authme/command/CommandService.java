@@ -1,8 +1,10 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -27,6 +29,7 @@ public class CommandService {
     private final PasswordSecurity passwordSecurity;
     private final PermissionsManager permissionsManager;
     private final NewSetting settings;
+    private final IpAddressManager ipAddressManager;
 
     /**
      * Constructor.
@@ -38,10 +41,11 @@ public class CommandService {
      * @param passwordSecurity The Password Security instance
      * @param permissionsManager The permissions manager
      * @param settings The settings manager
+     * @param ipAddressManager The IP address manager
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
-                          PasswordSecurity passwordSecurity, PermissionsManager permissionsManager,
-                          NewSetting settings) {
+                          PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
+                          IpAddressManager ipAddressManager) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
@@ -49,6 +53,7 @@ public class CommandService {
         this.passwordSecurity = passwordSecurity;
         this.permissionsManager = permissionsManager;
         this.settings = settings;
+        this.ipAddressManager = ipAddressManager;
     }
 
     /**
@@ -180,6 +185,14 @@ public class CommandService {
      */
     public NewSetting getSettings() {
         return settings;
+    }
+
+    public IpAddressManager getIpAddressManager() {
+        return ipAddressManager;
+    }
+
+    public PlayerCache getPlayerCache() {
+        return PlayerCache.getInstance();
     }
 
 }

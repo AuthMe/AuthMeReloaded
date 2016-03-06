@@ -33,18 +33,6 @@ public class PlayerAuth {
     /**
      * Constructor for PlayerAuth.
      *
-     * @param nickname  String
-     * @param ip        String
-     * @param lastLogin long
-     * @param realName  String
-     */
-    public PlayerAuth(String nickname, String ip, long lastLogin, String realName) {
-        this(nickname, new HashedPassword(""), -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
-    }
-
-    /**
-     * Constructor for PlayerAuth.
-     *
      * @param nickname String
      * @param x        double
      * @param y        double

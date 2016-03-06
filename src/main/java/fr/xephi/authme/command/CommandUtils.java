@@ -8,6 +8,9 @@ import java.util.List;
 
 public final class CommandUtils {
 
+    private CommandUtils() {
+    }
+
     public static int getMinNumberOfArguments(CommandDescription command) {
         int mandatoryArguments = 0;
         for (CommandArgumentDescription argument : command.getArguments()) {

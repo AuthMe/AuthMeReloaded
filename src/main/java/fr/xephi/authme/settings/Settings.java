@@ -1,10 +1,8 @@
 package fr.xephi.authme.settings;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.datasource.DataSourceType;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -41,13 +39,9 @@ public final class Settings {
     public static List<String> forceRegisterCommands;
     public static List<String> forceRegisterCommandsAsConsole;
     public static List<String> unsafePasswords;
-    public static List<String> emailBlacklist;
-    public static List<String> emailWhitelist;
-    public static DataSourceType getDataSource;
     public static HashAlgorithm getPasswordHash;
     public static Pattern nickPattern;
     public static boolean useLogging = false;
-    public static int purgeDelay = 60;
     public static boolean isChatAllowed, isPermissionCheckEnabled, isRegistrationEnabled,
         isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
         isSessionsEnabled, isAllowRestrictedIp,
@@ -57,19 +51,17 @@ public final class Settings {
         isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
         protectInventoryBeforeLogInEnabled, isStopEnabled, reloadSupport,
         rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-        useCaptcha, emailRegistration, multiverse, bungee,
+        emailRegistration, multiverse, bungee,
         banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-        disableSocialSpy, useEssentialsMotd, usePurge,
-        purgePlayerDat, purgeEssentialsFile,
-        purgeLimitedCreative, purgeAntiXray, purgePermissions,
+        disableSocialSpy, useEssentialsMotd,
         enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, removeJoinMessage, removeLeaveMessage, delayJoinMessage,
-        noTeleport, applyBlindEffect, hideTablistBeforeLogin, denyTabcompleteBeforeLogin,
+        noTeleport, hideTablistBeforeLogin, denyTabcompleteBeforeLogin,
         kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
-        customAttributes, generateImage, isRemoveSpeedEnabled, preventOtherCase;
+        customAttributes, isRemoveSpeedEnabled, preventOtherCase;
     public static String getNickRegex, getUnloggedinGroup,
-        getMySQLColumnGroup, unRegisteredGroup,
+        unRegisteredGroup,
         backupWindowsPath, getRegisteredGroup,
         rakamakUsers, rakamakUsersIp, getmailAccount, defaultWorld,
         spawnPriority, crazyloginFileName, getPassRegex, sendPlayerTo;
@@ -79,7 +71,7 @@ public final class Settings {
         getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
         getMailPort, maxLoginTry, captchaLength, saltLength,
         getmaxRegPerEmail, bCryptLog2Rounds,
-        antiBotSensibility, antiBotDuration, delayRecall, getMaxLoginPerIp,
+        antiBotSensibility, antiBotDuration, getMaxLoginPerIp,
         getMaxJoinPerIp;
     protected static FileConfiguration configFile;
 
@@ -123,8 +115,6 @@ public final class Settings {
         getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp", 1);
         getPasswordHash = load(SecuritySettings.PASSWORD_HASH);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
-        getDataSource = load(DatabaseSettings.BACKEND);
-        getMySQLColumnGroup = configFile.getString("ExternalBoardOptions.mySQLColumnGroup", "");
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
         unRegisteredGroup = configFile.getString("GroupOptions.UnregisteredPlayerGroup", "");
 
@@ -158,13 +148,12 @@ public final class Settings {
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
-        noConsoleSpam = configFile.getBoolean("Security.console.noConsoleSpam", false);
+        noConsoleSpam = load(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
         getmailAccount = configFile.getString("Email.mailAccount", "");
         getMailPort = configFile.getInt("Email.mailPort", 465);
         getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
         displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
-        useCaptcha = configFile.getBoolean("Security.captcha.useCaptcha", false);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
         emailRegistration = load(RegistrationSettings.USE_EMAIL_REGISTRATION);
@@ -180,14 +169,7 @@ public final class Settings {
         disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
         useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
-        usePurge = configFile.getBoolean("Purge.useAutoPurge", false);
-        purgeDelay = configFile.getInt("Purge.daysBeforeRemovePlayer", 60);
-        purgePlayerDat = configFile.getBoolean("Purge.removePlayerDat", false);
-        purgeEssentialsFile = configFile.getBoolean("Purge.removeEssentialsFile", false);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
-        purgeLimitedCreative = configFile.getBoolean("Purge.removeLimitedCreativesInventories", false);
-        purgeAntiXray = configFile.getBoolean("Purge.removeAntiXRayFile", false);
-        purgePermissions = configFile.getBoolean("Purge.removePermissions", false);
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = configFile.getStringList("Protection.countries");
         enableAntiBot = configFile.getBoolean("Protection.enableAntiBot", false);
@@ -196,11 +178,10 @@ public final class Settings {
         forceCommands = configFile.getStringList("settings.forceCommands");
         forceCommandsAsConsole = configFile.getStringList("settings.forceCommandsAsConsole");
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
-        delayRecall = configFile.getInt("Email.delayRecall", 5);
-        useWelcomeMessage = configFile.getBoolean("settings.useWelcomeMessage", true);
+        useWelcomeMessage = load(RegistrationSettings.USE_WELCOME_MESSAGE);
         unsafePasswords = configFile.getStringList("settings.security.unsafePasswords");
         countriesBlacklist = configFile.getStringList("Protection.countriesBlacklist");
-        broadcastWelcomeMessage = configFile.getBoolean("settings.broadcastWelcomeMessage", false);
+        broadcastWelcomeMessage = load(RegistrationSettings.BROADCAST_WELCOME_MESSAGE);
         forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
         forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
         spawnPriority = load(RestrictionSettings.SPAWN_PRIORITY);
@@ -213,13 +194,9 @@ public final class Settings {
         noTeleport = load(RestrictionSettings.NO_TELEPORT);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
-        applyBlindEffect = configFile.getBoolean("settings.applyBlindEffect", false);
-        emailBlacklist = configFile.getStringList("Email.emailBlacklisted");
-        emailWhitelist = configFile.getStringList("Email.emailWhitelisted");
         forceRegisterCommands = configFile.getStringList("settings.forceRegisterCommands");
         forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
-        generateImage = configFile.getBoolean("Email.generateImage", false);
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
         kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
         sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");

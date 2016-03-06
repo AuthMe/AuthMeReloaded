@@ -4,14 +4,16 @@ import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitTask;
 
 /**
+ * Represents a player which is not logged in and keeps track of certain states (like OP status, flying)
+ * which may be revoked from the player until he has logged in or registered.
  */
 public class LimboPlayer {
 
     private final String name;
     private final boolean fly;
     private Location loc = null;
-    private BukkitTask timeoutTaskId = null;
-    private BukkitTask messageTaskId = null;
+    private BukkitTask timeoutTask = null;
+    private BukkitTask messageTask = null;
     private boolean operator = false;
     private String group;
 
@@ -25,36 +27,36 @@ public class LimboPlayer {
     }
 
     /**
-     * Method getName.
+     * Return the name of the player.
      *
-     * @return String
+     * @return The player's name
      */
     public String getName() {
         return name;
     }
 
     /**
-     * Method getLoc.
+     * Return the player's original location.
      *
-     * @return Location
+     * @return The player's location
      */
     public Location getLoc() {
         return loc;
     }
 
     /**
-     * Method getOperator.
+     * Return whether the player is an operator or not (i.e. whether he is an OP).
      *
-     * @return boolean
+     * @return True if the player has OP status, false otherwise
      */
-    public boolean getOperator() {
+    public boolean isOperator() {
         return operator;
     }
 
     /**
-     * Method getGroup.
+     * Return the player's permissions group.
      *
-     * @return String
+     * @return The permissions group the player belongs to
      */
     public String getGroup() {
         return group;
@@ -64,54 +66,61 @@ public class LimboPlayer {
         return fly;
     }
 
-    public BukkitTask getTimeoutTaskId() {
-        return timeoutTaskId;
-    }
-
     /**
-     * Method setTimeoutTaskId.
+     * Return the timeout task, which kicks the player if he hasn't registered or logged in
+     * after a configurable amount of time.
      *
-     * @param i BukkitTask
+     * @return The timeout task associated to the player
      */
-    public void setTimeoutTaskId(BukkitTask i) {
-        if (this.timeoutTaskId != null) {
-            this.timeoutTaskId.cancel();
-        }
-        this.timeoutTaskId = i;
+    public BukkitTask getTimeoutTask() {
+        return timeoutTask;
     }
 
     /**
-     * Method getMessageTaskId.
+     * Set the timeout task of the player. The timeout task kicks the player after a configurable
+     * amount of time if he hasn't logged in or registered.
      *
-     * @return BukkitTask
+     * @param timeoutTask The task to set
      */
-    public BukkitTask getMessageTaskId() {
-        return messageTaskId;
+    public void setTimeoutTask(BukkitTask timeoutTask) {
+        if (this.timeoutTask != null) {
+            this.timeoutTask.cancel();
+        }
+        this.timeoutTask = timeoutTask;
     }
 
     /**
-     * Method setMessageTaskId.
+     * Return the message task reminding the player to log in or register.
      *
-     * @param messageTaskId BukkitTask
+     * @return The task responsible for sending the message regularly
      */
-    public void setMessageTaskId(BukkitTask messageTaskId) {
-        if (this.messageTaskId != null) {
-            this.messageTaskId.cancel();
-        }
-        this.messageTaskId = messageTaskId;
+    public BukkitTask getMessageTask() {
+        return messageTask;
     }
 
     /**
-     * Method clearTask.
+     * Set the messages task responsible for telling the player to log in or register.
+     *
+     * @param messageTask The message task to set
      */
-    public void clearTask() {
-        if (messageTaskId != null) {
-            messageTaskId.cancel();
+    public void setMessageTask(BukkitTask messageTask) {
+        if (this.messageTask != null) {
+            this.messageTask.cancel();
         }
-        messageTaskId = null;
-        if (timeoutTaskId != null) {
-            timeoutTaskId.cancel();
+        this.messageTask = messageTask;
+    }
+
+    /**
+     * Clears all tasks associated to the player.
+     */
+    public void clearTasks() {
+        if (messageTask != null) {
+            messageTask.cancel();
         }
-        timeoutTaskId = null;
+        messageTask = null;
+        if (timeoutTask != null) {
+            timeoutTask.cancel();
+        }
+        timeoutTask = null;
     }
 }

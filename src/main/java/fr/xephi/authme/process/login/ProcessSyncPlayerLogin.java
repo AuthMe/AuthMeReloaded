@@ -67,7 +67,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
     }
 
     private void restoreOpState() {
-        player.setOp(limbo.getOperator());
+        player.setOp(limbo.isOperator());
     }
 
     private void packQuitLocation() {

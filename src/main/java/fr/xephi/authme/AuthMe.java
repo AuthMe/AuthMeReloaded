@@ -1,8 +1,6 @@
 package fr.xephi.authme;
 
 import com.earth2me.essentials.Essentials;
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
 import com.onarandombox.MultiverseCore.MultiverseCore;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
@@ -35,6 +33,7 @@ import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
 import fr.xephi.authme.listener.AuthMeTablistPacketAdapter;
 import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
@@ -53,6 +52,7 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.CollectionUtils;
@@ -73,8 +73,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -112,7 +110,7 @@ public class AuthMe extends JavaPlugin {
     public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
+
     /*
      * Public Instances
      * TODO #432: Encapsulation
@@ -139,6 +137,7 @@ public class AuthMe extends JavaPlugin {
     private JsonCache playerBackup;
     private PasswordSecurity passwordSecurity;
     private DataSource database;
+    private IpAddressManager ipAddressManager;
 
     /**
      * Get the plugin's instance.
@@ -251,10 +250,11 @@ public class AuthMe extends JavaPlugin {
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
         passwordSecurity = new PasswordSecurity(getDataSource(), newSettings.getProperty(SecuritySettings.PASSWORD_HASH),
             Bukkit.getPluginManager(), newSettings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH));
+        ipAddressManager = new IpAddressManager(newSettings);
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings);
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager);
 
         // Set up Metrics
         MetricsStarter.setupMetrics(plugin, newSettings);
@@ -300,11 +300,12 @@ public class AuthMe extends JavaPlugin {
         setupApi();
 
         // Set up the management
-        ProcessService processService = new ProcessService(newSettings, messages, this);
+        ProcessService processService = new ProcessService(newSettings, messages, this, ipAddressManager,
+            passwordSecurity);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
-        setupBungeeCordHook();
+        setupBungeeCordHook(newSettings, ipAddressManager);
 
         // Reload support hook
         reloadSupportHook();
@@ -375,7 +376,7 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings);
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager);
 
         // Download and load GeoIp.dat file if absent
         GeoLiteAPI.isDataAvailable();
@@ -400,11 +401,12 @@ public class AuthMe extends JavaPlugin {
 
         dataManager = new DataManager(this);
 
-        ProcessService processService = new ProcessService(newSettings, messages, this);
+        ProcessService processService = new ProcessService(newSettings, messages, this,
+            ipAddressManager, passwordSecurity);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
-        setupBungeeCordHook();
+        setupBungeeCordHook(newSettings, ipAddressManager);
 
         // Reload support hook
         reloadSupportHook();
@@ -490,20 +492,22 @@ public class AuthMe extends JavaPlugin {
     /**
      * Set up the BungeeCord hook.
      */
-    private void setupBungeeCordHook() {
-        if (newSettings.getProperty(HooksSettings.BUNGEECORD)) {
+    private void setupBungeeCordHook(NewSetting settings, IpAddressManager ipAddressManager) {
+        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
+            Bukkit.getMessenger().registerIncomingPluginChannel(
+                this, "BungeeCord", new BungeeCordMessage(this, ipAddressManager));
         }
     }
 
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
-                                                    PasswordSecurity passwordSecurity, NewSetting settings) {
+                                                    PasswordSecurity passwordSecurity, NewSetting settings,
+                                                    IpAddressManager ipAddressManager) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
         CommandService commandService = new CommandService(
-            this, mapper, helpProvider, messages, passwordSecurity, permissionsManager, settings);
+            this, mapper, helpProvider, messages, passwordSecurity, permissionsManager, settings, ipAddressManager);
         return new CommandHandler(commandService);
     }
 
@@ -811,8 +815,8 @@ public class AuthMe extends JavaPlugin {
             }
 
             Utils.addNormal(player, limbo.getGroup());
-            player.setOp(limbo.getOperator());
-            limbo.getTimeoutTaskId().cancel();
+            player.setOp(limbo.isOperator());
+            limbo.getTimeoutTask().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (this.playerBackup.doesCacheExist(player)) {
                 this.playerBackup.removeCache(player);
@@ -833,26 +837,26 @@ public class AuthMe extends JavaPlugin {
 
     // Purge inactive players from the database, as defined in the configuration
     private void autoPurge() {
-        if (!Settings.usePurge) {
+        if (!newSettings.getProperty(PurgeSettings.USE_AUTO_PURGE)) {
             return;
         }
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -(Settings.purgeDelay));
+        calendar.add(Calendar.DATE, -newSettings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER));
         long until = calendar.getTimeInMillis();
         List<String> cleared = database.autoPurgeDatabase(until);
         if (CollectionUtils.isEmpty(cleared)) {
             return;
         }
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
-        if (Settings.purgeEssentialsFile && this.ess != null)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && this.ess != null)
             dataManager.purgeEssentials(cleared);
-        if (Settings.purgePlayerDat)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             dataManager.purgeDat(cleared);
-        if (Settings.purgeLimitedCreative)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
             dataManager.purgeLimitedCreative(cleared);
-        if (Settings.purgeAntiXray)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
             dataManager.purgeAntiXray(cleared);
-        if (Settings.purgePermissions)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_PERMISSIONS))
             dataManager.purgePermissions(cleared);
     }
 
@@ -884,59 +888,28 @@ public class AuthMe extends JavaPlugin {
 
     public String replaceAllInfo(String message, Player player) {
         String playersOnline = Integer.toString(Utils.getOnlinePlayers().size());
+        String ipAddress = ipAddressManager.getPlayerIp(player);
         return message
             .replace("&", "\u00a7")
             .replace("{PLAYER}", player.getName())
             .replace("{ONLINE}", playersOnline)
             .replace("{MAXPLAYERS}", Integer.toString(server.getMaxPlayers()))
-            .replace("{IP}", getIP(player))
+            .replace("{IP}", ipAddress)
             .replace("{LOGINS}", Integer.toString(PlayerCache.getInstance().getLogged()))
             .replace("{WORLD}", player.getWorld().getName())
             .replace("{SERVER}", server.getServerName())
             .replace("{VERSION}", server.getBukkitVersion())
-            .replace("{COUNTRY}", GeoLiteAPI.getCountryName(getIP(player)));
-    }
-
-    /**
-     * Gets a player's real IP through VeryGames method.
-     *
-     * @param player The player to process.
-     */
-    @Deprecated
-    public void getVerygamesIp(final Player player) {
-        final String name = player.getName().toLowerCase();
-        String currentIp = player.getAddress().getAddress().getHostAddress();
-        if (realIp.containsKey(name)) {
-            currentIp = realIp.get(name);
-        }
-        String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
-        sUrl = sUrl.replace("%IP%", currentIp).replace("%PORT%", "" + player.getAddress().getPort());
-        try {
-            String result = Resources.toString(new URL(sUrl), Charsets.UTF_8);
-            if (!StringUtils.isEmpty(result) && !result.equalsIgnoreCase("error") && !result.contains("error")) {
-                currentIp = result;
-                realIp.put(name, currentIp);
-            }
-        } catch (IOException e) {
-            ConsoleLogger.showError("Could not fetch Very Games API with URL '" +
-                sUrl + "' - " + StringUtils.formatException(e));
-        }
-    }
-
-    public String getIP(final Player player) {
-        final String name = player.getName().toLowerCase();
-        String ip = player.getAddress().getAddress().getHostAddress();
-        if (realIp.containsKey(name)) {
-            ip = realIp.get(name);
-        }
-        return ip;
+            .replace("{COUNTRY}", GeoLiteAPI.getCountryName(ipAddress));
     }
 
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
         for (Player player : Utils.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
-                count++;
+            if (ip.equalsIgnoreCase(ipAddressManager.getPlayerIp(player))
+                && database.isLogged(player.getName().toLowerCase())
+                && !player.getName().equalsIgnoreCase(name)) {
+                ++count;
+            }
         }
         return count >= Settings.getMaxLoginPerIp;
     }

@@ -8,7 +8,6 @@ import org.bukkit.Server;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import java.io.File;
-import java.util.logging.Logger;
 
 /**
  * Wrapper for the retrieval of common singletons used throughout the application.
@@ -46,10 +45,6 @@ public class Wrapper {
 
     public Server getServer() {
         return getAuthMe().getServer();
-    }
-
-    public Logger getLogger() {
-        return getAuthMe().getLogger();
     }
 
     public Messages getMessages() {

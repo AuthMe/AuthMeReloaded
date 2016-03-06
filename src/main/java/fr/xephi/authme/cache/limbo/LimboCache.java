@@ -16,8 +16,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class LimboCache {
 
     private volatile static LimboCache singleton;
-    public final ConcurrentHashMap<String, LimboPlayer> cache;
-    public final AuthMe plugin;
+    private final ConcurrentHashMap<String, LimboPlayer> cache;
+    private final AuthMe plugin;
     private final JsonCache jsonCache;
 
     /**
@@ -84,7 +84,7 @@ public class LimboCache {
         checkNotNull(name);
         name = name.toLowerCase();
         if (cache.containsKey(name)) {
-            cache.get(name).clearTask();
+            cache.get(name).clearTasks();
             cache.remove(name);
         }
     }
