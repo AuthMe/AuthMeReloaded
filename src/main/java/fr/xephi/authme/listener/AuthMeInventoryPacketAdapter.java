@@ -22,29 +22,35 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.reflect.MethodUtils;
+
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.settings.Settings;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.logging.Level;
 
-/**
- */
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+
 public class AuthMeInventoryPacketAdapter extends PacketAdapter {
 
     private static final int PLAYER_INVENTORY = 0;
-    // http://wiki.vg/Inventory#Inventory (0-4 crafting, 5-8 armor, 9-35 main inventory, 36-44 hotbar)
+    // http://wiki.vg/Inventory#Inventory (0-4 crafting, 5-8 armor, 9-35 main inventory, 36-44 hotbar, 45 off hand)
     // +1 because an index starts with 0
     private static final int CRAFTING_SIZE = 5;
     private static final int ARMOR_SIZE = 4;
     private static final int MAIN_SIZE = 27;
     private static final int HOTBAR_SIZE = 9;
+    private static final int OFF_HAND_POSITION = 45;
+
+    private final boolean offHandSupported = MethodUtils
+            .getAccessibleMethod(PlayerInventory.class, "getItemInOffHand", new Class[]{}) != null;
 
     public AuthMeInventoryPacketAdapter(AuthMe plugin) {
         super(plugin, PacketType.Play.Server.SET_SLOT, PacketType.Play.Server.WINDOW_ITEMS);
@@ -90,17 +96,23 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
         ItemStack[] storedInventory = Arrays.copyOfRange(mainInventory, HOTBAR_SIZE, mainInventory.length);
 
         // concat all parts of the inventory together
-        int inventorySize = playerCrafting.length + armorContents.length + mainInventory.length;
+        int inventorySize = CRAFTING_SIZE + ARMOR_SIZE + MAIN_SIZE + HOTBAR_SIZE;
+        if (offHandSupported) {
+            inventorySize++;
+        }
+
         ItemStack[] completeInventory = new ItemStack[inventorySize];
 
         System.arraycopy(playerCrafting, 0, completeInventory, 0, playerCrafting.length);
-        System.arraycopy(armorContents, 0, completeInventory, playerCrafting.length, armorContents.length);
+        System.arraycopy(armorContents, 0, completeInventory, CRAFTING_SIZE, armorContents.length);
 
         // storedInventory and hotbar
-        System.arraycopy(storedInventory, 0, completeInventory
-            , playerCrafting.length + armorContents.length, storedInventory.length);
-        System.arraycopy(hotbar, 0, completeInventory
-            , playerCrafting.length + armorContents.length + storedInventory.length, hotbar.length);
+        System.arraycopy(storedInventory, 0, completeInventory, CRAFTING_SIZE + ARMOR_SIZE, storedInventory.length);
+        System.arraycopy(hotbar, 0, completeInventory, CRAFTING_SIZE + ARMOR_SIZE + MAIN_SIZE, hotbar.length);
+
+        if (offHandSupported) {
+            completeInventory[OFF_HAND_POSITION] = player.getInventory().getItemInOffHand();
+        }
 
         inventoryPacket.getItemArrayModifier().write(0, completeInventory);
         try {
