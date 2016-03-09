@@ -103,17 +103,16 @@ public class AsyncRegister implements Process {
 
     private void emailRegister() {
         if (Settings.getmaxRegPerEmail > 0
-            && !ip.equalsIgnoreCase("127.0.0.1")
-            && !ip.equalsIgnoreCase("localhost")
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
-            int maxReg = Settings.getmaxRegPerIp;
-            List<String> otherAccounts = database.getAllAuthsByIp(ip);
-            if (otherAccounts.size() >= maxReg) {
+            int maxReg = Settings.getmaxRegPerEmail;
+            int otherAccounts = database.countAuthsByEmail(email);
+            if (otherAccounts >= maxReg) {
                 service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxReg),
-                    Integer.toString(otherAccounts.size()), StringUtils.join(", ", otherAccounts.toString()));
+                    Integer.toString(otherAccounts), "@");
                 return;
             }
         }
+
         final HashedPassword hashedPassword = service.computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
