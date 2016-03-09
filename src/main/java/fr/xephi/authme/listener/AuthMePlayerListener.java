@@ -187,7 +187,7 @@ public class AuthMePlayerListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onJoinMessage(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
         if (player == null) {
