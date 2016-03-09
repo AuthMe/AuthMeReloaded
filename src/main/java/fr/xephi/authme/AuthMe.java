@@ -331,90 +331,17 @@ public class AuthMe extends JavaPlugin {
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
     }
 
-    /** Temporary method for reloading all stateful entities. */
-    // TODO #432: Merge this with onEnable, not running things like Metrics multiple times where it would be bad
-    // Until then this method is a shameful copy of major parts of onEnable()...
-    public void reloadEntities() {
-        // Set various instances
-        server = getServer();
-        plugin = this;
-        ConsoleLogger.setLogger(getLogger());
-
-        setPluginInfos();
-
-        // Load settings and custom configurations, if it fails, stop the server due to security reasons.
-        newSettings = createNewSetting();
-        if (newSettings == null) {
-            ConsoleLogger.showError("Could not load configuration. Aborting.");
-            server.shutdown();
-            return;
-        }
-        ConsoleLogger.setLoggingOptions(newSettings.getProperty(SecuritySettings.USE_LOGGING),
-            new File(getDataFolder(), "authme.log"));
-
-        // Old settings manager
-        if (!loadSettings()) {
-            server.shutdown();
-            setEnabled(false);
-            return;
-        }
-
-        messages = new Messages(newSettings.getMessagesFile(), newSettings.getDefaultMessagesFile());
-
-        // Connect to the database and setup tables
-        try {
-            setupDatabase(newSettings);
-        } catch (Exception e) {
-            ConsoleLogger.logException("Fatal error occurred during database connection! "
-                + "Authme initialization aborted!", e);
-            stopOrUnload();
-            return;
-        }
-
-        passwordSecurity = new PasswordSecurity(getDataSource(), newSettings.getProperty(SecuritySettings.PASSWORD_HASH),
-            Bukkit.getPluginManager(), newSettings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH));
-
-        // Set up the permissions manager and command handler
-        permsMan = initializePermissionsManager();
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager);
-
-        // Download and load GeoIp.dat file if absent
-        GeoLiteAPI.isDataAvailable();
-
-        // Set up the mail API
-        setupMailApi();
-
-        // Hooks
-        // Check Combat Tag Plus Version
-        checkCombatTagPlus();
-
-        // Check Multiverse
-        checkMultiverse();
-
-        // Check Essentials
-        checkEssentials();
-
-        // Check if the ProtocolLib is available. If so we could listen for
-        // inventory protection
-        checkProtocolLib();
-        // End of Hooks
-
-        dataManager = new DataManager(this);
-
-        ProcessService processService = new ProcessService(newSettings, messages, this,
-            ipAddressManager, passwordSecurity);
-        management = new Management(this, processService, database, PlayerCache.getInstance());
-
-        // Set up the BungeeCord hook
-        setupBungeeCordHook(newSettings, ipAddressManager);
-
-        // Reload support hook
-        reloadSupportHook();
-
+    /**
+     * Reload certain components.
+     *
+     * @throws Exception if an error occurs
+     */
+    public void reload() throws Exception {
+        newSettings.reload();
+        messages.reload(newSettings.getMessagesFile());
+        // TODO ljacqu 20160309: change static interface of Spawn
         Spawn.reload();
-
-        // Show settings warnings
-        showSettingsWarnings();
+        // setupDatabase(newSettings);
     }
 
     /**

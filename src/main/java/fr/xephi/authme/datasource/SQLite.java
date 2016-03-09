@@ -125,6 +125,11 @@ public class SQLite implements DataSource {
     }
 
     @Override
+    public void reload() {
+        // TODO 20160309: Implement reloading
+    }
+
+    @Override
     public synchronized boolean isAuthAvailable(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;

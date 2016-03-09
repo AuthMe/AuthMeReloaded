@@ -18,7 +18,7 @@ public class ReloadCommand implements ExecutableCommand {
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         AuthMe plugin = commandService.getAuthMe();
         try {
-            plugin.reloadEntities();
+            plugin.reload();
             commandService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
         } catch (Exception e) {
             sender.sendMessage("Error occurred during reload of AuthMe: aborting");

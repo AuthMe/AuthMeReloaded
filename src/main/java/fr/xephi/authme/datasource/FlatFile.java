@@ -60,6 +60,11 @@ public class FlatFile implements DataSource {
     }
 
     @Override
+    public void reload() {
+        throw new UnsupportedOperationException("Flatfile no longer supported");
+    }
+
+    @Override
     public synchronized boolean isAuthAvailable(String user) {
         BufferedReader br = null;
         try {

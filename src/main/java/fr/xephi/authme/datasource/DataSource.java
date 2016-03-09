@@ -187,4 +187,9 @@ public interface DataSource {
 
     boolean isEmailStored(String email);
 
+    /**
+     * Reload the data source.
+     */
+    void reload();
+
 }

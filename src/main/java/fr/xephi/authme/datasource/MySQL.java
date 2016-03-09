@@ -131,7 +131,8 @@ public class MySQL implements DataSource {
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
-    private synchronized void reloadArguments() throws RuntimeException {
+    @Override
+    public synchronized void reload() throws RuntimeException {
         if (ds != null) {
             ds.close();
         }
