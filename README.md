@@ -2,6 +2,10 @@
 <p align="center"><strong>The most used authentication plugin for CraftBukkit/Spigot!</strong></p>
 <hr>
 
+#####News:
+
+- We are going to release a stable (and working!) version of AuthMeBungee, in the meantime, a fixed version of the unofficial AuthMeBridgeBukkit plugin can be found at: https://github.com/Xephi/AuthMeReloaded/issues/557 Thanks to @beetle2k
+
 #####Development tools:
 
 - DEVELOPMENT TEAM REPO (<strong>please send PRs here!</strong>): <a href="https://github.com/AuthMe-Team/AuthMeReloaded">Github Development Page</a>
