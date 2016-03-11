@@ -5,32 +5,82 @@ package fr.xephi.authme.permission;
  */
 public enum PermissionsSystemType {
 
-    NONE("None"),
+    /**
+     * Permissions Ex.
+     */
+    PERMISSIONS_EX("PermissionsEx", "PermissionsEx"),
 
-    PERMISSIONS_EX("PermissionsEx"),
+    /**
+     * Permissions Bukkit.
+     */
+    PERMISSIONS_BUKKIT("Permissions Bukkit", "PermissionsBukkit"),
 
-    PERMISSIONS_BUKKIT("Permissions Bukkit"),
+    /**
+     * bPermissions.
+     */
+    B_PERMISSIONS("bPermissions", "bPermissions"),
 
-    B_PERMISSIONS("bPermissions"),
+    /**
+     * Essentials Group Manager.
+     */
+    ESSENTIALS_GROUP_MANAGER("Essentials Group Manager", "GroupManager"),
 
-    ESSENTIALS_GROUP_MANAGER("Essentials Group Manager"),
+    /**
+     * zPermissions.
+     */
+    Z_PERMISSIONS("zPermissions", "zPermissions"),
 
-    Z_PERMISSIONS("zPermissions"),
+    /**
+     * Vault.
+     */
+    VAULT("Vault", "Vault");
 
-    VAULT("Vault");
+    /**
+     * The display name of the permissions system.
+     */
+    public String name;
 
-    public final String name;
+    /**
+     * The name of the permissions system plugin.
+     */
+    public String pluginName;
 
     /**
      * Constructor for PermissionsSystemType.
      *
-     * @param name The name the permissions manager goes by
+     * @param name       Display name of the permissions system.
+     * @param pluginName Name of the plugin.
      */
-    PermissionsSystemType(String name) {
+    PermissionsSystemType(String name, String pluginName) {
         this.name = name;
+        this.pluginName = pluginName;
     }
 
+    /**
+     * Get the display name of the permissions system.
+     *
+     * @return Display name.
+     */
     public String getName() {
         return this.name;
+    }
+
+    /**
+     * Return the plugin name.
+     *
+     * @return Plugin name.
+     */
+    public String getPluginName() {
+        return this.pluginName;
+    }
+
+    /**
+     * Cast the permissions system type to a string.
+     *
+     * @return The display name of the permissions system.
+     */
+    @Override
+    public String toString() {
+        return getName();
     }
 }
