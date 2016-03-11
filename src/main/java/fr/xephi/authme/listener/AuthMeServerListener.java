@@ -55,9 +55,6 @@ public class AuthMeServerListener implements Listener {
             return;
         }
 
-        // Call the onPluginDisable method in the permissions manager
-        this.plugin.getPermissionsManager().onPluginDisable(event);
-
         String pluginName = pluginInstance.getName();
         if (pluginName.equalsIgnoreCase("Essentials")) {
             plugin.ess = null;
@@ -89,9 +86,6 @@ public class AuthMeServerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
-        // Call the onPluginEnable method in the permissions manager
-        this.plugin.getPermissionsManager().onPluginEnable(event);
-
         String pluginName = event.getPlugin().getName();
         if (pluginName.equalsIgnoreCase("Essentials") || pluginName.equalsIgnoreCase("EssentialsSpawn")) {
             plugin.checkEssentials();
