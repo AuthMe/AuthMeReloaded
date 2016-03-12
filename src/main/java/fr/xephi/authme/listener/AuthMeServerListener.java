@@ -2,6 +2,7 @@ package fr.xephi.authme.listener;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
@@ -12,18 +13,19 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListPingEvent;
-import org.bukkit.plugin.Plugin;
 
 /**
  */
 public class AuthMeServerListener implements Listener {
 
     private final AuthMe plugin;
-    private final Messages m;
+    private final Messages messages;
+    private final PluginHooks pluginHooks;
 
-    public AuthMeServerListener(AuthMe plugin) {
-        this.m = plugin.getMessages();
+    public AuthMeServerListener(AuthMe plugin, Messages messages, PluginHooks pluginHooks) {
         this.plugin = plugin;
+        this.messages = messages;
+        this.pluginHooks = pluginHooks;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -31,11 +33,11 @@ public class AuthMeServerListener implements Listener {
         if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()){
             String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
             if( Settings.countriesBlacklist.contains(countryCode)) {
-                event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                event.setMotd(messages.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
                 return;
             }
             if (Settings.enableProtection && !Settings.countries.contains(countryCode)) {
-                event.setMotd(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                event.setMotd(messages.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
             }
         }
     }
@@ -47,35 +49,21 @@ public class AuthMeServerListener implements Listener {
             return;
         }
 
-        // Get the plugin instance
-        Plugin pluginInstance = event.getPlugin();
-
-        // Make sure it's not this plugin itself
-        if (pluginInstance.equals(this.plugin)) {
-            return;
-        }
-
-        String pluginName = pluginInstance.getName();
-        if (pluginName.equalsIgnoreCase("Essentials")) {
-            plugin.ess = null;
-            ConsoleLogger.info("Essentials has been disabled, unhook!");
-            return;
-        }
-        if (pluginName.equalsIgnoreCase("EssentialsSpawn")) {
+        final String pluginName = event.getPlugin().getName();
+        if ("Essentials".equalsIgnoreCase(pluginName)) {
+            pluginHooks.unhookEssentials();
+            ConsoleLogger.info("Essentials has been disabled: unhooking");
+        } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
+            pluginHooks.unhookMultiverse();
+            ConsoleLogger.info("Multiverse-Core has been disabled: unhooking");
+        } else if ("CombatTagPlus".equalsIgnoreCase(pluginName)) {
+            pluginHooks.unhookCombatPlus();
+            ConsoleLogger.info("CombatTagPlus has been disabled: unhooking");
+        } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
             plugin.essentialsSpawn = null;
-            ConsoleLogger.info("EssentialsSpawn has been disabled, unhook!");
-            return;
+            ConsoleLogger.info("EssentialsSpawn has been disabled: unhooking");
         }
-        if (pluginName.equalsIgnoreCase("Multiverse-Core")) {
-            plugin.multiverse = null;
-            ConsoleLogger.info("Multiverse-Core has been disabled, unhook!");
-            return;
-        }
-        if (pluginName.equalsIgnoreCase("CombatTagPlus")) {
-            plugin.combatTagPlus = null;
-            ConsoleLogger.info("CombatTagPlus has been disabled, unhook!");
-            return;
-        }
+
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
             plugin.inventoryProtector = null;
             plugin.tablistHider = null;
@@ -86,19 +74,22 @@ public class AuthMeServerListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
-        String pluginName = event.getPlugin().getName();
-        if (pluginName.equalsIgnoreCase("Essentials") || pluginName.equalsIgnoreCase("EssentialsSpawn")) {
-            plugin.checkEssentials();
+        // Make sure the plugin instance isn't null
+        if (event.getPlugin() == null) {
             return;
         }
-        if (pluginName.equalsIgnoreCase("Multiverse-Core")) {
-            plugin.checkMultiverse();
-            return;
+
+        final String pluginName = event.getPlugin().getName();
+        if ("Essentials".equalsIgnoreCase(pluginName)) {
+            pluginHooks.tryHookToEssentials();
+        } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
+            pluginHooks.tryHookToMultiverse();
+        } else if ("CombatTagPlus".equalsIgnoreCase(pluginName)) {
+            pluginHooks.tryHookToCombatPlus();
+        } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
+            plugin.checkEssentialsSpawn();
         }
-        if (pluginName.equalsIgnoreCase("CombatTagPlus")) {
-            plugin.checkCombatTagPlus();
-            return;
-        }
+
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {
             plugin.checkProtocolLib();
         }

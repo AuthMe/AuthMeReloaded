@@ -240,8 +240,7 @@ public final class Utils {
     }
 
     public static boolean isNPC(Player player) {
-        return player.hasMetadata("NPC") || plugin.combatTagPlus != null
-            && plugin.combatTagPlus.getNpcPlayerHelper().isNpc(player);
+        return player.hasMetadata("NPC") || plugin.getPluginHooks().isNpcInCombatTagPlus(player);
     }
 
     public static void teleportToSpawn(Player player) {

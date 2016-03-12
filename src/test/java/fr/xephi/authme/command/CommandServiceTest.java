@@ -1,9 +1,10 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.cache.IpAddressManager;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -42,6 +43,7 @@ public class CommandServiceTest {
     private PermissionsManager permissionsManager;
     private NewSetting settings;
     private IpAddressManager ipAddressManager;
+    private PluginHooks pluginHooks;
 
     @Before
     public void setUpService() {
@@ -53,8 +55,9 @@ public class CommandServiceTest {
         permissionsManager = mock(PermissionsManager.class);
         settings = mock(NewSetting.class);
         ipAddressManager = mock(IpAddressManager.class);
+        pluginHooks = mock(PluginHooks.class);
         commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager);
+            permissionsManager, settings, ipAddressManager, pluginHooks);
     }
 
     @Test

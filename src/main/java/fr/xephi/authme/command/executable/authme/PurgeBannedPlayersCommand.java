@@ -25,7 +25,8 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
 
         // Purge the banned players
         plugin.getDataSource().purgeBanned(bannedPlayers);
-        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && plugin.ess != null)
+        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES)
+            && commandService.getPluginHooks().isEssentialsAvailable())
             plugin.dataManager.purgeEssentials(bannedPlayers);
         if (commandService.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             plugin.dataManager.purgeDat(bannedPlayers);

@@ -1,9 +1,8 @@
 package fr.xephi.authme;
 
-import com.earth2me.essentials.Essentials;
-import com.onarandombox.MultiverseCore.MultiverseCore;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -23,6 +22,7 @@ import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.EssSpawn;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
@@ -33,7 +33,6 @@ import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
 import fr.xephi.authme.listener.AuthMeTablistPacketAdapter;
 import fr.xephi.authme.mail.SendMailSSL;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.output.ConsoleFilter;
 import fr.xephi.authme.output.Log4JFilter;
 import fr.xephi.authme.output.MessageKey;
@@ -60,7 +59,6 @@ import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
-import net.minelink.ctplus.CombatTagPlus;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -123,21 +121,19 @@ public class AuthMe extends JavaPlugin {
      * Plugin Hooks
      * TODO: Move into modules
      */
-    public Essentials ess;
-    public MultiverseCore multiverse;
-    public CombatTagPlus combatTagPlus;
     public AuthMeInventoryPacketAdapter inventoryProtector;
     public AuthMeTabCompletePacketAdapter tabComplete;
     public AuthMeTablistPacketAdapter tablistHider;
     private Management management;
-    private CommandHandler commandHandler = null;
-    private PermissionsManager permsMan = null;
+    private CommandHandler commandHandler;
+    private PermissionsManager permsMan;
     private NewSetting newSettings;
     private Messages messages;
     private JsonCache playerBackup;
     private PasswordSecurity passwordSecurity;
     private DataSource database;
     private IpAddressManager ipAddressManager;
+    private PluginHooks pluginHooks;
 
     /**
      * Get the plugin's instance.
@@ -247,13 +243,16 @@ public class AuthMe extends JavaPlugin {
             return;
         }
 
+        pluginHooks = new PluginHooks(server.getPluginManager());
+
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
         passwordSecurity = new PasswordSecurity(getDataSource(), newSettings, Bukkit.getPluginManager());
         ipAddressManager = new IpAddressManager(newSettings);
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager);
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager,
+            pluginHooks);
 
         // Set up Metrics
         MetricsStarter.setupMetrics(plugin, newSettings);
@@ -271,14 +270,8 @@ public class AuthMe extends JavaPlugin {
         setupMailApi();
 
         // Hooks
-        // Check Combat Tag Plus Version
-        checkCombatTagPlus();
-
-        // Check Multiverse
-        checkMultiverse();
-
         // Check Essentials
-        checkEssentials();
+        checkEssentialsSpawn();
 
         // Check if the ProtocolLib is available. If so we could listen for
         // inventory protection
@@ -293,14 +286,14 @@ public class AuthMe extends JavaPlugin {
         playerBackup = new JsonCache();
 
         // Set the DataManager
-        dataManager = new DataManager(this);
+        dataManager = new DataManager(this, pluginHooks);
 
         // Set up the new API
         setupApi();
 
         // Set up the management
         ProcessService processService = new ProcessService(newSettings, messages, this, ipAddressManager,
-            passwordSecurity);
+            passwordSecurity, pluginHooks);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
@@ -384,7 +377,7 @@ public class AuthMe extends JavaPlugin {
         pluginManager.registerEvents(new AuthMePlayerListener(this), this);
         pluginManager.registerEvents(new AuthMeBlockListener(), this);
         pluginManager.registerEvents(new AuthMeEntityListener(), this);
-        pluginManager.registerEvents(new AuthMeServerListener(this), this);
+        pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks), this);
 
         // Try to register 1.6 player listeners
         try {
@@ -432,12 +425,12 @@ public class AuthMe extends JavaPlugin {
 
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
                                                     PasswordSecurity passwordSecurity, NewSetting settings,
-                                                    IpAddressManager ipAddressManager) {
+                                                    IpAddressManager ipAddressManager, PluginHooks pluginHooks) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
-        CommandService commandService = new CommandService(
-            this, mapper, helpProvider, messages, passwordSecurity, permissionsManager, settings, ipAddressManager);
+        CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity,
+            permissionsManager, settings, ipAddressManager, pluginHooks);
         return new CommandHandler(commandService);
     }
 
@@ -640,32 +633,8 @@ public class AuthMe extends JavaPlugin {
         });
     }
 
-    // Get the Multiverse plugin
-    public void checkMultiverse() {
-        if (Settings.multiverse && server.getPluginManager().isPluginEnabled("Multiverse-Core")) {
-            try {
-                multiverse = (MultiverseCore) server.getPluginManager().getPlugin("Multiverse-Core");
-                ConsoleLogger.info("Hooked correctly with Multiverse-Core");
-            } catch (Exception | NoClassDefFoundError ignored) {
-                multiverse = null;
-            }
-        } else {
-            multiverse = null;
-        }
-    }
-
     // Get the Essentials plugin
-    public void checkEssentials() {
-        if (server.getPluginManager().isPluginEnabled("Essentials")) {
-            try {
-                ess = (Essentials) server.getPluginManager().getPlugin("Essentials");
-                ConsoleLogger.info("Hooked correctly with Essentials");
-            } catch (Exception | NoClassDefFoundError ignored) {
-                ess = null;
-            }
-        } else {
-            ess = null;
-        }
+    public void checkEssentialsSpawn() {
         if (server.getPluginManager().isPluginEnabled("EssentialsSpawn")) {
             try {
                 essentialsSpawn = new EssSpawn().getLocation();
@@ -676,20 +645,6 @@ public class AuthMe extends JavaPlugin {
             }
         } else {
             essentialsSpawn = null;
-        }
-    }
-
-    // Check the presence of CombatTag
-    public void checkCombatTagPlus() {
-        if (server.getPluginManager().isPluginEnabled("CombatTagPlus")) {
-            try {
-                combatTagPlus = (CombatTagPlus) server.getPluginManager().getPlugin("CombatTagPlus");
-                ConsoleLogger.info("Hooked correctly with CombatTagPlus");
-            } catch (Exception | NoClassDefFoundError ignored) {
-                combatTagPlus = null;
-            }
-        } else {
-            combatTagPlus = null;
         }
     }
 
@@ -778,7 +733,7 @@ public class AuthMe extends JavaPlugin {
             return;
         }
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
-        if (newSettings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && this.ess != null)
+        if (newSettings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && pluginHooks.isEssentialsAvailable())
             dataManager.purgeEssentials(cleared);
         if (newSettings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             dataManager.purgeDat(cleared);
@@ -882,6 +837,10 @@ public class AuthMe extends JavaPlugin {
 
     public PasswordSecurity getPasswordSecurity() {
         return passwordSecurity;
+    }
+
+    public PluginHooks getPluginHooks() {
+        return pluginHooks;
     }
 
 }

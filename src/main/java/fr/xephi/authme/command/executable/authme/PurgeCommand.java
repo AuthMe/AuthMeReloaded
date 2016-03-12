@@ -47,7 +47,8 @@ public class PurgeCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");
 
         // Purge other data
-        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && plugin.ess != null)
+        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) &&
+            commandService.getPluginHooks().isEssentialsAvailable())
             plugin.dataManager.purgeEssentials(purged);
         if (commandService.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             plugin.dataManager.purgeDat(purged);

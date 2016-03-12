@@ -59,8 +59,8 @@ public class AsynchronousJoin implements Process {
             return;
         }
 
-        if (plugin.ess != null && service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
-            plugin.ess.getUser(player).setSocialSpyEnabled(false);
+        if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
+            service.getPluginHooks().setEssentialsSocialSpyStatus(player, false);
         }
 
         final String ip = service.getIpAddressManager().getPlayerIp(player);

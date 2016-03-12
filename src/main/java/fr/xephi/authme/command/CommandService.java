@@ -5,6 +5,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.cache.IpAddressManager;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -30,6 +31,7 @@ public class CommandService {
     private final PermissionsManager permissionsManager;
     private final NewSetting settings;
     private final IpAddressManager ipAddressManager;
+    private final PluginHooks pluginHooks;
 
     /**
      * Constructor.
@@ -45,7 +47,7 @@ public class CommandService {
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
-                          IpAddressManager ipAddressManager) {
+                          IpAddressManager ipAddressManager, PluginHooks pluginHooks) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
@@ -54,6 +56,7 @@ public class CommandService {
         this.permissionsManager = permissionsManager;
         this.settings = settings;
         this.ipAddressManager = ipAddressManager;
+        this.pluginHooks = pluginHooks;
     }
 
     /**
@@ -193,6 +196,10 @@ public class CommandService {
 
     public PlayerCache getPlayerCache() {
         return PlayerCache.getInstance();
+    }
+
+    public PluginHooks getPluginHooks() {
+        return pluginHooks;
     }
 
 }

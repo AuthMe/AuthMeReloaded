@@ -2,6 +2,7 @@ package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.IpAddressManager;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -22,14 +23,16 @@ public class ProcessService {
     private final AuthMe authMe;
     private final IpAddressManager ipAddressManager;
     private final PasswordSecurity passwordSecurity;
+    private final PluginHooks pluginHooks;
 
     public ProcessService(NewSetting settings, Messages messages, AuthMe authMe, IpAddressManager ipAddressManager,
-                          PasswordSecurity passwordSecurity) {
+                          PasswordSecurity passwordSecurity, PluginHooks pluginHooks) {
         this.settings = settings;
         this.messages = messages;
         this.authMe = authMe;
         this.ipAddressManager = ipAddressManager;
         this.passwordSecurity = passwordSecurity;
+        this.pluginHooks = pluginHooks;
     }
 
     public <T> T getProperty(Property<T> property) {
@@ -82,6 +85,10 @@ public class ProcessService {
 
     public HashedPassword computeHash(String password, String username) {
         return passwordSecurity.computeHash(password, username);
+    }
+
+    public PluginHooks getPluginHooks() {
+        return pluginHooks;
     }
 
 }

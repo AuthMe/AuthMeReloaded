@@ -1,6 +1,5 @@
 package fr.xephi.authme.settings;
 
-import com.onarandombox.MultiverseCore.api.MVWorldManager;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.util.StringUtils;
@@ -117,11 +116,8 @@ public class Spawn extends CustomConfiguration {
                     }
                     break;
                 case "multiverse":
-                    if (Settings.multiverse && plugin.multiverse != null) {
-                        MVWorldManager manager = plugin.multiverse.getMVWorldManager();
-                        if (manager.isMVWorld(world)) {
-                            spawnLoc = manager.getMVWorld(world).getSpawnLocation();
-                        }
+                    if (Settings.multiverse) {
+                        spawnLoc = plugin.getPluginHooks().getMultiverseSpawn(world);
                     }
                     break;
                 case "essentials":
