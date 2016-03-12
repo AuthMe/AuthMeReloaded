@@ -8,6 +8,7 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
@@ -24,15 +25,17 @@ public class ProcessService {
     private final IpAddressManager ipAddressManager;
     private final PasswordSecurity passwordSecurity;
     private final PluginHooks pluginHooks;
+    private final SpawnLoader spawnLoader;
 
     public ProcessService(NewSetting settings, Messages messages, AuthMe authMe, IpAddressManager ipAddressManager,
-                          PasswordSecurity passwordSecurity, PluginHooks pluginHooks) {
+                          PasswordSecurity passwordSecurity, PluginHooks pluginHooks, SpawnLoader spawnLoader) {
         this.settings = settings;
         this.messages = messages;
         this.authMe = authMe;
         this.ipAddressManager = ipAddressManager;
         this.passwordSecurity = passwordSecurity;
         this.pluginHooks = pluginHooks;
+        this.spawnLoader = spawnLoader;
     }
 
     public <T> T getProperty(Property<T> property) {
@@ -89,6 +92,10 @@ public class ProcessService {
 
     public PluginHooks getPluginHooks() {
         return pluginHooks;
+    }
+
+    public SpawnLoader getSpawnLoader() {
+        return spawnLoader;
     }
 
 }

@@ -16,7 +16,6 @@ import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -90,7 +89,7 @@ public class AsynchronousJoin implements Process {
             });
             return;
         }
-        final Location spawnLoc = Spawn.getInstance().getSpawnLocation(player);
+        final Location spawnLoc = service.getSpawnLoader().getSpawnLocation(player);
         final boolean isAuthAvailable = database.isAuthAvailable(name);
         if (isAuthAvailable) {
             if (!Settings.noTeleport) {
@@ -212,11 +211,14 @@ public class AsynchronousJoin implements Process {
     }
 
     private boolean needFirstSpawn() {
-        if (player.hasPlayedBefore())
+        if (player.hasPlayedBefore()) {
             return false;
-        Location firstSpawn = Spawn.getInstance().getFirstSpawn();
-        if (firstSpawn == null || firstSpawn.getWorld() == null)
+        }
+        Location firstSpawn = service.getSpawnLoader().getFirstSpawn();
+        if (firstSpawn == null) {
             return false;
+        }
+
         FirstSpawnTeleportEvent tpEvent = new FirstSpawnTeleportEvent(player, player.getLocation(), firstSpawn);
         plugin.getServer().getPluginManager().callEvent(tpEvent);
         if (!tpEvent.isCancelled()) {

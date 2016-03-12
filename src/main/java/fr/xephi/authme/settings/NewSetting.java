@@ -24,7 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static fr.xephi.authme.settings.SettingsMigrationService.copyFileFromResource;
+import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
 
 /**
  * The new settings manager.

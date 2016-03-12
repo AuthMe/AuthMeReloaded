@@ -1,7 +1,6 @@
 package fr.xephi.authme.settings;
 
 import com.google.common.annotations.VisibleForTesting;
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
@@ -10,14 +9,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.file.Files;
 
 import static fr.xephi.authme.settings.properties.RegistrationSettings.DELAY_JOIN_MESSAGE;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_JOIN_MESSAGE;
 import static fr.xephi.authme.settings.properties.RegistrationSettings.REMOVE_LEAVE_MESSAGE;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS;
-import static java.lang.String.format;
 
 /**
  * Service for verifying that the configuration is up-to-date.
@@ -127,43 +123,6 @@ public final class SettingsMigrationService {
                 ConsoleLogger.info("Renamed " + oldDelayJoinPath + " to " + DELAY_JOIN_MESSAGE.getPath());
             }
             return true;
-        }
-        return false;
-    }
-
-
-    // -------
-    // Utilities
-    // -------
-
-    /**
-     * Copy a resource file (from the JAR) to the given file if it doesn't exist.
-     *
-     * @param destinationFile The file to check and copy to (outside of JAR)
-     * @param resourcePath Absolute path to the resource file (path to file within JAR)
-     * @return False if the file does not exist and could not be copied, true otherwise
-     */
-    public static boolean copyFileFromResource(File destinationFile, String resourcePath) {
-        if (destinationFile.exists()) {
-            return true;
-        } else if (!destinationFile.getParentFile().exists() && !destinationFile.getParentFile().mkdirs()) {
-            ConsoleLogger.showError("Cannot create parent directories for '" + destinationFile + "'");
-            return false;
-        }
-
-        // ClassLoader#getResourceAsStream does not deal with the '\' path separator: replace to '/'
-        final String normalizedPath = resourcePath.replace("\\", "/");
-        try (InputStream is = AuthMe.class.getClassLoader().getResourceAsStream(normalizedPath)) {
-            if (is == null) {
-                ConsoleLogger.showError(format("Cannot copy resource '%s' to file '%s': cannot load resource",
-                    resourcePath, destinationFile.getPath()));
-            } else {
-                Files.copy(is, destinationFile.toPath());
-                return true;
-            }
-        } catch (IOException e) {
-            ConsoleLogger.logException(format("Cannot copy resource '%s' to file '%s':",
-                resourcePath, destinationFile.getPath()), e);
         }
         return false;
     }

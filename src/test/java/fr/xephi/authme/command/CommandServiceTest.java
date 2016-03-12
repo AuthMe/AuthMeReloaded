@@ -11,6 +11,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
@@ -44,6 +45,7 @@ public class CommandServiceTest {
     private NewSetting settings;
     private IpAddressManager ipAddressManager;
     private PluginHooks pluginHooks;
+    private SpawnLoader spawnLoader;
 
     @Before
     public void setUpService() {
@@ -56,8 +58,9 @@ public class CommandServiceTest {
         settings = mock(NewSetting.class);
         ipAddressManager = mock(IpAddressManager.class);
         pluginHooks = mock(PluginHooks.class);
+        spawnLoader = mock(SpawnLoader.class);
         commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager, pluginHooks);
+            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader);
     }
 
     @Test

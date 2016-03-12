@@ -6,6 +6,7 @@ import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.util.GeoLiteAPI;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,11 +22,13 @@ public class AuthMeServerListener implements Listener {
     private final AuthMe plugin;
     private final Messages messages;
     private final PluginHooks pluginHooks;
+    private final SpawnLoader spawnLoader;
 
-    public AuthMeServerListener(AuthMe plugin, Messages messages, PluginHooks pluginHooks) {
+    public AuthMeServerListener(AuthMe plugin, Messages messages, PluginHooks pluginHooks, SpawnLoader spawnLoader) {
         this.plugin = plugin;
         this.messages = messages;
         this.pluginHooks = pluginHooks;
+        this.spawnLoader = spawnLoader;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -60,7 +63,7 @@ public class AuthMeServerListener implements Listener {
             pluginHooks.unhookCombatPlus();
             ConsoleLogger.info("CombatTagPlus has been disabled: unhooking");
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
-            plugin.essentialsSpawn = null;
+            spawnLoader.unloadEssentialsSpawn();
             ConsoleLogger.info("EssentialsSpawn has been disabled: unhooking");
         }
 
@@ -87,7 +90,7 @@ public class AuthMeServerListener implements Listener {
         } else if ("CombatTagPlus".equalsIgnoreCase(pluginName)) {
             pluginHooks.tryHookToCombatPlus();
         } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
-            plugin.checkEssentialsSpawn();
+            spawnLoader.loadEssentialsSpawn();
         }
 
         if (pluginName.equalsIgnoreCase("ProtocolLib")) {

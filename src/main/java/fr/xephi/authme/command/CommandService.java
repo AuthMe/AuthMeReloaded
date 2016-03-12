@@ -12,6 +12,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import org.bukkit.command.CommandSender;
 
@@ -32,6 +33,7 @@ public class CommandService {
     private final NewSetting settings;
     private final IpAddressManager ipAddressManager;
     private final PluginHooks pluginHooks;
+    private final SpawnLoader spawnLoader;
 
     /**
      * Constructor.
@@ -47,7 +49,7 @@ public class CommandService {
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
-                          IpAddressManager ipAddressManager, PluginHooks pluginHooks) {
+                          IpAddressManager ipAddressManager, PluginHooks pluginHooks, SpawnLoader spawnLoader) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
@@ -57,6 +59,7 @@ public class CommandService {
         this.settings = settings;
         this.ipAddressManager = ipAddressManager;
         this.pluginHooks = pluginHooks;
+        this.spawnLoader = spawnLoader;
     }
 
     /**
@@ -200,6 +203,10 @@ public class CommandService {
 
     public PluginHooks getPluginHooks() {
         return pluginHooks;
+    }
+
+    public SpawnLoader getSpawnLoader() {
+        return spawnLoader;
     }
 
 }

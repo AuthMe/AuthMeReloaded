@@ -21,7 +21,6 @@ import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
-import fr.xephi.authme.hooks.EssSpawn;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
@@ -45,8 +44,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.SettingsMigrationService;
-import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -55,6 +53,7 @@ import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.CollectionUtils;
+import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
@@ -116,7 +115,6 @@ public class AuthMe extends JavaPlugin {
     public NewAPI api;
     public SendMailSSL mail;
     public DataManager dataManager;
-    public Location essentialsSpawn;
     /*
      * Plugin Hooks
      * TODO: Move into modules
@@ -134,6 +132,7 @@ public class AuthMe extends JavaPlugin {
     private DataSource database;
     private IpAddressManager ipAddressManager;
     private PluginHooks pluginHooks;
+    private SpawnLoader spawnLoader;
 
     /**
      * Get the plugin's instance.
@@ -249,10 +248,13 @@ public class AuthMe extends JavaPlugin {
         passwordSecurity = new PasswordSecurity(getDataSource(), newSettings, Bukkit.getPluginManager());
         ipAddressManager = new IpAddressManager(newSettings);
 
+        // Initialize spawn loader
+        spawnLoader = new SpawnLoader(getDataFolder(), newSettings, pluginHooks);
+
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
         commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager,
-            pluginHooks);
+            pluginHooks, spawnLoader);
 
         // Set up Metrics
         MetricsStarter.setupMetrics(plugin, newSettings);
@@ -268,10 +270,6 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the mail API
         setupMailApi();
-
-        // Hooks
-        // Check Essentials
-        checkEssentialsSpawn();
 
         // Check if the ProtocolLib is available. If so we could listen for
         // inventory protection
@@ -293,7 +291,7 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the management
         ProcessService processService = new ProcessService(newSettings, messages, this, ipAddressManager,
-            passwordSecurity, pluginHooks);
+            passwordSecurity, pluginHooks, spawnLoader);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
@@ -303,7 +301,7 @@ public class AuthMe extends JavaPlugin {
         reloadSupportHook();
 
         // Register event listeners
-        registerEventListeners();
+        registerEventListeners(messages, pluginHooks, spawnLoader);
 
         // Purge on start if enabled
         autoPurge();
@@ -337,7 +335,7 @@ public class AuthMe extends JavaPlugin {
         database.reload();
         messages.reload(newSettings.getMessagesFile());
         passwordSecurity.reload(newSettings);
-        Spawn.reload();
+        spawnLoader.initialize(newSettings);
     }
 
     /**
@@ -369,7 +367,7 @@ public class AuthMe extends JavaPlugin {
     /**
      * Register all event listeners.
      */
-    private void registerEventListeners() {
+    private void registerEventListeners(Messages messages, PluginHooks pluginHooks, SpawnLoader spawnLoader) {
         // Get the plugin manager instance
         PluginManager pluginManager = server.getPluginManager();
 
@@ -377,7 +375,7 @@ public class AuthMe extends JavaPlugin {
         pluginManager.registerEvents(new AuthMePlayerListener(this), this);
         pluginManager.registerEvents(new AuthMeBlockListener(), this);
         pluginManager.registerEvents(new AuthMeEntityListener(), this);
-        pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks), this);
+        pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks, spawnLoader), this);
 
         // Try to register 1.6 player listeners
         try {
@@ -425,12 +423,13 @@ public class AuthMe extends JavaPlugin {
 
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
                                                     PasswordSecurity passwordSecurity, NewSetting settings,
-                                                    IpAddressManager ipAddressManager, PluginHooks pluginHooks) {
+                                                    IpAddressManager ipAddressManager, PluginHooks pluginHooks,
+                                                    SpawnLoader spawnLoader) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
         CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager, pluginHooks);
+            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader);
         return new CommandHandler(commandService);
     }
 
@@ -465,7 +464,7 @@ public class AuthMe extends JavaPlugin {
 
     private NewSetting createNewSetting() {
         File configFile = new File(getDataFolder(), "config.yml");
-        return SettingsMigrationService.copyFileFromResource(configFile, "config.yml")
+        return FileUtils.copyFileFromResource(configFile, "config.yml")
             ? new NewSetting(configFile, getDataFolder())
             : null;
     }
@@ -633,21 +632,6 @@ public class AuthMe extends JavaPlugin {
         });
     }
 
-    // Get the Essentials plugin
-    public void checkEssentialsSpawn() {
-        if (server.getPluginManager().isPluginEnabled("EssentialsSpawn")) {
-            try {
-                essentialsSpawn = new EssSpawn().getLocation();
-                ConsoleLogger.info("Hooked correctly with EssentialsSpawn");
-            } catch (Exception e) {
-                essentialsSpawn = null;
-                ConsoleLogger.showError("Can't read the /plugins/Essentials/spawn.yml file!");
-            }
-        } else {
-            essentialsSpawn = null;
-        }
-    }
-
     // Check the presence of the ProtocolLib plugin
     public void checkProtocolLib() {
         if (!server.getPluginManager().isPluginEnabled("ProtocolLib")) {
@@ -748,7 +732,7 @@ public class AuthMe extends JavaPlugin {
     // Return the spawn location of a player
     @Deprecated
     public Location getSpawnLocation(Player player) {
-        return Spawn.getInstance().getSpawnLocation(player);
+        return spawnLoader.getSpawnLocation(player);
     }
 
     private void scheduleRecallEmailTask() {
