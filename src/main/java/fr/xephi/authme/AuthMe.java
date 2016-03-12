@@ -248,8 +248,7 @@ public class AuthMe extends JavaPlugin {
         }
 
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
-        passwordSecurity = new PasswordSecurity(getDataSource(), newSettings.getProperty(SecuritySettings.PASSWORD_HASH),
-            Bukkit.getPluginManager(), newSettings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH));
+        passwordSecurity = new PasswordSecurity(getDataSource(), newSettings, Bukkit.getPluginManager());
         ipAddressManager = new IpAddressManager(newSettings);
 
         // Set up the permissions manager and command handler
@@ -338,10 +337,14 @@ public class AuthMe extends JavaPlugin {
      */
     public void reload() throws Exception {
         newSettings.reload();
+        // We do not change database type for consistency issues, but we'll output a note in the logs
+        if (!newSettings.getProperty(DatabaseSettings.BACKEND).equals(database.getType())) {
+            ConsoleLogger.info("Note: cannot change database type during /authme reload");
+        }
+        database.reload();
         messages.reload(newSettings.getMessagesFile());
-        // TODO ljacqu 20160309: change static interface of Spawn
+        passwordSecurity.reload(newSettings);
         Spawn.reload();
-        // setupDatabase(newSettings);
     }
 
     /**

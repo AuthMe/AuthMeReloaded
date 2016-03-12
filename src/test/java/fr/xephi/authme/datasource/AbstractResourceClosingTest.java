@@ -58,7 +58,7 @@ import static org.mockito.Mockito.verify;
 public abstract class AbstractResourceClosingTest {
 
     /** List of DataSource method names not to test. */
-    private static final Set<String> IGNORED_METHODS = ImmutableSet.of("close", "getType");
+    private static final Set<String> IGNORED_METHODS = ImmutableSet.of("reload", "close", "getType");
 
     /** Collection of values to use to call methods with the parameters they expect. */
     private static final Map<Class<?>, Object> PARAM_VALUES = getDefaultParameters();
