@@ -70,6 +70,16 @@ public class NewAPI {
     }
 
     /**
+     * Gather the version number of the plugin.
+     * This can be used to determine whether certain API features are available or not.
+     *
+     * @return Plugin version identifier as a string.
+     */
+    public String getPluginVersion() {
+        return AuthMe.getPluginVersion();
+    }
+
+    /**
      * Return whether the given player is authenticated.
      *
      * @param player The player to verify

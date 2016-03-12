@@ -24,7 +24,6 @@ import de.bananaco.bpermissions.api.CalculableType;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.util.CollectionUtils;
 import net.milkbowl.vault.permission.Permission;
-import ru.tehkode.permissions.PermissionManager;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
@@ -38,7 +37,7 @@ import ru.tehkode.permissions.bukkit.PermissionsEx;
  * Written by Tim Visée.
  * </p>
  * @author Tim Visée, http://timvisee.com
- * @version 0.2.1
+ * @version 0.3
  */
 public class PermissionsManager implements PermissionsService {
 
@@ -59,9 +58,14 @@ public class PermissionsManager implements PermissionsService {
      */
     private Logger log;
     /**
-     * Type of permissions system that is currently used.
+     * The permissions manager Bukkit listener instance.
      */
-    private PermissionsSystemType permsType = PermissionsSystemType.NONE;
+    private PermissionsManagerBukkitListener bukkitListener;
+    /**
+     * Type of permissions system that is currently used.
+     * Null if no permissions system is hooked and/or used.
+     */
+    private PermissionsSystemType permsType = null;
     /**
      * Essentials group manager instance.
      */
@@ -82,6 +86,21 @@ public class PermissionsManager implements PermissionsService {
         this.server = server;
         this.plugin = plugin;
         this.log = log;
+
+        // Create and register the Bukkit listener on the server if it's valid
+        if(this.server != null) {
+            // Create the Bukkit listener
+            this.bukkitListener = new PermissionsManagerBukkitListener(this);
+
+            // Get the plugin manager instance
+            PluginManager pluginManager = this.server.getPluginManager();
+
+            // Register the Bukkit listener
+            pluginManager.registerEvents(this.bukkitListener, this.plugin);
+
+            // Show a status message.
+            //this.log.info("Started permission plugins state listener!");
+        }
     }
 
     /**
@@ -90,7 +109,7 @@ public class PermissionsManager implements PermissionsService {
      * @return False if there isn't any permissions system used.
      */
     public boolean isEnabled() {
-        return !permsType.equals(PermissionsSystemType.NONE);
+        return permsType != null;
     }
 
     /**
@@ -108,110 +127,96 @@ public class PermissionsManager implements PermissionsService {
      * @return The detected permissions system.
      */
     public PermissionsSystemType setup() {
+        // Force-unhook from current hooked permissions systems
+        unhook();
+
         // Define the plugin manager
-        final PluginManager pm = this.server.getPluginManager();
+        final PluginManager pluginManager = this.server.getPluginManager();
 
-        // Reset used permissions system type
-        permsType = PermissionsSystemType.NONE;
+        // Reset used permissions system type flag
+        permsType = null;
 
-        // PermissionsEx, check if it's available
-        try {
-            Plugin pex = pm.getPlugin("PermissionsEx");
-            if (pex != null) {
-                PermissionManager pexPerms = PermissionsEx.getPermissionManager();
-                if (pexPerms != null) {
-                    permsType = PermissionsSystemType.PERMISSIONS_EX;
+        // Loop through all the available permissions system types
+        for(PermissionsSystemType type : PermissionsSystemType.values()) {
+            // Try to find and hook the current plugin if available, print an error if failed
+            try {
+                // Try to find the plugin for the current permissions system
+                Plugin plugin = pluginManager.getPlugin(type.getPluginName());
 
-                    System.out.println("[" + plugin.getName() + "] Hooked into PermissionsEx!");
-                    return permsType;
+                // Make sure a plugin with this name was found
+                if(plugin == null)
+                    continue;
+
+                // Make sure the plugin is enabled before hooking
+                if(!plugin.isEnabled()) {
+                    this.log.info("Not hooking into " + type.getName() + " because it's disabled!");
+                    continue;
                 }
-            }
-        } catch (Exception ex) {
-            // An error occurred, show a warning message
-            System.out.println("[" + plugin.getName() + "] Error while hooking into PermissionsEx!");
-        }
 
-        // PermissionsBukkit, check if it's available
-        try {
-            Plugin bukkitPerms = pm.getPlugin("PermissionsBukkit");
-            if (bukkitPerms != null) {
-                permsType = PermissionsSystemType.PERMISSIONS_BUKKIT;
-                System.out.println("[" + plugin.getName() + "] Hooked into PermissionsBukkit!");
-                return permsType;
-            }
-        } catch (Exception ex) {
-            // An error occurred, show a warning message
-            System.out.println("[" + plugin.getName() + "] Error while hooking into PermissionsBukkit!");
-        }
+                // Use the proper method to hook this plugin
+                switch(type) {
+                    case PERMISSIONS_EX:
+                        // Get the permissions manager for PermissionsEx and make sure it isn't null
+                        if(PermissionsEx.getPermissionManager() == null) {
+                            this.log.info("Failed to hook into " + type.getName() + "!");
+                            continue;
+                        }
 
-        // bPermissions, check if it's available
-        try {
-            Plugin bPerms = pm.getPlugin("bPermissions");
-            if (bPerms != null) {
-                permsType = PermissionsSystemType.B_PERMISSIONS;
-                System.out.println("[" + plugin.getName() + "] Hooked into bPermissions!");
-                return permsType;
-            }
-        } catch (Exception ex) {
-            // An error occurred, show a warning message
-            System.out.println("[" + plugin.getName() + "] Error while hooking into bPermissions!");
-        }
+                        break;
 
-        // Essentials Group Manager, check if it's available
-        try {
-            final Plugin groupManagerPlugin = pm.getPlugin("GroupManager");
-            if (groupManagerPlugin != null && groupManagerPlugin.isEnabled()) {
-                permsType = PermissionsSystemType.ESSENTIALS_GROUP_MANAGER;
-                groupManagerPerms = (GroupManager) groupManagerPlugin;
-                System.out.println("[" + plugin.getName() + "] Hooked into Essentials Group Manager!");
-                return permsType;
-            }
-        } catch (Exception ex) {
-            // An error occurred, show a warning message
-            System.out.println("[" + plugin.getName() + "] Error while hooking into Essentials Group Manager!");
-        }
+                    case ESSENTIALS_GROUP_MANAGER:
+                        // Set the plugin instance
+                        groupManagerPerms = (GroupManager) plugin;
+                        break;
 
-        // zPermissions, check if it's available
-        try {
-            Plugin zPerms = pm.getPlugin("zPermissions");
-            if (zPerms != null) {
-                zPermissionsService = Bukkit.getServicesManager().load(ZPermissionsService.class);
-                if (zPermissionsService != null) {
-                    permsType = PermissionsSystemType.Z_PERMISSIONS;
-                    System.out.println("[" + plugin.getName() + "] Hooked into zPermissions!");
-                    return permsType;
+                    case Z_PERMISSIONS:
+                        // Set the zPermissions service and make sure it's valid
+                        zPermissionsService = Bukkit.getServicesManager().load(ZPermissionsService.class);
+                        if(zPermissionsService == null) {
+                            this.log.info("Failed to hook into " + type.getName() + "!");
+                            continue;
+                        }
+
+                        break;
+
+                    case VAULT:
+                        // Get the permissions provider service
+                        RegisteredServiceProvider<Permission> permissionProvider = this.server.getServicesManager().getRegistration(Permission.class);
+                        if (permissionProvider == null) {
+                            this.log.info("Failed to hook into " + type.getName() + "!");
+                            continue;
+                        }
+
+                        // Get the Vault provider and make sure it's valid
+                        vaultPerms = permissionProvider.getProvider();
+                        if(vaultPerms == null) {
+                            this.log.info("Not using " + type.getName() + " because it's disabled!");
+                            continue;
+                        }
+
+                        break;
+
+                    default:
                 }
+
+                // Set the hooked permissions system type
+                this.permsType = type;
+
+                // Show a success message
+                this.log.info("Hooked into " + type.getName() + "!");
+
+                // Return the used permissions system type
+                return type;
+
+            } catch (Exception ex) {
+                // An error occurred, show a warning message
+                this.log.info("Error while hooking into " + type.getName() + "!");
             }
-        } catch (Exception ex) {
-            // An error occurred, show a warning message
-            System.out.println("[" + plugin.getName() + "] Error while hooking into zPermissions!");
         }
 
-        // Vault, check if it's available
-        try {
-            final Plugin vaultPlugin = pm.getPlugin("Vault");
-            if (vaultPlugin != null && vaultPlugin.isEnabled()) {
-                RegisteredServiceProvider<Permission> permissionProvider = this.server.getServicesManager().getRegistration(Permission.class);
-                if (permissionProvider != null) {
-                    vaultPerms = permissionProvider.getProvider();
-                    if (vaultPerms.isEnabled()) {
-                        permsType = PermissionsSystemType.VAULT;
-                        System.out.println("[" + plugin.getName() + "] Hooked into Vault Permissions!");
-                        return permsType;
-                    } else {
-                        System.out.println("[" + plugin.getName() + "] Not using Vault Permissions, Vault Permissions is disabled!");
-                    }
-                }
-            }
-        } catch (Exception ex) {
-            // An error occurred, show a warning message
-            System.out.println("[" + plugin.getName() + "] Error while hooking into Vault Permissions!");
-        }
-
-        // No recognized permissions system found
-        permsType = PermissionsSystemType.NONE;
-        System.out.println("[" + plugin.getName() + "] No supported permissions system found! Permissions disabled!");
-        return PermissionsSystemType.NONE;
+        // No recognized permissions system found, show a message and return
+        this.log.info("No supported permissions system found! Permissions are disabled!");
+        return null;
     }
 
     /**
@@ -219,7 +224,7 @@ public class PermissionsManager implements PermissionsService {
      */
     public void unhook() {
         // Reset the current used permissions system
-        this.permsType = PermissionsSystemType.NONE;
+        this.permsType = null;
 
         // Print a status message to the console
         this.log.info("Unhooked from Permissions!");
@@ -277,7 +282,14 @@ public class PermissionsManager implements PermissionsService {
         }
     }
 
-
+    /**
+     * Get the permissions manager Bukkit listener instance.
+     *
+     * @return Listener instance.
+     */
+    public PermissionsManagerBukkitListener getListener() {
+        return this.bukkitListener;
+    }
 
     /**
      * Check if the command sender has permission for the given permissions node. If no permissions system is used or
@@ -383,13 +395,9 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return vaultPerms.has(player, permsNode);
 
-            case NONE:
+            default:
                 // Not hooked into any permissions system, return default
                 return def;
-
-            default:
-                // Something went wrong, return false to prevent problems
-                return false;
         }
     }
 
@@ -416,12 +424,8 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return vaultPerms.hasGroupSupport();
 
-            case NONE:
-                // Not hooked into any permissions system, return false
-                return false;
-
             default:
-                // Something went wrong, return false to prevent problems
+                // Not hooked into any permissions system, return false
                 return false;
         }
     }
@@ -469,12 +473,8 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return Arrays.asList(vaultPerms.getPlayerGroups(player));
 
-            case NONE:
-                // Not hooked into any permissions system, return an empty list
-                return new ArrayList<>();
-
             default:
-                // Something went wrong, return an empty list to prevent problems
+                // Not hooked into any permissions system, return an empty list
                 return new ArrayList<>();
         }
     }
@@ -521,12 +521,8 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return vaultPerms.getPrimaryGroup(player);
 
-            case NONE:
-                // Not hooked into any permissions system, return null
-                return null;
-
             default:
-                // Something went wrong, return null to prevent problems
+                // Not hooked into any permissions system, return null
                 return null;
         }
     }
@@ -575,12 +571,8 @@ public class PermissionsManager implements PermissionsService {
                 // Vault
                 return vaultPerms.playerInGroup(player, groupName);
 
-            case NONE:
-                // Not hooked into any permissions system, return an empty list
-                return false;
-
             default:
-                // Something went wrong, return an empty list to prevent problems
+                // Not hooked into any permissions system, return an empty list
                 return false;
         }
     }
@@ -632,12 +624,8 @@ public class PermissionsManager implements PermissionsService {
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
 
-            case NONE:
-                // Not hooked into any permissions system, return false
-                return false;
-
             default:
-                // Something went wrong, return false
+                // Not hooked into any permissions system, return false
                 return false;
         }
     }
@@ -713,12 +701,8 @@ public class PermissionsManager implements PermissionsService {
                 vaultPerms.playerRemoveGroup(player, groupName);
                 return true;
 
-            case NONE:
-                // Not hooked into any permissions system, return false
-                return false;
-
             default:
-                // Something went wrong, return false
+                // Not hooked into any permissions system, return false
                 return false;
         }
     }
@@ -802,12 +786,8 @@ public class PermissionsManager implements PermissionsService {
                 vaultPerms.playerAddGroup(player, groupName);
                 return true;
 
-            case NONE:
-                // Not hooked into any permissions system, return false
-                return false;
-
             default:
-                // Something went wrong, return false
+                // Not hooked into any permissions system, return false
                 return false;
         }
     }
@@ -867,6 +847,4 @@ public class PermissionsManager implements PermissionsService {
         // Remove each group
         return removeGroups(player, groupNames);
     }
-
-
 }
