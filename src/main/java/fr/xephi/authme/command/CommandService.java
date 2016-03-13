@@ -46,6 +46,8 @@ public class CommandService {
      * @param permissionsManager The permissions manager
      * @param settings The settings manager
      * @param ipAddressManager The IP address manager
+     * @param pluginHooks The plugin hooks instance
+     * @param spawnLoader The spawn loader
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,

@@ -34,12 +34,13 @@ public class AsynchronousUnregister implements Process {
     private final ProcessService service;
 
     /**
-     * Constructor for AsynchronousUnregister.
+     * Constructor.
      *
-     * @param player   Player
-     * @param password String
-     * @param force    boolean
-     * @param plugin   AuthMe
+     * @param player The player to perform the action for
+     * @param password The password
+     * @param force True to bypass password validation
+     * @param plugin The plugin instance
+     * @param service The process service
      */
     public AsynchronousUnregister(Player player, String password, boolean force, AuthMe plugin,
                                   ProcessService service) {
@@ -57,7 +58,7 @@ public class AsynchronousUnregister implements Process {
         PlayerAuth cachedAuth = PlayerCache.getInstance().getAuth(name);
         if (force || plugin.getPasswordSecurity().comparePassword(
             password, cachedAuth.getPassword(), player.getName())) {
-            if (!plugin.getDataSource().removeAuth(name)) {
+            if (!service.getDataSource().removeAuth(name)) {
                 service.send(player, MessageKey.ERROR);
                 return;
             }

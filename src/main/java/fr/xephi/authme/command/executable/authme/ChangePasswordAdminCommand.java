@@ -40,7 +40,7 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
             commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
             return;
         }
-        // TODO ljacqu 20160312: The UNSAFE_PASSWORDS should be all lowercase
+        // TODO #602 20160312: The UNSAFE_PASSWORDS should be all lowercase
         // -> introduce a lowercase String list property type
         if (commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(playerPassLowerCase)) {
             commandService.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);

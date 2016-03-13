@@ -80,11 +80,10 @@ public class AuthMePlayerListener implements Listener {
         }
 
         event.setCancelled(true);
-        sendLoginRegisterMSG(player);
+        sendLoginOrRegisterMessage(player);
     }
 
-    // TODO: new name
-    private void sendLoginRegisterMSG(final Player player) {
+    private void sendLoginOrRegisterMessage(final Player player) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
@@ -117,7 +116,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         event.setCancelled(true);
-        sendLoginRegisterMSG(event.getPlayer());
+        sendLoginOrRegisterMessage(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)

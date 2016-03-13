@@ -22,7 +22,8 @@ public class BungeeCordMessage implements PluginMessageListener {
     /**
      * Constructor for BungeeCordMessage.
      *
-     * @param plugin AuthMe
+     * @param plugin The plugin instance
+     * @param ipAddressManager The IP address manager
      */
     public BungeeCordMessage(AuthMe plugin, IpAddressManager ipAddressManager) {
         this.plugin = plugin;

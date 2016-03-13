@@ -87,7 +87,7 @@ public class AuthMeEntityListener implements Listener {
         }
     }
 
-    // TODO: Need to check this, player can't throw snowball but the item is taken.
+    // TODO #568: Need to check this, player can't throw snowball but the item is taken.
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onProjectileLaunch(ProjectileLaunchEvent event) {
         if (event.getEntity() == null) {
@@ -103,7 +103,7 @@ public class AuthMeEntityListener implements Listener {
             }
             player = (Player) shooter;
         } else {
-            // TODO ljacqu 20151220: Invoking getShooter() with null but method isn't static
+            // TODO #568 20151220: Invoking getShooter() with null but method isn't static
             try {
                 if (getShooter == null) {
                     getShooter = Projectile.class.getMethod("getShooter");

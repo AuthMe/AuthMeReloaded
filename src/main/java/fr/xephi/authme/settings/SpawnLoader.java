@@ -141,9 +141,8 @@ public class SpawnLoader {
 
         World world = player.getWorld();
         Location spawnLoc = null;
-        // TODO ljacqu 20160312: We should trim() the entries
         for (String priority : spawnPriority) {
-            switch (priority.toLowerCase()) {
+            switch (priority.toLowerCase().trim()) {
                 case "default":
                     if (world.getSpawnLocation() != null) {
                         spawnLoc = world.getSpawnLocation();

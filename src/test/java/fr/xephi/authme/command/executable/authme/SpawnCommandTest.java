@@ -6,14 +6,13 @@ import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -51,15 +50,13 @@ public class SpawnCommandTest {
         CommandService service = mock(CommandService.class);
         given(service.getSpawnLoader()).willReturn(spawnLoader);
         Player player = mock(Player.class);
-        ExecutableCommand command = new FirstSpawnCommand();
+        ExecutableCommand command = new SpawnCommand();
 
         // when
         command.executeCommand(player, Collections.EMPTY_LIST, service);
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(player).sendMessage(captor.capture());
-        assertThat(captor.getValue(), containsString("spawn has failed"));
+        verify(player).sendMessage(argThat(containsString("Spawn has failed")));
         verify(player, never()).teleport(any(Location.class));
     }
 }

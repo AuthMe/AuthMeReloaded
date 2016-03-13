@@ -25,7 +25,8 @@ public class DataManager {
     /**
      * Constructor for DataManager.
      *
-     * @param plugin AuthMe
+     * @param plugin The plugin instance
+     * @param pluginHooks Plugin hooks instance
      */
     public DataManager(AuthMe plugin, PluginHooks pluginHooks) {
         this.plugin = plugin;
@@ -161,8 +162,13 @@ public class DataManager {
      */
     public void purgeEssentials(List<String> cleared) {
         int i = 0;
-        // FIXME: essentials data folder may be null
-        final File userDataFolder = new File(pluginHooks.getEssentialsDataFolder(), "userdata");
+        File essentialsDataFolder = pluginHooks.getEssentialsDataFolder();
+        if (essentialsDataFolder == null) {
+            ConsoleLogger.info("Cannot purge Essentials: plugin is not loaded");
+            return;
+        }
+
+        final File userDataFolder = new File(essentialsDataFolder, "userdata");
         for (String name : cleared) {
             try {
                 File playerFile = new File(userDataFolder, plugin.getServer().getOfflinePlayer(name).getUniqueId() + ".yml");
