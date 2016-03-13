@@ -10,13 +10,16 @@ import org.bukkit.command.CommandSender;
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * Command for purging the data of players which have not been since for a given number
+ * of days. Depending on the settings, this removes player data in third-party plugins as well.
+ */
 public class PurgeCommand implements ExecutableCommand {
+
+    private static final int MINIMUM_LAST_SEEN_DAYS = 30;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        // AuthMe plugin instance
-        AuthMe plugin = commandService.getAuthMe();
-
         // Get the days parameter
         String daysStr = arguments.get(0);
 
@@ -30,8 +33,9 @@ public class PurgeCommand implements ExecutableCommand {
         }
 
         // Validate the value
-        if (days < 30) {
-            sender.sendMessage(ChatColor.RED + "You can only purge data older than 30 days");
+        if (days < MINIMUM_LAST_SEEN_DAYS) {
+            sender.sendMessage(ChatColor.RED + "You can only purge data older than "
+                + MINIMUM_LAST_SEEN_DAYS + " days");
             return;
         }
 
@@ -47,6 +51,7 @@ public class PurgeCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");
 
         // Purge other data
+        AuthMe plugin = commandService.getAuthMe();
         if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) &&
             commandService.getPluginHooks().isEssentialsAvailable())
             plugin.dataManager.purgeEssentials(purged);

@@ -10,6 +10,10 @@ import org.bukkit.command.CommandSender;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Command for purging data of banned players. Depending on the settings
+ * it purges (deletes) data from third-party plugins as well.
+ */
 public class PurgeBannedPlayersCommand implements ExecutableCommand {
 
     @Override
@@ -24,7 +28,7 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
         }
 
         // Purge the banned players
-        plugin.getDataSource().purgeBanned(bannedPlayers);
+        commandService.getDataSource().purgeBanned(bannedPlayers);
         if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES)
             && commandService.getPluginHooks().isEssentialsAvailable())
             plugin.dataManager.purgeEssentials(bannedPlayers);

@@ -6,6 +6,9 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+/**
+ * Teleports the player to the first spawn.
+ */
 public class FirstSpawnCommand extends PlayerCommand {
 
     @Override

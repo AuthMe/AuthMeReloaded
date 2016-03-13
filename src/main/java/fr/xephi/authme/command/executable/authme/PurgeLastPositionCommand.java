@@ -8,45 +8,39 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+/**
+ * Removes the stored last position of a user or of all.
+ */
 public class PurgeLastPositionCommand implements ExecutableCommand {
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
-        String playerNameLowerCase = playerName.toLowerCase();
 
-        if (playerNameLowerCase.equalsIgnoreCase("*"))
-        {
-        	for (PlayerAuth auth : commandService.getDataSource().getAllAuths())
-        	{
-                // Set the last position
-                auth.setQuitLocX(0D);
-                auth.setQuitLocY(0D);
-                auth.setQuitLocZ(0D);
-                auth.setWorld("world");
+        if ("*".equals(playerName)) {
+            for (PlayerAuth auth : commandService.getDataSource().getAllAuths()) {
+                resetLastPosition(auth);
                 commandService.getDataSource().updateQuitLoc(auth);
-        	}
-        	sender.sendMessage("All players last position locations are now reset");
-        }
-        else
-        {
+            }
+            sender.sendMessage("All players last position locations are now reset");
+        } else {
             // Get the user auth and make sure the user exists
-            PlayerAuth auth = commandService.getDataSource().getAuth(playerNameLowerCase);
+            PlayerAuth auth = commandService.getDataSource().getAuth(playerName);
             if (auth == null) {
                 commandService.send(sender, MessageKey.UNKNOWN_USER);
                 return;
             }
 
-            // Set the last position
-            auth.setQuitLocX(0D);
-            auth.setQuitLocY(0D);
-            auth.setQuitLocZ(0D);
-            auth.setWorld("world");
+            resetLastPosition(auth);
             commandService.getDataSource().updateQuitLoc(auth);
-
-            // Show a status message
-            sender.sendMessage(playerNameLowerCase + "'s last position location is now reset");
+            sender.sendMessage(playerName + "'s last position location is now reset");
         }
+    }
 
+    private static void resetLastPosition(PlayerAuth auth) {
+        auth.setQuitLocX(0d);
+        auth.setQuitLocY(0d);
+        auth.setQuitLocZ(0d);
+        auth.setWorld("world");
     }
 }
