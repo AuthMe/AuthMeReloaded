@@ -290,7 +290,7 @@ public class AuthMe extends JavaPlugin {
         setupApi();
 
         // Set up the management
-        ProcessService processService = new ProcessService(newSettings, messages, this, ipAddressManager,
+        ProcessService processService = new ProcessService(newSettings, messages, this, database, ipAddressManager,
             passwordSecurity, pluginHooks, spawnLoader);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
