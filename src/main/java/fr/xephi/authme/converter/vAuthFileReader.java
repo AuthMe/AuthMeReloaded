@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.UUID;
 
+import static fr.xephi.authme.util.StringUtils.makePath;
+
 class vAuthFileReader {
 
     private final AuthMe plugin;
@@ -28,7 +30,7 @@ class vAuthFileReader {
     }
 
     public void convert() {
-        final File file = new File(plugin.getDataFolder().getParent() + File.separator + "vAuth" + File.separator + "passwords.yml");
+        final File file = new File(plugin.getDataFolder().getParent(), makePath("vAuth", "passwords.yml"));
         Scanner scanner;
         try {
             scanner = new Scanner(file);
@@ -46,9 +48,15 @@ class vAuthFileReader {
                     }
                     if (pname == null)
                         continue;
-                    auth = new PlayerAuth(pname.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", pname);
+                    auth = PlayerAuth.builder()
+                        .name(pname.toLowerCase())
+                        .realName(pname)
+                        .password(password, null).build();
                 } else {
-                    auth = new PlayerAuth(name.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com", name);
+                    auth = PlayerAuth.builder()
+                        .name(name.toLowerCase())
+                        .realName(name)
+                        .password(password, null).build();
                 }
                 database.saveAuth(auth);
             }

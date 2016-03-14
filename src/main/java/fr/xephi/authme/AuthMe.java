@@ -677,7 +677,10 @@ public class AuthMe extends JavaPlugin {
         }
         String name = player.getName().toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-            final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName(), player.getName());
+            final PlayerAuth auth = PlayerAuth.builder()
+                .name(player.getName().toLowerCase())
+                .realName(player.getName())
+                .location(player.getLocation()).build();
             database.updateQuitLoc(auth);
         }
         if (LimboCache.getInstance().hasLimboPlayer(name)) {
