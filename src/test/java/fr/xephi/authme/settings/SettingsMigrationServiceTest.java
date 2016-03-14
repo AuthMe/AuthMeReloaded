@@ -42,9 +42,10 @@ public class SettingsMigrationServiceTest {
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(configTestFile);
         PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
         assumeThat(testFolder.listFiles(), arrayWithSize(1));
+        SettingsMigrationService migrationService = new SettingsMigrationService();
 
         // when
-        boolean result = SettingsMigrationService.checkAndMigrate(configuration, propertyMap, testFolder);
+        boolean result = migrationService.checkAndMigrate(configuration, propertyMap, testFolder);
 
         // then
         assertThat(result, equalTo(false));

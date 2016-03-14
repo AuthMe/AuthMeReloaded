@@ -44,6 +44,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
@@ -467,8 +468,9 @@ public class AuthMe extends JavaPlugin {
     private NewSetting createNewSetting() {
         File configFile = new File(getDataFolder(), "config.yml");
         PropertyMap properties = SettingsFieldRetriever.getAllPropertyFields();
+        SettingsMigrationService migrationService = new SettingsMigrationService();
         return FileUtils.copyFileFromResource(configFile, "config.yml")
-            ? new NewSetting(configFile, getDataFolder(), properties)
+            ? new NewSetting(configFile, getDataFolder(), properties, migrationService)
             : null;
     }
 

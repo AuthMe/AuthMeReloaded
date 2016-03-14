@@ -33,6 +33,7 @@ public class NewSetting {
     private final File pluginFolder;
     private final File configFile;
     private final PropertyMap propertyMap;
+    private final SettingsMigrationService migrationService;
     private FileConfiguration configuration;
     /** The file with the localized messages based on {@link PluginSettings#MESSAGES_LANGUAGE}. */
     private File messagesFile;
@@ -44,12 +45,16 @@ public class NewSetting {
      *
      * @param configFile The configuration file
      * @param pluginFolder The AuthMe plugin folder
+     * @param propertyMap Collection of all available settings
+     * @param migrationService Migration service to check the settings file with
      */
-    public NewSetting(File configFile, File pluginFolder, PropertyMap propertyMap) {
+    public NewSetting(File configFile, File pluginFolder, PropertyMap propertyMap,
+                      SettingsMigrationService migrationService) {
         this.configuration = YamlConfiguration.loadConfiguration(configFile);
         this.configFile = configFile;
         this.pluginFolder = pluginFolder;
         this.propertyMap = propertyMap;
+        this.migrationService = migrationService;
         validateAndLoadOptions();
     }
 
@@ -59,15 +64,18 @@ public class NewSetting {
      * @param configuration The FileConfiguration object to use
      * @param configFile The file to write to
      * @param propertyMap The property map whose properties should be verified for presence, or null to skip this
+     * @param migrationService Migration service, or null to skip migration checks
      */
     @VisibleForTesting
-    NewSetting(FileConfiguration configuration, File configFile, PropertyMap propertyMap) {
+    NewSetting(FileConfiguration configuration, File configFile, PropertyMap propertyMap,
+               SettingsMigrationService migrationService) {
         this.configuration = configuration;
         this.configFile = configFile;
         this.pluginFolder = new File("");
         this.propertyMap = propertyMap;
+        this.migrationService = migrationService;
 
-        if (propertyMap != null) {
+        if (propertyMap != null && migrationService != null) {
             validateAndLoadOptions();
         }
     }
@@ -184,7 +192,7 @@ public class NewSetting {
     }
 
     private void validateAndLoadOptions() {
-        if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
+        if (migrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
             ConsoleLogger.info("Merged new config options");
             ConsoleLogger.info("Please check your config.yml file for new settings!");
             save();

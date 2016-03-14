@@ -8,9 +8,9 @@ import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.TestConfiguration;
 import fr.xephi.authme.settings.properties.TestEnum;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -25,6 +25,9 @@ import java.util.Map;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 
 /**
  * Integration test for {@link NewSetting}.
@@ -56,7 +59,7 @@ public class NewSettingIntegrationTest {
         File newFile = temporaryFolder.newFile();
 
         // when / then
-        NewSetting settings = new NewSetting(configuration, newFile, propertyMap);
+        NewSetting settings = new NewSetting(configuration, newFile, propertyMap, new PlainSettingsMigrationService());
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
             .put(TestConfiguration.SYSTEM_NAME, "Custom sys name")
@@ -82,13 +85,13 @@ public class NewSettingIntegrationTest {
         File file = copyFileFromResources(INCOMPLETE_FILE);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         // Expectation: File is rewritten to since it does not have all configurations
-        new NewSetting(configuration, file, propertyMap);
+        new NewSetting(configuration, file, propertyMap, new PlainSettingsMigrationService());
 
         // Load the settings again -> checks that what we wrote can be loaded again
         configuration = YamlConfiguration.loadConfiguration(file);
 
         // then
-        NewSetting settings = new NewSetting(configuration, file, propertyMap);
+        NewSetting settings = new NewSetting(configuration, file, propertyMap, new PlainSettingsMigrationService());
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
             .put(TestConfiguration.SYSTEM_NAME, "[TestDefaultValue]")
@@ -125,14 +128,14 @@ public class NewSettingIntegrationTest {
         }
 
         // when
-        new NewSetting(configuration, file, propertyMap);
+        new NewSetting(configuration, file, propertyMap, new PlainSettingsMigrationService());
         // reload the file as settings should have been rewritten
         configuration = YamlConfiguration.loadConfiguration(file);
 
         // then
         // assert that we won't rewrite the settings again! One rewrite should produce a valid, complete configuration
         File unusedFile = new File("config-difficult-values.unused.yml");
-        NewSetting settings = new NewSetting(configuration, unusedFile, propertyMap);
+        NewSetting settings = new NewSetting(configuration, unusedFile, propertyMap, new PlainSettingsMigrationService());
         assertThat(unusedFile.exists(), equalTo(false));
         assertThat(configuration.contains(TestConfiguration.DUST_LEVEL.getPath()), equalTo(true));
 
@@ -158,13 +161,15 @@ public class NewSettingIntegrationTest {
     }
 
     @Test
-    @Ignore
-    // TODO #603: Un-ignore once migration service is passed to settings
     public void shouldReloadSettings() throws IOException {
         // given
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(temporaryFolder.newFile());
         File fullConfigFile = copyFileFromResources(COMPLETE_FILE);
-        NewSetting settings = new NewSetting(configuration, fullConfigFile, null);
+        SettingsMigrationService migrationService = mock(SettingsMigrationService.class);
+        given(migrationService.checkAndMigrate(any(FileConfiguration.class), any(PropertyMap.class), any(File.class)))
+            .willReturn(false);
+        NewSetting settings = new NewSetting(configuration, fullConfigFile, TestConfiguration.generatePropertyMap(),
+            new PlainSettingsMigrationService());
 
         // when
         assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER),

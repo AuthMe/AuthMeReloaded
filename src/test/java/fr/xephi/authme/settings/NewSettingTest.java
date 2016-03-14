@@ -6,7 +6,6 @@ import fr.xephi.authme.settings.properties.TestConfiguration;
 import fr.xephi.authme.settings.properties.TestEnum;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -59,7 +58,7 @@ public class NewSettingTest {
         setReturnValue(configuration, TestConfiguration.SYSTEM_NAME, "myTestSys");
 
         // when / then
-        NewSetting settings = new NewSetting(configuration, null, null);
+        NewSetting settings = new NewSetting(configuration, null, null, null);
 
         assertThat(settings.getProperty(TestConfiguration.VERSION_NUMBER), equalTo(20));
         assertThat(settings.getProperty(TestConfiguration.SKIP_BORING_FEATURES), equalTo(true));
@@ -75,7 +74,7 @@ public class NewSettingTest {
     public void shouldReturnDefaultFile() throws IOException {
         // given
         YamlConfiguration configuration = mock(YamlConfiguration.class);
-        NewSetting settings = new NewSetting(configuration, null, null);
+        NewSetting settings = new NewSetting(configuration, null, null, null);
 
         // when
         String defaultFile = settings.getDefaultMessagesFile();
@@ -91,7 +90,7 @@ public class NewSettingTest {
     public void shouldSetProperty() {
         // given
         YamlConfiguration configuration = mock(YamlConfiguration.class);
-        NewSetting settings = new NewSetting(configuration, null, null);
+        NewSetting settings = new NewSetting(configuration, null, null, null);
 
         // when
         settings.setProperty(TestConfiguration.DUST_LEVEL, -4);
@@ -101,14 +100,13 @@ public class NewSettingTest {
     }
 
     @Test
-    @Ignore
-    // TODO #603: Un-ignore once migration service is injected into settings
     public void shouldReturnMessagesFile() {
         // given
         YamlConfiguration configuration = mock(YamlConfiguration.class);
         given(configuration.contains(anyString())).willReturn(true);
         given(configuration.getString(eq(MESSAGES_LANGUAGE.getPath()), anyString())).willReturn("fr");
-        NewSetting settings = new NewSetting(configuration, null, TestConfiguration.generatePropertyMap());
+        NewSetting settings = new NewSetting(configuration, null, TestConfiguration.generatePropertyMap(),
+            new PlainSettingsMigrationService());
 
         // when
         File messagesFile = settings.getMessagesFile();
