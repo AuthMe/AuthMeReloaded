@@ -6,7 +6,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -33,6 +32,7 @@ public class NewSetting {
 
     private final File pluginFolder;
     private final File configFile;
+    private final PropertyMap propertyMap;
     private FileConfiguration configuration;
     /** The file with the localized messages based on {@link PluginSettings#MESSAGES_LANGUAGE}. */
     private File messagesFile;
@@ -45,10 +45,11 @@ public class NewSetting {
      * @param configFile The configuration file
      * @param pluginFolder The AuthMe plugin folder
      */
-    public NewSetting(File configFile, File pluginFolder) {
+    public NewSetting(File configFile, File pluginFolder, PropertyMap propertyMap) {
         this.configuration = YamlConfiguration.loadConfiguration(configFile);
         this.configFile = configFile;
         this.pluginFolder = pluginFolder;
+        this.propertyMap = propertyMap;
         validateAndLoadOptions();
     }
 
@@ -64,9 +65,10 @@ public class NewSetting {
         this.configuration = configuration;
         this.configFile = configFile;
         this.pluginFolder = new File("");
+        this.propertyMap = propertyMap;
 
-        if (propertyMap != null && SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
-            save(propertyMap);
+        if (propertyMap != null) {
+            validateAndLoadOptions();
         }
     }
 
@@ -90,13 +92,6 @@ public class NewSetting {
      */
     public <T> void setProperty(Property<T> property, T value) {
         configuration.set(property.getPath(), value);
-    }
-
-    /**
-     * Save the config file. Use after migrating one or more settings.
-     */
-    public void save() {
-        save(SettingsFieldRetriever.getAllPropertyFields());
     }
 
     /**
@@ -133,7 +128,10 @@ public class NewSetting {
         validateAndLoadOptions();
     }
 
-    private void save(PropertyMap propertyMap) {
+    /**
+     * Save the config file. Use after migrating one or more settings.
+     */
+    public void save() {
         try (FileWriter writer = new FileWriter(configFile)) {
             Yaml simpleYaml = newYaml(false);
             Yaml singleQuoteYaml = newYaml(true);
@@ -186,11 +184,10 @@ public class NewSetting {
     }
 
     private void validateAndLoadOptions() {
-        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
         if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
             ConsoleLogger.info("Merged new config options");
             ConsoleLogger.info("Please check your config.yml file for new settings!");
-            save(propertyMap);
+            save();
         }
 
         messagesFile = buildMessagesFile();

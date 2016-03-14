@@ -1,15 +1,22 @@
 package fr.xephi.authme.settings;
 
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.TestConfiguration;
 import fr.xephi.authme.settings.properties.TestEnum;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import static fr.xephi.authme.settings.properties.PluginSettings.MESSAGES_LANGUAGE;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -21,12 +28,21 @@ import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link NewSetting}.
+ * Unit tests for {@link NewSetting}.
  */
 public class NewSettingTest {
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    @BeforeClass
+    public static void setUpLogger() {
+        ConsoleLoggerTestInitializer.setupLogger();
+    }
 
     @Test
     public void shouldLoadAllConfigs() {
@@ -69,6 +85,36 @@ public class NewSettingTest {
         InputStream stream = this.getClass().getResourceAsStream(defaultFile);
         assertThat(stream, not(nullValue()));
         assertThat(stream.read(), not(equalTo(0)));
+    }
+
+    @Test
+    public void shouldSetProperty() {
+        // given
+        YamlConfiguration configuration = mock(YamlConfiguration.class);
+        NewSetting settings = new NewSetting(configuration, null, null);
+
+        // when
+        settings.setProperty(TestConfiguration.DUST_LEVEL, -4);
+
+        // then
+        verify(configuration).set(TestConfiguration.DUST_LEVEL.getPath(), -4);
+    }
+
+    @Test
+    @Ignore
+    // TODO #603: Un-ignore once migration service is injected into settings
+    public void shouldReturnMessagesFile() {
+        // given
+        YamlConfiguration configuration = mock(YamlConfiguration.class);
+        given(configuration.contains(anyString())).willReturn(true);
+        given(configuration.getString(eq(MESSAGES_LANGUAGE.getPath()), anyString())).willReturn("fr");
+        NewSetting settings = new NewSetting(configuration, null, TestConfiguration.generatePropertyMap());
+
+        // when
+        File messagesFile = settings.getMessagesFile();
+
+        // then
+        System.out.println(messagesFile.getPath());
     }
 
     private static <T> void setReturnValue(YamlConfiguration config, Property<T> property, T value) {

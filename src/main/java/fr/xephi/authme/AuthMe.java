@@ -52,6 +52,8 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
+import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
@@ -464,8 +466,9 @@ public class AuthMe extends JavaPlugin {
 
     private NewSetting createNewSetting() {
         File configFile = new File(getDataFolder(), "config.yml");
+        PropertyMap properties = SettingsFieldRetriever.getAllPropertyFields();
         return FileUtils.copyFileFromResource(configFile, "config.yml")
-            ? new NewSetting(configFile, getDataFolder())
+            ? new NewSetting(configFile, getDataFolder(), properties)
             : null;
     }
 
