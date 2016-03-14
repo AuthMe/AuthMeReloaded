@@ -5,7 +5,6 @@ import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.domain.PropertyType;
 import fr.xephi.authme.settings.domain.SettingsClass;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
-import fr.xephi.authme.util.WrapperMock;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -57,7 +56,6 @@ public final class TestConfiguration implements SettingsClass {
      * @return The generated property map
      */
     public static PropertyMap generatePropertyMap() {
-        WrapperMock.createInstance();
         PropertyMap propertyMap = new PropertyMap();
         for (Field field : TestConfiguration.class.getDeclaredFields()) {
             Object fieldValue = ReflectionTestUtils.getFieldValue(TestConfiguration.class, null, field.getName());
