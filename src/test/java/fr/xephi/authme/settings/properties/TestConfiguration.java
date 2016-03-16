@@ -2,13 +2,13 @@ package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.PropertyType;
 import fr.xephi.authme.settings.domain.SettingsClass;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 
 import java.lang.reflect.Field;
 import java.util.List;
 
+import static fr.xephi.authme.settings.domain.Property.newListProperty;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 
 /**
@@ -26,7 +26,7 @@ public final class TestConfiguration implements SettingsClass {
         newProperty(TestEnum.class, "sample.ratio.order", TestEnum.SECOND);
 
     public static final Property<List<String>> RATIO_FIELDS =
-        newProperty(PropertyType.STRING_LIST, "sample.ratio.fields", "a", "b", "c");
+        newListProperty("sample.ratio.fields", "a", "b", "c");
 
     public static final Property<Integer> VERSION_NUMBER =
         newProperty("version", 32046);
@@ -35,7 +35,7 @@ public final class TestConfiguration implements SettingsClass {
         newProperty("features.boring.skip", false);
 
     public static final Property<List<String>> BORING_COLORS =
-        newProperty(PropertyType.STRING_LIST, "features.boring.colors");
+        newListProperty("features.boring.colors");
 
     public static final Property<Integer> DUST_LEVEL =
         newProperty("features.boring.dustLevel", -1);
@@ -44,7 +44,7 @@ public final class TestConfiguration implements SettingsClass {
         newProperty("features.cool.enabled", false);
 
     public static final Property<List<String>> COOL_OPTIONS =
-        newProperty(PropertyType.STRING_LIST, "features.cool.options", "Sparks", "Sprinkles");
+        newListProperty("features.cool.options", "Sparks", "Sprinkles");
 
 
     private TestConfiguration() {

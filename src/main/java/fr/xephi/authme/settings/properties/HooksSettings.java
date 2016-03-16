@@ -2,11 +2,11 @@ package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.settings.domain.Comment;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.PropertyType;
 import fr.xephi.authme.settings.domain.SettingsClass;
 
 import java.util.List;
 
+import static fr.xephi.authme.settings.domain.Property.newListProperty;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 
 public class HooksSettings implements SettingsClass {
@@ -48,7 +48,7 @@ public class HooksSettings implements SettingsClass {
 
     @Comment("Other MySQL columns where we need to put the username (case-sensitive)")
     public static final Property<List<String>> MYSQL_OTHER_USERNAME_COLS =
-        newProperty(PropertyType.STRING_LIST, "ExternalBoardOptions.mySQLOtherUsernameColumns");
+        newListProperty("ExternalBoardOptions.mySQLOtherUsernameColumns");
 
     @Comment("How much log2 rounds needed in BCrypt (do not change if you do not know what it does)")
     public static final Property<Integer> BCRYPT_LOG2_ROUND =
