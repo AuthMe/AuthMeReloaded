@@ -63,15 +63,16 @@ public class NewSetting {
      *
      * @param configuration The FileConfiguration object to use
      * @param configFile The file to write to
+     * @param pluginFolder The plugin folder
      * @param propertyMap The property map whose properties should be verified for presence, or null to skip this
      * @param migrationService Migration service, or null to skip migration checks
      */
     @VisibleForTesting
-    NewSetting(FileConfiguration configuration, File configFile, PropertyMap propertyMap,
+    NewSetting(FileConfiguration configuration, File configFile, File pluginFolder, PropertyMap propertyMap,
                SettingsMigrationService migrationService) {
         this.configuration = configuration;
         this.configFile = configFile;
-        this.pluginFolder = new File("");
+        this.pluginFolder = pluginFolder;
         this.propertyMap = propertyMap;
         this.migrationService = migrationService;
 
@@ -210,18 +211,20 @@ public class NewSetting {
 
     private File buildMessagesFile() {
         String languageCode = getProperty(PluginSettings.MESSAGES_LANGUAGE);
-        File messagesFile = buildMessagesFileFromCode(languageCode);
-        if (messagesFile.exists()) {
+
+        String filePath = buildMessagesFilePathFromCode(languageCode);
+        File messagesFile = new File(pluginFolder, filePath);
+        if (copyFileFromResource(messagesFile, filePath)) {
             return messagesFile;
         }
 
-        return copyFileFromResource(messagesFile, buildMessagesFilePathFromCode(languageCode))
-            ? messagesFile
-            : buildMessagesFileFromCode("en");
-    }
+        // File doesn't exist or couldn't be copied - try again with default, "en"
+        String defaultFilePath = buildMessagesFilePathFromCode("en");
+        File defaultFile = new File(pluginFolder, defaultFilePath);
+        copyFileFromResource(defaultFile, defaultFilePath);
 
-    private File buildMessagesFileFromCode(String language) {
-        return new File(pluginFolder, buildMessagesFilePathFromCode(language));
+        // No matter the result, need to return a file
+        return defaultFile;
     }
 
     private static String buildMessagesFilePathFromCode(String language) {
@@ -248,7 +251,7 @@ public class NewSetting {
         final Charset charset = Charset.forName("UTF-8");
         if (copyFileFromResource(emailFile, "email.html")) {
             try {
-                return StringUtils.join("", Files.readLines(emailFile, charset));
+                return StringUtils.join("\n", Files.readLines(emailFile, charset));
             } catch (IOException e) {
                 ConsoleLogger.logException("Failed to read file '" + emailFile.getPath() + "':", e);
             }

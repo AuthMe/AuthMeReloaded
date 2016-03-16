@@ -31,7 +31,7 @@ public class ConfigFileConsistencyTest {
     private static final String CONFIG_FILE = "/config.yml";
 
     @Test
-    public void shouldHaveAllConfigs() throws IOException {
+    public void shouldHaveAllConfigs() throws IOException { // TODO ljacqu: How is this different from SettingsMigrationServiceTest?
         // given
         File configFile = TestHelper.getJarFile(CONFIG_FILE);
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
