@@ -23,12 +23,12 @@ final class PropertyMapComparator implements Comparator<Property> {
      * @param property The property that is being added
      */
     public void add(Property property) {
-        Node.addNode(parent, property.getPath());
+        parent.addNode(property.getPath());
     }
 
     @Override
     public int compare(Property p1, Property p2) {
-        return Node.compare(parent, p1.getPath(), p2.getPath());
+        return parent.compare(p1.getPath(), p2.getPath());
     }
 
 }

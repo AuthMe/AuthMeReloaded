@@ -44,6 +44,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
@@ -52,6 +53,8 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
+import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
@@ -464,8 +467,10 @@ public class AuthMe extends JavaPlugin {
 
     private NewSetting createNewSetting() {
         File configFile = new File(getDataFolder(), "config.yml");
+        PropertyMap properties = SettingsFieldRetriever.getAllPropertyFields();
+        SettingsMigrationService migrationService = new SettingsMigrationService();
         return FileUtils.copyFileFromResource(configFile, "config.yml")
-            ? new NewSetting(configFile, getDataFolder())
+            ? new NewSetting(configFile, getDataFolder(), properties, migrationService)
             : null;
     }
 
@@ -674,7 +679,10 @@ public class AuthMe extends JavaPlugin {
         }
         String name = player.getName().toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-            final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName(), player.getName());
+            final PlayerAuth auth = PlayerAuth.builder()
+                .name(player.getName().toLowerCase())
+                .realName(player.getName())
+                .location(player.getLocation()).build();
             database.updateQuitLoc(auth);
         }
         if (LimboCache.getInstance().hasLimboPlayer(name)) {

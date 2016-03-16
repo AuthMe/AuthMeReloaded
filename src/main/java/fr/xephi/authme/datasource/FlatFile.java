@@ -10,6 +10,7 @@ import fr.xephi.authme.settings.Settings;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -19,6 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Deprecated flat file datasource. The only method guaranteed to work is {@link FlatFile#getAllAuths()}
+ * as to migrate the entries to {@link SQLite} when AuthMe starts.
  */
 @Deprecated
 public class FlatFile implements DataSource {
@@ -76,19 +79,11 @@ public class FlatFile implements DataSource {
                     return true;
                 }
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
         return false;
     }
@@ -110,17 +105,12 @@ public class FlatFile implements DataSource {
         BufferedWriter bw = null;
         try {
             bw = new BufferedWriter(new FileWriter(source, true));
-            bw.write(auth.getNickname() + ":" + auth.getPassword() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
+            bw.write(auth.getNickname() + ":" + auth.getPassword().getHash() + ":" + auth.getIp() + ":" + auth.getLastLogin() + ":" + auth.getQuitLocX() + ":" + auth.getQuitLocY() + ":" + auth.getQuitLocZ() + ":" + auth.getWorld() + ":" + auth.getEmail() + "\n");
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(bw);
         }
         return true;
     }
@@ -131,6 +121,7 @@ public class FlatFile implements DataSource {
     }
 
     @Override
+    // Note ljacqu 20151230: This does not persist the salt; it is not supported in flat file.
     public boolean updatePassword(String user, HashedPassword password) {
         user = user.toLowerCase();
         if (!isAuthAvailable(user)) {
@@ -144,45 +135,18 @@ public class FlatFile implements DataSource {
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equals(user)) {
-                    // Note ljacqu 20151230: This does not persist the salt; it is not supported in flat file.
-                    switch (args.length) {
-                        case 4: {
-                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], Long.parseLong(args[3]), 0, 0, 0, "world", "your@email.com", args[0]);
-                            break;
-                        }
-                        case 7: {
-                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "world", "your@email.com", args[0]);
-                            break;
-                        }
-                        case 8: {
-                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]);
-                            break;
-                        }
-                        case 9: {
-                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]);
-                            break;
-                        }
-                        default: {
-                            newAuth = new PlayerAuth(args[0], password.getHash(), args[2], 0, 0, 0, 0, "world", "your@email.com", args[0]);
-                            break;
-                        }
+                    newAuth = buildAuthFromArray(args);
+                    if (newAuth != null) {
+                        newAuth.setPassword(password);
                     }
                     break;
                 }
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
         if (newAuth != null) {
             removeAuth(user);
@@ -204,44 +168,19 @@ public class FlatFile implements DataSource {
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equalsIgnoreCase(auth.getNickname())) {
-                    switch (args.length) {
-                        case 4: {
-                            newAuth = new PlayerAuth(args[0], args[1], auth.getIp(), auth.getLastLogin(), 0, 0, 0, "world", "your@email.com", args[0]);
-                            break;
-                        }
-                        case 7: {
-                            newAuth = new PlayerAuth(args[0], args[1], auth.getIp(), auth.getLastLogin(), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "world", "your@email.com", args[0]);
-                            break;
-                        }
-                        case 8: {
-                            newAuth = new PlayerAuth(args[0], args[1], auth.getIp(), auth.getLastLogin(), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]);
-                            break;
-                        }
-                        case 9: {
-                            newAuth = new PlayerAuth(args[0], args[1], auth.getIp(), auth.getLastLogin(), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]);
-                            break;
-                        }
-                        default: {
-                            newAuth = new PlayerAuth(args[0], args[1], auth.getIp(), auth.getLastLogin(), 0, 0, 0, "world", "your@email.com", args[0]);
-                            break;
-                        }
+                    newAuth = buildAuthFromArray(args);
+                    if (newAuth != null) {
+                        newAuth.setLastLogin(auth.getLastLogin());
+                        newAuth.setIp(auth.getIp());
                     }
                     break;
                 }
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
         if (newAuth != null) {
             removeAuth(auth.getNickname());
@@ -263,23 +202,22 @@ public class FlatFile implements DataSource {
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equalsIgnoreCase(auth.getNickname())) {
-                    newAuth = new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ(), auth.getWorld(), auth.getEmail(), args[0]);
+                    newAuth = buildAuthFromArray(args);
+                    if (newAuth != null) {
+                        newAuth.setQuitLocX(auth.getQuitLocX());
+                        newAuth.setQuitLocY(auth.getQuitLocY());
+                        newAuth.setQuitLocZ(auth.getQuitLocZ());
+                        newAuth.setWorld(auth.getWorld());
+                        newAuth.setEmail(auth.getEmail());
+                    }
                     break;
                 }
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
         if (newAuth != null) {
             removeAuth(auth.getNickname());
@@ -311,25 +249,12 @@ public class FlatFile implements DataSource {
             for (String l : lines) {
                 bw.write(l + "\n");
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return cleared;
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return cleared;
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
+            silentClose(bw);
         }
         return cleared;
     }
@@ -355,25 +280,12 @@ public class FlatFile implements DataSource {
             for (String l : lines) {
                 bw.write(l + "\n");
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return false;
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
+            silentClose(bw);
         }
         return true;
     }
@@ -387,35 +299,14 @@ public class FlatFile implements DataSource {
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equalsIgnoreCase(user)) {
-                    switch (args.length) {
-                        case 2:
-                            return new PlayerAuth(args[0], args[1], "192.168.0.1", 0, "your@email.com", args[0]);
-                        case 3:
-                            return new PlayerAuth(args[0], args[1], args[2], 0, "your@email.com", args[0]);
-                        case 4:
-                            return new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), "your@email.com", args[0]);
-                        case 7:
-                            return new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), "unavailableworld", "your@email.com", args[0]);
-                        case 8:
-                            return new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], "your@email.com", args[0]);
-                        case 9:
-                            return new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], args[8], args[0]);
-                    }
+                    return buildAuthFromArray(args);
                 }
             }
-        } catch (FileNotFoundException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return null;
         } catch (IOException ex) {
             ConsoleLogger.showError(ex.getMessage());
             return null;
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
         return null;
     }
@@ -437,7 +328,10 @@ public class FlatFile implements DataSource {
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
                 if (args[0].equals(auth.getNickname())) {
-                    newAuth = new PlayerAuth(args[0], args[1], args[2], Long.parseLong(args[3]), Double.parseDouble(args[4]), Double.parseDouble(args[5]), Double.parseDouble(args[6]), args[7], auth.getEmail(), args[0]);
+                    newAuth = buildAuthFromArray(args);
+                    if (newAuth != null) {
+                        newAuth.setEmail(auth.getEmail());
+                    }
                     break;
                 }
             }
@@ -545,18 +439,8 @@ public class FlatFile implements DataSource {
             ConsoleLogger.showError(ex.getMessage());
 
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
-            if (bw != null) {
-                try {
-                    bw.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
+            silentClose(bw);
         }
     }
 
@@ -595,12 +479,7 @@ public class FlatFile implements DataSource {
             ConsoleLogger.showError(ex.getMessage());
             return result;
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
         return result;
     }
@@ -624,32 +503,15 @@ public class FlatFile implements DataSource {
             String line;
             while ((line = br.readLine()) != null) {
                 String[] args = line.split(":");
-                // We expect to encounter 2, 3, 4, 7, 8 or 9 fields. Ignore the line otherwise
-                if (args.length >= 2 && args.length != 5 && args.length != 6 && args.length <= 9) {
-                    PlayerAuth.Builder builder = PlayerAuth.builder()
-                        .name(args[0]).realName(args[0])
-                        .password(args[1], null);
-                    if (args.length >= 3)   builder.ip(args[2]);
-                    if (args.length >= 4)   builder.lastLogin(Long.parseLong(args[3]));
-                    if (args.length >= 7) {
-                        builder.locX(Double.parseDouble(args[4]))
-                            .locY(Double.parseDouble(args[5]))
-                            .locZ(Double.parseDouble(args[6]));
-                    }
-                    if (args.length >= 8)   builder.locWorld(args[7]);
-                    if (args.length >= 9)   builder.email(args[8]);
-                    auths.add(builder.build());
+                PlayerAuth auth = buildAuthFromArray(args);
+                if (auth != null) {
+                    auths.add(auth);
                 }
             }
         } catch (IOException ex) {
             ConsoleLogger.logException("Error while getting auths from flatfile:", ex);
         } finally {
-            if (br != null) {
-                try {
-                    br.close();
-                } catch (IOException ignored) {
-                }
-            }
+            silentClose(br);
         }
         return auths;
     }
@@ -662,5 +524,35 @@ public class FlatFile implements DataSource {
     @Override
     public boolean isEmailStored(String email) {
         throw new UnsupportedOperationException("Flat file no longer supported");
+    }
+
+    private static PlayerAuth buildAuthFromArray(String[] args) {
+        // Format allows 2, 3, 4, 7, 8, 9 fields. Anything else is unknown
+        if (args.length >= 2 && args.length <= 9 && args.length != 5 && args.length != 6) {
+            PlayerAuth.Builder builder = PlayerAuth.builder()
+                .name(args[0]).realName(args[0]).password(args[1], null);
+
+            if (args.length >= 3)   builder.ip(args[2]);
+            if (args.length >= 4)   builder.lastLogin(Long.parseLong(args[3]));
+            if (args.length >= 7) {
+                builder.locX(Double.parseDouble(args[4]))
+                    .locY(Double.parseDouble(args[5]))
+                    .locZ(Double.parseDouble(args[6]));
+            }
+            if (args.length >= 8)   builder.locWorld(args[7]);
+            if (args.length >= 9)   builder.email(args[8]);
+            return builder.build();
+        }
+        return null;
+    }
+
+    private static void silentClose(Closeable closeable) {
+        if (closeable != null) {
+            try {
+                closeable.close();
+            } catch (IOException ignored) {
+                // silent close
+            }
+        }
     }
 }

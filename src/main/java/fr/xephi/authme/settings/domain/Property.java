@@ -10,45 +10,27 @@ import java.util.Objects;
 /**
  * Property class, representing a <i>setting</i> that is read from the config.yml file.
  */
-public class Property<T> {
+public abstract class Property<T> {
 
-    private final PropertyType<T> type;
     private final String path;
     private final T defaultValue;
 
-    private Property(PropertyType<T> type, String path, T defaultValue) {
+    protected Property(String path, T defaultValue) {
         Objects.requireNonNull(defaultValue);
-        this.type = type;
         this.path = path;
         this.defaultValue = defaultValue;
     }
 
     /**
-     * Create a new property. See also {@link #newProperty(PropertyType, String, Object[])} for lists and
-     * {@link #newProperty(Class, String, Enum)}.
+     * Create a new string list property.
      *
-     * @param type The property type
      * @param path The property's path
-     * @param defaultValue The default value
-     * @param <T> The type of the property
-     * @return The created property
-     */
-    public static <T> Property<T> newProperty(PropertyType<T> type, String path, T defaultValue) {
-        return new Property<>(type, path, defaultValue);
-    }
-
-    /**
-     * Create a new list property.
-     *
-     * @param type The list type of the property
-     * @param path The property's path
-     * @param defaultValues The default value's items
-     * @param <U> The list type
+     * @param defaultValues The items in the default list
      * @return The created list property
      */
-    @SafeVarargs
-    public static <U> Property<List<U>> newProperty(PropertyType<List<U>> type, String path, U... defaultValues) {
-        return new Property<>(type, path, Arrays.asList(defaultValues));
+    public static Property<List<String>> newListProperty(String path, String... defaultValues) {
+        // does not have the same name as not to clash with #newProperty(String, String)
+        return new StringListProperty(path, defaultValues);
     }
 
     /**
@@ -61,36 +43,28 @@ public class Property<T> {
      * @return The created enum property
      */
     public static <E extends Enum<E>> Property<E> newProperty(Class<E> clazz, String path, E defaultValue) {
-        return new Property<>(new EnumPropertyType<>(clazz), path, defaultValue);
+        return new EnumProperty<>(clazz, path, defaultValue);
     }
 
-    // -----
-    // Overloaded convenience methods for specific types
-    // -----
     public static Property<Boolean> newProperty(String path, boolean defaultValue) {
-        return new Property<>(PropertyType.BOOLEAN, path, defaultValue);
+        return new BooleanProperty(path, defaultValue);
     }
 
     public static Property<Integer> newProperty(String path, int defaultValue) {
-        return new Property<>(PropertyType.INTEGER, path, defaultValue);
+        return new IntegerProperty(path, defaultValue);
     }
 
     public static Property<String> newProperty(String path, String defaultValue) {
-        return new Property<>(PropertyType.STRING, path, defaultValue);
+        return new StringProperty(path, defaultValue);
     }
 
-    // -----
-    // Hooks to the PropertyType methods
-    // -----
     /**
      * Get the property value from the given configuration &ndash; guaranteed to never return null.
      *
      * @param configuration The configuration to read the value from
      * @return The value, or default if not present
      */
-    public T getFromFile(FileConfiguration configuration) {
-        return type.getFromFile(this, configuration);
-    }
+    public abstract T getFromFile(FileConfiguration configuration);
 
     /**
      * Return whether or not the given configuration file contains the property.
@@ -99,7 +73,7 @@ public class Property<T> {
      * @return True if the property is present, false otherwise
      */
     public boolean isPresent(FileConfiguration configuration) {
-        return type.contains(this, configuration);
+        return configuration.contains(path);
     }
 
     /**
@@ -111,12 +85,9 @@ public class Property<T> {
      * @return The generated YAML
      */
     public String toYaml(FileConfiguration configuration, Yaml simpleYaml, Yaml singleQuoteYaml) {
-        return type.toYaml(getFromFile(configuration), simpleYaml, singleQuoteYaml);
+        return simpleYaml.dump(getFromFile(configuration));
     }
 
-    // -----
-    // Trivial getters
-    // -----
     /**
      * Return the default value of the property.
      *
@@ -138,6 +109,91 @@ public class Property<T> {
     @Override
     public String toString() {
         return "Property '" + path + "'";
+    }
+
+
+    /**
+     * Boolean property.
+     */
+    private static final class BooleanProperty extends Property<Boolean> {
+
+        public BooleanProperty(String path, Boolean defaultValue) {
+            super(path, defaultValue);
+        }
+
+        @Override
+        public Boolean getFromFile(FileConfiguration configuration) {
+            return configuration.getBoolean(getPath(), getDefaultValue());
+        }
+    }
+
+    /**
+     * Integer property.
+     */
+    private static final class IntegerProperty extends Property<Integer> {
+
+        public IntegerProperty(String path, Integer defaultValue) {
+            super(path, defaultValue);
+        }
+
+        @Override
+        public Integer getFromFile(FileConfiguration configuration) {
+            return configuration.getInt(getPath(), getDefaultValue());
+        }
+    }
+
+    /**
+     * String property.
+     */
+    private static final class StringProperty extends Property<String> {
+
+        public StringProperty(String path, String defaultValue) {
+            super(path, defaultValue);
+        }
+
+        @Override
+        public String getFromFile(FileConfiguration configuration) {
+            return configuration.getString(getPath(), getDefaultValue());
+        }
+
+        @Override
+        public String toYaml(FileConfiguration configuration, Yaml simpleYaml, Yaml singleQuoteYaml) {
+            return singleQuoteYaml.dump(getFromFile(configuration));
+        }
+    }
+
+    /**
+     * String list property.
+     */
+    private static final class StringListProperty extends Property<List<String>> {
+
+        public StringListProperty(String path, String[] defaultValues) {
+            super(path, Arrays.asList(defaultValues));
+        }
+
+        @Override
+        public List<String> getFromFile(FileConfiguration configuration) {
+            if (!configuration.isList(getPath())) {
+                return getDefaultValue();
+            }
+            return configuration.getStringList(getPath());
+        }
+
+        @Override
+        public boolean isPresent(FileConfiguration configuration) {
+            return configuration.isList(getPath());
+        }
+
+        @Override
+        public String toYaml(FileConfiguration configuration, Yaml simpleYaml, Yaml singleQuoteYaml) {
+            List<String> value = getFromFile(configuration);
+            String yaml = singleQuoteYaml.dump(value);
+            // If the property is a non-empty list we need to append a new line because it will be
+            // something like the following, which requires a new line:
+            // - 'item 1'
+            // - 'second item in list'
+            return value.isEmpty() ? yaml : "\n" + yaml;
+        }
     }
 
 }

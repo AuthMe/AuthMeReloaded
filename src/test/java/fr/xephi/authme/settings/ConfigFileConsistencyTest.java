@@ -35,10 +35,10 @@ public class ConfigFileConsistencyTest {
         // given
         File configFile = TestHelper.getJarFile(CONFIG_FILE);
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
+        SettingsMigrationService migration = new SettingsMigrationService();
 
         // when
-        boolean result = SettingsMigrationService.containsAllSettings(
-            configuration, SettingsFieldRetriever.getAllPropertyFields());
+        boolean result = migration.containsAllSettings(configuration, SettingsFieldRetriever.getAllPropertyFields());
 
         // then
         if (!result) {

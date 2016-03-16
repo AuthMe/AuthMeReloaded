@@ -31,27 +31,13 @@ public class CrazyLoginConverter implements Converter {
         this.sender = sender;
     }
 
-    /**
-     * Method getInstance.
-     *
-     * @return CrazyLoginConverter
-     */
-    public CrazyLoginConverter getInstance() {
-        return this;
-    }
-
-    /**
-     * Method run.
-     *
-     * @see java.lang.Runnable#run()
-     */
     @Override
     public void run() {
         String fileName = Settings.crazyloginFileName;
         try {
             File source = new File(AuthMe.getInstance().getDataFolder() + File.separator + fileName);
             if (!source.exists()) {
-                sender.sendMessage("Error while trying to import datas, please put " + fileName + " in AuthMe folder!");
+                sender.sendMessage("Error while trying to import data, please put " + fileName + " in AuthMe folder!");
                 return;
             }
             String line;
@@ -59,14 +45,17 @@ public class CrazyLoginConverter implements Converter {
             while ((line = users.readLine()) != null) {
                 if (line.contains("|")) {
                     String[] args = line.split("\\|");
-                    if (args.length < 2)
+                    if (args.length < 2 || "name".equalsIgnoreCase(args[0])) {
                         continue;
-                    if (args[0].equalsIgnoreCase("name"))
-                        continue;
-                    String playerName = args[0].toLowerCase();
+                    }
+                    String playerName = args[0];
                     String psw = args[1];
                     if (psw != null) {
-                        PlayerAuth auth = new PlayerAuth(playerName, psw, "127.0.0.1", System.currentTimeMillis(), playerName);
+                        PlayerAuth auth = PlayerAuth.builder()
+                            .name(playerName.toLowerCase())
+                            .realName(playerName)
+                            .password(psw, null)
+                            .build();
                         database.saveAuth(auth);
                     }
                 }

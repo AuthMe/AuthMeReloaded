@@ -3,8 +3,7 @@ package fr.xephi.authme.settings.domain;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
+import org.mockito.internal.stubbing.answers.ReturnsArgumentAt;
 
 import java.util.Arrays;
 import java.util.List;
@@ -20,9 +19,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
- * Test for {@link PropertyType} and the contained subtypes.
+ * Test for {@link Property} and the contained subtypes.
  */
-public class PropertyTypeTest {
+public class PropertyTest {
 
     private static YamlConfiguration configuration;
 
@@ -31,11 +30,11 @@ public class PropertyTypeTest {
         configuration = mock(YamlConfiguration.class);
 
         when(configuration.getBoolean(eq("bool.path.test"), anyBoolean())).thenReturn(true);
-        when(configuration.getBoolean(eq("bool.path.wrong"), anyBoolean())).thenAnswer(secondParameter());
+        when(configuration.getBoolean(eq("bool.path.wrong"), anyBoolean())).thenAnswer(new ReturnsArgumentAt(1));
         when(configuration.getInt(eq("int.path.test"), anyInt())).thenReturn(27);
-        when(configuration.getInt(eq("int.path.wrong"), anyInt())).thenAnswer(secondParameter());
+        when(configuration.getInt(eq("int.path.wrong"), anyInt())).thenAnswer(new ReturnsArgumentAt(1));
         when(configuration.getString(eq("str.path.test"), anyString())).thenReturn("Test value");
-        when(configuration.getString(eq("str.path.wrong"), anyString())).thenAnswer(secondParameter());
+        when(configuration.getString(eq("str.path.wrong"), anyString())).thenAnswer(new ReturnsArgumentAt(1));
         when(configuration.isList("list.path.test")).thenReturn(true);
         when(configuration.getStringList("list.path.test")).thenReturn(Arrays.asList("test1", "Test2", "3rd test"));
         when(configuration.isList("list.path.wrong")).thenReturn(false);
@@ -120,7 +119,7 @@ public class PropertyTypeTest {
     @Test
     public void shouldGetStringListValue() {
         // given
-        Property<List<String>> property = Property.newProperty(PropertyType.STRING_LIST, "list.path.test", "1", "b");
+        Property<List<String>> property = Property.newListProperty("list.path.test", "1", "b");
 
         // when
         List<String> result = property.getFromFile(configuration);
@@ -133,7 +132,7 @@ public class PropertyTypeTest {
     public void shouldGetStringListDefault() {
         // given
         Property<List<String>> property =
-            Property.newProperty(PropertyType.STRING_LIST, "list.path.wrong", "default", "list", "elements");
+            Property.newListProperty("list.path.wrong", "default", "list", "elements");
 
         // when
         List<String> result = property.getFromFile(configuration);
@@ -142,13 +141,4 @@ public class PropertyTypeTest {
         assertThat(result, contains("default", "list", "elements"));
     }
 
-    private static <T> Answer<T> secondParameter() {
-        return new Answer<T>() {
-            @Override
-            public T answer(InvocationOnMock invocation) throws Throwable {
-                // Return the second parameter -> the default
-                return (T) invocation.getArguments()[1];
-            }
-        };
-    }
 }

@@ -7,8 +7,8 @@ import fr.xephi.authme.settings.domain.SettingsClass;
 
 import java.util.List;
 
+import static fr.xephi.authme.settings.domain.Property.newListProperty;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
-import static fr.xephi.authme.settings.domain.PropertyType.STRING_LIST;
 
 public class SecuritySettings implements SettingsClass {
 
@@ -98,8 +98,7 @@ public class SecuritySettings implements SettingsClass {
         "- '123456'",
         "- 'password'"})
     public static final Property<List<String>> UNSAFE_PASSWORDS =
-        newProperty(STRING_LIST, "settings.security.unsafePasswords",
-            "123456", "password", "qwerty", "12345", "54321");
+        newListProperty("settings.security.unsafePasswords", "123456", "password", "qwerty", "12345", "54321");
 
     private SecuritySettings() {
     }

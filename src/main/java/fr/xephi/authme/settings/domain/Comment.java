@@ -12,6 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.FIELD)
 public @interface Comment {
 
-	String[] value();
+    String[] value();
 
 }

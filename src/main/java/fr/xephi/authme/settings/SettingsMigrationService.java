@@ -1,6 +1,5 @@
 package fr.xephi.authme.settings;
 
-import com.google.common.annotations.VisibleForTesting;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
@@ -18,25 +17,23 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_NI
 /**
  * Service for verifying that the configuration is up-to-date.
  */
-public final class SettingsMigrationService {
-
-    private SettingsMigrationService() {
-    }
+public class SettingsMigrationService {
 
     /**
-     * Checks the config file and does any necessary migrations.
+     * Checks the config file and performs any necessary migrations.
      *
      * @param configuration The file configuration to check and migrate
      * @param propertyMap The property map of all existing properties
      * @param pluginFolder The plugin folder
      * @return True if there is a change and the config must be saved, false if the config is up-to-date
      */
-    public static boolean checkAndMigrate(FileConfiguration configuration, PropertyMap propertyMap, File pluginFolder) {
-        return performMigrations(configuration, pluginFolder) || hasDeprecatedProperties(configuration)
+    public boolean checkAndMigrate(FileConfiguration configuration, PropertyMap propertyMap, File pluginFolder) {
+        return performMigrations(configuration, pluginFolder)
+            || hasDeprecatedProperties(configuration)
             || !containsAllSettings(configuration, propertyMap);
     }
 
-    private static boolean performMigrations(FileConfiguration configuration, File pluginFolder) {
+    private boolean performMigrations(FileConfiguration configuration, File pluginFolder) {
         boolean changes = false;
         if ("[a-zA-Z0-9_?]*".equals(configuration.getString(ALLOWED_NICKNAME_CHARACTERS.getPath()))) {
             configuration.set(ALLOWED_NICKNAME_CHARACTERS.getPath(), "[a-zA-Z0-9_]*");
@@ -50,8 +47,7 @@ public final class SettingsMigrationService {
             | migrateJoinLeaveMessages(configuration);
     }
 
-    @VisibleForTesting
-    static boolean containsAllSettings(FileConfiguration configuration, PropertyMap propertyMap) {
+    public boolean containsAllSettings(FileConfiguration configuration, PropertyMap propertyMap) {
         for (Property<?> property : propertyMap.keySet()) {
             if (!property.isPresent(configuration)) {
                 return false;
@@ -80,16 +76,16 @@ public final class SettingsMigrationService {
      * Check if {@code Email.mailText} is present and move it to the Email.html file if it doesn't exist yet.
      *
      * @param configuration The file configuration to verify
-     * @param dataFolder The plugin data folder
+     * @param pluginFolder The plugin data folder
      * @return True if a migration has been completed, false otherwise
      */
-    private static boolean performMailTextToFileMigration(FileConfiguration configuration, File dataFolder) {
+    private static boolean performMailTextToFileMigration(FileConfiguration configuration, File pluginFolder) {
         final String oldSettingPath = "Email.mailText";
         if (!configuration.contains(oldSettingPath)) {
             return false;
         }
 
-        final File emailFile = new File(dataFolder, "email.html");
+        final File emailFile = new File(pluginFolder, "email.html");
         final String mailText = configuration.getString(oldSettingPath)
             .replace("<playername>", "<playername />")
             .replace("<servername>", "<servername />")

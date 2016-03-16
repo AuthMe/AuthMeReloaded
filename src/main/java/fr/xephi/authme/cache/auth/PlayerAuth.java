@@ -8,20 +8,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 
 /**
+ * AuthMe player data.
  */
 public class PlayerAuth {
 
+    /** The player's name in lowercase, e.g. "xephi". */
     private String nickname;
+    /** The player's name in the correct casing, e.g. "Xephi". */
+    private String realName;
     private HashedPassword password;
+    private String email;
     private String ip;
+    private int groupId;
     private long lastLogin;
+    // Fields storing the player's quit location
     private double x;
     private double y;
     private double z;
     private String world;
-    private int groupId;
-    private String email;
-    private String realName;
 
     /**
      * @param serialized String
@@ -31,80 +35,19 @@ public class PlayerAuth {
     }
 
     /**
-     * Constructor for PlayerAuth.
+     * Constructor. Instantiate objects with the {@link #builder() builder}.
      *
-     * @param nickname String
-     * @param x        double
-     * @param y        double
-     * @param z        double
-     * @param world    String
-     * @param realName String
-     */
-    public PlayerAuth(String nickname, double x, double y, double z, String world, String realName) {
-        this(nickname, new HashedPassword(""), -1, "127.0.0.1", System.currentTimeMillis(), x, y, z, world,
-            "your@email.com", realName);
-    }
-
-    /**
-     * Constructor for PlayerAuth.
-     *
-     * @param nickname  String
-     * @param hash      String
-     * @param ip        String
-     * @param lastLogin long
-     * @param realName  String
-     */
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String realName) {
-        this(nickname, new HashedPassword(hash), -1, ip, lastLogin, 0, 0, 0, "world", "your@email.com", realName);
-    }
-
-    /**
-     * Constructor for PlayerAuth.
-     *
-     * @param nickname  String
-     * @param hash      String
-     * @param ip        String
-     * @param lastLogin long
-     * @param email     String
-     * @param realName  String
-     */
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, String email, String realName) {
-        this(nickname, new HashedPassword(hash), -1, ip, lastLogin, 0, 0, 0, "world", email, realName);
-    }
-
-    /**
-     * Constructor for PlayerAuth.
-     *
-     * @param nickname  String
-     * @param hash      String
-     * @param ip        String
-     * @param lastLogin long
-     * @param x         double
-     * @param y         double
-     * @param z         double
-     * @param world     String
-     * @param email     String
-     * @param realName  String
-     */
-    public PlayerAuth(String nickname, String hash, String ip, long lastLogin, double x, double y, double z,
-                      String world, String email, String realName) {
-        this(nickname, new HashedPassword(hash), -1, ip, lastLogin, x, y, z, world, email, realName);
-    }
-
-    /**
-     * Constructor for PlayerAuth.
-     *
-     * @param nickname  String
-     * @param password  String
-     * @param groupId   int
-     * @param ip        String
-     * @param lastLogin long
-     * @param x         double
-     * @param y         double
-     * @param z         double
-     * @param world     String
-     * @param email     String
-     * @param realName  String
+     * @param nickname  all lowercase name of the player
+     * @param password  password
+     * @param groupId   the group id
+     * @param ip        the associated ip address
+     * @param lastLogin player's last login (timestamp)
+     * @param x         quit location: x coordinate
+     * @param y         quit location: y coordinate
+     * @param z         quit location: z coordinate
+     * @param world     quit location: world name
+     * @param email     the associated email
+     * @param realName  the player's name with proper casing
      */
     private PlayerAuth(String nickname, HashedPassword password, int groupId, String ip, long lastLogin,
                        double x, double y, double z, String world, String email, String realName) {
@@ -119,24 +62,6 @@ public class PlayerAuth {
         this.groupId = groupId;
         this.email = email;
         this.realName = realName;
-    }
-
-    /**
-     * Method set.
-     *
-     * @param auth PlayerAuth
-     */
-    public void set(PlayerAuth auth) {
-        this.setEmail(auth.getEmail());
-        this.setPassword(auth.getPassword());
-        this.setIp(auth.getIp());
-        this.setLastLogin(auth.getLastLogin());
-        this.setNickname(auth.getNickname());
-        this.setQuitLocX(auth.getQuitLocX());
-        this.setQuitLocY(auth.getQuitLocY());
-        this.setQuitLocZ(auth.getQuitLocZ());
-        this.setWorld(auth.getWorld());
-        this.setRealName(auth.getRealName());
     }
 
 
