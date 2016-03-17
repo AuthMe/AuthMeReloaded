@@ -97,6 +97,7 @@ public abstract class AbstractResourceClosingTest {
     }
 
     /** Initialize the settings mock and makes it return the default of any given property by default. */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @BeforeClass
     public static void initializeSettings() throws IOException, ClassNotFoundException {
         settings = mock(NewSetting.class);

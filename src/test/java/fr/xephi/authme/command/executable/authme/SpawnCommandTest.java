@@ -35,7 +35,7 @@ public class SpawnCommandTest {
         ExecutableCommand command = new SpawnCommand();
 
         // when
-        command.executeCommand(player, Collections.EMPTY_LIST, service);
+        command.executeCommand(player, Collections.<String> emptyList(), service);
 
         // then
         verify(player).teleport(spawn);
@@ -53,7 +53,7 @@ public class SpawnCommandTest {
         ExecutableCommand command = new SpawnCommand();
 
         // when
-        command.executeCommand(player, Collections.EMPTY_LIST, service);
+        command.executeCommand(player, Collections.<String> emptyList(), service);
 
         // then
         verify(player).sendMessage(argThat(containsString("Spawn has failed")));

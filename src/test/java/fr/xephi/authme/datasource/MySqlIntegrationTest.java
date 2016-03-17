@@ -38,6 +38,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
     /**
      * Set up the settings mock to return specific values for database settings and load {@link #sqlInitialize}.
      */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     @BeforeClass
     public static void initializeSettings() throws IOException, ClassNotFoundException {
         // Check that we have an H2 driver

@@ -47,7 +47,7 @@ public class AccountsCommandTest {
     public void shouldGetAccountsOfCurrentUser() {
         // given
         given(sender.getName()).willReturn("Tester");
-        List<String> arguments = Collections.EMPTY_LIST;
+        List<String> arguments = Collections.emptyList();
         given(dataSource.getAuth("tester")).willReturn(authWithIp("123.45.67.89"));
         given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Arrays.asList("Toaster", "Pester"));
 
@@ -81,7 +81,7 @@ public class AccountsCommandTest {
         // given
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(mock(PlayerAuth.class));
-        given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.EMPTY_LIST);
+        given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.<String> emptyList());
 
         // when
         command.executeCommand(sender, arguments, service);
@@ -115,7 +115,7 @@ public class AccountsCommandTest {
     public void shouldReturnIpUnknown() {
         // given
         List<String> arguments = Collections.singletonList("123.45.67.89");
-        given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.EMPTY_LIST);
+        given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.<String> emptyList());
 
         // when
         command.executeCommand(sender, arguments, service);

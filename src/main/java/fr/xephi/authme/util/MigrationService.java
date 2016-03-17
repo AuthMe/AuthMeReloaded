@@ -31,6 +31,7 @@ public final class MigrationService {
      * @param dataSource The data source
      * @param authmeSha256 Instance to the AuthMe SHA256 encryption method implementation
      */
+    @SuppressWarnings("deprecation")
     public static void changePlainTextToSha256(NewSetting settings, DataSource dataSource,
                                                SHA256 authmeSha256) {
         if (HashAlgorithm.PLAINTEXT == settings.getProperty(SecuritySettings.PASSWORD_HASH)) {
@@ -56,6 +57,7 @@ public final class MigrationService {
      * @param dataSource The data source
      * @return The converted datasource (SQLite), or null if no migration was necessary
      */
+    @SuppressWarnings("deprecation")
     public static DataSource convertFlatfileToSqlite(NewSetting settings, DataSource dataSource) {
         if (DataSourceType.FILE == settings.getProperty(DatabaseSettings.BACKEND)) {
             ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated; it will be changed "

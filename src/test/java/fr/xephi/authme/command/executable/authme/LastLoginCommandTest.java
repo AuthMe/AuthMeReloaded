@@ -103,7 +103,7 @@ public class LastLoginCommandTest {
         ExecutableCommand command = new LastLoginCommand();
 
         // when
-        command.executeCommand(sender, Collections.EMPTY_LIST, service);
+        command.executeCommand(sender, Collections.<String> emptyList(), service);
 
         // then
         verify(dataSource).getAuth(name);

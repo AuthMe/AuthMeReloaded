@@ -112,6 +112,7 @@ public class SettingsClassConsistencyTest {
         return Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers);
     }
 
+    @SuppressWarnings("unchecked")
     private static Class<? extends SettingsClass> getSettingsClassFromFile(File file) {
         String fileName = file.getPath();
         String className = fileName

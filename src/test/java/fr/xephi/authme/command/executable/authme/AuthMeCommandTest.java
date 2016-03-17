@@ -27,7 +27,7 @@ public class AuthMeCommandTest {
         CommandService service = mock(CommandService.class);
 
         // when
-        command.executeCommand(sender, Collections.EMPTY_LIST, service);
+        command.executeCommand(sender, Collections.<String> emptyList(), service);
 
         // then
         ArgumentCaptor<String> messagesCaptor = ArgumentCaptor.forClass(String.class);

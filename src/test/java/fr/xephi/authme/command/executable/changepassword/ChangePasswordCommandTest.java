@@ -44,7 +44,7 @@ public class ChangePasswordCommandTest {
         when(commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).thenReturn(50);
         // Only allow passwords with alphanumerical characters for the test
         when(commandService.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).thenReturn("[a-zA-Z0-9]+");
-        when(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).thenReturn(Collections.EMPTY_LIST);
+        when(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).thenReturn(Collections.<String> emptyList());
     }
 
     @Test

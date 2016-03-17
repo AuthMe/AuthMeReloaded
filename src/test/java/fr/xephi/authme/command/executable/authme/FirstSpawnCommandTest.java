@@ -36,7 +36,7 @@ public class FirstSpawnCommandTest {
         ExecutableCommand command = new FirstSpawnCommand();
 
         // when
-        command.executeCommand(player, Collections.EMPTY_LIST, service);
+        command.executeCommand(player, Collections.<String> emptyList(), service);
 
         // then
         verify(player).teleport(firstSpawn);
@@ -54,7 +54,7 @@ public class FirstSpawnCommandTest {
         ExecutableCommand command = new FirstSpawnCommand();
 
         // when
-        command.executeCommand(player, Collections.EMPTY_LIST, service);
+        command.executeCommand(player, Collections.<String> emptyList(), service);
 
         // then
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
