@@ -4,7 +4,7 @@
 
 #####News:
 
-- We are going to release a stable (and working!) version of AuthMeBungee, in the meantime, a fixed version of the unofficial AuthMeBridgeBukkit plugin can be found at: https://github.com/Xephi/AuthMeReloaded/issues/557 Thanks to @beetle2k
+- Latest version of AuthMeBridge is finally compatible with latest AuthMe snapshots! ;)
 
 #####Development tools:
 
