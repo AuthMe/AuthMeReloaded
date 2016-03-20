@@ -29,11 +29,13 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
         }
     }
 
+    // TODO: fix this in 1.9
     public void register() {
-        ProtocolLibrary.getProtocolManager().addPacketListener(this);
+        ConsoleLogger.showError("The hideTablistBeforeLogin feature is temporarily disabled due to issues with 1.9 clients.");
+        //ProtocolLibrary.getProtocolManager().addPacketListener(this);
     }
 
     public void unregister() {
-        ProtocolLibrary.getProtocolManager().removePacketListener(this);
+        //ProtocolLibrary.getProtocolManager().removePacketListener(this);
     }
 }
