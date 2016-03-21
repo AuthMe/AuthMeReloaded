@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.output.MessageKey;
@@ -88,14 +89,16 @@ public class AsynchronousLogin implements Process {
         PlayerAuth pAuth = database.getAuth(name);
         if (pAuth == null) {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
-            if (LimboCache.getInstance().hasLimboPlayer(name)) {
-                LimboCache.getInstance().getLimboPlayer(name).getMessageTask().cancel();
+
+            LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
+            if (limboPlayer != null) {
+                limboPlayer.getMessageTask().cancel();
                 String[] msg = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
                     ? service.retrieveMessage(MessageKey.REGISTER_EMAIL_MESSAGE)
                     : service.retrieveMessage(MessageKey.REGISTER_MESSAGE);
                 BukkitTask messageTask = service.runTask(
                     new MessageTask(plugin, name, msg, service.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
-                LimboCache.getInstance().getLimboPlayer(name).setMessageTask(messageTask);
+                limboPlayer.setMessageTask(messageTask);
             }
             return null;
         }

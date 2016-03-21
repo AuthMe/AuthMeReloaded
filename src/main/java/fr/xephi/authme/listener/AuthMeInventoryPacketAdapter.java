@@ -103,12 +103,12 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
 
         ItemStack[] completeInventory = new ItemStack[inventorySize];
 
-        System.arraycopy(playerCrafting, 0, completeInventory, 0, playerCrafting.length);
-        System.arraycopy(armorContents, 0, completeInventory, CRAFTING_SIZE, armorContents.length);
+        System.arraycopy(playerCrafting, 0, completeInventory, 0, CRAFTING_SIZE);
+        System.arraycopy(armorContents, 0, completeInventory, CRAFTING_SIZE, ARMOR_SIZE);
 
         // storedInventory and hotbar
-        System.arraycopy(storedInventory, 0, completeInventory, CRAFTING_SIZE + ARMOR_SIZE, storedInventory.length);
-        System.arraycopy(hotbar, 0, completeInventory, CRAFTING_SIZE + ARMOR_SIZE + MAIN_SIZE, hotbar.length);
+        System.arraycopy(storedInventory, 0, completeInventory, CRAFTING_SIZE + ARMOR_SIZE, MAIN_SIZE);
+        System.arraycopy(hotbar, 0, completeInventory, CRAFTING_SIZE + ARMOR_SIZE + MAIN_SIZE, HOTBAR_SIZE);
 
         if (offHandSupported) {
             completeInventory[OFF_HAND_POSITION] = player.getInventory().getItemInOffHand();
