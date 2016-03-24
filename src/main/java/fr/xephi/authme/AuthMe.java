@@ -55,6 +55,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
@@ -136,6 +137,7 @@ public class AuthMe extends JavaPlugin {
     private IpAddressManager ipAddressManager;
     private PluginHooks pluginHooks;
     private SpawnLoader spawnLoader;
+    private AntiBot antiBot;
 
     /**
      * Get the plugin's instance.
@@ -254,19 +256,20 @@ public class AuthMe extends JavaPlugin {
         // Initialize spawn loader
         spawnLoader = new SpawnLoader(getDataFolder(), newSettings, pluginHooks);
 
+        // AntiBot delay
+        BukkitService bukkitService = new BukkitService(this);
+        antiBot = new AntiBot(messages, permsMan, bukkitService);
+
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
         commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager,
-            pluginHooks, spawnLoader);
+            pluginHooks, spawnLoader, antiBot);
 
         // Set up Metrics
         MetricsStarter.setupMetrics(plugin, newSettings);
 
         // Set console filter
         setupConsoleFilter();
-
-        // AntiBot delay
-        AntiBot.setupAntiBotService();
 
         // Download and load GeoIp.dat file if absent
         GeoLiteAPI.isDataAvailable();
@@ -304,7 +307,7 @@ public class AuthMe extends JavaPlugin {
         reloadSupportHook();
 
         // Register event listeners
-        registerEventListeners(messages, pluginHooks, spawnLoader);
+        registerEventListeners(messages, database, management, pluginHooks, spawnLoader, antiBot);
 
         // Purge on start if enabled
         autoPurge();
@@ -370,12 +373,13 @@ public class AuthMe extends JavaPlugin {
     /**
      * Register all event listeners.
      */
-    private void registerEventListeners(Messages messages, PluginHooks pluginHooks, SpawnLoader spawnLoader) {
+    private void registerEventListeners(Messages messages, DataSource dataSource, Management management,
+                                        PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot) {
         // Get the plugin manager instance
         PluginManager pluginManager = server.getPluginManager();
 
         // Register event listeners
-        pluginManager.registerEvents(new AuthMePlayerListener(this), this);
+        pluginManager.registerEvents(new AuthMePlayerListener(this, messages, dataSource, antiBot, management), this);
         pluginManager.registerEvents(new AuthMeBlockListener(), this);
         pluginManager.registerEvents(new AuthMeEntityListener(), this);
         pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks, spawnLoader), this);
@@ -427,12 +431,12 @@ public class AuthMe extends JavaPlugin {
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
                                                     PasswordSecurity passwordSecurity, NewSetting settings,
                                                     IpAddressManager ipAddressManager, PluginHooks pluginHooks,
-                                                    SpawnLoader spawnLoader) {
+                                                    SpawnLoader spawnLoader, AntiBot antiBot) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
         CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader);
+            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot);
         return new CommandHandler(commandService);
     }
 
@@ -614,15 +618,6 @@ public class AuthMe extends JavaPlugin {
         PermissionsManager manager = new PermissionsManager(Bukkit.getServer(), this, getLogger());
         manager.setup();
         return manager;
-    }
-
-    /**
-     * Get the permissions manager instance.
-     *
-     * @return Permissions Manager instance.
-     */
-    public PermissionsManager getPermissionsManager() {
-        return this.permsMan;
     }
 
     // Set the console filter to remove the passwords
@@ -812,6 +807,15 @@ public class AuthMe extends JavaPlugin {
 
         // Handle the command
         return commandHandler.processCommand(sender, commandLabel, args);
+    }
+
+    /**
+     * Get the permissions manager instance.
+     *
+     * @return Permissions Manager instance.
+     */
+    public PermissionsManager getPermissionsManager() {
+        return this.permsMan;
     }
 
     /**

@@ -1,5 +1,6 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.command.help.HelpProvider;
@@ -18,7 +19,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,34 +37,37 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link CommandService}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class CommandServiceTest {
 
-    private AuthMe authMe;
-    private CommandMapper commandMapper;
-    private HelpProvider helpProvider;
-    private Messages messages;
-    private PasswordSecurity passwordSecurity;
     private CommandService commandService;
+    @Mock
+    private AuthMe authMe;
+    @Mock
+    private CommandMapper commandMapper;
+    @Mock
+    private HelpProvider helpProvider;
+    @Mock
+    private Messages messages;
+    @Mock
+    private PasswordSecurity passwordSecurity;
+    @Mock
     private PermissionsManager permissionsManager;
+    @Mock
     private NewSetting settings;
+    @Mock
     private IpAddressManager ipAddressManager;
+    @Mock
     private PluginHooks pluginHooks;
+    @Mock
     private SpawnLoader spawnLoader;
+    @Mock
+    private AntiBot antiBot;
 
     @Before
     public void setUpService() {
-        authMe = mock(AuthMe.class);
-        commandMapper = mock(CommandMapper.class);
-        helpProvider = mock(HelpProvider.class);
-        messages = mock(Messages.class);
-        passwordSecurity = mock(PasswordSecurity.class);
-        permissionsManager = mock(PermissionsManager.class);
-        settings = mock(NewSetting.class);
-        ipAddressManager = mock(IpAddressManager.class);
-        pluginHooks = mock(PluginHooks.class);
-        spawnLoader = mock(SpawnLoader.class);
         commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader);
+            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot);
     }
 
     @Test

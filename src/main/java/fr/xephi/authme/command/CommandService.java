@@ -1,5 +1,6 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.help.HelpProvider;
@@ -34,6 +35,7 @@ public class CommandService {
     private final IpAddressManager ipAddressManager;
     private final PluginHooks pluginHooks;
     private final SpawnLoader spawnLoader;
+    private final AntiBot antiBot;
 
     /**
      * Constructor.
@@ -51,7 +53,8 @@ public class CommandService {
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
-                          IpAddressManager ipAddressManager, PluginHooks pluginHooks, SpawnLoader spawnLoader) {
+                          IpAddressManager ipAddressManager, PluginHooks pluginHooks, SpawnLoader spawnLoader,
+                          AntiBot antiBot) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
@@ -62,6 +65,7 @@ public class CommandService {
         this.ipAddressManager = ipAddressManager;
         this.pluginHooks = pluginHooks;
         this.spawnLoader = spawnLoader;
+        this.antiBot = antiBot;
     }
 
     /**
@@ -209,6 +213,10 @@ public class CommandService {
 
     public SpawnLoader getSpawnLoader() {
         return spawnLoader;
+    }
+
+    public AntiBot getAntiBot() {
+        return antiBot;
     }
 
 }
