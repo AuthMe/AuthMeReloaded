@@ -1,6 +1,7 @@
 package fr.xephi.authme;
 
 import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.util.BukkitService;
 import org.mockito.ArgumentCaptor;
 
 import java.io.File;
@@ -8,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -62,6 +64,34 @@ public final class TestHelper {
     public static void runInnerRunnable(CommandService service) {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verify(service).runTaskAsynchronously(captor.capture());
+        Runnable runnable = captor.getValue();
+        runnable.run();
+    }
+
+    /**
+     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncDelayedTask(Runnable)} method.
+     * Note that calling this method expects that there be a runnable sent to the method and will fail
+     * otherwise.
+     *
+     * @param service The mock service
+     */
+    public static void runSyncDelayedTask(BukkitService service) {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        verify(service).scheduleSyncDelayedTask(captor.capture());
+        Runnable runnable = captor.getValue();
+        runnable.run();
+    }
+
+    /**
+     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#scheduleSyncDelayedTask(Runnable, long)}
+     * method. Note that calling this method expects that there be a runnable sent to the method and will fail
+     * otherwise.
+     *
+     * @param service The mock service
+     */
+    public static void runSyncDelayedTaskWithDelay(BukkitService service) {
+        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
+        verify(service).scheduleSyncDelayedTask(captor.capture(), anyLong());
         Runnable runnable = captor.getValue();
         runnable.run();
     }

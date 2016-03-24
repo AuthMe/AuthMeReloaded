@@ -258,7 +258,7 @@ public class AuthMe extends JavaPlugin {
 
         // AntiBot delay
         BukkitService bukkitService = new BukkitService(this);
-        antiBot = new AntiBot(messages, permsMan, bukkitService);
+        antiBot = new AntiBot(newSettings, messages, permsMan, bukkitService);
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();

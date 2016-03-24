@@ -8,6 +8,11 @@ import org.bukkit.Bukkit;
  */
 public class BukkitService {
 
+    /** Number of ticks per second in the Bukkit main thread. */
+    public static final int TICKS_PER_SECOND = 20;
+    /** Number of ticks per minute. */
+    public static final int TICKS_PER_MINUTE = 60 * TICKS_PER_SECOND;
+
     private final AuthMe authMe;
 
     public BukkitService(AuthMe authMe) {

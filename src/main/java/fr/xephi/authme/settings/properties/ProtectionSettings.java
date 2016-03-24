@@ -30,7 +30,7 @@ public class ProtectionSettings implements SettingsClass {
     public static final Property<Boolean> ENABLE_ANTIBOT =
         newProperty("Protection.enableAntiBot", false);
 
-    @Comment("Max number of player allowed to login in 5 secs before enable AntiBot system automatically")
+    @Comment("Max number of players allowed to login in 5 secs before the AntiBot system is enabled automatically")
     public static final Property<Integer> ANTIBOT_SENSIBILITY =
         newProperty("Protection.antiBotSensibility", 5);
 

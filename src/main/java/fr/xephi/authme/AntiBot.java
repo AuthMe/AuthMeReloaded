@@ -4,26 +4,32 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.util.BukkitService;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
 /**
  * The AntiBot Service Management class.
  */
 public class AntiBot {
 
+    private final NewSetting settings;
     private final Messages messages;
     private final PermissionsManager permissionsManager;
     private final BukkitService bukkitService;
     private final List<String> antibotPlayers = new ArrayList<>();
     private AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
-    public AntiBot(Messages messages, PermissionsManager permissionsManager, BukkitService bukkitService) {
+    public AntiBot(NewSetting settings, Messages messages, PermissionsManager permissionsManager,
+                   BukkitService bukkitService) {
+        this.settings = settings;
         this.messages = messages;
         this.permissionsManager = permissionsManager;
         this.bukkitService = bukkitService;
@@ -32,15 +38,14 @@ public class AntiBot {
     }
 
     private void setupAntiBotService() {
-        if (!Settings.enableAntiBot) {
-            return;
+        if (settings.getProperty(ProtectionSettings.ENABLE_ANTIBOT)) {
+            bukkitService.scheduleSyncDelayedTask(new Runnable() {
+                @Override
+                public void run() {
+                    antiBotStatus = AntiBotStatus.LISTENING;
+                }
+            }, 2 * TICKS_PER_MINUTE);
         }
-        bukkitService.scheduleSyncDelayedTask(new Runnable() {
-            @Override
-            public void run() {
-                antiBotStatus = AntiBotStatus.LISTENING;
-            }
-        }, 2400);
     }
 
     public void overrideAntiBotStatus(boolean activated) {
@@ -60,9 +65,10 @@ public class AntiBot {
     public void activateAntiBot() {
         antiBotStatus = AntiBotStatus.ACTIVE;
         for (String s : messages.retrieve(MessageKey.ANTIBOT_AUTO_ENABLED_MESSAGE)) {
-            Bukkit.broadcastMessage(s);
+            bukkitService.broadcastMessage(s);
         }
 
+        final int duration = settings.getProperty(ProtectionSettings.ANTIBOT_DURATION);
         bukkitService.scheduleSyncDelayedTask(new Runnable() {
             @Override
             public void run() {
@@ -70,11 +76,11 @@ public class AntiBot {
                     antiBotStatus = AntiBotStatus.LISTENING;
                     antibotPlayers.clear();
                     for (String s : messages.retrieve(MessageKey.ANTIBOT_AUTO_DISABLED_MESSAGE)) {
-                        bukkitService.broadcastMessage(s.replace("%m", Integer.toString(Settings.antiBotDuration)));
+                        bukkitService.broadcastMessage(s.replace("%m", Integer.toString(duration)));
                     }
                 }
             }
-        }, Settings.antiBotDuration * 1200);
+        }, duration * TICKS_PER_MINUTE);
     }
 
     public void checkAntiBot(final Player player) {
@@ -86,7 +92,7 @@ public class AntiBot {
         }
 
         antibotPlayers.add(player.getName().toLowerCase());
-        if (antibotPlayers.size() > Settings.antiBotSensibility) {
+        if (antibotPlayers.size() > settings.getProperty(ProtectionSettings.ANTIBOT_SENSIBILITY)) {
             activateAntiBot();
             return;
         }
@@ -95,7 +101,7 @@ public class AntiBot {
             public void run() {
                 antibotPlayers.remove(player.getName().toLowerCase());
             }
-        }, 300);
+        }, 15 * TICKS_PER_SECOND);
     }
 
     public enum AntiBotStatus {

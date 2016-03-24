@@ -54,7 +54,7 @@ public final class Settings {
         emailRegistration, multiverse, bungee,
         banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
         disableSocialSpy, useEssentialsMotd,
-        enableProtection, enableAntiBot, recallEmail, useWelcomeMessage,
+        enableProtection, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, removeJoinMessage, removeLeaveMessage, delayJoinMessage,
         noTeleport, hideTablistBeforeLogin, denyTabcompleteBeforeLogin,
@@ -70,9 +70,7 @@ public final class Settings {
         getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
         getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
         getMailPort, maxLoginTry, captchaLength, saltLength,
-        getmaxRegPerEmail, bCryptLog2Rounds,
-        antiBotSensibility, antiBotDuration, getMaxLoginPerIp,
-        getMaxJoinPerIp;
+        getmaxRegPerEmail, bCryptLog2Rounds, getMaxLoginPerIp, getMaxJoinPerIp;
     protected static FileConfiguration configFile;
 
     /**
@@ -172,9 +170,6 @@ public final class Settings {
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = configFile.getStringList("Protection.countries");
-        enableAntiBot = configFile.getBoolean("Protection.enableAntiBot", false);
-        antiBotSensibility = configFile.getInt("Protection.antiBotSensibility", 5);
-        antiBotDuration = configFile.getInt("Protection.antiBotDuration", 10);
         forceCommands = configFile.getStringList("settings.forceCommands");
         forceCommandsAsConsole = configFile.getStringList("settings.forceCommandsAsConsole");
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
