@@ -7,37 +7,55 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 /**
  * Tests that the project's default language file contains a text for all message keys.
+ * <p>
+ * Translators can change the file name in {@link #MESSAGES_FILE} to validate their translation.
  */
 public class MessagesFileConsistencyTest {
 
-    private static final String DEFAULT_MESSAGES_FILE = "/messages/messages_en.yml";
+    private static final String MESSAGES_FILE = "/messages/messages_en.yml";
 
     @Test
     public void shouldHaveAllMessages() {
-        File file = TestHelper.getJarFile(DEFAULT_MESSAGES_FILE);
+        File file = TestHelper.getJarFile(MESSAGES_FILE);
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        List<String> errors = new ArrayList<>();
         for (MessageKey messageKey : MessageKey.values()) {
-            verifyHasMessage(messageKey, configuration);
+            validateMessage(messageKey, configuration, errors);
+        }
+
+        if (!errors.isEmpty()) {
+            fail("Validation errors in " + MESSAGES_FILE + ":\n- "
+                + StringUtils.join("\n- ", errors));
         }
     }
 
-    private static void verifyHasMessage(MessageKey messageKey, FileConfiguration configuration) {
+    private static void validateMessage(MessageKey messageKey, FileConfiguration configuration, List<String> errors) {
         final String key = messageKey.getKey();
         final String message = configuration.getString(key);
 
-        assertThat("Default messages file should have message for key '" + key + "'",
-            StringUtils.isEmpty(message), equalTo(false));
+        if (StringUtils.isEmpty(message)) {
+            errors.add("Messages file should have message for key '" + key + "'");
+            return;
+        }
 
-
+        List<String> missingTags = new ArrayList<>();
         for (String tag : messageKey.getTags()) {
-            assertThat("The message for key '" + key + "' contains the tag '" + tag + "' in the default messages file",
-                message.contains(tag), equalTo(true));
+            if (!message.contains(tag)) {
+                missingTags.add(tag);
+            }
+        }
+
+        if (!missingTags.isEmpty()) {
+            String pluralS = missingTags.size() > 1 ? "s" : "";
+            errors.add(String.format("Message with key '%s' missing tag%s: %s", key, pluralS,
+                StringUtils.join(", ", missingTags)));
         }
     }
 }
