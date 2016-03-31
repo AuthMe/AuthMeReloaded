@@ -137,8 +137,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                    <argLine>-Dfile.encoding=${projectEncoding} ${ar</argLine>
-                    <argLine>gLine}</argLine>
+                    <argLine>-Dfile.encoding=${projectEncoding} ${argLine}</argLine>
                 </configuration>
             </plugin>
             <!-- Libs Shading and Relocation -->
