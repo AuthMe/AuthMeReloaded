@@ -51,6 +51,9 @@ public class Log4JFilter implements Filter {
 
     @Override
     public Result filter(LogEvent record) {
+        if (record == null) {
+            return Result.NEUTRAL;
+        }
         return validateMessage(record.getMessage());
     }
 
