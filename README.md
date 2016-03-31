@@ -54,7 +54,7 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 #####Running Requirements:
 >- Java 1.7 (should work also with Java 1.8)
->- Spigot or CraftBukkit (1.7.10, 1.8.X or 1.9-pre1)
+>- PaperSpigot, Spigot or CraftBukkit (1.7.10, 1.8.X or 1.9.X)
 >- ProtocolLib (optional, required by the protectInventory feature)
 
 <hr>
