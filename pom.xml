@@ -63,7 +63,7 @@
         <buildNumber>Unknown</buildNumber>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkitVersion>1.9-SNAPSHOT</bukkitVersion>
+        <bukkitVersion>1.9-R0.1-SNAPSHOT</bukkitVersion>
     </properties>
 
     <!-- Jenkins profile (add the real buildNumber to the version string) -->
@@ -137,7 +137,8 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.19.1</version>
                 <configuration>
-                    <argLine>-Dfile.encoding=${projectEncoding} ${argLine}</argLine>
+                    <argLine>-Dfile.encoding=${projectEncoding} ${ar</argLine>
+                    <argLine>gLine}</argLine>
                 </configuration>
             </plugin>
             <!-- Libs Shading and Relocation -->
@@ -267,7 +268,6 @@
                 <configuration>
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
-                    <dependencyLocationsEnabled>false</dependencyLocationsEnabled>
                     <docfilessubdirs>true</docfilessubdirs>
                     <show>public</show>
                     <failOnError>false</failOnError>
