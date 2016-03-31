@@ -624,11 +624,13 @@ public class AuthMe extends JavaPlugin {
     // Set the console filter to remove the passwords
     private void setLog4JFilter() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-
             @Override
             public void run() {
-                org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-                coreLogger.addFilter(new Log4JFilter());
+                org.apache.logging.log4j.core.Logger logger;
+                logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+                logger.addFilter(new Log4JFilter());
+                logger = (org.apache.logging.log4j.core.Logger) LogManager.getLogger("net.minecraft");
+                logger.addFilter(new Log4JFilter());
             }
         });
     }
