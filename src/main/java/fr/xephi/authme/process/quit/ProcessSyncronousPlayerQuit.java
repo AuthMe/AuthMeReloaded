@@ -38,9 +38,6 @@ public class ProcessSyncronousPlayerQuit implements Runnable {
         if (needToChange) {
             player.setOp(isOp);
         }
-        try {
-            player.getVehicle().eject();
-        } catch (Exception ignored) {
-        }
+        player.leaveVehicle();
     }
 }

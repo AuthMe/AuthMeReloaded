@@ -6,7 +6,6 @@ import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -145,19 +144,9 @@ public class DataManager {
         }
         int i = 0;
         for (String name : cleared) {
-            permsMan.removeAllGroups(getOnlinePlayerLower(name));
+            permsMan.removeAllGroups(Utils.getPlayer(name));
             i++;
         }
         ConsoleLogger.info("AutoPurge: Removed permissions from " + i + " player(s).");
-    }
-
-    private Player getOnlinePlayerLower(String name) {
-        name = name.toLowerCase();
-        for (Player player : Utils.getOnlinePlayers()) {
-            if (player.getName().equalsIgnoreCase(name)) {
-                return player;
-            }
-        }
-        return null;
     }
 }
