@@ -167,6 +167,7 @@ public class AntiBotTest {
         antiBot.checkAntiBot(player);
 
         // then
+        @SuppressWarnings("unchecked")
         List<String> playerList = (List<String>) ReflectionTestUtils
             .getFieldValue(AntiBot.class, antiBot, "antibotPlayers");
         assertThat(playerList, hasSize(1));
@@ -196,6 +197,7 @@ public class AntiBotTest {
         antiBot.checkAntiBot(player);
 
         // then
+        @SuppressWarnings("rawtypes")
         List<?> playerList = (List) ReflectionTestUtils.getFieldValue(AntiBot.class, antiBot, "antibotPlayers");
         assertThat(playerList, empty());
         verify(bukkitService, never()).scheduleSyncDelayedTask(any(Runnable.class), anyLong());

@@ -38,7 +38,7 @@ public final class SettingsFieldRetriever {
         for (Class<?> clazz : CONFIGURATION_CLASSES) {
             Field[] declaredFields = clazz.getDeclaredFields();
             for (Field field : declaredFields) {
-                Property property = getPropertyField(field);
+                Property<?> property = getPropertyField(field);
                 if (property != null) {
                     properties.put(property, getCommentsForField(field));
                 }
@@ -64,7 +64,7 @@ public final class SettingsFieldRetriever {
         field.setAccessible(true);
         if (field.isAccessible() && Property.class.equals(field.getType()) && Modifier.isStatic(field.getModifiers())) {
             try {
-                return (Property) field.get(null);
+                return (Property<?>) field.get(null);
             } catch (IllegalAccessException e) {
                 throw new IllegalStateException("Could not fetch field '" + field.getName() + "' from class '"
                     + field.getDeclaringClass().getSimpleName() + "': " + StringUtils.formatException(e));

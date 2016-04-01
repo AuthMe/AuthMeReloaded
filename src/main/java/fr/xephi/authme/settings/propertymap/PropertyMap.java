@@ -31,7 +31,7 @@ public class PropertyMap {
      * @param property The property to add
      * @param comments The comments associated to the property
      */
-    public void put(Property property, String[] comments) {
+    public void put(Property<?> property, String[] comments) {
         comparator.add(property);
         map.put(property, comments);
     }
