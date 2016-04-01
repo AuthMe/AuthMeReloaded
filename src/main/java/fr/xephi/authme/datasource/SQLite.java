@@ -31,8 +31,9 @@ public class SQLite implements DataSource {
      * Constructor for SQLite.
      *
      * @param settings The settings instance
+     *
      * @throws ClassNotFoundException if no driver could be found for the datasource
-     * @throws SQLException when initialization of a SQL datasource failed
+     * @throws SQLException           when initialization of a SQL datasource failed
      */
     public SQLite(NewSetting settings) throws ClassNotFoundException, SQLException {
         this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
@@ -54,6 +55,10 @@ public class SQLite implements DataSource {
         this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
         this.col = new Columns(settings);
         this.con = connection;
+    }
+
+    private static void logSqlException(SQLException e) {
+        ConsoleLogger.logException("Error while executing SQL statement:", e);
     }
 
     private synchronized void connect() throws ClassNotFoundException, SQLException {
@@ -283,24 +288,23 @@ public class SQLite implements DataSource {
 
     @Override
     public List<String> autoPurgeDatabase(long until) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
         List<String> list = new ArrayList<>();
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;");
-            pst.setLong(1, until);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                list.add(rs.getString(col.NAME));
+        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        try (PreparedStatement selectPst = con.prepareStatement(select);
+             PreparedStatement deletePst = con.prepareStatement(delete)) {
+            selectPst.setLong(1, until);
+            try (ResultSet rs = selectPst.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getString(col.NAME));
+                }
             }
-            return list;
+            deletePst.setLong(1, until);
+            deletePst.executeUpdate();
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(rs);
-            close(pst);
         }
-        return new ArrayList<>();
+        return list;
     }
 
     @Override
@@ -521,7 +525,7 @@ public class SQLite implements DataSource {
     @Override
     public boolean updateRealName(String user, String realName) {
         String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
-        try(PreparedStatement pst = con.prepareStatement(sql)) {
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, realName);
             pst.setString(2, user);
             pst.executeUpdate();
@@ -535,7 +539,7 @@ public class SQLite implements DataSource {
     @Override
     public boolean updateIp(String user, String ip) {
         String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
-        try(PreparedStatement pst = con.prepareStatement(sql)) {
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, ip);
             pst.setString(2, user);
             pst.executeUpdate();
@@ -590,10 +594,6 @@ public class SQLite implements DataSource {
             close(rs);
         }
         return false;
-    }
-
-    private static void logSqlException(SQLException e) {
-        ConsoleLogger.logException("Error while executing SQL statement:", e);
     }
 
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
