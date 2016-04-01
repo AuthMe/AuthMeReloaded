@@ -1,7 +1,10 @@
 package fr.xephi.authme.cache;
 
 import com.google.common.base.Charsets;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.google.common.io.Resources;
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.HooksSettings;
@@ -16,10 +19,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * Stateful manager for looking up IP address appropriately, including caching.
  */
 public class IpAddressManager {
-
-    /** Whether or not to use the VeryGames API for IP lookups. */
+    /**
+     * Whether or not to use the VeryGames API or BungeeCord for IP lookups.
+     */
     private final boolean useVeryGamesIpCheck;
-    /** Cache for lookups via the VeryGames API. */
+    private final boolean useBungee;
+    /**
+     * Cache for lookups.
+     */
     private final ConcurrentHashMap<String, String> ipCache;
 
     /**
@@ -29,6 +36,7 @@ public class IpAddressManager {
      */
     public IpAddressManager(NewSetting settings) {
         this.useVeryGamesIpCheck = settings.getProperty(HooksSettings.ENABLE_VERYGAMES_IP_CHECK);
+        this.useBungee = settings.getProperty(HooksSettings.BUNGEECORD);
         this.ipCache = new ConcurrentHashMap<>();
     }
 
@@ -37,36 +45,40 @@ public class IpAddressManager {
      * VeryGames API will be returned.
      *
      * @param player The player to look up
+     *
      * @return The IP address of the player
      */
     public String getPlayerIp(Player player) {
-        if (useVeryGamesIpCheck) {
-            final String playerName = player.getName().toLowerCase();
-            final String cachedValue = ipCache.get(playerName);
-            if (cachedValue != null) {
-                return cachedValue;
-            }
+        final String playerName = player.getName().toLowerCase();
+        final String cachedValue = ipCache.get(playerName);
+        if (cachedValue != null) {
+            return cachedValue;
+        }
 
-            final String plainIp = player.getAddress().getAddress().getHostAddress();
+        final String plainIp = player.getAddress().getAddress().getHostAddress();
+        if (useBungee) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("IP");
+            player.sendPluginMessage(AuthMe.getInstance(), "BungeeCord", out.toByteArray());
+        }
+        if (useVeryGamesIpCheck) {
             String veryGamesResult = getVeryGamesIp(plainIp, player.getAddress().getPort());
             if (veryGamesResult != null) {
                 ipCache.put(playerName, veryGamesResult);
                 return veryGamesResult;
             }
         }
-        return player.getAddress().getAddress().getHostAddress();
+        return plainIp;
     }
 
     /**
      * Add a player to the IP address cache.
      *
      * @param player The player to add or update the cache entry for
-     * @param ip The IP address to add
+     * @param ip     The IP address to add
      */
     public void addCache(String player, String ip) {
-        if (useVeryGamesIpCheck) {
-            ipCache.put(player.toLowerCase(), ip);
-        }
+        ipCache.put(player.toLowerCase(), ip);
     }
 
     /**
@@ -75,9 +87,7 @@ public class IpAddressManager {
      * @param player The player to remove
      */
     public void removeCache(String player) {
-        if (useVeryGamesIpCheck) {
-            ipCache.remove(player.toLowerCase());
-        }
+        ipCache.remove(player.toLowerCase());
     }
 
     // returns null if IP could not be looked up
