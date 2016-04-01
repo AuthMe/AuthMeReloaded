@@ -7,9 +7,9 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 
-import static fr.xephi.authme.datasource.AuthMeMatchers.equalToHash;
-import static fr.xephi.authme.datasource.AuthMeMatchers.hasAuthBasicData;
-import static fr.xephi.authme.datasource.AuthMeMatchers.hasAuthLocation;
+import static fr.xephi.authme.AuthMeMatchers.equalToHash;
+import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
+import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -129,15 +129,9 @@ public abstract class AbstractDataSourceIntegrationTest {
         // then
         assertThat(response, equalTo(true));
         assertThat(authList, hasSize(2));
+        assertThat(authList, hasItem(hasAuthBasicData("bobby", "Bobby", "your@email.com", "123.45.67.89")));
         assertThat(newAuthList, hasSize(3));
-        boolean hasBobby = false;
-        for (PlayerAuth auth : authList) {
-            if (auth.getNickname().equals("bobby")) {
-                hasBobby = true;
-                break;
-            }
-        }
-        assertThat(hasBobby, equalTo(true));
+        assertThat(newAuthList, hasItem(hasAuthBasicData("bobby", "Bobby", "your@email.com", "123.45.67.89")));
     }
 
     @Test
@@ -290,6 +284,20 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(updatedList, hasSize(4));
         assertThat(updatedList, hasItem(equalTo("bobby")));
         assertThat(updatedList, hasItem(equalTo("test-1")));
+    }
+
+    @Test
+    public void shouldUpdateRealName() {
+        // given
+        DataSource dataSource = getDataSource();
+
+        // when
+        boolean response1 = dataSource.updateRealName("bobby", "BOBBY");
+        boolean response2 = dataSource.updateRealName("notExists", "NOTEXISTS");
+
+        // then
+        assertThat(response1 && response2, equalTo(true));
+        assertThat(dataSource.getAuth("bobby"), hasAuthBasicData("bobby", "BOBBY", "your@email.com", "123.45.67.89"));
     }
 
 }

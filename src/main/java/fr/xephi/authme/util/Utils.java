@@ -9,10 +9,10 @@ import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-
 import fr.xephi.authme.settings.properties.EmailSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -154,8 +154,7 @@ public final class Utils {
 
     public static boolean isUnrestricted(Player player) {
         return Settings.isAllowRestrictedIp
-            && !Settings.getUnrestrictedName.isEmpty()
-            && (Settings.getUnrestrictedName.contains(player.getName().toLowerCase()));
+            && Settings.getUnrestrictedName.contains(player.getName().toLowerCase());
     }
 
     public static void packCoords(double x, double y, double z, String w, final Player pl) {
@@ -216,8 +215,7 @@ public final class Utils {
                 ConsoleLogger.showError("Unknown list of online players of type " + type);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            ConsoleLogger.showError("Could not retrieve list of online players: ["
-                + e.getClass().getName() + "] " + e.getMessage());
+            ConsoleLogger.logException("Could not retrieve list of online players:", e);
         }
         return Collections.emptyList();
     }
@@ -242,8 +240,7 @@ public final class Utils {
     }
 
     public static boolean isNPC(Player player) {
-        return player.hasMetadata("NPC") || plugin.combatTagPlus != null
-            && plugin.combatTagPlus.getNpcPlayerHelper().isNpc(player);
+        return player.hasMetadata("NPC") || plugin.getPluginHooks().isNpcInCombatTagPlus(player);
     }
 
     public static void teleportToSpawn(Player player) {
@@ -281,8 +278,16 @@ public final class Utils {
         return false;
     }
 
-    /**
-     */
+    public static String getUUIDorName(OfflinePlayer player) {
+        String uuidOrName;
+        try {
+            uuidOrName = player.getUniqueId().toString();
+        } catch (Exception ignore) {
+            uuidOrName = player.getName();
+        }
+        return uuidOrName;
+    }
+
     public enum GroupType {
         UNREGISTERED,
         REGISTERED,

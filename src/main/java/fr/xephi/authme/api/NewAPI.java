@@ -13,7 +13,10 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
 
 /**
- * The current API of AuthMe.
+ * The current API of AuthMe. Recommended method of retrieving the API object:
+ * <code>
+ * NewAPI authmeApi = NewAPI.getInstance();
+ * </code>
  */
 public class NewAPI {
 
@@ -23,7 +26,7 @@ public class NewAPI {
     /**
      * Constructor for NewAPI.
      *
-     * @param plugin AuthMe
+     * @param plugin The AuthMe plugin instance
      */
     public NewAPI(AuthMe plugin) {
         this.plugin = plugin;
@@ -32,16 +35,17 @@ public class NewAPI {
     /**
      * Constructor for NewAPI.
      *
-     * @param server Server
+     * @param server The server instance
      */
     public NewAPI(Server server) {
         this.plugin = (AuthMe) server.getPluginManager().getPlugin("AuthMe");
     }
 
     /**
-     * Hook into AuthMe
+     * Get the API object for AuthMe.
      *
-     * @return The API object
+     * @return The API object, or null if the AuthMe plugin instance could not be retrieved
+     * from the server environment
      */
     public static NewAPI getInstance() {
         if (singleton != null) {
@@ -66,10 +70,19 @@ public class NewAPI {
     }
 
     /**
+     * Gather the version number of the plugin.
+     * This can be used to determine whether certain API features are available or not.
+     *
+     * @return Plugin version identifier as a string.
+     */
+    public String getPluginVersion() {
+        return AuthMe.getPluginVersion();
+    }
+
+    /**
      * Return whether the given player is authenticated.
      *
      * @param player The player to verify
-     *
      * @return true if the player is authenticated
      */
     public boolean isAuthenticated(Player player) {
@@ -77,18 +90,22 @@ public class NewAPI {
     }
 
     /**
-     * @param player a Player
+     * Check whether the given player is an NPC.
      *
-     * @return true if player is a npc
+     * @param player The player to verify
+     * @return true if the player is an npc
      */
     public boolean isNPC(Player player) {
         return Utils.isNPC(player);
     }
 
     /**
-     * @param player a Player
+     * Check whether the given player is unrestricted. For such players, AuthMe will not require
+     * them to authenticate.
      *
+     * @param player The player to verify
      * @return true if the player is unrestricted
+     * @see fr.xephi.authme.settings.properties.RestrictionSettings#UNRESTRICTED_NAMES
      */
     public boolean isUnrestricted(Player player) {
         return Utils.isUnrestricted(player);
@@ -97,30 +114,21 @@ public class NewAPI {
     /**
      * Get the last location of a player.
      *
-     * @param player Player The player to process
-     *
+     * @param player The player to process
      * @return Location The location of the player
      */
     public Location getLastLocation(Player player) {
-        try {
-            PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName());
-
-            if (auth != null) {
-                return new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
-            } else {
-                return null;
-            }
-
-        } catch (NullPointerException ex) {
-            return null;
+        PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName());
+        if (auth != null) {
+            return new Location(Bukkit.getWorld(auth.getWorld()), auth.getQuitLocX(), auth.getQuitLocY(), auth.getQuitLocZ());
         }
+        return null;
     }
 
     /**
      * Return whether the player is registered.
      *
      * @param playerName The player name to check
-     *
      * @return true if player is registered, false otherwise
      */
     public boolean isRegistered(String playerName) {
@@ -133,7 +141,6 @@ public class NewAPI {
      *
      * @param playerName      The player to check the password for
      * @param passwordToCheck The password to check
-     *
      * @return true if the password is correct, false otherwise
      */
     public boolean checkPassword(String playerName, String passwordToCheck) {
@@ -141,11 +148,10 @@ public class NewAPI {
     }
 
     /**
-     * Register a player.
+     * Register a player with the given password.
      *
      * @param playerName The player to register
      * @param password   The password to register the player with
-     *
      * @return true if the player was registered successfully
      */
     public boolean registerPlayer(String playerName, String password) {
@@ -163,7 +169,7 @@ public class NewAPI {
     }
 
     /**
-     * Force a player to login.
+     * Force a player to login, i.e. the player is logged in without needing his password.
      *
      * @param player The player to log in
      */
@@ -181,7 +187,7 @@ public class NewAPI {
     }
 
     /**
-     * Force a player to register.
+     * Register a player with the given password.
      *
      * @param player   The player to register
      * @param password The password to use
@@ -191,7 +197,7 @@ public class NewAPI {
     }
 
     /**
-     * Force a player to unregister.
+     * Unregister a player from AuthMe.
      *
      * @param player The player to unregister
      */

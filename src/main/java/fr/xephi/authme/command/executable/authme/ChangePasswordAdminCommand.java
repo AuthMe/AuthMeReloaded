@@ -2,7 +2,6 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
@@ -41,6 +40,8 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
             commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
             return;
         }
+        // TODO #602 20160312: The UNSAFE_PASSWORDS should be all lowercase
+        // -> introduce a lowercase String list property type
         if (commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(playerPassLowerCase)) {
             commandService.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
             return;
@@ -53,8 +54,8 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
             public void run() {
                 DataSource dataSource = commandService.getDataSource();
                 PlayerAuth auth = null;
-                if (PlayerCache.getInstance().isAuthenticated(playerNameLowerCase)) {
-                    auth = PlayerCache.getInstance().getAuth(playerNameLowerCase);
+                if (commandService.getPlayerCache().isAuthenticated(playerNameLowerCase)) {
+                    auth = commandService.getPlayerCache().getAuth(playerNameLowerCase);
                 } else if (dataSource.isAuthAvailable(playerNameLowerCase)) {
                     auth = dataSource.getAuth(playerNameLowerCase);
                 }

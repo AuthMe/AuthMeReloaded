@@ -22,9 +22,9 @@ import java.util.Map.Entry;
  */
 public class RakamakConverter implements Converter {
 
-    public final AuthMe instance;
-    public final DataSource database;
-    public final CommandSender sender;
+    private final AuthMe instance;
+    private final DataSource database;
+    private final CommandSender sender;
 
     public RakamakConverter(AuthMe instance, CommandSender sender) {
         this.instance = instance;

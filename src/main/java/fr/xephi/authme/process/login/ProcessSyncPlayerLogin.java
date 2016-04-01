@@ -38,7 +38,6 @@ public class ProcessSyncPlayerLogin implements Runnable {
     private final String name;
     private final PlayerAuth auth;
     private final AuthMe plugin;
-    private final DataSource database;
     private final PluginManager pm;
     private final JsonCache playerCache;
     private final NewSetting settings;
@@ -54,7 +53,6 @@ public class ProcessSyncPlayerLogin implements Runnable {
     public ProcessSyncPlayerLogin(Player player, AuthMe plugin,
                                   DataSource database, NewSetting settings) {
         this.plugin = plugin;
-        this.database = database;
         this.pm = plugin.getServer().getPluginManager();
         this.player = player;
         this.name = player.getName().toLowerCase();
@@ -69,7 +67,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
     }
 
     private void restoreOpState() {
-        player.setOp(limbo.getOperator());
+        player.setOp(limbo.isOperator());
     }
 
     private void packQuitLocation() {

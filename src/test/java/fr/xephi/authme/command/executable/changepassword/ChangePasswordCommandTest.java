@@ -7,8 +7,6 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.ChangePasswordTask;
-import fr.xephi.authme.util.WrapperMock;
-import org.bukkit.Server;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.any;
@@ -35,21 +34,17 @@ import static org.mockito.Mockito.when;
  */
 public class ChangePasswordCommandTest {
 
-    private WrapperMock wrapperMock;
-    private PlayerCache cacheMock;
     private CommandService commandService;
 
     @Before
     public void setUpMocks() {
-        wrapperMock = WrapperMock.createInstance();
-        cacheMock = wrapperMock.getPlayerCache();
         commandService = mock(CommandService.class);
 
         when(commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).thenReturn(2);
         when(commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).thenReturn(50);
         // Only allow passwords with alphanumerical characters for the test
         when(commandService.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).thenReturn("[a-zA-Z0-9]+");
-        when(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).thenReturn(Collections.EMPTY_LIST);
+        when(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).thenReturn(Collections.<String> emptyList());
     }
 
     @Test
@@ -62,7 +57,9 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
-        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(sender).sendMessage(captor.capture());
+        assertThat(captor.getValue(), containsString("only for players"));
     }
 
     @Test
@@ -76,7 +73,6 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(commandService).send(sender, MessageKey.NOT_LOGGED_IN);
-        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -90,7 +86,6 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(commandService).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
-        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
 
@@ -105,7 +100,6 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(commandService).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -120,7 +114,6 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -135,7 +128,6 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -151,7 +143,6 @@ public class ChangePasswordCommandTest {
 
         // then
         verify(commandService).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
-        assertThat(wrapperMock.wasMockCalled(Server.class), equalTo(false));
     }
 
     @Test
@@ -175,7 +166,9 @@ public class ChangePasswordCommandTest {
     private Player initPlayerWithName(String name, boolean loggedIn) {
         Player player = mock(Player.class);
         when(player.getName()).thenReturn(name);
-        when(cacheMock.isAuthenticated(name)).thenReturn(loggedIn);
+        PlayerCache playerCache = mock(PlayerCache.class);
+        when(playerCache.isAuthenticated(name)).thenReturn(loggedIn);
+        when(commandService.getPlayerCache()).thenReturn(playerCache);
         return player;
     }
 

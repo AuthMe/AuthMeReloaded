@@ -5,6 +5,8 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.converter.ForceFlatToSqlite;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
+import fr.xephi.authme.datasource.FlatFile;
+import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.SHA256;
@@ -29,6 +31,7 @@ public final class MigrationService {
      * @param dataSource The data source
      * @param authmeSha256 Instance to the AuthMe SHA256 encryption method implementation
      */
+    @SuppressWarnings("deprecation")
     public static void changePlainTextToSha256(NewSetting settings, DataSource dataSource,
                                                SHA256 authmeSha256) {
         if (HashAlgorithm.PLAINTEXT == settings.getProperty(SecuritySettings.PASSWORD_HASH)) {
@@ -54,16 +57,22 @@ public final class MigrationService {
      * @param dataSource The data source
      * @return The converted datasource (SQLite), or null if no migration was necessary
      */
+    @SuppressWarnings("deprecation")
     public static DataSource convertFlatfileToSqlite(NewSetting settings, DataSource dataSource) {
         if (DataSourceType.FILE == settings.getProperty(DatabaseSettings.BACKEND)) {
             ConsoleLogger.showError("FlatFile backend has been detected and is now deprecated; it will be changed "
                 + "to SQLite... Connection will be impossible until conversion is done!");
-            ForceFlatToSqlite converter = new ForceFlatToSqlite(dataSource, settings);
-            DataSource result = converter.run();
-            if (result == null) {
-                throw new IllegalStateException("Error during conversion from flatfile to SQLite");
-            } else {
-                return result;
+            FlatFile flatFile = (FlatFile) dataSource;
+            try {
+                SQLite sqlite = new SQLite(settings);
+                ForceFlatToSqlite converter = new ForceFlatToSqlite(flatFile, sqlite);
+                converter.run();
+                settings.setProperty(DatabaseSettings.BACKEND, DataSourceType.SQLITE);
+                settings.save();
+                return sqlite;
+            } catch (Exception e) {
+                ConsoleLogger.logException("Error during conversion from Flatfile to SQLite", e);
+                throw new IllegalStateException(e);
             }
         }
         return null;

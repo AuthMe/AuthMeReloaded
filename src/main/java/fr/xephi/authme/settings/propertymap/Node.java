@@ -1,5 +1,7 @@
 package fr.xephi.authme.settings.propertymap;
 
+import fr.xephi.authme.ConsoleLogger;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,14 +39,13 @@ final class Node {
     }
 
     /**
-     * Add a node to the root, creating any intermediary children that don't exist.
+     * Add a child node, creating any intermediary children that don't exist.
      *
-     * @param root The root to add the path to
      * @param fullPath The entire path of the node to add, separate by periods
      */
-    public static void addNode(Node root, String fullPath) {
+    public void addNode(String fullPath) {
         String[] pathParts = fullPath.split("\\.");
-        Node parent = root;
+        Node parent = this;
         for (String part : pathParts) {
             Node child = parent.getChild(part);
             if (child == null) {
@@ -59,17 +60,16 @@ final class Node {
      * Compare two nodes by this class' sorting behavior (insertion order).
      * Note that this method assumes that both supplied paths exist in the tree.
      *
-     * @param root The root of the tree
      * @param fullPath1 The full path to the first node
      * @param fullPath2 The full path to the second node
      * @return The comparison result, in the same format as {@link Comparable#compareTo}
      */
-    public static int compare(Node root, String fullPath1, String fullPath2) {
+    public int compare(String fullPath1, String fullPath2) {
         String[] path1 = fullPath1.split("\\.");
         String[] path2 = fullPath2.split("\\.");
 
         int commonCount = 0;
-        Node commonNode = root;
+        Node commonNode = this;
         while (commonCount < path1.length && commonCount < path2.length
                && path1[commonCount].equals(path2[commonCount]) && commonNode != null) {
             commonNode = commonNode.getChild(path1[commonCount]);
@@ -77,7 +77,7 @@ final class Node {
         }
 
         if (commonNode == null) {
-            System.err.println("Could not find common node for '" + fullPath1 + "' at index " + commonCount);
+            ConsoleLogger.showError("Could not find common node for '" + fullPath1 + "' at index " + commonCount);
             return fullPath1.compareTo(fullPath2); // fallback
         } else if (commonCount >= path1.length || commonCount >= path2.length) {
             return Integer.compare(path1.length, path2.length);

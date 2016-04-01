@@ -9,10 +9,12 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
@@ -58,10 +60,17 @@ public class AuthMePlayerListener implements Listener {
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
     private final AuthMe plugin;
     private final Messages m;
+    private final DataSource dataSource;
+    private final AntiBot antiBot;
+    private final Management management;
 
-    public AuthMePlayerListener(AuthMe plugin) {
-        this.m = plugin.getMessages();
+    public AuthMePlayerListener(AuthMe plugin, Messages messages, DataSource dataSource, AntiBot antiBot,
+                                Management management) {
         this.plugin = plugin;
+        this.m = messages;
+        this.dataSource = dataSource;
+        this.antiBot = antiBot;
+        this.management = management;
     }
 
     private void handleChat(AsyncPlayerChatEvent event) {
@@ -80,15 +89,14 @@ public class AuthMePlayerListener implements Listener {
         }
 
         event.setCancelled(true);
-        sendLoginRegisterMSG(player);
+        sendLoginOrRegisterMessage(player);
     }
 
-    // TODO: new name
-    private void sendLoginRegisterMSG(final Player player) {
+    private void sendLoginOrRegisterMessage(final Player player) {
         plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
             @Override
             public void run() {
-                if (plugin.getDataSource().isAuthAvailable(player.getName().toLowerCase())) {
+                if (dataSource.isAuthAvailable(player.getName().toLowerCase())) {
                     m.send(player, MessageKey.LOGIN_MESSAGE);
                 } else {
                     if (Settings.emailRegistration) {
@@ -117,7 +125,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
         event.setCancelled(true);
-        sendLoginRegisterMSG(event.getPlayer());
+        sendLoginOrRegisterMessage(event.getPlayer());
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
@@ -230,14 +238,14 @@ public class AuthMePlayerListener implements Listener {
         Bukkit.getScheduler().runTask(plugin, new Runnable() {
             @Override
             public void run() {
-                plugin.getManagement().performJoin(player);
+                management.performJoin(player);
             }
         });
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
-        PlayerAuth auth = plugin.getDataSource().getAuth(event.getName());
+        PlayerAuth auth = dataSource.getAuth(event.getName());
         if (Settings.preventOtherCase && auth != null && auth.getRealName() != null) {
             String realName = auth.getRealName();
             if (!realName.isEmpty() && !realName.equals("Player") && !realName.equals(event.getName())) {
@@ -246,7 +254,7 @@ public class AuthMePlayerListener implements Listener {
                 return;
             }
             if (realName.isEmpty() || realName.equals("Player")) {
-                plugin.getDataSource().updateRealName(event.getName().toLowerCase(), event.getName());
+                dataSource.updateRealName(event.getName().toLowerCase(), event.getName());
             }
         }
 
@@ -320,7 +328,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         final String name = player.getName().toLowerCase();
-        boolean isAuthAvailable = plugin.getDataSource().isAuthAvailable(name);
+        boolean isAuthAvailable = dataSource.isAuthAvailable(name);
 
         if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
             if (Settings.antiBotInAction) {
@@ -346,7 +354,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        AntiBot.checkAntiBot(player);
+        antiBot.checkAntiBot(player);
 
         if (Settings.bungee) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -367,7 +375,7 @@ public class AuthMePlayerListener implements Listener {
             event.setQuitMessage(null);
         }
 
-        plugin.getManagement().performQuit(player, false);
+        management.performQuit(player, false);
     }
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
@@ -493,13 +501,13 @@ public class AuthMePlayerListener implements Listener {
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
         Location spawn = plugin.getSpawnLocation(player);
-        if (Settings.isSaveQuitLocationEnabled && plugin.getDataSource().isAuthAvailable(name)) {
+        if (Settings.isSaveQuitLocationEnabled && dataSource.isAuthAvailable(name)) {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
                 .realName(player.getName())
                 .location(spawn)
                 .build();
-            plugin.getDataSource().updateQuitLoc(auth);
+            dataSource.updateQuitLoc(auth);
         }
         if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);

@@ -28,7 +28,7 @@ public class PlayerCommandTest {
         PlayerCommandImpl command = new PlayerCommandImpl();
 
         // when
-        command.executeCommand(sender, Collections.EMPTY_LIST, mock(CommandService.class));
+        command.executeCommand(sender, Collections.<String> emptyList(), mock(CommandService.class));
 
         // then
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -58,7 +58,7 @@ public class PlayerCommandTest {
         PlayerCommandWithAlt command = new PlayerCommandWithAlt();
 
         // when
-        command.executeCommand(sender, Collections.EMPTY_LIST, mock(CommandService.class));
+        command.executeCommand(sender, Collections.<String> emptyList(), mock(CommandService.class));
 
         // then
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);

@@ -121,8 +121,6 @@ public interface DataSource {
      */
     void close();
 
-    void reload();
-
     /**
      * Method purgeBanned.
      *
@@ -188,5 +186,10 @@ public interface DataSource {
     List<PlayerAuth> getLoggedPlayers();
 
     boolean isEmailStored(String email);
+
+    /**
+     * Reload the data source.
+     */
+    void reload();
 
 }

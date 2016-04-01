@@ -8,6 +8,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
@@ -59,14 +60,14 @@ public class UnregisterAdminCommand implements ExecutableCommand {
             BukkitScheduler scheduler = sender.getServer().getScheduler();
             if (timeOut != 0) {
                 BukkitTask id = scheduler.runTaskLater(plugin, new TimeoutTask(plugin, playerNameLowerCase, target), timeOut);
-                LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTaskId(id);
+                LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTask(id);
             }
-            LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTaskId(
+            LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTask(
                 scheduler.runTask(
                     plugin, new MessageTask(plugin, playerNameLowerCase, MessageKey.REGISTER_MESSAGE, interval)
                 )
             );
-            if (Settings.applyBlindEffect) {
+            if (commandService.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
                 target.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
             }
             commandService.send(target, MessageKey.UNREGISTERED_SUCCESS);

@@ -65,6 +65,11 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
+    public void reload() {
+        source.reload();
+    }
+
+    @Override
     public synchronized boolean isAuthAvailable(String user) {
         return getAuth(user) != null;
     }
@@ -160,12 +165,6 @@ public class CacheDataSource implements DataSource {
         } catch (InterruptedException e) {
             ConsoleLogger.writeStackTrace(e);
         }
-    }
-
-    @Override
-    public void reload() { // unused method
-        source.reload();
-        cachedAuths.invalidateAll();
     }
 
     @Override

@@ -3,20 +3,23 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.PurgeSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 import java.util.Calendar;
 import java.util.List;
 
+/**
+ * Command for purging the data of players which have not been since for a given number
+ * of days. Depending on the settings, this removes player data in third-party plugins as well.
+ */
 public class PurgeCommand implements ExecutableCommand {
+
+    private static final int MINIMUM_LAST_SEEN_DAYS = 30;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        // AuthMe plugin instance
-        AuthMe plugin = AuthMe.getInstance();
-
         // Get the days parameter
         String daysStr = arguments.get(0);
 
@@ -30,8 +33,9 @@ public class PurgeCommand implements ExecutableCommand {
         }
 
         // Validate the value
-        if (days < 30) {
-            sender.sendMessage(ChatColor.RED + "You can only purge data older than 30 days");
+        if (days < MINIMUM_LAST_SEEN_DAYS) {
+            sender.sendMessage(ChatColor.RED + "You can only purge data older than "
+                + MINIMUM_LAST_SEEN_DAYS + " days");
             return;
         }
 
@@ -47,13 +51,15 @@ public class PurgeCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");
 
         // Purge other data
-        if (Settings.purgeEssentialsFile && plugin.ess != null)
+        AuthMe plugin = commandService.getAuthMe();
+        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) &&
+            commandService.getPluginHooks().isEssentialsAvailable())
             plugin.dataManager.purgeEssentials(purged);
-        if (Settings.purgePlayerDat)
+        if (commandService.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             plugin.dataManager.purgeDat(purged);
-        if (Settings.purgeLimitedCreative)
+        if (commandService.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
             plugin.dataManager.purgeLimitedCreative(purged);
-        if (Settings.purgeAntiXray)
+        if (commandService.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
             plugin.dataManager.purgeAntiXray(purged);
 
         // Show a status message

@@ -1,27 +1,31 @@
 package fr.xephi.authme.settings;
 
 import com.google.common.collect.ImmutableMap;
-import fr.xephi.authme.ReflectionTestUtils;
+import com.google.common.io.Files;
+import fr.xephi.authme.ConsoleLoggerTestInitializer;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.TestConfiguration;
 import fr.xephi.authme.settings.properties.TestEnum;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
-import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
-import java.lang.reflect.Field;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static fr.xephi.authme.TestHelper.getJarFile;
+import static fr.xephi.authme.settings.TestSettingsMigrationServices.checkAllPropertiesPresent;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assume.assumeThat;
 
 /**
  * Integration test for {@link NewSetting}.
@@ -35,16 +39,33 @@ public class NewSettingIntegrationTest {
     /** File name for testing difficult values. */
     private static final String DIFFICULT_FILE = "/config-difficult-values.yml";
 
-    private static PropertyMap propertyMap = generatePropertyMap();
+    private static PropertyMap propertyMap = TestConfiguration.generatePropertyMap();
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
+
+    private File testPluginFolder;
+
+    @BeforeClass
+    public static void setUpLogger() {
+        ConsoleLoggerTestInitializer.setupLogger();
+    }
+
+    @Before
+    public void setUpTestPluginFolder() throws IOException {
+        testPluginFolder = temporaryFolder.newFolder();
+    }
 
     @Test
-    public void shouldLoadAndReadAllProperties() {
+    public void shouldLoadAndReadAllProperties() throws IOException {
         // given
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(getJarFile(COMPLETE_FILE));
-        File file = new File("unused");
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(copyFileFromResources(COMPLETE_FILE));
+        // Pass another, non-existent file to check if the settings had to be rewritten
+        File newFile = temporaryFolder.newFile();
 
         // when / then
-        NewSetting settings = new NewSetting(configuration, file, propertyMap);
+        NewSetting settings = new NewSetting(configuration, newFile, testPluginFolder, propertyMap,
+            checkAllPropertiesPresent());
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
             .put(TestConfiguration.SYSTEM_NAME, "Custom sys name")
@@ -61,23 +82,23 @@ public class NewSettingIntegrationTest {
             assertThat("Property '" + entry.getKey().getPath() + "' has expected value",
                 settings.getProperty(entry.getKey()), equalTo(entry.getValue()));
         }
-        assertThat(file.exists(), equalTo(false));
+        assertThat(newFile.length(), equalTo(0L));
     }
 
     @Test
     public void shouldWriteMissingProperties() {
         // given/when
-        File file = getJarFile(INCOMPLETE_FILE);
+        File file = copyFileFromResources(INCOMPLETE_FILE);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        assumeThat(configuration.contains(TestConfiguration.BORING_COLORS.getPath()), equalTo(false));
         // Expectation: File is rewritten to since it does not have all configurations
-        new NewSetting(configuration, file, propertyMap);
+        new NewSetting(configuration, file, testPluginFolder, propertyMap, checkAllPropertiesPresent());
 
         // Load the settings again -> checks that what we wrote can be loaded again
         configuration = YamlConfiguration.loadConfiguration(file);
 
         // then
-        NewSetting settings = new NewSetting(configuration, file, propertyMap);
+        NewSetting settings = new NewSetting(configuration, file, testPluginFolder, propertyMap,
+            checkAllPropertiesPresent());
         Map<Property<?>, Object> expectedValues = ImmutableMap.<Property<?>, Object>builder()
             .put(TestConfiguration.DURATION_IN_SECONDS, 22)
             .put(TestConfiguration.SYSTEM_NAME, "[TestDefaultValue]")
@@ -100,29 +121,28 @@ public class NewSettingIntegrationTest {
     @Test
     public void shouldProperlyExportAnyValues() {
         // given
-        File file = getJarFile(DIFFICULT_FILE);
+        File file = copyFileFromResources(DIFFICULT_FILE);
         YamlConfiguration configuration = YamlConfiguration.loadConfiguration(file);
-        assumeThat(configuration.contains(TestConfiguration.DUST_LEVEL.getPath()), equalTo(false));
 
         // Additional string properties
         List<Property<String>> additionalProperties = Arrays.asList(
             newProperty("more.string1", "it's a text with some \\'apostrophes'"),
             newProperty("more.string2", "\tthis one\nhas some\nnew '' lines-test")
         );
-        PropertyMap propertyMap = generatePropertyMap();
         for (Property<?> property : additionalProperties) {
             propertyMap.put(property, new String[0]);
         }
 
         // when
-        new NewSetting(configuration, file, propertyMap);
-        // reload the file as settings should hav been rewritten
+        new NewSetting(configuration, file, testPluginFolder, propertyMap, checkAllPropertiesPresent());
+        // reload the file as settings should have been rewritten
         configuration = YamlConfiguration.loadConfiguration(file);
 
         // then
         // assert that we won't rewrite the settings again! One rewrite should produce a valid, complete configuration
         File unusedFile = new File("config-difficult-values.unused.yml");
-        NewSetting settings = new NewSetting(configuration, unusedFile, propertyMap);
+        NewSetting settings = new NewSetting(configuration, unusedFile, testPluginFolder, propertyMap,
+            checkAllPropertiesPresent());
         assertThat(unusedFile.exists(), equalTo(false));
         assertThat(configuration.contains(TestConfiguration.DUST_LEVEL.getPath()), equalTo(true));
 
@@ -147,23 +167,32 @@ public class NewSettingIntegrationTest {
         }
     }
 
-    /**
-     * Generate a property map with all properties in {@link TestConfiguration}.
-     *
-     * @return The generated property map
-     */
-    private static PropertyMap generatePropertyMap() {
-        WrapperMock.createInstance();
-        PropertyMap propertyMap = new PropertyMap();
-        for (Field field : TestConfiguration.class.getDeclaredFields()) {
-            Object fieldValue = ReflectionTestUtils.getFieldValue(TestConfiguration.class, null, field.getName());
-            if (fieldValue instanceof Property<?>) {
-                Property<?> property = (Property<?>) fieldValue;
-                String[] comments = new String[]{"Comment for '" + property.getPath() + "'"};
-                propertyMap.put(property, comments);
-            }
+    @Test
+    public void shouldReloadSettings() throws IOException {
+        // given
+        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(temporaryFolder.newFile());
+        File fullConfigFile = copyFileFromResources(COMPLETE_FILE);
+        NewSetting settings = new NewSetting(configuration, fullConfigFile, testPluginFolder, propertyMap,
+            TestSettingsMigrationServices.alwaysFulfilled());
+
+        // when
+        assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER),
+            equalTo(TestConfiguration.RATIO_ORDER.getDefaultValue()));
+        settings.reload();
+
+        // then
+        assertThat(settings.getProperty(TestConfiguration.RATIO_ORDER), equalTo(TestEnum.FIRST));
+    }
+
+    private File copyFileFromResources(String path) {
+        try {
+            File source = TestHelper.getJarFile(path);
+            File destination = temporaryFolder.newFile();
+            Files.copy(source, destination);
+            return destination;
+        } catch (IOException e) {
+            throw new IllegalStateException("Could not copy test file", e);
         }
-        return propertyMap;
     }
 
 }

@@ -22,8 +22,11 @@ public class GeoLiteAPI {
     private static LookupService lookupService;
     private static Thread downloadTask;
 
+    private GeoLiteAPI() {
+    }
+
     /**
-     * Download (if absent) the GeoIpLite data file and then try to load it.
+     * Download (if absent or old) the GeoIpLite data file and then try to load it.
      *
      * @return True if the data is available, false otherwise.
      */

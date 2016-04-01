@@ -2,11 +2,11 @@ package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.settings.domain.Comment;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.PropertyType;
 import fr.xephi.authme.settings.domain.SettingsClass;
 
 import java.util.List;
 
+import static fr.xephi.authme.settings.domain.Property.newListProperty;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 
 public class RestrictionSettings implements SettingsClass {
@@ -26,7 +26,7 @@ public class RestrictionSettings implements SettingsClass {
 
     @Comment("Allowed commands for unauthenticated players")
     public static final Property<List<String>> ALLOW_COMMANDS =
-        newProperty(PropertyType.STRING_LIST, "settings.restrictions.allowCommands",
+        newListProperty("settings.restrictions.allowCommands",
             "login", "register", "l", "reg", "email", "captcha");
 
     @Comment("Max number of allowed registrations per IP")
@@ -64,7 +64,7 @@ public class RestrictionSettings implements SettingsClass {
 
     @Comment({
         "To activate the restricted user feature you need",
-        "to enable this option and configure the AllowedRestrctedUser field."})
+        "to enable this option and configure the AllowedRestrictedUser field."})
     public static final Property<Boolean> ENABLE_RESTRICTED_USERS =
         newProperty("settings.restrictions.AllowRestrictedUser", false);
 
@@ -75,7 +75,7 @@ public class RestrictionSettings implements SettingsClass {
         "    AllowedRestrictedUser:",
         "    - playername;127.0.0.1"})
     public static final Property<List<String>> ALLOWED_RESTRICTED_USERS =
-        newProperty(PropertyType.STRING_LIST, "settings.restrictions.AllowedRestrictedUser");
+        newListProperty("settings.restrictions.AllowedRestrictedUser");
 
     @Comment("Should unregistered players be kicked immediately?")
     public static final Property<Boolean> KICK_NON_REGISTERED =
@@ -148,7 +148,7 @@ public class RestrictionSettings implements SettingsClass {
         "WorldNames where we need to force the spawn location for ForceSpawnLocOnJoinEnabled",
         "Case-sensitive!"})
     public static final Property<List<String>> FORCE_SPAWN_ON_WORLDS =
-        newProperty(PropertyType.STRING_LIST, "settings.restrictions.ForceSpawnOnTheseWorlds",
+        newListProperty("settings.restrictions.ForceSpawnOnTheseWorlds",
             "world", "world_nether", "world_the_end");
 
     @Comment("Ban ip when the ip is not the ip registered in database")
@@ -189,7 +189,7 @@ public class RestrictionSettings implements SettingsClass {
         "It is case-sensitive!"
     })
     public static final Property<List<String>> UNRESTRICTED_NAMES =
-        newProperty(PropertyType.STRING_LIST, "settings.unrestrictions.UnrestrictedName");
+        newListProperty("settings.unrestrictions.UnrestrictedName");
 
 
     private RestrictionSettings() {

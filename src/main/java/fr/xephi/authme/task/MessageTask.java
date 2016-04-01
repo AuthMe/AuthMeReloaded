@@ -22,13 +22,13 @@ public class MessageTask implements Runnable {
      *
      * @param plugin   AuthMe
      * @param name     String
-     * @param strings  String[]
+     * @param lines  String[]
      * @param interval int
      */
-    public MessageTask(AuthMe plugin, String name, String[] strings, int interval) {
+    public MessageTask(AuthMe plugin, String name, String[] lines, int interval) {
         this.plugin = plugin;
         this.name = name;
-        this.msg = strings;
+        this.msg = lines;
         this.interval = interval;
     }
 
@@ -49,7 +49,7 @@ public class MessageTask implements Runnable {
                 }
                 BukkitTask nextTask = plugin.getServer().getScheduler().runTaskLater(plugin, this, interval * 20);
                 if (LimboCache.getInstance().hasLimboPlayer(name)) {
-                    LimboCache.getInstance().getLimboPlayer(name).setMessageTaskId(nextTask);
+                    LimboCache.getInstance().getLimboPlayer(name).setMessageTask(nextTask);
                 }
                 return;
             }

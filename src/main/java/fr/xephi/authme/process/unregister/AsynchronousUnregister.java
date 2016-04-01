@@ -8,8 +8,11 @@ import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
@@ -20,47 +23,46 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
-public class AsynchronousUnregister {
+public class AsynchronousUnregister implements Process {
 
     private final Player player;
     private final String name;
     private final String password;
     private final boolean force;
     private final AuthMe plugin;
-    private final Messages m;
     private final JsonCache playerCache;
+    private final ProcessService service;
 
     /**
-     * Constructor for AsynchronousUnregister.
+     * Constructor.
      *
-     * @param player   Player
-     * @param password String
-     * @param force    boolean
-     * @param plugin   AuthMe
+     * @param player The player to perform the action for
+     * @param password The password
+     * @param force True to bypass password validation
+     * @param plugin The plugin instance
+     * @param service The process service
      */
-    public AsynchronousUnregister(Player player, String password, boolean force, AuthMe plugin) {
-        this.m = plugin.getMessages();
+    public AsynchronousUnregister(Player player, String password, boolean force, AuthMe plugin,
+                                  ProcessService service) {
         this.player = player;
         this.name = player.getName().toLowerCase();
         this.password = password;
         this.force = force;
         this.plugin = plugin;
         this.playerCache = new JsonCache();
+        this.service = service;
     }
 
-    protected String getIp() {
-        return plugin.getIP(player);
-    }
-
-    public void process() {
+    @Override
+    public void run() {
         PlayerAuth cachedAuth = PlayerCache.getInstance().getAuth(name);
         if (force || plugin.getPasswordSecurity().comparePassword(
             password, cachedAuth.getPassword(), player.getName())) {
-            if (!plugin.getDataSource().removeAuth(name)) {
-                m.send(player, MessageKey.ERROR);
+            if (!service.getDataSource().removeAuth(name)) {
+                service.send(player, MessageKey.ERROR);
                 return;
             }
-            int timeOut = Settings.getRegistrationTimeout * 20;
+            int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
             if (Settings.isForcedRegistrationEnabled) {
                 Utils.teleportToSpawn(player);
                 player.saveData();
@@ -70,15 +72,15 @@ public class AsynchronousUnregister {
                 }
                 LimboCache.getInstance().addLimboPlayer(player);
                 LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
-                int interval = Settings.getWarnMessageInterval;
+                int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
                 BukkitScheduler scheduler = plugin.getServer().getScheduler();
                 if (timeOut != 0) {
                     BukkitTask id = scheduler.runTaskLater(plugin, new TimeoutTask(plugin, name, player), timeOut);
-                    limboPlayer.setTimeoutTaskId(id);
+                    limboPlayer.setTimeoutTask(id);
                 }
-                limboPlayer.setMessageTaskId(scheduler.runTask(plugin,
+                limboPlayer.setMessageTask(scheduler.runTask(plugin,
                     new MessageTask(plugin, name, MessageKey.REGISTER_MESSAGE, interval)));
-                m.send(player, MessageKey.UNREGISTERED_SUCCESS);
+                service.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                 return;
             }
@@ -92,14 +94,14 @@ public class AsynchronousUnregister {
                 playerCache.removeCache(player);
             }
             // Apply blind effect
-            if (Settings.applyBlindEffect) {
+            if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
             }
-            m.send(player, MessageKey.UNREGISTERED_SUCCESS);
+            service.send(player, MessageKey.UNREGISTERED_SUCCESS);
             ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
             Utils.teleportToSpawn(player);
         } else {
-            m.send(player, MessageKey.WRONG_PASSWORD);
+            service.send(player, MessageKey.WRONG_PASSWORD);
         }
     }
 }

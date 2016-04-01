@@ -8,13 +8,16 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+/**
+ * Returns a player's email.
+ */
 public class GetEmailCommand implements ExecutableCommand {
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
-        PlayerAuth auth = commandService.getDataSource().getAuth(playerName.toLowerCase());
+        PlayerAuth auth = commandService.getDataSource().getAuth(playerName);
         if (auth == null) {
             commandService.send(sender, MessageKey.UNKNOWN_USER);
         } else {

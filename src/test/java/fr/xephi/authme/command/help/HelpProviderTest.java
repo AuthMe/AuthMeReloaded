@@ -253,7 +253,7 @@ public class HelpProviderTest {
     public void shouldHandleUnboundFoundCommandResult() {
         // given
         FoundCommandResult result = new FoundCommandResult(null, Arrays.asList("authme", "test"),
-            Collections.EMPTY_LIST, 0.0, FoundResultStatus.UNKNOWN_LABEL);
+            Collections.<String> emptyList(), 0.0, FoundResultStatus.UNKNOWN_LABEL);
 
         // when
         List<String> lines = helpProvider.printHelp(sender, result, ALL_OPTIONS);
@@ -317,7 +317,7 @@ public class HelpProviderTest {
      * @return The generated FoundCommandResult object
      */
     private static FoundCommandResult newFoundResult(CommandDescription command, List<String> labels) {
-        return new FoundCommandResult(command, labels, Collections.EMPTY_LIST, 0.0, FoundResultStatus.SUCCESS);
+        return new FoundCommandResult(command, labels, Collections.<String> emptyList(), 0.0, FoundResultStatus.SUCCESS);
     }
 
     private static String removeColors(String str) {

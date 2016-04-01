@@ -6,7 +6,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -24,7 +23,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static fr.xephi.authme.settings.SettingsMigrationService.copyFileFromResource;
+import static fr.xephi.authme.util.FileUtils.copyFileFromResource;
 
 /**
  * The new settings manager.
@@ -33,6 +32,8 @@ public class NewSetting {
 
     private final File pluginFolder;
     private final File configFile;
+    private final PropertyMap propertyMap;
+    private final SettingsMigrationService migrationService;
     private FileConfiguration configuration;
     /** The file with the localized messages based on {@link PluginSettings#MESSAGES_LANGUAGE}. */
     private File messagesFile;
@@ -44,11 +45,16 @@ public class NewSetting {
      *
      * @param configFile The configuration file
      * @param pluginFolder The AuthMe plugin folder
+     * @param propertyMap Collection of all available settings
+     * @param migrationService Migration service to check the settings file with
      */
-    public NewSetting(File configFile, File pluginFolder) {
+    public NewSetting(File configFile, File pluginFolder, PropertyMap propertyMap,
+                      SettingsMigrationService migrationService) {
         this.configuration = YamlConfiguration.loadConfiguration(configFile);
         this.configFile = configFile;
         this.pluginFolder = pluginFolder;
+        this.propertyMap = propertyMap;
+        this.migrationService = migrationService;
         validateAndLoadOptions();
     }
 
@@ -57,16 +63,21 @@ public class NewSetting {
      *
      * @param configuration The FileConfiguration object to use
      * @param configFile The file to write to
+     * @param pluginFolder The plugin folder
      * @param propertyMap The property map whose properties should be verified for presence, or null to skip this
+     * @param migrationService Migration service, or null to skip migration checks
      */
     @VisibleForTesting
-    NewSetting(FileConfiguration configuration, File configFile, PropertyMap propertyMap) {
+    NewSetting(FileConfiguration configuration, File configFile, File pluginFolder, PropertyMap propertyMap,
+               SettingsMigrationService migrationService) {
         this.configuration = configuration;
         this.configFile = configFile;
-        this.pluginFolder = new File("");
+        this.pluginFolder = pluginFolder;
+        this.propertyMap = propertyMap;
+        this.migrationService = migrationService;
 
-        if (propertyMap != null && SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
-            save(propertyMap);
+        if (propertyMap != null && migrationService != null) {
+            validateAndLoadOptions();
         }
     }
 
@@ -90,13 +101,6 @@ public class NewSetting {
      */
     public <T> void setProperty(Property<T> property, T value) {
         configuration.set(property.getPath(), value);
-    }
-
-    /**
-     * Save the config file. Use after migrating one or more settings.
-     */
-    public void save() {
-        save(SettingsFieldRetriever.getAllPropertyFields());
     }
 
     /**
@@ -133,7 +137,10 @@ public class NewSetting {
         validateAndLoadOptions();
     }
 
-    private void save(PropertyMap propertyMap) {
+    /**
+     * Save the config file. Use after migrating one or more settings.
+     */
+    public void save() {
         try (FileWriter writer = new FileWriter(configFile)) {
             Yaml simpleYaml = newYaml(false);
             Yaml singleQuoteYaml = newYaml(true);
@@ -186,11 +193,10 @@ public class NewSetting {
     }
 
     private void validateAndLoadOptions() {
-        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
-        if (SettingsMigrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
+        if (migrationService.checkAndMigrate(configuration, propertyMap, pluginFolder)) {
             ConsoleLogger.info("Merged new config options");
             ConsoleLogger.info("Please check your config.yml file for new settings!");
-            save(propertyMap);
+            save();
         }
 
         messagesFile = buildMessagesFile();
@@ -205,18 +211,20 @@ public class NewSetting {
 
     private File buildMessagesFile() {
         String languageCode = getProperty(PluginSettings.MESSAGES_LANGUAGE);
-        File messagesFile = buildMessagesFileFromCode(languageCode);
-        if (messagesFile.exists()) {
+
+        String filePath = buildMessagesFilePathFromCode(languageCode);
+        File messagesFile = new File(pluginFolder, filePath);
+        if (copyFileFromResource(messagesFile, filePath)) {
             return messagesFile;
         }
 
-        return copyFileFromResource(messagesFile, buildMessagesFilePathFromCode(languageCode))
-            ? messagesFile
-            : buildMessagesFileFromCode("en");
-    }
+        // File doesn't exist or couldn't be copied - try again with default, "en"
+        String defaultFilePath = buildMessagesFilePathFromCode("en");
+        File defaultFile = new File(pluginFolder, defaultFilePath);
+        copyFileFromResource(defaultFile, defaultFilePath);
 
-    private File buildMessagesFileFromCode(String language) {
-        return new File(pluginFolder, buildMessagesFilePathFromCode(language));
+        // No matter the result, need to return a file
+        return defaultFile;
     }
 
     private static String buildMessagesFilePathFromCode(String language) {
@@ -243,7 +251,7 @@ public class NewSetting {
         final Charset charset = Charset.forName("UTF-8");
         if (copyFileFromResource(emailFile, "email.html")) {
             try {
-                return StringUtils.join("", Files.readLines(emailFile, charset));
+                return StringUtils.join("\n", Files.readLines(emailFile, charset));
             } catch (IOException e) {
                 ConsoleLogger.logException("Failed to read file '" + emailFile.getPath() + "':", e);
             }

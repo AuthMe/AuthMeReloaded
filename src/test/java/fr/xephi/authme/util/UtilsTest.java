@@ -110,8 +110,8 @@ public class UtilsTest {
     public void shouldAcceptEmailWithEmptyLists() {
         // given
         NewSetting settings = mock(NewSetting.class);
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.EMPTY_LIST);
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String> emptyList());
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String> emptyList());
 
         // when
         boolean result = Utils.isEmailCorrect("test@example.org", settings);
@@ -126,7 +126,7 @@ public class UtilsTest {
         NewSetting settings = mock(NewSetting.class);
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
             .willReturn(Arrays.asList("domain.tld", "example.com"));
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String> emptyList());
 
         // when
         boolean result = Utils.isEmailCorrect("TesT@Example.com", settings);
@@ -141,7 +141,7 @@ public class UtilsTest {
         NewSetting settings = mock(NewSetting.class);
         given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
             .willReturn(Arrays.asList("domain.tld", "example.com"));
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String> emptyList());
 
         // when
         boolean result = Utils.isEmailCorrect("email@other-domain.abc", settings);
@@ -154,7 +154,7 @@ public class UtilsTest {
     public void shouldAcceptEmailNotInBlacklist() {
         // given
         NewSetting settings = mock(NewSetting.class);
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String> emptyList());
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
             .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
 
@@ -169,7 +169,7 @@ public class UtilsTest {
     public void shouldRejectEmailInBlacklist() {
         // given
         NewSetting settings = mock(NewSetting.class);
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.EMPTY_LIST);
+        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String> emptyList());
         given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
             .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
 

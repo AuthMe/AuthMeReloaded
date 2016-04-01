@@ -59,13 +59,16 @@ public class Log4JFilter implements Filter {
 
     @Override
     public Result filter(Logger arg0, Level arg1, Marker arg2, String message, Object... arg4) {
+        if (message == null) {		
+            return Result.NEUTRAL;		
+        }
         return validateMessage(message);
     }
 
     @Override
     public Result filter(Logger arg0, Level arg1, Marker arg2, Object message, Throwable arg4) {
-        if (message == null) {
-            return Result.NEUTRAL;
+        if (message == null) {		
+            return Result.NEUTRAL;		
         }
         return validateMessage(message.toString());
     }

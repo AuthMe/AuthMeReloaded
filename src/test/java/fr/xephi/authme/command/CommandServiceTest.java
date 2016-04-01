@@ -1,23 +1,29 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -31,28 +37,37 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link CommandService}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class CommandServiceTest {
 
-    private AuthMe authMe;
-    private CommandMapper commandMapper;
-    private HelpProvider helpProvider;
-    private Messages messages;
-    private PasswordSecurity passwordSecurity;
     private CommandService commandService;
+    @Mock
+    private AuthMe authMe;
+    @Mock
+    private CommandMapper commandMapper;
+    @Mock
+    private HelpProvider helpProvider;
+    @Mock
+    private Messages messages;
+    @Mock
+    private PasswordSecurity passwordSecurity;
+    @Mock
     private PermissionsManager permissionsManager;
+    @Mock
     private NewSetting settings;
+    @Mock
+    private IpAddressManager ipAddressManager;
+    @Mock
+    private PluginHooks pluginHooks;
+    @Mock
+    private SpawnLoader spawnLoader;
+    @Mock
+    private AntiBot antiBot;
 
     @Before
     public void setUpService() {
-        authMe = mock(AuthMe.class);
-        commandMapper = mock(CommandMapper.class);
-        helpProvider = mock(HelpProvider.class);
-        messages = mock(Messages.class);
-        passwordSecurity = mock(PasswordSecurity.class);
-        permissionsManager = mock(PermissionsManager.class);
-        settings = mock(NewSetting.class);
-        commandService = new CommandService(
-            authMe, commandMapper, helpProvider, messages, passwordSecurity, permissionsManager, settings);
+        commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
+            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot);
     }
 
     @Test
@@ -188,18 +203,6 @@ public class CommandServiceTest {
     }
 
     @Test
-    public void shouldReloadMessages() {
-        // given
-        File file = new File("some/bogus-file.test");
-
-        // when
-        commandService.reloadMessages(file);
-
-        // then
-        verify(messages).reload(file);
-    }
-
-    @Test
     public void shouldReturnSettings() {
         // given/when
         NewSetting result = commandService.getSettings();
@@ -215,5 +218,14 @@ public class CommandServiceTest {
 
         // then
         assertThat(result, equalTo(authMe));
+    }
+
+    @Test
+    public void shouldReturnIpAddressManager() {
+        // given/when
+        IpAddressManager ipManager = commandService.getIpAddressManager();
+
+        // then
+        assertThat(ipManager, equalTo(ipAddressManager));
     }
 }

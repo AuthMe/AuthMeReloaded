@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import static fr.xephi.authme.TestHelper.runInnerRunnable;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -46,7 +47,7 @@ public class AccountsCommandTest {
     public void shouldGetAccountsOfCurrentUser() {
         // given
         given(sender.getName()).willReturn("Tester");
-        List<String> arguments = Collections.EMPTY_LIST;
+        List<String> arguments = Collections.emptyList();
         given(dataSource.getAuth("tester")).willReturn(authWithIp("123.45.67.89"));
         given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Arrays.asList("Toaster", "Pester"));
 
@@ -80,7 +81,7 @@ public class AccountsCommandTest {
         // given
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(mock(PlayerAuth.class));
-        given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.EMPTY_LIST);
+        given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.<String> emptyList());
 
         // when
         command.executeCommand(sender, arguments, service);
@@ -114,7 +115,7 @@ public class AccountsCommandTest {
     public void shouldReturnIpUnknown() {
         // given
         List<String> arguments = Collections.singletonList("123.45.67.89");
-        given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.EMPTY_LIST);
+        given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.<String> emptyList());
 
         // when
         command.executeCommand(sender, arguments, service);
@@ -154,13 +155,6 @@ public class AccountsCommandTest {
         String[] messages = getMessagesSentToSender(sender, 2);
         assertThat(messages[0], containsString("3 accounts"));
         assertThat(messages[1], containsString("Tester, Lester, Taster"));
-    }
-
-    private static void runInnerRunnable(CommandService service) {
-        ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
-        verify(service).runTaskAsynchronously(captor.capture());
-        Runnable runnable = captor.getValue();
-        runnable.run();
     }
 
     private static String[] getMessagesSentToSender(CommandSender sender, int expectedCount) {

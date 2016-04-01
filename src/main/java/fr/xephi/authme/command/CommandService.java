@@ -1,18 +1,22 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.cache.IpAddressManager;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import org.bukkit.command.CommandSender;
 
-import java.io.File;
 import java.util.List;
 
 /**
@@ -28,6 +32,10 @@ public class CommandService {
     private final PasswordSecurity passwordSecurity;
     private final PermissionsManager permissionsManager;
     private final NewSetting settings;
+    private final IpAddressManager ipAddressManager;
+    private final PluginHooks pluginHooks;
+    private final SpawnLoader spawnLoader;
+    private final AntiBot antiBot;
 
     /**
      * Constructor.
@@ -39,10 +47,14 @@ public class CommandService {
      * @param passwordSecurity The Password Security instance
      * @param permissionsManager The permissions manager
      * @param settings The settings manager
+     * @param ipAddressManager The IP address manager
+     * @param pluginHooks The plugin hooks instance
+     * @param spawnLoader The spawn loader
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
-                          PasswordSecurity passwordSecurity, PermissionsManager permissionsManager,
-                          NewSetting settings) {
+                          PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
+                          IpAddressManager ipAddressManager, PluginHooks pluginHooks, SpawnLoader spawnLoader,
+                          AntiBot antiBot) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
@@ -50,6 +62,10 @@ public class CommandService {
         this.passwordSecurity = passwordSecurity;
         this.permissionsManager = permissionsManager;
         this.settings = settings;
+        this.ipAddressManager = ipAddressManager;
+        this.pluginHooks = pluginHooks;
+        this.spawnLoader = spawnLoader;
+        this.antiBot = antiBot;
     }
 
     /**
@@ -164,15 +180,6 @@ public class CommandService {
     }
 
     /**
-     * Change the messages instance to retrieve messages from the given file.
-     *
-     * @param file The new file to read messages from
-     */
-    public void reloadMessages(File file) {
-        messages.reload(file);
-    }
-
-    /**
      * Retrieve the given property's value.
      *
      * @param property The property to retrieve
@@ -190,6 +197,26 @@ public class CommandService {
      */
     public NewSetting getSettings() {
         return settings;
+    }
+
+    public IpAddressManager getIpAddressManager() {
+        return ipAddressManager;
+    }
+
+    public PlayerCache getPlayerCache() {
+        return PlayerCache.getInstance();
+    }
+
+    public PluginHooks getPluginHooks() {
+        return pluginHooks;
+    }
+
+    public SpawnLoader getSpawnLoader() {
+        return spawnLoader;
+    }
+
+    public AntiBot getAntiBot() {
+        return antiBot;
     }
 
 }

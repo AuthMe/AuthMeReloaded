@@ -7,6 +7,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -15,30 +16,33 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
  */
 public class BungeeCordMessage implements PluginMessageListener {
 
-    public final AuthMe plugin;
+    private final AuthMe plugin;
+    private final IpAddressManager ipAddressManager;
 
     /**
      * Constructor for BungeeCordMessage.
      *
-     * @param plugin AuthMe
+     * @param plugin The plugin instance
+     * @param ipAddressManager The IP address manager
      */
-    public BungeeCordMessage(AuthMe plugin) {
+    public BungeeCordMessage(AuthMe plugin, IpAddressManager ipAddressManager) {
         this.plugin = plugin;
+        this.ipAddressManager = ipAddressManager;
     }
 
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equals("BungeeCord")) {
+        if (!"BungeeCord".equals(channel)) {
             return;
         }
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
-        if (subChannel.equals("IP")) { // We need only the IP channel
+        if ("IP".equals(subChannel)) { // We need only the IP channel
             String ip = in.readUTF();
             // Put the IP (only the ip not the port) in the hashMap
-            plugin.realIp.put(player.getName().toLowerCase(), ip);
+            ipAddressManager.addCache(player.getName(), ip);
         }
-        if (subChannel.equalsIgnoreCase("AuthMe")) {
+        if ("AuthMe".equalsIgnoreCase(subChannel)) {
             String str = in.readUTF();
             final String[] args = str.split(";");
             final String act = args[0];
@@ -65,10 +69,10 @@ public class BungeeCordMessage implements PluginMessageListener {
                         ConsoleLogger.info("Player " + auth.getNickname()
                             + " has registered out from one of your server!");
                     } else if ("changepassword".equals(act)) {
-                    	final String password = args[2];
+                        final String password = args[2];
                         final String salt = args.length >= 4 ? args[3] : null;
-                    	auth.setPassword(new HashedPassword(password, salt));
-                    	PlayerCache.getInstance().updatePlayer(auth);
+                        auth.setPassword(new HashedPassword(password, salt));
+                        PlayerCache.getInstance().updatePlayer(auth);
                         dataSource.updatePassword(auth);
                     }
 

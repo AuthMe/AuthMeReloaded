@@ -18,8 +18,9 @@ public class SwitchAntiBotCommand implements ExecutableCommand {
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
+        AntiBot antiBot = commandService.getAntiBot();
         if (arguments.isEmpty()) {
-            sender.sendMessage("[AuthMe] AntiBot status: " + AntiBot.getAntiBotStatus().name());
+            sender.sendMessage("[AuthMe] AntiBot status: " + antiBot.getAntiBotStatus().name());
             return;
         }
 
@@ -27,10 +28,10 @@ public class SwitchAntiBotCommand implements ExecutableCommand {
 
         // Enable or disable the mod
         if ("ON".equalsIgnoreCase(newState)) {
-            AntiBot.overrideAntiBotStatus(true);
+            antiBot.overrideAntiBotStatus(true);
             sender.sendMessage("[AuthMe] AntiBot Manual Override: enabled!");
         } else if ("OFF".equalsIgnoreCase(newState)) {
-            AntiBot.overrideAntiBotStatus(false);
+            antiBot.overrideAntiBotStatus(false);
             sender.sendMessage("[AuthMe] AntiBot Manual Override: disabled!");
         } else {
             sender.sendMessage(ChatColor.DARK_RED + "Invalid AntiBot mode!");

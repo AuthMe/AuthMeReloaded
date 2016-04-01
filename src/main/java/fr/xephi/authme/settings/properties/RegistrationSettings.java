@@ -2,11 +2,11 @@ package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.settings.domain.Comment;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.domain.PropertyType;
 import fr.xephi.authme.settings.domain.SettingsClass;
 
 import java.util.List;
 
+import static fr.xephi.authme.settings.domain.Property.newListProperty;
 import static fr.xephi.authme.settings.domain.Property.newProperty;
 
 public class RegistrationSettings implements SettingsClass {
@@ -39,7 +39,7 @@ public class RegistrationSettings implements SettingsClass {
         newProperty("settings.registration.doubleEmailCheck", false);
 
     @Comment({
-        "Do we force kicking player after a successful registration?",
+        "Do we force kick a player after a successful registration?",
         "Do not use with login feature below"})
     public static final Property<Boolean> FORCE_KICK_AFTER_REGISTER =
         newProperty("settings.registration.forceKickAfterRegister", false);
@@ -50,21 +50,21 @@ public class RegistrationSettings implements SettingsClass {
 
     @Comment("Force these commands after /login, without any '/', use %p to replace with player name")
     public static final Property<List<String>> FORCE_COMMANDS =
-        newProperty(PropertyType.STRING_LIST, "settings.forceCommands");
+        newListProperty("settings.forceCommands");
 
     @Comment("Force these commands after /login as service console, without any '/'. "
         + "Use %p to replace with player name")
     public static final Property<List<String>> FORCE_COMMANDS_AS_CONSOLE =
-        newProperty(PropertyType.STRING_LIST, "settings.forceCommandsAsConsole");
+        newListProperty("settings.forceCommandsAsConsole");
 
     @Comment("Force these commands after /register, without any '/', use %p to replace with player name")
     public static final Property<List<String>> FORCE_REGISTER_COMMANDS =
-        newProperty(PropertyType.STRING_LIST, "settings.forceRegisterCommands");
+        newListProperty("settings.forceRegisterCommands");
 
     @Comment("Force these commands after /register as a server console, without any '/'. "
         + "Use %p to replace with player name")
     public static final Property<List<String>> FORCE_REGISTER_COMMANDS_AS_CONSOLE =
-        newProperty(PropertyType.STRING_LIST, "settings.forceRegisterCommandsAsConsole");
+        newListProperty("settings.forceRegisterCommandsAsConsole");
 
     @Comment({
         "Enable to display the welcome message (welcome.txt) after a registration or a login",

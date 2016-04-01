@@ -4,7 +4,7 @@
 
 #####News:
 
-- We are going to release a stable (and working!) version of AuthMeBungee, in the meantime, a fixed version of the unofficial AuthMeBridgeBukkit plugin can be found at: https://github.com/Xephi/AuthMeReloaded/issues/557 Thanks to @beetle2k
+- Latest version of AuthMeBridge is finally compatible with latest AuthMe snapshots! ;)
 
 #####Development tools:
 
@@ -62,7 +62,7 @@ McStats: http://mcstats.org/plugin/AuthMe
 
 #####"The best authentication plugin for the Bukkit/Spigot API!"
 
-<p>Prevent username stealing on your server! Fully compatible with UUIDs and Craftbukkit/Spigot 1.8.X!<br>
+<p>Prevent username stealing on your server!<br>
 Use it to secure your Offline mode server or to increase your Online mode server's protection!</p>
 
 <p>AuthMeReloaded disallows players who aren't authenticated to do actions like placing blocks, moving,<br>

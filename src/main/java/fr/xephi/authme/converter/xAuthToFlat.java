@@ -50,7 +50,10 @@ class xAuthToFlat {
                 String pl = getIdPlayer(id);
                 String psw = getPassword(id);
                 if (psw != null && !psw.isEmpty() && pl != null) {
-                    PlayerAuth auth = new PlayerAuth(pl, psw, "192.168.0.1", 0, "your@email.com", pl);
+                    PlayerAuth auth = PlayerAuth.builder()
+                        .name(pl.toLowerCase())
+                        .realName(pl)
+                        .password(psw, null).build();
                     database.saveAuth(auth);
                 }
             }
@@ -69,7 +72,8 @@ class xAuthToFlat {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT `playername` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
+            String sql = String.format("SELECT `playername` FROM `%s` WHERE `id` = ?",
+                xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
             ps = conn.prepareStatement(sql);
             ps.setInt(1, id);
             rs = ps.executeQuery();
@@ -91,7 +95,8 @@ class xAuthToFlat {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT * FROM `%s`", xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
+            String sql = String.format("SELECT * FROM `%s`",
+                xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
             ps = conn.prepareStatement(sql);
             rs = ps.executeQuery();
             while (rs.next()) {
@@ -112,7 +117,8 @@ class xAuthToFlat {
         PreparedStatement ps = null;
         ResultSet rs = null;
         try {
-            String sql = String.format("SELECT `password`, `pwtype` FROM `%s` WHERE `id` = ?", xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
+            String sql = String.format("SELECT `password`, `pwtype` FROM `%s` WHERE `id` = ?",
+                xAuth.getPlugin().getDatabaseController().getTable(DatabaseTables.ACCOUNT));
             ps = conn.prepareStatement(sql);
             ps.setInt(1, accountId);
             rs = ps.executeQuery();

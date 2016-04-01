@@ -7,6 +7,7 @@ import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.Utils;
 
 import org.bukkit.entity.Player;
@@ -17,7 +18,7 @@ public class RegisterCommand extends PlayerCommand {
 
     @Override
     public void runCommand(Player player, List<String> arguments, CommandService commandService) {
-        if (Settings.getPasswordHash == HashAlgorithm.TWO_FACTOR) {
+        if (commandService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
             //for two factor auth we don't need to check the usage
             commandService.getManagement().performRegister(player, "", "");
             return;

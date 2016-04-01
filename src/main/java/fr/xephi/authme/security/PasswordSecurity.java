@@ -4,6 +4,8 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.plugin.PluginManager;
 
 /**
@@ -11,17 +13,16 @@ import org.bukkit.plugin.PluginManager;
  */
 public class PasswordSecurity {
 
+    private HashAlgorithm algorithm;
+    private boolean supportOldAlgorithm;
     private final DataSource dataSource;
-    private final HashAlgorithm algorithm;
     private final PluginManager pluginManager;
-    private final boolean supportOldAlgorithm;
 
-    public PasswordSecurity(DataSource dataSource, HashAlgorithm algorithm,
-                            PluginManager pluginManager, boolean supportOldAlgorithm) {
+    public PasswordSecurity(DataSource dataSource, NewSetting settings, PluginManager pluginManager) {
+        this.algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
+        this.supportOldAlgorithm = settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH);
         this.dataSource = dataSource;
-        this.algorithm = algorithm;
         this.pluginManager = pluginManager;
-        this.supportOldAlgorithm = supportOldAlgorithm;
     }
 
     public HashedPassword computeHash(String password, String playerName) {
@@ -44,6 +45,11 @@ public class PasswordSecurity {
         String playerLowerCase = playerName.toLowerCase();
         return methodMatches(method, password, hashedPassword, playerLowerCase)
             || supportOldAlgorithm && compareWithAllEncryptionMethods(password, hashedPassword, playerLowerCase);
+    }
+
+    public void reload(NewSetting settings) {
+        this.algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
+        this.supportOldAlgorithm = settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH);
     }
 
     /**

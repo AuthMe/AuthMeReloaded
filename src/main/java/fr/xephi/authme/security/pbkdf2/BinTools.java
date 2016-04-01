@@ -106,8 +106,9 @@ public class BinTools {
         throw new IllegalArgumentException("Input string may only contain hex digits, but found '" + c + "'");
     }
 
-    // TODO ljacqu 20151219: Move to a BinToolsTest class
-    private static void testUtils(String[] args) {
+    // Note ljacqu 20160313: This appears to be a test method that was present in the third-party source.
+    // We can keep it for troubleshooting in the future.
+    private static void testUtils() {
         byte b[] = new byte[256];
         byte bb = 0;
         for (int i = 0; i < 256; i++) {

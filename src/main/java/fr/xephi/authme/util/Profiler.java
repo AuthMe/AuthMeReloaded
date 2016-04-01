@@ -2,15 +2,13 @@ package fr.xephi.authme.util;
 
 import java.text.DecimalFormat;
 
-/**
- */
-@SuppressWarnings("UnusedDeclaration")
 public class Profiler {
 
     /**
      * Defines the past time in milliseconds.
      */
     private long time = 0;
+
     /**
      * Defines the time in milliseconds the profiler last started at.
      */

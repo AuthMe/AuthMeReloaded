@@ -1,11 +1,8 @@
 package fr.xephi.authme;
 
-import com.earth2me.essentials.Essentials;
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-import com.onarandombox.MultiverseCore.MultiverseCore;
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
+import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -24,7 +21,7 @@ import fr.xephi.authme.datasource.FlatFile;
 import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
-import fr.xephi.authme.hooks.EssSpawn;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.listener.AuthMeBlockListener;
 import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
@@ -42,24 +39,29 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.OtherAccounts;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SettingsMigrationService;
-import fr.xephi.authme.settings.Spawn;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
+import fr.xephi.authme.settings.propertymap.PropertyMap;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.CollectionUtils;
+import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
-import net.minelink.ctplus.CombatTagPlus;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -72,8 +74,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URL;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -111,7 +111,7 @@ public class AuthMe extends JavaPlugin {
     public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
-    public final ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<>();
+
     /*
      * Public Instances
      * TODO #432: Encapsulation
@@ -119,26 +119,26 @@ public class AuthMe extends JavaPlugin {
     public NewAPI api;
     public SendMailSSL mail;
     public DataManager dataManager;
-    public OtherAccounts otherAccounts;
-    public Location essentialsSpawn;
     /*
      * Plugin Hooks
      * TODO: Move into modules
      */
-    public Essentials ess;
-    public MultiverseCore multiverse;
-    public CombatTagPlus combatTagPlus;
     public AuthMeInventoryPacketAdapter inventoryProtector;
     public AuthMeTabCompletePacketAdapter tabComplete;
     public AuthMeTablistPacketAdapter tablistHider;
     private Management management;
-    private CommandHandler commandHandler = null;
-    private PermissionsManager permsMan = null;
+    private CommandHandler commandHandler;
+    private PermissionsManager permsMan;
     private NewSetting newSettings;
     private Messages messages;
     private JsonCache playerBackup;
     private PasswordSecurity passwordSecurity;
     private DataSource database;
+    private IpAddressManager ipAddressManager;
+    private PluginHooks pluginHooks;
+    private SpawnLoader spawnLoader;
+    private AntiBot antiBot;
+    private boolean autoPurging;
 
     /**
      * Get the plugin's instance.
@@ -248,16 +248,24 @@ public class AuthMe extends JavaPlugin {
             return;
         }
 
+        pluginHooks = new PluginHooks(server.getPluginManager());
+
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
-        passwordSecurity = new PasswordSecurity(getDataSource(), newSettings.getProperty(SecuritySettings.PASSWORD_HASH),
-            Bukkit.getPluginManager(), newSettings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH));
+        passwordSecurity = new PasswordSecurity(getDataSource(), newSettings, Bukkit.getPluginManager());
+        ipAddressManager = new IpAddressManager(newSettings);
+
+        // Initialize spawn loader
+        spawnLoader = new SpawnLoader(getDataFolder(), newSettings, pluginHooks);
+
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings);
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager,
+            pluginHooks, spawnLoader, antiBot);
 
-        // Setup otherAccounts file
-        this.otherAccounts = OtherAccounts.getInstance();
+        // AntiBot delay
+        BukkitService bukkitService = new BukkitService(this);
+        antiBot = new AntiBot(newSettings, messages, permsMan, bukkitService);
 
         // Set up Metrics
         MetricsStarter.setupMetrics(plugin, newSettings);
@@ -265,24 +273,11 @@ public class AuthMe extends JavaPlugin {
         // Set console filter
         setupConsoleFilter();
 
-        // AntiBot delay
-        AntiBot.setupAntiBotService();
-
         // Download and load GeoIp.dat file if absent
         GeoLiteAPI.isDataAvailable();
 
         // Set up the mail API
         setupMailApi();
-
-        // Hooks
-        // Check Combat Tag Plus Version
-        checkCombatTagPlus();
-
-        // Check Multiverse
-        checkMultiverse();
-
-        // Check Essentials
-        checkEssentials();
 
         // Check if the ProtocolLib is available. If so we could listen for
         // inventory protection
@@ -297,26 +292,24 @@ public class AuthMe extends JavaPlugin {
         playerBackup = new JsonCache();
 
         // Set the DataManager
-        dataManager = new DataManager(this);
+        dataManager = new DataManager(this, pluginHooks);
 
         // Set up the new API
         setupApi();
 
         // Set up the management
-        management = new Management(this, newSettings);
+        ProcessService processService = new ProcessService(newSettings, messages, this, database, ipAddressManager,
+            passwordSecurity, pluginHooks, spawnLoader);
+        management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
-        setupBungeeCordHook();
+        setupBungeeCordHook(newSettings, ipAddressManager);
 
         // Reload support hook
         reloadSupportHook();
 
         // Register event listeners
-        registerEventListeners();
-
-        // Purge on start if enabled
-        autoPurge();
-
+        registerEventListeners(messages, database, management, pluginHooks, spawnLoader, antiBot);
         // Start Email recall task if needed
         scheduleRecallEmailTask();
 
@@ -330,6 +323,26 @@ public class AuthMe extends JavaPlugin {
 
         // Successful message
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
+
+        // Purge on start if enabled
+        runAutoPurge();
+    }
+
+    /**
+     * Reload certain components.
+     *
+     * @throws Exception if an error occurs
+     */
+    public void reload() throws Exception {
+        newSettings.reload();
+        // We do not change database type for consistency issues, but we'll output a note in the logs
+        if (!newSettings.getProperty(DatabaseSettings.BACKEND).equals(database.getType())) {
+            ConsoleLogger.info("Note: cannot change database type during /authme reload");
+        }
+        database.reload();
+        messages.reload(newSettings.getMessagesFile());
+        passwordSecurity.reload(newSettings);
+        spawnLoader.initialize(newSettings);
     }
 
     /**
@@ -361,15 +374,16 @@ public class AuthMe extends JavaPlugin {
     /**
      * Register all event listeners.
      */
-    private void registerEventListeners() {
+    private void registerEventListeners(Messages messages, DataSource dataSource, Management management,
+                                        PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot) {
         // Get the plugin manager instance
         PluginManager pluginManager = server.getPluginManager();
 
         // Register event listeners
-        pluginManager.registerEvents(new AuthMePlayerListener(this), this);
+        pluginManager.registerEvents(new AuthMePlayerListener(this, messages, dataSource, antiBot, management), this);
         pluginManager.registerEvents(new AuthMeBlockListener(), this);
         pluginManager.registerEvents(new AuthMeEntityListener(), this);
-        pluginManager.registerEvents(new AuthMeServerListener(this), this);
+        pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks, spawnLoader), this);
 
         // Try to register 1.6 player listeners
         try {
@@ -407,20 +421,23 @@ public class AuthMe extends JavaPlugin {
     /**
      * Set up the BungeeCord hook.
      */
-    private void setupBungeeCordHook() {
-        if (newSettings.getProperty(HooksSettings.BUNGEECORD)) {
+    private void setupBungeeCordHook(NewSetting settings, IpAddressManager ipAddressManager) {
+        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
+            Bukkit.getMessenger().registerIncomingPluginChannel(
+                this, "BungeeCord", new BungeeCordMessage(this, ipAddressManager));
         }
     }
 
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
-                                                    PasswordSecurity passwordSecurity, NewSetting settings) {
+                                                    PasswordSecurity passwordSecurity, NewSetting settings,
+                                                    IpAddressManager ipAddressManager, PluginHooks pluginHooks,
+                                                    SpawnLoader spawnLoader, AntiBot antiBot) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
-        CommandService commandService = new CommandService(
-            this, mapper, helpProvider, messages, passwordSecurity, permissionsManager, settings);
+        CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity,
+            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot);
         return new CommandHandler(commandService);
     }
 
@@ -455,8 +472,10 @@ public class AuthMe extends JavaPlugin {
 
     private NewSetting createNewSetting() {
         File configFile = new File(getDataFolder(), "config.yml");
-        return SettingsMigrationService.copyFileFromResource(configFile, "config.yml")
-            ? new NewSetting(configFile, getDataFolder())
+        PropertyMap properties = SettingsFieldRetriever.getAllPropertyFields();
+        SettingsMigrationService migrationService = new SettingsMigrationService();
+        return FileUtils.copyFileFromResource(configFile, "config.yml")
+            ? new NewSetting(configFile, getDataFolder(), properties, migrationService)
             : null;
     }
 
@@ -546,6 +565,8 @@ public class AuthMe extends JavaPlugin {
      *
      * @param settings The settings instance
      *
+     * @throws ClassNotFoundException if no driver could be found for the datasource
+     * @throws SQLException           when initialization of a SQL datasource failed
      * @see AuthMe#database
      */
     public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException {
@@ -600,78 +621,18 @@ public class AuthMe extends JavaPlugin {
         return manager;
     }
 
-    /**
-     * Get the permissions manager instance.
-     *
-     * @return Permissions Manager instance.
-     */
-    public PermissionsManager getPermissionsManager() {
-        return this.permsMan;
-    }
-
     // Set the console filter to remove the passwords
     private void setLog4JFilter() {
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-
             @Override
             public void run() {
-                org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-                coreLogger.addFilter(new Log4JFilter());
+                org.apache.logging.log4j.core.Logger logger;
+                logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+                logger.addFilter(new Log4JFilter());
+                logger = (org.apache.logging.log4j.core.Logger) LogManager.getLogger("net.minecraft");
+                logger.addFilter(new Log4JFilter());
             }
         });
-    }
-
-    // Get the Multiverse plugin
-    public void checkMultiverse() {
-        if (Settings.multiverse && server.getPluginManager().isPluginEnabled("Multiverse-Core")) {
-            try {
-                multiverse = (MultiverseCore) server.getPluginManager().getPlugin("Multiverse-Core");
-                ConsoleLogger.info("Hooked correctly with Multiverse-Core");
-            } catch (Exception | NoClassDefFoundError ignored) {
-                multiverse = null;
-            }
-        } else {
-            multiverse = null;
-        }
-    }
-
-    // Get the Essentials plugin
-    public void checkEssentials() {
-        if (server.getPluginManager().isPluginEnabled("Essentials")) {
-            try {
-                ess = (Essentials) server.getPluginManager().getPlugin("Essentials");
-                ConsoleLogger.info("Hooked correctly with Essentials");
-            } catch (Exception | NoClassDefFoundError ignored) {
-                ess = null;
-            }
-        } else {
-            ess = null;
-        }
-        if (server.getPluginManager().isPluginEnabled("EssentialsSpawn")) {
-            try {
-                essentialsSpawn = new EssSpawn().getLocation();
-                ConsoleLogger.info("Hooked correctly with EssentialsSpawn");
-            } catch (Exception e) {
-                essentialsSpawn = null;
-                ConsoleLogger.showError("Can't read the /plugins/Essentials/spawn.yml file!");
-            }
-        } else {
-            essentialsSpawn = null;
-        }
-    }
-
-    // Check the presence of CombatTag
-    public void checkCombatTagPlus() {
-        if (server.getPluginManager().isPluginEnabled("CombatTagPlus")) {
-            try {
-                combatTagPlus = (CombatTagPlus) server.getPluginManager().getPlugin("CombatTagPlus");
-                ConsoleLogger.info("Hooked correctly with CombatTagPlus");
-            } catch (Exception | NoClassDefFoundError ignored) {
-                combatTagPlus = null;
-            }
-        } else {
-            combatTagPlus = null;
-        }
     }
 
     // Check the presence of the ProtocolLib plugin
@@ -716,7 +677,10 @@ public class AuthMe extends JavaPlugin {
         }
         String name = player.getName().toLowerCase();
         if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-            final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName(), player.getName());
+            final PlayerAuth auth = PlayerAuth.builder()
+                .name(player.getName().toLowerCase())
+                .realName(player.getName())
+                .location(player.getLocation()).build();
             database.updateQuitLoc(auth);
         }
         if (LimboCache.getInstance().hasLimboPlayer(name)) {
@@ -726,8 +690,8 @@ public class AuthMe extends JavaPlugin {
             }
 
             Utils.addNormal(player, limbo.getGroup());
-            player.setOp(limbo.getOperator());
-            limbo.getTimeoutTaskId().cancel();
+            player.setOp(limbo.isOperator());
+            limbo.getTimeoutTask().cancel();
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (this.playerBackup.doesCacheExist(player)) {
                 this.playerBackup.removeCache(player);
@@ -747,34 +711,43 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Purge inactive players from the database, as defined in the configuration
-    private void autoPurge() {
-        if (!Settings.usePurge) {
+    private void runAutoPurge() {
+        if (!newSettings.getProperty(PurgeSettings.USE_AUTO_PURGE) || autoPurging) {
             return;
         }
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -(Settings.purgeDelay));
-        long until = calendar.getTimeInMillis();
-        List<String> cleared = database.autoPurgeDatabase(until);
-        if (CollectionUtils.isEmpty(cleared)) {
-            return;
-        }
-        ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
-        if (Settings.purgeEssentialsFile && this.ess != null)
-            dataManager.purgeEssentials(cleared);
-        if (Settings.purgePlayerDat)
-            dataManager.purgeDat(cleared);
-        if (Settings.purgeLimitedCreative)
-            dataManager.purgeLimitedCreative(cleared);
-        if (Settings.purgeAntiXray)
-            dataManager.purgeAntiXray(cleared);
-        if (Settings.purgePermissions)
-            dataManager.purgePermissions(cleared);
+        autoPurging = true;
+        server.getScheduler().runTaskAsynchronously(this, new Runnable() {
+            @Override
+            public void run() {
+                ConsoleLogger.info("AutoPurging the Database...");
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, -newSettings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER));
+                long until = calendar.getTimeInMillis();
+                List<String> cleared = database.autoPurgeDatabase(until);
+                if (CollectionUtils.isEmpty(cleared)) {
+                    return;
+                }
+                ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
+                if (newSettings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && pluginHooks.isEssentialsAvailable())
+                    dataManager.purgeEssentials(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
+                    dataManager.purgeDat(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
+                    dataManager.purgeLimitedCreative(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
+                    dataManager.purgeAntiXray(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_PERMISSIONS))
+                    dataManager.purgePermissions(cleared);
+                ConsoleLogger.info("AutoPurge Finished!");
+                autoPurging = false;
+            }
+        });
     }
 
     // Return the spawn location of a player
     @Deprecated
     public Location getSpawnLocation(Player player) {
-        return Spawn.getInstance().getSpawnLocation(player);
+        return spawnLoader.getSpawnLocation(player);
     }
 
     private void scheduleRecallEmailTask() {
@@ -786,7 +759,7 @@ public class AuthMe extends JavaPlugin {
             public void run() {
                 for (PlayerAuth auth : database.getLoggedPlayers()) {
                     String email = auth.getEmail();
-                    if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com")) {
+                    if (StringUtils.isEmpty(email) || email.equalsIgnoreCase("your@email.com")) {
                         Player player = Utils.getPlayer(auth.getRealName());
                         if (player != null) {
                             messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
@@ -794,75 +767,35 @@ public class AuthMe extends JavaPlugin {
                     }
                 }
             }
-        }, 1, 1200 * Settings.delayRecall);
+        }, 1, 1200 * newSettings.getProperty(EmailSettings.DELAY_RECALL));
     }
 
     public String replaceAllInfo(String message, Player player) {
         String playersOnline = Integer.toString(Utils.getOnlinePlayers().size());
+        String ipAddress = ipAddressManager.getPlayerIp(player);
         return message
             .replace("&", "\u00a7")
             .replace("{PLAYER}", player.getName())
             .replace("{ONLINE}", playersOnline)
             .replace("{MAXPLAYERS}", Integer.toString(server.getMaxPlayers()))
-            .replace("{IP}", getIP(player))
+            .replace("{IP}", ipAddress)
             .replace("{LOGINS}", Integer.toString(PlayerCache.getInstance().getLogged()))
             .replace("{WORLD}", player.getWorld().getName())
             .replace("{SERVER}", server.getServerName())
             .replace("{VERSION}", server.getBukkitVersion())
-            .replace("{COUNTRY}", GeoLiteAPI.getCountryName(getIP(player)));
-    }
-
-    /**
-     * Gets a player's real IP through VeryGames method.
-     *
-     * @param player The player to process.
-     */
-    @Deprecated
-    public void getVerygamesIp(final Player player) {
-        final String name = player.getName().toLowerCase();
-        String currentIp = player.getAddress().getAddress().getHostAddress();
-        if (realIp.containsKey(name)) {
-            currentIp = realIp.get(name);
-        }
-        String sUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
-        sUrl = sUrl.replace("%IP%", currentIp).replace("%PORT%", "" + player.getAddress().getPort());
-        try {
-            String result = Resources.toString(new URL(sUrl), Charsets.UTF_8);
-            if (!StringUtils.isEmpty(result) && !result.equalsIgnoreCase("error") && !result.contains("error")) {
-                currentIp = result;
-                realIp.put(name, currentIp);
-            }
-        } catch (IOException e) {
-            ConsoleLogger.showError("Could not fetch Very Games API with URL '" +
-                sUrl + "' - " + StringUtils.formatException(e));
-        }
-    }
-
-    public String getIP(final Player player) {
-        final String name = player.getName().toLowerCase();
-        String ip = player.getAddress().getAddress().getHostAddress();
-        if (realIp.containsKey(name)) {
-            ip = realIp.get(name);
-        }
-        return ip;
+            .replace("{COUNTRY}", GeoLiteAPI.getCountryName(ipAddress));
     }
 
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
         for (Player player : Utils.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
-                count++;
+            if (ip.equalsIgnoreCase(ipAddressManager.getPlayerIp(player))
+                && database.isLogged(player.getName().toLowerCase())
+                && !player.getName().equalsIgnoreCase(name)) {
+                ++count;
+            }
         }
         return count >= Settings.getMaxLoginPerIp;
-    }
-
-    public boolean hasJoinedIp(String name, String ip) {
-        int count = 0;
-        for (Player player : Utils.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
-                count++;
-        }
-        return count >= Settings.getMaxJoinPerIp;
     }
 
     /**
@@ -889,6 +822,15 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
+     * Get the permissions manager instance.
+     *
+     * @return Permissions Manager instance.
+     */
+    public PermissionsManager getPermissionsManager() {
+        return this.permsMan;
+    }
+
+    /**
      * Return the management instance.
      *
      * @return management The Management
@@ -903,6 +845,10 @@ public class AuthMe extends JavaPlugin {
 
     public PasswordSecurity getPasswordSecurity() {
         return passwordSecurity;
+    }
+
+    public PluginHooks getPluginHooks() {
+        return pluginHooks;
     }
 
 }

@@ -30,7 +30,7 @@ public class CommandUtilsTest {
     @Test
     public void shouldPrintEmptyStringForNoArguments() {
         // given
-        List<String> parts = Collections.EMPTY_LIST;
+        List<String> parts = Collections.emptyList();
 
         // when
         String str = CommandUtils.labelsToString(parts);

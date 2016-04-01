@@ -92,7 +92,7 @@ public final class CommandInitializer {
             .description("Enforce login player")
             .detailedDescription("Enforce the specified player to login.")
             .withArgument("player", "Online player name", true)
-            .permissions(OP_ONLY, PlayerPermission.CAN_LOGIN_BE_FORCED)
+            .permissions(OP_ONLY, AdminPermission.FORCE_LOGIN)
             .executableCommand(new ForceLoginCommand())
             .build();
 
@@ -159,7 +159,7 @@ public final class CommandInitializer {
             .labels("getip", "ip")
             .description("Get player's IP")
             .detailedDescription("Get the IP address of the specified online player.")
-            .withArgument("player", "Player Name", false)
+            .withArgument("player", "Player name", false)
             .permissions(OP_ONLY, AdminPermission.GET_IP)
             .executableCommand(new GetIpCommand())
             .build();
@@ -170,7 +170,6 @@ public final class CommandInitializer {
             .labels("spawn", "home")
             .description("Teleport to spawn")
             .detailedDescription("Teleport to the spawn.")
-            .withArgument("player", "Player Name", false)
             .permissions(OP_ONLY, AdminPermission.SPAWN)
             .executableCommand(new SpawnCommand())
             .build();

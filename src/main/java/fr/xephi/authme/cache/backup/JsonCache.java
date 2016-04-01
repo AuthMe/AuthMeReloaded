@@ -35,29 +35,6 @@ public class JsonCache {
             .create();
     }
 
-    public void createCache(Player player, PlayerData playerData) {
-        if (player == null) {
-            return;
-        }
-
-        String name = player.getName().toLowerCase();
-        File file = new File(cacheDir, name + File.separator + "cache.json");
-        if (file.exists()) {
-            return;
-        }
-        if (!file.getParentFile().exists() && !file.getParentFile().mkdirs()) {
-            return;
-        }
-
-        try {
-            String data = gson.toJson(playerData);
-            Files.touch(file);
-            Files.write(data, file, Charsets.UTF_8);
-        } catch (IOException e) {
-            ConsoleLogger.writeStackTrace(e);
-        }
-    }
-
     public PlayerData readCache(Player player) {
         String name = player.getName().toLowerCase();
         File file = new File(cacheDir, name + File.separator + "cache.json");
