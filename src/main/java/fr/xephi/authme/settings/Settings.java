@@ -59,7 +59,7 @@ public final class Settings {
         checkVeryGames, removeJoinMessage, removeLeaveMessage, delayJoinMessage,
         noTeleport, hideTablistBeforeLogin, denyTabcompleteBeforeLogin,
         kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
-        customAttributes, isRemoveSpeedEnabled, preventOtherCase;
+        customAttributes, isRemoveSpeedEnabled, preventOtherCase, keepCollisionsDisabled;
     public static String getNickRegex, getUnloggedinGroup,
         unRegisteredGroup,
         backupWindowsPath, getRegisteredGroup,
@@ -195,7 +195,7 @@ public final class Settings {
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
         kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
         sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
-
+        keepCollisionsDisabled = configFile.getBoolean("settings.keepCollisionsDisabled");
     }
 
     /**

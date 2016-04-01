@@ -27,9 +27,13 @@ import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
+
+import com.comphenix.protocol.reflect.MethodUtils;
 
 /**
  */
@@ -41,6 +45,9 @@ public class AsynchronousJoin implements Process {
     private final String name;
     private final ProcessService service;
     private final PlayerCache playerCache;
+
+    private final boolean disableCollisions = MethodUtils
+            .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
     public AsynchronousJoin(Player player, AuthMe plugin, DataSource database, PlayerCache playerCache,
                             ProcessService service) {
@@ -88,6 +95,10 @@ public class AsynchronousJoin implements Process {
                 }
             });
             return;
+        }
+        // Prevent player collisions in 1.9
+        if (disableCollisions) {
+            ((LivingEntity) player).setCollidable(false);
         }
         final Location spawnLoc = service.getSpawnLoader().getSpawnLocation(player);
         final boolean isAuthAvailable = database.isAuthAvailable(name);

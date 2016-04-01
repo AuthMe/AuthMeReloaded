@@ -4,12 +4,15 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
+import com.comphenix.protocol.reflect.MethodUtils;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
@@ -29,6 +32,7 @@ import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
+import static fr.xephi.authme.settings.properties.PluginSettings.KEEP_COLLISIONS_DISABLED;
 
 
 public class ProcessSyncPlayerLogin implements Runnable {
@@ -41,6 +45,9 @@ public class ProcessSyncPlayerLogin implements Runnable {
     private final PluginManager pm;
     private final JsonCache playerCache;
     private final NewSetting settings;
+
+    private final boolean restoreCollisions = MethodUtils
+            .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
     /**
      * Constructor for ProcessSyncPlayerLogin.
@@ -146,6 +153,10 @@ public class ProcessSyncPlayerLogin implements Runnable {
                 } else {
                     teleportBackFromSpawn();
                 }
+            }
+
+            if (restoreCollisions && !settings.getProperty(KEEP_COLLISIONS_DISABLED)) {
+                player.setCollidable(true);
             }
 
             if (settings.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
