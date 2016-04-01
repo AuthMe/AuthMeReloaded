@@ -9,10 +9,10 @@ import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-
 import fr.xephi.authme.settings.properties.EmailSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
@@ -278,8 +278,16 @@ public final class Utils {
         return false;
     }
 
-    /**
-     */
+    public static String getUUIDorName(OfflinePlayer player) {
+        String uuidOrName;
+        try {
+            uuidOrName = player.getUniqueId().toString();
+        } catch (Exception ignore) {
+            uuidOrName = player.getName();
+        }
+        return uuidOrName;
+    }
+
     public enum GroupType {
         UNREGISTERED,
         REGISTERED,
