@@ -1,6 +1,6 @@
-# Translator: MineWolf50
-# Last Time Edit : 2015 / 7 / 14 , A.M.10:14
-# = = = = = = = = = = = = = = = = = = = = = = = #
+# Translator: MineWolf50, lifehome             #
+# Last modif: 1459528742 UTC                   #
+# -------------------------------------------- #
 unknown_user: "&b【AuthMe】&6沒有在資料庫內找到該玩家。"
 unsafe_spawn: '&b【AuthMe】&6你登出的地點不安全，已傳送你到安全的地點。'
 not_logged_in: '&b【AuthMe】&6你還沒有登入!'
