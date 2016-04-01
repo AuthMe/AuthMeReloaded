@@ -138,6 +138,7 @@ public class AuthMe extends JavaPlugin {
     private PluginHooks pluginHooks;
     private SpawnLoader spawnLoader;
     private AntiBot antiBot;
+    private boolean autoPurging;
 
     /**
      * Get the plugin's instance.
@@ -309,10 +310,6 @@ public class AuthMe extends JavaPlugin {
 
         // Register event listeners
         registerEventListeners(messages, database, management, pluginHooks, spawnLoader, antiBot);
-
-        // Purge on start if enabled
-        autoPurge();
-
         // Start Email recall task if needed
         scheduleRecallEmailTask();
 
@@ -326,6 +323,9 @@ public class AuthMe extends JavaPlugin {
 
         // Successful message
         ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
+
+        // Purge on start if enabled
+        runAutoPurge();
     }
 
     /**
@@ -565,9 +565,9 @@ public class AuthMe extends JavaPlugin {
      *
      * @param settings The settings instance
      *
-     * @see AuthMe#database
      * @throws ClassNotFoundException if no driver could be found for the datasource
-     * @throws SQLException when initialization of a SQL datasource failed
+     * @throws SQLException           when initialization of a SQL datasource failed
+     * @see AuthMe#database
      */
     public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException {
         if (this.database != null) {
@@ -711,28 +711,37 @@ public class AuthMe extends JavaPlugin {
     }
 
     // Purge inactive players from the database, as defined in the configuration
-    private void autoPurge() {
-        if (!newSettings.getProperty(PurgeSettings.USE_AUTO_PURGE)) {
+    private void runAutoPurge() {
+        if (!newSettings.getProperty(PurgeSettings.USE_AUTO_PURGE) || autoPurging) {
             return;
         }
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -newSettings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER));
-        long until = calendar.getTimeInMillis();
-        List<String> cleared = database.autoPurgeDatabase(until);
-        if (CollectionUtils.isEmpty(cleared)) {
-            return;
-        }
-        ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
-        if (newSettings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && pluginHooks.isEssentialsAvailable())
-            dataManager.purgeEssentials(cleared);
-        if (newSettings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
-            dataManager.purgeDat(cleared);
-        if (newSettings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
-            dataManager.purgeLimitedCreative(cleared);
-        if (newSettings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
-            dataManager.purgeAntiXray(cleared);
-        if (newSettings.getProperty(PurgeSettings.REMOVE_PERMISSIONS))
-            dataManager.purgePermissions(cleared);
+        autoPurging = true;
+        server.getScheduler().runTaskAsynchronously(this, new Runnable() {
+            @Override
+            public void run() {
+                ConsoleLogger.info("AutoPurging the Database...");
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, -newSettings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER));
+                long until = calendar.getTimeInMillis();
+                List<String> cleared = database.autoPurgeDatabase(until);
+                if (CollectionUtils.isEmpty(cleared)) {
+                    return;
+                }
+                ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
+                if (newSettings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && pluginHooks.isEssentialsAvailable())
+                    dataManager.purgeEssentials(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
+                    dataManager.purgeDat(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
+                    dataManager.purgeLimitedCreative(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
+                    dataManager.purgeAntiXray(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_PERMISSIONS))
+                    dataManager.purgePermissions(cleared);
+                ConsoleLogger.info("AutoPurge Finished!");
+                autoPurging = false;
+            }
+        });
     }
 
     // Return the spawn location of a player
