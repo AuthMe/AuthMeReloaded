@@ -190,7 +190,7 @@ public final class Settings {
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
         kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
         sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
-        keepCollisionsDisabled = configFile.getBoolean("settings.keepCollisionsDisabled");
+        keepCollisionsDisabled = configFile.getBoolean("settings.KeepCollisionsDisabled");
     }
 
     /**
