@@ -38,11 +38,10 @@ public final class Settings {
     public static List<String> forceCommandsAsConsole;
     public static List<String> forceRegisterCommands;
     public static List<String> forceRegisterCommandsAsConsole;
-    public static List<String> unsafePasswords;
     public static HashAlgorithm getPasswordHash;
     public static Pattern nickPattern;
     public static boolean useLogging = false;
-    public static boolean isChatAllowed, isPermissionCheckEnabled, isRegistrationEnabled,
+    public static boolean isChatAllowed, isPermissionCheckEnabled,
         isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
         isSessionsEnabled, isAllowRestrictedIp,
         isMovementAllowed, isKickNonRegisteredEnabled,
@@ -64,10 +63,10 @@ public final class Settings {
         unRegisteredGroup,
         backupWindowsPath, getRegisteredGroup,
         rakamakUsers, rakamakUsersIp, getmailAccount, defaultWorld,
-        spawnPriority, crazyloginFileName, getPassRegex, sendPlayerTo;
+        spawnPriority, crazyloginFileName, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
-        getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
+        getPasswordMinLen, getMovementRadius,
         getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
         getMailPort, maxLoginTry, captchaLength, saltLength,
         getmaxRegPerEmail, bCryptLog2Rounds, getMaxLoginPerIp, getMaxJoinPerIp;
@@ -86,7 +85,6 @@ public final class Settings {
     private static void loadVariables() {
         isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
         isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
-        isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
         isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
         getWarnMessageInterval = load(RegistrationSettings.MESSAGE_INTERVAL);
         isSessionsEnabled = load(PluginSettings.SESSIONS_ENABLED);
@@ -110,7 +108,6 @@ public final class Settings {
         isForceSpawnLocOnJoinEnabled = configFile.getBoolean("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
         isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
         isForceSurvivalModeEnabled = configFile.getBoolean("settings.GameMode.ForceSurvivalMode", false);
-        getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp", 1);
         getPasswordHash = load(SecuritySettings.PASSWORD_HASH);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
@@ -174,7 +171,6 @@ public final class Settings {
         forceCommandsAsConsole = configFile.getStringList("settings.forceCommandsAsConsole");
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         useWelcomeMessage = load(RegistrationSettings.USE_WELCOME_MESSAGE);
-        unsafePasswords = configFile.getStringList("settings.security.unsafePasswords");
         countriesBlacklist = configFile.getStringList("Protection.countriesBlacklist");
         broadcastWelcomeMessage = load(RegistrationSettings.BROADCAST_WELCOME_MESSAGE);
         forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
@@ -188,7 +184,6 @@ public final class Settings {
         delayJoinMessage = load(RegistrationSettings.DELAY_JOIN_MESSAGE);
         noTeleport = load(RestrictionSettings.NO_TELEPORT);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
-        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
         forceRegisterCommands = configFile.getStringList("settings.forceRegisterCommands");
         forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
         customAttributes = configFile.getBoolean("Hooks.customAttributes");
@@ -196,21 +191,6 @@ public final class Settings {
         kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
         sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
         keepCollisionsDisabled = configFile.getBoolean("settings.keepCollisionsDisabled");
-    }
-
-    /**
-     * Method switchAntiBotMod.
-     *
-     * @param mode boolean
-     */
-    public static void switchAntiBotMod(boolean mode) {
-        if (mode) {
-            isKickNonRegisteredEnabled = true;
-            antiBotInAction = true;
-        } else {
-            isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
-            antiBotInAction = false;
-        }
     }
 
     /**

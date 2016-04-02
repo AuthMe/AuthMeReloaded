@@ -62,6 +62,7 @@ import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.ValidationService;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -260,8 +261,9 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
+        ValidationService validationService = new ValidationService(newSettings);
         commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager,
-            pluginHooks, spawnLoader, antiBot);
+            pluginHooks, spawnLoader, antiBot, validationService);
 
         // AntiBot delay
         BukkitService bukkitService = new BukkitService(this);
@@ -299,7 +301,7 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the management
         ProcessService processService = new ProcessService(newSettings, messages, this, database, ipAddressManager,
-            passwordSecurity, pluginHooks, spawnLoader);
+            passwordSecurity, pluginHooks, spawnLoader, validationService);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
@@ -432,12 +434,13 @@ public class AuthMe extends JavaPlugin {
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
                                                     PasswordSecurity passwordSecurity, NewSetting settings,
                                                     IpAddressManager ipAddressManager, PluginHooks pluginHooks,
-                                                    SpawnLoader spawnLoader, AntiBot antiBot) {
+                                                    SpawnLoader spawnLoader, AntiBot antiBot,
+                                                    ValidationService validationService) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
         CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot);
+            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot, validationService);
         return new CommandHandler(commandService);
     }
 

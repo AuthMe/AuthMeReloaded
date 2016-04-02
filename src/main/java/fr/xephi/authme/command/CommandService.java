@@ -15,6 +15,7 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -36,6 +37,7 @@ public class CommandService {
     private final PluginHooks pluginHooks;
     private final SpawnLoader spawnLoader;
     private final AntiBot antiBot;
+    private final ValidationService validationService;
 
     /**
      * Constructor.
@@ -54,7 +56,7 @@ public class CommandService {
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
                           IpAddressManager ipAddressManager, PluginHooks pluginHooks, SpawnLoader spawnLoader,
-                          AntiBot antiBot) {
+                          AntiBot antiBot, ValidationService validationService) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
@@ -66,6 +68,7 @@ public class CommandService {
         this.pluginHooks = pluginHooks;
         this.spawnLoader = spawnLoader;
         this.antiBot = antiBot;
+        this.validationService = validationService;
     }
 
     /**
@@ -217,6 +220,17 @@ public class CommandService {
 
     public AntiBot getAntiBot() {
         return antiBot;
+    }
+
+    /**
+     * Verifies whether a password is valid according to the plugin settings.
+     *
+     * @param password the password to verify
+     * @param username the username the password is associated with
+     * @return message key with the password error, or {@code null} if password is valid
+     */
+    public MessageKey validatePassword(String password, String username) {
+        return validationService.validatePassword(password, username);
     }
 
 }

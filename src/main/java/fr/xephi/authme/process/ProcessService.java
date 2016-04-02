@@ -11,6 +11,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitTask;
@@ -28,10 +29,11 @@ public class ProcessService {
     private final PasswordSecurity passwordSecurity;
     private final PluginHooks pluginHooks;
     private final SpawnLoader spawnLoader;
+    private final ValidationService validationService;
 
     public ProcessService(NewSetting settings, Messages messages, AuthMe authMe, DataSource dataSource,
                           IpAddressManager ipAddressManager, PasswordSecurity passwordSecurity, PluginHooks pluginHooks,
-                          SpawnLoader spawnLoader) {
+                          SpawnLoader spawnLoader, ValidationService validationService) {
         this.settings = settings;
         this.messages = messages;
         this.authMe = authMe;
@@ -40,6 +42,7 @@ public class ProcessService {
         this.passwordSecurity = passwordSecurity;
         this.pluginHooks = pluginHooks;
         this.spawnLoader = spawnLoader;
+        this.validationService = validationService;
     }
 
     /**
@@ -197,6 +200,17 @@ public class ProcessService {
      */
     public DataSource getDataSource() {
         return dataSource;
+    }
+
+    /**
+     * Verifies whether a password is valid according to the plugin settings.
+     *
+     * @param password the password to verify
+     * @param username the username the password is associated with
+     * @return message key with the password error, or {@code null} if password is valid
+     */
+    public MessageKey validatePassword(String password, String username) {
+        return validationService.validatePassword(password, username);
     }
 
 }

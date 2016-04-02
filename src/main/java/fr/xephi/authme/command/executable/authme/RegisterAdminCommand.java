@@ -6,8 +6,6 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
@@ -25,26 +23,14 @@ public class RegisterAdminCommand implements ExecutableCommand {
         final String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);
         final String playerNameLowerCase = playerName.toLowerCase();
-        final String playerPassLowerCase = playerPass.toLowerCase();
 
         // Command logic
-        if (!playerPassLowerCase.matches(Settings.getPassRegex)) {
-            commandService.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
+        MessageKey passwordError = commandService.validatePassword(playerPass, playerName);
+        if (passwordError != null) {
+            commandService.send(sender, passwordError);
             return;
         }
-        if (playerPassLowerCase.equalsIgnoreCase(playerName)) {
-            commandService.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-            return;
-        }
-        if (playerPassLowerCase.length() < commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)
-            || playerPassLowerCase.length() > commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)) {
-            commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-            return;
-        }
-        if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(playerPassLowerCase)) {
-            commandService.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
-            return;
-        }
+
         commandService.runTaskAsynchronously(new Runnable() {
 
             @Override

@@ -11,7 +11,9 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
+import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +39,7 @@ public class ProcessServiceTest {
         mocks = new HashMap<>();
         processService = new ProcessService(newMock(NewSetting.class), newMock(Messages.class), newMock(AuthMe.class),
             newMock(DataSource.class), newMock(IpAddressManager.class), newMock(PasswordSecurity.class),
-            newMock(PluginHooks.class), newMock(SpawnLoader.class));
+            newMock(PluginHooks.class), newMock(SpawnLoader.class), newMock(ValidationService.class));
     }
 
     @Test
@@ -184,6 +186,22 @@ public class ProcessServiceTest {
         // then
         assertThat(result, equalTo(hashedPassword));
         verify(passwordSecurity).computeHash(password, username);
+    }
+
+    @Test
+    public void shouldValidatePassword() {
+        // given
+        String user = "test-user";
+        String password = "passw0rd";
+        ValidationService validationService = getMock(ValidationService.class);
+        given(validationService.validatePassword(password, user)).willReturn(MessageKey.PASSWORD_MATCH_ERROR);
+
+        // when
+        MessageKey result = processService.validatePassword(password, user);
+
+        // then
+        MatcherAssert.assertThat(result, equalTo(MessageKey.PASSWORD_MATCH_ERROR));
+        verify(validationService).validatePassword(password, user);
     }
 
     private <T> T newMock(Class<T> clazz) {

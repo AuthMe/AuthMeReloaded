@@ -1,6 +1,5 @@
 package fr.xephi.authme.command.executable.authme;
 
-import com.google.common.base.Strings;
 import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -10,12 +9,12 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
@@ -29,8 +28,10 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link ChangePasswordAdminCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ChangePasswordAdminCommandTest {
 
+    @Mock
     private CommandService service;
 
     @BeforeClass
@@ -38,85 +39,19 @@ public class ChangePasswordAdminCommandTest {
         ConsoleLoggerTestInitializer.setupLogger();
     }
 
-    @Before
-    public void setUpServiceMock() {
-        service = mock(CommandService.class);
-        given(service.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).willReturn("[a-zA-Z]+");
-        given(service.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(3);
-        given(service.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(20);
-        given(service.getProperty(SecuritySettings.UNSAFE_PASSWORDS))
-            .willReturn(Arrays.asList("unsafe", "otherUnsafe"));
-    }
-
     @Test
-    public void shouldRejectPasswordSameAsUsername() {
+    public void shouldRejectInvalidPassword() {
         // given
         ExecutableCommand command = new ChangePasswordAdminCommand();
         CommandSender sender = mock(CommandSender.class);
+        given(service.validatePassword("Bobby", "bobby")).willReturn(MessageKey.PASSWORD_IS_USERNAME_ERROR);
 
         // when
         command.executeCommand(sender, Arrays.asList("bobby", "Bobby"), service);
 
         // then
+        verify(service).validatePassword("Bobby", "bobby");
         verify(service).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-        verify(service, never()).getDataSource();
-    }
-
-    @Test
-    public void shouldRejectPasswordNotMatchingPattern() {
-        // given
-        ExecutableCommand command = new ChangePasswordAdminCommand();
-        CommandSender sender = mock(CommandSender.class);
-        // service mock returns pattern a-zA-Z -> numbers should not be accepted
-        String invalidPassword = "invalid1234";
-
-        // when
-        command.executeCommand(sender, Arrays.asList("myPlayer123", invalidPassword), service);
-
-        // then
-        verify(service).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
-        verify(service, never()).getDataSource();
-    }
-
-    @Test
-    public void shouldRejectTooShortPassword() {
-        // given
-        ExecutableCommand command = new ChangePasswordAdminCommand();
-        CommandSender sender = mock(CommandSender.class);
-
-        // when
-        command.executeCommand(sender, Arrays.asList("player", "ab"), service);
-
-        // then
-        verify(service).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-        verify(service, never()).getDataSource();
-    }
-
-    @Test
-    public void shouldRejectTooLongPassword() {
-        // given
-        ExecutableCommand command = new ChangePasswordAdminCommand();
-        CommandSender sender = mock(CommandSender.class);
-
-        // when
-        command.executeCommand(sender, Arrays.asList("player", Strings.repeat("a", 30)), service);
-
-        // then
-        verify(service).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-        verify(service, never()).getDataSource();
-    }
-
-    @Test
-    public void shouldRejectUnsafePassword() {
-        // given
-        ExecutableCommand command = new ChangePasswordAdminCommand();
-        CommandSender sender = mock(CommandSender.class);
-
-        // when
-        command.executeCommand(sender, Arrays.asList("player", "unsafe"), service);
-
-        // then
-        verify(service).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
         verify(service, never()).getDataSource();
     }
 
@@ -173,6 +108,7 @@ public class ChangePasswordAdminCommandTest {
         runInnerRunnable(service);
 
         // then
+        verify(service).validatePassword(password, player);
         verify(service).send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
         verify(passwordSecurity).computeHash(password, player);
         verify(auth).setPassword(hashedPassword);
@@ -209,6 +145,7 @@ public class ChangePasswordAdminCommandTest {
         runInnerRunnable(service);
 
         // then
+        verify(service).validatePassword(password, player);
         verify(service).send(sender, MessageKey.PASSWORD_CHANGED_SUCCESS);
         verify(passwordSecurity).computeHash(password, player);
         verify(auth).setPassword(hashedPassword);
@@ -244,6 +181,7 @@ public class ChangePasswordAdminCommandTest {
         runInnerRunnable(service);
 
         // then
+        verify(service).validatePassword(password, player);
         verify(service).send(sender, MessageKey.ERROR);
         verify(passwordSecurity).computeHash(password, player);
         verify(auth).setPassword(hashedPassword);

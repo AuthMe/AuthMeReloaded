@@ -15,6 +15,7 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -63,11 +64,13 @@ public class CommandServiceTest {
     private SpawnLoader spawnLoader;
     @Mock
     private AntiBot antiBot;
+    @Mock
+    private ValidationService validationService;
 
     @Before
     public void setUpService() {
         commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot);
+            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot, validationService);
     }
 
     @Test
@@ -227,5 +230,20 @@ public class CommandServiceTest {
 
         // then
         assertThat(ipManager, equalTo(ipAddressManager));
+    }
+
+    @Test
+    public void shouldValidatePassword() {
+        // given
+        String user = "asdf";
+        String password = "mySecret55";
+        given(validationService.validatePassword(password, user)).willReturn(MessageKey.INVALID_PASSWORD_LENGTH);
+
+        // when
+        MessageKey result = commandService.validatePassword(password, user);
+
+        // then
+        assertThat(result, equalTo(MessageKey.INVALID_PASSWORD_LENGTH));
+        verify(validationService).validatePassword(password, user);
     }
 }
