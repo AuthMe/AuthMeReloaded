@@ -21,12 +21,12 @@ import java.util.List;
 
 import static fr.xephi.authme.settings.properties.PluginSettings.MESSAGES_LANGUAGE;
 import static fr.xephi.authme.util.StringUtils.makePath;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.endsWith;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyDouble;

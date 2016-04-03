@@ -13,7 +13,6 @@ import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
-import org.hamcrest.MatcherAssert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -200,7 +199,7 @@ public class ProcessServiceTest {
         MessageKey result = processService.validatePassword(password, user);
 
         // then
-        MatcherAssert.assertThat(result, equalTo(MessageKey.PASSWORD_MATCH_ERROR));
+        assertThat(result, equalTo(MessageKey.PASSWORD_MATCH_ERROR));
         verify(validationService).validatePassword(password, user);
     }
 

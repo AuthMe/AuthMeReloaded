@@ -17,13 +17,14 @@ import static fr.xephi.authme.command.FoundResultStatus.NO_PERMISSION;
 import static fr.xephi.authme.command.FoundResultStatus.SUCCESS;
 import static fr.xephi.authme.command.FoundResultStatus.UNKNOWN_LABEL;
 import static java.util.Arrays.asList;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyListOf;
 import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -95,11 +96,8 @@ public class CommandHandlerTest {
         // then
         verify(serviceMock).mapPartsToCommand(eq(sender), captor.capture());
         assertThat(captor.getValue(), contains("unreg", "testPlayer"));
-
         verify(command, never()).getExecutableCommand();
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender).sendMessage(captor.capture());
-        assertThat(captor.getValue(), containsString("don't have permission"));
+        verify(sender).sendMessage(argThat(containsString("don't have permission")));
     }
 
     @Test
@@ -170,11 +168,8 @@ public class CommandHandlerTest {
         // then
         verify(serviceMock).mapPartsToCommand(eq(sender), captor.capture());
         assertThat(captor.getValue(), contains("unreg", "testPlayer"));
-
         verify(command, never()).getExecutableCommand();
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender).sendMessage(captor.capture());
-        assertThat(captor.getValue(), containsString("Failed to parse"));
+        verify(sender).sendMessage(argThat(containsString("Failed to parse")));
     }
 
     @Test

@@ -14,8 +14,8 @@ import java.util.Collections;
 import java.util.List;
 
 import static fr.xephi.authme.TestHelper.runInnerRunnable;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
@@ -81,7 +81,7 @@ public class AccountsCommandTest {
         // given
         List<String> arguments = Collections.singletonList("SomeUser");
         given(dataSource.getAuth("someuser")).willReturn(mock(PlayerAuth.class));
-        given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.<String> emptyList());
+        given(dataSource.getAllAuthsByIp(anyString())).willReturn(Collections.<String>emptyList());
 
         // when
         command.executeCommand(sender, arguments, service);
@@ -115,7 +115,7 @@ public class AccountsCommandTest {
     public void shouldReturnIpUnknown() {
         // given
         List<String> arguments = Collections.singletonList("123.45.67.89");
-        given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.<String> emptyList());
+        given(dataSource.getAllAuthsByIp("123.45.67.89")).willReturn(Collections.<String>emptyList());
 
         // when
         command.executeCommand(sender, arguments, service);

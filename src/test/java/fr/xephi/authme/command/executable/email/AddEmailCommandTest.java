@@ -3,7 +3,6 @@ package fr.xephi.authme.command.executable.email;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,7 +28,6 @@ public class AddEmailCommandTest {
     @Before
     public void setUpMocks() {
         commandService = mock(CommandService.class);
-        WrapperMock.createInstance();
     }
 
     @Test

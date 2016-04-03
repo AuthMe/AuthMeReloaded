@@ -7,13 +7,12 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -61,8 +60,6 @@ public class GetEmailCommandTest {
         command.executeCommand(sender, Collections.singletonList(user), service);
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender).sendMessage(captor.capture());
-        assertThat(captor.getValue(), containsString(email));
+        verify(sender).sendMessage(argThat(containsString(email)));
     }
 }

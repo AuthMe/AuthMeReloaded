@@ -61,7 +61,7 @@ public class PurgeLastPositionCommandTest {
         ExecutableCommand command = new PurgeLastPositionCommand();
 
         // when
-        command.executeCommand(sender, Collections.<String> emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList(), service);
 
         // then
         verify(dataSource).getAuth(player);

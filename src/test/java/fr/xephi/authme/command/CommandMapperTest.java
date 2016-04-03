@@ -13,12 +13,12 @@ import java.util.Set;
 import static fr.xephi.authme.command.TestCommandsUtil.getCommandWithLabel;
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -31,7 +31,7 @@ public class CommandMapperTest {
 
     private static Set<CommandDescription> commands;
     private static CommandMapper mapper;
-    private static PermissionsManager permissionsManagerMock;
+    private static PermissionsManager permissionsManager;
 
     @BeforeClass
     public static void setUpCommandHandler() {
@@ -40,8 +40,8 @@ public class CommandMapperTest {
 
     @Before
     public void setUpMocks() {
-        permissionsManagerMock = mock(PermissionsManager.class);
-        mapper = new CommandMapper(commands, permissionsManagerMock);
+        permissionsManager = mock(PermissionsManager.class);
+        mapper = new CommandMapper(commands, permissionsManager);
     }
 
     // -----------
@@ -52,7 +52,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = Arrays.asList("authme", "login", "test1");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -71,7 +71,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = Arrays.asList("Authme", "REG", "arg1", "arg2");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -89,7 +89,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = Arrays.asList("authme", "register", "pass123", "pass123", "pass123");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -107,7 +107,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = Arrays.asList("authme", "Reg");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -125,7 +125,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = Arrays.asList("authme", "reh", "pass123", "pass123");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -144,7 +144,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = Arrays.asList("authme", "asdfawetawty4asdca");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -162,7 +162,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = singletonList("unregister");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -180,7 +180,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = asList("bogus", "label1", "arg1");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -205,7 +205,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = asList("Unreg", "player1");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -223,7 +223,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = asList("unregistER", "player1", "wrongArg");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -241,7 +241,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = asList("email", "helptest", "arg1");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(true);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);
@@ -259,7 +259,7 @@ public class CommandMapperTest {
         // given
         List<String> parts = Arrays.asList("authme", "login", "test1");
         CommandSender sender = mock(CommandSender.class);
-        given(permissionsManagerMock.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(false);
+        given(permissionsManager.hasPermission(eq(sender), any(CommandDescription.class))).willReturn(false);
 
         // when
         FoundCommandResult result = mapper.mapPartsToCommand(sender, parts);

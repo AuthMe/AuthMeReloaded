@@ -37,7 +37,7 @@ public class ReloadCommandTest {
         ExecutableCommand command = new ReloadCommand();
 
         // when
-        command.executeCommand(sender, Collections.<String> emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList(), service);
 
         // then
         verify(authMe).reload();
@@ -55,7 +55,7 @@ public class ReloadCommandTest {
         ExecutableCommand command = new ReloadCommand();
 
         // when
-        command.executeCommand(sender, Collections.<String> emptyList(), service);
+        command.executeCommand(sender, Collections.<String>emptyList(), service);
 
         // then
         verify(authMe).reload();

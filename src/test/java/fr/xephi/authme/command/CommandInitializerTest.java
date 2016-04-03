@@ -3,7 +3,6 @@ package fr.xephi.authme.command;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -38,7 +37,6 @@ public class CommandInitializerTest {
 
     @BeforeClass
     public static void initializeCommandManager() {
-        WrapperMock.createInstance();
         commands = CommandInitializer.buildCommands();
     }
 
