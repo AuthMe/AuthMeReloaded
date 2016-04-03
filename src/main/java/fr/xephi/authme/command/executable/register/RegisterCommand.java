@@ -7,12 +7,15 @@ import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.Utils;
-
 import org.bukkit.entity.Player;
 
 import java.util.List;
+
+import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWORD_LENGTH;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION;
 
 public class RegisterCommand extends PlayerCommand {
 
@@ -24,25 +27,27 @@ public class RegisterCommand extends PlayerCommand {
             return;
         }
 
-        if (arguments.isEmpty() || Settings.enablePasswordConfirmation && arguments.size() < 2) {
+        if (arguments.isEmpty() || commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION) && arguments.size() < 2) {
             commandService.send(player, MessageKey.USAGE_REGISTER);
             return;
         }
 
         final Management management = commandService.getManagement();
-        if (Settings.emailRegistration && !Settings.getmailAccount.isEmpty()) {
-            if (Settings.doubleEmailCheck && arguments.size() < 2 || !arguments.get(0).equals(arguments.get(1))) {
+        if (commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
+                && !commandService.getProperty(EmailSettings.MAIL_ACCOUNT).isEmpty()) {
+            boolean emailDoubleCheck = commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL);
+            if (emailDoubleCheck && arguments.size() < 2 || !arguments.get(0).equals(arguments.get(1))) {
                 commandService.send(player, MessageKey.USAGE_REGISTER);
                 return;
             }
 
             final String email = arguments.get(0);
-            if (!Utils.isEmailCorrect(email, commandService.getSettings())) {
+            if (!commandService.validateEmail(email)) {
                 commandService.send(player, MessageKey.INVALID_EMAIL);
                 return;
             }
 
-            final String thePass = RandomString.generate(Settings.getRecoveryPassLength);
+            final String thePass = RandomString.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
             management.performRegister(player, thePass, email);
             return;
         }

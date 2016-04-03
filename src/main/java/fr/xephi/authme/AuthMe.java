@@ -261,7 +261,7 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
-        ValidationService validationService = new ValidationService(newSettings);
+        ValidationService validationService = new ValidationService(newSettings, database, permsMan);
         commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager,
             pluginHooks, spawnLoader, antiBot, validationService);
 

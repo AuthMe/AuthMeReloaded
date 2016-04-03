@@ -1,9 +1,17 @@
 package fr.xephi.authme.util;
 
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import org.bukkit.command.CommandSender;
+
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Validation service.
@@ -11,9 +19,13 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 public class ValidationService {
 
     private final NewSetting settings;
+    private final DataSource dataSource;
+    private final PermissionsManager permissionsManager;
 
-    public ValidationService(NewSetting settings) {
+    public ValidationService(NewSetting settings, DataSource dataSource, PermissionsManager permissionsManager) {
         this.settings = settings;
+        this.dataSource = dataSource;
+        this.permissionsManager = permissionsManager;
     }
 
     /**
@@ -38,5 +50,34 @@ public class ValidationService {
             return MessageKey.PASSWORD_UNSAFE_ERROR;
         }
         return null;
+    }
+
+    public boolean validateEmail(String email) {
+        if (!email.contains("@") || "your@email.com".equalsIgnoreCase(email)) {
+            return false;
+        }
+        final String emailDomain = email.split("@")[1];
+
+        List<String> whitelist = settings.getProperty(EmailSettings.DOMAIN_WHITELIST);
+        if (!CollectionUtils.isEmpty(whitelist)) {
+            return containsIgnoreCase(whitelist, emailDomain);
+        }
+
+        List<String> blacklist = settings.getProperty(EmailSettings.DOMAIN_BLACKLIST);
+        return CollectionUtils.isEmpty(blacklist) || !containsIgnoreCase(blacklist, emailDomain);
+    }
+
+    public boolean isEmailFreeForRegistration(String email, CommandSender sender) {
+        return permissionsManager.hasPermission(sender, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
+            || dataSource.countAuthsByEmail(email) < settings.getProperty(EmailSettings.MAX_REG_PER_EMAIL);
+    }
+
+    private static boolean containsIgnoreCase(Collection<String> coll, String needle) {
+        for (String entry : coll) {
+            if (entry.equalsIgnoreCase(needle)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

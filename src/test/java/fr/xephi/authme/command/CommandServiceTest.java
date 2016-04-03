@@ -246,4 +246,35 @@ public class CommandServiceTest {
         assertThat(result, equalTo(MessageKey.INVALID_PASSWORD_LENGTH));
         verify(validationService).validatePassword(password, user);
     }
+
+    @Test
+    public void shouldValidateEmail() {
+        // given
+        String email = "test@example.tld";
+        given(validationService.validateEmail(email)).willReturn(true);
+
+        // when
+        boolean result = commandService.validateEmail(email);
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(validationService).validateEmail(email);
+    }
+
+    @Test
+    public void shouldCheckIfEmailCanBeUsed() {
+        // given
+        String email = "mail@example.com";
+        CommandSender sender = mock(CommandSender.class);
+        given(validationService.isEmailFreeForRegistration(email, sender))
+            .willReturn(true);
+
+        // when
+        boolean result = commandService.isEmailFreeForRegistration(email, sender);
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(validationService).isEmailFreeForRegistration(email, sender);
+    }
+
 }

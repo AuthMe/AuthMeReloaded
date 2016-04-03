@@ -39,7 +39,6 @@ public final class Settings {
     public static List<String> forceRegisterCommandsAsConsole;
     public static HashAlgorithm getPasswordHash;
     public static Pattern nickPattern;
-    public static boolean useLogging = false;
     public static boolean isChatAllowed, isPermissionCheckEnabled,
         isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
         isSessionsEnabled, isAllowRestrictedIp,
@@ -50,8 +49,7 @@ public final class Settings {
         protectInventoryBeforeLogInEnabled, isStopEnabled, reloadSupport,
         rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
         emailRegistration, multiverse, bungee,
-        banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-        disableSocialSpy, useEssentialsMotd,
+        banUnsafeIp, sessionExpireOnIpChange, useEssentialsMotd,
         enableProtection, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         checkVeryGames, removeJoinMessage, removeLeaveMessage, delayJoinMessage,
@@ -59,15 +57,13 @@ public final class Settings {
         kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
         customAttributes, isRemoveSpeedEnabled, preventOtherCase, keepCollisionsDisabled;
     public static String getNickRegex, getUnloggedinGroup,
-        unRegisteredGroup,
-        backupWindowsPath, getRegisteredGroup,
+        unRegisteredGroup, backupWindowsPath, getRegisteredGroup,
         rakamakUsers, rakamakUsersIp, getmailAccount, defaultWorld,
         spawnPriority, crazyloginFileName, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
-        getPasswordMinLen, getMovementRadius,
-        getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
-        getMailPort, maxLoginTry, captchaLength, saltLength,
+        getPasswordMinLen, getMovementRadius, getNonActivatedGroup, passwordMaxLength,
+        maxLoginTry, captchaLength, saltLength,
         bCryptLog2Rounds, getMaxLoginPerIp, getMaxJoinPerIp;
     protected static FileConfiguration configFile;
 
@@ -145,8 +141,6 @@ public final class Settings {
         noConsoleSpam = load(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
         getmailAccount = load(EmailSettings.MAIL_ACCOUNT);
-        getMailPort = configFile.getInt("Email.mailPort", 465);
-        getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
         displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
@@ -156,10 +150,7 @@ public final class Settings {
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
-        doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", true);
-        useLogging = configFile.getBoolean("Security.console.logConsole", false);
-        disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
         useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");

@@ -213,4 +213,12 @@ public class ProcessService {
         return validationService.validatePassword(password, username);
     }
 
+    public boolean validateEmail(String email) {
+        return validationService.validateEmail(email);
+    }
+
+    public boolean isEmailFreeForRegistration(String email, CommandSender sender) {
+        return validationService.isEmailFreeForRegistration(email, sender);
+    }
+
 }

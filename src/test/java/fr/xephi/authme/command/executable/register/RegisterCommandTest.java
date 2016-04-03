@@ -3,7 +3,7 @@ package fr.xephi.authme.command.executable.register;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
@@ -14,6 +14,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static fr.xephi.authme.settings.properties.RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION;
 import static org.hamcrest.Matchers.containsString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.argThat;
@@ -31,7 +32,6 @@ public class RegisterCommandTest {
     @Before
     public void initializeAuthMeMock() {
         WrapperMock.createInstance();
-        Settings.captchaLength = 10;
         commandService = mock(CommandService.class);
     }
 
@@ -70,6 +70,8 @@ public class RegisterCommandTest {
         RegisterCommand command = new RegisterCommand();
         Management management = mock(Management.class);
         given(commandService.getManagement()).willReturn(management);
+        given(commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION)).willReturn(false);
+        given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(false);
 
         // when
         command.executeCommand(sender, Collections.singletonList("password"), commandService);

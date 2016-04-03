@@ -7,9 +7,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
-import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 /**
@@ -42,9 +40,9 @@ public class AsyncAddEmail implements Process {
 
             if (currentEmail != null && !"your@email.com".equals(currentEmail)) {
                 service.send(player, MessageKey.USAGE_CHANGE_EMAIL);
-            } else if (!Utils.isEmailCorrect(email, service.getSettings())) {
+            } else if (!service.validateEmail(email)) {
                 service.send(player, MessageKey.INVALID_EMAIL);
-            } else if (dataSource.countAuthsByEmail(email) >= service.getProperty(EmailSettings.MAX_REG_PER_EMAIL)) {
+            } else if (!service.isEmailFreeForRegistration(email, player)) {
                 service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
                 auth.setEmail(email);

@@ -6,12 +6,13 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.settings.properties.EmailSettings;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
 
+/**
+ * Admin command for setting an email to an account.
+ */
 public class SetEmailCommand implements ExecutableCommand {
 
     @Override
@@ -22,7 +23,7 @@ public class SetEmailCommand implements ExecutableCommand {
         final String playerEmail = arguments.get(1);
 
         // Validate the email address
-        if (!Utils.isEmailCorrect(playerEmail, commandService.getSettings())) {
+        if (!commandService.validateEmail(playerEmail)) {
             commandService.send(sender, MessageKey.INVALID_EMAIL);
             return;
         }
@@ -36,8 +37,7 @@ public class SetEmailCommand implements ExecutableCommand {
                 if (auth == null) {
                     commandService.send(sender, MessageKey.UNKNOWN_USER);
                     return;
-                } else if (dataSource.countAuthsByEmail(playerEmail)
-                        >= commandService.getProperty(EmailSettings.MAX_REG_PER_EMAIL)) {
+                } else if (!commandService.isEmailFreeForRegistration(playerEmail, sender)) {
                     commandService.send(sender, MessageKey.EMAIL_ALREADY_USED_ERROR);
                     return;
                 }

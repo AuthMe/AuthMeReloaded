@@ -3,26 +3,23 @@ package fr.xephi.authme.util;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-
-import fr.xephi.authme.settings.properties.EmailSettings;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
+import static org.mockito.Mockito.verify;
 
 /**
  * Test for the {@link Utils} class.
@@ -30,7 +27,6 @@ import static org.mockito.Mockito.*;
 public class UtilsTest {
 
     private static AuthMe authMeMock;
-    private PermissionsManager permissionsManagerMock;
 
     /**
      * The Utils class initializes its fields in a {@code static} block which is only executed once during the JUnit
@@ -51,9 +47,6 @@ public class UtilsTest {
         // before every test -- this is OK because it is retrieved via authMeMock. It is just crucial that authMeMock
         // remain the same object.
         reset(authMeMock);
-
-        permissionsManagerMock = mock(PermissionsManager.class);
-        when(authMeMock.getPermissionsManager()).thenReturn(permissionsManagerMock);
     }
 
     @Test
@@ -101,95 +94,6 @@ public class UtilsTest {
 
         // then
         assertThat(players, hasSize(2));
-    }
-
-    // ----------------
-    // Tests for Utils#isEmailCorrect()
-    // ----------------
-    @Test
-    public void shouldAcceptEmailWithEmptyLists() {
-        // given
-        NewSetting settings = mock(NewSetting.class);
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String> emptyList());
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String> emptyList());
-
-        // when
-        boolean result = Utils.isEmailCorrect("test@example.org", settings);
-
-        // then
-        assertThat(result, equalTo(true));
-    }
-
-    @Test
-    public void shouldAcceptEmailWithWhitelist() {
-        // given
-        NewSetting settings = mock(NewSetting.class);
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
-            .willReturn(Arrays.asList("domain.tld", "example.com"));
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String> emptyList());
-
-        // when
-        boolean result = Utils.isEmailCorrect("TesT@Example.com", settings);
-
-        // then
-        assertThat(result, equalTo(true));
-    }
-
-    @Test
-    public void shouldRejectEmailNotInWhitelist() {
-        // given
-        NewSetting settings = mock(NewSetting.class);
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST))
-            .willReturn(Arrays.asList("domain.tld", "example.com"));
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST)).willReturn(Collections.<String> emptyList());
-
-        // when
-        boolean result = Utils.isEmailCorrect("email@other-domain.abc", settings);
-
-        // then
-        assertThat(result, equalTo(false));
-    }
-
-    @Test
-    public void shouldAcceptEmailNotInBlacklist() {
-        // given
-        NewSetting settings = mock(NewSetting.class);
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String> emptyList());
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
-            .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
-
-        // when
-        boolean result = Utils.isEmailCorrect("sample@valid-name.tld", settings);
-
-        // then
-        assertThat(result, equalTo(true));
-    }
-
-    @Test
-    public void shouldRejectEmailInBlacklist() {
-        // given
-        NewSetting settings = mock(NewSetting.class);
-        given(settings.getProperty(EmailSettings.DOMAIN_WHITELIST)).willReturn(Collections.<String> emptyList());
-        given(settings.getProperty(EmailSettings.DOMAIN_BLACKLIST))
-            .willReturn(Arrays.asList("Example.org", "a-test-name.tld"));
-
-        // when
-        boolean result = Utils.isEmailCorrect("sample@a-Test-name.tld", settings);
-
-        // then
-        assertThat(result, equalTo(false));
-    }
-
-    @Test
-    public void shouldRejectInvalidEmail() {
-        // given/when/then
-        assertThat(Utils.isEmailCorrect("invalidinput", mock(NewSetting.class)), equalTo(false));
-    }
-
-    @Test
-    public void shouldRejectDefaultEmail() {
-        // given/when/then
-        assertThat(Utils.isEmailCorrect("your@email.com", mock(NewSetting.class)), equalTo(false));
     }
 
     // Note: This method is used through reflections
