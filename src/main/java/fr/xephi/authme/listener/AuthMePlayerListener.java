@@ -3,6 +3,7 @@ package fr.xephi.authme.listener;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import fr.xephi.authme.AntiBot;
+import fr.xephi.authme.AntiBot.AntiBotStatus;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -330,16 +331,16 @@ public class AuthMePlayerListener implements Listener {
         final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = dataSource.isAuthAvailable(name);
 
+        if (antiBot.getAntiBotStatus()==AntiBotStatus.ACTIVE && !isAuthAvailable) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
+
         if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
-            if (Settings.antiBotInAction) {
-                event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            } else {
-                event.setKickMessage(m.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
+            event.setKickMessage(m.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
         }
 
         if (name.length() > Settings.getMaxNickLength || name.length() < Settings.getMinNickLength) {

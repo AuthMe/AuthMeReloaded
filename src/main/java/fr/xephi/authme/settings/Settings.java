@@ -25,8 +25,6 @@ public final class Settings {
     public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
-    // This is not an option!
-    public static boolean antiBotInAction = false;
     public static List<String> allowCommands;
     public static List<String> getJoinPermissions;
     public static List<String> getUnrestrictedName;
