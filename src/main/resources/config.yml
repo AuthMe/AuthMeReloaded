@@ -161,7 +161,7 @@ settings:
         allowedPasswordCharacters: '[\x21-\x7E]*'
         # Keeps collisions disabled for logged players
         # Works only with MC 1.9
-        KeepCollisionsDisabled: false
+        keepCollisionsDisabled: false
     GameMode:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false

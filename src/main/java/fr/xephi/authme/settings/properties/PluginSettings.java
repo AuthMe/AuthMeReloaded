@@ -58,7 +58,7 @@ public class PluginSettings implements SettingsClass {
         "Works only with MC 1.9"
     })
     public static final Property<Boolean> KEEP_COLLISIONS_DISABLED =
-            newProperty("settings.KeepCollisionsDisabled", false);
+        newProperty("settings.restrictions.keepCollisionsDisabled", false);
 
     private PluginSettings() {
     }
