@@ -580,22 +580,6 @@ public class SQLite implements DataSource {
         return auths;
     }
 
-    @Override
-    public synchronized boolean isEmailStored(String email) {
-        String sql = "SELECT 1 FROM " + tableName + " WHERE " + col.EMAIL + " = ? COLLATE NOCASE;";
-        ResultSet rs = null;
-        try (PreparedStatement ps = con.prepareStatement(sql)) {
-            ps.setString(1, email);
-            rs = ps.executeQuery();
-            return rs.next();
-        } catch (SQLException e) {
-            logSqlException(e);
-        } finally {
-            close(rs);
-        }
-        return false;
-    }
-
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = !col.SALT.isEmpty() ? row.getString(col.SALT) : null;
 

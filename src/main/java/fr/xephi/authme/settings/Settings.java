@@ -3,6 +3,7 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -67,7 +68,7 @@ public final class Settings {
         getPasswordMinLen, getMovementRadius,
         getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
         getMailPort, maxLoginTry, captchaLength, saltLength,
-        getmaxRegPerEmail, bCryptLog2Rounds, getMaxLoginPerIp, getMaxJoinPerIp;
+        bCryptLog2Rounds, getMaxLoginPerIp, getMaxJoinPerIp;
     protected static FileConfiguration configFile;
 
     /**
@@ -143,7 +144,7 @@ public final class Settings {
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
         noConsoleSpam = load(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
-        getmailAccount = configFile.getString("Email.mailAccount", "");
+        getmailAccount = load(EmailSettings.MAIL_ACCOUNT);
         getMailPort = configFile.getInt("Email.mailPort", 465);
         getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
         displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
@@ -151,7 +152,6 @@ public final class Settings {
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
         emailRegistration = load(RegistrationSettings.USE_EMAIL_REGISTRATION);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
-        getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = load(HooksSettings.MULTIVERSE);
         bungee = configFile.getBoolean("Hooks.bungeecord", false);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");

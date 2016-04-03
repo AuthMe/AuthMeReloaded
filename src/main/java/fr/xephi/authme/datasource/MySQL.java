@@ -908,20 +908,6 @@ public class MySQL implements DataSource {
         return auths;
     }
 
-    @Override
-    public synchronized boolean isEmailStored(String email) {
-        String sql = "SELECT 1 FROM " + tableName + " WHERE UPPER(" + col.EMAIL + ") = UPPER(?)";
-        try (Connection con = ds.getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
-            pst.setString(1, email);
-            try (ResultSet rs = pst.executeQuery()) {
-                return rs.next();
-            }
-        } catch (SQLException e) {
-            logSqlException(e);
-        }
-        return false;
-    }
-
     private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
         String salt = col.SALT.isEmpty() ? null : row.getString(col.SALT);
         int group = col.GROUP.isEmpty() ? -1 : row.getInt(col.GROUP);

@@ -7,12 +7,14 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.entity.Player;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -24,26 +26,21 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link AsyncAddEmail}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AsyncAddEmailTest {
 
+    @Mock
     private Player player;
+    @Mock
     private DataSource dataSource;
+    @Mock
     private PlayerCache playerCache;
+    @Mock
     private ProcessService service;
 
     @BeforeClass
     public static void setUp() {
-        WrapperMock.createInstance();
         ConsoleLoggerTestInitializer.setupLogger();
-    }
-
-    // Clean up the fields to ensure that no test uses elements of another test
-    @After
-    public void removeFieldValues() {
-        player = null;
-        dataSource = null;
-        playerCache = null;
-        service = null;
     }
 
     @Test
@@ -55,7 +52,7 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("tester")).willReturn(auth);
-        given(dataSource.isEmailStored("my.mail@example.org")).willReturn(false);
+        given(dataSource.countAuthsByEmail("my.mail@example.org")).willReturn(1);
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(true);
 
         // when
@@ -77,7 +74,7 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("tester")).willReturn(auth);
-        given(dataSource.isEmailStored("my.mail@example.org")).willReturn(false);
+        given(dataSource.countAuthsByEmail("my.mail@example.org")).willReturn(0);
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(false);
 
         // when
@@ -97,7 +94,7 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn("another@mail.tld");
         given(playerCache.getAuth("my_player")).willReturn(auth);
-        given(dataSource.isEmailStored("some.mail@example.org")).willReturn(false);
+        given(dataSource.countAuthsByEmail("some.mail@example.org")).willReturn(0);
 
         // when
         process.run();
@@ -116,7 +113,7 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("my_player")).willReturn(auth);
-        given(dataSource.isEmailStored("invalid_mail")).willReturn(false);
+        given(dataSource.countAuthsByEmail("invalid_mail")).willReturn(0);
 
         // when
         process.run();
@@ -135,7 +132,7 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("testname")).willReturn(auth);
-        given(dataSource.isEmailStored("player@mail.tld")).willReturn(true);
+        given(dataSource.countAuthsByEmail("player@mail.tld")).willReturn(2);
 
         // when
         process.run();
@@ -196,17 +193,15 @@ public class AsyncAddEmailTest {
     }
 
     /**
-     * Create an instance of {@link AsyncAddEmail} and save the mcoks to this class' fields.
+     * Create an instance of {@link AsyncAddEmail} and save the mocks to this class' fields.
      *
      * @param email The email to use
      * @return The created process
      */
     private AsyncAddEmail createProcess(String email) {
-        player = mock(Player.class);
-        dataSource = mock(DataSource.class);
-        playerCache = mock(PlayerCache.class);
-        service = mock(ProcessService.class);
-        when(service.getSettings()).thenReturn(mock(NewSetting.class));
+        NewSetting settings = mock(NewSetting.class);
+        when(service.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).thenReturn(2);
+        when(service.getSettings()).thenReturn(settings);
         return new AsyncAddEmail(player, email, dataSource, playerCache, service);
     }
 

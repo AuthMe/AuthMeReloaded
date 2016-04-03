@@ -12,6 +12,7 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -99,12 +100,12 @@ public class AsyncRegister implements Process {
     }
 
     private void emailRegister() {
-        if (Settings.getmaxRegPerEmail > 0
+        final int maxRegPerEmail = service.getProperty(EmailSettings.MAX_REG_PER_EMAIL);
+        if (maxRegPerEmail > 0
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
-            int maxReg = Settings.getmaxRegPerEmail;
             int otherAccounts = database.countAuthsByEmail(email);
-            if (otherAccounts >= maxReg) {
-                service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxReg),
+            if (otherAccounts >= maxRegPerEmail) {
+                service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxRegPerEmail),
                     Integer.toString(otherAccounts), "@");
                 return;
             }

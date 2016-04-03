@@ -6,6 +6,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
@@ -45,7 +46,7 @@ public class AsyncChangeEmail implements Process {
                 service.send(player, MessageKey.INVALID_NEW_EMAIL);
             } else if (!oldEmail.equals(currentEmail)) {
                 service.send(player, MessageKey.INVALID_OLD_EMAIL);
-            } else if (dataSource.isEmailStored(newEmail)) {
+            } else if (dataSource.countAuthsByEmail(newEmail) >= service.getProperty(EmailSettings.MAX_REG_PER_EMAIL)) {
                 service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
                 saveNewEmail(auth);
@@ -62,7 +63,6 @@ public class AsyncChangeEmail implements Process {
             service.send(player, MessageKey.EMAIL_CHANGED_SUCCESS);
         } else {
             service.send(player, MessageKey.ERROR);
-            auth.setEmail(newEmail);
         }
     }
 

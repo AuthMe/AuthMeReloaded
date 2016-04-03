@@ -39,19 +39,8 @@ public class CommandService {
     private final AntiBot antiBot;
     private final ValidationService validationService;
 
-    /**
+    /*
      * Constructor.
-     *
-     * @param authMe The plugin instance
-     * @param commandMapper Command mapper
-     * @param helpProvider Help provider
-     * @param messages Messages instance
-     * @param passwordSecurity The Password Security instance
-     * @param permissionsManager The permissions manager
-     * @param settings The settings manager
-     * @param ipAddressManager The IP address manager
-     * @param pluginHooks The plugin hooks instance
-     * @param spawnLoader The spawn loader
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,

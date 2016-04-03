@@ -81,22 +81,6 @@ public abstract class AbstractDataSourceIntegrationTest {
     }
 
     @Test
-    public void shouldFindIfEmailExists() {
-        // given
-        DataSource dataSource = getDataSource();
-
-        // when
-        boolean isUserMailPresent = dataSource.isEmailStored("user@example.org");
-        boolean isUserMailPresentCaseInsensitive = dataSource.isEmailStored("user@example.ORG");
-        boolean isInvalidMailPresent = dataSource.isEmailStored("not-in-database@example.com");
-
-        // then
-        assertThat(isUserMailPresent, equalTo(true));
-        assertThat(isUserMailPresentCaseInsensitive, equalTo(true));
-        assertThat(isInvalidMailPresent, equalTo(false));
-    }
-
-    @Test
     public void shouldCountAuthsByEmail() {
         // given
         DataSource dataSource = getDataSource();

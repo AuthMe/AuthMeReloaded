@@ -6,12 +6,13 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.entity.Player;
-import org.junit.After;
-import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
@@ -23,28 +24,19 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link AsyncChangeEmail}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AsyncChangeEmailTest {
 
+    @Mock
     private Player player;
+    @Mock
     private PlayerCache playerCache;
+    @Mock
     private DataSource dataSource;
+    @Mock
     private ProcessService service;
+    @Mock
     private NewSetting settings;
-
-    @BeforeClass
-    public static void setUp() {
-        WrapperMock.createInstance();
-    }
-
-    // Prevent the accidental re-use of a field in another test
-    @After
-    public void cleanFields() {
-        player = null;
-        playerCache = null;
-        dataSource = null;
-        service = null;
-        settings = null;
-    }
 
     @Test
     public void shouldAddEmail() {
@@ -146,7 +138,7 @@ public class AsyncChangeEmailTest {
         given(playerCache.isAuthenticated("username")).willReturn(true);
         PlayerAuth auth = authWithMail("old@example.com");
         given(playerCache.getAuth("username")).willReturn(auth);
-        given(dataSource.isEmailStored("new@example.com")).willReturn(true);
+        given(dataSource.countAuthsByEmail("new@example.com")).willReturn(5);
 
         // when
         process.run();
@@ -217,11 +209,7 @@ public class AsyncChangeEmailTest {
     }
 
     private AsyncChangeEmail createProcess(String oldEmail, String newEmail) {
-        player = mock(Player.class);
-        playerCache = mock(PlayerCache.class);
-        dataSource = mock(DataSource.class);
-        service = mock(ProcessService.class);
-        settings = mock(NewSetting.class);
+        given(service.getProperty(EmailSettings.MAX_REG_PER_EMAIL)).willReturn(5);
         given(service.getSettings()).willReturn(settings);
         return new AsyncChangeEmail(player, oldEmail, newEmail, dataSource, playerCache, service);
     }
