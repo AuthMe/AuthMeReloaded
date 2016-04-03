@@ -7,6 +7,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
+import fr.xephi.authme.integration.NodeBBAPI;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.AdminPermission;
@@ -200,6 +201,8 @@ public class AsynchronousLogin {
                     syncPlayerLogin.getLimbo().getMessageTaskId().cancel();
                 }
             }
+
+            NodeBBAPI.getInstance().doRegisterRequest(auth, password);
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, syncPlayerLogin);
         } else if (player.isOnline()) {
             if (!Settings.noConsoleSpam)

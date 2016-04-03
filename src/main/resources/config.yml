@@ -49,6 +49,8 @@ DataSource:
     mySQLMyBBUsername: root
     mySQLMyBBPassword: ""
     mySQLMyBBTable: mybb_forousers
+    nobebbApiEndpoint: ""
+    nobebbApiMasterKey: ""
 settings:
     # The name shown in the help messages.
     helpHeader: AuthMeReloaded

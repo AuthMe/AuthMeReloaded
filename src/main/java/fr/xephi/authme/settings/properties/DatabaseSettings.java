@@ -127,6 +127,14 @@ public class DatabaseSettings implements SettingsClass {
     public static final Property<String> MYSQL_MYBB_TABLE =
         newProperty("DataSource.mySQLMyBBTable", "");
 
+    @Comment("Enable this when you allow nodebb integration")
+    public static final Property<String> NODEBB_API_ENDPOINT =
+        newProperty("DataSource.nobebbApiEndpoint", "");
+
+    @Comment("Enable this when you allow nodebb integration")
+    public static final Property<String> NODEBB_API_MASTER_KEY =
+        newProperty("DataSource.nobebbApiMasterKey", "");
+
     private DatabaseSettings() {
     }
 
