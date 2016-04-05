@@ -54,7 +54,7 @@ public class ProcessSyncPasswordRegister implements Process {
         }
         for (String command : Settings.forceRegisterCommandsAsConsole) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                command.replace("%p", player.getName()));
+                    command.replace("%p", player.getName()));
         }
     }
 
@@ -80,6 +80,10 @@ public class ProcessSyncPasswordRegister implements Process {
     public void run() {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (limbo != null) {
+            if (Settings.hideTablistBeforeLogin && plugin.tablistHider != null) {
+                plugin.tablistHider.sendTablist(player);
+            }
+
             Utils.teleportToSpawn(player);
 
             if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {

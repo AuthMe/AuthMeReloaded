@@ -162,6 +162,10 @@ public class ProcessSyncPlayerLogin implements Runnable {
                 restoreInventory();
             }
 
+            if (settings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
+                plugin.tablistHider.sendTablist(player);
+            }
+
             // Cleanup no longer used temporary data
             LimboCache.getInstance().deleteLimboPlayer(name);
             if (playerCache.doesCacheExist(player)) {
@@ -208,7 +212,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
 
         // Login is now finished; we can force all commands
         forceCommands();
-        
+
         sendTo();
     }
 

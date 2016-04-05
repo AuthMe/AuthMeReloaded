@@ -127,9 +127,11 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
         PacketContainer inventoryPacket = protocolManager.createPacket(PacketType.Play.Server.WINDOW_ITEMS);
         inventoryPacket.getIntegers().write(0, PLAYER_INVENTORY);
         int inventorySize = CRAFTING_SIZE + ARMOR_SIZE + MAIN_SIZE + HOTBAR_SIZE;
+
         ItemStack[] blankInventory = new ItemStack[inventorySize];
         Arrays.fill(blankInventory, new ItemStack(Material.AIR));
         inventoryPacket.getItemArrayModifier().write(0, blankInventory);
+
         try {
             protocolManager.sendServerPacket(player, inventoryPacket, false);
         } catch (InvocationTargetException invocationExc) {
