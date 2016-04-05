@@ -63,7 +63,7 @@
         <buildNumber>Unknown</buildNumber>
 
         <!-- Change Bukkit Version HERE! -->
-        <bukkitVersion>1.9-R0.1-SNAPSHOT</bukkitVersion>
+        <bukkitVersion>1.9.2-R0.1-SNAPSHOT</bukkitVersion>
     </properties>
 
     <!-- Jenkins profile (add the real buildNumber to the version string) -->
