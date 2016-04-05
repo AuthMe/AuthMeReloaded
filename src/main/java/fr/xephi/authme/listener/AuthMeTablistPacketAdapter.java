@@ -73,8 +73,8 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
             }
 
             //removes the entity and display them
-            receiver.hidePlayer(receiver);
-            receiver.showPlayer(receiver);
+            receiver.hidePlayer(onlinePlayer);
+            receiver.showPlayer(onlinePlayer);
         }
     }
 
