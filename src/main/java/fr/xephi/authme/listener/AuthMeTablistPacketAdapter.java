@@ -78,11 +78,8 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
         }
     }
 
-    // TODO: fix this
     public void register() {
-        //commented out because it **could (not tested could also work with it)** still conflict with SkinRestorer
-        ConsoleLogger.showError("The hideTablistBeforeLogin feature is temporarily disabled due to issues");
-//        ProtocolLibrary.getProtocolManager().addPacketListener(this);
+        ProtocolLibrary.getProtocolManager().addPacketListener(this);
     }
 
     public void unregister() {
