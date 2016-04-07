@@ -63,6 +63,9 @@ public class DataManager {
         int i = 0;
         File dataFolder = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative"
             + File.separator + "inventories");
+        if (!dataFolder.exists() || !dataFolder.isDirectory()) {
+            return;
+        }
         for (String file : dataFolder.list()) {
             String name = file;
             int idx;
@@ -122,6 +125,9 @@ public class DataManager {
         }
 
         final File userDataFolder = new File(essentialsDataFolder, "userdata");
+        if (!userDataFolder.exists() || !userDataFolder.isDirectory()) {
+            return;
+        }
         List<OfflinePlayer> offlinePlayers = getOfflinePlayers(cleared);
         for (OfflinePlayer player : offlinePlayers) {
             File playerFile = new File(userDataFolder, Utils.getUUIDorName(player) + ".yml");
