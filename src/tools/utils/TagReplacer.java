@@ -27,8 +27,7 @@ public class TagReplacer {
      * Replace a template with default tags and custom ones supplied by a map.
      *
      * @param template The template to process
-     * @param tagValues Map with additional tags, e.g. a map entry with key "foo" and value "bar" will replace
-     *  any occurrences of "{foo}" to "bar".
+     * @param tagValues Container with tags and their associated values
      * @return The filled template
      */
     public static String applyReplacements(String template, TagValueHolder tagValues) {

@@ -27,11 +27,6 @@ public abstract class TagValue<T> {
         public boolean isEmpty() {
             return getValue().isEmpty();
         }
-
-        @Override
-        public int hashCode() {
-            return super.hashCode();
-        }
     }
 
     public static final class NestedTagValue extends TagValue<List<TagValueHolder>> {
