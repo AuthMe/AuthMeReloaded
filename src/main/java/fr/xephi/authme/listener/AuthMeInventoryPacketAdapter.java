@@ -22,7 +22,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.MethodUtils;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -37,6 +36,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+
+import org.apache.commons.lang.reflect.MethodUtils;
 
 public class AuthMeInventoryPacketAdapter extends PacketAdapter {
 

@@ -4,6 +4,7 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
@@ -11,9 +12,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.potion.PotionEffectType;
 
-import com.comphenix.protocol.reflect.MethodUtils;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+
+import org.apache.commons.lang.reflect.MethodUtils;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -32,7 +34,6 @@ import fr.xephi.authme.util.Utils.GroupType;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 import static fr.xephi.authme.settings.properties.PluginSettings.KEEP_COLLISIONS_DISABLED;
-
 
 public class ProcessSyncPlayerLogin implements Runnable {
 

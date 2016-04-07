@@ -24,6 +24,7 @@ import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -32,7 +33,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import com.comphenix.protocol.reflect.MethodUtils;
+import org.apache.commons.lang.reflect.MethodUtils;
 
 /**
  */
