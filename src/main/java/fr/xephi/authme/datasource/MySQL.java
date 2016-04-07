@@ -478,12 +478,12 @@ public class MySQL implements DataSource {
                     pst2.addBatch();
                     // wp_capabilities
                     pst2.setInt(1, id);
-                    pst2.setString(2, "wp_capabilities");
+                    pst2.setString(2, wordpressPrefix + "capabilities");
                     pst2.setString(3, "a:1:{s:10:\"subscriber\";b:1;}");
                     pst2.addBatch();
                     // wp_user_level
                     pst2.setInt(1, id);
-                    pst2.setString(2, "wp_user_level");
+                    pst2.setString(2, wordpressPrefix + "user_level");
                     pst2.setString(3, "0");
                     pst2.addBatch();
                     // default_password_nag
