@@ -184,12 +184,12 @@ public class AsynchronousJoin implements Process {
             @Override
             public void run() {
                 player.setOp(false);
-                if (Settings.isRemoveSpeedEnabled) {
+                if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
                     player.setFlySpeed(0.0f);
                     player.setWalkSpeed(0.0f);
                 }
                 player.setNoDamageTicks(registrationTimeout);
-                if (service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
+                if (plugin.getPluginHooks().isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
                     player.performCommand("motd");
                 }
                 if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {

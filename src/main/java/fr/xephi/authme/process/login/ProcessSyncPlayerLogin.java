@@ -99,7 +99,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
     }
 
     private void restoreSpeedEffects() {
-        if (settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+        if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT) && settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
             player.setWalkSpeed(0.2F);
             player.setFlySpeed(0.1F);
         }
