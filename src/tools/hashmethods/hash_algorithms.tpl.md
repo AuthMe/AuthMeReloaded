@@ -7,7 +7,10 @@ AuthMe supports the following hash algorithms for storing your passwords safely.
 
 Algorithm | Recommendation | Hash length | ASCII |     | Salt type | Length | Separate?
 --------- | -------------- | ----------- | ----- | --- | --------- | ------ | ---------
-{method_rows}CUSTOM |  |  |  |  |  |  |  |
+[#algorithms]
+{name} | {recommendation} | {hash_length} | {ascii_restricted} | | {salt_type} | {salt_length} | {separate_salt}
+[/#algorithms]
+CUSTOM |  |  |  |  |  |  |  |
 
 <!-- {gen_warning} -->
 

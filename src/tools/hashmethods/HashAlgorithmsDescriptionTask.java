@@ -1,11 +1,11 @@
 package hashmethods;
 
-import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.util.WrapperMock;
 import utils.FileUtils;
-import utils.TagReplacer;
+import utils.TagValue.NestedTagValue;
+import utils.TagValueHolder;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
@@ -33,30 +33,28 @@ public class HashAlgorithmsDescriptionTask implements ToolTask {
         // Gather info and construct a row for each method
         EncryptionMethodInfoGatherer infoGatherer = new EncryptionMethodInfoGatherer();
         Map<HashAlgorithm, MethodDescription> descriptions = infoGatherer.getDescriptions();
-        final String methodRows = constructMethodRows(descriptions);
+        final NestedTagValue methodRows = constructMethodRows(descriptions);
 
         // Write to the docs file
-        Map<String, String> tags = ImmutableMap.of("method_rows", methodRows);
+        TagValueHolder tags = TagValueHolder.create().put("algorithms", methodRows);
         FileUtils.generateFileFromTemplate(CUR_FOLDER + "hash_algorithms.tpl.md", OUTPUT_FILE, tags);
     }
 
-    private static String constructMethodRows(Map<HashAlgorithm, MethodDescription> descriptions) {
-        final String rowTemplate = FileUtils.readFromFile(CUR_FOLDER + "hash_algorithms_row.tpl.md");
-        StringBuilder result = new StringBuilder();
+    private static NestedTagValue constructMethodRows(Map<HashAlgorithm, MethodDescription> descriptions) {
+        NestedTagValue methodTags = new NestedTagValue();
         for (Map.Entry<HashAlgorithm, MethodDescription> entry : descriptions.entrySet()) {
             MethodDescription description = entry.getValue();
-            Map<String, String> tags = ImmutableMap.<String, String>builder()
+            TagValueHolder tags = TagValueHolder.create()
                 .put("name",             asString(entry.getKey()))
                 .put("recommendation",   asString(description.getUsage()))
                 .put("hash_length",      asString(description.getHashLength()))
                 .put("ascii_restricted", asString(description.isAsciiRestricted()))
                 .put("salt_type",        asString(description.getSaltType()))
                 .put("salt_length",      asString(description.getSaltLength()))
-                .put("separate_salt",    asString(description.hasSeparateSalt()))
-                .build();
-            result.append(TagReplacer.applyReplacements(rowTemplate, tags));
+                .put("separate_salt",    asString(description.hasSeparateSalt()));
+            methodTags.add(tags);
         }
-        return result.toString();
+        return methodTags;
     }
 
     @Override

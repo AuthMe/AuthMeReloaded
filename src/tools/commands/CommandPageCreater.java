@@ -1,6 +1,5 @@
 package commands;
 
-import com.google.common.collect.ImmutableMap;
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandInitializer;
@@ -8,12 +7,12 @@ import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
 import utils.FileUtils;
-import utils.TagReplacer;
+import utils.TagValue.NestedTagValue;
+import utils.TagValueHolder;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
 import java.util.Collection;
-import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -29,31 +28,27 @@ public class CommandPageCreater implements ToolTask {
     @Override
     public void execute(Scanner scanner) {
         final Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
-        final String template = FileUtils.readFromFile(ToolsConstants.TOOLS_SOURCE_ROOT
-            + "commands/command_entry.tpl.md");
-
-        StringBuilder commandsResult = new StringBuilder();
-        addCommandsInfo(commandsResult, baseCommands, template);
+        NestedTagValue commandTags = new NestedTagValue();
+        addCommandsInfo(commandTags, baseCommands);
 
         FileUtils.generateFileFromTemplate(
             ToolsConstants.TOOLS_SOURCE_ROOT + "commands/commands.tpl.md",
             OUTPUT_FILE,
-            ImmutableMap.of("commands", commandsResult.toString()));
+            TagValueHolder.create().put("commands", commandTags));
         System.out.println("Wrote to '" + OUTPUT_FILE + "' with " + baseCommands.size() + " base commands.");
     }
 
-    private static void addCommandsInfo(StringBuilder sb, Collection<CommandDescription> commands,
-                                        final String template) {
+    private static void addCommandsInfo(NestedTagValue commandTags, Collection<CommandDescription> commands) {
         for (CommandDescription command : commands) {
-            Map<String, String> tags = ImmutableMap.of(
-                "command", CommandUtils.constructCommandPath(command),
-                "description", command.getDetailedDescription(),
-                "arguments", formatArguments(command.getArguments()),
-                "permissions", formatPermissions(command.getCommandPermissions()));
-            sb.append(TagReplacer.applyReplacements(template, tags));
+            TagValueHolder tags = TagValueHolder.create()
+                .put("command", CommandUtils.constructCommandPath(command))
+                .put("description", command.getDetailedDescription())
+                .put("arguments", formatArguments(command.getArguments()))
+                .put("permissions", formatPermissions(command.getCommandPermissions()));
+            commandTags.add(tags);
 
             if (!command.getChildren().isEmpty()) {
-                addCommandsInfo(sb, command.getChildren(), template);
+                addCommandsInfo(commandTags, command.getChildren());
             }
         }
     }
