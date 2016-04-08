@@ -6,8 +6,8 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -52,11 +52,12 @@ public class RegisterAdminCommand implements ExecutableCommand {
                     return;
                 }
                 commandService.getDataSource().setUnlogged(playerNameLowerCase);
-                if (Bukkit.getPlayerExact(playerName) != null) {
-                    Bukkit.getPlayerExact(playerName).kickPlayer("An admin just registered you, please log again");
-                } else {
-                    commandService.send(sender, MessageKey.REGISTER_SUCCESS);
-                    ConsoleLogger.info(playerName + " registered");
+
+                commandService.send(sender, MessageKey.REGISTER_SUCCESS);
+                ConsoleLogger.info(sender.getName() + " registered " + playerName);
+                Player player = commandService.getPlayer(playerName);
+                if (player != null) {
+                    player.kickPlayer("An admin just registered you, please log in again");
                 }
             }
         });

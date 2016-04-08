@@ -14,8 +14,10 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -36,13 +38,15 @@ public class CommandService {
     private final SpawnLoader spawnLoader;
     private final AntiBot antiBot;
     private final ValidationService validationService;
+    private final BukkitService bukkitService;
 
     /*
      * Constructor.
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
-                          PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot, ValidationService validationService) {
+                          PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot,
+                          ValidationService validationService, BukkitService bukkitService) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
@@ -54,6 +58,7 @@ public class CommandService {
         this.spawnLoader = spawnLoader;
         this.antiBot = antiBot;
         this.validationService = validationService;
+        this.bukkitService = bukkitService;
     }
 
     /**
@@ -220,6 +225,10 @@ public class CommandService {
 
     public boolean isEmailFreeForRegistration(String email, CommandSender sender) {
         return validationService.isEmailFreeForRegistration(email, sender);
+    }
+
+    public Player getPlayer(String name) {
+        return bukkitService.getPlayerExact(name);
     }
 
 }

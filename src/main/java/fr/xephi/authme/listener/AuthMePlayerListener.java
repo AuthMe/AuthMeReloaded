@@ -17,6 +17,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
@@ -53,7 +54,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 
 /**
- * Listener class for player's events
+ * Listener class for player events.
  */
 public class AuthMePlayerListener implements Listener {
 
@@ -64,14 +65,16 @@ public class AuthMePlayerListener implements Listener {
     private final DataSource dataSource;
     private final AntiBot antiBot;
     private final Management management;
+    private final BukkitService bukkitService;
 
     public AuthMePlayerListener(AuthMe plugin, Messages messages, DataSource dataSource, AntiBot antiBot,
-                                Management management) {
+                                Management management, BukkitService bukkitService) {
         this.plugin = plugin;
         this.m = messages;
         this.dataSource = dataSource;
         this.antiBot = antiBot;
         this.management = management;
+        this.bukkitService = bukkitService;
     }
 
     private void handleChat(AsyncPlayerChatEvent event) {
@@ -94,7 +97,7 @@ public class AuthMePlayerListener implements Listener {
     }
 
     private void sendLoginOrRegisterMessage(final Player player) {
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        bukkitService.runTaskAsynchronously(new Runnable() {
             @Override
             public void run() {
                 if (dataSource.isAuthAvailable(player.getName().toLowerCase())) {
@@ -236,7 +239,7 @@ public class AuthMePlayerListener implements Listener {
 
         // Shedule login task so works after the prelogin
         // (Fix found by Koolaid5000)
-        Bukkit.getScheduler().runTask(plugin, new Runnable() {
+        bukkitService.runTask(new Runnable() {
             @Override
             public void run() {
                 management.performJoin(player);
@@ -277,7 +280,7 @@ public class AuthMePlayerListener implements Listener {
         }
 
         final String name = event.getName().toLowerCase();
-        final Player player = Utils.getPlayer(name);
+        final Player player = bukkitService.getPlayerExact(name);
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
         if (player != null && Settings.isForceSingleSessionEnabled) {

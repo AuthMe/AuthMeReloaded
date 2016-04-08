@@ -49,7 +49,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
         }
 
         // Unregister the player
-        Player target = Utils.getPlayer(playerNameLowerCase);
+        Player target = commandService.getPlayer(playerNameLowerCase);
         PlayerCache.getInstance().removePlayer(playerNameLowerCase);
         Utils.setGroup(target, Utils.GroupType.UNREGISTERED);
         if (target != null && target.isOnline()) {

@@ -138,6 +138,7 @@ public class AuthMe extends JavaPlugin {
     private SpawnLoader spawnLoader;
     private AntiBot antiBot;
     private boolean autoPurging;
+    private BukkitService bukkitService;
 
     /**
      * Get the plugin's instance.
@@ -257,13 +258,13 @@ public class AuthMe extends JavaPlugin {
 
 
         // Set up the permissions manager and command handler
+        bukkitService = new BukkitService(this);
         permsMan = initializePermissionsManager();
         ValidationService validationService = new ValidationService(newSettings, database, permsMan);
         commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings,
-            pluginHooks, spawnLoader, antiBot, validationService);
+            pluginHooks, spawnLoader, antiBot, validationService, bukkitService);
 
         // AntiBot delay
-        BukkitService bukkitService = new BukkitService(this);
         antiBot = new AntiBot(newSettings, messages, permsMan, bukkitService);
 
         // Set up Metrics
@@ -291,7 +292,7 @@ public class AuthMe extends JavaPlugin {
         playerBackup = new JsonCache();
 
         // Set the DataManager
-        dataManager = new DataManager(this, pluginHooks);
+        dataManager = new DataManager(this, pluginHooks, bukkitService);
 
         // Set up the new API
         setupApi();
@@ -378,7 +379,8 @@ public class AuthMe extends JavaPlugin {
         PluginManager pluginManager = server.getPluginManager();
 
         // Register event listeners
-        pluginManager.registerEvents(new AuthMePlayerListener(this, messages, dataSource, antiBot, management), this);
+        pluginManager.registerEvents(new AuthMePlayerListener(
+            this, messages, dataSource, antiBot, management, bukkitService), this);
         pluginManager.registerEvents(new AuthMeBlockListener(), this);
         pluginManager.registerEvents(new AuthMeEntityListener(), this);
         pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks, spawnLoader), this);
@@ -429,13 +431,13 @@ public class AuthMe extends JavaPlugin {
 
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
                                                     PasswordSecurity passwordSecurity, NewSetting settings,
-                                                    PluginHooks pluginHooks, SpawnLoader spawnLoader,
-                                                    AntiBot antiBot, ValidationService validationService) {
+                                                    PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot,
+                                                    ValidationService validationService, BukkitService bukkitService) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
         CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, pluginHooks, spawnLoader, antiBot, validationService);
+            permissionsManager, settings, pluginHooks, spawnLoader, antiBot, validationService, bukkitService);
         return new CommandHandler(commandService);
     }
 
@@ -757,8 +759,8 @@ public class AuthMe extends JavaPlugin {
             public void run() {
                 for (PlayerAuth auth : database.getLoggedPlayers()) {
                     String email = auth.getEmail();
-                    if (StringUtils.isEmpty(email) || email.equalsIgnoreCase("your@email.com")) {
-                        Player player = Utils.getPlayer(auth.getRealName());
+                    if (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email)) {
+                        Player player = bukkitService.getPlayerExact(auth.getRealName());
                         if (player != null) {
                             messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
                         }

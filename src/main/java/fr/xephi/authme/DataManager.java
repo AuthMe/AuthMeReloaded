@@ -3,6 +3,7 @@ package fr.xephi.authme;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.properties.PurgeSettings;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -17,6 +18,7 @@ public class DataManager {
 
     private final AuthMe plugin;
     private final PluginHooks pluginHooks;
+    private final BukkitService bukkitService;
 
     /**
      * Constructor for DataManager.
@@ -24,9 +26,10 @@ public class DataManager {
      * @param plugin      The plugin instance
      * @param pluginHooks Plugin hooks instance
      */
-    public DataManager(AuthMe plugin, PluginHooks pluginHooks) {
+    public DataManager(AuthMe plugin, PluginHooks pluginHooks, BukkitService bukkitService) {
         this.plugin = plugin;
         this.pluginHooks = pluginHooks;
+        this.bukkitService = bukkitService;
     }
 
     private List<OfflinePlayer> getOfflinePlayers(List<String> names) {
@@ -148,11 +151,9 @@ public class DataManager {
             ConsoleLogger.showError("Unable to access permissions manager instance!");
             return;
         }
-        int i = 0;
         for (String name : cleared) {
-            permsMan.removeAllGroups(Utils.getPlayer(name));
-            i++;
+            permsMan.removeAllGroups(bukkitService.getPlayerExact(name));
         }
-        ConsoleLogger.info("AutoPurge: Removed permissions from " + i + " player(s).");
+        ConsoleLogger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
     }
 }

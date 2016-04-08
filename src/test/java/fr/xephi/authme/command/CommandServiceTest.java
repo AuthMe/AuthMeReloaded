@@ -14,6 +14,7 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -63,11 +64,13 @@ public class CommandServiceTest {
     private AntiBot antiBot;
     @Mock
     private ValidationService validationService;
+    @Mock
+    private BukkitService bukkitService;
 
     @Before
     public void setUpService() {
         commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, pluginHooks, spawnLoader, antiBot, validationService);
+            permissionsManager, settings, pluginHooks, spawnLoader, antiBot, validationService, bukkitService);
     }
 
     @Test
@@ -263,6 +266,21 @@ public class CommandServiceTest {
         // then
         assertThat(result, equalTo(true));
         verify(validationService).isEmailFreeForRegistration(email, sender);
+    }
+
+    @Test
+    public void shouldGetPlayer() {
+        // given
+        String playerName = "_tester";
+        Player player = mock(Player.class);
+        given(bukkitService.getPlayerExact(playerName)).willReturn(player);
+
+        // when
+        Player result = commandService.getPlayer(playerName);
+
+        // then
+        assertThat(result, equalTo(player));
+        verify(bukkitService).getPlayerExact(playerName);
     }
 
 }

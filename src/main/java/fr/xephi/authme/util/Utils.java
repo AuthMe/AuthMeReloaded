@@ -232,10 +232,6 @@ public final class Utils {
         }
     }
 
-    public static Player getPlayer(String name) {
-        return wrapper.getServer().getPlayerExact(name); // bukkit will lowercase the input
-    }
-
     public static boolean isNPC(Player player) {
         return player.hasMetadata("NPC") || plugin.getPluginHooks().isNpcInCombatTagPlus(player);
     }
