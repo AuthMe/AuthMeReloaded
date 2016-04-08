@@ -59,7 +59,7 @@ public class SettingsMigrationService {
     private static boolean hasDeprecatedProperties(FileConfiguration configuration) {
         String[] deprecatedProperties = {
             "Converter.Rakamak.newPasswordHash", "Hooks.chestshop", "Hooks.legacyChestshop", "Hooks.notifications",
-            "Passpartu", "Performances", "settings.restrictions.enablePasswordVerifier", "Xenoforo.predefinedSalt"};
+            "Passpartu", "Performances", "settings.restrictions.enablePasswordVerifier", "Xenoforo.predefinedSalt", "VeryGames"};
         for (String deprecatedPath : deprecatedProperties) {
             if (configuration.contains(deprecatedPath)) {
                 return true;

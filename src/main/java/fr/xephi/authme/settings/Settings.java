@@ -52,7 +52,7 @@ public final class Settings {
         banUnsafeIp, sessionExpireOnIpChange, useEssentialsMotd,
         enableProtection, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
-        checkVeryGames, removeJoinMessage, removeLeaveMessage, delayJoinMessage,
+        removeJoinMessage, removeLeaveMessage, delayJoinMessage,
         noTeleport, hideTablistBeforeLogin, denyTabcompleteBeforeLogin,
         kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
         customAttributes, isRemoveSpeedEnabled, preventOtherCase, keepCollisionsDisabled;
@@ -167,7 +167,6 @@ public final class Settings {
         spawnPriority = load(RestrictionSettings.SPAWN_PRIORITY);
         getMaxLoginPerIp = load(RestrictionSettings.MAX_LOGIN_PER_IP);
         getMaxJoinPerIp = load(RestrictionSettings.MAX_JOIN_PER_IP);
-        checkVeryGames = load(HooksSettings.ENABLE_VERYGAMES_IP_CHECK);
         removeJoinMessage = load(RegistrationSettings.REMOVE_JOIN_MESSAGE);
         removeLeaveMessage = load(RegistrationSettings.REMOVE_LEAVE_MESSAGE);
         delayJoinMessage = load(RegistrationSettings.DELAY_JOIN_MESSAGE);

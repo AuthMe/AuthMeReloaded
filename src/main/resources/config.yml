@@ -421,6 +421,3 @@ Protection:
     antiBotSensibility: 5
     # Duration in minutes of the antibot automatic system
     antiBotDuration: 10
-VeryGames:
-    # These features are only available on VeryGames Server Provider
-    enableIpCheck: false
