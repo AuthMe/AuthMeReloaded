@@ -58,7 +58,7 @@ public class ProcessSyncEmailRegister implements Process {
 
         player.saveData();
         if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-            ConsoleLogger.info(player.getName() + " registered " + service.getIpAddressManager().getPlayerIp(player));
+            ConsoleLogger.info(player.getName() + " registered " + Utils.getPlayerIp(player));
         }
     }
 

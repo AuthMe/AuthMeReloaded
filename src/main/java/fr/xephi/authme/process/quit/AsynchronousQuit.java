@@ -43,7 +43,7 @@ public class AsynchronousQuit implements Process {
             return;
         }
 
-        String ip = service.getIpAddressManager().getPlayerIp(player);
+        String ip = Utils.getPlayerIp(player);
 
         if (PlayerCache.getInstance().isAuthenticated(name)) {
             if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
@@ -94,7 +94,6 @@ public class AsynchronousQuit implements Process {
             database.setUnlogged(name);
         }
 
-        service.getIpAddressManager().removeCache(player.getName());
         if (plugin.isEnabled()) {
             service.scheduleSyncDelayedTask(new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
         }

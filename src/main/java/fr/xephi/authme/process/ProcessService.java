@@ -1,7 +1,6 @@
 package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
@@ -25,20 +24,18 @@ public class ProcessService {
     private final Messages messages;
     private final AuthMe authMe;
     private final DataSource dataSource;
-    private final IpAddressManager ipAddressManager;
     private final PasswordSecurity passwordSecurity;
     private final PluginHooks pluginHooks;
     private final SpawnLoader spawnLoader;
     private final ValidationService validationService;
 
     public ProcessService(NewSetting settings, Messages messages, AuthMe authMe, DataSource dataSource,
-                          IpAddressManager ipAddressManager, PasswordSecurity passwordSecurity, PluginHooks pluginHooks,
+                          PasswordSecurity passwordSecurity, PluginHooks pluginHooks,
                           SpawnLoader spawnLoader, ValidationService validationService) {
         this.settings = settings;
         this.messages = messages;
         this.authMe = authMe;
         this.dataSource = dataSource;
-        this.ipAddressManager = ipAddressManager;
         this.passwordSecurity = passwordSecurity;
         this.pluginHooks = pluginHooks;
         this.spawnLoader = spawnLoader;
@@ -153,15 +150,6 @@ public class ProcessService {
      */
     public AuthMe getAuthMe() {
         return authMe;
-    }
-
-    /**
-     * Return the IP address manager.
-     *
-     * @return the ip address manager
-     */
-    public IpAddressManager getIpAddressManager() {
-        return ipAddressManager;
     }
 
     /**

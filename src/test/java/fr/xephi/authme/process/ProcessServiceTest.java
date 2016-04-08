@@ -1,7 +1,6 @@
 package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
@@ -39,8 +38,6 @@ public class ProcessServiceTest {
     @Mock
     private Messages messages;
     @Mock
-    private IpAddressManager ipAddressManager;
-    @Mock
     private PasswordSecurity passwordSecurity;
     @Mock
     private AuthMe authMe;
@@ -53,7 +50,7 @@ public class ProcessServiceTest {
 
     @Before
     public void setUpService() {
-        processService = new ProcessService(settings, messages, authMe, dataSource, ipAddressManager, passwordSecurity,
+        processService = new ProcessService(settings, messages, authMe, dataSource, passwordSecurity,
             pluginHooks, spawnLoader, validationService);
     }
 
@@ -152,15 +149,6 @@ public class ProcessServiceTest {
 
         // then
         assertThat(result, equalTo(pluginHooks));
-    }
-
-    @Test
-    public void shouldReturnIpAddressManager() {
-        // given / when
-        IpAddressManager result = processService.getIpAddressManager();
-
-        // then
-        assertThat(result, equalTo(ipAddressManager));
     }
 
     @Test

@@ -35,6 +35,7 @@ public class HooksSettings implements SettingsClass {
     public static final Property<Boolean> CACHE_CUSTOM_ATTRIBUTES =
         newProperty("Hooks.customAttributes", false);
 
+    // TODO REMOVE ME
     @Comment("These features are only available on VeryGames Server Provider")
     public static final Property<Boolean> ENABLE_VERYGAMES_IP_CHECK =
         newProperty("VeryGames.enableIpCheck", false);

@@ -5,7 +5,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -33,7 +32,6 @@ public class CommandService {
     private final PasswordSecurity passwordSecurity;
     private final PermissionsManager permissionsManager;
     private final NewSetting settings;
-    private final IpAddressManager ipAddressManager;
     private final PluginHooks pluginHooks;
     private final SpawnLoader spawnLoader;
     private final AntiBot antiBot;
@@ -44,8 +42,7 @@ public class CommandService {
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
-                          IpAddressManager ipAddressManager, PluginHooks pluginHooks, SpawnLoader spawnLoader,
-                          AntiBot antiBot, ValidationService validationService) {
+                          PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot, ValidationService validationService) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
@@ -53,7 +50,6 @@ public class CommandService {
         this.passwordSecurity = passwordSecurity;
         this.permissionsManager = permissionsManager;
         this.settings = settings;
-        this.ipAddressManager = ipAddressManager;
         this.pluginHooks = pluginHooks;
         this.spawnLoader = spawnLoader;
         this.antiBot = antiBot;
@@ -189,10 +185,6 @@ public class CommandService {
      */
     public NewSetting getSettings() {
         return settings;
-    }
-
-    public IpAddressManager getIpAddressManager() {
-        return ipAddressManager;
     }
 
     public PlayerCache getPlayerCache() {

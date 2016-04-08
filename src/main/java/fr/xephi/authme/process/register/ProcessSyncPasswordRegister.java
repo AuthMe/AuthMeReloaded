@@ -116,7 +116,7 @@ public class ProcessSyncPasswordRegister implements Process {
         player.saveData();
 
         if (!Settings.noConsoleSpam) {
-            ConsoleLogger.info(player.getName() + " registered " + service.getIpAddressManager().getPlayerIp(player));
+            ConsoleLogger.info(player.getName() + " registered " + Utils.getPlayerIp(player));
         }
 
         // Kick Player after Registration is enabled, kick the player

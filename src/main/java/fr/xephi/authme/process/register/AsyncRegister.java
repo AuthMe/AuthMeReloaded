@@ -17,6 +17,8 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -44,7 +46,7 @@ public class AsyncRegister implements Process {
         this.email = email;
         this.plugin = plugin;
         this.database = data;
-        this.ip = service.getIpAddressManager().getPlayerIp(player);
+        this.ip = Utils.getPlayerIp(player);
         this.playerCache = playerCache;
         this.service = service;
     }

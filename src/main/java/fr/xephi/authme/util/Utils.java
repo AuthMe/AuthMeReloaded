@@ -265,4 +265,11 @@ public final class Utils {
         NOTLOGGEDIN,
         LOGGEDIN
     }
+
+    /**
+     * Returns the IP of the given player.
+     */
+    public static String getPlayerIp(Player p) {
+        return p.getAddress().getAddress().getHostAddress();
+    }
 }

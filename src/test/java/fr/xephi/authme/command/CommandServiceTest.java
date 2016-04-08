@@ -2,7 +2,6 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
@@ -57,8 +56,6 @@ public class CommandServiceTest {
     @Mock
     private NewSetting settings;
     @Mock
-    private IpAddressManager ipAddressManager;
-    @Mock
     private PluginHooks pluginHooks;
     @Mock
     private SpawnLoader spawnLoader;
@@ -70,7 +67,7 @@ public class CommandServiceTest {
     @Before
     public void setUpService() {
         commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot, validationService);
+            permissionsManager, settings, pluginHooks, spawnLoader, antiBot, validationService);
     }
 
     @Test
@@ -221,15 +218,6 @@ public class CommandServiceTest {
 
         // then
         assertThat(result, equalTo(authMe));
-    }
-
-    @Test
-    public void shouldReturnIpAddressManager() {
-        // given/when
-        IpAddressManager ipManager = commandService.getIpAddressManager();
-
-        // then
-        assertThat(ipManager, equalTo(ipAddressManager));
     }
 
     @Test

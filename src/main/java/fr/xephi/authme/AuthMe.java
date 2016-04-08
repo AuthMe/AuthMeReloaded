@@ -2,7 +2,6 @@ package fr.xephi.authme;
 
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -135,7 +134,6 @@ public class AuthMe extends JavaPlugin {
     private JsonCache playerBackup;
     private PasswordSecurity passwordSecurity;
     private DataSource database;
-    private IpAddressManager ipAddressManager;
     private PluginHooks pluginHooks;
     private SpawnLoader spawnLoader;
     private AntiBot antiBot;
@@ -253,7 +251,6 @@ public class AuthMe extends JavaPlugin {
 
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
         passwordSecurity = new PasswordSecurity(getDataSource(), newSettings, Bukkit.getPluginManager());
-        ipAddressManager = new IpAddressManager(newSettings);
 
         // Initialize spawn loader
         spawnLoader = new SpawnLoader(getDataFolder(), newSettings, pluginHooks);
@@ -262,7 +259,7 @@ public class AuthMe extends JavaPlugin {
         // Set up the permissions manager and command handler
         permsMan = initializePermissionsManager();
         ValidationService validationService = new ValidationService(newSettings, database, permsMan);
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager,
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings,
             pluginHooks, spawnLoader, antiBot, validationService);
 
         // AntiBot delay
@@ -300,12 +297,12 @@ public class AuthMe extends JavaPlugin {
         setupApi();
 
         // Set up the management
-        ProcessService processService = new ProcessService(newSettings, messages, this, database, ipAddressManager,
+        ProcessService processService = new ProcessService(newSettings, messages, this, database,
             passwordSecurity, pluginHooks, spawnLoader, validationService);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
-        setupBungeeCordHook(newSettings, ipAddressManager);
+        setupBungeeCordHook(newSettings);
 
         // Reload support hook
         reloadSupportHook();
@@ -423,24 +420,23 @@ public class AuthMe extends JavaPlugin {
     /**
      * Set up the BungeeCord hook.
      */
-    private void setupBungeeCordHook(NewSetting settings, IpAddressManager ipAddressManager) {
+    private void setupBungeeCordHook(NewSetting settings) {
         if (settings.getProperty(HooksSettings.BUNGEECORD)) {
             Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
             Bukkit.getMessenger().registerIncomingPluginChannel(
-                this, "BungeeCord", new BungeeCordMessage(this, ipAddressManager));
+                this, "BungeeCord", new BungeeCordMessage(this));
         }
     }
 
     private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
                                                     PasswordSecurity passwordSecurity, NewSetting settings,
-                                                    IpAddressManager ipAddressManager, PluginHooks pluginHooks,
-                                                    SpawnLoader spawnLoader, AntiBot antiBot,
-                                                    ValidationService validationService) {
+                                                    PluginHooks pluginHooks, SpawnLoader spawnLoader,
+                                                    AntiBot antiBot, ValidationService validationService) {
         HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
         Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
         CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
         CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot, validationService);
+            permissionsManager, settings, pluginHooks, spawnLoader, antiBot, validationService);
         return new CommandHandler(commandService);
     }
 
@@ -775,7 +771,7 @@ public class AuthMe extends JavaPlugin {
 
     public String replaceAllInfo(String message, Player player) {
         String playersOnline = Integer.toString(Utils.getOnlinePlayers().size());
-        String ipAddress = ipAddressManager.getPlayerIp(player);
+        String ipAddress = Utils.getPlayerIp(player);
         return message
             .replace("&", "\u00a7")
             .replace("{PLAYER}", player.getName())
@@ -792,7 +788,7 @@ public class AuthMe extends JavaPlugin {
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
         for (Player player : Utils.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(ipAddressManager.getPlayerIp(player))
+            if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))
                 && database.isLogged(player.getName().toLowerCase())
                 && !player.getName().equalsIgnoreCase(name)) {
                 ++count;

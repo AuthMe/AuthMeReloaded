@@ -52,7 +52,7 @@ public class AsynchronousLogin implements Process {
         this.forceLogin = forceLogin;
         this.plugin = plugin;
         this.database = data;
-        this.ip = service.getIpAddressManager().getPlayerIp(player);
+        this.ip = Utils.getPlayerIp(player);
         this.service = service;
     }
 

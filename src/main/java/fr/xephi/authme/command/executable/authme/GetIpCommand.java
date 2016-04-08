@@ -27,7 +27,7 @@ public class GetIpCommand implements ExecutableCommand {
 
         if (commandService.getProperty(HooksSettings.ENABLE_VERYGAMES_IP_CHECK)) {
             sender.sendMessage(player.getName() + "'s real IP is: "
-                + commandService.getIpAddressManager().getPlayerIp(player));
+                + Utils.getPlayerIp(player));
         }
     }
 }

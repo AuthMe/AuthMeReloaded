@@ -69,7 +69,7 @@ public class AsynchronousJoin implements Process {
             service.getPluginHooks().setEssentialsSocialSpyStatus(player, false);
         }
 
-        final String ip = service.getIpAddressManager().getPlayerIp(player);
+        final String ip = Utils.getPlayerIp(player);
         if (isNameRestricted(name, ip, player.getAddress().getHostName(), service.getSettings())) {
             service.scheduleSyncDelayedTask(new Runnable() {
                 @Override
@@ -305,7 +305,7 @@ public class AsynchronousJoin implements Process {
     private boolean hasJoinedIp(String name, String ip, NewSetting settings) {
         int count = 0;
         for (Player player : Utils.getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(service.getIpAddressManager().getPlayerIp(player))
+            if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))
                 && !player.getName().equalsIgnoreCase(name)) {
                 count++;
             }
