@@ -10,7 +10,7 @@
     <packaging>jar</packaging>
 
     <name>AuthMeReloaded</name>
-    <description>Authentication plugin for CraftBukkit/Spigot!</description>
+    <description>The first authentication plugin for the Bukkit API!</description>
     <inceptionYear>2013</inceptionYear>
     <url>http://dev.bukkit.org/bukkit-plugins/authme-reloaded/</url>
     <!-- See also: https://www.spigotmc.org/resources/authme-reloaded.6269/ -->
@@ -23,7 +23,7 @@
     <scm>
         <connection>scm:git:https://github.com/Xephi/AuthMeReloaded.git</connection>
         <developerConnection>scm:git:git@github.com:Xephi/AuthMeReloaded.git</developerConnection>
-        <url>http://github.com/Xephi/AuthMeReloaded</url>
+        <url>https://github.com/Xephi/AuthMeReloaded</url>
     </scm>
 
     <ciManagement>
@@ -40,6 +40,7 @@
         <license>
             <name>The GNU General Public Licence version 3 (GPLv3)</name>
             <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+            <distribution>repo</distribution>
         </license>
     </licenses>
 
