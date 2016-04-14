@@ -76,6 +76,9 @@ public class Messages {
                 + "Please verify your config file at '" + fileName + "'");
             return formatMessage(getDefault(code));
         }
+        if(message.isEmpty()) {
+            return new String[0];
+        }
         return formatMessage(message);
     }
 
