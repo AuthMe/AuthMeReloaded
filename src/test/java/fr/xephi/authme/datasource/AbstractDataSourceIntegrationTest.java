@@ -22,7 +22,11 @@ import static org.junit.Assume.assumeThat;
  */
 public abstract class AbstractDataSourceIntegrationTest {
 
-    protected abstract DataSource getDataSource();
+    protected DataSource getDataSource() {
+        return getDataSource("salt");
+    }
+
+    protected abstract DataSource getDataSource(String saltColumn);
 
     @Test
     public void shouldReturnIfAuthIsAvailableOrNot() {
@@ -54,6 +58,22 @@ public abstract class AbstractDataSourceIntegrationTest {
         assertThat(bobbyPassword, equalToHash("$SHA$11aa0706173d7272$dbba966"));
         assertThat(invalidPassword, nullValue());
         assertThat(userPassword, equalToHash("b28c32f624a4eb161d6adc9acb5bfc5b", "f750ba32"));
+    }
+
+    @Test
+    public void shouldReturnPasswordWithEmptySaltColumn() {
+        // given
+        DataSource dataSource = getDataSource("");
+
+        // when
+        HashedPassword bobbyPassword = dataSource.getPassword("bobby");
+        HashedPassword invalidPassword = dataSource.getPassword("doesNotExist");
+        HashedPassword userPassword = dataSource.getPassword("user");
+
+        // then
+        assertThat(bobbyPassword, equalToHash("$SHA$11aa0706173d7272$dbba966"));
+        assertThat(invalidPassword, nullValue());
+        assertThat(userPassword, equalToHash("b28c32f624a4eb161d6adc9acb5bfc5b"));
     }
 
     @Test
@@ -131,6 +151,21 @@ public abstract class AbstractDataSourceIntegrationTest {
         // then
         assertThat(response1 && response2, equalTo(true));
         assertThat(dataSource.getPassword("user"), equalToHash(newHash));
+    }
+
+    @Test
+    public void shouldUpdatePasswordWithNoSalt() {
+        // given
+        DataSource dataSource = getDataSource("");
+        HashedPassword newHash = new HashedPassword("new_hash", "1241");
+
+        // when
+        boolean response1 = dataSource.updatePassword("user", newHash);
+        boolean response2 = dataSource.updatePassword("non-existent-name", new HashedPassword("asdfasdf", "a1f34ec"));
+
+        // then
+        assertThat(response1 && response2, equalTo(true));
+        assertThat(dataSource.getPassword("user"), equalToHash("new_hash"));
     }
 
     @Test

@@ -274,20 +274,20 @@ public class MySQL implements DataSource {
 
     @Override
     public HashedPassword getPassword(String user) {
-        String sql = "SELECT " + col.PASSWORD + "," + col.SALT + " FROM " + tableName
-            + " WHERE " + col.NAME + "=?;";
-        ResultSet rs = null;
+        boolean useSalt = !col.SALT.isEmpty();
+        String sql = "SELECT " + col.PASSWORD
+            + (useSalt ? ", " + col.SALT : "")
+            + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user.toLowerCase());
-            rs = pst.executeQuery();
-            if (rs.next()) {
-                return new HashedPassword(rs.getString(col.PASSWORD),
-                    !col.SALT.isEmpty() ? rs.getString(col.SALT) : null);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return new HashedPassword(rs.getString(col.PASSWORD),
+                        useSalt ? rs.getString(col.SALT) : null);
+                }
             }
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(rs);
         }
         return null;
     }

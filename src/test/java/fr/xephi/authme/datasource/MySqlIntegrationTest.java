@@ -53,7 +53,6 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         });
         set(DatabaseSettings.MYSQL_DATABASE, "h2_test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
-        set(DatabaseSettings.MYSQL_COL_SALT, "salt");
         ConsoleLoggerTestInitializer.setupLogger();
 
         Path sqlInitFile = TestHelper.getJarPath("/datasource-integration/sql-initialize.sql");
@@ -80,7 +79,8 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
     }
 
     @Override
-    protected DataSource getDataSource() {
+    protected DataSource getDataSource(String saltColumn) {
+        when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);
         return new MySQL(settings, hikariSource);
     }
 

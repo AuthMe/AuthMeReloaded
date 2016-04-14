@@ -75,7 +75,8 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     }
 
     @Override
-    protected DataSource getDataSource() {
+    protected DataSource getDataSource(String saltColumn) {
+        when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);
         return new SQLite(settings, con);
     }
 

@@ -154,22 +154,20 @@ public class SQLite implements DataSource {
 
     @Override
     public HashedPassword getPassword(String user) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        try {
-            pst = con.prepareStatement("SELECT " + col.PASSWORD + "," + col.SALT
-                + " FROM " + tableName + " WHERE " + col.NAME + "=?");
+        boolean useSalt = !col.SALT.isEmpty();
+        String sql = "SELECT " + col.PASSWORD
+            + (useSalt ? ", " + col.SALT : "")
+            + " FROM " + tableName + " WHERE " + col.NAME + "=?";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
-            rs = pst.executeQuery();
-            if (rs.next()) {
-                return new HashedPassword(rs.getString(col.PASSWORD),
-                    !col.SALT.isEmpty() ? rs.getString(col.SALT) : null);
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return new HashedPassword(rs.getString(col.PASSWORD),
+                        useSalt ? rs.getString(col.SALT) : null);
+                }
             }
         } catch (SQLException ex) {
             logSqlException(ex);
-        } finally {
-            close(rs);
-            close(pst);
         }
         return null;
     }
