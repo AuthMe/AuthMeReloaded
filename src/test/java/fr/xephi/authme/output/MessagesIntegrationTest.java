@@ -1,7 +1,6 @@
 package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.CommandSender;
@@ -36,7 +35,7 @@ public class MessagesIntegrationTest {
     @BeforeClass
     public static void setup() {
         WrapperMock.createInstance();
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     /**

@@ -106,23 +106,25 @@ public class AuthMe extends JavaPlugin {
     private static Server server;
     /*
      *  Maps and stuff
-     *  TODO: Clean up and Move into a manager
      */
+    // TODO #601: Integrate CaptchaManager
     public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
     public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
 
     /*
      * Public Instances
-     * TODO #432: Encapsulation
      */
     public NewAPI api;
+    // TODO #655: Encapsulate mail
     public SendMailSSL mail;
+    // TODO #656: Encapsulate data manager
     public DataManager dataManager;
     /*
-     * Plugin Hooks
-     * TODO: Move into modules
+     * Private instances
+     * TODO #432: Move instantiation and management of these services
      */
+    // TODO #604: Encapsulate ProtocolLib members
     public AuthMeInventoryPacketAdapter inventoryProtector;
     public AuthMeTabCompletePacketAdapter tabComplete;
     public AuthMeTablistPacketAdapter tablistHider;

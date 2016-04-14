@@ -33,7 +33,7 @@ public class AuthMeEntityListener implements Listener {
         }
     }
 
-    // TODO #360: npc status can be used to bypass security!!!
+    // Note #360: npc status can be used to bypass security!!!
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onEntityDamage(EntityDamageEvent event) {
         if (shouldCancelEvent(event)) {

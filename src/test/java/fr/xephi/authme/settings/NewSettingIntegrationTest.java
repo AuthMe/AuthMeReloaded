@@ -2,7 +2,6 @@ package fr.xephi.authme.settings;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.TestConfiguration;
@@ -48,7 +47,7 @@ public class NewSettingIntegrationTest {
 
     @BeforeClass
     public static void setUpLogger() {
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     @Before

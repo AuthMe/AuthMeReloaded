@@ -1,6 +1,6 @@
 package fr.xephi.authme.settings;
 
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.TestConfiguration;
@@ -48,7 +48,7 @@ public class NewSettingTest {
 
     @BeforeClass
     public static void setUpLogger() {
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     @Before

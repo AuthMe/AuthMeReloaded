@@ -1,7 +1,7 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
@@ -24,7 +24,7 @@ public class ReloadCommandTest {
 
     @BeforeClass
     public static void setUpLogger() {
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     @Test

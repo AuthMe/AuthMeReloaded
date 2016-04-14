@@ -1,6 +1,6 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
@@ -36,7 +36,7 @@ public class ChangePasswordAdminCommandTest {
 
     @BeforeClass
     public static void setUpLogger() {
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     @Test

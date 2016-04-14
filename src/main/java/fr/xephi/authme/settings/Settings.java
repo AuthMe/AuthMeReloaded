@@ -24,7 +24,6 @@ import java.util.regex.Pattern;
 public final class Settings {
 
     public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
-    public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
     public static List<String> allowCommands;
     public static List<String> getJoinPermissions;
@@ -62,7 +61,7 @@ public final class Settings {
         spawnPriority, crazyloginFileName, sendPlayerTo;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
-        getPasswordMinLen, getMovementRadius, getNonActivatedGroup, passwordMaxLength,
+        getMovementRadius, getNonActivatedGroup,
         maxLoginTry, captchaLength, saltLength,
         bCryptLog2Rounds, getMaxLoginPerIp, getMaxJoinPerIp;
     protected static FileConfiguration configFile;
@@ -88,7 +87,6 @@ public final class Settings {
         isChatAllowed = load(RestrictionSettings.ALLOW_CHAT);
         getMaxNickLength = configFile.getInt("settings.restrictions.maxNicknameLength", 20);
         getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
-        getPasswordMinLen = configFile.getInt("settings.security.minPasswordLength", 4);
         getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
         nickPattern = Pattern.compile(getNickRegex);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
@@ -120,7 +118,6 @@ public final class Settings {
         denyTabcompleteBeforeLogin = load(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
         hideTablistBeforeLogin = load(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN);
 
-        passwordMaxLength = load(SecuritySettings.MAX_PASSWORD_LENGTH);
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);

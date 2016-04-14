@@ -1,7 +1,6 @@
 package fr.xephi.authme.converter;
 
 import com.google.common.io.Files;
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
@@ -37,7 +36,7 @@ public class ForceFlatToSqliteTest {
 
     @BeforeClass
     public static void setup() {
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     @Before

@@ -122,68 +122,84 @@ public interface DataSource {
     void close();
 
     /**
-     * Method purgeBanned.
+     * Purge all given players, i.e. delete all players whose name is in the list.
      *
-     * @param banned List of String
+     * @param banned the list of players to delete
      */
     void purgeBanned(List<String> banned);
 
     /**
-     * Method getType.
+     * Return the data source type.
      *
-     * @return DataSourceType
+     * @return the data source type
      */
     DataSourceType getType();
 
     /**
-     * Method isLogged.
+     * Query the datasource whether the player is logged in or not.
      *
-     * @param user String
-     *
-     * @return boolean
+     * @param user The name of the player to verify
+     * @return True if logged in, false otherwise
      */
     boolean isLogged(String user);
 
     /**
-     * Method setLogged.
+     * Set a player as logged in.
      *
-     * @param user String
+     * @param user The name of the player to change
      */
     void setLogged(String user);
 
     /**
-     * Method setUnlogged.
+     * Set a player as unlogged (not logged in).
      *
-     * @param user String
+     * @param user The name of the player to change
      */
     void setUnlogged(String user);
 
+    /**
+     * Set all players who are marked as logged in as NOT logged in.
+     */
     void purgeLogged();
 
     /**
-     * Method getAccountsRegistered.
+     * Return all players which are logged in.
      *
-     * @return int
+     * @return All logged in players
+     */
+    List<PlayerAuth> getLoggedPlayers();
+
+    /**
+     * Return the number of registered accounts.
+     *
+     * @return Total number of accounts
      */
     int getAccountsRegistered();
 
+    /**
+     * Update a player's real name (capitalization).
+     *
+     * @param user The name of the user (lowercase)
+     * @param realName The real name of the user (proper casing)
+     * @return True upon success, false upon failure
+     */
     boolean updateRealName(String user, String realName);
 
+    /**
+     * Update a player's IP address.
+     *
+     * @param user The name of the user (lowercase)
+     * @param ip The IP address to save
+     * @return True upon success, false upon failure
+     */
     boolean updateIp(String user, String ip);
 
     /**
-     * Method getAllAuths.
+     * Return all players of the database.
      *
-     * @return List of PlayerAuth
+     * @return List of all players
      */
     List<PlayerAuth> getAllAuths();
-
-    /**
-     * Method getLoggedPlayers.
-     *
-     * @return List of PlayerAuth
-     */
-    List<PlayerAuth> getLoggedPlayers();
 
     /**
      * Reload the data source.

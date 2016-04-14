@@ -1,8 +1,8 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -37,7 +37,7 @@ public class UtilsTest {
     public static void setUpMocks() {
         WrapperMock wrapperMock = WrapperMock.createInstance();
         authMeMock = wrapperMock.getAuthMe();
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     @Before

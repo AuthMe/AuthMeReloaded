@@ -1,6 +1,6 @@
 package fr.xephi.authme.process.email;
 
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
@@ -37,7 +37,7 @@ public class AsyncAddEmailTest {
 
     @BeforeClass
     public static void setUp() {
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     @Test
