@@ -172,9 +172,13 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
+        /* 
+         * Limit player X and Z movements to 1 block
+         * Deny player Y+ movements (allows falling)
+         */
         if (event.getFrom().getBlockX() == event.getTo().getBlockX()
-            && event.getFrom().getBlockY() == event.getTo().getBlockY()
-            && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+            && event.getFrom().getBlockZ() == event.getTo().getBlockZ()
+            && event.getFrom().getY() - event.getTo().getY() >= 0) {
             return;
         }
 
@@ -185,6 +189,7 @@ public class AuthMePlayerListener implements Listener {
 
         if (!Settings.isMovementAllowed) {
             event.setTo(event.getFrom());
+            // sgdc3 TODO: remove this, maybe we should set the effect every x ticks, idk!
             if (Settings.isRemoveSpeedEnabled) {
                 player.setFlySpeed(0.0f);
                 player.setWalkSpeed(0.0f);
