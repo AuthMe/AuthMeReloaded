@@ -47,7 +47,7 @@ public final class Settings {
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         removeJoinMessage, removeLeaveMessage, delayJoinMessage,
         noTeleport, allowAllCommandsIfRegIsOptional,
-        isRemoveSpeedEnabled, preventOtherCase;
+        isRemoveSpeedEnabled, preventOtherCase, hideChat;
     public static String getNickRegex, getUnloggedinGroup,
         unRegisteredGroup, backupWindowsPath, getRegisteredGroup,
         rakamakUsers, rakamakUsersIp, defaultWorld,
@@ -154,6 +154,7 @@ public final class Settings {
         forceRegisterCommands = configFile.getStringList("settings.forceRegisterCommands");
         forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
+        hideChat = load(RestrictionSettings.HIDE_CHAT);
     }
 
     /**

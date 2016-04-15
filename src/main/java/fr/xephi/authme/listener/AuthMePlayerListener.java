@@ -16,7 +16,11 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
@@ -61,15 +65,17 @@ public class AuthMePlayerListener implements Listener {
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
     private final AuthMe plugin;
+    private final NewSetting settings;
     private final Messages m;
     private final DataSource dataSource;
     private final AntiBot antiBot;
     private final Management management;
     private final BukkitService bukkitService;
 
-    public AuthMePlayerListener(AuthMe plugin, Messages messages, DataSource dataSource, AntiBot antiBot,
+    public AuthMePlayerListener(AuthMe plugin, NewSetting settings, Messages messages, DataSource dataSource, AntiBot antiBot,
                                 Management management, BukkitService bukkitService) {
         this.plugin = plugin;
+        this.settings = settings;
         this.m = messages;
         this.dataSource = dataSource;
         this.antiBot = antiBot;
@@ -78,15 +84,18 @@ public class AuthMePlayerListener implements Listener {
     }
 
     private void handleChat(AsyncPlayerChatEvent event) {
-        if (Settings.isChatAllowed) {
+        if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
             return;
         }
 
         final Player player = event.getPlayer();
         if (Utils.checkAuth(player)) {
             for (Player p : Utils.getOnlinePlayers()) {
+                if(!settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
+                    break;
+                }
                 if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
-                    event.getRecipients().remove(p); // TODO: it should be configurable
+                    event.getRecipients().remove(p);
                 }
             }
             return;
@@ -103,7 +112,7 @@ public class AuthMePlayerListener implements Listener {
                 if (dataSource.isAuthAvailable(player.getName().toLowerCase())) {
                     m.send(player, MessageKey.LOGIN_MESSAGE);
                 } else {
-                    if (Settings.emailRegistration) {
+                    if (settings.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)) {
                         m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
                     } else {
                         m.send(player, MessageKey.REGISTER_MESSAGE);
@@ -116,7 +125,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmd = event.getMessage().split(" ")[0].toLowerCase();
-        if (Settings.useEssentialsMotd && cmd.equals("/motd")) {
+        if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && cmd.equals("/motd")) {
             return;
         }
         if (!Settings.isForcedRegistrationEnabled && Settings.allowAllCommandsIfRegIsOptional) {

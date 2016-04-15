@@ -382,7 +382,7 @@ public class AuthMe extends JavaPlugin {
 
         // Register event listeners
         pluginManager.registerEvents(new AuthMePlayerListener(
-            this, messages, dataSource, antiBot, management, bukkitService), this);
+            this, newSettings, messages, dataSource, antiBot, management, bukkitService), this);
         pluginManager.registerEvents(new AuthMeBlockListener(), this);
         pluginManager.registerEvents(new AuthMeEntityListener(), this);
         pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks, spawnLoader), this);
