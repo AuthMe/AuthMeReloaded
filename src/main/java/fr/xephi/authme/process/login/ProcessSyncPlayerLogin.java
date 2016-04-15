@@ -1,22 +1,7 @@
 package fr.xephi.authme.process.login;
 
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.properties.HooksSettings;
-import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.potion.PotionEffectType;
-
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-
-import org.apache.commons.lang.reflect.MethodUtils;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.backup.JsonCache;
@@ -28,14 +13,26 @@ import fr.xephi.authme.events.LoginEvent;
 import fr.xephi.authme.events.RestoreInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
 import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
+import org.apache.commons.lang.reflect.MethodUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.potion.PotionEffectType;
 
-import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 import static fr.xephi.authme.settings.properties.PluginSettings.KEEP_COLLISIONS_DISABLED;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
-public class ProcessSyncPlayerLogin implements Runnable {
+public class ProcessSyncPlayerLogin implements Process {
 
     private final LimboPlayer limbo;
     private final Player player;
@@ -44,7 +41,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
     private final AuthMe plugin;
     private final PluginManager pm;
     private final JsonCache playerCache;
-    private final NewSetting settings;
+    private final ProcessService service;
 
     private final boolean restoreCollisions = MethodUtils
             .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
@@ -55,10 +52,9 @@ public class ProcessSyncPlayerLogin implements Runnable {
      * @param player Player
      * @param plugin AuthMe
      * @param database DataSource
-     * @param settings The plugin settings
+     * @param service The process service
      */
-    public ProcessSyncPlayerLogin(Player player, AuthMe plugin,
-                                  DataSource database, NewSetting settings) {
+    public ProcessSyncPlayerLogin(Player player, AuthMe plugin, DataSource database, ProcessService service) {
         this.plugin = plugin;
         this.pm = plugin.getServer().getPluginManager();
         this.player = player;
@@ -66,7 +62,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
         this.limbo = LimboCache.getInstance().getLimboPlayer(name);
         this.auth = database.getAuth(name);
         this.playerCache = new JsonCache();
-        this.settings = settings;
+        this.service = service;
     }
 
     public LimboPlayer getLimbo() {
@@ -99,7 +95,7 @@ public class ProcessSyncPlayerLogin implements Runnable {
     }
 
     private void restoreSpeedEffects() {
-        if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT) && settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
+        if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT) && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
             player.setWalkSpeed(0.2F);
             player.setFlySpeed(0.1F);
         }
@@ -114,10 +110,10 @@ public class ProcessSyncPlayerLogin implements Runnable {
     }
 
     private void forceCommands() {
-        for (String command : Settings.forceCommands) {
+        for (String command : service.getProperty(RegistrationSettings.FORCE_COMMANDS)) {
             player.performCommand(command.replace("%p", player.getName()));
         }
-        for (String command : Settings.forceCommandsAsConsole) {
+        for (String command : service.getProperty(RegistrationSettings.FORCE_COMMANDS_AS_CONSOLE)) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(), command.replace("%p", player.getName()));
         }
     }
@@ -155,15 +151,15 @@ public class ProcessSyncPlayerLogin implements Runnable {
                 }
             }
 
-            if (restoreCollisions && !settings.getProperty(KEEP_COLLISIONS_DISABLED)) {
+            if (restoreCollisions && !service.getProperty(KEEP_COLLISIONS_DISABLED)) {
                 player.setCollidable(true);
             }
 
-            if (settings.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
+            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 restoreInventory();
             }
 
-            if (settings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
+            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
                 plugin.tablistHider.sendTablist(player);
             }
 
@@ -188,24 +184,24 @@ public class ProcessSyncPlayerLogin implements Runnable {
         }
 
         restoreSpeedEffects();
-        if (settings.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
+        if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
             player.removePotionEffect(PotionEffectType.BLINDNESS);
         }
 
         // The Login event now fires (as intended) after everything is processed
         Bukkit.getServer().getPluginManager().callEvent(new LoginEvent(player));
         player.saveData();
-        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
+        if (service.getProperty(HooksSettings.BUNGEECORD)) {
             sendBungeeMessage();
         }
         // Login is done, display welcome message
-        if (settings.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
-            if (settings.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
-                for (String s : settings.getWelcomeMessage()) {
+        if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
+            if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
+                for (String s : service.getSettings().getWelcomeMessage()) {
                     Bukkit.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
                 }
             } else {
-                for (String s : settings.getWelcomeMessage()) {
+                for (String s : service.getSettings().getWelcomeMessage()) {
                     player.sendMessage(plugin.replaceAllInfo(s, player));
                 }
             }
@@ -218,10 +214,10 @@ public class ProcessSyncPlayerLogin implements Runnable {
     }
 
     private void sendTo() {
-        if (!settings.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
+        if (!service.getProperty(HooksSettings.BUNGEECORD_SERVER).isEmpty()) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("Connect");
-            out.writeUTF(settings.getProperty(HooksSettings.BUNGEECORD_SERVER));
+            out.writeUTF(service.getProperty(HooksSettings.BUNGEECORD_SERVER));
             player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
         }
     }

@@ -20,11 +20,8 @@ public class DataManager {
     private final PluginHooks pluginHooks;
     private final BukkitService bukkitService;
 
-    /**
-     * Constructor for DataManager.
-     *
-     * @param plugin      The plugin instance
-     * @param pluginHooks Plugin hooks instance
+    /*
+     * Constructor.
      */
     public DataManager(AuthMe plugin, PluginHooks pluginHooks, BukkitService bukkitService) {
         this.plugin = plugin;

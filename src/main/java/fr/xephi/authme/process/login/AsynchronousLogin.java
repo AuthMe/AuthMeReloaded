@@ -182,8 +182,7 @@ public class AsynchronousLogin implements Process {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            ProcessSyncPlayerLogin syncPlayerLogin = new ProcessSyncPlayerLogin(
-                player, plugin, database, service.getSettings());
+            ProcessSyncPlayerLogin syncPlayerLogin = new ProcessSyncPlayerLogin(player, plugin, database, service);
             if (syncPlayerLogin.getLimbo() != null) {
                 if (syncPlayerLogin.getLimbo().getTimeoutTask() != null) {
                     syncPlayerLogin.getLimbo().getTimeoutTask().cancel();

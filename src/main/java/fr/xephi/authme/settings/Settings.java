@@ -3,7 +3,6 @@ package fr.xephi.authme.settings;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -26,14 +25,10 @@ public final class Settings {
     public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
     public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
     public static List<String> allowCommands;
-    public static List<String> getJoinPermissions;
     public static List<String> getUnrestrictedName;
-    public static List<String> getRestrictedIp;
     public static List<String> getForcedWorlds;
     public static List<String> countries;
     public static List<String> countriesBlacklist;
-    public static List<String> forceCommands;
-    public static List<String> forceCommandsAsConsole;
     public static List<String> forceRegisterCommands;
     public static List<String> forceRegisterCommandsAsConsole;
     public static HashAlgorithm getPasswordHash;
@@ -44,7 +39,6 @@ public final class Settings {
         isMovementAllowed, isKickNonRegisteredEnabled,
         isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
         isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
-        isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
         protectInventoryBeforeLogInEnabled, isStopEnabled, reloadSupport,
         rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
         emailRegistration, multiverse, bungee,
@@ -52,13 +46,12 @@ public final class Settings {
         enableProtection, recallEmail, useWelcomeMessage,
         broadcastWelcomeMessage, forceRegKick, forceRegLogin,
         removeJoinMessage, removeLeaveMessage, delayJoinMessage,
-        noTeleport, hideTablistBeforeLogin, denyTabcompleteBeforeLogin,
-        kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
-        customAttributes, isRemoveSpeedEnabled, preventOtherCase, keepCollisionsDisabled;
+        noTeleport, allowAllCommandsIfRegIsOptional,
+        isRemoveSpeedEnabled, preventOtherCase;
     public static String getNickRegex, getUnloggedinGroup,
         unRegisteredGroup, backupWindowsPath, getRegisteredGroup,
-        rakamakUsers, rakamakUsersIp, getmailAccount, defaultWorld,
-        spawnPriority, crazyloginFileName, sendPlayerTo;
+        rakamakUsers, rakamakUsersIp, defaultWorld,
+        spawnPriority, crazyloginFileName;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
         getMovementRadius, getNonActivatedGroup,
@@ -90,12 +83,9 @@ public final class Settings {
         getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
         nickPattern = Pattern.compile(getNickRegex);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
-        getRestrictedIp = load(RestrictionSettings.ALLOWED_RESTRICTED_USERS);
         isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
         isRemoveSpeedEnabled = configFile.getBoolean("settings.restrictions.removeSpeed", true);
         getMovementRadius = configFile.getInt("settings.restrictions.allowedMovementRadius", 100);
-        getJoinPermissions = configFile.getStringList("GroupOptions.Permissions.PermissionsOnJoin");
-        isKickOnWrongPasswordEnabled = configFile.getBoolean("settings.restrictions.kickOnWrongPassword", false);
         isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
         isForceSingleSessionEnabled = configFile.getBoolean("settings.restrictions.ForceSingleSession", true);
         isForceSpawnLocOnJoinEnabled = configFile.getBoolean("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
@@ -112,12 +102,7 @@ public final class Settings {
         }
 
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
-        enablePasswordConfirmation = load(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION);
-
         protectInventoryBeforeLogInEnabled = load(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
-        denyTabcompleteBeforeLogin = load(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
-        hideTablistBeforeLogin = load(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN);
-
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
@@ -137,7 +122,6 @@ public final class Settings {
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
         noConsoleSpam = load(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
-        getmailAccount = load(EmailSettings.MAIL_ACCOUNT);
         displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
@@ -153,8 +137,6 @@ public final class Settings {
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = configFile.getStringList("Protection.countries");
-        forceCommands = configFile.getStringList("settings.forceCommands");
-        forceCommandsAsConsole = configFile.getStringList("settings.forceCommandsAsConsole");
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         useWelcomeMessage = load(RegistrationSettings.USE_WELCOME_MESSAGE);
         countriesBlacklist = configFile.getStringList("Protection.countriesBlacklist");
@@ -171,11 +153,7 @@ public final class Settings {
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
         forceRegisterCommands = configFile.getStringList("settings.forceRegisterCommands");
         forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
-        customAttributes = configFile.getBoolean("Hooks.customAttributes");
         preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
-        kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
-        sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
-        keepCollisionsDisabled = load(PluginSettings.KEEP_COLLISIONS_DISABLED);
     }
 
     /**

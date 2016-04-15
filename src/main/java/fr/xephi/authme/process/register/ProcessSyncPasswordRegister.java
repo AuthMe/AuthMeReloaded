@@ -12,9 +12,11 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
@@ -22,6 +24,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
+
+import static fr.xephi.authme.settings.properties.RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
 /**
  */
@@ -49,10 +54,10 @@ public class ProcessSyncPasswordRegister implements Process {
     }
 
     private void forceCommands() {
-        for (String command : Settings.forceRegisterCommands) {
+        for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS)) {
             player.performCommand(command.replace("%p", player.getName()));
         }
-        for (String command : Settings.forceRegisterCommandsAsConsole) {
+        for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS_AS_CONSOLE)) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
                     command.replace("%p", player.getName()));
         }
@@ -62,7 +67,7 @@ public class ProcessSyncPasswordRegister implements Process {
         Utils.teleportToSpawn(player);
         LimboCache cache = LimboCache.getInstance();
         cache.updateLimboPlayer(player);
-        int delay = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
+        int delay = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         BukkitTask task;
         if (delay != 0) {
@@ -80,15 +85,15 @@ public class ProcessSyncPasswordRegister implements Process {
     public void run() {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (limbo != null) {
-            if (Settings.hideTablistBeforeLogin && plugin.tablistHider != null) {
+            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
                 plugin.tablistHider.sendTablist(player);
             }
 
             Utils.teleportToSpawn(player);
 
-            if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
+            if (service.getProperty(HIDE_TABLIST_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-                Bukkit.getPluginManager().callEvent(event);
+                service.callEvent(event);
                 if (!event.isCancelled()) {
                     plugin.inventoryProtector.sendInventoryPacket(player);
                 }
@@ -103,7 +108,7 @@ public class ProcessSyncPasswordRegister implements Process {
 
         service.send(player, MessageKey.REGISTER_SUCCESS);
 
-        if (!Settings.getmailAccount.isEmpty()) {
+        if (!service.getProperty(EmailSettings.MAIL_ACCOUNT).isEmpty()) {
             service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
         }
 
@@ -115,12 +120,12 @@ public class ProcessSyncPasswordRegister implements Process {
         plugin.getServer().getPluginManager().callEvent(new LoginEvent(player));
         player.saveData();
 
-        if (!Settings.noConsoleSpam) {
+        if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
             ConsoleLogger.info(player.getName() + " registered " + Utils.getPlayerIp(player));
         }
 
         // Kick Player after Registration is enabled, kick the player
-        if (Settings.forceRegKick) {
+        if (service.getProperty(RegistrationSettings.FORCE_KICK_AFTER_REGISTER)) {
             player.kickPlayer(service.retrieveSingleMessage(MessageKey.REGISTER_SUCCESS));
             return;
         }
@@ -139,12 +144,12 @@ public class ProcessSyncPasswordRegister implements Process {
         }
 
         // Request Login after Registration
-        if (Settings.forceRegLogin) {
+        if (service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)) {
             forceLogin(player);
             return;
         }
 
-        if (Settings.bungee) {
+        if (service.getProperty(HooksSettings.BUNGEECORD)) {
             sendBungeeMessage();
         }
 

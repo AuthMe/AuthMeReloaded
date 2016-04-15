@@ -58,7 +58,7 @@ public class RegisterCommand extends PlayerCommand {
         if (commandService.getProperty(EmailSettings.MAIL_ACCOUNT).isEmpty()) {
             player.sendMessage("Cannot register: no email address is set for the server. "
                 + "Please contact an administrator");
-            ConsoleLogger.showError("Cannot register player '" + player.getName() + "': no email is set"
+            ConsoleLogger.showError("Cannot register player '" + player.getName() + "': no email is set "
                 + "to send emails from. Please add one in your config at " + EmailSettings.MAIL_ACCOUNT.getPath());
             return;
         }

@@ -264,6 +264,10 @@ public final class Utils {
 
     /**
      * Returns the IP of the given player.
+     *
+     * @param p The player to return the IP address for
+     *
+     * @return The player's IP address
      */
     public static String getPlayerIp(Player p) {
         return p.getAddress().getAddress().getHostAddress();
