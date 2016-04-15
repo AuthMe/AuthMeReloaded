@@ -144,7 +144,7 @@ public class MessagesIntegrationTest {
         messages.send(sender, key, "1234");
 
         // then
-        verify(sender, times(1)).sendMessage(argThat(equalTo("Use /captcha 1234 to solve the captcha")));
+        verify(sender, times(1)).sendMessage("Use /captcha 1234 to solve the captcha");
     }
 
     @Test
