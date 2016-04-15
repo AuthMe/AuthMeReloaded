@@ -2,7 +2,6 @@ package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -15,11 +14,15 @@ import java.io.File;
 import java.util.logging.Logger;
 
 import static org.hamcrest.Matchers.arrayWithSize;
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -34,7 +37,6 @@ public class MessagesIntegrationTest {
 
     @BeforeClass
     public static void setup() {
-        WrapperMock.createInstance();
         TestHelper.setupLogger();
     }
 
@@ -61,7 +63,7 @@ public class MessagesIntegrationTest {
         String[] message = messages.retrieve(key);
 
         // then
-        String[] lines = new String[]{"This test message", "includes", "some new lines"};
+        String[] lines = new String[]{"We've got", "new lines", "and ' apostrophes"};
         assertThat(message, equalTo(lines));
     }
 
@@ -74,7 +76,7 @@ public class MessagesIntegrationTest {
         String message = messages.retrieveSingle(key);
 
         // then
-        assertThat(message, equalTo("This test message\nincludes\nsome new lines"));
+        assertThat(message, equalTo("We've got\nnew lines\nand ' apostrophes"));
     }
 
     @Test
@@ -91,16 +93,16 @@ public class MessagesIntegrationTest {
     }
 
     @Test
-    public void shouldRetainApostrophes() {
+    public void shouldNotSendEmptyMessage() {
         // given
-        MessageKey key = MessageKey.NOT_LOGGED_IN;
+        MessageKey key = MessageKey.EMAIL_ALREADY_USED_ERROR;
+        CommandSender sender = mock(CommandSender.class);
 
         // when
-        String[] message = messages.retrieve(key);
+        messages.send(sender, key);
 
         // then
-        assertThat(message, arrayWithSize(1));
-        assertThat(message[0], equalTo("Apostrophes ' should be loaded correctly, don't you think?"));
+        verify(sender, never()).sendMessage(anyString());
     }
 
     @Test
@@ -126,10 +128,10 @@ public class MessagesIntegrationTest {
         messages.send(player, key);
 
         // then
-        String[] lines = new String[]{"This test message", "includes", "some new lines"};
-        for (String line : lines) {
-            verify(player).sendMessage(line);
-        }
+        String[] lines = new String[]{"We've got", "new lines", "and ' apostrophes"};
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+        verify(player, times(3)).sendMessage(captor.capture());
+        assertThat(captor.getAllValues(), contains(lines));
     }
 
     @Test
@@ -142,14 +144,11 @@ public class MessagesIntegrationTest {
         messages.send(sender, key, "1234");
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(1)).sendMessage(captor.capture());
-        String message = captor.getValue();
-        assertThat(message, equalTo("Use /captcha 1234 to solve the captcha"));
+        verify(sender, times(1)).sendMessage(argThat(equalTo("Use /captcha 1234 to solve the captcha")));
     }
 
     @Test
-    public void shouldNotThrowForKeyWithNoTagReplacements() {
+    public void shouldNotLogErrorForKeyWithNoTagReplacements() {
         // given
         MessageKey key = MessageKey.CAPTCHA_WRONG_ERROR;
         CommandSender sender = mock(CommandSender.class);
@@ -158,10 +157,7 @@ public class MessagesIntegrationTest {
         messages.send(sender, key);
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(1)).sendMessage(captor.capture());
-        String message = captor.getValue();
-        assertThat(message, equalTo("Use /captcha THE_CAPTCHA to solve the captcha"));
+        verify(sender).sendMessage(argThat(equalTo("Use /captcha THE_CAPTCHA to solve the captcha")));
     }
 
     @Test
@@ -175,13 +171,11 @@ public class MessagesIntegrationTest {
         messages.send(mock(CommandSender.class), key, "rep", "rep2");
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(logger).warning(captor.capture());
-        assertThat(captor.getValue(), containsString("Invalid number of replacements"));
+        verify(logger).warning(argThat(containsString("Invalid number of replacements")));
     }
 
     @Test
-    public void shouldThrowForReplacementsOnKeyWithNoTags() {
+    public void shouldSendErrorForReplacementsOnKeyWithNoTags() {
         // given
         Logger logger = mock(Logger.class);
         ConsoleLogger.setLogger(logger);
@@ -191,9 +185,7 @@ public class MessagesIntegrationTest {
         messages.send(mock(CommandSender.class), key, "Replacement");
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(logger).warning(captor.capture());
-        assertThat(captor.getValue(), containsString("Invalid number of replacements"));
+        verify(logger).warning(argThat(containsString("Invalid number of replacements")));
     }
 
     @Test
