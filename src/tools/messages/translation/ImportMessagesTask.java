@@ -2,21 +2,27 @@ package messages.translation;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
+import messages.MessageFileVerifier;
+import messages.VerifyMessagesTask;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.yaml.snakeyaml.DumperOptions;
+import utils.FileUtils;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 /**
- * Imports a message file from a JSON export.
+ * Imports a message file from a remote JSON export and validates the resulting file.
+ * <p>
+ * Comments at the top of an existing file should remain after the import, but it is important
+ * to verify that no unwanted changes have been applied to the file. Note that YAML comments
+ * tend to disappear if there is no space between the <code>#</code> and the first character.
  */
 public class ImportMessagesTask implements ToolTask {
 
@@ -30,8 +36,9 @@ public class ImportMessagesTask implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
-        System.out.println("Enter URL to export from");
+        System.out.println("Enter URL to import from");
         String url = scanner.nextLine();
+
         LanguageExport languageExport = getLanguageExportFromUrl(url);
         if (languageExport == null) {
             throw new IllegalStateException("An error occurred: constructed language export is null");
@@ -41,10 +48,10 @@ public class ImportMessagesTask implements ToolTask {
         System.out.println("Saved to messages file for code '" + languageExport.code + "'");
     }
 
-    private LanguageExport getLanguageExportFromUrl(String url) {
+    private LanguageExport getLanguageExportFromUrl(String location) {
         try {
-            URL uri = new URL(url);
-            String json = Resources.toString(uri, Charset.forName("UTF-8"));
+            URL url = new URL(location);
+            String json = Resources.toString(url, Charset.forName("UTF-8"));
             return gson.fromJson(json, LanguageExport.class);
         } catch (IOException e) {
             throw new IllegalStateException(e);
@@ -53,23 +60,40 @@ public class ImportMessagesTask implements ToolTask {
 
     private void mergeExportIntoFile(LanguageExport export) {
         String languageCode = export.code;
-        File file = new File(MESSAGES_FOLDER + "messages_" + languageCode + ".yml");
+        String fileName = MESSAGES_FOLDER + "messages_" + languageCode + ".yml";
+        File file = new File(fileName);
         if (!file.exists()) {
             throw new IllegalStateException("Messages file for language code " + languageCode + " does not exist");
         }
-        FileConfiguration fileConfiguration = YamlConfiguration.loadConfiguration(file);
+        removeAllTodoComments(fileName);
 
+        FileConfiguration fileConfiguration = AuthMeYamlConfiguration.loadConfiguration(file);
         for (MessageExport messageExport : export.messages) {
-            fileConfiguration.set(messageExport.key, messageExport.translatedMessage);
+            if (!messageExport.translatedMessage.isEmpty()) {
+                fileConfiguration.set(messageExport.key, messageExport.translatedMessage);
+            }
         }
         try {
-            Field dumperOptionsField = YamlConfiguration.class.getDeclaredField("yamlOptions");
-            dumperOptionsField.setAccessible(true);
-            DumperOptions options = (DumperOptions) dumperOptionsField.get(fileConfiguration);
-            options.setDefaultScalarStyle(DumperOptions.ScalarStyle.SINGLE_QUOTED);
             fileConfiguration.save(file);
-        } catch (IOException | NoSuchFieldException | IllegalAccessException e) {
+        } catch (IOException e) {
             throw new IllegalStateException(e);
         }
+
+        MessageFileVerifier verifier = new MessageFileVerifier(fileName);
+        VerifyMessagesTask.verifyFileAndAddKeys(verifier, YamlConfiguration.loadConfiguration(
+            new File(MESSAGES_FOLDER + "messages_en.yml")));
+    }
+
+    /**
+     * Removes all to-do comments written by {@link VerifyMessagesTask}. This is helpful as the YamlConfiguration
+     * moves those comments otherwise upon saving.
+     *
+     * @param file The file whose to-do comments should be removed
+     */
+    private static void removeAllTodoComments(String file) {
+        String contents = FileUtils.readFromFile(file);
+        String regex = "^# TODO .*$";
+        contents = Pattern.compile(regex, Pattern.MULTILINE).matcher(contents).replaceAll("");
+        FileUtils.writeToFile(file, contents);
     }
 }

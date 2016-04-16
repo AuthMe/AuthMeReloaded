@@ -93,7 +93,7 @@ public final class VerifyMessagesTask implements ToolTask {
         }
     }
 
-    private static void verifyFileAndAddKeys(MessageFileVerifier verifier, FileConfiguration defaultMessages) {
+    public static void verifyFileAndAddKeys(MessageFileVerifier verifier, FileConfiguration defaultMessages) {
         Map<String, Boolean> missingKeys = verifier.getMissingKeys();
         if (!missingKeys.isEmpty() || !verifier.getMissingTags().isEmpty()) {
             verifier.addMissingKeys(defaultMessages);
