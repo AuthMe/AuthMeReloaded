@@ -2,6 +2,7 @@ package messages.translation;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
+import fr.xephi.authme.output.MessageKey;
 import messages.MessageFileVerifier;
 import messages.VerifyMessagesTask;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -14,7 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -28,6 +31,7 @@ public class ImportMessagesTask implements ToolTask {
 
     private static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
     private Gson gson = new Gson();
+    private Set<String> messageCodes;
 
     @Override
     public String getTaskName() {
@@ -37,7 +41,8 @@ public class ImportMessagesTask implements ToolTask {
     @Override
     public void execute(Scanner scanner) {
         System.out.println("Enter URL to import from");
-        String url = scanner.nextLine();
+        // Dirty trick: replace https:// with http:// so we don't have to worry about installing certificates...
+        String url = scanner.nextLine().replace("https://", "http://");
 
         LanguageExport languageExport = getLanguageExportFromUrl(url);
         if (languageExport == null) {
@@ -62,14 +67,19 @@ public class ImportMessagesTask implements ToolTask {
         String languageCode = export.code;
         String fileName = MESSAGES_FOLDER + "messages_" + languageCode + ".yml";
         File file = new File(fileName);
-        if (!file.exists()) {
-            throw new IllegalStateException("Messages file for language code " + languageCode + " does not exist");
+        FileConfiguration fileConfiguration;
+        if (file.exists()) {
+            removeAllTodoComments(fileName);
+            fileConfiguration = AuthMeYamlConfiguration.loadConfiguration(file);
+        } else {
+            fileConfiguration = new AuthMeYamlConfiguration();
         }
-        removeAllTodoComments(fileName);
 
-        FileConfiguration fileConfiguration = AuthMeYamlConfiguration.loadConfiguration(file);
+        buildMessageCodeList();
         for (MessageExport messageExport : export.messages) {
-            if (!messageExport.translatedMessage.isEmpty()) {
+            if (!messageCodes.contains(messageExport.key)) {
+                throw new IllegalStateException("Message key '" + messageExport.key + "' does not exist");
+            } else if (!messageExport.translatedMessage.isEmpty()) {
                 fileConfiguration.set(messageExport.key, messageExport.translatedMessage);
             }
         }
@@ -82,6 +92,13 @@ public class ImportMessagesTask implements ToolTask {
         MessageFileVerifier verifier = new MessageFileVerifier(fileName);
         VerifyMessagesTask.verifyFileAndAddKeys(verifier, YamlConfiguration.loadConfiguration(
             new File(MESSAGES_FOLDER + "messages_en.yml")));
+    }
+
+    private void buildMessageCodeList() {
+        messageCodes = new HashSet<>(MessageKey.values().length);
+        for (MessageKey messageKey : MessageKey.values()) {
+            messageCodes.add(messageKey.getKey());
+        }
     }
 
     /**

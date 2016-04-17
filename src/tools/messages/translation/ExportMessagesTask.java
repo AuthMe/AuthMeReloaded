@@ -29,8 +29,7 @@ public class ExportMessagesTask implements ToolTask {
     /** The folder containing the messages files. */
     protected static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
     /** The remote URL to send an updated file to. */
-    //private static final String UPDATE_URL = "http://jalu.ch/ext/authme/update.php";
-    private static final String UPDATE_URL = "http://localhost/AuthMe-translate/update.php";
+    private static final String UPDATE_URL = "http://jalu.ch/ext/authme/update.php";
     private final Gson gson = new Gson();
 
     @Override
@@ -51,9 +50,7 @@ public class ExportMessagesTask implements ToolTask {
         FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
         String json = convertToJson(languageCode, loadDefaultMessages(), configuration);
 
-        System.out.println("Enter update code (generated on remote side)");
-        String updateCode = scanner.nextLine().trim();
-        String result = sendJsonToRemote(json, updateCode, languageCode);
+        String result = sendJsonToRemote(languageCode, json);
         System.out.println("Answer: " + result);
     }
 
@@ -75,10 +72,9 @@ public class ExportMessagesTask implements ToolTask {
         return configuration.getString(key.getKey(), "");
     }
 
-    private static String sendJsonToRemote(String file, String code, String language) {
+    private static String sendJsonToRemote(String language, String json) {
         try {
-            String encodedData = "file=" + URLEncoder.encode(file, "UTF-8")
-                + "&code=" + URLEncoder.encode(code, "UTF-8")
+            String encodedData = "file=" + URLEncoder.encode(json, "UTF-8")
                 + "&language=" + URLEncoder.encode(language, "UTF-8");
 
             URL url = new URL(UPDATE_URL);
