@@ -1,23 +1,36 @@
 package messages.translation;
 
+import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import utils.FileUtils;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
 /**
- * Task to export all messages for translation purposes.
+ * Task to export a language's messages to the remote translation service.
  */
 public class ExportMessagesTask implements ToolTask {
 
+    /** The folder containing the messages files. */
+    protected static final String MESSAGES_FOLDER = ToolsConstants.MAIN_RESOURCES_ROOT + "messages/";
+    /** The remote URL to send an updated file to. */
+    //private static final String UPDATE_URL = "http://jalu.ch/ext/authme/update.php";
+    private static final String UPDATE_URL = "http://localhost/AuthMe-translate/update.php";
     private final Gson gson = new Gson();
 
     @Override
@@ -27,34 +40,71 @@ public class ExportMessagesTask implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
-        FileConfiguration defaultMessages = YamlConfiguration.loadConfiguration(
-            new File(ToolsConstants.MAIN_RESOURCES_ROOT + "messages/messages_en.yml"));
+        System.out.println("Enter language code of messages to export:");
+        String languageCode = scanner.nextLine().trim();
 
-        File[] messageFiles = new File(ToolsConstants.MAIN_RESOURCES_ROOT + "messages").listFiles();
-        if (messageFiles == null || messageFiles.length == 0) {
-            throw new IllegalStateException("Could not read messages folder");
+        File file = new File(MESSAGES_FOLDER + "messages_" + languageCode + ".yml");
+        if (!file.exists()) {
+            throw new IllegalStateException("File '" + file.getAbsolutePath() + "' does not exist");
         }
 
-        for (File file : messageFiles) {
-            String code = file.getName().substring("messages_".length(), file.getName().length() - ".yml".length());
-            exportLanguage(code, defaultMessages, YamlConfiguration.loadConfiguration(file));
-        }
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(file);
+        String json = convertToJson(languageCode, loadDefaultMessages(), configuration);
+
+        System.out.println("Enter update code (generated on remote side)");
+        String updateCode = scanner.nextLine().trim();
+        String result = sendJsonToRemote(json, updateCode, languageCode);
+        System.out.println("Answer: " + result);
     }
 
-    private void exportLanguage(String code, FileConfiguration defaultMessages, FileConfiguration messageFile) {
+    protected String convertToJson(String code, FileConfiguration defaultMessages, FileConfiguration messageFile) {
         List<MessageExport> list = new ArrayList<>();
         for (MessageKey key : MessageKey.values()) {
             list.add(new MessageExport(key.getKey(), key.getTags(), getString(key, defaultMessages),
                 getString(key, messageFile)));
         }
 
-        FileUtils.writeToFile(
-            ToolsConstants.TOOLS_SOURCE_ROOT + "messages/translation/export/messages_" + code + ".json",
-            gson.toJson(new LanguageExport(code, list)));
+        return gson.toJson(new LanguageExport(code, list));
+    }
+
+    protected FileConfiguration loadDefaultMessages() {
+        return YamlConfiguration.loadConfiguration(new File(MESSAGES_FOLDER + "messages_en.yml"));
     }
 
     private static String getString(MessageKey key, FileConfiguration configuration) {
         return configuration.getString(key.getKey(), "");
+    }
+
+    private static String sendJsonToRemote(String file, String code, String language) {
+        try {
+            String encodedData = "file=" + URLEncoder.encode(file, "UTF-8")
+                + "&code=" + URLEncoder.encode(code, "UTF-8")
+                + "&language=" + URLEncoder.encode(language, "UTF-8");
+
+            URL url = new URL(UPDATE_URL);
+            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            conn.setDoOutput(true);
+            conn.setRequestMethod("POST");
+            conn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+            conn.setRequestProperty("Content-Length", String.valueOf(encodedData.length()));
+            OutputStream os = conn.getOutputStream();
+            os.write(encodedData.getBytes());
+            os.flush();
+            os.close();
+
+            return "Response code: " + conn.getResponseCode()
+                + "\n" + inputStreamToString(conn.getInputStream());
+        } catch (IOException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    private static String inputStreamToString(InputStream is) {
+        try (InputStreamReader isr = new InputStreamReader(is)) {
+            return CharStreams.toString(isr);
+        } catch (IOException e) {
+            return "Failed to read output - " + StringUtils.formatException(e);
+        }
     }
 
 }
