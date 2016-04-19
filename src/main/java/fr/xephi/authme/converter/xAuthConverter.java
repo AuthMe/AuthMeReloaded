@@ -1,13 +1,12 @@
 package fr.xephi.authme.converter;
 
-import org.bukkit.command.CommandSender;
-
 import fr.xephi.authme.AuthMe;
+import org.bukkit.command.CommandSender;
 
 public class xAuthConverter implements Converter {
 
-    public AuthMe plugin;
-    public CommandSender sender;
+    private final AuthMe plugin;
+    private final CommandSender sender;
 
     public xAuthConverter(AuthMe plugin, CommandSender sender) {
         this.plugin = plugin;

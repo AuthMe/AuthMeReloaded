@@ -1,150 +1,163 @@
 package fr.xephi.authme;
 
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-
+import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.properties.PurgeSettings;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
-import fr.xephi.authme.settings.Settings;
-import net.milkbowl.vault.permission.Permission;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
+/**
+ */
 public class DataManager {
 
-    public AuthMe plugin;
+    private final AuthMe plugin;
+    private final PluginHooks pluginHooks;
 
-    public DataManager(AuthMe plugin) {
+    /**
+     * Constructor for DataManager.
+     *
+     * @param plugin      The plugin instance
+     * @param pluginHooks Plugin hooks instance
+     */
+    public DataManager(AuthMe plugin, PluginHooks pluginHooks) {
         this.plugin = plugin;
+        this.pluginHooks = pluginHooks;
     }
 
-    public void run() {
-    }
-
-    public synchronized OfflinePlayer getOfflinePlayer(final String name) {
-        ExecutorService executor = Executors.newSingleThreadExecutor();
-        Future<OfflinePlayer> result = executor.submit(new Callable<OfflinePlayer>() {
-
-            public synchronized OfflinePlayer call() throws Exception {
-                OfflinePlayer result = null;
-                try {
-                    for (OfflinePlayer op : Bukkit.getOfflinePlayers())
-                        if (op.getName().equalsIgnoreCase(name)) {
-                            result = op;
-                            break;
-                        }
-                } catch (Exception e) {
+    private List<OfflinePlayer> getOfflinePlayers(List<String> names) {
+        List<OfflinePlayer> result = new ArrayList<>();
+        for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
+            for (String name : names) {
+                if (name.equalsIgnoreCase(op.getName())) {
+                    result.add(op);
                 }
-                return result;
             }
-        });
-        try {
-            return result.get();
-        } catch (InterruptedException | ExecutionException e) {
-            return (null);
         }
+        return result;
     }
 
-    public synchronized void purgeAntiXray(List<String> cleared) {
+    public void purgeAntiXray(List<String> cleared) {
         int i = 0;
-        for (String name : cleared) {
-            try {
-                org.bukkit.OfflinePlayer player = getOfflinePlayer(name);
-                if (player == null)
-                    continue;
-                String playerName = player.getName();
-                File playerFile = new File("." + File.separator + "plugins" + File.separator + "AntiXRayData" + File.separator + "PlayerData" + File.separator + playerName);
-                if (playerFile.exists()) {
-                    playerFile.delete();
+        File dataFolder = new File("." + File.separator + "plugins" + File.separator + "AntiXRayData"
+            + File.separator + "PlayerData");
+        if (!dataFolder.exists() || !dataFolder.isDirectory()) {
+            return;
+        }
+        for (String file : dataFolder.list()) {
+            if (cleared.contains(file.toLowerCase())) {
+                File playerFile = new File(dataFolder, file);
+                if (playerFile.exists() && playerFile.delete()) {
                     i++;
                 }
-            } catch (Exception e) {
             }
         }
-        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " AntiXRayData Files");
+        ConsoleLogger.info("AutoPurge: Removed " + i + " AntiXRayData Files");
     }
 
     public synchronized void purgeLimitedCreative(List<String> cleared) {
         int i = 0;
-        for (String name : cleared) {
-            try {
-                org.bukkit.OfflinePlayer player = getOfflinePlayer(name);
-                if (player == null)
-                    continue;
-                String playerName = player.getName();
-                File playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + ".yml");
-                if (playerFile.exists()) {
-                    playerFile.delete();
+        File dataFolder = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative"
+            + File.separator + "inventories");
+        for (String file : dataFolder.list()) {
+            String name = file;
+            int idx;
+            idx = file.lastIndexOf("_creative.yml");
+            if (idx != -1) {
+                name = name.substring(0, idx);
+            } else {
+                idx = file.lastIndexOf("_adventure.yml");
+                if (idx != -1) {
+                    name = name.substring(0, idx);
+                } else {
+                    idx = file.lastIndexOf(".yml");
+                    if (idx != -1) {
+                        name = name.substring(0, idx);
+                    }
+                }
+            }
+            if (name.equals(file)) {
+                continue;
+            }
+            if (cleared.contains(name.toLowerCase())) {
+                File dataFile = new File(dataFolder, file);
+                if (dataFile.exists() && dataFile.delete()) {
                     i++;
                 }
-                playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + "_creative.yml");
-                if (playerFile.exists()) {
-                    playerFile.delete();
-                    i++;
-                }
-                playerFile = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative" + File.separator + "inventories" + File.separator + playerName + "_adventure.yml");
-                if (playerFile.exists()) {
-                    playerFile.delete();
-                    i++;
-                }
-            } catch (Exception e) {
             }
         }
-        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " LimitedCreative Survival, Creative and Adventure files");
+        ConsoleLogger.info("AutoPurge: Removed " + i + " LimitedCreative Survival, Creative and Adventure files");
     }
 
     public synchronized void purgeDat(List<String> cleared) {
         int i = 0;
-        for (String name : cleared) {
-            try {
-                org.bukkit.OfflinePlayer player = getOfflinePlayer(name);
-                if (player == null)
-                    continue;
-                String playerName = player.getName();
-                File playerFile = new File(plugin.getServer().getWorldContainer() + File.separator + Settings.defaultWorld + File.separator + "players" + File.separator + playerName + ".dat");
-                if (playerFile.exists()) {
-                    playerFile.delete();
-                    i++;
-                }
-            } catch (Exception e) {
+        File dataFolder = new File(plugin.getServer().getWorldContainer()
+            + File.separator + plugin.getSettings().getProperty(PurgeSettings.DEFAULT_WORLD)
+            + File.separator + "players");
+        List<OfflinePlayer> offlinePlayers = getOfflinePlayers(cleared);
+        for (OfflinePlayer player : offlinePlayers) {
+            File playerFile = new File(dataFolder, Utils.getUUIDorName(player) + ".dat");
+            if (playerFile.delete()) {
+                i++;
             }
         }
-        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " .dat Files");
+        ConsoleLogger.info("AutoPurge: Removed " + i + " .dat Files");
     }
 
+    /**
+     * Method purgeEssentials.
+     *
+     * @param cleared List of String
+     */
     public void purgeEssentials(List<String> cleared) {
         int i = 0;
-        for (String name : cleared) {
-            try {
-                File playerFile = new File(plugin.ess.getDataFolder() + File.separator + "userdata" + File.separator + name + ".yml");
-                if (playerFile.exists()) {
-                    playerFile.delete();
-                    i++;
-                }
-            } catch (Exception e) {
+        File essentialsDataFolder = pluginHooks.getEssentialsDataFolder();
+        if (essentialsDataFolder == null) {
+            ConsoleLogger.info("Cannot purge Essentials: plugin is not loaded");
+            return;
+        }
+
+        final File userDataFolder = new File(essentialsDataFolder, "userdata");
+        List<OfflinePlayer> offlinePlayers = getOfflinePlayers(cleared);
+        for (OfflinePlayer player : offlinePlayers) {
+            File playerFile = new File(userDataFolder, Utils.getUUIDorName(player) + ".yml");
+            if (playerFile.exists() && playerFile.delete()) {
+                i++;
             }
         }
-        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " EssentialsFiles");
+
+        ConsoleLogger.info("AutoPurge: Removed " + i + " EssentialsFiles");
     }
 
-    public synchronized void purgePermissions(List<String> cleared,
-            Permission permission) {
+    // TODO: What is this method for? Is it correct?
+    // TODO: Make it work with OfflinePlayers group data.
+    public synchronized void purgePermissions(List<String> cleared) {
+        // Get the permissions manager, and make sure it's valid
+        PermissionsManager permsMan = plugin.getPermissionsManager();
+        if (permsMan == null) {
+            ConsoleLogger.showError("Unable to access permissions manager instance!");
+            return;
+        }
         int i = 0;
         for (String name : cleared) {
-            try {
-                OfflinePlayer p = this.getOfflinePlayer(name);
-                for (String group : permission.getPlayerGroups((Player) p)) {
-                    permission.playerRemoveGroup(null, p, group);
-                }
-                i++;
-            } catch (Exception e) {
+            permsMan.removeAllGroups(getOnlinePlayerLower(name));
+            i++;
+        }
+        ConsoleLogger.info("AutoPurge: Removed permissions from " + i + " player(s).");
+    }
+
+    private Player getOnlinePlayerLower(String name) {
+        name = name.toLowerCase();
+        for (Player player : Utils.getOnlinePlayers()) {
+            if (player.getName().equalsIgnoreCase(name)) {
+                return player;
             }
         }
-        ConsoleLogger.info("AutoPurgeDatabase : Remove " + i + " Permissions");
+        return null;
     }
 }

@@ -8,9 +8,9 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
 /**
+ * <p>
  * Default PRF implementation based on standard javax.crypt.Mac mechanisms.
- * 
- * <hr />
+ * </p>
  * <p>
  * A free Java implementation of Password Based Key Derivation Function 2 as
  * defined by RFC 2898. Copyright (c) 2007 Matthias G&auml;rtner
@@ -37,7 +37,7 @@ import javax.crypto.spec.SecretKeySpec;
  * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
  * >http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
  * </p>
- * 
+ *
  * @author Matthias G&auml;rtner
  * @version 1.0
  */
@@ -47,13 +47,12 @@ public class MacBasedPRF implements PRF {
 
     protected int hLen;
 
-    protected String macAlgorithm;
+    protected final String macAlgorithm;
 
     /**
      * Create Mac-based Pseudo Random Function.
-     * 
-     * @param macAlgorithm
-     *            Mac algorithm to use, i.e. HMacSHA1 or HMacMD5.
+     *
+     * @param macAlgorithm Mac algorithm to use, i.e. HMacSHA1 or HMacMD5.
      */
     public MacBasedPRF(String macAlgorithm) {
         this.macAlgorithm = macAlgorithm;
@@ -70,22 +69,23 @@ public class MacBasedPRF implements PRF {
         try {
             mac = Mac.getInstance(macAlgorithm, provider);
             hLen = mac.getMacLength();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchProviderException e) {
+        } catch (NoSuchAlgorithmException | NoSuchProviderException e) {
             throw new RuntimeException(e);
         }
     }
 
+    @Override
     public byte[] doFinal(byte[] M) {
         byte[] r = mac.doFinal(M);
         return r;
     }
 
+    @Override
     public int getHLen() {
         return hLen;
     }
 
+    @Override
     public void init(byte[] P) {
         try {
             mac.init(new SecretKeySpec(P, macAlgorithm));

@@ -2,46 +2,51 @@ package fr.xephi.authme.events;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 /**
- * 
- * Called if a player is teleported to a specific spawn
- *
- * @author Xephi59
+ * Called if a player is teleported to a specific spawn upon joining or logging in.
  */
-public class SpawnTeleportEvent extends CustomEvent {
+public class SpawnTeleportEvent extends AbstractTeleportEvent {
 
-    private Player player;
-    private Location to;
-    private Location from;
-    private boolean isAuthenticated;
+    private static final HandlerList handlers = new HandlerList();
+    private final boolean isAuthenticated;
 
-    public SpawnTeleportEvent(Player player, Location from, Location to,
-            boolean isAuthenticated) {
-        this.player = player;
-        this.from = from;
-        this.to = to;
+    /**
+     * Constructor.
+     *
+     * @param player The player
+     * @param from The location the player is being teleported away from
+     * @param to The teleport destination
+     * @param isAuthenticated Whether or not the player is logged in
+     */
+    public SpawnTeleportEvent(Player player, Location from, Location to, boolean isAuthenticated) {
+        super(false, player, from, to);
         this.isAuthenticated = isAuthenticated;
     }
 
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setTo(Location to) {
-        this.to = to;
-    }
-
-    public Location getTo() {
-        return to;
-    }
-
-    public Location getFrom() {
-        return from;
-    }
-
+    /**
+     * Return whether or not the player is authenticated.
+     *
+     * @return true if the player is logged in, false otherwise
+     */
     public boolean isAuthenticated() {
         return isAuthenticated;
+    }
+
+    /**
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
+     *
+     * @return The list of handlers
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
 }

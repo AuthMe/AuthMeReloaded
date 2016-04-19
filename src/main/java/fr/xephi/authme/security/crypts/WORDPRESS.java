@@ -1,49 +1,59 @@
 package fr.xephi.authme.security.crypts;
 
+import fr.xephi.authme.security.HashUtils;
+import fr.xephi.authme.security.MessageDigestAlgorithm;
+import fr.xephi.authme.security.crypts.description.HasSalt;
+import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.security.crypts.description.SaltType;
+import fr.xephi.authme.security.crypts.description.Usage;
+
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 
-public class WORDPRESS implements EncryptionMethod {
+@Recommendation(Usage.ACCEPTABLE)
+@HasSalt(value = SaltType.TEXT, length = 9)
+// Note ljacqu 20151228: Wordpress is actually a salted algorithm but salt generation is handled internally
+// and isn't exposed to the outside, so we treat it as an unsalted implementation
+public class WORDPRESS extends UnsaltedMethod {
 
-    private static String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    private int iterationCountLog2 = 8;
-    private SecureRandom randomGen = new SecureRandom();
+    private static final String itoa64 = "./0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    private final SecureRandom randomGen = new SecureRandom();
 
     private String encode64(byte[] src, int count) {
         int i, value;
-        String output = "";
+        StringBuilder output = new StringBuilder();
         i = 0;
 
         if (src.length < count) {
             byte[] t = new byte[count];
             System.arraycopy(src, 0, t, 0, src.length);
             Arrays.fill(t, src.length, count - 1, (byte) 0);
+            src = t;
         }
 
         do {
             value = src[i] + (src[i] < 0 ? 256 : 0);
             ++i;
-            output += itoa64.charAt(value & 63);
+            output.append(itoa64.charAt(value & 63));
             if (i < count) {
                 value |= (src[i] + (src[i] < 0 ? 256 : 0)) << 8;
             }
-            output += itoa64.charAt((value >> 6) & 63);
+            output.append(itoa64.charAt((value >> 6) & 63));
             if (i++ >= count) {
                 break;
             }
             if (i < count) {
                 value |= (src[i] + (src[i] < 0 ? 256 : 0)) << 16;
             }
-            output += itoa64.charAt((value >> 12) & 63);
+            output.append(itoa64.charAt((value >> 12) & 63));
             if (i++ >= count) {
                 break;
             }
-            output += itoa64.charAt((value >> 18) & 63);
+            output.append(itoa64.charAt((value >> 18) & 63));
         } while (i < count);
-        return output;
+        return output.toString();
     }
 
     private String crypt(String password, String setting) {
@@ -64,13 +74,7 @@ public class WORDPRESS implements EncryptionMethod {
         if (salt.length() != 8) {
             return output;
         }
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("MD5");
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-            return output;
-        }
+        MessageDigest md = HashUtils.getDigest(MessageDigestAlgorithm.MD5);
         byte[] pass = stringToUtf8(password);
         byte[] hash = md.digest(stringToUtf8(salt + password));
         do {
@@ -86,7 +90,8 @@ public class WORDPRESS implements EncryptionMethod {
 
     private String gensaltPrivate(byte[] input) {
         String output = "$P$";
-        output += itoa64.charAt(Math.min(this.iterationCountLog2 + 5, 30));
+        int iterationCountLog2 = 8;
+        output += itoa64.charAt(Math.min(iterationCountLog2 + 5, 30));
         output += encode64(input, 6);
         return output;
     }
@@ -100,16 +105,15 @@ public class WORDPRESS implements EncryptionMethod {
     }
 
     @Override
-    public String getHash(String password, String salt, String name)
-            throws NoSuchAlgorithmException {
+    public String computeHash(String password) {
         byte random[] = new byte[6];
-        this.randomGen.nextBytes(random);
+        randomGen.nextBytes(random);
         return crypt(password, gensaltPrivate(stringToUtf8(new String(random))));
     }
 
     @Override
-    public boolean comparePassword(String hash, String password,
-            String playerName) throws NoSuchAlgorithmException {
+    public boolean comparePassword(String password, HashedPassword hashedPassword, String name) {
+        String hash = hashedPassword.getHash();
         String comparedHash = crypt(password, hash);
         return comparedHash.equals(hash);
     }

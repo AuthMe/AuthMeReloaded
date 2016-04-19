@@ -1,780 +1,854 @@
 package fr.xephi.authme;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-import java.util.zip.GZIPInputStream;
-
+import fr.xephi.authme.api.API;
+import fr.xephi.authme.api.NewAPI;
+import fr.xephi.authme.cache.IpAddressManager;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.backup.JsonCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.command.CommandHandler;
+import fr.xephi.authme.command.CommandInitializer;
+import fr.xephi.authme.command.CommandMapper;
+import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.datasource.CacheDataSource;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
+import fr.xephi.authme.datasource.FlatFile;
+import fr.xephi.authme.datasource.MySQL;
+import fr.xephi.authme.datasource.SQLite;
+import fr.xephi.authme.hooks.BungeeCordMessage;
+import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.listener.AuthMeBlockListener;
+import fr.xephi.authme.listener.AuthMeEntityListener;
+import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
+import fr.xephi.authme.listener.AuthMePlayerListener;
+import fr.xephi.authme.listener.AuthMePlayerListener16;
+import fr.xephi.authme.listener.AuthMePlayerListener18;
+import fr.xephi.authme.listener.AuthMeServerListener;
+import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
+import fr.xephi.authme.listener.AuthMeTablistPacketAdapter;
+import fr.xephi.authme.mail.SendMailSSL;
+import fr.xephi.authme.output.ConsoleFilter;
+import fr.xephi.authme.output.Log4JFilter;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.process.Management;
+import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.SHA256;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SettingsMigrationService;
+import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.PluginSettings;
+import fr.xephi.authme.settings.properties.PurgeSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
+import fr.xephi.authme.settings.propertymap.PropertyMap;
+import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.CollectionUtils;
+import fr.xephi.authme.util.FileUtils;
+import fr.xephi.authme.util.GeoLiteAPI;
+import fr.xephi.authme.util.MigrationService;
+import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Server;
-import org.bukkit.World;
+import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-import org.mcstats.Metrics;
 
-import com.earth2me.essentials.Essentials;
-import com.maxmind.geoip.LookupService;
-import com.onarandombox.MultiverseCore.MultiverseCore;
+import java.io.File;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
 
-import fr.xephi.authme.api.API;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.FileCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.commands.AdminCommand;
-import fr.xephi.authme.commands.CaptchaCommand;
-import fr.xephi.authme.commands.ChangePasswordCommand;
-import fr.xephi.authme.commands.ConverterCommand;
-import fr.xephi.authme.commands.EmailCommand;
-import fr.xephi.authme.commands.LoginCommand;
-import fr.xephi.authme.commands.LogoutCommand;
-import fr.xephi.authme.commands.PasspartuCommand;
-import fr.xephi.authme.commands.RegisterCommand;
-import fr.xephi.authme.commands.UnregisterCommand;
-import fr.xephi.authme.datasource.CacheDataSource;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.datasource.DatabaseCalls;
-import fr.xephi.authme.datasource.FlatFile;
-import fr.xephi.authme.datasource.MySQL;
-import fr.xephi.authme.datasource.SQLite;
-import fr.xephi.authme.listener.AuthMeBlockListener;
-import fr.xephi.authme.listener.AuthMeChestShopListener;
-import fr.xephi.authme.listener.AuthMeEntityListener;
-import fr.xephi.authme.listener.AuthMePlayerListener;
-import fr.xephi.authme.listener.AuthMeServerListener;
-import fr.xephi.authme.plugin.manager.BungeeCordMessage;
-import fr.xephi.authme.plugin.manager.CitizensCommunicator;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
-import fr.xephi.authme.plugin.manager.EssSpawn;
-import fr.xephi.authme.process.Management;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.OtherAccounts;
-import fr.xephi.authme.settings.PlayersLogs;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.Spawn;
-import net.milkbowl.vault.permission.Permission;
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
+import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
+import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
 
+/**
+ * The AuthMe main class.
+ */
 public class AuthMe extends JavaPlugin {
 
-    public DataSource database = null;
-    private Settings settings;
-    private Messages m;
-    public OtherAccounts otherAccounts;
-    public static Server server;
-    public static Logger authmeLogger = Logger.getLogger("AuthMe");
-    public static AuthMe authme;
-    public Permission permission;
-    private Utils utils = Utils.getInstance();
-    private FileCache playerBackup = new FileCache(this);
-    public CitizensCommunicator citizens;
-    public boolean isCitizensActive = false;
-    public SendMailSSL mail = null;
-    public boolean CombatTag = false;
-    public double ChestShop = 0;
-    public boolean BungeeCord = false;
-    public Essentials ess;
-    public API api;
-    public Management management;
-    public ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<String, Integer>();
-    public ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<String, String>();
-    public ConcurrentHashMap<String, String> realIp = new ConcurrentHashMap<String, String>();
-    public MultiverseCore multiverse = null;
-    public Location essentialsSpawn;
-    public LookupService ls = null;
-    public boolean antibotMod = false;
-    public boolean delayedAntiBot = true;
-    protected static String vgUrl = "http://monitor-1.verygames.net/api/?action=ipclean-real-ip&out=raw&ip=%IP%&port=%PORT%";
-    public DataManager dataManager;
-    public ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<String, BukkitTask>();
+    // Defines the name of the plugin.
+    private static final String PLUGIN_NAME = "AuthMeReloaded";
 
-    public Settings getSettings() {
-        return settings;
+    // Default version and build number values;
+    private static String pluginVersion = "N/D";
+    private static String pluginBuildNumber = "Unknown";
+
+    // Private Instances
+    private static AuthMe plugin;
+    private static Server server;
+    /*
+     *  Maps and stuff
+     *  TODO: Clean up and Move into a manager
+     */
+    public final ConcurrentHashMap<String, BukkitTask> sessions = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, Integer> captcha = new ConcurrentHashMap<>();
+    public final ConcurrentHashMap<String, String> cap = new ConcurrentHashMap<>();
+
+    /*
+     * Public Instances
+     * TODO #432: Encapsulation
+     */
+    public NewAPI api;
+    public SendMailSSL mail;
+    public DataManager dataManager;
+    /*
+     * Plugin Hooks
+     * TODO: Move into modules
+     */
+    public AuthMeInventoryPacketAdapter inventoryProtector;
+    public AuthMeTabCompletePacketAdapter tabComplete;
+    public AuthMeTablistPacketAdapter tablistHider;
+    private Management management;
+    private CommandHandler commandHandler;
+    private PermissionsManager permsMan;
+    private NewSetting newSettings;
+    private Messages messages;
+    private JsonCache playerBackup;
+    private PasswordSecurity passwordSecurity;
+    private DataSource database;
+    private IpAddressManager ipAddressManager;
+    private PluginHooks pluginHooks;
+    private SpawnLoader spawnLoader;
+    private AntiBot antiBot;
+    private boolean autoPurging;
+
+    /**
+     * Get the plugin's instance.
+     *
+     * @return AuthMe
+     */
+    public static AuthMe getInstance() {
+        return plugin;
     }
 
+    /**
+     * Get the plugin's name.
+     *
+     * @return The plugin's name.
+     */
+    public static String getPluginName() {
+        return PLUGIN_NAME;
+    }
+
+    /**
+     * Get the plugin's version.
+     *
+     * @return The plugin's version.
+     */
+    public static String getPluginVersion() {
+        return pluginVersion;
+    }
+
+    /**
+     * Get the plugin's build number.
+     *
+     * @return The plugin's build number.
+     */
+    public static String getPluginBuildNumber() {
+        return pluginBuildNumber;
+    }
+
+    /**
+     * Get the Messages instance.
+     *
+     * @return Plugin's messages.
+     */
+    public Messages getMessages() {
+        return messages;
+    }
+
+    /**
+     * Get the plugin's NewSetting instance.
+     *
+     * @return NewSetting.
+     */
+    public NewSetting getSettings() {
+        return newSettings;
+    }
+
+    // Get version and build number of the plugin
+    private void setPluginInfos() {
+        String versionRaw = this.getDescription().getVersion();
+        int index = versionRaw.lastIndexOf("-");
+        if (index != -1) {
+            pluginVersion = versionRaw.substring(0, index);
+            pluginBuildNumber = versionRaw.substring(index + 1);
+            if (pluginBuildNumber.startsWith("b")) {
+                pluginBuildNumber = pluginBuildNumber.substring(1);
+            }
+        }
+    }
+
+    /**
+     * Method called when the server enables the plugin.
+     */
     @Override
     public void onEnable() {
-        authme = this;
+        // Set various instances
+        server = getServer();
+        plugin = this;
+        ConsoleLogger.setLogger(getLogger());
 
-        authmeLogger.setParent(this.getLogger());
+        setPluginInfos();
 
-        try {
-            settings = new Settings(this);
-            settings.loadConfigOptions();
-        } catch (Exception e) {
-            ConsoleLogger.showError("Can't load config file... Something goes wrong, for prevent security issues, server will shutdown");
-            this.getServer().shutdown();
+        // Load settings and custom configurations, if it fails, stop the server due to security reasons.
+        newSettings = createNewSetting();
+        if (newSettings == null) {
+            ConsoleLogger.showError("Could not load configuration. Aborting.");
+            server.shutdown();
+            return;
+        }
+        ConsoleLogger.setLoggingOptions(newSettings.getProperty(SecuritySettings.USE_LOGGING),
+            new File(getDataFolder(), "authme.log"));
+
+        // Old settings manager
+        if (!loadSettings()) {
+            server.shutdown();
+            setEnabled(false);
             return;
         }
 
+        messages = new Messages(newSettings.getMessagesFile(), newSettings.getDefaultMessagesFile());
+
+        // Connect to the database and setup tables
         try {
-            Metrics metrics = new Metrics(this);
-            metrics.start();
-            ConsoleLogger.info("Metrics started successfully!");
-        } catch (IOException e) {
-            // Failed to submit the stats :-(
-            ConsoleLogger.showError("Can't start Metrics! The plugin will work anyway...");
+            setupDatabase(newSettings);
+        } catch (Exception e) {
+            ConsoleLogger.logException("Fatal error occurred during database connection! "
+                + "Authme initialization aborted!", e);
+            stopOrUnload();
+            return;
         }
 
-        citizens = new CitizensCommunicator(this);
+        pluginHooks = new PluginHooks(server.getPluginManager());
 
-        if (Settings.enableAntiBot) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+        MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
+        passwordSecurity = new PasswordSecurity(getDataSource(), newSettings, Bukkit.getPluginManager());
+        ipAddressManager = new IpAddressManager(newSettings);
 
-                @Override
-                public void run() {
-                    delayedAntiBot = false;
+        // Initialize spawn loader
+        spawnLoader = new SpawnLoader(getDataFolder(), newSettings, pluginHooks);
+
+
+        // Set up the permissions manager and command handler
+        permsMan = initializePermissionsManager();
+        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings, ipAddressManager,
+            pluginHooks, spawnLoader, antiBot);
+
+        // AntiBot delay
+        BukkitService bukkitService = new BukkitService(this);
+        antiBot = new AntiBot(newSettings, messages, permsMan, bukkitService);
+
+        // Set up Metrics
+        MetricsStarter.setupMetrics(plugin, newSettings);
+
+        // Set console filter
+        setupConsoleFilter();
+
+        // Download and load GeoIp.dat file if absent
+        GeoLiteAPI.isDataAvailable();
+
+        // Set up the mail API
+        setupMailApi();
+
+        // Check if the ProtocolLib is available. If so we could listen for
+        // inventory protection
+        checkProtocolLib();
+        // End of Hooks
+
+        // Do a backup on start
+        new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.START);
+
+
+        // Setup the inventory backup
+        playerBackup = new JsonCache();
+
+        // Set the DataManager
+        dataManager = new DataManager(this, pluginHooks);
+
+        // Set up the new API
+        setupApi();
+
+        // Set up the management
+        ProcessService processService = new ProcessService(newSettings, messages, this, database, ipAddressManager,
+            passwordSecurity, pluginHooks, spawnLoader);
+        management = new Management(this, processService, database, PlayerCache.getInstance());
+
+        // Set up the BungeeCord hook
+        setupBungeeCordHook(newSettings, ipAddressManager);
+
+        // Reload support hook
+        reloadSupportHook();
+
+        // Register event listeners
+        registerEventListeners(messages, database, management, pluginHooks, spawnLoader, antiBot);
+        // Start Email recall task if needed
+        scheduleRecallEmailTask();
+
+        // Show settings warnings
+        showSettingsWarnings();
+
+        // Sponsor messages
+        ConsoleLogger.info("AuthMe hooks perfectly with the VeryGames server hosting!");
+        ConsoleLogger.info("Development builds are available on our jenkins, thanks to f14stelt.");
+        ConsoleLogger.info("Do you want a good game server? Look at our sponsor GameHosting.it leader in Italy as Game Server Provider!");
+
+        // Successful message
+        ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " correctly enabled!");
+
+        // Purge on start if enabled
+        runAutoPurge();
+    }
+
+    /**
+     * Reload certain components.
+     *
+     * @throws Exception if an error occurs
+     */
+    public void reload() throws Exception {
+        newSettings.reload();
+        // We do not change database type for consistency issues, but we'll output a note in the logs
+        if (!newSettings.getProperty(DatabaseSettings.BACKEND).equals(database.getType())) {
+            ConsoleLogger.info("Note: cannot change database type during /authme reload");
+        }
+        database.reload();
+        messages.reload(newSettings.getMessagesFile());
+        passwordSecurity.reload(newSettings);
+        spawnLoader.initialize(newSettings);
+    }
+
+    /**
+     * Set up the mail API, if enabled.
+     */
+    private void setupMailApi() {
+        // Make sure the mail API is enabled
+        if (!newSettings.getProperty(MAIL_ACCOUNT).isEmpty() && !newSettings.getProperty(MAIL_PASSWORD).isEmpty()) {
+            this.mail = new SendMailSSL(this, newSettings);
+        }
+    }
+
+    /**
+     * Show the settings warnings, for various risky settings.
+     */
+    private void showSettingsWarnings() {
+        // Force single session disabled
+        if (!newSettings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
+            ConsoleLogger.showError("WARNING!!! By disabling ForceSingleSession, your server protection is inadequate!");
+        }
+
+        // Session timeout disabled
+        if (newSettings.getProperty(PluginSettings.SESSIONS_TIMEOUT) == 0
+            && newSettings.getProperty(PluginSettings.SESSIONS_ENABLED)) {
+            ConsoleLogger.showError("WARNING!!! You set session timeout to 0, this may cause security issues!");
+        }
+    }
+
+    /**
+     * Register all event listeners.
+     */
+    private void registerEventListeners(Messages messages, DataSource dataSource, Management management,
+                                        PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot) {
+        // Get the plugin manager instance
+        PluginManager pluginManager = server.getPluginManager();
+
+        // Register event listeners
+        pluginManager.registerEvents(new AuthMePlayerListener(this, messages, dataSource, antiBot, management), this);
+        pluginManager.registerEvents(new AuthMeBlockListener(), this);
+        pluginManager.registerEvents(new AuthMeEntityListener(), this);
+        pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks, spawnLoader), this);
+
+        // Try to register 1.6 player listeners
+        try {
+            Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
+            pluginManager.registerEvents(new AuthMePlayerListener16(), this);
+        } catch (ClassNotFoundException ignore) {
+        }
+
+        // Try to register 1.8 player listeners
+        try {
+            Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
+            pluginManager.registerEvents(new AuthMePlayerListener18(), this);
+        } catch (ClassNotFoundException ignore) {
+        }
+    }
+
+    private void reloadSupportHook() {
+        if (database != null) {
+            int playersOnline = Utils.getOnlinePlayers().size();
+            if (playersOnline < 1) {
+                database.purgeLogged();
+            } else if (Settings.reloadSupport) {
+                for (PlayerAuth auth : database.getLoggedPlayers()) {
+                    if (auth == null) {
+                        continue;
+                    }
+                    auth.setLastLogin(new Date().getTime());
+                    database.updateSession(auth);
+                    PlayerCache.getInstance().addPlayer(auth);
                 }
-            }, 2400);
+            }
         }
+    }
 
-        m = Messages.getInstance();
+    /**
+     * Set up the BungeeCord hook.
+     */
+    private void setupBungeeCordHook(NewSetting settings, IpAddressManager ipAddressManager) {
+        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
+            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+            Bukkit.getMessenger().registerIncomingPluginChannel(
+                this, "BungeeCord", new BungeeCordMessage(this, ipAddressManager));
+        }
+    }
 
-        otherAccounts = OtherAccounts.getInstance();
+    private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
+                                                    PasswordSecurity passwordSecurity, NewSetting settings,
+                                                    IpAddressManager ipAddressManager, PluginHooks pluginHooks,
+                                                    SpawnLoader spawnLoader, AntiBot antiBot) {
+        HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
+        Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
+        CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
+        CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity,
+            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot);
+        return new CommandHandler(commandService);
+    }
 
-        server = getServer();
+    /**
+     * Set up the API. This sets up the new and the old API.
+     */
+    @SuppressWarnings("deprecation")
+    private void setupApi() {
+        // Set up the API
+        api = new NewAPI(this);
 
-        // Find Permissions
-        checkVault();
+        // Set up the deprecated API
+        new API(this);
+    }
 
-        // Set Console Filter
+    /**
+     * Load the plugin's settings.
+     *
+     * @return True on success, false on failure.
+     */
+    private boolean loadSettings() {
+        try {
+            new Settings(this);
+            return true;
+        } catch (Exception e) {
+            ConsoleLogger.logException("Can't load the configuration file... Something went wrong. "
+                + "To avoid security issues the server will shut down!", e);
+            server.shutdown();
+        }
+        return false;
+    }
+
+    private NewSetting createNewSetting() {
+        File configFile = new File(getDataFolder(), "config.yml");
+        PropertyMap properties = SettingsFieldRetriever.getAllPropertyFields();
+        SettingsMigrationService migrationService = new SettingsMigrationService();
+        return FileUtils.copyFileFromResource(configFile, "config.yml")
+            ? new NewSetting(configFile, getDataFolder(), properties, migrationService)
+            : null;
+    }
+
+    /**
+     * Set up the console filter.
+     */
+    private void setupConsoleFilter() {
         if (Settings.removePassword) {
-            this.getLogger().setFilter(new ConsoleFilter());
-            Bukkit.getLogger().setFilter(new ConsoleFilter());
-            Logger.getLogger("Minecraft").setFilter(new ConsoleFilter());
-            authmeLogger.setFilter(new ConsoleFilter());
+            ConsoleFilter filter = new ConsoleFilter();
+            getLogger().setFilter(filter);
+            Bukkit.getLogger().setFilter(filter);
+            Logger.getLogger("Minecraft").setFilter(filter);
             // Set Log4J Filter
             try {
                 Class.forName("org.apache.logging.log4j.core.Filter");
                 setLog4JFilter();
-            } catch (ClassNotFoundException e) {
-                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
-            } catch (NoClassDefFoundError e) {
-                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support is disabled");
+            } catch (ClassNotFoundException | NoClassDefFoundError e) {
+                ConsoleLogger.info("You're using Minecraft 1.6.x or older, Log4J support will be disabled");
             }
         }
-
-        // Load MailApi
-        if (!Settings.getmailAccount.isEmpty() && !Settings.getmailPassword.isEmpty())
-            mail = new SendMailSSL(this);
-
-        // Check Citizens Version
-        citizensVersion();
-
-        // Check Combat Tag Version
-        combatTag();
-
-        // Check Multiverse
-        checkMultiverse();
-
-        // Check ChestShop
-        checkChestShop();
-
-        // Check Essentials
-        checkEssentials();
-
-        /*
-         * Back style on start if avalaible
-         */
-        if (Settings.isBackupActivated && Settings.isBackupOnStart) {
-            Boolean Backup = new PerformBackup(this).DoBackup();
-            if (Backup)
-                ConsoleLogger.info("Backup Complete");
-            else ConsoleLogger.showError("Error while making Backup");
-        }
-
-        setupDatabase();
-
-        dataManager = new DataManager(this);
-
-        // Setup API
-        api = new API(this);
-
-        // Setup Management
-        management = new Management(this);
-
-        PluginManager pm = getServer().getPluginManager();
-        if (Settings.bungee) {
-            Bukkit.getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-            Bukkit.getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new BungeeCordMessage(this));
-        }
-
-        pm.registerEvents(new AuthMePlayerListener(this), this);
-        pm.registerEvents(new AuthMeBlockListener(this), this);
-        pm.registerEvents(new AuthMeEntityListener(this), this);
-        pm.registerEvents(new AuthMeServerListener(this), this);
-        if (ChestShop != 0) {
-            pm.registerEvents(new AuthMeChestShopListener(this), this);
-            ConsoleLogger.info("Successfully hook with ChestShop!");
-        }
-
-        this.getCommand("authme").setExecutor(new AdminCommand(this));
-        this.getCommand("register").setExecutor(new RegisterCommand(this));
-        this.getCommand("login").setExecutor(new LoginCommand(this));
-        this.getCommand("changepassword").setExecutor(new ChangePasswordCommand(this));
-        this.getCommand("logout").setExecutor(new LogoutCommand(this));
-        this.getCommand("unregister").setExecutor(new UnregisterCommand(this));
-        this.getCommand("passpartu").setExecutor(new PasspartuCommand(this));
-        this.getCommand("email").setExecutor(new EmailCommand(this));
-        this.getCommand("captcha").setExecutor(new CaptchaCommand(this));
-        this.getCommand("converter").setExecutor(new ConverterCommand(this));
-
-        if (!Settings.isForceSingleSessionEnabled) {
-            ConsoleLogger.showError("BECAREFUL !!! By disabling ForceSingleSession, your server protection is set to LOW");
-        }
-
-        PlayersLogs.getInstance();
-
-        if (Settings.reloadSupport)
-            try {
-                int playersOnline = 0;
-                try {
-                    if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
-                        playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
-                    else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-                } catch (Exception ex) {
-                }
-                if (playersOnline < 1) {
-                    try {
-                        database.purgeLogged();
-                    } catch (NullPointerException npe) {
-                    }
-                } else PlayersLogs.getInstance().loadPlayers();
-            } catch (Exception ex) {
-            }
-
-        if (Settings.usePurge)
-            autoPurge();
-
-        // Download GeoIp.dat file
-        downloadGeoIp();
-
-        // Start Email recall task if needed
-        recallEmail();
-
-        // Sponsor message
-        ConsoleLogger.info("AuthMe hook perfectly with server hosting VERYGAMES");
-
-        ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " enabled");
-    }
-
-    private void setLog4JFilter() {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
-
-            @Override
-            public void run() {
-                org.apache.logging.log4j.core.Logger coreLogger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
-                coreLogger.addFilter(new Log4JFilter());
-            }
-        });
-    }
-
-    public void checkVault() {
-        if (this.getServer().getPluginManager().getPlugin("Vault") != null && this.getServer().getPluginManager().getPlugin("Vault").isEnabled()) {
-            RegisteredServiceProvider<Permission> permissionProvider = getServer().getServicesManager().getRegistration(net.milkbowl.vault.permission.Permission.class);
-            if (permissionProvider != null) {
-                permission = permissionProvider.getProvider();
-                ConsoleLogger.info("Vault plugin detected, hook with " + permission.getName() + " system");
-            } else {
-                ConsoleLogger.showError("Vault plugin is detected but not the permissions plugin!");
-            }
-        } else {
-            permission = null;
-        }
-    }
-
-    public void checkChestShop() {
-        if (!Settings.chestshop) {
-            this.ChestShop = 0;
-            return;
-        }
-        if (this.getServer().getPluginManager().getPlugin("ChestShop") != null && this.getServer().getPluginManager().getPlugin("ChestShop").isEnabled()) {
-            try {
-                String ver = com.Acrobot.ChestShop.ChestShop.getVersion();
-                try {
-                    double version = Double.valueOf(ver.split(" ")[0]);
-                    if (version >= 3.50) {
-                        this.ChestShop = version;
-                    } else {
-                        ConsoleLogger.showError("Please Update your ChestShop version!");
-                    }
-                } catch (NumberFormatException nfe) {
-                    try {
-                        double version = Double.valueOf(ver.split("t")[0]);
-                        if (version >= 3.50) {
-                            this.ChestShop = version;
-                        } else {
-                            ConsoleLogger.showError("Please Update your ChestShop version!");
-                        }
-                    } catch (NumberFormatException nfee) {
-                    }
-                }
-            } catch (Exception e) {
-            }
-        } else {
-            this.ChestShop = 0;
-        }
-    }
-
-    public void checkMultiverse() {
-        if (!Settings.multiverse) {
-            multiverse = null;
-            return;
-        }
-        if (this.getServer().getPluginManager().getPlugin("Multiverse-Core") != null && this.getServer().getPluginManager().getPlugin("Multiverse-Core").isEnabled()) {
-            try {
-                multiverse = (MultiverseCore) this.getServer().getPluginManager().getPlugin("Multiverse-Core");
-                ConsoleLogger.info("Hook with Multiverse-Core for SpawnLocations");
-            } catch (NullPointerException npe) {
-                multiverse = null;
-            } catch (ClassCastException cce) {
-                multiverse = null;
-            } catch (NoClassDefFoundError ncdfe) {
-                multiverse = null;
-            }
-        } else {
-            multiverse = null;
-        }
-    }
-
-    public void checkEssentials() {
-        if (this.getServer().getPluginManager().getPlugin("Essentials") != null && this.getServer().getPluginManager().getPlugin("Essentials").isEnabled()) {
-            try {
-                ess = (Essentials) this.getServer().getPluginManager().getPlugin("Essentials");
-                ConsoleLogger.info("Hook with Essentials plugin");
-            } catch (NullPointerException npe) {
-                ess = null;
-            } catch (ClassCastException cce) {
-                ess = null;
-            } catch (NoClassDefFoundError ncdfe) {
-                ess = null;
-            }
-        } else {
-            ess = null;
-        }
-        if (this.getServer().getPluginManager().getPlugin("EssentialsSpawn") != null && this.getServer().getPluginManager().getPlugin("EssentialsSpawn").isEnabled()) {
-            try {
-                essentialsSpawn = new EssSpawn().getLocation();
-                ConsoleLogger.info("Hook with EssentialsSpawn plugin");
-            } catch (Exception e) {
-                essentialsSpawn = null;
-                ConsoleLogger.showError("Error while reading /plugins/Essentials/spawn.yml file ");
-            }
-        } else {
-            essentialsSpawn = null;
-        }
-    }
-
-    public void combatTag() {
-        if (this.getServer().getPluginManager().getPlugin("CombatTag") != null && this.getServer().getPluginManager().getPlugin("CombatTag").isEnabled()) {
-            this.CombatTag = true;
-        } else {
-            this.CombatTag = false;
-        }
-    }
-
-    public void citizensVersion() {
-        if (this.getServer().getPluginManager().getPlugin("Citizens") != null && this.getServer().getPluginManager().getPlugin("Citizens").isEnabled())
-            this.isCitizensActive = true;
-        else this.isCitizensActive = false;
     }
 
     @Override
     public void onDisable() {
-        int playersOnline = 0;
-        try {
-            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
-                playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
-            else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-        } catch (NoSuchMethodException ex) {
-        } // can never happen
-        catch (InvocationTargetException ex) {
-        } // can also never happen
-        catch (IllegalAccessException ex) {
-        } // can still never happen
-        if (playersOnline != 0)
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                this.savePlayer(player);
-            }
-
-        if (database != null) {
-            database.close();
+        // Save player data
+        Collection<? extends Player> players = Utils.getOnlinePlayers();
+        for (Player player : players) {
+            savePlayer(player);
         }
 
-        if (Settings.isBackupActivated && Settings.isBackupOnStop) {
-            Boolean Backup = new PerformBackup(this).DoBackup();
-            if (Backup)
-                ConsoleLogger.info("Backup Complete");
-            else ConsoleLogger.showError("Error while making Backup");
+        // Do backup on stop if enabled
+        if (newSettings != null) {
+            new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.STOP);
         }
-        ConsoleLogger.info("Authme " + this.getDescription().getVersion() + " disabled");
-    }
-
-    public static AuthMe getInstance() {
-        return authme;
-    }
-
-    public void savePlayer(Player player)
-            throws IllegalStateException, NullPointerException {
-        try {
-            if ((citizens.isNPC(player)) || (Utils.getInstance().isUnrestricted(player)) || (CombatTagComunicator.isNPC(player))) {
-                return;
-            }
-        } catch (Exception e) {
-        }
-        try {
-            String name = player.getName().toLowerCase();
-            if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
-                final PlayerAuth auth = new PlayerAuth(player.getName().toLowerCase(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), player.getWorld().getName());
-                database.updateQuitLoc(auth);
-            }
-            if (LimboCache.getInstance().hasLimboPlayer(name)) {
-                LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
-                if (Settings.protectInventoryBeforeLogInEnabled.booleanValue()) {
-                    player.getInventory().setArmorContents(limbo.getArmour());
-                    player.getInventory().setContents(limbo.getInventory());
-                }
-                if (!Settings.noTeleport)
-                    player.teleport(limbo.getLoc());
-                this.utils.addNormal(player, limbo.getGroup());
-                player.setOp(limbo.getOperator());
-                limbo.getTimeoutTaskId().cancel();
-                LimboCache.getInstance().deleteLimboPlayer(name);
-                if (this.playerBackup.doesCacheExist(player)) {
-                    this.playerBackup.removeCache(player);
-                }
-            }
-            PlayerCache.getInstance().removePlayer(name);
-            database.setUnlogged(name);
-            player.saveData();
-        } catch (Exception ex) {
-        }
-    }
-
-    public CitizensCommunicator getCitizensCommunicator() {
-        return citizens;
-    }
-
-    public void setMessages(Messages m) {
-        this.m = m;
-    }
-
-    public Messages getMessages() {
-        return m;
-    }
-
-    public Player generateKickPlayer(Collection<? extends Player> collection) {
-        Player player = null;
-        for (Player p : collection) {
-            if (!(authmePermissible(p, "authme.vip"))) {
-                player = p;
-                break;
-            }
-        }
-        return player;
-    }
-
-    public boolean authmePermissible(Player player, String perm) {
-        if (player.hasPermission(perm))
-            return true;
-        else if (permission != null) {
-            return permission.playerHas(player, perm);
-        }
-        return false;
-    }
-
-    public boolean authmePermissible(CommandSender sender, String perm) {
-        if (sender.hasPermission(perm))
-            return true;
-        else if (permission != null) {
-            return permission.has(sender, perm);
-        }
-        return false;
-    }
-
-    private void autoPurge() {
-        if (!Settings.usePurge) {
-            return;
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -(Settings.purgeDelay));
-        long until = calendar.getTimeInMillis();
-        List<String> cleared = database.autoPurgeDatabase(until);
-        if (cleared == null)
-            return;
-        if (cleared.isEmpty())
-            return;
-        ConsoleLogger.info("AutoPurgeDatabase : " + cleared.size() + " accounts removed.");
-        if (Settings.purgeEssentialsFile && this.ess != null)
-            dataManager.purgeEssentials(cleared);
-        if (Settings.purgePlayerDat)
-            dataManager.purgeDat(cleared);
-        if (Settings.purgeLimitedCreative)
-            dataManager.purgeLimitedCreative(cleared);
-        if (Settings.purgeAntiXray)
-            dataManager.purgeAntiXray(cleared);
-        if (Settings.purgePermissions)
-            dataManager.purgePermissions(cleared, permission);
-    }
-
-    public Location getSpawnLocation(Player player) {
-        World world = player.getWorld();
-        String[] spawnPriority = Settings.spawnPriority.split(",");
-        Location spawnLoc = world.getSpawnLocation();
-        for (int i = spawnPriority.length - 1; i >= 0; i--) {
-            String s = spawnPriority[i];
-            if (s.equalsIgnoreCase("default") && getDefaultSpawn() != null)
-                spawnLoc = getDefaultSpawn();
-            if (s.equalsIgnoreCase("multiverse") && getMultiverseSpawn(world) != null)
-                spawnLoc = getMultiverseSpawn(world);
-            if (s.equalsIgnoreCase("essentials") && getEssentialsSpawn() != null)
-                spawnLoc = getEssentialsSpawn();
-            if (s.equalsIgnoreCase("authme") && getAuthMeSpawn(player) != null)
-                spawnLoc = getAuthMeSpawn(player);
-        }
-        if (spawnLoc == null)
-            spawnLoc = world.getSpawnLocation();
-        return spawnLoc;
-    }
-
-    private Location getDefaultSpawn() {
-        return this.getServer().getWorld(Settings.defaultWorld).getSpawnLocation();
-    }
-
-    private Location getMultiverseSpawn(World world) {
-        if (multiverse != null && Settings.multiverse) {
-            try {
-                return multiverse.getMVWorldManager().getMVWorld(world).getSpawnLocation();
-            } catch (NullPointerException npe) {
-            } catch (ClassCastException cce) {
-            } catch (NoClassDefFoundError ncdfe) {
-            }
-        }
-        return null;
-    }
-
-    private Location getEssentialsSpawn() {
-        if (essentialsSpawn != null)
-            return essentialsSpawn;
-        return null;
-    }
-
-    private Location getAuthMeSpawn(Player player) {
-        if ((!database.isAuthAvailable(player.getName().toLowerCase()) || !player.hasPlayedBefore()) && (Spawn.getInstance().getFirstSpawn() != null))
-            return Spawn.getInstance().getFirstSpawn();
-        if (Spawn.getInstance().getSpawn() != null)
-            return Spawn.getInstance().getSpawn();
-        return player.getWorld().getSpawnLocation();
-    }
-
-    public void downloadGeoIp() {
-        ConsoleLogger.info("[LICENSE] This product includes GeoLite data created by MaxMind, available from http://www.maxmind.com");
-        File file = new File(getDataFolder(), "GeoIP.dat");
-        if (!file.exists()) {
-            try {
-                String url = "http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz";
-                URL downloadUrl = new URL(url);
-                URLConnection conn = downloadUrl.openConnection();
-                conn.setConnectTimeout(10000);
-                conn.connect();
-                InputStream input = conn.getInputStream();
-                if (url.endsWith(".gz"))
-                    input = new GZIPInputStream(input);
-                OutputStream output = new FileOutputStream(file);
-                byte[] buffer = new byte[2048];
-                int length = input.read(buffer);
-                while (length >= 0) {
-                    output.write(buffer, 0, length);
-                    length = input.read(buffer);
-                }
-                output.close();
-                input.close();
-            } catch (Exception e) {
-            }
-        }
-    }
-
-    public String getCountryCode(String ip) {
-        try {
-            if (ls == null)
-                ls = new LookupService(new File(getDataFolder(), "GeoIP.dat"));
-            String code = ls.getCountry(ip).getCode();
-            if (code != null && !code.isEmpty())
-                return code;
-        } catch (Exception e) {
-        }
-        return null;
-    }
-
-    public String getCountryName(String ip) {
-        try {
-            if (ls == null)
-                ls = new LookupService(new File(getDataFolder(), "GeoIP.dat"));
-            String code = ls.getCountry(ip).getName();
-            if (code != null && !code.isEmpty())
-                return code;
-        } catch (Exception e) {
-        }
-        return null;
-    }
-
-    public void switchAntiBotMod(boolean mode) {
-        this.antibotMod = mode;
-        Settings.switchAntiBotMod(mode);
-    }
-
-    private void recallEmail() {
-        if (!Settings.recallEmail)
-            return;
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable() {
-
+        new Thread(new Runnable() {
             @Override
             public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (player.isOnline()) {
-                        String name = player.getName().toLowerCase();
-                        if (database.isAuthAvailable(name))
-                            if (PlayerCache.getInstance().isAuthenticated(name)) {
-                                String email = database.getAuth(name).getEmail();
-                                if (email == null || email.isEmpty() || email.equalsIgnoreCase("your@email.com"))
-                                    m.send(player, "add_email");
-                            }
+                List<Integer> pendingTasks = new ArrayList<>();
+                for (BukkitTask pendingTask : getServer().getScheduler().getPendingTasks()) {
+                    if (pendingTask.getOwner().equals(plugin) && !pendingTask.isSync()) {
+                        pendingTasks.add(pendingTask.getTaskId());
+                    }
+                }
+                ConsoleLogger.info("Waiting for " + pendingTasks.size() + " tasks to finish");
+                int progress = 0;
+                for (int taskId : pendingTasks) {
+                    int maxTries = 5;
+                    while (getServer().getScheduler().isCurrentlyRunning(taskId)) {
+                        if (maxTries <= 0) {
+                            ConsoleLogger.info("Async task " + taskId + " times out after to many tries");
+                            break;
+                        }
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException ignored) {
+                        }
+                        maxTries--;
+                    }
+
+                    progress++;
+                    ConsoleLogger.info("Progress: " + progress + " / " + pendingTasks.size());
+                }
+                if (database != null) {
+                    database.close();
+                }
+            }
+        }, "AuthMe-DataSource#close").start();
+
+        // Close the database
+
+        // Disabled correctly
+        ConsoleLogger.info("AuthMe " + this.getDescription().getVersion() + " disabled!");
+    }
+
+    // Stop/unload the server/plugin as defined in the configuration
+    public void stopOrUnload() {
+        if (Settings.isStopEnabled) {
+            ConsoleLogger.showError("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
+            server.shutdown();
+        } else {
+            server.getPluginManager().disablePlugin(AuthMe.getInstance());
+        }
+    }
+
+    /**
+     * Sets up the data source.
+     *
+     * @param settings The settings instance
+     *
+     * @throws ClassNotFoundException if no driver could be found for the datasource
+     * @throws SQLException           when initialization of a SQL datasource failed
+     * @see AuthMe#database
+     */
+    public void setupDatabase(NewSetting settings) throws ClassNotFoundException, SQLException {
+        if (this.database != null) {
+            this.database.close();
+        }
+
+        DataSourceType dataSourceType = settings.getProperty(DatabaseSettings.BACKEND);
+        DataSource dataSource;
+        switch (dataSourceType) {
+            case FILE:
+                dataSource = new FlatFile();
+                break;
+            case MYSQL:
+                dataSource = new MySQL(settings);
+                break;
+            case SQLITE:
+                dataSource = new SQLite(settings);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown data source type '" + dataSourceType + "'");
+        }
+
+        DataSource convertedSource = MigrationService.convertFlatfileToSqlite(newSettings, dataSource);
+        dataSource = convertedSource == null ? dataSource : convertedSource;
+
+        if (newSettings.getProperty(DatabaseSettings.USE_CACHING)) {
+            dataSource = new CacheDataSource(dataSource);
+        }
+
+        database = dataSource;
+        if (DataSourceType.SQLITE == dataSourceType) {
+            server.getScheduler().runTaskAsynchronously(this, new Runnable() {
+                @Override
+                public void run() {
+                    int accounts = database.getAccountsRegistered();
+                    if (accounts >= 4000) {
+                        ConsoleLogger.showError("YOU'RE USING THE SQLITE DATABASE WITH "
+                            + accounts + "+ ACCOUNTS; FOR BETTER PERFORMANCE, PLEASE UPGRADE TO MYSQL!!");
+                    }
+                }
+            });
+        }
+    }
+
+    /**
+     * Set up the permissions manager.
+     */
+    private PermissionsManager initializePermissionsManager() {
+        PermissionsManager manager = new PermissionsManager(Bukkit.getServer(), this, getLogger());
+        manager.setup();
+        return manager;
+    }
+
+    // Set the console filter to remove the passwords
+    private void setLog4JFilter() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+            @Override
+            public void run() {
+                org.apache.logging.log4j.core.Logger logger;
+                logger = (org.apache.logging.log4j.core.Logger) LogManager.getRootLogger();
+                logger.addFilter(new Log4JFilter());
+                logger = (org.apache.logging.log4j.core.Logger) LogManager.getLogger("net.minecraft");
+                logger.addFilter(new Log4JFilter());
+            }
+        });
+    }
+
+    // Check the presence of the ProtocolLib plugin
+    public void checkProtocolLib() {
+        if (!server.getPluginManager().isPluginEnabled("ProtocolLib")) {
+            if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
+                ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
+                Settings.protectInventoryBeforeLogInEnabled = false;
+                newSettings.setProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN, false);
+                newSettings.save();
+            }
+            return;
+        }
+
+        if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN) && inventoryProtector == null) {
+            inventoryProtector = new AuthMeInventoryPacketAdapter(this);
+            inventoryProtector.register();
+        } else if (inventoryProtector != null) {
+            inventoryProtector.unregister();
+            inventoryProtector = null;
+        }
+        if (newSettings.getProperty(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN) && tabComplete == null) {
+            tabComplete = new AuthMeTabCompletePacketAdapter(this);
+            tabComplete.register();
+        } else if (tabComplete != null) {
+            tabComplete.unregister();
+            tabComplete = null;
+        }
+        if (newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && tablistHider == null) {
+            tablistHider = new AuthMeTablistPacketAdapter(this);
+            tablistHider.register();
+        } else if (tablistHider != null) {
+            tablistHider.unregister();
+            tablistHider = null;
+        }
+    }
+
+    // Save Player Data
+    private void savePlayer(Player player) {
+        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
+            return;
+        }
+        String name = player.getName().toLowerCase();
+        if (PlayerCache.getInstance().isAuthenticated(name) && !player.isDead() && Settings.isSaveQuitLocationEnabled) {
+            final PlayerAuth auth = PlayerAuth.builder()
+                .name(player.getName().toLowerCase())
+                .realName(player.getName())
+                .location(player.getLocation()).build();
+            database.updateQuitLoc(auth);
+        }
+        if (LimboCache.getInstance().hasLimboPlayer(name)) {
+            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+            if (!Settings.noTeleport) {
+                player.teleport(limbo.getLoc());
+            }
+
+            Utils.addNormal(player, limbo.getGroup());
+            player.setOp(limbo.isOperator());
+            limbo.getTimeoutTask().cancel();
+            LimboCache.getInstance().deleteLimboPlayer(name);
+            if (this.playerBackup.doesCacheExist(player)) {
+                this.playerBackup.removeCache(player);
+            }
+        }
+        PlayerCache.getInstance().removePlayer(name);
+    }
+
+    // Select the player to kick when a vip player joins the server when full
+    public Player generateKickPlayer(Collection<? extends Player> collection) {
+        for (Player player : collection) {
+            if (!getPermissionsManager().hasPermission(player, PlayerStatePermission.IS_VIP)) {
+                return player;
+            }
+        }
+        return null;
+    }
+
+    // Purge inactive players from the database, as defined in the configuration
+    private void runAutoPurge() {
+        if (!newSettings.getProperty(PurgeSettings.USE_AUTO_PURGE) || autoPurging) {
+            return;
+        }
+        autoPurging = true;
+        server.getScheduler().runTaskAsynchronously(this, new Runnable() {
+            @Override
+            public void run() {
+                ConsoleLogger.info("AutoPurging the Database...");
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, -newSettings.getProperty(PurgeSettings.DAYS_BEFORE_REMOVE_PLAYER));
+                long until = calendar.getTimeInMillis();
+                List<String> cleared = database.autoPurgeDatabase(until);
+                if (CollectionUtils.isEmpty(cleared)) {
+                    return;
+                }
+                ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
+                if (newSettings.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) && pluginHooks.isEssentialsAvailable())
+                    dataManager.purgeEssentials(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
+                    dataManager.purgeDat(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_LIMITED_CREATIVE_INVENTORIES))
+                    dataManager.purgeLimitedCreative(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_ANTI_XRAY_FILE))
+                    dataManager.purgeAntiXray(cleared);
+                if (newSettings.getProperty(PurgeSettings.REMOVE_PERMISSIONS))
+                    dataManager.purgePermissions(cleared);
+                ConsoleLogger.info("AutoPurge Finished!");
+                autoPurging = false;
+            }
+        });
+    }
+
+    // Return the spawn location of a player
+    @Deprecated
+    public Location getSpawnLocation(Player player) {
+        return spawnLoader.getSpawnLocation(player);
+    }
+
+    private void scheduleRecallEmailTask() {
+        if (!newSettings.getProperty(RECALL_PLAYERS)) {
+            return;
+        }
+        Bukkit.getScheduler().runTaskTimerAsynchronously(this, new Runnable() {
+            @Override
+            public void run() {
+                for (PlayerAuth auth : database.getLoggedPlayers()) {
+                    String email = auth.getEmail();
+                    if (StringUtils.isEmpty(email) || email.equalsIgnoreCase("your@email.com")) {
+                        Player player = Utils.getPlayer(auth.getRealName());
+                        if (player != null) {
+                            messages.send(player, MessageKey.ADD_EMAIL_MESSAGE);
+                        }
                     }
                 }
             }
-        }, 1, 1200 * Settings.delayRecall);
+        }, 1, 1200 * newSettings.getProperty(EmailSettings.DELAY_RECALL));
     }
 
-    public String replaceAllInfos(String message, Player player) {
-        int playersOnline = 0;
-        try {
-            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
-                playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
-            else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-        } catch (NoSuchMethodException ex) {
-        } // can never happen
-        catch (InvocationTargetException ex) {
-        } // can also never happen
-        catch (IllegalAccessException ex) {
-        } // can still never happen
-        try {
-            message = message.replace("&", "\u00a7");
-            message = message.replace("{PLAYER}", player.getName());
-            message = message.replace("{ONLINE}", "" + playersOnline);
-            message = message.replace("{MAXPLAYERS}", "" + this.getServer().getMaxPlayers());
-            message = message.replace("{IP}", getIP(player));
-            message = message.replace("{LOGINS}", "" + PlayerCache.getInstance().getLogged());
-            message = message.replace("{WORLD}", player.getWorld().getName());
-            message = message.replace("{SERVER}", this.getServer().getServerName());
-            message = message.replace("{VERSION}", this.getServer().getBukkitVersion());
-            message = message.replace("{COUNTRY}", this.getCountryName(getIP(player)));
-        } catch (Exception e) {
-        }
-        return message;
-    }
-
-    public String getIP(Player player) {
-        String name = player.getName().toLowerCase();
-        String ip = player.getAddress().getAddress().getHostAddress();
-        if (Settings.bungee) {
-            if (realIp.containsKey(name))
-                ip = realIp.get(name);
-        }
-        if (Settings.checkVeryGames)
-            if (getVeryGamesIP(player) != null)
-                ip = getVeryGamesIP(player);
-        return ip;
+    public String replaceAllInfo(String message, Player player) {
+        String playersOnline = Integer.toString(Utils.getOnlinePlayers().size());
+        String ipAddress = ipAddressManager.getPlayerIp(player);
+        return message
+            .replace("&", "\u00a7")
+            .replace("{PLAYER}", player.getName())
+            .replace("{ONLINE}", playersOnline)
+            .replace("{MAXPLAYERS}", Integer.toString(server.getMaxPlayers()))
+            .replace("{IP}", ipAddress)
+            .replace("{LOGINS}", Integer.toString(PlayerCache.getInstance().getLogged()))
+            .replace("{WORLD}", player.getWorld().getName())
+            .replace("{SERVER}", server.getServerName())
+            .replace("{VERSION}", server.getBukkitVersion())
+            .replace("{COUNTRY}", GeoLiteAPI.getCountryName(ipAddress));
     }
 
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
-        for (Player player : this.getServer().getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
-                count++;
+        for (Player player : Utils.getOnlinePlayers()) {
+            if (ip.equalsIgnoreCase(ipAddressManager.getPlayerIp(player))
+                && database.isLogged(player.getName().toLowerCase())
+                && !player.getName().equalsIgnoreCase(name)) {
+                ++count;
+            }
         }
-        if (count >= Settings.getMaxLoginPerIp)
-            return true;
-        return false;
-    }
-
-    public boolean hasJoinedIp(String name, String ip) {
-        int count = 0;
-        for (Player player : this.getServer().getOnlinePlayers()) {
-            if (ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
-                count++;
-        }
-        if (count >= Settings.getMaxJoinPerIp)
-            return true;
-        return false;
+        return count >= Settings.getMaxLoginPerIp;
     }
 
     /**
-     * Get Player real IP through VeryGames method
-     * 
-     * @param Player
-     *            player
+     * Handle Bukkit commands.
+     *
+     * @param sender       The command sender (Bukkit).
+     * @param cmd          The command (Bukkit).
+     * @param commandLabel The command label (Bukkit).
+     * @param args         The command arguments (Bukkit).
+     *
+     * @return True if the command was executed, false otherwise.
      */
-    public String getVeryGamesIP(Player player) {
-        String realIP = player.getAddress().getAddress().getHostAddress();
-        String sUrl = vgUrl;
-        sUrl = sUrl.replace("%IP%", player.getAddress().getAddress().getHostAddress()).replace("%PORT%", "" + player.getAddress().getPort());
-        try {
-            URL url = new URL(sUrl);
-            URLConnection urlc = url.openConnection();
-            BufferedReader in = new BufferedReader(new InputStreamReader(urlc.getInputStream()));
-            String inputLine = in.readLine();
-            if (inputLine != null && !inputLine.isEmpty() && !inputLine.equalsIgnoreCase("error") && !inputLine.contains("error")) {
-                realIP = inputLine;
-            }
-        } catch (Exception e) {
+    @Override
+    public boolean onCommand(CommandSender sender, Command cmd,
+                             String commandLabel, String[] args) {
+        // Make sure the command handler has been initialized
+        if (commandHandler == null) {
+            getLogger().severe("AuthMe command handler is not available");
+            return false;
         }
-        return realIP;
+
+        // Handle the command
+        return commandHandler.processCommand(sender, commandLabel, args);
     }
 
-    public void setupDatabase() {
-        /*
-         * Backend MYSQL - FILE - SQLITE
-         */
-        switch (Settings.getDataSource) {
-            case FILE:
-                database = new FlatFile();
-                final int a = database.getAccountsRegistered();
-                if (a >= 1000)
-                    ConsoleLogger.showError("YOU'RE USING FILE DATABASE WITH " + a + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
-                break;
-            case MYSQL:
-                database = new MySQL();
-                break;
-            case SQLITE:
-                database = new SQLite();
-                final int b = database.getAccountsRegistered();
-                if (b >= 2000)
-                    ConsoleLogger.showError("YOU'RE USING SQLITE DATABASE WITH " + b + "+ ACCOUNTS, FOR BETTER PERFORMANCES, PLEASE USE MYSQL!!");
-                break;
-        }
-
-        if (Settings.isCachingEnabled) {
-            database = new CacheDataSource(this, database);
-        }
-
-        database = new DatabaseCalls(this, database);
+    /**
+     * Get the permissions manager instance.
+     *
+     * @return Permissions Manager instance.
+     */
+    public PermissionsManager getPermissionsManager() {
+        return this.permsMan;
     }
+
+    /**
+     * Return the management instance.
+     *
+     * @return management The Management
+     */
+    public Management getManagement() {
+        return management;
+    }
+
+    public DataSource getDataSource() {
+        return database;
+    }
+
+    public PasswordSecurity getPasswordSecurity() {
+        return passwordSecurity;
+    }
+
+    public PluginHooks getPluginHooks() {
+        return pluginHooks;
+    }
+
 }

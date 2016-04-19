@@ -1,76 +1,81 @@
 package fr.xephi.authme.converter;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.datasource.DataSource;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
+import static fr.xephi.authme.util.StringUtils.makePath;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.datasource.DataSource;
+class vAuthFileReader {
 
-public class vAuthFileReader {
+    private final AuthMe plugin;
+    private final DataSource database;
 
-    public AuthMe plugin;
-    public DataSource database;
-    public CommandSender sender;
-
-    public vAuthFileReader(AuthMe plugin, CommandSender sender) {
+    /**
+     * Constructor for vAuthFileReader.
+     *
+     * @param plugin AuthMe
+     */
+    public vAuthFileReader(AuthMe plugin) {
         this.plugin = plugin;
-        this.database = plugin.database;
-        this.sender = sender;
+        this.database = plugin.getDataSource();
     }
 
-    public void convert() throws IOException {
-        final File file = new File(plugin.getDataFolder().getParent() + "" + File.separator + "vAuth" + File.separator + "passwords.yml");
-        Scanner scanner = null;
+    public void convert() {
+        final File file = new File(plugin.getDataFolder().getParent(), makePath("vAuth", "passwords.yml"));
+        Scanner scanner;
         try {
             scanner = new Scanner(file);
             while (scanner.hasNextLine()) {
                 String line = scanner.nextLine();
                 String name = line.split(": ")[0];
                 String password = line.split(": ")[1];
-                PlayerAuth auth = null;
-                if (isUUIDinstance(password)) {
-                    String pname = null;
+                PlayerAuth auth;
+                if (isUuidInstance(password)) {
+                    String pname;
                     try {
                         pname = Bukkit.getOfflinePlayer(UUID.fromString(name)).getName();
-                    } catch (Exception e) {
-                        pname = getName(UUID.fromString(name));
-                    } catch (NoSuchMethodError e) {
+                    } catch (Exception | NoSuchMethodError e) {
                         pname = getName(UUID.fromString(name));
                     }
                     if (pname == null)
                         continue;
-                    auth = new PlayerAuth(pname.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com");
+                    auth = PlayerAuth.builder()
+                        .name(pname.toLowerCase())
+                        .realName(pname)
+                        .password(password, null).build();
                 } else {
-                    auth = new PlayerAuth(name.toLowerCase(), password, "127.0.0.1", System.currentTimeMillis(), "your@email.com");
+                    auth = PlayerAuth.builder()
+                        .name(name.toLowerCase())
+                        .realName(name)
+                        .password(password, null).build();
                 }
-                if (auth != null)
-                    database.saveAuth(auth);
+                database.saveAuth(auth);
             }
-        } catch (Exception e) {
+            scanner.close();
+        } catch (IOException e) {
+            ConsoleLogger.logException("Error while trying to import some vAuth data", e);
         }
 
     }
 
-    private boolean isUUIDinstance(String s) {
-        if (String.valueOf(s.charAt(8)).equalsIgnoreCase("-"))
-            return true;
-        return true;
+    private static boolean isUuidInstance(String s) {
+        return s.length() > 8 && s.charAt(8) == '-';
     }
 
     private String getName(UUID uuid) {
-        try {
-            for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
-                if (op.getUniqueId().compareTo(uuid) == 0)
-                    return op.getName();
+        for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
+            if (op.getUniqueId().compareTo(uuid) == 0) {
+                return op.getName();
             }
-        } catch (Exception e) {
         }
         return null;
     }

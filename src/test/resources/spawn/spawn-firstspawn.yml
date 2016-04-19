@@ -1,0 +1,15 @@
+# Sample spawn.yml file with both spawn and firstspawn defined
+spawn:
+  world: 'world'
+  x: 300.12
+  y: 120.34
+  z: -89.12
+  yaw: 0.23
+  pitch: 112.25
+firstspawn:
+  world: 'firstspawn'
+  x: -30.12
+  y: 204.43
+  z: 10.32
+  yaw: 0.00
+  pitch: 10.23

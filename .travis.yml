@@ -8,7 +8,8 @@ cache:
     - '$HOME/.m2/repository'
 
 script:
-  - mvn clean install -B && mvn clean -B
+  - mvn dependency:purge-local-repository -DactTransitively=false -DreResolve=false
+  - mvn clean install -B -U
 
 notifications:
   webhooks:

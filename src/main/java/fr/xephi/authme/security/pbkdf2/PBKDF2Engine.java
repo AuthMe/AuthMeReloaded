@@ -8,20 +8,17 @@ import java.security.SecureRandom;
 /**
  * <p>
  * Request for Comments: 2898 PKCS #5: Password-Based Cryptography Specification
- * <p>
+ * </p><p>
  * Version 2.0
- * 
+ * </p>
  * <p>
  * PBKDF2 (P, S, c, dkLen)
- * 
- * <p>
+ * </p>
  * Options:
  * <ul>
  * <li>PRF underlying pseudorandom function (hLen denotes the length in octets
  * of the pseudorandom function output). PRF is pluggable.</li>
  * </ul>
- * 
- * <p>
  * Input:
  * <ul>
  * <li>P password, an octet string</li>
@@ -30,14 +27,10 @@ import java.security.SecureRandom;
  * <li>dkLen intended length in octets of the derived key, a positive integer,
  * at most (2^32 - 1) * hLen</li>
  * </ul>
- * 
- * <p>
  * Output:
  * <ul>
  * <li>DK derived key, a dkLen-octet string</li>
  * </ul>
- * 
- * <hr />
  * <p>
  * A free Java implementation of Password Based Key Derivation Function 2 as
  * defined by RFC 2898. Copyright (c) 2007 Matthias G&auml;rtner
@@ -60,14 +53,14 @@ import java.security.SecureRandom;
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
  * </p>
  * <p>
- * For Details, see <a
- * href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html"
- * >http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
+ * For Details, see
+ * <a href="http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html" >http://www.
+ * gnu.org/licenses/old-licenses/lgpl-2.1.html</a>.
  * </p>
- * 
- * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898</a>
+ *
  * @author Matthias G&auml;rtner
  * @version 1.0
+ * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898</a>
  */
 public class PBKDF2Engine implements PBKDF2 {
 
@@ -88,9 +81,8 @@ public class PBKDF2Engine implements PBKDF2 {
      * Constructor for PBKDF2 implementation object. PBKDF2 parameters are
      * passed so that this implementation knows iteration count, method to use
      * and String encoding.
-     * 
-     * @param parameters
-     *            Data holder for iteration count, method to use et cetera.
+     *
+     * @param parameters Data holder for iteration count, method to use et cetera.
      */
     public PBKDF2Engine(PBKDF2Parameters parameters) {
         this.parameters = parameters;
@@ -101,24 +93,75 @@ public class PBKDF2Engine implements PBKDF2 {
      * Constructor for PBKDF2 implementation object. PBKDF2 parameters are
      * passed so that this implementation knows iteration count, method to use
      * and String encoding.
-     * 
-     * @param parameters
-     *            Data holder for iteration count, method to use et cetera.
-     * @param prf
-     *            Supply customer Pseudo Random Function.
+     *
+     * @param parameters Data holder for iteration count, method to use et cetera.
+     * @param prf        Supply customer Pseudo Random Function.
      */
     public PBKDF2Engine(PBKDF2Parameters parameters, PRF prf) {
         this.parameters = parameters;
         this.prf = prf;
     }
 
+    /**
+     * Convenience client function. Convert supplied password with random 8-byte
+     * salt and 1000 iterations using HMacSHA1. Assume that password is in
+     * ISO-8559-1 encoding. Output result as
+     * &quot;Salt:iteration-count:PBKDF2&quot; with binary data in hexadecimal
+     * encoding.
+     * <p>
+     * Example: Password &quot;password&quot; (without the quotes) leads to
+     * 48290A0B96C426C3:1000:973899B1D4AFEB3ED371060D0797E0EE0142BD04
+     * </p>
+     * @param args Supply the password as argument.
+     *
+     * @throws IOException an ioexception occured
+     * @throws NoSuchAlgorithmException a NoSuchAlgorithmException occured
+     */
+    public static void main(String[] args)
+        throws IOException, NoSuchAlgorithmException {
+        String password = "password";
+        String candidate = null;
+        PBKDF2Formatter formatter = new PBKDF2HexFormatter();
+
+        if (args.length >= 1) {
+            password = args[0];
+        }
+        if (args.length >= 2) {
+            candidate = args[1];
+        }
+        if (candidate == null) {
+            // Creation mode
+            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+            byte[] salt = new byte[8];
+            sr.nextBytes(salt);
+            int iterations = 1000;
+            PBKDF2Parameters p = new PBKDF2Parameters("HmacSHA1", "ISO-8859-1", salt, iterations);
+            PBKDF2Engine e = new PBKDF2Engine(p);
+            p.setDerivedKey(e.deriveKey(password));
+            candidate = formatter.toString(p);
+        } else {
+            // Verification mode
+            PBKDF2Parameters p = new PBKDF2Parameters();
+            p.setHashAlgorithm("HmacSHA1");
+            p.setHashCharset("ISO-8859-1");
+            if (formatter.fromString(p, candidate)) {
+                throw new IllegalArgumentException("Candidate data does not have correct format (\"" + candidate + "\")");
+            }
+            PBKDF2Engine e = new PBKDF2Engine(p);
+            boolean verifyOK = e.verifyKey(password);
+            System.exit(verifyOK ? 0 : 1);
+        }
+    }
+
+    @Override
     public byte[] deriveKey(String inputPassword) {
         return deriveKey(inputPassword, 0);
     }
 
+    @Override
     public byte[] deriveKey(String inputPassword, int dkLen) {
         byte[] r = null;
-        byte P[] = null;
+        byte[] P = null;
         String charset = parameters.getHashCharset();
         if (inputPassword == null) {
             inputPassword = "";
@@ -140,6 +183,7 @@ public class PBKDF2Engine implements PBKDF2 {
         return r;
     }
 
+    @Override
     public boolean verifyKey(String inputPassword) {
         byte[] referenceKey = getParameters().getDerivedKey();
         if (referenceKey == null || referenceKey.length == 0) {
@@ -161,9 +205,8 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Factory method. Default implementation is (H)MAC-based. To be overridden
      * in derived classes.
-     * 
-     * @param P
-     *            User-supplied candidate password as array of bytes.
+     *
+     * @param P User-supplied candidate password as array of bytes.
      */
     protected void assertPRF(byte[] P) {
         if (prf == null) {
@@ -172,23 +215,25 @@ public class PBKDF2Engine implements PBKDF2 {
         prf.init(P);
     }
 
+    @Override
     public PRF getPseudoRandomFunction() {
         return prf;
     }
 
+    @Override
+    public void setPseudoRandomFunction(PRF prf) {
+        this.prf = prf;
+    }
+
     /**
      * Core Password Based Key Derivation Function 2.
-     * 
-     * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2</a>
-     * @param prf
-     *            Pseudo Random Function (i.e. HmacSHA1)
-     * @param S
-     *            Salt as array of bytes. <code>null</code> means no salt.
-     * @param c
-     *            Iteration count (see RFC 2898 4.2)
-     * @param dkLen
-     *            desired length of derived key.
-     * @return internal byte array
+     *
+     * @param prf   Pseudo Random Function (i.e. HmacSHA1)
+     * @param S     Salt as array of bytes. <code>null</code> means no salt.
+     * @param c     Iteration count (see RFC 2898 4.2)
+     * @param dkLen desired length of derived key.
+     *
+     * @return internal byte array * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2</a>
      */
     protected byte[] PBKDF2(PRF prf, byte[] S, int c, int dkLen) {
         if (S == null) {
@@ -214,12 +259,12 @@ public class PBKDF2Engine implements PBKDF2 {
 
     /**
      * Integer division with ceiling function.
-     * 
-     * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
-     *      2.</a>
-     * @param a
-     * @param b
-     * @return ceil(a/b)
+     *
+     * @param a Integer
+     * @param b Integer
+     *
+     * @return ceil(a/b) * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
+     * 2.</a>
      */
     protected int ceil(int a, int b) {
         int m = 0;
@@ -231,23 +276,19 @@ public class PBKDF2Engine implements PBKDF2 {
 
     /**
      * Function F.
-     * 
+     *
+     * @param dest       Destination byte buffer
+     * @param offset     Offset into destination byte buffer
+     * @param prf        Pseudo Random Function
+     * @param S          Salt as array of bytes
+     * @param c          Iteration count
+     * @param blockIndex Integer
+     *
      * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
-     *      3.</a>
-     * @param dest
-     *            Destination byte buffer
-     * @param offset
-     *            Offset into destination byte buffer
-     * @param prf
-     *            Pseudo Random Function
-     * @param S
-     *            Salt as array of bytes
-     * @param c
-     *            Iteration count
-     * @param blockIndex
+     * 3.</a>
      */
     protected void _F(byte[] dest, int offset, PRF prf, byte[] S, int c,
-            int blockIndex) {
+                      int blockIndex) {
         int hLen = prf.getHLen();
         byte U_r[] = new byte[hLen];
 
@@ -266,9 +307,9 @@ public class PBKDF2Engine implements PBKDF2 {
     /**
      * Block-Xor. Xor source bytes into destination byte buffer. Destination
      * buffer must be same length or less than source buffer.
-     * 
-     * @param dest
-     * @param src
+     *
+     * @param dest byte array
+     * @param src byte array
      */
     protected void xor(byte[] dest, byte[] src) {
         for (int i = 0; i < dest.length; i++) {
@@ -278,82 +319,28 @@ public class PBKDF2Engine implements PBKDF2 {
 
     /**
      * Four-octet encoding of the integer i, most significant octet first.
-     * 
+     *
+     * @param dest byte array
+     * @param offset Integer
+     * @param i Integer
+     *
      * @see <a href="http://tools.ietf.org/html/rfc2898">RFC 2898 5.2 Step
-     *      3.</a>
-     * @param dest
-     * @param offset
-     * @param i
+     * 3.</a>
      */
     protected void INT(byte[] dest, int offset, int i) {
-        dest[offset + 0] = (byte) (i / (256 * 256 * 256));
+        dest[offset] = (byte) (i / (256 * 256 * 256));
         dest[offset + 1] = (byte) (i / (256 * 256));
         dest[offset + 2] = (byte) (i / (256));
         dest[offset + 3] = (byte) (i);
     }
 
+    @Override
     public PBKDF2Parameters getParameters() {
         return parameters;
     }
 
+    @Override
     public void setParameters(PBKDF2Parameters parameters) {
         this.parameters = parameters;
-    }
-
-    public void setPseudoRandomFunction(PRF prf) {
-        this.prf = prf;
-    }
-
-    /**
-     * Convenience client function. Convert supplied password with random 8-byte
-     * salt and 1000 iterations using HMacSHA1. Assume that password is in
-     * ISO-8559-1 encoding. Output result as
-     * &quot;Salt:iteration-count:PBKDF2&quot; with binary data in hexadecimal
-     * encoding.
-     * 
-     * Example: Password &quot;password&quot; (without the quotes) leads to
-     * 48290A0B96C426C3:1000:973899B1D4AFEB3ED371060D0797E0EE0142BD04
-     * 
-     * @param args
-     *            Supply the password as argument.
-     * @throws IOException
-     * @throws NoSuchAlgorithmException
-     */
-    public static void main(String[] args) throws IOException,
-            NoSuchAlgorithmException {
-        String password = "password";
-        String candidate = null;
-        PBKDF2Formatter formatter = new PBKDF2HexFormatter();
-
-        if (args.length >= 1) {
-            password = args[0];
-        }
-        if (args.length >= 2) {
-            candidate = args[1];
-        }
-        if (candidate == null) {
-            // Creation mode
-            SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
-            byte[] salt = new byte[8];
-            sr.nextBytes(salt);
-            int iterations = 1000;
-            PBKDF2Parameters p = new PBKDF2Parameters("HmacSHA1", "ISO-8859-1", salt, iterations);
-            PBKDF2Engine e = new PBKDF2Engine(p);
-            p.setDerivedKey(e.deriveKey(password));
-            candidate = formatter.toString(p);
-            System.out.println(candidate);
-        } else {
-            // Verification mode
-            PBKDF2Parameters p = new PBKDF2Parameters();
-            p.setHashAlgorithm("HmacSHA1");
-            p.setHashCharset("ISO-8859-1");
-            if (formatter.fromString(p, candidate)) {
-                throw new IllegalArgumentException("Candidate data does not have correct format (\"" + candidate + "\")");
-            }
-            PBKDF2Engine e = new PBKDF2Engine(p);
-            boolean verifyOK = e.verifyKey(password);
-            System.out.println(verifyOK ? "OK" : "FAIL");
-            System.exit(verifyOK ? 0 : 1);
-        }
     }
 }

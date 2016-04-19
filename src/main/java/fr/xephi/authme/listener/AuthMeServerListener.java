@@ -1,5 +1,13 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SpawnLoader;
+import fr.xephi.authme.util.GeoLiteAPI;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -7,87 +15,86 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
-
+/**
+ */
 public class AuthMeServerListener implements Listener {
 
-    public AuthMe plugin;
-    private Messages m = Messages.getInstance();
+    private final AuthMe plugin;
+    private final Messages messages;
+    private final PluginHooks pluginHooks;
+    private final SpawnLoader spawnLoader;
 
-    public AuthMeServerListener(AuthMe plugin) {
+    public AuthMeServerListener(AuthMe plugin, Messages messages, PluginHooks pluginHooks, SpawnLoader spawnLoader) {
         this.plugin = plugin;
+        this.messages = messages;
+        this.pluginHooks = pluginHooks;
+        this.spawnLoader = spawnLoader;
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
-        if (!Settings.enableProtection)
-            return;
-        if (Settings.countries.isEmpty())
-            return;
-        if (!Settings.countriesBlacklist.isEmpty()) {
-            if (Settings.countriesBlacklist.contains(plugin.getCountryCode(event.getAddress().getHostAddress())))
-                event.setMotd(m.send("country_banned")[0]);
-        }
-        if (Settings.countries.contains(plugin.getCountryCode(event.getAddress().getHostAddress()))) {
-            event.setMotd(plugin.getServer().getMotd());
-        } else {
-            event.setMotd(m.send("country_banned")[0]);
+        if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()){
+            String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
+            if( Settings.countriesBlacklist.contains(countryCode)) {
+                event.setMotd(messages.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
+            }
+            if (Settings.enableProtection && !Settings.countries.contains(countryCode)) {
+                event.setMotd(messages.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+            }
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginDisable(PluginDisableEvent event) {
-        String pluginName = event.getPlugin().getName();
-        if (pluginName.equalsIgnoreCase("Essentials")) {
-            plugin.ess = null;
-            ConsoleLogger.info("Essentials has been disabled, unhook!");
+        // Make sure the plugin instance isn't null
+        if (event.getPlugin() == null) {
             return;
         }
-        if (pluginName.equalsIgnoreCase("EssentialsSpawn")) {
-            plugin.essentialsSpawn = null;
-            ConsoleLogger.info("EssentialsSpawn has been disabled, unhook!");
-            return;
+
+        final String pluginName = event.getPlugin().getName();
+        if ("Essentials".equalsIgnoreCase(pluginName)) {
+            pluginHooks.unhookEssentials();
+            ConsoleLogger.info("Essentials has been disabled: unhooking");
+        } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
+            pluginHooks.unhookMultiverse();
+            ConsoleLogger.info("Multiverse-Core has been disabled: unhooking");
+        } else if ("CombatTagPlus".equalsIgnoreCase(pluginName)) {
+            pluginHooks.unhookCombatPlus();
+            ConsoleLogger.info("CombatTagPlus has been disabled: unhooking");
+        } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
+            spawnLoader.unloadEssentialsSpawn();
+            ConsoleLogger.info("EssentialsSpawn has been disabled: unhooking");
         }
-        if (pluginName.equalsIgnoreCase("Multiverse-Core")) {
-            plugin.multiverse = null;
-            ConsoleLogger.info("Multiverse-Core has been disabled, unhook!");
-            return;
-        }
-        if (pluginName.equalsIgnoreCase("ChestShop")) {
-            plugin.ChestShop = 0;
-            ConsoleLogger.info("ChestShop has been disabled, unhook!");
-        }
-        if (pluginName.equalsIgnoreCase("CombatTag")) {
-            plugin.CombatTag = false;
-            ConsoleLogger.info("CombatTag has been disabled, unhook!");
-        }
-        if (pluginName.equalsIgnoreCase("Citizens")) {
-            plugin.isCitizensActive = false;
-            ConsoleLogger.info("Citizens has been disabled, unhook!");
-        }
-        if (pluginName.equalsIgnoreCase("Vault")) {
-            plugin.permission = null;
-            ConsoleLogger.showError("Vault has been disabled, unhook permissions!");
+
+        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+            plugin.inventoryProtector = null;
+            plugin.tablistHider = null;
+            plugin.tabComplete = null;
+            ConsoleLogger.showError("ProtocolLib has been disabled, unhook packet inventory protection!");
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPluginEnable(PluginEnableEvent event) {
-        String pluginName = event.getPlugin().getName();
-        if (pluginName.equalsIgnoreCase("Essentials") || pluginName.equalsIgnoreCase("EssentialsSpawn"))
-            plugin.checkEssentials();
-        if (pluginName.equalsIgnoreCase("Multiverse-Core"))
-            plugin.checkMultiverse();
-        if (pluginName.equalsIgnoreCase("ChestShop"))
-            plugin.checkChestShop();
-        if (pluginName.equalsIgnoreCase("CombatTag"))
-            plugin.combatTag();
-        if (pluginName.equalsIgnoreCase("Citizens"))
-            plugin.citizensVersion();
-        if (pluginName.equalsIgnoreCase("Vault"))
-            plugin.checkVault();
+        // Make sure the plugin instance isn't null
+        if (event.getPlugin() == null) {
+            return;
+        }
+
+        final String pluginName = event.getPlugin().getName();
+        if ("Essentials".equalsIgnoreCase(pluginName)) {
+            pluginHooks.tryHookToEssentials();
+        } else if ("Multiverse-Core".equalsIgnoreCase(pluginName)) {
+            pluginHooks.tryHookToMultiverse();
+        } else if ("CombatTagPlus".equalsIgnoreCase(pluginName)) {
+            pluginHooks.tryHookToCombatPlus();
+        } else if ("EssentialsSpawn".equalsIgnoreCase(pluginName)) {
+            spawnLoader.loadEssentialsSpawn();
+        }
+
+        if (pluginName.equalsIgnoreCase("ProtocolLib")) {
+            plugin.checkProtocolLib();
+        }
     }
 }

@@ -1,33 +1,43 @@
 package fr.xephi.authme.listener;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.PatternSyntaxException;
-
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import fr.xephi.authme.AntiBot;
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.permission.PlayerStatePermission;
+import fr.xephi.authme.process.Management;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.util.GeoLiteAPI;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerGameModeChangeEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerLoginEvent;
@@ -35,846 +45,486 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.limbo.LimboCache;
-import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
-import fr.xephi.authme.settings.Messages;
-import fr.xephi.authme.settings.Settings;
+import java.util.concurrent.ConcurrentHashMap;
 
+import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
+
+/**
+ * Listener class for player's events
+ */
 public class AuthMePlayerListener implements Listener {
 
-    public static ConcurrentHashMap<String, GameMode> gameMode = new ConcurrentHashMap<String, GameMode>();
-    public static ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<String, String>();
-    private Messages m = Messages.getInstance();
-    public AuthMe plugin;
-    public static ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<String, Boolean>();
-    private List<String> antibot = new ArrayList<String>();
+    public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
+    private final AuthMe plugin;
+    private final Messages m;
+    private final DataSource dataSource;
+    private final AntiBot antiBot;
+    private final Management management;
 
-    public AuthMePlayerListener(AuthMe plugin) {
+    public AuthMePlayerListener(AuthMe plugin, Messages messages, DataSource dataSource, AntiBot antiBot,
+                                Management management) {
         this.plugin = plugin;
+        this.m = messages;
+        this.dataSource = dataSource;
+        this.antiBot = antiBot;
+        this.management = management;
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null)
+    private void handleChat(AsyncPlayerChatEvent event) {
+        if (Settings.isChatAllowed) {
             return;
+        }
+
+        final Player player = event.getPlayer();
+        if (Utils.checkAuth(player)) {
+            for (Player p : Utils.getOnlinePlayers()) {
+                if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
+                    event.getRecipients().remove(p); // TODO: it should be configurable
+                }
+            }
+            return;
+        }
+
+        event.setCancelled(true);
+        sendLoginOrRegisterMessage(player);
+    }
+
+    private void sendLoginOrRegisterMessage(final Player player) {
+        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+            @Override
+            public void run() {
+                if (dataSource.isAuthAvailable(player.getName().toLowerCase())) {
+                    m.send(player, MessageKey.LOGIN_MESSAGE);
+                } else {
+                    if (Settings.emailRegistration) {
+                        m.send(player, MessageKey.REGISTER_EMAIL_MESSAGE);
+                    } else {
+                        m.send(player, MessageKey.REGISTER_MESSAGE);
+                    }
+                }
+            }
+        });
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
+        String cmd = event.getMessage().split(" ")[0].toLowerCase();
+        if (Settings.useEssentialsMotd && cmd.equals("/motd")) {
+            return;
+        }
+        if (!Settings.isForcedRegistrationEnabled && Settings.allowAllCommandsIfRegIsOptional) {
+            return;
+        }
+        if (Settings.allowCommands.contains(cmd)) {
+            return;
+        }
+        if (Utils.checkAuth(event.getPlayer())) {
+            return;
+        }
+        event.setCancelled(true);
+        sendLoginOrRegisterMessage(event.getPlayer());
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
+    public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
+        handleChat(event);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
+    public void onPlayerHighChat(AsyncPlayerChatEvent event) {
+        handleChat(event);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
+        handleChat(event);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerEarlyChat(AsyncPlayerChatEvent event) {
+        handleChat(event);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onPlayerLowChat(AsyncPlayerChatEvent event) {
+        handleChat(event);
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0) {
+            return;
+        }
+
+        if (event.getFrom().getBlockX() == event.getTo().getBlockX()
+            && event.getFrom().getBlockY() == event.getTo().getBlockY()
+            && event.getFrom().getBlockZ() == event.getTo().getBlockZ()) {
+            return;
+        }
 
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        if (!plugin.database.isAuthAvailable(name))
-            if (!Settings.isForcedRegistrationEnabled)
-                return;
-
-        String msg = event.getMessage();
-        if (msg.equalsIgnoreCase("/worldedit cui"))
-            return;
-
-        String cmd = msg.split(" ")[0];
-        if (cmd.equalsIgnoreCase("/login") || cmd.equalsIgnoreCase("/register") || cmd.equalsIgnoreCase("/passpartu") || cmd.equalsIgnoreCase("/l") || cmd.equalsIgnoreCase("/reg") || cmd.equalsIgnoreCase("/email") || cmd.equalsIgnoreCase("/captcha"))
-            return;
-        if (Settings.useEssentialsMotd && cmd.equalsIgnoreCase("/motd"))
-            return;
-        if (Settings.allowCommands.contains(cmd))
-            return;
-
-        event.setMessage("/notloggedin");
-        event.setCancelled(true);
-    }
-
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
+        if (Utils.checkAuth(player)) {
             return;
         }
-    }
 
-    @EventHandler(priority = EventPriority.HIGH)
-    public void onPlayerHighChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
+        if (!Settings.isMovementAllowed) {
+            event.setTo(event.getFrom());
+            if (Settings.isRemoveSpeedEnabled) {
+                player.setFlySpeed(0.0f);
+                player.setWalkSpeed(0.0f);
             }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
-            }
+            return;
         }
 
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
+        if (Settings.noTeleport) {
             return;
         }
-    }
 
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
+        Location spawn = plugin.getSpawnLocation(player);
+        if (spawn != null && spawn.getWorld() != null) {
+            if (!player.getWorld().equals(spawn.getWorld())) {
+                player.teleport(spawn);
                 return;
             }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
+            if (spawn.distance(player.getLocation()) > Settings.getMovementRadius) {
+                player.teleport(spawn);
             }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
-            return;
         }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null)
-            return;
-
+    public void onJoinMessage(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
-            return;
-        }
-    }
-
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerEarlyChat(final AsyncPlayerChatEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null)
-            return;
-
-        final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+        if (player == null) {
             return;
         }
 
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-                return;
-            } else {
-                m.send(player, "reg_msg");
-                return;
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
+        if (Settings.removeJoinMessage) {
+            event.setJoinMessage(null);
             return;
         }
+        if (!Settings.delayJoinMessage) {
+            return;
+        }
+
+        String name = player.getName().toLowerCase();
+        String joinMsg = event.getJoinMessage();
+
+        // Remove the join message while the player isn't logging in
+        if (joinMsg == null) {
+            return;
+        }
+        event.setJoinMessage(null);
+        joinMessage.put(name, joinMsg);
     }
 
     @EventHandler(priority = EventPriority.LOW)
-    public void onPlayerLowChat(AsyncPlayerChatEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null)
-            return;
-
+    public void onPlayerJoin(PlayerJoinEvent event) {
         final Player player = event.getPlayer();
-        final String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        String cmd = event.getMessage().split(" ")[0];
-
-        if (plugin.database.isAuthAvailable(name)) {
-            m.send(player, "login_msg");
-        } else {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-            if (Settings.emailRegistration) {
-                m.send(player, "reg_email_msg");
-            } else {
-                m.send(player, "reg_msg");
-            }
-        }
-
-        if (!Settings.isChatAllowed && !(Settings.allowCommands.contains(cmd))) {
-            event.setCancelled(true);
-            return;
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
+        if (player == null) {
             return;
         }
 
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
-            return;
+        if (Settings.isForceSurvivalModeEnabled
+            && !player.hasPermission(PlayerStatePermission.BYPASS_FORCE_SURVIVAL.getNode())) {
+            player.setGameMode(GameMode.SURVIVAL);
         }
 
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        if (!Settings.isForcedRegistrationEnabled) {
-            if (!plugin.database.isAuthAvailable(name))
-                return;
-        }
-
-        if (!Settings.isMovementAllowed) {
-            if (!event.getFrom().getBlock().equals(event.getTo().getBlock()))
-                event.setTo(event.getFrom());
-            return;
-        }
-
-        if (Settings.getMovementRadius == 0) {
-            return;
-        }
-
-        int radius = Settings.getMovementRadius;
-        Location spawn = plugin.getSpawnLocation(player);
-
-        if (spawn != null && spawn.getWorld() != null) {
-            if (!event.getPlayer().getWorld().equals(spawn.getWorld())) {
-                event.getPlayer().teleport(spawn);
-                return;
-            }
-            if ((spawn.distance(player.getLocation()) > radius)) {
-                event.getPlayer().teleport(spawn);
-                return;
-            }
-        }
-    }
-
-    private void checkAntiBotMod(final Player player) {
-        if (plugin.delayedAntiBot || plugin.antibotMod)
-            return;
-        if (plugin.authmePermissible(player, "authme.bypassantibot"))
-            return;
-        if (antibot.size() > Settings.antiBotSensibility) {
-            plugin.switchAntiBotMod(true);
-            for (String s : m.send("antibot_auto_enabled"))
-                Bukkit.broadcastMessage(s);
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    if (plugin.antibotMod) {
-                        plugin.switchAntiBotMod(false);
-                        antibot.clear();
-                        for (String s : m.send("antibot_auto_disabled"))
-                            Bukkit.broadcastMessage(s.replace("%m", "" + Settings.antiBotDuration));
-                    }
-                }
-            }, Settings.antiBotDuration * 1200);
-            return;
-        }
-        antibot.add(player.getName().toLowerCase());
-        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
+        // Shedule login task so works after the prelogin
+        // (Fix found by Koolaid5000)
+        Bukkit.getScheduler().runTask(plugin, new Runnable() {
             @Override
             public void run() {
-                antibot.remove(player.getName().toLowerCase());
+                management.performJoin(player);
             }
-        }, 300);
+        });
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPreLogin(AsyncPlayerPreLoginEvent event) {
+        PlayerAuth auth = dataSource.getAuth(event.getName());
+        if (Settings.preventOtherCase && auth != null && auth.getRealName() != null) {
+            String realName = auth.getRealName();
+            if (!realName.isEmpty() && !realName.equals("Player") && !realName.equals(event.getName())) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CASE, realName, event.getName()));
+                return;
+            }
+            if (realName.isEmpty() || realName.equals("Player")) {
+                dataSource.updateRealName(event.getName().toLowerCase(), event.getName());
+            }
+        }
+
+        if (auth == null) {
+            if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()) {
+                String playerIP = event.getAddress().getHostAddress();
+                String countryCode = GeoLiteAPI.getCountryCode(playerIP);
+                if (Settings.countriesBlacklist.contains(countryCode)) {
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                    event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                    return;
+                }
+                if (Settings.enableProtection && !Settings.countries.contains(countryCode)) {
+                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                    event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                    return;
+                }
+            }
+        }
+
+        final String name = event.getName().toLowerCase();
+        final Player player = Utils.getPlayer(name);
+        // Check if forceSingleSession is set to true, so kick player that has
+        // joined with same nick of online player
+        if (player != null && Settings.isForceSingleSessionEnabled) {
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            event.setKickMessage(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR));
+            LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+            if (limbo != null && PlayerCache.getInstance().isAuthenticated(name)) {
+                Utils.addNormal(player, limbo.getGroup());
+                LimboCache.getInstance().deleteLimboPlayer(name);
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerLogin(PlayerLoginEvent event) {
         final Player player = event.getPlayer();
-        if (player == null)
-            return;
-        final String name = player.getName().toLowerCase();
-        boolean isAuthAvailable = plugin.database.isAuthAvailable(name);
-
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
+        if (player == null || Utils.isUnrestricted(player)) {
             return;
         }
 
-        if (Settings.enablePasspartu && !Settings.countriesBlacklist.isEmpty()) {
-            String code = plugin.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || (Settings.countriesBlacklist.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
-                event.setKickMessage(m.send("country_banned")[0]);
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
-        if (Settings.enableProtection && !Settings.countries.isEmpty()) {
-            String code = plugin.getCountryCode(event.getAddress().getHostAddress());
-            if (((code == null) || (!Settings.countries.contains(code) && !isAuthAvailable)) && !plugin.authmePermissible(player, "authme.bypassantibot")) {
-                event.setKickMessage(m.send("country_banned")[0]);
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
+        // Get the permissions manager
+        PermissionsManager permsMan = plugin.getPermissionsManager();
 
-        if (Settings.isKickNonRegisteredEnabled) {
-            if (!plugin.database.isAuthAvailable(name)) {
-                event.setKickMessage(m.send("reg_only")[0]);
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-        }
-
-        if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
-            event.setKickMessage(m.send("same_nick")[0]);
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
-        }
-
-        // Check if forceSingleSession is set to true, so kick player that has
-        // joined with same nick of online player
-        if (player.isOnline() && Settings.isForceSingleSessionEnabled) {
-            event.setKickMessage(m.send("same_nick")[0]);
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-                @Override
-                public void run() {
-                    LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(player.getName().toLowerCase());
-                    if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-                        Utils.getInstance().addNormal(player, limbo.getGroup());
-                        LimboCache.getInstance().deleteLimboPlayer(player.getName().toLowerCase());
+        if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
+            if (permsMan.hasPermission(player, PlayerStatePermission.IS_VIP)) {
+                int playersOnline = Utils.getOnlinePlayers().size();
+                if (playersOnline > plugin.getServer().getMaxPlayers()) {
+                    event.allow();
+                } else {
+                    Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
+                    if (pl != null) {
+                        pl.kickPlayer(m.retrieveSingle(MessageKey.KICK_FOR_VIP));
+                        event.allow();
+                    } else {
+                        ConsoleLogger.info("The player " + event.getPlayer().getName() + " tried to join, but the server was full");
+                        event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
+                        event.setResult(PlayerLoginEvent.Result.KICK_FULL);
                     }
                 }
-
-            });
-            return;
-        }
-
-        int min = Settings.getMinNickLength;
-        int max = Settings.getMaxNickLength;
-        String regex = Settings.getNickRegex;
-
-        if (name.length() > max || name.length() < min) {
-
-            event.setKickMessage(m.send("name_len")[0]);
-            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            return;
-        }
-        try {
-            if (!player.getName().matches(regex) || name.equals("Player")) {
-                try {
-                    event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
-                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                } catch (Exception exc) {
-                    event.setKickMessage("allowed char : " + regex);
-                    event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                }
-                return;
-            }
-        } catch (PatternSyntaxException pse) {
-            if (regex == null || regex.isEmpty()) {
-                event.setKickMessage("Your nickname do not match");
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-                return;
-            }
-            try {
-                event.setKickMessage(m.send("regex")[0].replace("REG_EX", regex));
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            } catch (Exception exc) {
-                event.setKickMessage("allowed char : " + regex);
-                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
-            }
-            return;
-        }
-
-        if (event.getResult() == PlayerLoginEvent.Result.ALLOWED) {
-            checkAntiBotMod(player);
-            if (Settings.bungee) {
-                final ByteArrayOutputStream b = new ByteArrayOutputStream();
-                DataOutputStream out = new DataOutputStream(b);
-
-                try {
-                    out.writeUTF("IP");
-                } catch (IOException e) {
-                }
-                player.sendPluginMessage(plugin, "BungeeCord", b.toByteArray());
-            }
-            return;
-        }
-        if (event.getResult() != PlayerLoginEvent.Result.KICK_FULL)
-            return;
-        if (player.isBanned())
-            return;
-        if (!plugin.authmePermissible(player, "authme.vip")) {
-            event.setKickMessage(m.send("kick_fullserver")[0]);
-            event.setResult(PlayerLoginEvent.Result.KICK_FULL);
-            return;
-        }
-
-        int playersOnline = 0;
-        try {
-            if (Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).getReturnType() == Collection.class)
-                playersOnline = ((Collection<?>) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).size();
-            else playersOnline = ((Player[]) Bukkit.class.getMethod("getOnlinePlayers", new Class<?>[0]).invoke(null, new Object[0])).length;
-        } catch (NoSuchMethodException ex) {
-        } // can never happen
-        catch (InvocationTargetException ex) {
-        } // can also never happen
-        catch (IllegalAccessException ex) {
-        } // can still never happen
-        if (playersOnline > plugin.getServer().getMaxPlayers()) {
-            event.allow();
-            return;
-        } else {
-            final Player pl = plugin.generateKickPlayer(plugin.getServer().getOnlinePlayers());
-            if (pl != null) {
-                pl.kickPlayer(m.send("kick_forvip")[0]);
-                event.allow();
-                return;
             } else {
-                ConsoleLogger.info("The player " + player.getName() + " wants to join, but the server is full");
-                event.setKickMessage(m.send("kick_fullserver")[0]);
+                event.setKickMessage(m.retrieveSingle(MessageKey.KICK_FULL_SERVER));
                 event.setResult(PlayerLoginEvent.Result.KICK_FULL);
                 return;
             }
         }
+
+        if (event.getResult() != PlayerLoginEvent.Result.ALLOWED) {
+            return;
+        }
+
+        final String name = player.getName().toLowerCase();
+        boolean isAuthAvailable = dataSource.isAuthAvailable(name);
+
+        if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
+            if (Settings.antiBotInAction) {
+                event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            } else {
+                event.setKickMessage(m.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE));
+                event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+                return;
+            }
+        }
+
+        if (name.length() > Settings.getMaxNickLength || name.length() < Settings.getMinNickLength) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_LENGTH));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
+
+        if (!Settings.nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS).replace("REG_EX", Settings.getNickRegex));
+            event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            return;
+        }
+
+        antiBot.checkAntiBot(player);
+
+        if (Settings.bungee) {
+            ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            out.writeUTF("IP");
+            player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        if (event.getPlayer() == null) {
-            return;
-        }
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        plugin.management.performJoin(player);
-
-        // Remove the join message while the player isn't logging in
-        if (Settings.enableProtection || Settings.delayJoinMessage) {
-            joinMessage.put(name, event.getJoinMessage());
-            event.setJoinMessage(null);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (event.getPlayer() == null) {
+        Player player = event.getPlayer();
+
+        if (player == null) {
             return;
         }
 
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        plugin.management.performQuit(player, false);
-
-        if (plugin.database.getAuth(name) != null && !PlayerCache.getInstance().isAuthenticated(name) && Settings.enableProtection)
+        if (Settings.removeLeaveMessage) {
             event.setQuitMessage(null);
+        }
+
+        management.performQuit(player, false);
     }
 
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerKick(PlayerKickEvent event) {
-        if (event.getPlayer() == null) {
-            return;
-        }
-        if (event.isCancelled()) {
-            return;
-        }
-
         Player player = event.getPlayer();
 
-        if ((!Settings.isForceSingleSessionEnabled) && (event.getReason().contains(m.getString("same_nick")))) {
+        if (player == null) {
+            return;
+        }
+
+        if ((!Settings.isForceSingleSessionEnabled)
+            && (event.getReason().equals(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR)))) {
             event.setCancelled(true);
             return;
         }
 
-        plugin.management.performQuit(player, true);
+        plugin.getManagement().performQuit(player, true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    /*
+     * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+     * Note #360: npc status can be used to bypass security!!!
+     * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+     */
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player)) {
-            return;
-        }
-
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-
-        event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteract(PlayerInteractEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null)
-            return;
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player)) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-        if (event.getClickedBlock() != null && event.getClickedBlock().getType() != Material.AIR)
-            event.setUseInteractedBlock(org.bukkit.event.Event.Result.DENY);
-        event.setUseItemInHand(org.bukkit.event.Event.Result.DENY);
-        event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryOpen(InventoryOpenEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null)
-            return;
-        Player player = (Player) event.getPlayer();
-        String name = player.getName().toLowerCase();
+        final Player player = (Player) event.getPlayer();
 
-        if (Utils.getInstance().isUnrestricted(player)) {
+        if (!ListenerService.shouldCancelEvent(player)) {
             return;
-        }
-
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
         }
         event.setCancelled(true);
-        player.closeInventory();
+
+        /*
+         * @note little hack cause InventoryOpenEvent cannot be cancelled for
+         * real, cause no packet is send to server by client for the main inv
+         */
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            @Override
+            public void run() {
+                player.closeInventory();
+            }
+        }, 1);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
-        if (event.isCancelled() || event.getWhoClicked() == null)
+        if (event.getWhoClicked() == null)
             return;
         if (!(event.getWhoClicked() instanceof Player))
             return;
-        Player player = (Player) event.getWhoClicked();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player)) {
+        if (Utils.checkAuth((Player) event.getWhoClicked()))
             return;
-        }
-
-        if (plugin.getCitizensCommunicator().isNPC(player))
+        if (Utils.isNPC((Player) event.getWhoClicked()))
             return;
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-        event.setResult(org.bukkit.event.Event.Result.DENY);
         event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerHitPlayerEvent(EntityDamageByEntityEvent event) {
+        if (ListenerService.shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInteractEntity(PlayerInteractEntityEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (plugin.getCitizensCommunicator().isNPC(player) || Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-        event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerDropItem(PlayerDropItemEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player)) {
-            return;
-        }
-
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-        event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerBedEnter(PlayerBedEnterEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
-            return;
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
         }
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(player.getName().toLowerCase())) {
-            return;
-        }
-
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-        event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onSignChange(SignChangeEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null || event == null) {
-            return;
-        }
         Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-        if (Utils.getInstance().isUnrestricted(player)) {
-            return;
+        if (ListenerService.shouldCancelEvent(player)) {
+            event.setCancelled(true);
         }
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-        if (!plugin.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-        event.setCancelled(true);
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        if (event.getPlayer() == null || event == null) {
+        if (!shouldCancelEvent(event)) {
             return;
         }
 
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player))
-            return;
-
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        if (!plugin.database.isAuthAvailable(name))
-            if (!Settings.isForcedRegistrationEnabled)
-                return;
-
         Location spawn = plugin.getSpawnLocation(player);
-        if (Settings.isSaveQuitLocationEnabled && plugin.database.isAuthAvailable(name)) {
-            final PlayerAuth auth = new PlayerAuth(name, spawn.getX(), spawn.getY(), spawn.getZ(), spawn.getWorld().getName());
-            try {
-                plugin.database.updateQuitLoc(auth);
-            } catch (NullPointerException npe) {
-            }
+        if (Settings.isSaveQuitLocationEnabled && dataSource.isAuthAvailable(name)) {
+            PlayerAuth auth = PlayerAuth.builder()
+                .name(name)
+                .realName(player.getName())
+                .location(spawn)
+                .build();
+            dataSource.updateQuitLoc(auth);
         }
-        if (spawn != null && spawn.getWorld() != null)
+        if (spawn != null && spawn.getWorld() != null) {
             event.setRespawnLocation(spawn);
+        }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerGameModeChange(PlayerGameModeChangeEvent event) {
-        if (event.isCancelled())
-            return;
-        if (event.getPlayer() == null || event == null)
-            return;
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerShear(PlayerShearEntityEvent event) {
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
+    }
 
-        Player player = event.getPlayer();
-
-        if (plugin.authmePermissible(player, "authme.bypassforcesurvival"))
-            return;
-
-        String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player) || CombatTagComunicator.isNPC(player))
-            return;
-
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return;
-
-        if (PlayerCache.getInstance().isAuthenticated(name))
-            return;
-
-        if (!plugin.database.isAuthAvailable(name))
-            if (!Settings.isForcedRegistrationEnabled)
-                return;
-
-        if (causeByAuthMe.containsKey(name) && causeByAuthMe.get(name))
-            return;
-
-        event.setCancelled(true);
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
+    public void onPlayerFish(PlayerFishEvent event) {
+        if (shouldCancelEvent(event)) {
+            event.setCancelled(true);
+        }
     }
 }

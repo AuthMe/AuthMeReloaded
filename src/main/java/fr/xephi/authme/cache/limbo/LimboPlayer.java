@@ -1,114 +1,126 @@
 package fr.xephi.authme.cache.limbo;
 
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
+/**
+ * Represents a player which is not logged in and keeps track of certain states (like OP status, flying)
+ * which may be revoked from the player until he has logged in or registered.
+ */
 public class LimboPlayer {
 
-    private String name;
-    private ItemStack[] inventory;
-    private ItemStack[] armour;
+    private final String name;
+    private final boolean fly;
     private Location loc = null;
-    private BukkitTask timeoutTaskId = null;
-    private BukkitTask messageTaskId = null;
-    private GameMode gameMode = GameMode.SURVIVAL;
+    private BukkitTask timeoutTask = null;
+    private BukkitTask messageTask = null;
     private boolean operator = false;
-    private String group = "";
-    private boolean flying = false;
+    private String group;
 
-    public LimboPlayer(String name, Location loc, ItemStack[] inventory,
-            ItemStack[] armour, GameMode gameMode, boolean operator,
-            String group, boolean flying) {
+    public LimboPlayer(String name, Location loc, boolean operator,
+                       String group, boolean fly) {
         this.name = name;
         this.loc = loc;
-        this.inventory = inventory;
-        this.armour = armour;
-        this.gameMode = gameMode;
         this.operator = operator;
         this.group = group;
-        this.flying = flying;
+        this.fly = fly;
     }
 
-    public LimboPlayer(String name, Location loc, GameMode gameMode,
-            boolean operator, String group, boolean flying) {
-        this.name = name;
-        this.loc = loc;
-        this.gameMode = gameMode;
-        this.operator = operator;
-        this.group = group;
-        this.flying = flying;
-    }
-
-    public LimboPlayer(String name, String group) {
-        this.name = name;
-        this.group = group;
-    }
-
+    /**
+     * Return the name of the player.
+     *
+     * @return The player's name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Return the player's original location.
+     *
+     * @return The player's location
+     */
     public Location getLoc() {
         return loc;
     }
 
-    public ItemStack[] getArmour() {
-        return armour;
-    }
-
-    public ItemStack[] getInventory() {
-        return inventory;
-    }
-
-    public void setArmour(ItemStack[] armour) {
-        this.armour = armour;
-    }
-
-    public void setInventory(ItemStack[] inventory) {
-        this.inventory = inventory;
-    }
-
-    public GameMode getGameMode() {
-        return gameMode;
-    }
-
-    public boolean getOperator() {
+    /**
+     * Return whether the player is an operator or not (i.e. whether he is an OP).
+     *
+     * @return True if the player has OP status, false otherwise
+     */
+    public boolean isOperator() {
         return operator;
     }
 
+    /**
+     * Return the player's permissions group.
+     *
+     * @return The permissions group the player belongs to
+     */
     public String getGroup() {
         return group;
     }
 
-    public void setTimeoutTaskId(BukkitTask i) {
-        if (this.timeoutTaskId != null) {
-            if (Bukkit.getScheduler().isCurrentlyRunning(this.timeoutTaskId.getTaskId()) || Bukkit.getScheduler().isQueued(this.timeoutTaskId.getTaskId()))
-                Bukkit.getScheduler().cancelTask(this.timeoutTaskId.getTaskId());
+    public boolean isFly() {
+        return fly;
+    }
+
+    /**
+     * Return the timeout task, which kicks the player if he hasn't registered or logged in
+     * after a configurable amount of time.
+     *
+     * @return The timeout task associated to the player
+     */
+    public BukkitTask getTimeoutTask() {
+        return timeoutTask;
+    }
+
+    /**
+     * Set the timeout task of the player. The timeout task kicks the player after a configurable
+     * amount of time if he hasn't logged in or registered.
+     *
+     * @param timeoutTask The task to set
+     */
+    public void setTimeoutTask(BukkitTask timeoutTask) {
+        if (this.timeoutTask != null) {
+            this.timeoutTask.cancel();
         }
-        this.timeoutTaskId = i;
+        this.timeoutTask = timeoutTask;
     }
 
-    public BukkitTask getTimeoutTaskId() {
-        return timeoutTaskId;
+    /**
+     * Return the message task reminding the player to log in or register.
+     *
+     * @return The task responsible for sending the message regularly
+     */
+    public BukkitTask getMessageTask() {
+        return messageTask;
     }
 
-    public void setMessageTaskId(BukkitTask messageTaskId) {
-        if (this.messageTaskId != null) {
-            if (Bukkit.getScheduler().isCurrentlyRunning(this.messageTaskId.getTaskId()) || Bukkit.getScheduler().isQueued(this.messageTaskId.getTaskId()))
-                Bukkit.getScheduler().cancelTask(this.messageTaskId.getTaskId());
+    /**
+     * Set the messages task responsible for telling the player to log in or register.
+     *
+     * @param messageTask The message task to set
+     */
+    public void setMessageTask(BukkitTask messageTask) {
+        if (this.messageTask != null) {
+            this.messageTask.cancel();
         }
-        this.messageTaskId = messageTaskId;
+        this.messageTask = messageTask;
     }
 
-    public BukkitTask getMessageTaskId() {
-        return messageTaskId;
+    /**
+     * Clears all tasks associated to the player.
+     */
+    public void clearTasks() {
+        if (messageTask != null) {
+            messageTask.cancel();
+        }
+        messageTask = null;
+        if (timeoutTask != null) {
+            timeoutTask.cancel();
+        }
+        timeoutTask = null;
     }
-
-    public boolean isFlying() {
-        return flying;
-    }
-
 }

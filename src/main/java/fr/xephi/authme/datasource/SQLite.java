@@ -1,5 +1,14 @@
 package fr.xephi.authme.datasource;
 
+import com.google.common.annotations.VisibleForTesting;
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.util.StringUtils;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -9,74 +18,50 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.datasource.MiniConnectionPoolManager.TimeoutException;
-import fr.xephi.authme.settings.PlayersLogs;
-import fr.xephi.authme.settings.Settings;
-
+/**
+ */
 public class SQLite implements DataSource {
 
-    private String database;
-    private String tableName;
-    private String columnName;
-    private String columnPassword;
-    private String columnIp;
-    private String columnLastLogin;
-    private String columnSalt;
-    private String columnGroup;
-    private String lastlocX;
-    private String lastlocY;
-    private String lastlocZ;
-    private String lastlocWorld;
-    private String columnEmail;
-    private String columnID;
+    private final String database;
+    private final String tableName;
+    private final Columns col;
     private Connection con;
 
-    public SQLite() {
-        this.database = Settings.getMySQLDatabase;
-        this.tableName = Settings.getMySQLTablename;
-        this.columnName = Settings.getMySQLColumnName;
-        this.columnPassword = Settings.getMySQLColumnPassword;
-        this.columnIp = Settings.getMySQLColumnIp;
-        this.columnLastLogin = Settings.getMySQLColumnLastLogin;
-        this.columnSalt = Settings.getMySQLColumnSalt;
-        this.columnGroup = Settings.getMySQLColumnGroup;
-        this.lastlocX = Settings.getMySQLlastlocX;
-        this.lastlocY = Settings.getMySQLlastlocY;
-        this.lastlocZ = Settings.getMySQLlastlocZ;
-        this.lastlocWorld = Settings.getMySQLlastlocWorld;
-        this.columnEmail = Settings.getMySQLColumnEmail;
-        this.columnID = Settings.getMySQLColumnId;
+    /**
+     * Constructor for SQLite.
+     *
+     * @param settings The settings instance
+     *
+     * @throws ClassNotFoundException if no driver could be found for the datasource
+     * @throws SQLException           when initialization of a SQL datasource failed
+     */
+    public SQLite(NewSetting settings) throws ClassNotFoundException, SQLException {
+        this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
+        this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
+        this.col = new Columns(settings);
 
         try {
             this.connect();
             this.setup();
-        } catch (ClassNotFoundException e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use SQLITE... ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
-        } catch (SQLException e) {
-            ConsoleLogger.showError(e.getMessage());
-            if (Settings.isStopEnabled) {
-                ConsoleLogger.showError("Can't use SQLITE... ! SHUTDOWN...");
-                AuthMe.getInstance().getServer().shutdown();
-            }
-            if (!Settings.isStopEnabled)
-                AuthMe.getInstance().getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
-            return;
+        } catch (ClassNotFoundException | SQLException ex) {
+            ConsoleLogger.logException("Error during SQLite initialization:", ex);
+            throw ex;
         }
     }
 
-    private synchronized void connect()
-            throws ClassNotFoundException, SQLException {
+    @VisibleForTesting
+    SQLite(NewSetting settings, Connection connection) {
+        this.database = settings.getProperty(DatabaseSettings.MYSQL_DATABASE);
+        this.tableName = settings.getProperty(DatabaseSettings.MYSQL_TABLE);
+        this.col = new Columns(settings);
+        this.con = connection;
+    }
+
+    private static void logSqlException(SQLException e) {
+        ConsoleLogger.logException("Error while executing SQL statement:", e);
+    }
+
+    private synchronized void connect() throws ClassNotFoundException, SQLException {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
@@ -88,37 +73,54 @@ public class SQLite implements DataSource {
         ResultSet rs = null;
         try {
             st = con.createStatement();
-            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + columnID + " INTEGER AUTO_INCREMENT," + columnName + " VARCHAR(255) NOT NULL UNIQUE," + columnPassword + " VARCHAR(255) NOT NULL," + columnIp + " VARCHAR(40) NOT NULL," + columnLastLogin + " BIGINT," + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0'," + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "'," + columnEmail + " VARCHAR(255) DEFAULT 'your@email.com'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + columnID + "));");
-            rs = con.getMetaData().getColumns(null, null, tableName, columnPassword);
+            st.executeUpdate("CREATE TABLE IF NOT EXISTS " + tableName + " (" + col.ID + " INTEGER AUTO_INCREMENT," + col.NAME + " VARCHAR(255) NOT NULL UNIQUE," + col.PASSWORD + " VARCHAR(255) NOT NULL," + col.IP + " VARCHAR(40) NOT NULL," + col.LAST_LOGIN + " BIGINT," + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0'," + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0'," + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0'," + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT '" + Settings.defaultWorld + "'," + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com'," + "CONSTRAINT table_const_prim PRIMARY KEY (" + col.ID + "));");
+            rs = con.getMetaData().getColumns(null, null, tableName, col.PASSWORD);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnPassword + " VARCHAR(255) NOT NULL;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.PASSWORD + " VARCHAR(255) NOT NULL;");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, columnIp);
+            if (!col.SALT.isEmpty()) {
+                rs = con.getMetaData().getColumns(null, null, tableName, col.SALT);
+                if (!rs.next()) {
+                    st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.SALT + " VARCHAR(255);");
+                }
+                rs.close();
+            }
+            rs = con.getMetaData().getColumns(null, null, tableName, col.IP);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnIp + " VARCHAR(40) NOT NULL;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.IP + " VARCHAR(40) NOT NULL;");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, columnLastLogin);
+            rs = con.getMetaData().getColumns(null, null, tableName, col.LAST_LOGIN);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnLastLogin + " BIGINT;");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LAST_LOGIN + " TIMESTAMP DEFAULT current_timestamp;");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, lastlocX);
+            rs = con.getMetaData().getColumns(null, null, tableName, col.LASTLOC_X);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocX + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocY + " DOUBLE NOT NULL DEFAULT '0.0';");
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocZ + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_X + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Y + " DOUBLE NOT NULL DEFAULT '0.0';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_Z + " DOUBLE NOT NULL DEFAULT '0.0';");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, lastlocWorld);
+            rs = con.getMetaData().getColumns(null, null, tableName, col.LASTLOC_WORLD);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + lastlocWorld + " VARCHAR(255) NOT NULL DEFAULT 'world';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.LASTLOC_WORLD + " VARCHAR(255) NOT NULL DEFAULT 'world';");
             }
             rs.close();
-            rs = con.getMetaData().getColumns(null, null, tableName, columnEmail);
+            rs = con.getMetaData().getColumns(null, null, tableName, col.EMAIL);
             if (!rs.next()) {
-                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + columnEmail + "  VARCHAR(255) DEFAULT 'your@email.com';");
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.EMAIL + " VARCHAR(255) DEFAULT 'your@email.com';");
+            }
+            rs.close();
+            rs = con.getMetaData().getColumns(null, null, tableName, col.IS_LOGGED);
+            if (!rs.next()) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.IS_LOGGED + " INT DEFAULT '0';");
+            }
+            rs.close();
+            rs = con.getMetaData().getColumns(null, null, tableName, col.REAL_NAME);
+            if (!rs.next()) {
+                st.executeUpdate("ALTER TABLE " + tableName + " ADD COLUMN " + col.REAL_NAME + " VARCHAR(255) NOT NULL DEFAULT 'Player';");
             }
         } finally {
             close(rs);
@@ -128,11 +130,16 @@ public class SQLite implements DataSource {
     }
 
     @Override
+    public void reload() {
+        // TODO 20160309: Implement reloading
+    }
+
+    @Override
     public synchronized boolean isAuthAvailable(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);");
             pst.setString(1, user);
             rs = pst.executeQuery();
             return rs.next();
@@ -146,58 +153,82 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public synchronized PlayerAuth getAuth(String user) {
+    public HashedPassword getPassword(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + columnName + ")=LOWER(?);");
+            pst = con.prepareStatement("SELECT " + col.PASSWORD + "," + col.SALT
+                + " FROM " + tableName + " WHERE " + col.NAME + "=?");
             pst.setString(1, user);
             rs = pst.executeQuery();
             if (rs.next()) {
-                if (rs.getString(columnIp).isEmpty()) {
-                    return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "192.168.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                } else {
-                    if (!columnSalt.isEmpty()) {
-                        return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                    } else {
-                        return new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                    }
-                }
-            } else {
-                return null;
+                return new HashedPassword(rs.getString(col.PASSWORD),
+                    !col.SALT.isEmpty() ? rs.getString(col.SALT) : null);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return null;
+            logSqlException(ex);
         } finally {
             close(rs);
             close(pst);
         }
+        return null;
+    }
+
+    @Override
+    public synchronized PlayerAuth getAuth(String user) {
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=LOWER(?);");
+            pst.setString(1, user);
+            rs = pst.executeQuery();
+            if (rs.next()) {
+                return buildAuthFromResultSet(rs);
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        } finally {
+            close(rs);
+            close(pst);
+        }
+        return null;
     }
 
     @Override
     public synchronized boolean saveAuth(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            if (columnSalt.isEmpty() && auth.getSalt().isEmpty()) {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + ") VALUES (?,?,?,?);");
+            HashedPassword password = auth.getPassword();
+            if (col.SALT.isEmpty()) {
+                if (!StringUtils.isEmpty(auth.getPassword().getSalt())) {
+                    ConsoleLogger.showError("Warning! Detected hashed password with separate salt but the salt column "
+                        + "is not set in the config!");
+                }
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD +
+                    "," + col.IP + "," + col.LAST_LOGIN + "," + col.REAL_NAME + "," + col.EMAIL +
+                    ") VALUES (?,?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
-                pst.setString(2, auth.getHash());
+                pst.setString(2, password.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
+                pst.setString(5, auth.getRealName());
+                pst.setString(6, auth.getEmail());
                 pst.executeUpdate();
             } else {
-                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + columnName + "," + columnPassword + "," + columnIp + "," + columnLastLogin + "," + columnSalt + ") VALUES (?,?,?,?,?);");
+                pst = con.prepareStatement("INSERT INTO " + tableName + "(" + col.NAME + "," + col.PASSWORD + ","
+                    + col.IP + "," + col.LAST_LOGIN + "," + col.REAL_NAME + "," + col.EMAIL + "," + col.SALT
+                    + ") VALUES (?,?,?,?,?,?,?);");
                 pst.setString(1, auth.getNickname());
-                pst.setString(2, auth.getHash());
+                pst.setString(2, password.getHash());
                 pst.setString(3, auth.getIp());
                 pst.setLong(4, auth.getLastLogin());
-                pst.setString(5, auth.getSalt());
+                pst.setString(5, auth.getRealName());
+                pst.setString(6, auth.getEmail());
+                pst.setString(7, password.getSalt());
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
@@ -206,183 +237,135 @@ public class SQLite implements DataSource {
 
     @Override
     public synchronized boolean updatePassword(PlayerAuth auth) {
+        return updatePassword(auth.getNickname(), auth.getPassword());
+    }
+
+    @Override
+    public boolean updatePassword(String user, HashedPassword password) {
+        user = user.toLowerCase();
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnPassword + "=? WHERE " + columnName + "=?;");
-            pst.setString(1, auth.getHash());
-            pst.setString(2, auth.getNickname());
+            boolean useSalt = !col.SALT.isEmpty();
+            String sql = "UPDATE " + tableName + " SET " + col.PASSWORD + " = ?"
+                + (useSalt ? ", " + col.SALT + " = ?" : "")
+                + " WHERE " + col.NAME + " = ?";
+            pst = con.prepareStatement(sql);
+            pst.setString(1, password.getHash());
+            if (useSalt) {
+                pst.setString(2, password.getSalt());
+                pst.setString(3, user);
+            } else {
+                pst.setString(2, user);
+            }
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean updateSession(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnIp + "=?, " + columnLastLogin + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;");
             pst.setString(1, auth.getIp());
             pst.setLong(2, auth.getLastLogin());
-            pst.setString(3, auth.getNickname());
+            pst.setString(3, auth.getRealName());
+            pst.setString(4, auth.getNickname());
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
-        return true;
-    }
-
-    @Override
-    public int purgeDatabase(long until) {
-        PreparedStatement pst = null;
-        try {
-
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
-            pst.setLong(1, until);
-            return pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
-        } finally {
-            close(pst);
-        }
+        return false;
     }
 
     @Override
     public List<String> autoPurgeDatabase(long until) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        List<String> list = new ArrayList<String>();
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnLastLogin + "<?;");
-            pst.setLong(1, until);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                list.add(rs.getString(columnName));
+        List<String> list = new ArrayList<>();
+        String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
+        try (PreparedStatement selectPst = con.prepareStatement(select);
+             PreparedStatement deletePst = con.prepareStatement(delete)) {
+            selectPst.setLong(1, until);
+            try (ResultSet rs = selectPst.executeQuery()) {
+                while (rs.next()) {
+                    list.add(rs.getString(col.NAME));
+                }
             }
-            return list;
+            deletePst.setLong(1, until);
+            deletePst.executeUpdate();
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } finally {
-            close(rs);
-            close(pst);
+            logSqlException(ex);
         }
+        return list;
     }
 
     @Override
     public synchronized boolean removeAuth(String user) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;");
             pst.setString(1, user);
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean updateQuitLoc(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + lastlocX + "=?, " + lastlocY + "=?, " + lastlocZ + "=?, " + lastlocWorld + "=? WHERE " + columnName + "=?;");
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.LASTLOC_X + "=?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=? WHERE " + col.NAME + "=?;");
             pst.setDouble(1, auth.getQuitLocX());
             pst.setDouble(2, auth.getQuitLocY());
             pst.setDouble(3, auth.getQuitLocZ());
             pst.setString(4, auth.getWorld());
             pst.setString(5, auth.getNickname());
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
+            logSqlException(ex);
         } finally {
             close(pst);
         }
-        return true;
-    }
-
-    @Override
-    public int getIps(String ip) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        int countIp = 0;
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
-            pst.setString(1, ip);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                countIp++;
-            }
-            return countIp;
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return 0;
-        } finally {
-            close(rs);
-            close(pst);
-        }
+        return false;
     }
 
     @Override
     public boolean updateEmail(PlayerAuth auth) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnEmail + "=? WHERE " + columnName + "=?;");
+        String sql = "UPDATE " + tableName + " SET " + col.EMAIL + "=? WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, auth.getEmail());
             pst.setString(2, auth.getNickname());
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } finally {
-            close(pst);
+            logSqlException(ex);
         }
-        return true;
-    }
-
-    @Override
-    public boolean updateSalt(PlayerAuth auth) {
-        if (columnSalt.isEmpty()) {
-            return false;
-        }
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnSalt + "=? WHERE " + columnName + "=?;");
-            pst.setString(1, auth.getSalt());
-            pst.setString(2, auth.getNickname());
-            pst.executeUpdate();
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return false;
-        } finally {
-            close(pst);
-        }
-        return true;
+        return false;
     }
 
     @Override
     public synchronized void close() {
         try {
-            con.close();
+            if (con != null && !con.isClosed()) {
+                con.close();
+            }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
+            logSqlException(ex);
         }
-    }
-
-    @Override
-    public void reload() {
     }
 
     private void close(Statement st) {
@@ -390,7 +373,7 @@ public class SQLite implements DataSource {
             try {
                 st.close();
             } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
+                logSqlException(ex);
             }
         }
     }
@@ -400,35 +383,8 @@ public class SQLite implements DataSource {
             try {
                 rs.close();
             } catch (SQLException ex) {
-                ConsoleLogger.showError(ex.getMessage());
+                logSqlException(ex);
             }
-        }
-    }
-
-    @Override
-    public List<String> getAllAuthsByName(PlayerAuth auth) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
-            pst.setString(1, auth.getIp());
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                countIp.add(rs.getString(columnName));
-            }
-            return countIp;
-        } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (NullPointerException npe) {
-            return new ArrayList<String>();
-        } finally {
-            close(rs);
-            close(pst);
         }
     }
 
@@ -436,69 +392,50 @@ public class SQLite implements DataSource {
     public List<String> getAllAuthsByIp(String ip) {
         PreparedStatement pst = null;
         ResultSet rs = null;
-        List<String> countIp = new ArrayList<String>();
+        List<String> countIp = new ArrayList<>();
         try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnIp + "=?;");
+            pst = con.prepareStatement("SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.IP + "=?;");
             pst.setString(1, ip);
             rs = pst.executeQuery();
             while (rs.next()) {
-                countIp.add(rs.getString(columnName));
+                countIp.add(rs.getString(col.NAME));
             }
             return countIp;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (NullPointerException npe) {
-            return new ArrayList<String>();
+            logSqlException(ex);
         } finally {
             close(rs);
             close(pst);
         }
+        return new ArrayList<>();
     }
 
     @Override
-    public List<String> getAllAuthsByEmail(String email) {
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        List<String> countEmail = new ArrayList<String>();
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE " + columnEmail + "=?;");
+    public int countAuthsByEmail(String email) {
+        String sql = "SELECT COUNT(1) FROM " + tableName + " WHERE " + col.EMAIL + " = ? COLLATE NOCASE;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, email);
-            rs = pst.executeQuery();
-            while (rs.next()) {
-                countEmail.add(rs.getString(columnName));
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt(1);
+                }
             }
-            return countEmail;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return new ArrayList<String>();
-        } catch (NullPointerException npe) {
-            return new ArrayList<String>();
-        } finally {
-            close(rs);
-            close(pst);
+            logSqlException(ex);
         }
+        return 0;
     }
 
     @Override
     public void purgeBanned(List<String> banned) {
-        PreparedStatement pst = null;
-        try {
+        String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : banned) {
-                pst = con.prepareStatement("DELETE FROM " + tableName + " WHERE " + columnName + "=?;");
                 pst.setString(1, name);
                 pst.executeUpdate();
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-        } finally {
-            close(pst);
+            logSqlException(ex);
         }
     }
 
@@ -509,98 +446,174 @@ public class SQLite implements DataSource {
 
     @Override
     public boolean isLogged(String user) {
-        return PlayerCache.getInstance().isAuthenticated(user);
+        PreparedStatement pst = null;
+        ResultSet rs = null;
+        try {
+            pst = con.prepareStatement("SELECT * FROM " + tableName + " WHERE LOWER(" + col.NAME + ")=?;");
+            pst.setString(1, user);
+            rs = pst.executeQuery();
+            if (rs.next())
+                return (rs.getInt(col.IS_LOGGED) == 1);
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        } finally {
+            close(rs);
+            close(pst);
+        }
+        return false;
     }
 
     @Override
     public void setLogged(String user) {
-        PlayersLogs.getInstance().savePlayerLogs();
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;");
+            pst.setInt(1, 1);
+            pst.setString(2, user);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        } finally {
+            close(pst);
+        }
     }
 
     @Override
     public void setUnlogged(String user) {
-        PlayersLogs.getInstance().savePlayerLogs();
+        PreparedStatement pst = null;
+        if (user != null)
+            try {
+                pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;");
+                pst.setInt(1, 0);
+                pst.setString(2, user);
+                pst.executeUpdate();
+            } catch (SQLException ex) {
+                logSqlException(ex);
+            } finally {
+                close(pst);
+            }
     }
 
     @Override
     public void purgeLogged() {
-        PlayersLogs.getInstance().clear();
+        PreparedStatement pst = null;
+        try {
+            pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.IS_LOGGED + "=?;");
+            pst.setInt(1, 0);
+            pst.setInt(2, 1);
+            pst.executeUpdate();
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        } finally {
+            close(pst);
+        }
     }
 
     @Override
     public int getAccountsRegistered() {
-        int result = 0;
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        try {
-            pst = con.prepareStatement("SELECT COUNT(*) FROM " + tableName + ";");
-            rs = pst.executeQuery();
-            if (rs != null && rs.next()) {
-                result = rs.getInt(1);
+        String sql = "SELECT COUNT(*) FROM " + tableName + ";";
+        try (PreparedStatement pst = con.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt(1);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return result;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return result;
-        } finally {
-            close(pst);
+            logSqlException(ex);
         }
-        return result;
+        return 0;
     }
 
     @Override
-    public void updateName(String oldone, String newone) {
-        PreparedStatement pst = null;
-        try {
-            pst = con.prepareStatement("UPDATE " + tableName + " SET " + columnName + "=? WHERE " + columnName + "=?;");
-            pst.setString(1, newone);
-            pst.setString(2, oldone);
+    public boolean updateRealName(String user, String realName) {
+        String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, realName);
+            pst.setString(2, user);
             pst.executeUpdate();
+            return true;
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return;
-        } finally {
-            close(pst);
+            logSqlException(ex);
         }
-        return;
+        return false;
+    }
+
+    @Override
+    public boolean updateIp(String user, String ip) {
+        String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
+        try (PreparedStatement pst = con.prepareStatement(sql)) {
+            pst.setString(1, ip);
+            pst.setString(2, user);
+            pst.executeUpdate();
+            return true;
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return false;
     }
 
     @Override
     public List<PlayerAuth> getAllAuths() {
-        List<PlayerAuth> auths = new ArrayList<PlayerAuth>();
-        PreparedStatement pst = null;
-        ResultSet rs = null;
-        try {
-            pst = con.prepareStatement("SELECT * FROM " + tableName + ";");
-            rs = pst.executeQuery();
+        List<PlayerAuth> auths = new ArrayList<>();
+        String sql = "SELECT * FROM " + tableName + ";";
+        try (PreparedStatement pst = con.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
             while (rs.next()) {
-                PlayerAuth pAuth = null;
-                if (rs.getString(columnIp).isEmpty()) {
-                    pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), "127.0.0.1", rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                } else {
-                    if (!columnSalt.isEmpty()) {
-                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnSalt), rs.getInt(columnGroup), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                    } else {
-                        pAuth = new PlayerAuth(rs.getString(columnName), rs.getString(columnPassword), rs.getString(columnIp), rs.getLong(columnLastLogin), rs.getDouble(lastlocX), rs.getDouble(lastlocY), rs.getDouble(lastlocZ), rs.getString(lastlocWorld), rs.getString(columnEmail));
-                    }
-                }
-                if (pAuth != null)
-                    auths.add(pAuth);
+                PlayerAuth auth = buildAuthFromResultSet(rs);
+                auths.add(auth);
             }
         } catch (SQLException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
-        } catch (TimeoutException ex) {
-            ConsoleLogger.showError(ex.getMessage());
-            return auths;
-        } finally {
-            close(pst);
+            logSqlException(ex);
         }
         return auths;
+    }
+
+    @Override
+    public List<PlayerAuth> getLoggedPlayers() {
+        List<PlayerAuth> auths = new ArrayList<>();
+        String sql = "SELECT * FROM " + tableName + " WHERE " + col.IS_LOGGED + "=1;";
+        try (PreparedStatement pst = con.prepareStatement(sql); ResultSet rs = pst.executeQuery()) {
+            while (rs.next()) {
+                PlayerAuth auth = buildAuthFromResultSet(rs);
+                auths.add(auth);
+            }
+        } catch (SQLException ex) {
+            logSqlException(ex);
+        }
+        return auths;
+    }
+
+    @Override
+    public synchronized boolean isEmailStored(String email) {
+        String sql = "SELECT 1 FROM " + tableName + " WHERE " + col.EMAIL + " = ? COLLATE NOCASE;";
+        ResultSet rs = null;
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+            ps.setString(1, email);
+            rs = ps.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            logSqlException(e);
+        } finally {
+            close(rs);
+        }
+        return false;
+    }
+
+    private PlayerAuth buildAuthFromResultSet(ResultSet row) throws SQLException {
+        String salt = !col.SALT.isEmpty() ? row.getString(col.SALT) : null;
+
+        PlayerAuth.Builder authBuilder = PlayerAuth.builder()
+            .name(row.getString(col.NAME))
+            .email(row.getString(col.EMAIL))
+            .realName(row.getString(col.REAL_NAME))
+            .password(row.getString(col.PASSWORD), salt)
+            .lastLogin(row.getLong(col.LAST_LOGIN))
+            .locX(row.getDouble(col.LASTLOC_X))
+            .locY(row.getDouble(col.LASTLOC_Y))
+            .locZ(row.getDouble(col.LASTLOC_Z))
+            .locWorld(row.getString(col.LASTLOC_WORLD));
+
+        String ip = row.getString(col.IP);
+        if (!ip.isEmpty()) {
+            authBuilder.ip(ip);
+        }
+        return authBuilder.build();
     }
 }

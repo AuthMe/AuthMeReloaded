@@ -2,39 +2,40 @@ package fr.xephi.authme.events;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.HandlerList;
 
 /**
- * 
- * Called if a player is teleported to the authme first spawn
- *
- * @author Xephi59
+ * Event that is called if a player is teleported to the AuthMe first spawn, i.e. to the
+ * spawn location for players who have never played before.
  */
-public class FirstSpawnTeleportEvent extends CustomEvent {
+public class FirstSpawnTeleportEvent extends AbstractTeleportEvent {
 
-    private Player player;
-    private Location to;
-    private Location from;
+    private static final HandlerList handlers = new HandlerList();
 
+    /**
+     * Constructor.
+     *
+     * @param player The player
+     * @param from The location the player is being teleported away from
+     * @param to The teleport destination
+     */
     public FirstSpawnTeleportEvent(Player player, Location from, Location to) {
-        this.player = player;
-        this.from = from;
-        this.to = to;
+        super(true, player, from, to);
     }
 
-    public Player getPlayer() {
-        return player;
+    /**
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
+     *
+     * @return The list of handlers
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
-    public void setTo(Location to) {
-        this.to = to;
-    }
-
-    public Location getTo() {
-        return to;
-    }
-
-    public Location getFrom() {
-        return from;
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
     }
 
 }

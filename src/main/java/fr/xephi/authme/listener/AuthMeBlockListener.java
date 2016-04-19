@@ -1,73 +1,24 @@
 package fr.xephi.authme.listener;
 
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.settings.Settings;
-
 public class AuthMeBlockListener implements Listener {
 
-    public AuthMe instance;
-
-    public AuthMeBlockListener(AuthMe instance) {
-
-        this.instance = instance;
-    }
-
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
-            return;
+        if (ListenerService.shouldCancelEvent(event.getPlayer())) {
+            event.setCancelled(true);
         }
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        if (!instance.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-        event.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-        if (event.isCancelled() || event.getPlayer() == null) {
-            return;
+        if (ListenerService.shouldCancelEvent(event.getPlayer())) {
+            event.setCancelled(true);
         }
-
-        Player player = event.getPlayer();
-        String name = player.getName().toLowerCase();
-
-        if (Utils.getInstance().isUnrestricted(player)) {
-            return;
-        }
-
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
-            return;
-        }
-
-        if (!instance.database.isAuthAvailable(name)) {
-            if (!Settings.isForcedRegistrationEnabled) {
-                return;
-            }
-        }
-        event.setCancelled(true);
     }
 
 }

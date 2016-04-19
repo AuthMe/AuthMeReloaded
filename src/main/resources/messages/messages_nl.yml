@@ -1,0 +1,64 @@
+unknown_user: Gebruiker is niet gevonden in de database
+unsafe_spawn: De locatie waar je de vorige keer het spel verliet was gevaarlijk, je bent geteleporteerd naar de spawn
+not_logged_in: '&cNiet ingelogt!'
+reg_voluntarily: Je kunt je gebruikersnaam registreren met "/register <wachtwoord> <herhaalWachtwoord>"
+usage_log: '&cGebruik: /login <wachtwoord>'
+wrong_pwd: '&cFout wachtwoord'
+unregistered: '&cRegistratie succesvol ongedaan gemaakt!'
+reg_disabled: '&cRegistratie is uitgeschakeld'
+valid_session: '&cSessie ingelogd'
+login: '&cSuccesvol ingelogd!'
+password_error_nick: '&fJe kunt je gebruikersnaam niet als wachtwoord gebruiken'
+password_error_unsafe: '&fJe kunt geen onveilige wachtwoorden gebruiken'
+vb_nonActiv: Je accound is nog niet geactiveerd, controleer je mailbox!
+user_regged: '&cGebruikersnaam is al geregistreerd'
+usage_reg: '&cGebruik: /register <wachtwoord> <herhaalWachtwoord>'
+max_reg: Je hebt de maximale registraties van jouw account overschreden.
+no_perm: '&cGeen toegang!'
+error: 'Error: neem contact op met een administrator!'
+login_msg: '&cLog in met "/login <wachtwoord>"'
+reg_msg: '&cRegistreer met "/register <wachtwoord> <herhaalWachtwoord>"'
+usage_unreg: '&cGebruik: /unregister password'
+pwd_changed: '&cWachtwoord aangepast!'
+user_unknown: '&cGebruikersnaam niet geregistreerd'
+password_error: Wachtwoord incorrect!
+invalid_session: Sessie beschadigd, wacht tot de sessie is verlopen en verbindt opnieuw.
+reg_only: Alleen voor geregistreerde spelers! Bezoek http://example.com om te registreren
+logged_in: '&cJe bent al ingelogd!'
+logout: '&cJe bent succesvol uitgelogd'
+same_nick: Er is al iemand met jou gebruikersnaam online.
+registered: '&cSuccesvol geregistreerd!'
+pass_len: Je gekozen wachtwoord voldoet niet aan de minimum of maximum lengte
+reload: Configuratie en database is opnieuw opgestard
+timeout: 'Login time-out: het duurde telang voor je je inlogde.'
+usage_changepassword: 'Gebruik: /changepassword <oudWachtwoord> <nieuwWachtwoord>'
+name_len: '&cJe gebruikersnaam is te kort'
+regex: '&cJouw gebruikersnaam bevat illegale tekens. Toegestaane karakters: REG_EX'
+add_email: '&cVoeg uw E-mail alstublieft toe met: /email add <E-mail> <wachtwoord> <herhaalWachtwoord>'
+recovery_email: '&cWachtwoord vergeten? Gebruik alstublieft "/email recovery <E-mail>"'
+usage_captcha: '&cGebruik: /captcha <theCaptcha>'
+wrong_captcha: '&cVerkeerde Captcha, gebruik alstublieft: /captcha THE_CAPTCHA'
+valid_captcha: '&cDe captcha is geldig!'
+kick_forvip: '&cEen VIP Gebruiker ga naar de volledige server!'
+kick_fullserver: '&cDe server is vol, sorry!'
+usage_email_add: '&fGebruik: /email add <E-mail> <herhaalE-mail>'
+usage_email_change: '&fGebruik: /email change <oudeE-mail> <nieuweE-mail>'
+usage_email_recovery: '&fGebruik: /email recovery <E-mail>'
+new_email_invalid: '[AuthMe] Nieuwe E-mail ongeldig!'
+old_email_invalid: '[AuthMe] Oude E-mail ongeldig!'
+email_invalid: '[AuthMe] Ongeldige E-mail'
+email_added: '[AuthMe] Bevestig jouw E-mail!'
+email_confirm: '[AuthMe] Bevestig jouw E-mail!'
+email_changed: '[AuthMe] Email Veranderd!'
+email_send: '[AuthMe] Herstel E-mail Verzonden!'
+country_banned: 'Jouw land is geband op deze server'
+antibot_auto_enabled: '[AuthMe] AntiBotMod automatisch aangezet vanewge veel verbindingen!'
+antibot_auto_disabled: '[AuthMe] AntiBotMod automatisch uitgezet na %m minuten, hopelijk is de invasie gestopt'
+kick_antibot: 'AntiBot is aangezet! Wacht alsjeblieft enkele minuten voor je met de server verbindt.'
+# TODO two_factor_create: Missing tag %url
+two_factor_create: '&2Je geheime code is %code'
+# TODO email_already_used: '&4The email address is already being used'
+# TODO email_exists: '&cA recovery email was already sent! You can discard it and send a new one using the command below:'
+# TODO invalid_name_case: 'You should join using username %valid, not %invalid.'
+# TODO reg_email_msg: '&3Please, register to the server with the command "/register <email> <confirmEmail>"'
+# TODO not_owner_error: 'You are not the owner of this account. Please try another name!'

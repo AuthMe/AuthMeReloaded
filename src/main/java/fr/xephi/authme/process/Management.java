@@ -1,86 +1,70 @@
 package fr.xephi.authme.process;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.process.join.AsyncronousJoin;
-import fr.xephi.authme.process.login.AsyncronousLogin;
-import fr.xephi.authme.process.logout.AsyncronousLogout;
-import fr.xephi.authme.process.quit.AsyncronousQuit;
-import fr.xephi.authme.process.register.AsyncronousRegister;
-import fr.xephi.authme.security.RandomString;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.process.email.AsyncAddEmail;
+import fr.xephi.authme.process.email.AsyncChangeEmail;
+import fr.xephi.authme.process.join.AsynchronousJoin;
+import fr.xephi.authme.process.login.AsynchronousLogin;
+import fr.xephi.authme.process.logout.AsynchronousLogout;
+import fr.xephi.authme.process.quit.AsynchronousQuit;
+import fr.xephi.authme.process.register.AsyncRegister;
+import fr.xephi.authme.process.unregister.AsynchronousUnregister;
+import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
 
 /**
- * 
- * @authors Xephi59,
- *          <a href="http://dev.bukkit.org/profiles/Possible/">Possible</a>
- *
  */
 public class Management {
 
-    public AuthMe plugin;
-    public static RandomString rdm = new RandomString(Settings.captchaLength);
-    public PluginManager pm;
+    private final AuthMe plugin;
+    private final BukkitScheduler sched;
+    private final ProcessService processService;
+    private final DataSource dataSource;
+    private final PlayerCache playerCache;
 
-    public Management(AuthMe plugin) {
+    public Management(AuthMe plugin, ProcessService processService, DataSource dataSource, PlayerCache playerCache) {
         this.plugin = plugin;
-        this.pm = plugin.getServer().getPluginManager();
+        this.sched = this.plugin.getServer().getScheduler();
+        this.processService = processService;
+        this.dataSource = dataSource;
+        this.playerCache = playerCache;
     }
 
-    public void performLogin(final Player player, final String password,
-            final boolean forceLogin) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                new AsyncronousLogin(player, password, forceLogin, plugin, plugin.database).process();
-            }
-        });
-    }
-
-    public void performRegister(final Player player, final String password,
-            final String email) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                new AsyncronousRegister(player, password, email, plugin, plugin.database).process();
-            }
-        });
+    public void performLogin(final Player player, final String password, final boolean forceLogin) {
+        runTask(new AsynchronousLogin(player, password, forceLogin, plugin, dataSource, processService));
     }
 
     public void performLogout(final Player player) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
-            @Override
-            public void run() {
-                new AsyncronousLogout(player, plugin, plugin.database).process();
-            }
-        });
+        runTask(new AsynchronousLogout(player, plugin, dataSource, processService));
     }
 
-    public void performQuit(final Player player, final boolean isKick) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+    public void performRegister(final Player player, final String password, final String email) {
+        runTask(new AsyncRegister(player, password, email, plugin, dataSource, processService));
+    }
 
-            @Override
-            public void run() {
-                new AsyncronousQuit(player, plugin, plugin.database, isKick).process();
-            }
-
-        });
+    public void performUnregister(final Player player, final String password, final boolean force) {
+        runTask(new AsynchronousUnregister(player, password, force, plugin, processService));
     }
 
     public void performJoin(final Player player) {
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+        runTask(new AsynchronousJoin(player, plugin, dataSource, playerCache, processService));
+    }
 
-            @Override
-            public void run() {
-                new AsyncronousJoin(player, plugin, plugin.database).process();
-            }
+    public void performQuit(final Player player, final boolean isKick) {
+        runTask(new AsynchronousQuit(player, plugin, dataSource, isKick, processService));
+    }
 
-        });
+    public void performAddEmail(final Player player, final String newEmail) {
+        runTask(new AsyncAddEmail(player, newEmail, dataSource, playerCache, processService));
+    }
+
+    public void performChangeEmail(final Player player, final String oldEmail, final String newEmail) {
+        runTask(new AsyncChangeEmail(player, oldEmail, newEmail, dataSource, playerCache, processService));
+    }
+
+    private void runTask(Process process) {
+        sched.runTaskAsynchronously(plugin, process);
     }
 }

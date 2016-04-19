@@ -1,89 +1,80 @@
 package fr.xephi.authme.api;
 
-import java.security.NoSuchAlgorithmException;
-
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
+import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Server;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 
-import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.Utils;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.plugin.manager.CombatTagComunicator;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.settings.Settings;
-
+/**
+ * Deprecated API of AuthMe. Please use {@link NewAPI} instead.
+ */
+@Deprecated
 public class API {
 
     public static final String newline = System.getProperty("line.separator");
-    public static API singleton;
-    public AuthMe plugin;
+    public static AuthMe instance;
+    private static PasswordSecurity passwordSecurity;
 
-    public API(AuthMe plugin) {
-        this.plugin = plugin;
-    }
-
-    public API(Server serv) {
-        this.plugin = (AuthMe) serv.getPluginManager().getPlugin("AuthMe");
+    /**
+     * Constructor for the deprecated API.
+     *
+     * @param instance AuthMe
+     */
+    @Deprecated
+    public API(AuthMe instance) {
+        API.instance = instance;
+        passwordSecurity = instance.getPasswordSecurity();
     }
 
     /**
-     * Hook into AuthMe
-     * 
-     * @return
-     * 
-     * @return AuthMe plugin
+     * Hook into AuthMe.
+     *
+     * @return AuthMe instance
      */
-    public static API getInstance() {
-        if (singleton != null)
-            return singleton;
-        Plugin p = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
-        if (p == null || !(p instanceof AuthMe)) {
+    @Deprecated
+    public static AuthMe hookAuthMe() {
+        if (instance != null) {
+            return instance;
+        }
+        Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("AuthMe");
+        if (plugin == null || !(plugin instanceof AuthMe)) {
             return null;
         }
-        AuthMe authme = (AuthMe) p;
-        singleton = (new API(authme));
-        return singleton;
-    }
-
-    public AuthMe getPlugin() {
-        return plugin;
+        instance = (AuthMe) plugin;
+        return instance;
     }
 
     /**
-     * 
-     * @param player
-     * @return true if player is authenticate
+     * Return whether the player is authenticated.
+     *
+     * @param player The player to verify
+     * @return true if the player is authenticated
      */
-    public boolean isAuthenticated(Player player) {
+    @Deprecated
+    public static boolean isAuthenticated(Player player) {
         return PlayerCache.getInstance().isAuthenticated(player.getName());
     }
 
     /**
-     * 
-     * @param player
-     * @return true if player is a npc
-     */
-    public boolean isNPC(Player player) {
-        if (plugin.getCitizensCommunicator().isNPC(player))
-            return true;
-        return CombatTagComunicator.isNPC(player);
-    }
-
-    /**
-     * 
-     * @param player
+     * Return whether the player is unrestricted.
+     *
+     * @param player The player to verify
      * @return true if the player is unrestricted
      */
-    public boolean isUnrestricted(Player player) {
-        return Utils.getInstance().isUnrestricted(player);
+    @Deprecated
+    public static boolean isUnrestricted(Player player) {
+        return Utils.isUnrestricted(player);
     }
 
-    public Location getLastLocation(Player player) {
+    @Deprecated
+    public static Location getLastLocation(Player player) {
         try {
             PlayerAuth auth = PlayerCache.getInstance().getAuth(player.getName().toLowerCase());
 
@@ -99,74 +90,87 @@ public class API {
         }
     }
 
-    public void setPlayerInventory(Player player, ItemStack[] content,
-            ItemStack[] armor) {
+    @Deprecated
+    public static void setPlayerInventory(Player player, ItemStack[] content,
+                                          ItemStack[] armor) {
         try {
             player.getInventory().setContents(content);
             player.getInventory().setArmorContents(armor);
-        } catch (NullPointerException npe) {
+        } catch (NullPointerException ignored) {
         }
     }
 
     /**
-     * 
-     * @param playerName
+     * Check whether the given player name is registered.
+     *
+     * @param playerName The player name to verify
      * @return true if player is registered
      */
-    public boolean isRegistered(String playerName) {
+    @Deprecated
+    public static boolean isRegistered(String playerName) {
         String player = playerName.toLowerCase();
-        return plugin.database.isAuthAvailable(player);
+        return instance.getDataSource().isAuthAvailable(player);
     }
 
     /**
-     * @param String
-     *            playerName, String passwordToCheck
-     * @return true if the password is correct , false else
+     * Check the password for the given player.
+     *
+     * @param playerName      The name of the player
+     * @param passwordToCheck The password to check
+     * @return true if the password is correct, false otherwise
      */
-    public boolean checkPassword(String playerName, String passwordToCheck) {
-        if (!isRegistered(playerName))
-            return false;
-        String player = playerName.toLowerCase();
-        PlayerAuth auth = plugin.database.getAuth(player);
-        try {
-            return PasswordSecurity.comparePasswordWithHash(passwordToCheck, auth.getHash(), playerName);
-        } catch (NoSuchAlgorithmException e) {
+    @Deprecated
+    public static boolean checkPassword(String playerName, String passwordToCheck) {
+        return isRegistered(playerName) && passwordSecurity.comparePassword(passwordToCheck, playerName);
+    }
+
+    /**
+     * Register a player.
+     *
+     * @param playerName The name of the player
+     * @param password   The password
+     * @return true if the player was registered correctly
+     */
+    @Deprecated
+    public static boolean registerPlayer(String playerName, String password) {
+        String name = playerName.toLowerCase();
+        HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
+        if (isRegistered(name)) {
             return false;
         }
+        PlayerAuth auth = PlayerAuth.builder()
+            .name(name)
+            .password(hashedPassword)
+            .lastLogin(0)
+            .realName(playerName)
+            .build();
+        return instance.getDataSource().saveAuth(auth);
     }
 
     /**
-     * Register a player
-     * 
-     * @param String
-     *            playerName, String password
-     * @return true if the player is register correctly
+     * Force a player to log in.
+     *
+     * @param player The player to log in
      */
-    public boolean registerPlayer(String playerName, String password) {
-        try {
-            String name = playerName.toLowerCase();
-            String hash = PasswordSecurity.getHash(Settings.getPasswordHash, password, name);
-            if (isRegistered(name)) {
-                return false;
-            }
-            PlayerAuth auth = new PlayerAuth(name, hash, "192.168.0.1", 0, "your@email.com");
-            if (!plugin.database.saveAuth(auth)) {
-                return false;
-            }
-            return true;
-        } catch (NoSuchAlgorithmException ex) {
-            return false;
-        }
+    @Deprecated
+    public static void forceLogin(Player player) {
+        instance.getManagement().performLogin(player, "dontneed", true);
+    }
+
+    @Deprecated
+    public AuthMe getPlugin() {
+        return instance;
     }
 
     /**
-     * Force a player to login
-     * 
-     * @param Player
-     *            player
+     * Check whether the player is an NPC.
+     *
+     * @param player The player to verify
+     * @return true if player is an npc
      */
-    public void forceLogin(Player player) {
-        plugin.management.performLogin(player, "dontneed", true);
+    @Deprecated
+    public boolean isNPC(Player player) {
+        return Utils.isNPC(player);
     }
 
 }

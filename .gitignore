@@ -1,12 +1,7 @@
-# Created by https://www.gitignore.io
-
-### Java ###
+### Java files ###
 *.class
 
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+# Package Files
 #*.jar
 *.war
 *.ear
@@ -15,40 +10,27 @@
 hs_err_pid*
 
 
+
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm
-
+# Ignore project files
 *.iml
 
-## Directory-based project format:
-.idea/
-# if you remove the above rule, at least ignore the following:
+# Ignore IDEA directory
+.idea/*
 
-# User-specific stuff:
-# .idea/workspace.xml
-# .idea/tasks.xml
-# .idea/dictionaries
+# Include the project's code style settings file
+!.idea/codeStyleSettings.xml
 
-# Sensitive or high-churn files:
-# .idea/dataSources.ids
-# .idea/dataSources.xml
-# .idea/sqlDataSources.xml
-# .idea/dynamic.xml
-# .idea/uiDesigner.xml
+# Include the project's dictionary
+!.idea/dictionaries/
+!.idea/dictionaries/*
 
-# Gradle:
-# .idea/gradle.xml
-# .idea/libraries
-
-# Mongo Explorer plugin:
-# .idea/mongoSettings.xml
-
-## File-based project format:
+# File-based project format:
 *.ipr
 *.iws
 
-## Plugin-specific files:
-
+### Plugin-specific files: ###
 # IntelliJ
 /out/
 
@@ -62,6 +44,7 @@ atlassian-ide-plugin.xml
 com_crashlytics_export_strings.xml
 crashlytics.properties
 crashlytics-build.properties
+
 
 
 ### Eclipse ###
@@ -103,6 +86,7 @@ local.properties
 .texlipse
 
 
+
 ### Maven ###
 target/
 pom.xml.tag
@@ -114,6 +98,7 @@ dependency-reduced-pom.xml
 buildNumber.properties
 
 
+
 ### NetBeans ###
 nbproject/private/
 build/
@@ -123,3 +108,9 @@ nbdist/
 nbactions.xml
 nb-configuration.xml
 .nb-gradle/
+
+
+
+### Git ###
+# Don't exclude the .gitignore itself
+!.gitignore

@@ -5,46 +5,42 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 /**
- *
- * This event is called when a player login or register through AuthMe. The
- * boolean 'isLogin' will be false if, and only if, login/register failed.
- *
- * @author Xephi59
+ * Event fired when a player has successfully logged in or registered.
  */
-public class LoginEvent extends Event {
+public class LoginEvent extends CustomEvent {
 
-    private Player player;
-    private boolean isLogin;
     private static final HandlerList handlers = new HandlerList();
+    private final Player player;
 
-    public LoginEvent(Player player, boolean isLogin) {
+    /**
+     * Constructor.
+     *
+     * @param player The player
+     */
+    public LoginEvent(Player player) {
         this.player = player;
-        this.isLogin = isLogin;
     }
 
+    /**
+     * Return the player that has successfully logged in or registered.
+     *
+     * @return The player
+     */
     public Player getPlayer() {
-        return this.player;
+        return player;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-
-    @Deprecated
-    public void setLogin(boolean isLogin) {
-        this.isLogin = isLogin;
-    }
-
-    public boolean isLogin() {
-        return isLogin;
+    /**
+     * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
+     *
+     * @return The list of handlers
+     */
+    public static HandlerList getHandlerList() {
+        return handlers;
     }
 
     @Override
     public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
         return handlers;
     }
 
