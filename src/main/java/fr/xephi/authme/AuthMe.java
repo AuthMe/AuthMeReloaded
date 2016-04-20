@@ -258,16 +258,12 @@ public class AuthMe extends JavaPlugin {
         // Initialize spawn loader
         spawnLoader = new SpawnLoader(getDataFolder(), newSettings, pluginHooks);
 
-
-        // Set up the permissions manager and command handler
         bukkitService = new BukkitService(this);
         permsMan = initializePermissionsManager();
+        antiBot = new AntiBot(newSettings, messages, permsMan, bukkitService);
         ValidationService validationService = new ValidationService(newSettings, database, permsMan);
         commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings,
             pluginHooks, spawnLoader, antiBot, validationService, bukkitService);
-
-        // AntiBot delay
-        antiBot = new AntiBot(newSettings, messages, permsMan, bukkitService);
 
         // Set up Metrics
         MetricsStarter.setupMetrics(plugin, newSettings);
