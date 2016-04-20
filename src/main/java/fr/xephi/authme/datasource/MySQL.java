@@ -429,7 +429,7 @@ public class MySQL implements DataSource {
                 rs = pst.executeQuery();
                 if (rs.next()) {
                     int id = rs.getInt(col.ID);
-                    sql = "INSERT INTO " + wordpressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?);";
+                    sql = "INSERT INTO " + wordpressPrefix + "usermeta (user_id, meta_key, meta_value) VALUES (?,?,?)";
                     pst2 = con.prepareStatement(sql);
                     // First Name
                     pst2.setInt(1, id);
