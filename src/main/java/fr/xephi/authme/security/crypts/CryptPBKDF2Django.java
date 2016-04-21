@@ -4,6 +4,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Engine;
 import fr.xephi.authme.security.pbkdf2.PBKDF2Parameters;
+import fr.xephi.authme.util.StringUtils;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -31,8 +32,8 @@ public class CryptPBKDF2Django extends HexSaltedMethod {
         try {
             iterations = Integer.parseInt(line[1]);
         } catch (NumberFormatException e) {
-            ConsoleLogger.logException("Could not read number of rounds in '" + hashedPassword.getHash()
-                + " for CryptPBKDF2Django", e);
+            ConsoleLogger.showError("Could not read number of rounds for CryptPBKDF2Django:"
+                + StringUtils.formatException(e));
             return false;
         }
         String salt = line[2];
