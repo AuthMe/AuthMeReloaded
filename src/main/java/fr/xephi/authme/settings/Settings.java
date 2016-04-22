@@ -29,34 +29,25 @@ public final class Settings {
     public static List<String> getForcedWorlds;
     public static List<String> countries;
     public static List<String> countriesBlacklist;
-    public static List<String> forceRegisterCommands;
-    public static List<String> forceRegisterCommandsAsConsole;
     public static HashAlgorithm getPasswordHash;
     public static Pattern nickPattern;
     public static boolean isChatAllowed, isPermissionCheckEnabled,
         isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
-        isSessionsEnabled, isAllowRestrictedIp,
-        isMovementAllowed, isKickNonRegisteredEnabled,
+        isSessionsEnabled, isAllowRestrictedIp, isMovementAllowed,
         isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
-        isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
-        protectInventoryBeforeLogInEnabled, isStopEnabled, reloadSupport,
-        rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-        emailRegistration, multiverse, bungee,
-        banUnsafeIp, sessionExpireOnIpChange, useEssentialsMotd,
-        enableProtection, recallEmail, useWelcomeMessage,
-        broadcastWelcomeMessage, forceRegKick, forceRegLogin,
-        removeJoinMessage, removeLeaveMessage, delayJoinMessage,
-        noTeleport, allowAllCommandsIfRegIsOptional,
-        isRemoveSpeedEnabled, preventOtherCase, hideChat;
+        isSaveQuitLocationEnabled, protectInventoryBeforeLogInEnabled,
+        isStopEnabled, reloadSupport, rakamakUseIp, noConsoleSpam,
+        removePassword, displayOtherAccounts, emailRegistration,
+        multiverse, bungee, banUnsafeIp, sessionExpireOnIpChange,
+        enableProtection, recallEmail, forceRegLogin, noTeleport,
+        allowAllCommandsIfRegIsOptional, isRemoveSpeedEnabled;
     public static String getNickRegex, getUnloggedinGroup,
         unRegisteredGroup, backupWindowsPath, getRegisteredGroup,
-        rakamakUsers, rakamakUsersIp, defaultWorld,
-        spawnPriority, crazyloginFileName;
+        rakamakUsers, rakamakUsersIp, defaultWorld, crazyloginFileName;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
-        getMovementRadius, getNonActivatedGroup,
-        maxLoginTry, captchaLength, saltLength,
-        bCryptLog2Rounds, getMaxLoginPerIp, getMaxJoinPerIp;
+        getNonActivatedGroup, maxLoginTry, captchaLength, saltLength,
+        bCryptLog2Rounds, getMaxLoginPerIp;
     protected static FileConfiguration configFile;
 
     /**
@@ -71,7 +62,7 @@ public final class Settings {
 
     private static void loadVariables() {
         isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
-        isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
+        isForcedRegistrationEnabled = load(RegistrationSettings.FORCE);
         isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
         getWarnMessageInterval = load(RegistrationSettings.MESSAGE_INTERVAL);
         isSessionsEnabled = load(PluginSettings.SESSIONS_ENABLED);
@@ -83,14 +74,11 @@ public final class Settings {
         getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
         nickPattern = Pattern.compile(getNickRegex);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
-        isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
-        isRemoveSpeedEnabled = configFile.getBoolean("settings.restrictions.removeSpeed", true);
-        getMovementRadius = configFile.getInt("settings.restrictions.allowedMovementRadius", 100);
-        isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
-        isForceSingleSessionEnabled = configFile.getBoolean("settings.restrictions.ForceSingleSession", true);
-        isForceSpawnLocOnJoinEnabled = configFile.getBoolean("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
+        isMovementAllowed = load(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT);
+        isRemoveSpeedEnabled = load(RestrictionSettings.REMOVE_SPEED);
+        isForceSingleSessionEnabled = load(RestrictionSettings.FORCE_SINGLE_SESSION);
+        isForceSpawnLocOnJoinEnabled = load(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN);
         isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
-        isForceSurvivalModeEnabled = configFile.getBoolean("settings.GameMode.ForceSurvivalMode", false);
         getPasswordHash = load(SecuritySettings.PASSWORD_HASH);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
@@ -107,7 +95,7 @@ public final class Settings {
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
 
-        allowAllCommandsIfRegIsOptional = configFile.getBoolean("settings.restrictions.allowAllCommandsIfRegistrationIsOptional", false);
+        allowAllCommandsIfRegIsOptional = load(RestrictionSettings.ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL);
         allowCommands = new ArrayList<>();
         allowCommands.addAll(Arrays.asList("/login", "/l", "/register", "/reg", "/email", "/captcha"));
         for (String cmd : configFile.getStringList("settings.restrictions.allowCommands")) {
@@ -128,33 +116,20 @@ public final class Settings {
         emailRegistration = load(RegistrationSettings.USE_EMAIL_REGISTRATION);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         multiverse = load(HooksSettings.MULTIVERSE);
-        bungee = configFile.getBoolean("Hooks.bungeecord", false);
+        bungee = load(HooksSettings.BUNGEECORD);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
         banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
         sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
-        useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = configFile.getStringList("Protection.countries");
         recallEmail = configFile.getBoolean("Email.recallPlayers", false);
-        useWelcomeMessage = load(RegistrationSettings.USE_WELCOME_MESSAGE);
         countriesBlacklist = configFile.getStringList("Protection.countriesBlacklist");
-        broadcastWelcomeMessage = load(RegistrationSettings.BROADCAST_WELCOME_MESSAGE);
-        forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
         forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
-        spawnPriority = load(RestrictionSettings.SPAWN_PRIORITY);
         getMaxLoginPerIp = load(RestrictionSettings.MAX_LOGIN_PER_IP);
-        getMaxJoinPerIp = load(RestrictionSettings.MAX_JOIN_PER_IP);
-        removeJoinMessage = load(RegistrationSettings.REMOVE_JOIN_MESSAGE);
-        removeLeaveMessage = load(RegistrationSettings.REMOVE_LEAVE_MESSAGE);
-        delayJoinMessage = load(RegistrationSettings.DELAY_JOIN_MESSAGE);
         noTeleport = load(RestrictionSettings.NO_TELEPORT);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
-        forceRegisterCommands = configFile.getStringList("settings.forceRegisterCommands");
-        forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
-        preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
-        hideChat = load(RestrictionSettings.HIDE_CHAT);
     }
 
     /**

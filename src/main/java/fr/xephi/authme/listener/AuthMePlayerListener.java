@@ -56,6 +56,9 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT;
 
 /**
  * Listener class for player events.
@@ -90,19 +93,17 @@ public class AuthMePlayerListener implements Listener {
 
         final Player player = event.getPlayer();
         if (Utils.checkAuth(player)) {
-            for (Player p : Utils.getOnlinePlayers()) {
-                if(!settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
-                    break;
-                }
-                if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
-                    event.getRecipients().remove(p);
+            if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
+                for (Player p : Utils.getOnlinePlayers()) {
+                    if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
+                        event.getRecipients().remove(p);
+                    }
                 }
             }
-            return;
+        } else {
+            event.setCancelled(true);
+            sendLoginOrRegisterMessage(player);
         }
-
-        event.setCancelled(true);
-        sendLoginOrRegisterMessage(player);
     }
 
     private void sendLoginOrRegisterMessage(final Player player) {
@@ -125,13 +126,14 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerCommandPreprocess(PlayerCommandPreprocessEvent event) {
         String cmd = event.getMessage().split(" ")[0].toLowerCase();
-        if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && cmd.equals("/motd")) {
+        if (settings.getProperty(HooksSettings.USE_ESSENTIALS_MOTD) && "/motd".equals(cmd)) {
             return;
         }
-        if (!Settings.isForcedRegistrationEnabled && Settings.allowAllCommandsIfRegIsOptional) {
+        if (!settings.getProperty(RegistrationSettings.FORCE)
+            && settings.getProperty(ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL)) {
             return;
         }
-        if (Settings.allowCommands.contains(cmd)) {
+        if (settings.getProperty(RestrictionSettings.ALLOW_COMMANDS).contains(cmd)) {
             return;
         }
         if (Utils.checkAuth(event.getPlayer())) {
@@ -168,7 +170,7 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (Settings.isMovementAllowed && Settings.getMovementRadius <= 0) {
+        if (settings.getProperty(ALLOW_UNAUTHED_MOVEMENT) && settings.getProperty(ALLOWED_MOVEMENT_RADIUS) <= 0) {
             return;
         }
 
@@ -187,17 +189,17 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (!Settings.isMovementAllowed) {
+        if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
             event.setTo(event.getFrom());
             // sgdc3 TODO: remove this, maybe we should set the effect every x ticks, idk!
-            if (Settings.isRemoveSpeedEnabled) {
+            if (settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
                 player.setFlySpeed(0.0f);
                 player.setWalkSpeed(0.0f);
             }
             return;
         }
 
-        if (Settings.noTeleport) {
+        if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
             return;
         }
 
@@ -207,7 +209,7 @@ public class AuthMePlayerListener implements Listener {
                 player.teleport(spawn);
                 return;
             }
-            if (spawn.distance(player.getLocation()) > Settings.getMovementRadius) {
+            if (spawn.distance(player.getLocation()) > settings.getProperty(ALLOWED_MOVEMENT_RADIUS)) {
                 player.teleport(spawn);
             }
         }
@@ -220,11 +222,11 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (Settings.removeJoinMessage) {
+        if (settings.getProperty(RegistrationSettings.REMOVE_JOIN_MESSAGE)) {
             event.setJoinMessage(null);
             return;
         }
-        if (!Settings.delayJoinMessage) {
+        if (!settings.getProperty(RegistrationSettings.DELAY_JOIN_MESSAGE)) {
             return;
         }
 
@@ -232,11 +234,10 @@ public class AuthMePlayerListener implements Listener {
         String joinMsg = event.getJoinMessage();
 
         // Remove the join message while the player isn't logging in
-        if (joinMsg == null) {
-            return;
+        if (joinMsg != null) {
+            event.setJoinMessage(null);
+            joinMessage.put(name, joinMsg);
         }
-        event.setJoinMessage(null);
-        joinMessage.put(name, joinMsg);
     }
 
     @EventHandler(priority = EventPriority.LOW)
@@ -246,7 +247,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (Settings.isForceSurvivalModeEnabled
+        if (settings.getProperty(RestrictionSettings.FORCE_SURVIVAL_MODE)
             && !player.hasPermission(PlayerStatePermission.BYPASS_FORCE_SURVIVAL.getNode())) {
             player.setGameMode(GameMode.SURVIVAL);
         }
@@ -264,7 +265,7 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerAuth auth = dataSource.getAuth(event.getName());
-        if (Settings.preventOtherCase && auth != null && auth.getRealName() != null) {
+        if (settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE) && auth != null && auth.getRealName() != null) {
             String realName = auth.getRealName();
             if (!realName.isEmpty() && !realName.equals("Player") && !realName.equals(event.getName())) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
@@ -297,7 +298,7 @@ public class AuthMePlayerListener implements Listener {
         final Player player = bukkitService.getPlayerExact(name);
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
-        if (player != null && Settings.isForceSingleSessionEnabled) {
+        if (player != null && settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)) {
             event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
             event.setKickMessage(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR));
             LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
@@ -354,7 +355,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (Settings.isKickNonRegisteredEnabled && !isAuthAvailable) {
+        if (settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED) && !isAuthAvailable) {
             event.setKickMessage(m.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
@@ -374,7 +375,7 @@ public class AuthMePlayerListener implements Listener {
 
         antiBot.checkAntiBot(player);
 
-        if (Settings.bungee) {
+        if (settings.getProperty(HooksSettings.BUNGEECORD)) {
             ByteArrayDataOutput out = ByteStreams.newDataOutput();
             out.writeUTF("IP");
             player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
@@ -389,7 +390,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (Settings.removeLeaveMessage) {
+        if (settings.getProperty(RegistrationSettings.REMOVE_LEAVE_MESSAGE)) {
             event.setQuitMessage(null);
         }
 
@@ -404,8 +405,8 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if ((!Settings.isForceSingleSessionEnabled)
-            && (event.getReason().equals(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR)))) {
+        if (!settings.getProperty(RestrictionSettings.FORCE_SINGLE_SESSION)
+            && event.getReason().equals(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR))) {
             event.setCancelled(true);
             return;
         }
