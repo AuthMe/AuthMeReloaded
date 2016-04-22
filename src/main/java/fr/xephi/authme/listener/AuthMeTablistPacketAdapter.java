@@ -68,7 +68,7 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
 
         //triggers an update for others player to see them
         for (Player onlinePlayer : Utils.getOnlinePlayers()) {
-            if (onlinePlayer.equals(receiver)) {
+            if (onlinePlayer.equals(receiver) || !receiver.canSee(onlinePlayer)) {
                 continue;
             }
 
