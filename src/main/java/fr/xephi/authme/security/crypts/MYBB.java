@@ -19,7 +19,7 @@ public class MYBB extends SeparateSaltMethod {
 
     @Override
     public String generateSalt() {
-        return RandomString.generateHex(8);
+        return RandomString.generateLowerUpper(8);
     }
 
 }
