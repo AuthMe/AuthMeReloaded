@@ -17,6 +17,7 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -166,11 +167,12 @@ public class AsynchronousLogin implements Process {
 
             displayOtherAccounts(auth);
 
-            if (Settings.recallEmail && (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email))) {
+            if (service.getProperty(EmailSettings.RECALL_PLAYERS)
+                && (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email))) {
                 service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
 
-            if (!Settings.noConsoleSpam) {
+            if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                 ConsoleLogger.info(realName + " logged in!");
             }
 
@@ -212,7 +214,7 @@ public class AsynchronousLogin implements Process {
     }
 
     private void displayOtherAccounts(PlayerAuth auth) {
-        if (!Settings.displayOtherAccounts || auth == null) {
+        if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS) || auth == null) {
             return;
         }
 

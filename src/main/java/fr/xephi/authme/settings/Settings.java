@@ -31,15 +31,14 @@ public final class Settings {
     public static List<String> countriesBlacklist;
     public static HashAlgorithm getPasswordHash;
     public static Pattern nickPattern;
-    public static boolean isChatAllowed, isPermissionCheckEnabled,
+    public static boolean isPermissionCheckEnabled,
         isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
-        isSessionsEnabled, isAllowRestrictedIp, isMovementAllowed,
+        isSessionsEnabled, isAllowRestrictedIp,
         isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
         isSaveQuitLocationEnabled, protectInventoryBeforeLogInEnabled,
-        isStopEnabled, reloadSupport, rakamakUseIp, noConsoleSpam,
-        removePassword, displayOtherAccounts, emailRegistration,
-        multiverse, bungee, banUnsafeIp, sessionExpireOnIpChange,
-        enableProtection, recallEmail, forceRegLogin, noTeleport,
+        isStopEnabled, reloadSupport, rakamakUseIp,
+        removePassword, multiverse, bungee,
+        enableProtection, forceRegLogin, noTeleport,
         allowAllCommandsIfRegIsOptional, isRemoveSpeedEnabled;
     public static String getNickRegex, getUnloggedinGroup,
         unRegisteredGroup, backupWindowsPath, getRegisteredGroup,
@@ -68,13 +67,11 @@ public final class Settings {
         isSessionsEnabled = load(PluginSettings.SESSIONS_ENABLED);
         getSessionTimeout = configFile.getInt("settings.sessions.timeout", 10);
         getRegistrationTimeout = load(RestrictionSettings.TIMEOUT);
-        isChatAllowed = load(RestrictionSettings.ALLOW_CHAT);
         getMaxNickLength = configFile.getInt("settings.restrictions.maxNicknameLength", 20);
         getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
         getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
         nickPattern = Pattern.compile(getNickRegex);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
-        isMovementAllowed = load(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT);
         isRemoveSpeedEnabled = load(RestrictionSettings.REMOVE_SPEED);
         isForceSingleSessionEnabled = load(RestrictionSettings.FORCE_SINGLE_SESSION);
         isForceSpawnLocOnJoinEnabled = load(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN);
@@ -108,23 +105,17 @@ public final class Settings {
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
-        noConsoleSpam = load(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
-        displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        emailRegistration = load(RegistrationSettings.USE_EMAIL_REGISTRATION);
         saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         multiverse = load(HooksSettings.MULTIVERSE);
         bungee = load(HooksSettings.BUNGEECORD);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
-        banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
-        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", true);
         bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = configFile.getStringList("Protection.countries");
-        recallEmail = configFile.getBoolean("Email.recallPlayers", false);
         countriesBlacklist = configFile.getStringList("Protection.countriesBlacklist");
         forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
         getMaxLoginPerIp = load(RestrictionSettings.MAX_LOGIN_PER_IP);

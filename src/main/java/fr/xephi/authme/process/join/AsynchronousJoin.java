@@ -14,26 +14,26 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
-import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.Utils.GroupType;
-
+import org.apache.commons.lang.reflect.MethodUtils;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import org.apache.commons.lang.reflect.MethodUtils;
+import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 /**
  */
@@ -70,13 +70,13 @@ public class AsynchronousJoin implements Process {
         }
 
         final String ip = Utils.getPlayerIp(player);
-        if (isNameRestricted(name, ip, player.getAddress().getHostName(), service.getSettings())) {
+        if (isNameRestricted(name, ip, player.getAddress().getHostName())) {
             service.scheduleSyncDelayedTask(new Runnable() {
                 @Override
                 public void run() {
                     AuthMePlayerListener.causeByAuthMe.putIfAbsent(name, true);
                     player.kickPlayer(service.retrieveSingleMessage(MessageKey.NOT_OWNER_ERROR));
-                    if (Settings.banUnsafeIp) {
+                    if (service.getProperty(RestrictionSettings.BAN_UNKNOWN_IP)) {
                         plugin.getServer().banIP(ip);
                     }
                 }
@@ -87,7 +87,7 @@ public class AsynchronousJoin implements Process {
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
             && !"127.0.0.1".equalsIgnoreCase(ip)
             && !"localhost".equalsIgnoreCase(ip)
-            && hasJoinedIp(player.getName(), ip, service.getSettings())) {
+            && hasJoinedIp(player.getName(), ip)) {
             service.scheduleSyncDelayedTask(new Runnable() {
                 @Override
                 public void run() {
@@ -103,7 +103,7 @@ public class AsynchronousJoin implements Process {
         final Location spawnLoc = service.getSpawnLoader().getSpawnLocation(player);
         final boolean isAuthAvailable = database.isAuthAvailable(name);
         if (isAuthAvailable) {
-            if (!Settings.noTeleport) {
+            if (!service.getProperty(RestrictionSettings.NO_TELEPORT)) {
                 if (Settings.isTeleportToSpawnEnabled || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                     service.scheduleSyncDelayedTask(new Runnable() {
                         @Override
@@ -122,12 +122,12 @@ public class AsynchronousJoin implements Process {
             LimboCache.getInstance().updateLimboPlayer(player);
 
             // protect inventory
-            if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
+            if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
                 ProtectInventoryEvent ev = new ProtectInventoryEvent(player);
                 plugin.getServer().getPluginManager().callEvent(ev);
                 if (ev.isCancelled()) {
                     plugin.inventoryProtector.sendInventoryPacket(player);
-                    if (!Settings.noConsoleSpam) {
+                    if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                         ConsoleLogger.info("ProtectInventoryEvent has been cancelled for " + player.getName() + "...");
                     }
                 }
@@ -145,7 +145,7 @@ public class AsynchronousJoin implements Process {
                     service.send(player, MessageKey.SESSION_RECONNECTION);
                     plugin.getManagement().performLogin(player, "dontneed", true);
                     return;
-                } else if (Settings.sessionExpireOnIpChange) {
+                } else if (service.getProperty(PluginSettings.SESSIONS_EXPIRE_ON_IP_CHANGE)) {
                     service.send(player, MessageKey.SESSION_EXPIRED);
                 }
             }
@@ -153,7 +153,7 @@ public class AsynchronousJoin implements Process {
             if (!Settings.unRegisteredGroup.isEmpty()) {
                 Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
             }
-            if (!Settings.isForcedRegistrationEnabled) {
+            if (!service.getProperty(RegistrationSettings.FORCE)) {
                 return;
             }
 
@@ -184,7 +184,8 @@ public class AsynchronousJoin implements Process {
             @Override
             public void run() {
                 player.setOp(false);
-                if (!Settings.isMovementAllowed && Settings.isRemoveSpeedEnabled) {
+                if (!service.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)
+                    && service.getProperty(RestrictionSettings.REMOVE_SPEED)) {
                     player.setFlySpeed(0.0f);
                     player.setWalkSpeed(0.0f);
                 }
@@ -211,7 +212,7 @@ public class AsynchronousJoin implements Process {
         if (isAuthAvailable) {
             msg = MessageKey.LOGIN_MESSAGE;
         } else {
-            msg = Settings.emailRegistration
+            msg = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
                 ? MessageKey.REGISTER_EMAIL_MESSAGE
                 : MessageKey.REGISTER_MESSAGE;
         }
@@ -277,24 +278,22 @@ public class AsynchronousJoin implements Process {
      * @param name The name to check
      * @param ip The IP address of the player
      * @param domain The hostname of the IP address
-     * @param settings The settings instance
      * @return True if the name is restricted (IP/domain is not allowed for the given name),
      *         false if the restrictions are met or if the name has no restrictions to it
      */
-    private static boolean isNameRestricted(String name, String ip, String domain, NewSetting settings) {
-        if (!settings.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)) {
+    private boolean isNameRestricted(String name, String ip, String domain) {
+        if (!service.getProperty(RestrictionSettings.ENABLE_RESTRICTED_USERS)) {
             return false;
         }
 
         boolean nameFound = false;
-        for (String entry : settings.getProperty(RestrictionSettings.ALLOWED_RESTRICTED_USERS)) {
+        for (String entry : service.getProperty(RestrictionSettings.ALLOWED_RESTRICTED_USERS)) {
             String[] args = entry.split(";");
             String testName = args[0];
             String testIp = args[1];
             if (testName.equalsIgnoreCase(name)) {
                 nameFound = true;
-                if ((ip != null && testIp.equals(ip))
-                    || (domain != null && testIp.equalsIgnoreCase(domain))) {
+                if ((ip != null && testIp.equals(ip)) || (domain != null && testIp.equalsIgnoreCase(domain))) {
                     return false;
                 }
             }
@@ -302,7 +301,7 @@ public class AsynchronousJoin implements Process {
         return nameFound;
     }
 
-    private boolean hasJoinedIp(String name, String ip, NewSetting settings) {
+    private boolean hasJoinedIp(String name, String ip) {
         int count = 0;
         for (Player player : Utils.getOnlinePlayers()) {
             if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))
@@ -310,6 +309,6 @@ public class AsynchronousJoin implements Process {
                 count++;
             }
         }
-        return count >= settings.getProperty(RestrictionSettings.MAX_JOIN_PER_IP);
+        return count >= service.getProperty(RestrictionSettings.MAX_JOIN_PER_IP);
     }
 }

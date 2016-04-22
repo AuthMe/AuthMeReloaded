@@ -18,13 +18,13 @@ public class RestrictionSettings implements SettingsClass {
     public static final Property<Boolean> ALLOW_CHAT =
         newProperty("settings.restrictions.allowChat", false);
 
-    @Comment("Can not authenticated players see the chat log?")
+    @Comment("Hide the chat log from players who are not authenticated?")
     public static final Property<Boolean> HIDE_CHAT =
         newProperty("settings.restrictions.hideChat", false);
 
     @Comment({
        "Allow unlogged users to use all the commands if registration is not forced!",
-       "WARNING: use this only if you need it!)"})
+       "WARNING: use this only if you need it!"})
     public static final Property<Boolean> ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL =
         newProperty("settings.restrictions.allowAllCommandsIfRegistrationIsOptional", false);
 

@@ -75,8 +75,8 @@ public class AuthMePlayerListener implements Listener {
     private final Management management;
     private final BukkitService bukkitService;
 
-    public AuthMePlayerListener(AuthMe plugin, NewSetting settings, Messages messages, DataSource dataSource, AntiBot antiBot,
-                                Management management, BukkitService bukkitService) {
+    public AuthMePlayerListener(AuthMe plugin, NewSetting settings, Messages messages, DataSource dataSource,
+                                AntiBot antiBot, Management management, BukkitService bukkitService) {
         this.plugin = plugin;
         this.settings = settings;
         this.m = messages;
@@ -92,17 +92,15 @@ public class AuthMePlayerListener implements Listener {
         }
 
         final Player player = event.getPlayer();
-        if (Utils.checkAuth(player)) {
-            if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
-                for (Player p : Utils.getOnlinePlayers()) {
-                    if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
-                        event.getRecipients().remove(p);
-                    }
-                }
-            }
-        } else {
+        if (shouldCancelEvent(player)) {
             event.setCancelled(true);
             sendLoginOrRegisterMessage(player);
+        } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
+            for (Player p : Utils.getOnlinePlayers()) {
+                if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
+                    event.getRecipients().remove(p);
+                }
+            }
         }
     }
 
@@ -349,7 +347,7 @@ public class AuthMePlayerListener implements Listener {
         final String name = player.getName().toLowerCase();
         boolean isAuthAvailable = dataSource.isAuthAvailable(name);
 
-        if (antiBot.getAntiBotStatus()==AntiBotStatus.ACTIVE && !isAuthAvailable) {
+        if (antiBot.getAntiBotStatus() == AntiBotStatus.ACTIVE && !isAuthAvailable) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;

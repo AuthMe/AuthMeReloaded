@@ -614,7 +614,7 @@ public class AuthMe extends JavaPlugin {
      * Set up the permissions manager.
      */
     private PermissionsManager initializePermissionsManager() {
-        PermissionsManager manager = new PermissionsManager(Bukkit.getServer(), this, getLogger());
+        PermissionsManager manager = new PermissionsManager(Bukkit.getServer(), getLogger());
         manager.setup();
         return manager;
     }
