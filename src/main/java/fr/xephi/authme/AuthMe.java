@@ -338,7 +338,7 @@ public class AuthMe extends JavaPlugin {
         }
         database.reload();
         messages.reload(newSettings.getMessagesFile());
-        passwordSecurity.reload(newSettings);
+        passwordSecurity.reload();
         spawnLoader.initialize(newSettings);
     }
 

@@ -4,7 +4,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
@@ -35,7 +34,6 @@ public class RakamakConverter implements Converter {
     @Override
     // TODO ljacqu 20151229: Restructure this into smaller portions
     public void run() {
-        HashAlgorithm hash = Settings.getPasswordHash;
         boolean useIP = Settings.rakamakUseIp;
         String fileName = Settings.rakamakUsers;
         String ipFileName = Settings.rakamakUsersIp;
@@ -64,7 +62,7 @@ public class RakamakConverter implements Converter {
             while ((line = users.readLine()) != null) {
                 if (line.contains("=")) {
                     String[] arguments = line.split("=");
-                    HashedPassword hashedPassword = passwordSecurity.computeHash(hash, arguments[1], arguments[0]);
+                    HashedPassword hashedPassword = passwordSecurity.computeHash(arguments[1], arguments[0]);
                     playerPSW.put(arguments[0], hashedPassword);
 
                 }

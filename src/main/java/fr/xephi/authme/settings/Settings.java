@@ -45,8 +45,7 @@ public final class Settings {
         rakamakUsers, rakamakUsersIp, defaultWorld, crazyloginFileName;
     public static int getWarnMessageInterval, getSessionTimeout,
         getRegistrationTimeout, getMaxNickLength, getMinNickLength,
-        getNonActivatedGroup, maxLoginTry, captchaLength, saltLength,
-        bCryptLog2Rounds, getMaxLoginPerIp;
+        getNonActivatedGroup, maxLoginTry, captchaLength, getMaxLoginPerIp;
     protected static FileConfiguration configFile;
 
     /**
@@ -108,11 +107,9 @@ public final class Settings {
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
         multiverse = load(HooksSettings.MULTIVERSE);
         bungee = load(HooksSettings.BUNGEECORD);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
-        bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = configFile.getStringList("Protection.countries");

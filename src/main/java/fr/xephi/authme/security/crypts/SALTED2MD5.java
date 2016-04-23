@@ -5,13 +5,20 @@ import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 
 import static fr.xephi.authme.security.HashUtils.md5;
 
 @Recommendation(Usage.ACCEPTABLE) // presuming that length is something sensible (>= 8)
 @HasSalt(value = SaltType.TEXT)   // length defined by Settings.saltLength
 public class SALTED2MD5 extends SeparateSaltMethod {
+
+    private final int saltLength;
+
+    public SALTED2MD5(NewSetting settings) {
+        saltLength = settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH);
+    }
 
     @Override
     public String computeHash(String password, String salt, String name) {
@@ -20,7 +27,7 @@ public class SALTED2MD5 extends SeparateSaltMethod {
 
     @Override
     public String generateSalt() {
-        return RandomString.generateHex(Settings.saltLength);
+        return RandomString.generateHex(saltLength);
     }
 
 }

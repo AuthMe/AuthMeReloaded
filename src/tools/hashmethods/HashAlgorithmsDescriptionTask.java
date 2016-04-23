@@ -1,8 +1,6 @@
 package hashmethods;
 
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.util.WrapperMock;
 import utils.FileUtils;
 import utils.TagValue.NestedTagValue;
 import utils.TagValueHolder;
@@ -24,12 +22,6 @@ public class HashAlgorithmsDescriptionTask implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
-        // Unfortunately, we need the Wrapper to be around to work with Settings, and certain encryption methods
-        // directly read from the Settings file
-        WrapperMock.createInstance();
-        Settings.bCryptLog2Rounds = 8;
-        Settings.saltLength = 8;
-
         // Gather info and construct a row for each method
         EncryptionMethodInfoGatherer infoGatherer = new EncryptionMethodInfoGatherer();
         Map<HashAlgorithm, MethodDescription> descriptions = infoGatherer.getDescriptions();

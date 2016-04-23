@@ -1,11 +1,16 @@
 package hashmethods;
 
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HexSaltedMethod;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
+import org.mockito.BDDMockito;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -14,6 +19,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.mockito.Mockito.mock;
 
 /**
  * Gathers information on {@link EncryptionMethod} implementations based on
@@ -24,6 +30,8 @@ public class EncryptionMethodInfoGatherer {
     @SuppressWarnings("unchecked")
     private final static Set<Class<? extends Annotation>> RELEVANT_ANNOTATIONS =
         newHashSet(HasSalt.class, Recommendation.class, AsciiRestricted.class);
+
+    private static NewSetting settings = createSettings();
 
     private Map<HashAlgorithm, MethodDescription> descriptions;
 
@@ -38,16 +46,19 @@ public class EncryptionMethodInfoGatherer {
 
     private void constructDescriptions() {
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
-            Class<? extends EncryptionMethod> methodClazz = algorithm.getClazz();
-            if (!HashAlgorithm.CUSTOM.equals(algorithm) && !methodClazz.isAnnotationPresent(Deprecated.class)) {
-                MethodDescription description = createDescription(methodClazz);
+            if (!HashAlgorithm.CUSTOM.equals(algorithm) && !algorithm.getClazz().isAnnotationPresent(Deprecated.class)) {
+                MethodDescription description = createDescription(algorithm);
                 descriptions.put(algorithm, description);
             }
         }
     }
 
-    private static MethodDescription createDescription(Class<? extends EncryptionMethod> clazz) {
-        EncryptionMethod method = instantiateMethod(clazz);
+    private static MethodDescription createDescription(HashAlgorithm algorithm) {
+        Class<? extends EncryptionMethod> clazz = algorithm.getClazz();
+        EncryptionMethod method = PasswordSecurity.initializeEncryptionMethod(algorithm, settings);
+        if (method == null) {
+            throw new NullPointerException("Method for '" + algorithm + "' is null");
+        }
         MethodDescription description = new MethodDescription(clazz);
         description.setHashLength(method.computeHash("test", "user").getHash().length());
         description.setHasSeparateSalt(method.hasSeparateSalt());
@@ -118,18 +129,25 @@ public class EncryptionMethodInfoGatherer {
         }
     }
 
-    private static EncryptionMethod instantiateMethod(Class<? extends EncryptionMethod> clazz) {
-        try {
-            return clazz.newInstance();
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new RuntimeException("Could not instantiate " + clazz, e);
-        }
-    }
-
     // Convenience method for retrieving an annotation in a typed fashion.
     // We know implicitly that the key of the map always corresponds to the type of the value
     private static <T> T returnTyped(Map<Class<?>, Annotation> map, Class<T> key) {
         return key.cast(map.get(key));
+    }
+
+    private static NewSetting createSettings() {
+        // TODO #672 Don't mock settings but instantiate a NewSetting object without any validation / migration
+        NewSetting settings = mock(NewSetting.class);
+        BDDMockito.given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
+        BDDMockito.given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(8);
+        return settings;
+
+        /*try (InputStreamReader isr = new InputStreamReader(getClass().getResourceAsStream("config.yml"))) {
+            FileConfiguration configuration = YamlConfiguration.loadConfiguration(isr);
+            return new NewSetting(configuration, null, null, null);
+        } catch (IOException e) {
+            throw new UnsupportedOperationException(e);
+        }*/
     }
 
 }

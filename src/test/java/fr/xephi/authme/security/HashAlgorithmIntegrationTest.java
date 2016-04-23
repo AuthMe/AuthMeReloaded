@@ -1,10 +1,11 @@
 package fr.xephi.authme.security;
 
-import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
-import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -12,19 +13,25 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.not;
+import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Integration test for {@link HashAlgorithm}.
  */
 public class HashAlgorithmIntegrationTest {
 
+    private static NewSetting settings;
+
     @BeforeClass
     public static void setUpWrapper() {
-        WrapperMock.createInstance();
-        Settings.bCryptLog2Rounds = 8;
-        Settings.saltLength = 16;
+        settings = mock(NewSetting.class);
+        given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
+        given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
     }
 
     @Test
@@ -47,8 +54,10 @@ public class HashAlgorithmIntegrationTest {
     public void shouldBeAbleToInstantiateEncryptionAlgorithms() throws InstantiationException, IllegalAccessException {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
-            if (!HashAlgorithm.CUSTOM.equals(algorithm)) {
-                EncryptionMethod method = algorithm.getClazz().newInstance();
+            if (!HashAlgorithm.CUSTOM.equals(algorithm) && !HashAlgorithm.PLAINTEXT.equals(algorithm)) {
+                EncryptionMethod method = PasswordSecurity.initializeEncryptionMethod(algorithm, settings);
+                assertThat("Encryption method for algorithm '" + algorithm + "' is not null",
+                    method, not(nullValue()));
                 HashedPassword hashedPassword = method.computeHash("pwd", "name");
                 assertThat("Salt should not be null if method.hasSeparateSalt(), and vice versa. Method: '"
                     + method + "'", StringUtils.isEmpty(hashedPassword.getSalt()), equalTo(!method.hasSeparateSalt()));

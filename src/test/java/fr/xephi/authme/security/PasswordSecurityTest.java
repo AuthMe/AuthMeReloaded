@@ -1,22 +1,25 @@
 package fr.xephi.authme.security;
 
 import fr.xephi.authme.ReflectionTestUtils;
-import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
-import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
+import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.JOOMLA;
-import fr.xephi.authme.security.crypts.PHPBB;
 import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.event.Event;
 import org.bukkit.plugin.PluginManager;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import static org.hamcrest.Matchers.equalTo;
@@ -35,19 +38,24 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link PasswordSecurity}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class PasswordSecurityTest {
 
+    @Mock
     private PluginManager pluginManager;
+    @Mock
     private DataSource dataSource;
+    @Mock
     private EncryptionMethod method;
     private Class<?> caughtClassInEvent;
 
+    @BeforeClass
+    public static void setUpTest() {
+        TestHelper.setupLogger();
+    }
+
     @Before
     public void setUpMocks() {
-        WrapperMock.createInstance();
-        pluginManager = mock(PluginManager.class);
-        dataSource = mock(DataSource.class);
-        method = mock(EncryptionMethod.class);
         caughtClassInEvent = null;
 
         // When the password encryption event is emitted, replace the encryption method with our mock.
@@ -97,7 +105,6 @@ public class PasswordSecurityTest {
         String playerLowerCase = playerName.toLowerCase();
         String clearTextPass = "passw0Rd1";
 
-        PlayerAuth auth = mock(PlayerAuth.class);
         given(dataSource.getPassword(playerName)).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
         PasswordSecurity security =
@@ -166,6 +173,25 @@ public class PasswordSecurityTest {
     }
 
     @Test
+    public void shouldTryAllMethodsAndFail() {
+        // given
+        HashedPassword password = new HashedPassword("hashNotMatchingAnyMethod", "someBogusSalt");
+        String playerName = "asfd";
+        String clearTextPass = "someInvalidPassword";
+        given(dataSource.getPassword(playerName)).willReturn(password);
+        given(method.comparePassword(clearTextPass, password, playerName)).willReturn(false);
+        PasswordSecurity security =
+            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.MD5, true), pluginManager);
+
+        // when
+        boolean result = security.comparePassword(clearTextPass, playerName);
+
+        // then
+        assertThat(result, equalTo(false));
+        verify(dataSource, never()).updatePassword(anyString(), any(HashedPassword.class));
+    }
+
+    @Test
     public void shouldHashPassword() {
         // given
         String password = "MyP@ssword";
@@ -186,28 +212,6 @@ public class PasswordSecurityTest {
         PasswordEncryptionEvent event = captor.getValue();
         assertThat(JOOMLA.class.equals(caughtClassInEvent), equalTo(true));
         assertThat(event.getPlayerName(), equalTo(usernameLowerCase));
-    }
-
-    @Test
-    public void shouldHashPasswordWithGivenAlgorithm() {
-        // given
-        String password = "TopSecretPass#112525";
-        String username = "someone12";
-        HashedPassword hashedPassword = new HashedPassword("~T!est#Hash", "__someSalt__");
-        given(method.computeHash(password, username)).willReturn(hashedPassword);
-        PasswordSecurity security =
-            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.JOOMLA, true), pluginManager);
-
-        // when
-        HashedPassword result = security.computeHash(HashAlgorithm.PHPBB, password, username);
-
-        // then
-        assertThat(result, equalTo(hashedPassword));
-        ArgumentCaptor<PasswordEncryptionEvent> captor = ArgumentCaptor.forClass(PasswordEncryptionEvent.class);
-        verify(pluginManager).callEvent(captor.capture());
-        PasswordEncryptionEvent event = captor.getValue();
-        assertThat(PHPBB.class.equals(caughtClassInEvent), equalTo(true));
-        assertThat(event.getPlayerName(), equalTo(username));
     }
 
     @Test
@@ -234,12 +238,13 @@ public class PasswordSecurityTest {
     @Test
     public void shouldReloadSettings() {
         // given
-        PasswordSecurity passwordSecurity =
-            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.BCRYPT, false), pluginManager);
-        NewSetting updatedSettings = mockSettings(HashAlgorithm.MD5, true);
+        NewSetting settings = mockSettings(HashAlgorithm.BCRYPT, false);
+        PasswordSecurity passwordSecurity = new PasswordSecurity(dataSource, settings, pluginManager);
+        given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
+        given(settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH)).willReturn(true);
 
         // when
-        passwordSecurity.reload(updatedSettings);
+        passwordSecurity.reload();
 
         // then
         assertThat(ReflectionTestUtils.getFieldValue(PasswordSecurity.class, passwordSecurity, "algorithm"),
@@ -252,6 +257,8 @@ public class PasswordSecurityTest {
         NewSetting settings = mock(NewSetting.class);
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(algorithm);
         given(settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH)).willReturn(supportOldPassword);
+        given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
+        given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
         return settings;
     }
 

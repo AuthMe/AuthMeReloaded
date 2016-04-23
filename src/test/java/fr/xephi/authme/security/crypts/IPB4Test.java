@@ -1,7 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.util.WrapperMock;
 import org.junit.BeforeClass;
 
 /**
@@ -11,7 +10,6 @@ public class IPB4Test extends AbstractEncryptionMethodTest {
 
     @BeforeClass
     public static void setUpSettings() {
-        WrapperMock.createInstance();
         TestHelper.setupLogger();
     }
 
