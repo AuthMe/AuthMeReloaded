@@ -8,10 +8,8 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,8 +20,6 @@ import java.util.regex.Pattern;
  */
 public final class Settings {
 
-    public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
-    public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
     public static List<String> allowCommands;
     public static List<String> getUnrestrictedName;
     public static List<String> getForcedWorlds;

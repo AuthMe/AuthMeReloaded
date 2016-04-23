@@ -20,7 +20,6 @@ import fr.xephi.authme.util.Utils.GroupType;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 public class AsynchronousUnregister implements Process {
@@ -73,13 +72,12 @@ public class AsynchronousUnregister implements Process {
                 LimboCache.getInstance().addLimboPlayer(player);
                 LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
                 int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
-                BukkitScheduler scheduler = plugin.getServer().getScheduler();
                 if (timeOut != 0) {
-                    BukkitTask id = scheduler.runTaskLater(plugin, new TimeoutTask(plugin, name, player), timeOut);
+                    BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
                     limboPlayer.setTimeoutTask(id);
                 }
-                limboPlayer.setMessageTask(scheduler.runTask(plugin,
-                    new MessageTask(plugin, name, MessageKey.REGISTER_MESSAGE, interval)));
+                limboPlayer.setMessageTask(service.runTask(new MessageTask(service.getBukkitService(),
+                    plugin.getMessages(), name, MessageKey.REGISTER_MESSAGE, interval)));
                 service.send(player, MessageKey.UNREGISTERED_SUCCESS);
                 ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
                 return;

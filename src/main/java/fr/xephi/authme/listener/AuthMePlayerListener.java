@@ -96,7 +96,7 @@ public class AuthMePlayerListener implements Listener {
             event.setCancelled(true);
             sendLoginOrRegisterMessage(player);
         } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
-            for (Player p : Utils.getOnlinePlayers()) {
+            for (Player p : bukkitService.getOnlinePlayers()) {
                 if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
                     event.getRecipients().remove(p);
                 }
@@ -319,11 +319,11 @@ public class AuthMePlayerListener implements Listener {
 
         if (event.getResult() == PlayerLoginEvent.Result.KICK_FULL) {
             if (permsMan.hasPermission(player, PlayerStatePermission.IS_VIP)) {
-                int playersOnline = Utils.getOnlinePlayers().size();
+                int playersOnline = bukkitService.getOnlinePlayers().size();
                 if (playersOnline > plugin.getServer().getMaxPlayers()) {
                     event.allow();
                 } else {
-                    Player pl = plugin.generateKickPlayer(Utils.getOnlinePlayers());
+                    Player pl = plugin.generateKickPlayer(bukkitService.getOnlinePlayers());
                     if (pl != null) {
                         pl.kickPlayer(m.retrieveSingle(MessageKey.KICK_FOR_VIP));
                         event.allow();

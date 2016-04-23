@@ -250,6 +250,7 @@ public class AuthMe extends JavaPlugin {
             return;
         }
 
+        bukkitService = new BukkitService(this);
         pluginHooks = new PluginHooks(server.getPluginManager());
 
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
@@ -257,8 +258,6 @@ public class AuthMe extends JavaPlugin {
 
         // Initialize spawn loader
         spawnLoader = new SpawnLoader(getDataFolder(), newSettings, pluginHooks);
-
-        bukkitService = new BukkitService(this);
         permsMan = initializePermissionsManager();
         antiBot = new AntiBot(newSettings, messages, permsMan, bukkitService);
         ValidationService validationService = new ValidationService(newSettings, database, permsMan);
@@ -297,7 +296,7 @@ public class AuthMe extends JavaPlugin {
 
         // Set up the management
         ProcessService processService = new ProcessService(newSettings, messages, this, database,
-            passwordSecurity, pluginHooks, spawnLoader, validationService);
+            passwordSecurity, pluginHooks, spawnLoader, validationService, bukkitService);
         management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
@@ -400,7 +399,7 @@ public class AuthMe extends JavaPlugin {
 
     private void reloadSupportHook() {
         if (database != null) {
-            int playersOnline = Utils.getOnlinePlayers().size();
+            int playersOnline = bukkitService.getOnlinePlayers().size();
             if (playersOnline < 1) {
                 database.purgeLogged();
             } else if (Settings.reloadSupport) {
@@ -499,9 +498,11 @@ public class AuthMe extends JavaPlugin {
     @Override
     public void onDisable() {
         // Save player data
-        Collection<? extends Player> players = Utils.getOnlinePlayers();
-        for (Player player : players) {
-            savePlayer(player);
+        if (bukkitService != null) {
+            Collection<? extends Player> players = bukkitService.getOnlinePlayers();
+            for (Player player : players) {
+                savePlayer(player);
+            }
         }
 
         // Do backup on stop if enabled
@@ -660,7 +661,7 @@ public class AuthMe extends JavaPlugin {
             tabComplete = null;
         }
         if (newSettings.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && tablistHider == null) {
-            tablistHider = new AuthMeTablistPacketAdapter(this);
+            tablistHider = new AuthMeTablistPacketAdapter(this, bukkitService);
             tablistHider.register();
         } else if (tablistHider != null) {
             tablistHider.unregister();
@@ -769,7 +770,7 @@ public class AuthMe extends JavaPlugin {
     }
 
     public String replaceAllInfo(String message, Player player) {
-        String playersOnline = Integer.toString(Utils.getOnlinePlayers().size());
+        String playersOnline = Integer.toString(bukkitService.getOnlinePlayers().size());
         String ipAddress = Utils.getPlayerIp(player);
         return message
             .replace("&", "\u00a7")
@@ -786,7 +787,7 @@ public class AuthMe extends JavaPlugin {
 
     public boolean isLoggedIp(String name, String ip) {
         int count = 0;
-        for (Player player : Utils.getOnlinePlayers()) {
+        for (Player player : bukkitService.getOnlinePlayers()) {
             if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))
                 && database.isLogged(player.getName().toLowerCase())
                 && !player.getName().equalsIgnoreCase(name)) {

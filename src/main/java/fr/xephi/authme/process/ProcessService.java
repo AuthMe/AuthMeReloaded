@@ -10,10 +10,14 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.Collection;
 
 /**
  * Service for asynchronous and synchronous processes.
@@ -28,10 +32,11 @@ public class ProcessService {
     private final PluginHooks pluginHooks;
     private final SpawnLoader spawnLoader;
     private final ValidationService validationService;
+    private final BukkitService bukkitService;
 
     public ProcessService(NewSetting settings, Messages messages, AuthMe authMe, DataSource dataSource,
-                          PasswordSecurity passwordSecurity, PluginHooks pluginHooks,
-                          SpawnLoader spawnLoader, ValidationService validationService) {
+                          PasswordSecurity passwordSecurity, PluginHooks pluginHooks, SpawnLoader spawnLoader,
+                          ValidationService validationService, BukkitService bukkitService) {
         this.settings = settings;
         this.messages = messages;
         this.authMe = authMe;
@@ -40,6 +45,7 @@ public class ProcessService {
         this.pluginHooks = pluginHooks;
         this.spawnLoader = spawnLoader;
         this.validationService = validationService;
+        this.bukkitService = bukkitService;
     }
 
     /**
@@ -207,6 +213,14 @@ public class ProcessService {
 
     public boolean isEmailFreeForRegistration(String email, CommandSender sender) {
         return validationService.isEmailFreeForRegistration(email, sender);
+    }
+
+    public Collection<? extends Player> getOnlinePlayers() {
+        return bukkitService.getOnlinePlayers();
+    }
+
+    public BukkitService getBukkitService() {
+        return bukkitService;
     }
 
 }

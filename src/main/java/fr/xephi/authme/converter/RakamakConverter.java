@@ -24,11 +24,13 @@ public class RakamakConverter implements Converter {
     private final AuthMe instance;
     private final DataSource database;
     private final CommandSender sender;
+    private final File pluginFolder;
 
     public RakamakConverter(AuthMe instance, CommandSender sender) {
         this.instance = instance;
         this.database = instance.getDataSource();
         this.sender = sender;
+        pluginFolder = instance.getDataFolder();
     }
 
     @Override
@@ -37,8 +39,8 @@ public class RakamakConverter implements Converter {
         boolean useIP = Settings.rakamakUseIp;
         String fileName = Settings.rakamakUsers;
         String ipFileName = Settings.rakamakUsersIp;
-        File source = new File(Settings.PLUGIN_FOLDER, fileName);
-        File ipfiles = new File(Settings.PLUGIN_FOLDER, ipFileName);
+        File source = new File(pluginFolder, fileName);
+        File ipfiles = new File(pluginFolder, ipFileName);
         HashMap<String, String> playerIP = new HashMap<>();
         HashMap<String, HashedPassword> playerPSW = new HashMap<>();
         try {

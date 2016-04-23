@@ -32,8 +32,8 @@ import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
  */
 public class ProcessSyncPasswordRegister implements Process {
 
-    protected final Player player;
-    protected final String name;
+    private final Player player;
+    private final String name;
     private final AuthMe plugin;
     private final ProcessService service;
 
@@ -74,7 +74,8 @@ public class ProcessSyncPasswordRegister implements Process {
             task = service.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), delay);
             cache.getLimboPlayer(name).setTimeoutTask(task);
         }
-        task = service.runTask(new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
+        task = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
+            name, MessageKey.LOGIN_MESSAGE, interval));
         cache.getLimboPlayer(name).setMessageTask(task);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();

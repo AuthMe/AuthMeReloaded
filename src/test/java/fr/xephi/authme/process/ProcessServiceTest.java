@@ -10,6 +10,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
@@ -47,11 +48,13 @@ public class ProcessServiceTest {
     private SpawnLoader spawnLoader;
     @Mock
     private PluginHooks pluginHooks;
+    @Mock
+    private BukkitService bukkitService;
 
     @Before
     public void setUpService() {
         processService = new ProcessService(settings, messages, authMe, dataSource, passwordSecurity,
-            pluginHooks, spawnLoader, validationService);
+            pluginHooks, spawnLoader, validationService, bukkitService);
     }
 
     @Test

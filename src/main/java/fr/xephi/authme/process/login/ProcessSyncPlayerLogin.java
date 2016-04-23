@@ -174,7 +174,7 @@ public class ProcessSyncPlayerLogin implements Process {
         String jm = AuthMePlayerListener.joinMessage.get(name);
         if (jm != null) {
             if (!jm.isEmpty()) {
-                for (Player p : Utils.getOnlinePlayers()) {
+                for (Player p : service.getOnlinePlayers()) {
                     if (p.isOnline()) {
                         p.sendMessage(jm);
                     }

@@ -19,6 +19,7 @@ import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -229,6 +230,14 @@ public class CommandService {
 
     public Player getPlayer(String name) {
         return bukkitService.getPlayerExact(name);
+    }
+
+    public Collection<? extends Player> getOnlinePlayers() {
+        return bukkitService.getOnlinePlayers();
+    }
+
+    public BukkitService getBukkitService() {
+        return bukkitService;
     }
 
 }

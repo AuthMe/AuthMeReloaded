@@ -52,7 +52,7 @@ public class ProcessSyncEmailRegister implements Process {
                 limbo.setTimeoutTask(id);
             }
             BukkitTask messageTask = service.runTask(new MessageTask(
-                service.getAuthMe(), name, service.retrieveMessage(MessageKey.LOGIN_MESSAGE), msgInterval));
+                service.getBukkitService(), name, service.retrieveMessage(MessageKey.LOGIN_MESSAGE), msgInterval));
             limbo.setMessageTask(messageTask);
         }
 

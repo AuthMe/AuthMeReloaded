@@ -97,8 +97,8 @@ public class AsynchronousLogin implements Process {
                 String[] msg = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
                     ? service.retrieveMessage(MessageKey.REGISTER_EMAIL_MESSAGE)
                     : service.retrieveMessage(MessageKey.REGISTER_MESSAGE);
-                BukkitTask messageTask = service.runTask(
-                    new MessageTask(plugin, name, msg, service.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
+                BukkitTask messageTask = service.runTask(new MessageTask(service.getBukkitService(),
+                    name, msg, service.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
                 limboPlayer.setMessageTask(messageTask);
             }
             return null;
@@ -223,7 +223,7 @@ public class AsynchronousLogin implements Process {
             return;
         }
         String message = "[AuthMe] " + StringUtils.join(", ", auths) + ".";
-        for (Player player : Utils.getOnlinePlayers()) {
+        for (Player player : service.getOnlinePlayers()) {
             if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)
                     || (player.getName().equals(this.player.getName())
                             && plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {

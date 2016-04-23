@@ -1,11 +1,17 @@
 package fr.xephi.authme.util;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -19,9 +25,12 @@ public class BukkitService {
     public static final int TICKS_PER_MINUTE = 60 * TICKS_PER_SECOND;
 
     private final AuthMe authMe;
+    private final boolean getOnlinePlayersIsCollection;
+    private Method getOnlinePlayers;
 
     public BukkitService(AuthMe authMe) {
         this.authMe = authMe;
+        getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();
     }
 
     /**
@@ -59,6 +68,20 @@ public class BukkitService {
      */
     public BukkitTask runTask(Runnable task) {
         return Bukkit.getScheduler().runTask(authMe, task);
+    }
+
+    /**
+     * Returns a task that will run after the specified number of server
+     * ticks.
+     *
+     * @param task the task to be run
+     * @param delay the ticks to wait before running the task
+     * @return a BukkitTask that contains the id number
+     * @throws IllegalArgumentException if plugin is null
+     * @throws IllegalArgumentException if task is null
+     */
+    public BukkitTask runTaskLater(Runnable task, long delay) {
+        return Bukkit.getScheduler().runTaskLater(authMe, task, delay);
     }
 
     /**
@@ -102,8 +125,60 @@ public class BukkitService {
      * @return a set containing banned players
      */
     public Set<OfflinePlayer> getBannedPlayers() {
-        Bukkit.getBannedPlayers();
-        return authMe.getServer().getBannedPlayers();
+        return Bukkit.getBannedPlayers();
+    }
+
+    /**
+     * Safe way to retrieve the list of online players from the server. Depending on the
+     * implementation of the server, either an array of {@link Player} instances is being returned,
+     * or a Collection. Always use this wrapper to retrieve online players instead of {@link
+     * Bukkit#getOnlinePlayers()} directly.
+     *
+     * @return collection of online players
+     *
+     * @see <a href="https://www.spigotmc.org/threads/solved-cant-use-new-getonlineplayers.33061/">SpigotMC
+     * forum</a>
+     * @see <a href="http://stackoverflow.com/questions/32130851/player-changed-from-array-to-collection">StackOverflow</a>
+     */
+    @SuppressWarnings("unchecked")
+    public Collection<? extends Player> getOnlinePlayers() {
+        if (getOnlinePlayersIsCollection) {
+            return Bukkit.getOnlinePlayers();
+        }
+        try {
+            // The lookup of a method via Reflections is rather expensive, so we keep a reference to it
+            if (getOnlinePlayers == null) {
+                getOnlinePlayers = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
+            }
+            Object obj = getOnlinePlayers.invoke(null);
+            if (obj instanceof Collection<?>) {
+                return (Collection<? extends Player>) obj;
+            } else if (obj instanceof Player[]) {
+                return Arrays.asList((Player[]) obj);
+            } else {
+                String type = (obj != null) ? obj.getClass().getName() : "null";
+                ConsoleLogger.showError("Unknown list of online players of type " + type);
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            ConsoleLogger.logException("Could not retrieve list of online players:", e);
+        }
+        return Collections.emptyList();
+    }
+
+    /**
+     * Method run upon initialization to verify whether or not the Bukkit implementation
+     * returns the online players as a Collection.
+     *
+     * @see #getOnlinePlayers()
+     */
+    private static boolean initializeOnlinePlayersIsCollectionField() {
+        try {
+            Method method = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
+            return method.getReturnType() == Collection.class;
+        } catch (NoSuchMethodException e) {
+            ConsoleLogger.showError("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
+        }
+        return false;
     }
 
 }

@@ -217,7 +217,8 @@ public class AsynchronousJoin implements Process {
                 : MessageKey.REGISTER_MESSAGE;
         }
         if (msgInterval > 0 && LimboCache.getInstance().getLimboPlayer(name) != null) {
-            BukkitTask msgTask = service.runTask(new MessageTask(plugin, name, msg, msgInterval));
+            BukkitTask msgTask = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
+                name, msg, msgInterval));
             LimboCache.getInstance().getLimboPlayer(name).setMessageTask(msgTask);
         }
     }
@@ -303,7 +304,7 @@ public class AsynchronousJoin implements Process {
 
     private boolean hasJoinedIp(String name, String ip) {
         int count = 0;
-        for (Player player : Utils.getOnlinePlayers()) {
+        for (Player player : service.getOnlinePlayers()) {
             if (ip.equalsIgnoreCase(Utils.getPlayerIp(player))
                 && !player.getName().equalsIgnoreCase(name)) {
                 count++;

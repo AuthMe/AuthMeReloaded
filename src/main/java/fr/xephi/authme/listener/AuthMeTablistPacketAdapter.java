@@ -13,22 +13,23 @@ import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedGameProfile;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.BukkitService;
+import org.bukkit.entity.Player;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.logging.Level;
 
-import org.bukkit.entity.Player;
-
 public class AuthMeTablistPacketAdapter extends PacketAdapter {
 
-    public AuthMeTablistPacketAdapter(AuthMe plugin) {
+    private final BukkitService bukkitService;
+
+    public AuthMeTablistPacketAdapter(AuthMe plugin, BukkitService bukkitService) {
         super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO);
+        this.bukkitService = bukkitService;
     }
 
     @Override
@@ -40,7 +41,7 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
                     event.setCancelled(true);
                 }
             } catch (FieldAccessException e) {
-                ConsoleLogger.showError("Couldn't access field.");
+                ConsoleLogger.logException("Couldn't access field", e);
             }
         }
     }
@@ -67,7 +68,7 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
         }
 
         //triggers an update for others player to see them
-        for (Player onlinePlayer : Utils.getOnlinePlayers()) {
+        for (Player onlinePlayer : bukkitService.getOnlinePlayers()) {
             if (onlinePlayer.equals(receiver) || !receiver.canSee(onlinePlayer)) {
                 continue;
             }
