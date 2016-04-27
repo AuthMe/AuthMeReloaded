@@ -8,6 +8,7 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.plugin.PluginManager;
 
+import javax.inject.Inject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -22,6 +23,7 @@ public class PasswordSecurity {
     private final DataSource dataSource;
     private final PluginManager pluginManager;
 
+    @Inject
     public PasswordSecurity(DataSource dataSource, NewSetting settings, PluginManager pluginManager) {
         this.settings = settings;
         this.algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);

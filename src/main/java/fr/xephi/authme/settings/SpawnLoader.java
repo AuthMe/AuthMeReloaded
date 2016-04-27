@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -14,6 +15,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 
@@ -40,7 +42,8 @@ public class SpawnLoader {
      * @param settings The setting instance
      * @param pluginHooks The plugin hooks instance
      */
-    public SpawnLoader(File pluginFolder, NewSetting settings, PluginHooks pluginHooks) {
+    @Inject
+    public SpawnLoader(@DataFolder File pluginFolder, NewSetting settings, PluginHooks pluginHooks) {
         File spawnFile = new File(pluginFolder, "spawn.yml");
         // TODO ljacqu 20160312: Check if resource could be copied and handle the case if not
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");

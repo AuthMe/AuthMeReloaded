@@ -9,6 +9,7 @@ import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ public class AntiBot {
     private final List<String> antibotPlayers = new ArrayList<>();
     private AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
+    @Inject
     public AntiBot(NewSetting settings, Messages messages, PermissionsManager permissionsManager,
                    BukkitService bukkitService) {
         this.settings = settings;

@@ -19,6 +19,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -27,6 +28,7 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
 
     private final BukkitService bukkitService;
 
+    @Inject
     public AuthMeTablistPacketAdapter(AuthMe plugin, BukkitService bukkitService) {
         super(plugin, ListenerPriority.NORMAL, PacketType.Play.Server.PLAYER_INFO);
         this.bukkitService = bukkitService;

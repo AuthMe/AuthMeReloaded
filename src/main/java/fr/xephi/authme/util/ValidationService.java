@@ -10,6 +10,7 @@ import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,6 +23,7 @@ public class ValidationService {
     private final DataSource dataSource;
     private final PermissionsManager permissionsManager;
 
+    @Inject
     public ValidationService(NewSetting settings, DataSource dataSource, PermissionsManager permissionsManager) {
         this.settings = settings;
         this.dataSource = dataSource;

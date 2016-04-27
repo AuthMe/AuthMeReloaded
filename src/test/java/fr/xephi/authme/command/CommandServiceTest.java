@@ -18,10 +18,10 @@ import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -41,6 +41,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class CommandServiceTest {
 
+    @InjectMocks
     private CommandService commandService;
     @Mock
     private AuthMe authMe;
@@ -66,12 +67,6 @@ public class CommandServiceTest {
     private ValidationService validationService;
     @Mock
     private BukkitService bukkitService;
-
-    @Before
-    public void setUpService() {
-        commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, pluginHooks, spawnLoader, antiBot, validationService, bukkitService);
-    }
 
     @Test
     public void shouldSendMessage() {

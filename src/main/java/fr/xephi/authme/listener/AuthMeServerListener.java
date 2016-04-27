@@ -15,21 +15,20 @@ import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.server.ServerListPingEvent;
 
+import javax.inject.Inject;
+
 /**
  */
 public class AuthMeServerListener implements Listener {
 
-    private final AuthMe plugin;
-    private final Messages messages;
-    private final PluginHooks pluginHooks;
-    private final SpawnLoader spawnLoader;
-
-    public AuthMeServerListener(AuthMe plugin, Messages messages, PluginHooks pluginHooks, SpawnLoader spawnLoader) {
-        this.plugin = plugin;
-        this.messages = messages;
-        this.pluginHooks = pluginHooks;
-        this.spawnLoader = spawnLoader;
-    }
+    @Inject
+    private AuthMe plugin;
+    @Inject
+    private Messages messages;
+    @Inject
+    private PluginHooks pluginHooks;
+    @Inject
+    private SpawnLoader spawnLoader;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {

@@ -1,11 +1,13 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.HelpCommand;
+import fr.xephi.authme.initialization.BaseCommands;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +30,8 @@ public class CommandMapper {
     private final Set<CommandDescription> baseCommands;
     private final PermissionsManager permissionsManager;
 
-    public CommandMapper(Set<CommandDescription> baseCommands, PermissionsManager permissionsManager) {
+    @Inject
+    public CommandMapper(@BaseCommands Set<CommandDescription> baseCommands, PermissionsManager permissionsManager) {
         this.baseCommands = baseCommands;
         this.permissionsManager = permissionsManager;
     }

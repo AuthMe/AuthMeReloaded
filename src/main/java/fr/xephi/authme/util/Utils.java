@@ -165,8 +165,9 @@ public final class Utils {
         });
     }
 
+    @Deprecated
     public static boolean isNPC(Player player) {
-        return player.hasMetadata("NPC") || plugin.getPluginHooks().isNpcInCombatTagPlus(player);
+        return plugin.getPluginHooks().isNpc(player);
     }
 
     public static void teleportToSpawn(Player player) {

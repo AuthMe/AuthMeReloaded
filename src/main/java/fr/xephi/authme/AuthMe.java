@@ -7,12 +7,8 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
-import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandHandler;
 import fr.xephi.authme.command.CommandInitializer;
-import fr.xephi.authme.command.CommandMapper;
-import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
@@ -21,8 +17,11 @@ import fr.xephi.authme.datasource.MySQL;
 import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.PluginHooks;
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
+import fr.xephi.authme.initialization.BaseCommands;
+import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.initialization.MetricsStarter;
 import fr.xephi.authme.listener.AuthMeBlockListener;
-import fr.xephi.authme.listener.AuthMeEntityListener;
 import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
@@ -38,7 +37,6 @@ import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
-import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.SHA256;
 import fr.xephi.authme.settings.NewSetting;
@@ -61,7 +59,6 @@ import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
-import fr.xephi.authme.util.ValidationService;
 import org.apache.logging.log4j.LogManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -71,6 +68,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
@@ -80,14 +78,12 @@ import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
 import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
 import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
-import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
 
 /**
  * The AuthMe main class.
@@ -103,7 +99,6 @@ public class AuthMe extends JavaPlugin {
 
     // Private Instances
     private static AuthMe plugin;
-    private static Server server;
     /*
      *  Maps and stuff
      */
@@ -138,7 +133,6 @@ public class AuthMe extends JavaPlugin {
     private DataSource database;
     private PluginHooks pluginHooks;
     private SpawnLoader spawnLoader;
-    private AntiBot antiBot;
     private boolean autoPurging;
     private BukkitService bukkitService;
 
@@ -215,17 +209,15 @@ public class AuthMe extends JavaPlugin {
     @Override
     public void onEnable() {
         // Set various instances
-        server = getServer();
         plugin = this;
         ConsoleLogger.setLogger(getLogger());
-
         setPluginInfos();
 
         // Load settings and custom configurations, if it fails, stop the server due to security reasons.
         newSettings = createNewSetting();
         if (newSettings == null) {
             ConsoleLogger.showError("Could not load configuration. Aborting.");
-            server.shutdown();
+            getServer().shutdown();
             return;
         }
         ConsoleLogger.setLoggingOptions(newSettings.getProperty(SecuritySettings.USE_LOGGING),
@@ -233,7 +225,7 @@ public class AuthMe extends JavaPlugin {
 
         // Old settings manager
         if (!loadSettings()) {
-            server.shutdown();
+            getServer().shutdown();
             setEnabled(false);
             return;
         }
@@ -249,23 +241,40 @@ public class AuthMe extends JavaPlugin {
             stopOrUnload();
             return;
         }
-
-        bukkitService = new BukkitService(this);
-        pluginHooks = new PluginHooks(server.getPluginManager());
-
         MigrationService.changePlainTextToSha256(newSettings, database, new SHA256());
-        passwordSecurity = new PasswordSecurity(getDataSource(), newSettings, Bukkit.getPluginManager());
 
-        // Initialize spawn loader
-        spawnLoader = new SpawnLoader(getDataFolder(), newSettings, pluginHooks);
-        permsMan = initializePermissionsManager();
-        antiBot = new AntiBot(newSettings, messages, permsMan, bukkitService);
-        ValidationService validationService = new ValidationService(newSettings, database, permsMan);
-        commandHandler = initializeCommandHandler(permsMan, messages, passwordSecurity, newSettings,
-            pluginHooks, spawnLoader, antiBot, validationService, bukkitService);
+
+        AuthMeServiceInitializer initializer = new AuthMeServiceInitializer("fr.xephi.authme");
+        // Register elements of the Bukkit / JavaPlugin environment
+        initializer.register(AuthMe.class, this);
+        initializer.register(Server.class, getServer());
+        initializer.register(PluginManager.class, getServer().getPluginManager());
+        initializer.register(BukkitScheduler.class, getServer().getScheduler());
+        initializer.provide(DataFolder.class, getDataFolder());
+
+        // Register elements we instantiate manually
+        initializer.register(newSettings);
+        initializer.register(messages);
+        initializer.register(DataSource.class, database);
+        initializer.provide(BaseCommands.class, CommandInitializer.buildCommands());
+
+        // Some statically injected things
+        initializer.register(PlayerCache.class, PlayerCache.getInstance());
+        initializer.register(LimboCache.class, LimboCache.getInstance());
+
+        permsMan         = initializer.get(PermissionsManager.class);
+        bukkitService    = initializer.get(BukkitService.class);
+        pluginHooks      = initializer.get(PluginHooks.class);
+        passwordSecurity = initializer.get(PasswordSecurity.class);
+        spawnLoader      = initializer.get(SpawnLoader.class);
+        commandHandler   = initializer.get(CommandHandler.class);
+        api              = initializer.get(NewAPI.class);
+        management       = initializer.get(Management.class);
+        dataManager      = initializer.get(DataManager.class);
+        initializer.get(API.class);
 
         // Set up Metrics
-        MetricsStarter.setupMetrics(plugin, newSettings);
+        MetricsStarter.setupMetrics(this, newSettings);
 
         // Set console filter
         setupConsoleFilter();
@@ -282,22 +291,12 @@ public class AuthMe extends JavaPlugin {
         // End of Hooks
 
         // Do a backup on start
-        new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.START);
+        new PerformBackup(this, newSettings).doBackup(PerformBackup.BackupCause.START);
 
 
         // Setup the inventory backup
         playerBackup = new JsonCache();
 
-        // Set the DataManager
-        dataManager = new DataManager(this, pluginHooks, bukkitService);
-
-        // Set up the new API
-        setupApi();
-
-        // Set up the management
-        ProcessService processService = new ProcessService(newSettings, messages, this, database,
-            passwordSecurity, pluginHooks, spawnLoader, validationService, bukkitService);
-        management = new Management(this, processService, database, PlayerCache.getInstance());
 
         // Set up the BungeeCord hook
         setupBungeeCordHook(newSettings);
@@ -306,7 +305,7 @@ public class AuthMe extends JavaPlugin {
         reloadSupportHook();
 
         // Register event listeners
-        registerEventListeners(messages, database, management, pluginHooks, spawnLoader, antiBot);
+        registerEventListeners(initializer);
         // Start Email recall task if needed
         scheduleRecallEmailTask();
 
@@ -370,29 +369,27 @@ public class AuthMe extends JavaPlugin {
     /**
      * Register all event listeners.
      */
-    private void registerEventListeners(Messages messages, DataSource dataSource, Management management,
-                                        PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot) {
+    private void registerEventListeners(AuthMeServiceInitializer initializer) {
         // Get the plugin manager instance
-        PluginManager pluginManager = server.getPluginManager();
+        PluginManager pluginManager = getServer().getPluginManager();
 
         // Register event listeners
-        pluginManager.registerEvents(new AuthMePlayerListener(
-            this, newSettings, messages, dataSource, antiBot, management, bukkitService), this);
-        pluginManager.registerEvents(new AuthMeBlockListener(), this);
-        pluginManager.registerEvents(new AuthMeEntityListener(), this);
-        pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks, spawnLoader), this);
+        pluginManager.registerEvents(initializer.get(AuthMePlayerListener.class), this);
+        pluginManager.registerEvents(initializer.get(AuthMeBlockListener.class),  this);
+        pluginManager.registerEvents(initializer.get(AuthMePlayerListener.class), this);
+        pluginManager.registerEvents(initializer.get(AuthMeServerListener.class), this);
 
         // Try to register 1.6 player listeners
         try {
             Class.forName("org.bukkit.event.player.PlayerEditBookEvent");
-            pluginManager.registerEvents(new AuthMePlayerListener16(), this);
+            pluginManager.registerEvents(initializer.get(AuthMePlayerListener16.class), this);
         } catch (ClassNotFoundException ignore) {
         }
 
         // Try to register 1.8 player listeners
         try {
             Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
-            pluginManager.registerEvents(new AuthMePlayerListener18(), this);
+            pluginManager.registerEvents(initializer.get(AuthMePlayerListener18.class), this);
         } catch (ClassNotFoundException ignore) {
         }
     }
@@ -426,30 +423,6 @@ public class AuthMe extends JavaPlugin {
         }
     }
 
-    private CommandHandler initializeCommandHandler(PermissionsManager permissionsManager, Messages messages,
-                                                    PasswordSecurity passwordSecurity, NewSetting settings,
-                                                    PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot,
-                                                    ValidationService validationService, BukkitService bukkitService) {
-        HelpProvider helpProvider = new HelpProvider(permissionsManager, settings.getProperty(HELP_HEADER));
-        Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
-        CommandMapper mapper = new CommandMapper(baseCommands, permissionsManager);
-        CommandService commandService = new CommandService(this, mapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, pluginHooks, spawnLoader, antiBot, validationService, bukkitService);
-        return new CommandHandler(commandService);
-    }
-
-    /**
-     * Set up the API. This sets up the new and the old API.
-     */
-    @SuppressWarnings("deprecation")
-    private void setupApi() {
-        // Set up the API
-        api = new NewAPI(this);
-
-        // Set up the deprecated API
-        new API(this);
-    }
-
     /**
      * Load the plugin's settings.
      *
@@ -462,7 +435,7 @@ public class AuthMe extends JavaPlugin {
         } catch (Exception e) {
             ConsoleLogger.logException("Can't load the configuration file... Something went wrong. "
                 + "To avoid security issues the server will shut down!", e);
-            server.shutdown();
+            getServer().shutdown();
         }
         return false;
     }
@@ -507,14 +480,15 @@ public class AuthMe extends JavaPlugin {
 
         // Do backup on stop if enabled
         if (newSettings != null) {
-            new PerformBackup(plugin, newSettings).doBackup(PerformBackup.BackupCause.STOP);
+            new PerformBackup(this, newSettings).doBackup(PerformBackup.BackupCause.STOP);
         }
+        final AuthMe pluginInstance = this;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 List<Integer> pendingTasks = new ArrayList<>();
                 for (BukkitTask pendingTask : getServer().getScheduler().getPendingTasks()) {
-                    if (pendingTask.getOwner().equals(plugin) && !pendingTask.isSync()) {
+                    if (pendingTask.getOwner().equals(pluginInstance) && !pendingTask.isSync()) {
                         pendingTasks.add(pendingTask.getTaskId());
                     }
                 }
@@ -553,9 +527,9 @@ public class AuthMe extends JavaPlugin {
     public void stopOrUnload() {
         if (Settings.isStopEnabled) {
             ConsoleLogger.showError("THE SERVER IS GOING TO SHUT DOWN AS DEFINED IN THE CONFIGURATION!");
-            server.shutdown();
+            getServer().shutdown();
         } else {
-            server.getPluginManager().disablePlugin(AuthMe.getInstance());
+            getServer().getPluginManager().disablePlugin(AuthMe.getInstance());
         }
     }
 
@@ -598,7 +572,7 @@ public class AuthMe extends JavaPlugin {
 
         database = dataSource;
         if (DataSourceType.SQLITE == dataSourceType) {
-            server.getScheduler().runTaskAsynchronously(this, new Runnable() {
+            getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
                 @Override
                 public void run() {
                     int accounts = database.getAccountsRegistered();
@@ -609,15 +583,6 @@ public class AuthMe extends JavaPlugin {
                 }
             });
         }
-    }
-
-    /**
-     * Set up the permissions manager.
-     */
-    private PermissionsManager initializePermissionsManager() {
-        PermissionsManager manager = new PermissionsManager(Bukkit.getServer(), getLogger());
-        manager.setup();
-        return manager;
     }
 
     // Set the console filter to remove the passwords
@@ -636,7 +601,7 @@ public class AuthMe extends JavaPlugin {
 
     // Check the presence of the ProtocolLib plugin
     public void checkProtocolLib() {
-        if (!server.getPluginManager().isPluginEnabled("ProtocolLib")) {
+        if (!getServer().getPluginManager().isPluginEnabled("ProtocolLib")) {
             if (newSettings.getProperty(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN)) {
                 ConsoleLogger.showError("WARNING! The protectInventory feature requires ProtocolLib! Disabling it...");
                 Settings.protectInventoryBeforeLogInEnabled = false;
@@ -671,7 +636,7 @@ public class AuthMe extends JavaPlugin {
 
     // Save Player Data
     private void savePlayer(Player player) {
-        if (Utils.isNPC(player) || Utils.isUnrestricted(player)) {
+        if (safeIsNpc(player) || Utils.isUnrestricted(player)) {
             return;
         }
         String name = player.getName().toLowerCase();
@@ -699,6 +664,10 @@ public class AuthMe extends JavaPlugin {
         PlayerCache.getInstance().removePlayer(name);
     }
 
+    private boolean safeIsNpc(Player player) {
+        return pluginHooks != null && pluginHooks.isNpc(player) || player.hasMetadata("NPC");
+    }
+
     // Select the player to kick when a vip player joins the server when full
     public Player generateKickPlayer(Collection<? extends Player> collection) {
         for (Player player : collection) {
@@ -715,7 +684,7 @@ public class AuthMe extends JavaPlugin {
             return;
         }
         autoPurging = true;
-        server.getScheduler().runTaskAsynchronously(this, new Runnable() {
+        getServer().getScheduler().runTaskAsynchronously(this, new Runnable() {
             @Override
             public void run() {
                 ConsoleLogger.info("AutoPurging the Database...");
@@ -772,6 +741,7 @@ public class AuthMe extends JavaPlugin {
     public String replaceAllInfo(String message, Player player) {
         String playersOnline = Integer.toString(bukkitService.getOnlinePlayers().size());
         String ipAddress = Utils.getPlayerIp(player);
+        Server server = getServer();
         return message
             .replace("&", "\u00a7")
             .replace("{PLAYER}", player.getName())

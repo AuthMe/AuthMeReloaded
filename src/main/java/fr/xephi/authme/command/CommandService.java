@@ -19,6 +19,7 @@ import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,39 +29,30 @@ import java.util.List;
  */
 public class CommandService {
 
-    private final AuthMe authMe;
-    private final Messages messages;
-    private final HelpProvider helpProvider;
-    private final CommandMapper commandMapper;
-    private final PasswordSecurity passwordSecurity;
-    private final PermissionsManager permissionsManager;
-    private final NewSetting settings;
-    private final PluginHooks pluginHooks;
-    private final SpawnLoader spawnLoader;
-    private final AntiBot antiBot;
-    private final ValidationService validationService;
-    private final BukkitService bukkitService;
-
-    /*
-     * Constructor.
-     */
-    public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
-                          PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
-                          PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot,
-                          ValidationService validationService, BukkitService bukkitService) {
-        this.authMe = authMe;
-        this.messages = messages;
-        this.helpProvider = helpProvider;
-        this.commandMapper = commandMapper;
-        this.passwordSecurity = passwordSecurity;
-        this.permissionsManager = permissionsManager;
-        this.settings = settings;
-        this.pluginHooks = pluginHooks;
-        this.spawnLoader = spawnLoader;
-        this.antiBot = antiBot;
-        this.validationService = validationService;
-        this.bukkitService = bukkitService;
-    }
+    @Inject
+    private AuthMe authMe;
+    @Inject
+    private Messages messages;
+    @Inject
+    private HelpProvider helpProvider;
+    @Inject
+    private CommandMapper commandMapper;
+    @Inject
+    private PasswordSecurity passwordSecurity;
+    @Inject
+    private PermissionsManager permissionsManager;
+    @Inject
+    private NewSetting settings;
+    @Inject
+    private PluginHooks pluginHooks;
+    @Inject
+    private SpawnLoader spawnLoader;
+    @Inject
+    private AntiBot antiBot;
+    @Inject
+    private ValidationService validationService;
+    @Inject
+    private BukkitService bukkitService;
 
     /**
      * Send a message to a player.
