@@ -1,7 +1,6 @@
 package fr.xephi.authme.initialization;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 
 import javax.annotation.PostConstruct;
@@ -263,7 +262,7 @@ public class AuthMeServiceInitializer {
     private static void executePostConstructMethods(Object object) {
         for (Method method : object.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(PostConstruct.class)) {
-                if (method.getParameterCount() == 0) {
+                if (method.getParameterTypes().length == 0) {
                     try {
                         method.setAccessible(true);
                         method.invoke(object);
