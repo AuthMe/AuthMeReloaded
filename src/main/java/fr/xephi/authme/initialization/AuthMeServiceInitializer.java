@@ -98,6 +98,18 @@ public class AuthMeServiceInitializer {
     }
 
     /**
+     * Creates a new instance of the given class and does <i>not</i> keep track of it afterwards,
+     * unlike {@link #get(Class)} (singleton scope).
+     *
+     * @param clazz the class to instantiate
+     * @param <T> the class' type
+     * @return new instance of class T
+     */
+    public <T> T newInstance(Class<T> clazz) {
+        return instantiate(clazz, new HashSet<Class<?>>());
+    }
+
+    /**
      * Returns an instance of the given class or the value associated with an annotation,
      * by retrieving it or by instantiating it if not yet present.
      *
@@ -120,7 +132,6 @@ public class AuthMeServiceInitializer {
 
         traversedClasses = new HashSet<>(traversedClasses);
         traversedClasses.add(clazz);
-        System.out.println(Strings.repeat(" ", traversedClasses.size() * 2) + "- Instantiating " + clazz);
         return instantiate(clazz, traversedClasses);
     }
 

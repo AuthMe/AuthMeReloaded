@@ -256,7 +256,7 @@ public class AuthMe extends JavaPlugin {
         initializer.register(newSettings);
         initializer.register(messages);
         initializer.register(DataSource.class, database);
-        initializer.provide(BaseCommands.class, CommandInitializer.buildCommands());
+        initializer.provide(BaseCommands.class, CommandInitializer.buildCommands(initializer));
 
         // Some statically injected things
         initializer.register(PlayerCache.class, PlayerCache.getInstance());
