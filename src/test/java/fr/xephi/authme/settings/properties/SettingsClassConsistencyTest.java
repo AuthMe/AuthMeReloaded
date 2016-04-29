@@ -1,22 +1,20 @@
 package fr.xephi.authme.settings.properties;
 
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.domain.SettingsClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static org.hamcrest.Matchers.arrayWithSize;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -86,24 +84,9 @@ public class SettingsClassConsistencyTest {
     }
 
     @Test
-    public void shouldHaveHiddenDefaultConstructorOnly() {
+    public void shouldHaveHiddenEmptyConstructorOnly() {
         for (Class<?> clazz : classes) {
-            Constructor<?>[] constructors = clazz.getDeclaredConstructors();
-            assertThat(clazz + " should only have one constructor",
-                constructors, arrayWithSize(1));
-            assertThat("Constructor of " + clazz + " is private",
-                Modifier.isPrivate(constructors[0].getModifiers()), equalTo(true));
-
-            // Ugly hack to get coverage on the private constructors
-            // http://stackoverflow.com/questions/14077842/how-to-test-a-private-constructor-in-java-application
-            try {
-                Constructor<?> constructor = clazz.getDeclaredConstructor();
-                constructor.setAccessible(true);
-                constructor.newInstance();
-            } catch (NoSuchMethodException | InstantiationException
-                | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
+            TestHelper.validateHasOnlyPrivateEmptyConstructor(clazz);
         }
     }
 

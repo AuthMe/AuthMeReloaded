@@ -44,8 +44,7 @@ public final class MigrationService {
                 if (hash.startsWith("$SHA$")) {
                     ConsoleLogger.showError("Skipping conversion for " + auth.getNickname() + "; detected SHA hash");
                 } else {
-                    HashedPassword hashedPassword = authmeSha256.computeHash(
-                        auth.getPassword().getHash(), auth.getNickname());
+                    HashedPassword hashedPassword = authmeSha256.computeHash(hash, auth.getNickname());
                     auth.setPassword(hashedPassword);
                     dataSource.updatePassword(auth);
                 }

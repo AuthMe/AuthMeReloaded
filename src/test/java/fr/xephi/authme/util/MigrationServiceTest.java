@@ -110,6 +110,11 @@ public class MigrationServiceTest {
         verifyNoMoreInteractions(settings, dataSource, sha256);
     }
 
+    @Test
+    public void shouldHaveHiddenEmptyConstructorOnly() {
+        TestHelper.validateHasOnlyPrivateEmptyConstructor(MigrationService.class);
+    }
+
     private static PlayerAuth authWithNickAndHash(String nick, String hash) {
         return PlayerAuth.builder()
             .name(nick)
