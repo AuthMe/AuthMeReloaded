@@ -63,7 +63,12 @@ public class ProcessSyncPasswordRegister implements Process {
         }
     }
 
-    private void forceLogin(Player player) {
+    /**
+     * Request that the player log in.
+     *
+     * @param player the player
+     */
+    private void requestLogin(Player player) {
         Utils.teleportToSpawn(player);
         LimboCache cache = LimboCache.getInstance();
         cache.updateLimboPlayer(player);
@@ -131,31 +136,18 @@ public class ProcessSyncPasswordRegister implements Process {
             return;
         }
 
-        // Register is finish and player is logged, display welcome message
-        if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
-            if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
-                for (String s : service.getSettings().getWelcomeMessage()) {
-                    plugin.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
-                }
-            } else {
-                for (String s : service.getSettings().getWelcomeMessage()) {
-                    player.sendMessage(plugin.replaceAllInfo(s, player));
-                }
-            }
-        }
+        // Register is now finished; we can force all commands
+        forceCommands();
 
-        // Request Login after Registration
+        // Request login after registration
         if (service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)) {
-            forceLogin(player);
+            requestLogin(player);
             return;
         }
 
         if (service.getProperty(HooksSettings.BUNGEECORD)) {
             sendBungeeMessage();
         }
-
-        // Register is now finished; we can force all commands
-        forceCommands();
 
         sendTo();
     }
