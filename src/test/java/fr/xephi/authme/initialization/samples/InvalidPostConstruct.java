@@ -8,12 +8,35 @@ import javax.inject.Inject;
  */
 public class InvalidPostConstruct {
 
-    @Inject
-    private AlphaService alphaService;
-    @Inject
-    private ProvidedClass providedClass;
+    public static final class WithParams {
+        @Inject
+        private AlphaService alphaService;
+        @Inject
+        private ProvidedClass providedClass;
 
-    @PostConstruct
-    public void invalidPostConstr(BetaManager betaManager) {
+        WithParams() { }
+
+        @PostConstruct
+        public void invalidPostConstr(BetaManager betaManager) {
+        }
+    }
+
+    public static final class Static {
+        @Inject
+        Static(BetaManager betaManager) {
+            // --
+        }
+
+        @PostConstruct
+        public static void invalidMethod() {
+            // --
+        }
+    }
+
+    public static final class ThrowsException {
+        @PostConstruct
+        public void throwingPostConstruct() {
+            throw new IllegalStateException("Exception in post construct");
+        }
     }
 }

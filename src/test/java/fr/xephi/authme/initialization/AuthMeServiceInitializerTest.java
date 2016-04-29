@@ -1,5 +1,6 @@
 package fr.xephi.authme.initialization;
 
+import fr.xephi.authme.initialization.samples.AlphaService;
 import fr.xephi.authme.initialization.samples.BadFieldInjection;
 import fr.xephi.authme.initialization.samples.BetaManager;
 import fr.xephi.authme.initialization.samples.CircularClasses;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -47,10 +49,16 @@ public class AuthMeServiceInitializerTest {
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = RuntimeException.class)
     public void shouldThrowForInvalidPackage() {
         // given / when / then
         initializer.get(InvalidClass.class);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowForUnregisteredPrimitiveType() {
+        // given / when / then
+        initializer.get(int.class);
     }
 
     @Test
@@ -169,7 +177,19 @@ public class AuthMeServiceInitializerTest {
     @Test(expected = RuntimeException.class)
     public void shouldThrowForInvalidPostConstructMethod() {
         // given / when / then
-        initializer.get(InvalidPostConstruct.class);
+        initializer.get(InvalidPostConstruct.WithParams.class);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowForStaticPostConstructMethod() {
+        // given / when / then
+        initializer.get(InvalidPostConstruct.Static.class);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldForwardExceptionFromPostConstruct() {
+        // given / when / then
+        initializer.get(InvalidPostConstruct.ThrowsException.class);
     }
 
     @Test(expected = RuntimeException.class)
@@ -191,4 +211,26 @@ public class AuthMeServiceInitializerTest {
         assertThat(cwad.getAbstractDependency() == concrete, equalTo(true));
         assertThat(cwad.getAlphaService(), not(nullValue()));
     }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowForAlreadyRegisteredClass() {
+        // given
+        initializer.register(new BetaManager());
+
+        // when / then
+        initializer.register(BetaManager.class, new BetaManager());
+    }
+
+    @Test
+    public void shouldCreateNewUntrackedInstance() {
+        // given / when
+        AlphaService singletonScoped = initializer.get(AlphaService.class);
+        AlphaService requestScoped = initializer.newInstance(AlphaService.class);
+
+        // then
+        assertThat(singletonScoped.getProvidedClass(), not(nullValue()));
+        assertThat(singletonScoped.getProvidedClass(), equalTo(requestScoped.getProvidedClass()));
+        assertThat(singletonScoped, not(sameInstance(requestScoped)));
+    }
+
 }

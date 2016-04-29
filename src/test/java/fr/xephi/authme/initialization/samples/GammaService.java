@@ -10,7 +10,7 @@ public class GammaService {
     private AlphaService alphaService;
 
     @Inject
-    GammaService(AlphaService alphaService) {
+    public GammaService(AlphaService alphaService) {
         this.alphaService = alphaService;
     }
 

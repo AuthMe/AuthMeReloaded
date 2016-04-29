@@ -121,17 +121,19 @@ public class AuthMeServiceInitializer {
         if (Annotation.class.isAssignableFrom(clazz)) {
             throw new UnsupportedOperationException("Cannot retrieve annotated elements in this way!");
         } else if (objects.containsKey(clazz)) {
-            return getObject(clazz);
+            return clazz.cast(objects.get(clazz));
         }
 
-        // First time we come across clazz, need to instantiate it. Add the clazz to the list of traversed
-        // classes in a new list, so each path we need to take has its own Set.
+        // First time we come across clazz, need to instantiate it. Validate that we can do so
         validatePackage(clazz);
         validateInstantiable(clazz);
 
+        // Add the clazz to the list of traversed classes in a new Set, so each path we take has its own Set.
         traversedClasses = new HashSet<>(traversedClasses);
         traversedClasses.add(clazz);
-        return instantiate(clazz, traversedClasses);
+        T object = instantiate(clazz, traversedClasses);
+        storeObject(object);
+        return object;
     }
 
     /**
@@ -154,7 +156,6 @@ public class AuthMeServiceInitializer {
         validateInjectionHasNoCircularDependencies(injection.getDependencies(), traversedClasses);
         Object[] dependencies = resolveDependencies(injection, traversedClasses);
         T object = injection.instantiateWith(dependencies);
-        storeObject(object);
         executePostConstructMethods(object);
         return object;
     }
@@ -184,27 +185,6 @@ public class AuthMeServiceInitializer {
             }
         }
         return values;
-    }
-
-
-    /**
-     * Internal method to retrieve an object from the objects map for <b>non-annotation classes</b>.
-     * In such cases, the type of the entry always corresponds to the key, i.e. the entry of key
-     * {@code Class<T>} is guaranteed to be of type {@code T}.
-     * <p>
-     * To retrieve values identified with an annotation, use {@code objects.get(clazz)} directly.
-     * We do not know or control the type of the value of keys of annotation classes.
-     *
-     * @param clazz the class to retrieve the implementation of
-     * @param <T> the type
-     * @return the implementation
-     */
-    private <T> T getObject(Class<T> clazz) {
-        Object o = objects.get(clazz);
-        if (o == null) {
-            throw new NullPointerException("No instance of " + clazz + " available");
-        }
-        return clazz.cast(o);
     }
 
     /**
@@ -262,7 +242,7 @@ public class AuthMeServiceInitializer {
     private static void executePostConstructMethods(Object object) {
         for (Method method : object.getClass().getDeclaredMethods()) {
             if (method.isAnnotationPresent(PostConstruct.class)) {
-                if (method.getParameterTypes().length == 0) {
+                if (method.getParameterTypes().length == 0 && !Modifier.isStatic(method.getModifiers())) {
                     try {
                         method.setAccessible(true);
                         method.invoke(object);
@@ -270,8 +250,9 @@ public class AuthMeServiceInitializer {
                         throw new UnsupportedOperationException(e);
                     }
                 } else {
-                    throw new IllegalStateException("@PostConstruct methods must have an empty parameter list. " +
-                        "Found parameters in " + method + " belonging to " + object.getClass());
+                    throw new IllegalStateException(String.format("@PostConstruct methods may not be static or have "
+                        + " any parameters. Method '%s' of class '%s' is either static or has parameters",
+                        method.getName(), object.getClass().getSimpleName()));
                 }
             }
         }

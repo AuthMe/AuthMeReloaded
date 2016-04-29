@@ -17,4 +17,14 @@ public class AlphaService {
     public ProvidedClass getProvidedClass() {
         return providedClass;
     }
+
+    /**
+     * Creates a new instance (for instantiations in tests).
+     *
+     * @param providedClass .
+     * @return created instance
+     */
+    public static AlphaService newInstance(ProvidedClass providedClass) {
+        return new AlphaService(providedClass);
+    }
 }
