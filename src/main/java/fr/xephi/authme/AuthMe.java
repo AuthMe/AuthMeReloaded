@@ -306,7 +306,8 @@ public class AuthMe extends JavaPlugin {
         reloadSupportHook();
 
         // Register event listeners
-        registerEventListeners(messages, database, management, pluginHooks, spawnLoader, antiBot);
+        registerEventListeners(
+            messages, database, management, pluginHooks, spawnLoader, antiBot, bukkitService, validationService);
         // Start Email recall task if needed
         scheduleRecallEmailTask();
 
@@ -371,16 +372,18 @@ public class AuthMe extends JavaPlugin {
      * Register all event listeners.
      */
     private void registerEventListeners(Messages messages, DataSource dataSource, Management management,
-                                        PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot) {
+                                        PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot,
+                                        BukkitService bukkitService, ValidationService validationService) {
         // Get the plugin manager instance
         PluginManager pluginManager = server.getPluginManager();
 
         // Register event listeners
         pluginManager.registerEvents(new AuthMePlayerListener(
-            this, newSettings, messages, dataSource, antiBot, management, bukkitService), this);
+            this, newSettings, messages, dataSource, antiBot, management, bukkitService, validationService), this);
         pluginManager.registerEvents(new AuthMeBlockListener(), this);
         pluginManager.registerEvents(new AuthMeEntityListener(), this);
-        pluginManager.registerEvents(new AuthMeServerListener(this, messages, pluginHooks, spawnLoader), this);
+        pluginManager.registerEvents(new AuthMeServerListener(
+            this, messages, newSettings, pluginHooks, spawnLoader, validationService), this);
 
         // Try to register 1.6 player listeners
         try {
