@@ -39,8 +39,7 @@ public final class Settings {
     public static String getNickRegex, getUnloggedinGroup,
         unRegisteredGroup, backupWindowsPath, getRegisteredGroup,
         rakamakUsers, rakamakUsersIp, defaultWorld, crazyloginFileName;
-    public static int getWarnMessageInterval, getSessionTimeout,
-        getRegistrationTimeout, getMaxNickLength, getMinNickLength,
+    public static int getSessionTimeout, getMaxNickLength, getMinNickLength,
         getNonActivatedGroup, maxLoginTry, captchaLength, getMaxLoginPerIp;
     protected static FileConfiguration configFile;
 
@@ -58,10 +57,8 @@ public final class Settings {
         isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
         isForcedRegistrationEnabled = load(RegistrationSettings.FORCE);
         isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
-        getWarnMessageInterval = load(RegistrationSettings.MESSAGE_INTERVAL);
         isSessionsEnabled = load(PluginSettings.SESSIONS_ENABLED);
         getSessionTimeout = configFile.getInt("settings.sessions.timeout", 10);
-        getRegistrationTimeout = load(RestrictionSettings.TIMEOUT);
         getMaxNickLength = configFile.getInt("settings.restrictions.maxNicknameLength", 20);
         getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
         getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");

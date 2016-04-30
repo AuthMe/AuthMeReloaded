@@ -37,12 +37,17 @@ public final class MigrationService {
         if (HashAlgorithm.PLAINTEXT == settings.getProperty(SecuritySettings.PASSWORD_HASH)) {
             ConsoleLogger.showError("Your HashAlgorithm has been detected as plaintext and is now deprecated;"
                 + " it will be changed and hashed now to the AuthMe default hashing method");
+            ConsoleLogger.showError("Don't stop your server; wait for the conversion to have been completed!");
             List<PlayerAuth> allAuths = dataSource.getAllAuths();
             for (PlayerAuth auth : allAuths) {
-                HashedPassword hashedPassword = authmeSha256.computeHash(
-                    auth.getPassword().getHash(), auth.getNickname());
-                auth.setPassword(hashedPassword);
-                dataSource.updatePassword(auth);
+                String hash = auth.getPassword().getHash();
+                if (hash.startsWith("$SHA$")) {
+                    ConsoleLogger.showError("Skipping conversion for " + auth.getNickname() + "; detected SHA hash");
+                } else {
+                    HashedPassword hashedPassword = authmeSha256.computeHash(hash, auth.getNickname());
+                    auth.setPassword(hashedPassword);
+                    dataSource.updatePassword(auth);
+                }
             }
             settings.setProperty(SecuritySettings.PASSWORD_HASH, HashAlgorithm.SHA256);
             settings.save();

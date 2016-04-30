@@ -67,7 +67,7 @@ public class RegistrationSettings implements SettingsClass {
         newListProperty("settings.forceRegisterCommandsAsConsole");
 
     @Comment({
-        "Enable to display the welcome message (welcome.txt) after a registration or a login",
+        "Enable to display the welcome message (welcome.txt) after a login",
         "You can use colors in this welcome.txt + some replaced strings:",
         "{PLAYER}: player name, {ONLINE}: display number of online players, {MAXPLAYERS}: display server slots,",
         "{IP}: player ip, {LOGINS}: number of players logged, {WORLD}: player current world, {SERVER}: server name",
