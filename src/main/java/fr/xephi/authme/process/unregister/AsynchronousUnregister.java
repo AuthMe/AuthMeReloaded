@@ -97,7 +97,6 @@ public class AsynchronousUnregister implements Process {
             }
             service.send(player, MessageKey.UNREGISTERED_SUCCESS);
             ConsoleLogger.info(player.getDisplayName() + " unregistered himself");
-            Utils.teleportToSpawn(player);
         } else {
             service.send(player, MessageKey.WRONG_PASSWORD);
         }
