@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation for specifying the plugin's data folder.
  */
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DataFolder {
 }

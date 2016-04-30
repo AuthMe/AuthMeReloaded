@@ -3,7 +3,7 @@ package fr.xephi.authme.initialization.samples;
 import javax.inject.Inject;
 
 /**
- * Sample - class dependent on alpha and provided.
+ * Sample - class dependent on alpha service.
  */
 public class GammaService {
 

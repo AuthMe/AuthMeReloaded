@@ -8,7 +8,7 @@ import java.lang.annotation.Target;
 /**
  * Annotation to denote the collection of AuthMe commands.
  */
-@Target(ElementType.PARAMETER)
+@Target({ElementType.PARAMETER, ElementType.FIELD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface BaseCommands {
 }

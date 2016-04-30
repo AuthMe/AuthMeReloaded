@@ -9,7 +9,6 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.lang.reflect.Type;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,20 +48,6 @@ public class AuthMeServiceInitializer {
      */
     public <T> T get(Class<T> clazz) {
         return get(clazz, new HashSet<Class<?>>());
-    }
-
-    /**
-     * Registers an instantiation by its type.
-     *
-     * @param object the object to register
-     * @throws IllegalStateException if an object of the same type has already been registered
-     */
-    public void register(Object object) {
-        if (object instanceof Type) {
-            throw new IllegalStateException("You tried to register a Type object: '" + object
-                + "'. This likely indicates an error. Please use register(Class<T>, T) if really desired.");
-        }
-        storeObject(object);
     }
 
     /**

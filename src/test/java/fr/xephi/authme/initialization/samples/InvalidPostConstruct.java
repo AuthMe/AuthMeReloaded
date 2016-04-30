@@ -6,7 +6,7 @@ import javax.inject.Inject;
 /**
  * Class with invalid @PostConstruct method.
  */
-public class InvalidPostConstruct {
+public abstract class InvalidPostConstruct {
 
     public static final class WithParams {
         @Inject

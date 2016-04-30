@@ -4,7 +4,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 /**
- * Sample class for testing the execution of the @PostConstruct method.
+ * Sample class for testing the execution of @PostConstruct methods.
  */
 public class PostConstructTestClass {
 

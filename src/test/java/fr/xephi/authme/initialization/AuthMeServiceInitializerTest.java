@@ -10,6 +10,7 @@ import fr.xephi.authme.initialization.samples.Duration;
 import fr.xephi.authme.initialization.samples.FieldInjectionWithAnnotations;
 import fr.xephi.authme.initialization.samples.InvalidClass;
 import fr.xephi.authme.initialization.samples.InvalidPostConstruct;
+import fr.xephi.authme.initialization.samples.InvalidStaticFieldInjection;
 import fr.xephi.authme.initialization.samples.PostConstructTestClass;
 import fr.xephi.authme.initialization.samples.ProvidedClass;
 import fr.xephi.authme.initialization.samples.Size;
@@ -34,7 +35,7 @@ public class AuthMeServiceInitializerTest {
     @Before
     public void setInitializer() {
         initializer = new AuthMeServiceInitializer(ALLOWED_PACKAGE);
-        initializer.register(new ProvidedClass(""));
+        initializer.register(ProvidedClass.class, new ProvidedClass(""));
     }
 
     @Test
@@ -128,7 +129,7 @@ public class AuthMeServiceInitializerTest {
     @Test(expected = RuntimeException.class)
     public void shouldThrowForSecondRegistration() {
         // given / when / then
-        initializer.register(new ProvidedClass(""));
+        initializer.register(ProvidedClass.class, new ProvidedClass(""));
     }
 
     @Test(expected = RuntimeException.class)
@@ -150,15 +151,6 @@ public class AuthMeServiceInitializerTest {
     public void shouldThrowForRegisterWithNull() {
         // given / when / then
         initializer.register(String.class, null);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void shouldThrowForRegisterOfType() {
-        // given / when / then
-        // this most likely means that the second argument was forgotten, so throw an error and force
-        // the API user to use the explicit register(Class.class, String.class) if really, really desired
-        // (Though for such generic types, an annotation would be a lot better)
-        initializer.register(String.class);
     }
 
     @Test
@@ -215,7 +207,7 @@ public class AuthMeServiceInitializerTest {
     @Test(expected = RuntimeException.class)
     public void shouldThrowForAlreadyRegisteredClass() {
         // given
-        initializer.register(new BetaManager());
+        initializer.register(BetaManager.class, new BetaManager());
 
         // when / then
         initializer.register(BetaManager.class, new BetaManager());
@@ -231,6 +223,12 @@ public class AuthMeServiceInitializerTest {
         assertThat(singletonScoped.getProvidedClass(), not(nullValue()));
         assertThat(singletonScoped.getProvidedClass(), equalTo(requestScoped.getProvidedClass()));
         assertThat(singletonScoped, not(sameInstance(requestScoped)));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowForStaticFieldInjection() {
+        // given / when / then
+        initializer.newInstance(InvalidStaticFieldInjection.class);
     }
 
 }

@@ -5,7 +5,7 @@ import javax.inject.Inject;
 /**
  * Classes with circular dependencies.
  */
-public class CircularClasses {
+public abstract class CircularClasses {
 
     public static final class Circular1 {
         @Inject

@@ -1,5 +1,7 @@
 package fr.xephi.authme.initialization;
 
+import com.google.common.base.Preconditions;
+
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.lang.annotation.Annotation;
@@ -36,6 +38,7 @@ class ConstructorInjection<T> implements Injection<T> {
 
     @Override
     public T instantiateWith(Object... values) {
+        validateNoNullValues(values);
         try {
             return constructor.newInstance(values);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -60,7 +63,7 @@ class ConstructorInjection<T> implements Injection<T> {
      *
      * @param clazz the class to process
      * @param <T> the class' type
-     * @return injection constructor for the class
+     * @return injection constructor for the class, null if not applicable
      */
     @SuppressWarnings("unchecked")
     private static <T> Constructor<T> getInjectionConstructor(Class<T> clazz) {
@@ -72,6 +75,12 @@ class ConstructorInjection<T> implements Injection<T> {
             }
         }
         return null;
+    }
+
+    private static void validateNoNullValues(Object[] array) {
+        for (Object entry : array) {
+            Preconditions.checkNotNull(entry);
+        }
     }
 
 }

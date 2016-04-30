@@ -253,8 +253,8 @@ public class AuthMe extends JavaPlugin {
         initializer.provide(DataFolder.class, getDataFolder());
 
         // Register elements we instantiate manually
-        initializer.register(newSettings);
-        initializer.register(messages);
+        initializer.register(NewSetting.class, newSettings);
+        initializer.register(Messages.class, messages);
         initializer.register(DataSource.class, database);
         initializer.provide(BaseCommands.class, CommandInitializer.buildCommands(initializer));
 
