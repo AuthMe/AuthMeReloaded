@@ -4,6 +4,7 @@ import fr.xephi.authme.ReflectionTestUtils;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.JOOMLA;
@@ -30,7 +31,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -41,12 +41,20 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class PasswordSecurityTest {
 
+    private AuthMeServiceInitializer initializer;
+
+    @Mock
+    private NewSetting settings;
+
     @Mock
     private PluginManager pluginManager;
+
     @Mock
     private DataSource dataSource;
+
     @Mock
     private EncryptionMethod method;
+
     private Class<?> caughtClassInEvent;
 
     @BeforeClass
@@ -71,6 +79,10 @@ public class PasswordSecurityTest {
                 return null;
             }
         }).when(pluginManager).callEvent(any(Event.class));
+        initializer = new AuthMeServiceInitializer(new String[]{});
+        initializer.register(NewSetting.class, settings);
+        initializer.register(DataSource.class, dataSource);
+        initializer.register(PluginManager.class, pluginManager);
     }
 
     @Test
@@ -84,8 +96,8 @@ public class PasswordSecurityTest {
 
         given(dataSource.getPassword(playerName)).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(true);
-        PasswordSecurity security =
-            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.BCRYPT, false), pluginManager);
+        initSettings(HashAlgorithm.BCRYPT, false);
+        PasswordSecurity security = initializer.newInstance(PasswordSecurity.class);
 
         // when
         boolean result = security.comparePassword(clearTextPass, playerName);
@@ -107,8 +119,8 @@ public class PasswordSecurityTest {
 
         given(dataSource.getPassword(playerName)).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
-        PasswordSecurity security =
-            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.CUSTOM, false), pluginManager);
+        initSettings(HashAlgorithm.CUSTOM, false);
+        PasswordSecurity security = initializer.newInstance(PasswordSecurity.class);
 
         // when
         boolean result = security.comparePassword(clearTextPass, playerName);
@@ -127,8 +139,8 @@ public class PasswordSecurityTest {
         String clearTextPass = "tables";
 
         given(dataSource.getPassword(playerName)).willReturn(null);
-        PasswordSecurity security =
-            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.MD5, false), pluginManager);
+        initSettings(HashAlgorithm.MD5, false);
+        PasswordSecurity security = initializer.newInstance(PasswordSecurity.class);
 
         // when
         boolean result = security.comparePassword(clearTextPass, playerName);
@@ -155,8 +167,8 @@ public class PasswordSecurityTest {
         given(dataSource.getPassword(argThat(equalToIgnoringCase(playerName)))).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerLowerCase)).willReturn(false);
         given(method.computeHash(clearTextPass, playerLowerCase)).willReturn(newPassword);
-        PasswordSecurity security =
-            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.MD5, true), pluginManager);
+        initSettings(HashAlgorithm.MD5, true);
+        PasswordSecurity security = initializer.newInstance(PasswordSecurity.class);
 
         // when
         boolean result = security.comparePassword(clearTextPass, playerName);
@@ -180,8 +192,8 @@ public class PasswordSecurityTest {
         String clearTextPass = "someInvalidPassword";
         given(dataSource.getPassword(playerName)).willReturn(password);
         given(method.comparePassword(clearTextPass, password, playerName)).willReturn(false);
-        PasswordSecurity security =
-            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.MD5, true), pluginManager);
+        initSettings(HashAlgorithm.MD5, true);
+        PasswordSecurity security = initializer.newInstance(PasswordSecurity.class);
 
         // when
         boolean result = security.comparePassword(clearTextPass, playerName);
@@ -199,8 +211,8 @@ public class PasswordSecurityTest {
         String usernameLowerCase = username.toLowerCase();
         HashedPassword hashedPassword = new HashedPassword("$T$est#Hash", "__someSalt__");
         given(method.computeHash(password, usernameLowerCase)).willReturn(hashedPassword);
-        PasswordSecurity security =
-            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.JOOMLA, true), pluginManager);
+        initSettings(HashAlgorithm.JOOMLA, true);
+        PasswordSecurity security = initializer.newInstance(PasswordSecurity.class);
 
         // when
         HashedPassword result = security.computeHash(password, username);
@@ -222,8 +234,8 @@ public class PasswordSecurityTest {
         HashedPassword hashedPassword = new HashedPassword("~T!est#Hash");
         given(method.computeHash(password, username)).willReturn(hashedPassword);
         given(method.hasSeparateSalt()).willReturn(true);
-        PasswordSecurity security =
-            new PasswordSecurity(dataSource, mockSettings(HashAlgorithm.XAUTH, false), pluginManager);
+        initSettings(HashAlgorithm.XAUTH, false);
+        PasswordSecurity security = initializer.newInstance(PasswordSecurity.class);
 
         // when
         boolean result = security.comparePassword(password, hashedPassword, username);
@@ -238,8 +250,8 @@ public class PasswordSecurityTest {
     @Test
     public void shouldReloadSettings() {
         // given
-        NewSetting settings = mockSettings(HashAlgorithm.BCRYPT, false);
-        PasswordSecurity passwordSecurity = new PasswordSecurity(dataSource, settings, pluginManager);
+        initSettings(HashAlgorithm.BCRYPT, false);
+        PasswordSecurity passwordSecurity = initializer.newInstance(PasswordSecurity.class);
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.MD5);
         given(settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH)).willReturn(true);
 
@@ -253,13 +265,11 @@ public class PasswordSecurityTest {
             equalTo((Object) Boolean.TRUE));
     }
 
-    private static NewSetting mockSettings(HashAlgorithm algorithm, boolean supportOldPassword) {
-        NewSetting settings = mock(NewSetting.class);
+    private void initSettings(HashAlgorithm algorithm, boolean supportOldPassword) {
         given(settings.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(algorithm);
         given(settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH)).willReturn(supportOldPassword);
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
         given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
-        return settings;
     }
 
 }

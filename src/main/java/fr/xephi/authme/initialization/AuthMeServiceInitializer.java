@@ -37,6 +37,7 @@ public class AuthMeServiceInitializer {
     public AuthMeServiceInitializer(String... allowedPackages) {
         ALLOWED_PACKAGES = ImmutableSet.copyOf(allowedPackages);
         objects = new HashMap<>();
+        objects.put(getClass(), this);
     }
 
     /**
