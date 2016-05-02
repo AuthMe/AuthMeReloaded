@@ -6,6 +6,7 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -19,6 +20,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
@@ -28,6 +30,12 @@ import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
  */
 public class UnregisterAdminCommand implements ExecutableCommand {
 
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private PlayerCache playerCache;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
         // Get the player name
@@ -35,20 +43,20 @@ public class UnregisterAdminCommand implements ExecutableCommand {
         String playerNameLowerCase = playerName.toLowerCase();
 
         // Make sure the user is valid
-        if (!commandService.getDataSource().isAuthAvailable(playerNameLowerCase)) {
+        if (!dataSource.isAuthAvailable(playerNameLowerCase)) {
             commandService.send(sender, MessageKey.UNKNOWN_USER);
             return;
         }
 
         // Remove the player
-        if (!commandService.getDataSource().removeAuth(playerNameLowerCase)) {
+        if (!dataSource.removeAuth(playerNameLowerCase)) {
             commandService.send(sender, MessageKey.ERROR);
             return;
         }
 
         // Unregister the player
         Player target = commandService.getPlayer(playerNameLowerCase);
-        PlayerCache.getInstance().removePlayer(playerNameLowerCase);
+        playerCache.removePlayer(playerNameLowerCase);
         Utils.setGroup(target, Utils.GroupType.UNREGISTERED);
         if (target != null && target.isOnline()) {
             if (commandService.getProperty(RegistrationSettings.FORCE)) {

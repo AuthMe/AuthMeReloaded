@@ -1,10 +1,7 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -47,8 +44,6 @@ public class CommandService {
     private PluginHooks pluginHooks;
     @Inject
     private SpawnLoader spawnLoader;
-    @Inject
-    private AntiBot antiBot;
     @Inject
     private ValidationService validationService;
     @Inject
@@ -96,15 +91,6 @@ public class CommandService {
     }
 
     /**
-     * Return the AuthMe data source.
-     *
-     * @return The used data source
-     */
-    public DataSource getDataSource() {
-        return authMe.getDataSource();
-    }
-
-    /**
      * Return the AuthMe instance for further manipulation. Use only if other methods from
      * the command service cannot be used.
      *
@@ -112,15 +98,6 @@ public class CommandService {
      */
     public AuthMe getAuthMe() {
         return authMe;
-    }
-
-    /**
-     * Return the PasswordSecurity instance.
-     *
-     * @return The password security instance
-     */
-    public PasswordSecurity getPasswordSecurity() {
-        return passwordSecurity;
     }
 
     /**
@@ -185,20 +162,12 @@ public class CommandService {
         return settings;
     }
 
-    public PlayerCache getPlayerCache() {
-        return PlayerCache.getInstance();
-    }
-
     public PluginHooks getPluginHooks() {
         return pluginHooks;
     }
 
     public SpawnLoader getSpawnLoader() {
         return spawnLoader;
-    }
-
-    public AntiBot getAntiBot() {
-        return antiBot;
     }
 
     /**

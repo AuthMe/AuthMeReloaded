@@ -1,7 +1,6 @@
 package hashmethods;
 
 import fr.xephi.authme.security.HashAlgorithm;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HexSaltedMethod;
 import fr.xephi.authme.security.crypts.description.AsciiRestricted;
@@ -55,7 +54,7 @@ public class EncryptionMethodInfoGatherer {
 
     private static MethodDescription createDescription(HashAlgorithm algorithm) {
         Class<? extends EncryptionMethod> clazz = algorithm.getClazz();
-        EncryptionMethod method = PasswordSecurity.initializeEncryptionMethod(algorithm, settings);
+        EncryptionMethod method = null; // TODO ljacqu PasswordSecurity.initializeEncryptionMethod(algorithm, settings);
         if (method == null) {
             throw new NullPointerException("Method for '" + algorithm + "' is null");
         }

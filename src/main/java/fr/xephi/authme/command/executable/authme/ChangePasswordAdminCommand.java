@@ -2,19 +2,31 @@ package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
  * Admin command for changing a player's password.
  */
 public class ChangePasswordAdminCommand implements ExecutableCommand {
+
+    @Inject
+    private PasswordSecurity passwordSecurity;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private DataSource dataSource;
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments,
@@ -36,10 +48,9 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
 
             @Override
             public void run() {
-                DataSource dataSource = commandService.getDataSource();
                 PlayerAuth auth = null;
-                if (commandService.getPlayerCache().isAuthenticated(playerNameLowerCase)) {
-                    auth = commandService.getPlayerCache().getAuth(playerNameLowerCase);
+                if (playerCache.isAuthenticated(playerNameLowerCase)) {
+                    auth = playerCache.getAuth(playerNameLowerCase);
                 } else if (dataSource.isAuthAvailable(playerNameLowerCase)) {
                     auth = dataSource.getAuth(playerNameLowerCase);
                 }
@@ -48,8 +59,7 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
                     return;
                 }
 
-                HashedPassword hashedPassword = commandService.getPasswordSecurity()
-                    .computeHash(playerPass, playerNameLowerCase);
+                HashedPassword hashedPassword = passwordSecurity.computeHash(playerPass, playerNameLowerCase);
                 auth.setPassword(hashedPassword);
 
                 if (!dataSource.updatePassword(auth)) {

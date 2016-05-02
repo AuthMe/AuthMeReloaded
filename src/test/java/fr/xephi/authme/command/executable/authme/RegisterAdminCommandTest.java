@@ -3,7 +3,6 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -14,6 +13,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -35,10 +35,20 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class RegisterAdminCommandTest {
 
+    @InjectMocks
+    private RegisterAdminCommand command;
+
+    @Mock
+    private PasswordSecurity passwordSecurity;
+
     @Mock
     private CommandSender sender;
+
     @Mock
     private CommandService commandService;
+
+    @Mock
+    private DataSource dataSource;
 
     @BeforeClass
     public static void setUpLogger() {
@@ -51,7 +61,6 @@ public class RegisterAdminCommandTest {
         String user = "tester";
         String password = "myPassword";
         given(commandService.validatePassword(password, user)).willReturn(MessageKey.INVALID_PASSWORD_LENGTH);
-        ExecutableCommand command = new RegisterAdminCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
@@ -68,10 +77,7 @@ public class RegisterAdminCommandTest {
         String user = "my_name55";
         String password = "@some-pass@";
         given(commandService.validatePassword(password, user)).willReturn(null);
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.isAuthAvailable(user)).willReturn(true);
-        given(commandService.getDataSource()).willReturn(dataSource);
-        ExecutableCommand command = new RegisterAdminCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
@@ -89,15 +95,10 @@ public class RegisterAdminCommandTest {
         String user = "test-test";
         String password = "afdjhfkt";
         given(commandService.validatePassword(password, user)).willReturn(null);
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.isAuthAvailable(user)).willReturn(false);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(false);
-        given(commandService.getDataSource()).willReturn(dataSource);
-        PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
         HashedPassword hashedPassword = new HashedPassword("235sdf4w5udsgf");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
-        given(commandService.getPasswordSecurity()).willReturn(passwordSecurity);
-        ExecutableCommand command = new RegisterAdminCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
@@ -117,16 +118,11 @@ public class RegisterAdminCommandTest {
         String user = "someone";
         String password = "Al1O3P49S5%";
         given(commandService.validatePassword(password, user)).willReturn(null);
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.isAuthAvailable(user)).willReturn(false);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(true);
-        given(commandService.getDataSource()).willReturn(dataSource);
-        PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
-        given(commandService.getPasswordSecurity()).willReturn(passwordSecurity);
         given(commandService.getPlayer(user)).willReturn(null);
-        ExecutableCommand command = new RegisterAdminCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
@@ -147,17 +143,12 @@ public class RegisterAdminCommandTest {
         String user = "someone";
         String password = "Al1O3P49S5%";
         given(commandService.validatePassword(password, user)).willReturn(null);
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.isAuthAvailable(user)).willReturn(false);
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(true);
-        given(commandService.getDataSource()).willReturn(dataSource);
-        PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
-        given(commandService.getPasswordSecurity()).willReturn(passwordSecurity);
         Player player = mock(Player.class);
         given(commandService.getPlayer(user)).willReturn(player);
-        ExecutableCommand command = new RegisterAdminCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
