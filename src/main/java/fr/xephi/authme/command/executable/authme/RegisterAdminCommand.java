@@ -63,13 +63,12 @@ public class RegisterAdminCommand implements ExecutableCommand {
 
                 commandService.send(sender, MessageKey.REGISTER_SUCCESS);
                 ConsoleLogger.info(sender.getName() + " registered " + playerName);
-                Player player = commandService.getPlayer(playerName);
+                final Player player = commandService.getPlayer(playerName);
                 if (player != null) {
-                    final Player p = player;
-                    p.getServer().getScheduler().scheduleSyncDelayedTask(commandService.getAuthMe(), new Runnable() {
+                    commandService.getBukkitService().scheduleSyncDelayedTask(new Runnable() {
                         @Override
                         public void run() {
-                            p.kickPlayer("An admin just registered you, please log in again");
+                            player.kickPlayer("An admin just registered you, please log in again");
                         }
                     });
                 }
