@@ -1,5 +1,32 @@
 package fr.xephi.authme;
 
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
+import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
+import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
+
+import java.io.File;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.logging.Logger;
+
+import org.apache.logging.log4j.LogManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
+
 import fr.xephi.authme.api.API;
 import fr.xephi.authme.api.NewAPI;
 import fr.xephi.authme.cache.auth.PlayerAuth;
@@ -27,6 +54,7 @@ import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
+import fr.xephi.authme.listener.AuthMePlayerListener19;
 import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
 import fr.xephi.authme.listener.AuthMeTablistPacketAdapter;
@@ -62,32 +90,6 @@ import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import fr.xephi.authme.util.ValidationService;
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
-
-import java.io.File;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.logging.Logger;
-
-import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
-import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
-import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
-import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
 
 /**
  * The AuthMe main class.
@@ -396,6 +398,13 @@ public class AuthMe extends JavaPlugin {
         try {
             Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
             pluginManager.registerEvents(new AuthMePlayerListener18(), this);
+        } catch (ClassNotFoundException ignore) {
+        }
+        
+        // Try to register 1.9 player listeners
+        try {
+            Class.forName("org.spigotmc.event.player.PlayerSpawnLocationEvent");
+            pluginManager.registerEvents(new AuthMePlayerListener19(this), this);
         } catch (ClassNotFoundException ignore) {
         }
     }
