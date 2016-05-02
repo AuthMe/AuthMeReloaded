@@ -5,7 +5,6 @@ import java.util.List;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
@@ -57,15 +56,15 @@ public class RegisterAdminCommand implements ExecutableCommand {
 
                 commandService.send(sender, MessageKey.REGISTER_SUCCESS);
                 ConsoleLogger.info(sender.getName() + " registered " + playerName);
-                final Player player = commandService.getPlayer(playerName);
+                Player player = commandService.getPlayer(playerName);
                 if (player != null) {
-                    sender.getServer().getScheduler().scheduleSyncDelayedTask(AuthMe.getInstance(), new Runnable()
-                            {
-                                @Override
-                                public void run() {
-                                    player.kickPlayer("An admin just registered you, please log in again");
-                                }
-                            });
+                    final Player p = player;
+                    p.getServer().getScheduler().scheduleSyncDelayedTask(commandService.getAuthMe(), new Runnable() {
+                        @Override
+                        public void run() {
+                            p.kickPlayer("An admin just registered you, please log in again");
+                        }
+                    });
                 }
             }
         });

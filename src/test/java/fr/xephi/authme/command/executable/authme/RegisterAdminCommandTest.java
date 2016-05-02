@@ -1,13 +1,15 @@
 package fr.xephi.authme.command.executable.authme;
 
-import fr.xephi.authme.TestHelper;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.HashedPassword;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+
+import java.util.Arrays;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
@@ -17,17 +19,14 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Arrays;
-
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.equalTo;
-import static org.junit.Assert.assertThat;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
+import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.security.PasswordSecurity;
+import fr.xephi.authme.security.crypts.HashedPassword;
 
 /**
  * Test for {@link RegisterAdminCommand}.
@@ -155,8 +154,6 @@ public class RegisterAdminCommandTest {
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
         given(commandService.getPasswordSecurity()).willReturn(passwordSecurity);
-        Player player = mock(Player.class);
-        given(commandService.getPlayer(user)).willReturn(player);
         ExecutableCommand command = new RegisterAdminCommand();
 
         // when
@@ -170,7 +167,6 @@ public class RegisterAdminCommandTest {
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
         verify(dataSource).setUnlogged(user);
-        verify(player).kickPlayer(argThat(containsString("please log in again")));
     }
 
     private void assertAuthHasInfo(PlayerAuth auth, String name, HashedPassword hashedPassword) {
