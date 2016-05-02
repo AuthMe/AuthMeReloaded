@@ -8,6 +8,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.reflect.FieldAccessException;
+import com.comphenix.protocol.utility.MinecraftVersion;
 import com.comphenix.protocol.wrappers.EnumWrappers.NativeGameMode;
 import com.comphenix.protocol.wrappers.EnumWrappers.PlayerInfoAction;
 import com.comphenix.protocol.wrappers.PlayerInfoData;
@@ -82,7 +83,12 @@ public class AuthMeTablistPacketAdapter extends PacketAdapter {
     }
 
     public void register() {
-        ProtocolLibrary.getProtocolManager().addPacketListener(this);
+        if (MinecraftVersion.getCurrentVersion().isAtLeast(MinecraftVersion.BOUNTIFUL_UPDATE)) {
+            ProtocolLibrary.getProtocolManager().addPacketListener(this);
+        } else {
+            ConsoleLogger.info("The hideTablist feature is not compatible with your minecraft version");
+            ConsoleLogger.info("It requires 1.8+. Disabling the hideTablist feature...");
+        }
     }
 
     public void unregister() {

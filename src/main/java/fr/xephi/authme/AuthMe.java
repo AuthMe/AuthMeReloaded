@@ -26,6 +26,7 @@ import fr.xephi.authme.listener.AuthMeInventoryPacketAdapter;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.listener.AuthMePlayerListener16;
 import fr.xephi.authme.listener.AuthMePlayerListener18;
+import fr.xephi.authme.listener.AuthMePlayerListener19;
 import fr.xephi.authme.listener.AuthMeServerListener;
 import fr.xephi.authme.listener.AuthMeTabCompletePacketAdapter;
 import fr.xephi.authme.listener.AuthMeTablistPacketAdapter;
@@ -390,6 +391,13 @@ public class AuthMe extends JavaPlugin {
         try {
             Class.forName("org.bukkit.event.player.PlayerInteractAtEntityEvent");
             pluginManager.registerEvents(initializer.get(AuthMePlayerListener18.class), this);
+        } catch (ClassNotFoundException ignore) {
+        }
+
+        // Try to register 1.9 player listeners
+        try {
+            Class.forName("org.spigotmc.event.player.PlayerSpawnLocationEvent");
+            pluginManager.registerEvents(initializer.get(AuthMePlayerListener19.class), this);
         } catch (ClassNotFoundException ignore) {
         }
     }

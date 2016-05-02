@@ -21,7 +21,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
 
     @Inject
     private PasswordSecurity passwordSecurity;
-    
+
     @Inject
     private DataSource dataSource;
 
@@ -65,7 +65,13 @@ public class RegisterAdminCommand implements ExecutableCommand {
                 ConsoleLogger.info(sender.getName() + " registered " + playerName);
                 Player player = commandService.getPlayer(playerName);
                 if (player != null) {
-                    player.kickPlayer("An admin just registered you, please log in again");
+                    final Player p = player;
+                    p.getServer().getScheduler().scheduleSyncDelayedTask(commandService.getAuthMe(), new Runnable() {
+                        @Override
+                        public void run() {
+                            p.kickPlayer("An admin just registered you, please log in again");
+                        }
+                    });
                 }
             }
         });

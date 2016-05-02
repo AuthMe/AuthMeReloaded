@@ -20,11 +20,12 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
+import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.BukkitService;
-import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -85,6 +86,8 @@ public class AuthMePlayerListener implements Listener {
     private BukkitService bukkitService;
     @Inject
     private SpawnLoader spawnLoader;
+    @Inject
+    private ValidationService validationService;
 
     private void handleChat(AsyncPlayerChatEvent event) {
         if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
@@ -265,30 +268,22 @@ public class AuthMePlayerListener implements Listener {
         PlayerAuth auth = dataSource.getAuth(event.getName());
         if (settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE) && auth != null && auth.getRealName() != null) {
             String realName = auth.getRealName();
-            if (!realName.isEmpty() && !realName.equals("Player") && !realName.equals(event.getName())) {
+            if (!realName.isEmpty() && !"Player".equals(realName) && !realName.equals(event.getName())) {
                 event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
                 event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CASE, realName, event.getName()));
                 return;
             }
-            if (realName.isEmpty() || realName.equals("Player")) {
+            if (realName.isEmpty() || "Player".equals(realName)) {
                 dataSource.updateRealName(event.getName().toLowerCase(), event.getName());
             }
         }
 
-        if (auth == null) {
-            if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()) {
-                String playerIP = event.getAddress().getHostAddress();
-                String countryCode = GeoLiteAPI.getCountryCode(playerIP);
-                if (Settings.countriesBlacklist.contains(countryCode)) {
-                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                    event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                    return;
-                }
-                if (Settings.enableProtection && !Settings.countries.contains(countryCode)) {
-                    event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
-                    event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                    return;
-                }
+        if (auth == null && settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)) {
+            String playerIp = event.getAddress().getHostAddress();
+            if (!validationService.isCountryAdmitted(playerIp)) {
+                event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+                event.setKickMessage(m.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
+                return;
             }
         }
 

@@ -436,6 +436,14 @@
             <optional>true</optional>
         </dependency>
 
+		<!--Spigot API-->
+		<dependency>
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot-api</artifactId>
+			<version>1.9.2-R0.1-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
         <!-- Bukkit API, http://www.spigotmc.org/ or http://bukkit.org/ -->
         <dependency>
             <groupId>org.bukkit</groupId>

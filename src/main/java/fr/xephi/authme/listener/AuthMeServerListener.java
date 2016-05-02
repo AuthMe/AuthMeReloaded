@@ -5,9 +5,10 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
-import fr.xephi.authme.util.GeoLiteAPI;
+import fr.xephi.authme.settings.properties.ProtectionSettings;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -26,19 +27,19 @@ public class AuthMeServerListener implements Listener {
     @Inject
     private Messages messages;
     @Inject
+    private NewSetting settings;
+    @Inject
     private PluginHooks pluginHooks;
     @Inject
     private SpawnLoader spawnLoader;
+    @Inject
+    private ValidationService validationService;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
-        if (!Settings.countriesBlacklist.isEmpty() || !Settings.countries.isEmpty()){
-            String countryCode = GeoLiteAPI.getCountryCode(event.getAddress().getHostAddress());
-            if( Settings.countriesBlacklist.contains(countryCode)) {
-                event.setMotd(messages.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
-                return;
-            }
-            if (Settings.enableProtection && !Settings.countries.contains(countryCode)) {
+        if (settings.getProperty(ProtectionSettings.ENABLE_PROTECTION)) {
+            String playerIp = event.getAddress().getHostAddress();
+            if (!validationService.isCountryAdmitted(playerIp)) {
                 event.setMotd(messages.retrieveSingle(MessageKey.COUNTRY_BANNED_ERROR));
             }
         }

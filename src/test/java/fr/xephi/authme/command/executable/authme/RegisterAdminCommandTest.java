@@ -8,7 +8,6 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,13 +18,10 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
@@ -147,8 +143,6 @@ public class RegisterAdminCommandTest {
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(true);
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
-        Player player = mock(Player.class);
-        given(commandService.getPlayer(user)).willReturn(player);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
@@ -161,7 +155,6 @@ public class RegisterAdminCommandTest {
         verify(dataSource).saveAuth(captor.capture());
         assertAuthHasInfo(captor.getValue(), user, hashedPassword);
         verify(dataSource).setUnlogged(user);
-        verify(player).kickPlayer(argThat(containsString("please log in again")));
     }
 
     private void assertAuthHasInfo(PlayerAuth auth, String name, HashedPassword hashedPassword) {
