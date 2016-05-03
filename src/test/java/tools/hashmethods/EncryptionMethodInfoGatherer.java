@@ -1,5 +1,6 @@
 package tools.hashmethods;
 
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HexSaltedMethod;
@@ -7,9 +8,9 @@ import fr.xephi.authme.security.crypts.description.AsciiRestricted;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.properties.HooksSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.mockito.BDDMockito;
+import fr.xephi.authme.settings.domain.Property;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.lang.annotation.Annotation;
 import java.util.HashMap;
@@ -18,7 +19,9 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Gathers information on {@link EncryptionMethod} implementations based on
@@ -30,7 +33,7 @@ public class EncryptionMethodInfoGatherer {
     private final static Set<Class<? extends Annotation>> RELEVANT_ANNOTATIONS =
         newHashSet(HasSalt.class, Recommendation.class, AsciiRestricted.class);
 
-    private static NewSetting settings = createSettings();
+    private static AuthMeServiceInitializer initializer = createInitializer();
 
     private Map<HashAlgorithm, MethodDescription> descriptions;
 
@@ -54,7 +57,7 @@ public class EncryptionMethodInfoGatherer {
 
     private static MethodDescription createDescription(HashAlgorithm algorithm) {
         Class<? extends EncryptionMethod> clazz = algorithm.getClazz();
-        EncryptionMethod method = null; // TODO ljacqu PasswordSecurity.initializeEncryptionMethod(algorithm, settings);
+        EncryptionMethod method = initializer.newInstance(clazz);
         if (method == null) {
             throw new NullPointerException("Method for '" + algorithm + "' is null");
         }
@@ -134,19 +137,22 @@ public class EncryptionMethodInfoGatherer {
         return key.cast(map.get(key));
     }
 
-    private static NewSetting createSettings() {
-        // TODO #672 Don't mock settings but instantiate a NewSetting object without any validation / migration
+    private static AuthMeServiceInitializer createInitializer() {
         NewSetting settings = mock(NewSetting.class);
-        BDDMockito.given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
-        BDDMockito.given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(8);
-        return settings;
+        // Return the default value for any property
+        when(settings.getProperty(any(Property.class))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Property<?> property = (Property<?>) invocation.getArguments()[0];
+                return property.getDefaultValue();
+            }
+        });
 
-        /*try (InputStreamReader isr = new InputStreamReader(getClass().getResourceAsStream("config.yml"))) {
-            FileConfiguration configuration = YamlConfiguration.loadConfiguration(isr);
-            return new NewSetting(configuration, null, null, null);
-        } catch (IOException e) {
-            throw new UnsupportedOperationException(e);
-        }*/
+        // By not passing any "allowed package" to the constructor, the initializer will throw if it needs to
+        // instantiate any dependency other than what we provide.
+        AuthMeServiceInitializer initializer = new AuthMeServiceInitializer();
+        initializer.register(NewSetting.class, settings);
+        return initializer;
     }
 
 }

@@ -2,9 +2,14 @@ package tools.commands;
 
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
+import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.PermissionNode;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import tools.utils.FileUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
@@ -12,9 +17,12 @@ import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
+
+import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class CommandPageCreater implements ToolTask {
 
@@ -27,8 +35,7 @@ public class CommandPageCreater implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
-        // TODO ljacqu 20160427: Fix initialization of commands
-        final Set<CommandDescription> baseCommands = new HashSet<>();//CommandInitializer.buildCommands();
+        final Set<CommandDescription> baseCommands = CommandInitializer.buildCommands(getMockInitializer());
         NestedTagValue commandTags = new NestedTagValue();
         addCommandsInfo(commandTags, baseCommands);
 
@@ -74,5 +81,25 @@ public class CommandPageCreater implements ToolTask {
             result.append(" ").append(argumentName);
         }
         return result.toString();
+    }
+
+    /**
+     * Creates an initializer mock that returns mocks of any {@link ExecutableCommand} subclasses passed to it.
+     *
+     * @return the initializer mock
+     */
+    private static AuthMeServiceInitializer getMockInitializer() {
+        AuthMeServiceInitializer initializer = mock(AuthMeServiceInitializer.class);
+        when(initializer.newInstance(isA(Class.class))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Class<?> clazz = (Class<?>) invocation.getArguments()[0];
+                if (ExecutableCommand.class.isAssignableFrom(clazz)) {
+                    return mock(clazz);
+                }
+                throw new IllegalStateException("Unexpected request to instantiate class of type " + clazz.getName());
+            }
+        });
+        return initializer;
     }
 }
