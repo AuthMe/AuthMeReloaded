@@ -405,6 +405,13 @@
             <optional>true</optional>
         </dependency>
 
+        <!-- javax.inject API -->
+        <dependency>
+            <groupId>javax.inject</groupId>
+            <artifactId>javax.inject</artifactId>
+            <version>1</version>
+        </dependency>
+
         <!-- Maxmind GeoIp API -->
         <dependency>
             <groupId>com.maxmind.geoip</groupId>

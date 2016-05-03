@@ -9,6 +9,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
 import fr.xephi.authme.events.SpawnTeleportEvent;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
@@ -45,18 +46,20 @@ public class AsynchronousJoin implements Process {
     private final String name;
     private final ProcessService service;
     private final PlayerCache playerCache;
+    private final PluginHooks pluginHooks;
 
     private final boolean disableCollisions = MethodUtils
             .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
     public AsynchronousJoin(Player player, AuthMe plugin, DataSource database, PlayerCache playerCache,
-                            ProcessService service) {
+                            PluginHooks pluginHooks, ProcessService service) {
         this.player = player;
         this.plugin = plugin;
         this.database = database;
         this.name = player.getName().toLowerCase();
         this.service = service;
         this.playerCache = playerCache;
+        this.pluginHooks = pluginHooks;
     }
 
     @Override
@@ -190,7 +193,7 @@ public class AsynchronousJoin implements Process {
                     player.setWalkSpeed(0.0f);
                 }
                 player.setNoDamageTicks(registrationTimeout);
-                if (plugin.getPluginHooks().isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
+                if (pluginHooks.isEssentialsAvailable() && service.getProperty(HooksSettings.USE_ESSENTIALS_MOTD)) {
                     player.performCommand("motd");
                 }
                 if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {

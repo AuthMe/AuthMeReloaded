@@ -1,5 +1,6 @@
 package fr.xephi.authme.security;
 
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
@@ -13,8 +14,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.BDDMockito.given;
@@ -25,13 +24,15 @@ import static org.mockito.Mockito.mock;
  */
 public class HashAlgorithmIntegrationTest {
 
-    private static NewSetting settings;
+    private static AuthMeServiceInitializer initializer;
 
     @BeforeClass
     public static void setUpWrapper() {
-        settings = mock(NewSetting.class);
+        NewSetting settings = mock(NewSetting.class);
         given(settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND)).willReturn(8);
         given(settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH)).willReturn(16);
+        initializer = new AuthMeServiceInitializer();
+        initializer.register(NewSetting.class, settings);
     }
 
     @Test
@@ -55,9 +56,7 @@ public class HashAlgorithmIntegrationTest {
         // given / when / then
         for (HashAlgorithm algorithm : HashAlgorithm.values()) {
             if (!HashAlgorithm.CUSTOM.equals(algorithm) && !HashAlgorithm.PLAINTEXT.equals(algorithm)) {
-                EncryptionMethod method = PasswordSecurity.initializeEncryptionMethod(algorithm, settings);
-                assertThat("Encryption method for algorithm '" + algorithm + "' is not null",
-                    method, not(nullValue()));
+                EncryptionMethod method = initializer.newInstance(algorithm.getClazz());
                 HashedPassword hashedPassword = method.computeHash("pwd", "name");
                 assertThat("Salt should not be null if method.hasSeparateSalt(), and vice versa. Method: '"
                     + method + "'", StringUtils.isEmpty(hashedPassword.getSalt()), equalTo(!method.hasSeparateSalt()));

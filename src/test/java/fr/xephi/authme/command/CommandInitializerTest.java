@@ -1,10 +1,13 @@
 package fr.xephi.authme.command;
 
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.util.StringUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,6 +24,9 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link CommandInitializer} to guarantee the integrity of the defined commands.
@@ -37,7 +43,16 @@ public class CommandInitializerTest {
 
     @BeforeClass
     public static void initializeCommandManager() {
-        commands = CommandInitializer.buildCommands();
+        AuthMeServiceInitializer initializer = mock(AuthMeServiceInitializer.class);
+        when(initializer.newInstance(any(Class.class))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) {
+                Class<?> clazz = (Class<?>) invocation.getArguments()[0];
+                return mock(clazz);
+            }
+        });
+
+        commands = CommandInitializer.buildCommands(initializer);
     }
 
     @Test

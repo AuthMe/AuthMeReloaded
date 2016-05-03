@@ -1,5 +1,7 @@
-package fr.xephi.authme;
+package fr.xephi.authme.initialization;
 
+import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;

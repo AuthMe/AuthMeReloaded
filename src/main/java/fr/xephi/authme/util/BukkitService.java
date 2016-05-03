@@ -7,6 +7,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.inject.Inject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -28,6 +29,7 @@ public class BukkitService {
     private final boolean getOnlinePlayersIsCollection;
     private Method getOnlinePlayers;
 
+    @Inject
     public BukkitService(AuthMe authMe) {
         this.authMe = authMe;
         getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();

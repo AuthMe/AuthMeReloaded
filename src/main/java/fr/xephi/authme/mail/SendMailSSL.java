@@ -2,7 +2,6 @@ package fr.xephi.authme.mail;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.ImageGenerator;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.EmailSettings;

@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.inject.Inject;
 import java.util.Collection;
 
 /**
@@ -24,29 +25,24 @@ import java.util.Collection;
  */
 public class ProcessService {
 
-    private final NewSetting settings;
-    private final Messages messages;
-    private final AuthMe authMe;
-    private final DataSource dataSource;
-    private final PasswordSecurity passwordSecurity;
-    private final PluginHooks pluginHooks;
-    private final SpawnLoader spawnLoader;
-    private final ValidationService validationService;
-    private final BukkitService bukkitService;
-
-    public ProcessService(NewSetting settings, Messages messages, AuthMe authMe, DataSource dataSource,
-                          PasswordSecurity passwordSecurity, PluginHooks pluginHooks, SpawnLoader spawnLoader,
-                          ValidationService validationService, BukkitService bukkitService) {
-        this.settings = settings;
-        this.messages = messages;
-        this.authMe = authMe;
-        this.dataSource = dataSource;
-        this.passwordSecurity = passwordSecurity;
-        this.pluginHooks = pluginHooks;
-        this.spawnLoader = spawnLoader;
-        this.validationService = validationService;
-        this.bukkitService = bukkitService;
-    }
+    @Inject
+    private NewSetting settings;
+    @Inject
+    private Messages messages;
+    @Inject
+    private AuthMe authMe;
+    @Inject
+    private DataSource dataSource;
+    @Inject
+    private PasswordSecurity passwordSecurity;
+    @Inject
+    private PluginHooks pluginHooks;
+    @Inject
+    private SpawnLoader spawnLoader;
+    @Inject
+    private ValidationService validationService;
+    @Inject
+    private BukkitService bukkitService;
 
     /**
      * Retrieve a property's value.

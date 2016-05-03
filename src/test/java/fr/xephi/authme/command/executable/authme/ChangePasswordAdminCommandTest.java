@@ -4,7 +4,6 @@ import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
@@ -13,6 +12,7 @@ import org.bukkit.command.CommandSender;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -24,6 +24,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link ChangePasswordAdminCommand}.
@@ -31,8 +32,20 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class ChangePasswordAdminCommandTest {
 
+    @InjectMocks
+    private ChangePasswordAdminCommand command;
+
     @Mock
     private CommandService service;
+
+    @Mock
+    private PasswordSecurity passwordSecurity;
+
+    @Mock
+    private DataSource dataSource;
+
+    @Mock
+    private PlayerCache playerCache;
 
     @BeforeClass
     public static void setUpLogger() {
@@ -42,7 +55,6 @@ public class ChangePasswordAdminCommandTest {
     @Test
     public void shouldRejectInvalidPassword() {
         // given
-        ExecutableCommand command = new ChangePasswordAdminCommand();
         CommandSender sender = mock(CommandSender.class);
         given(service.validatePassword("Bobby", "bobby")).willReturn(MessageKey.PASSWORD_IS_USERNAME_ERROR);
 
@@ -52,23 +64,16 @@ public class ChangePasswordAdminCommandTest {
         // then
         verify(service).validatePassword("Bobby", "bobby");
         verify(service).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-        verify(service, never()).getDataSource();
+        verifyZeroInteractions(dataSource);
     }
 
     @Test
     public void shouldRejectCommandForUnknownUser() {
         // given
-        ExecutableCommand command = new ChangePasswordAdminCommand();
         CommandSender sender = mock(CommandSender.class);
         String player = "player";
-
-        PlayerCache playerCache = mock(PlayerCache.class);
         given(playerCache.isAuthenticated(player)).willReturn(false);
-        given(service.getPlayerCache()).willReturn(playerCache);
-
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.getAuth(player)).willReturn(null);
-        given(service.getDataSource()).willReturn(dataSource);
 
         // when
         command.executeCommand(sender, Arrays.asList(player, "password"), service);
@@ -82,26 +87,17 @@ public class ChangePasswordAdminCommandTest {
     @Test
     public void shouldUpdatePasswordOfLoggedInUser() {
         // given
-        ExecutableCommand command = new ChangePasswordAdminCommand();
         CommandSender sender = mock(CommandSender.class);
-
         String player = "my_user12";
         String password = "passPass";
         PlayerAuth auth = mock(PlayerAuth.class);
 
-        PlayerCache playerCache = mock(PlayerCache.class);
         given(playerCache.isAuthenticated(player)).willReturn(true);
         given(playerCache.getAuth(player)).willReturn(auth);
-        given(service.getPlayerCache()).willReturn(playerCache);
 
-        PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
         HashedPassword hashedPassword = mock(HashedPassword.class);
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
-        given(service.getPasswordSecurity()).willReturn(passwordSecurity);
-
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.updatePassword(auth)).willReturn(true);
-        given(service.getDataSource()).willReturn(dataSource);
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password), service);
@@ -118,27 +114,17 @@ public class ChangePasswordAdminCommandTest {
     @Test
     public void shouldUpdatePasswordOfOfflineUser() {
         // given
-        ExecutableCommand command = new ChangePasswordAdminCommand();
         CommandSender sender = mock(CommandSender.class);
-
         String player = "my_user12";
         String password = "passPass";
         PlayerAuth auth = mock(PlayerAuth.class);
-
-        PlayerCache playerCache = mock(PlayerCache.class);
         given(playerCache.isAuthenticated(player)).willReturn(false);
-        given(service.getPlayerCache()).willReturn(playerCache);
-
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.isAuthAvailable(player)).willReturn(true);
         given(dataSource.getAuth(player)).willReturn(auth);
         given(dataSource.updatePassword(auth)).willReturn(true);
-        given(service.getDataSource()).willReturn(dataSource);
 
-        PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
         HashedPassword hashedPassword = mock(HashedPassword.class);
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
-        given(service.getPasswordSecurity()).willReturn(passwordSecurity);
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password), service);
@@ -155,26 +141,16 @@ public class ChangePasswordAdminCommandTest {
     @Test
     public void shouldReportWhenSaveFailed() {
         // given
-        ExecutableCommand command = new ChangePasswordAdminCommand();
         CommandSender sender = mock(CommandSender.class);
-
         String player = "my_user12";
         String password = "passPass";
         PlayerAuth auth = mock(PlayerAuth.class);
-
-        PlayerCache playerCache = mock(PlayerCache.class);
         given(playerCache.isAuthenticated(player)).willReturn(true);
         given(playerCache.getAuth(player)).willReturn(auth);
-        given(service.getPlayerCache()).willReturn(playerCache);
 
-        PasswordSecurity passwordSecurity = mock(PasswordSecurity.class);
         HashedPassword hashedPassword = mock(HashedPassword.class);
         given(passwordSecurity.computeHash(password, player)).willReturn(hashedPassword);
-        given(service.getPasswordSecurity()).willReturn(passwordSecurity);
-
-        DataSource dataSource = mock(DataSource.class);
         given(dataSource.updatePassword(auth)).willReturn(false);
-        given(service.getDataSource()).willReturn(dataSource);
 
         // when
         command.executeCommand(sender, Arrays.asList(player, password), service);

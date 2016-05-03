@@ -2,7 +2,6 @@ package commands;
 
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
@@ -13,6 +12,7 @@ import utils.ToolTask;
 import utils.ToolsConstants;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -27,7 +27,8 @@ public class CommandPageCreater implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
-        final Set<CommandDescription> baseCommands = CommandInitializer.buildCommands();
+        // TODO ljacqu 20160427: Fix initialization of commands
+        final Set<CommandDescription> baseCommands = new HashSet<>();//CommandInitializer.buildCommands();
         NestedTagValue commandTags = new NestedTagValue();
         addCommandsInfo(commandTags, baseCommands);
 

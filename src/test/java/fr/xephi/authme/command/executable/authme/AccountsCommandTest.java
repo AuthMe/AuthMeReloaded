@@ -4,10 +4,14 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.output.Messages;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,26 +26,23 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link AccountsCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AccountsCommandTest {
 
+    @InjectMocks
     private AccountsCommand command;
+    @Mock
     private CommandSender sender;
+    @Mock
     private CommandService service;
+    @Mock
     private DataSource dataSource;
-
-    @Before
-    public void setUpMocks() {
-        command = new AccountsCommand();
-        sender = mock(CommandSender.class);
-        dataSource = mock(DataSource.class);
-        service = mock(CommandService.class);
-        when(service.getDataSource()).thenReturn(dataSource);
-    }
+    @Mock
+    private Messages messages;
 
     @Test
     public void shouldGetAccountsOfCurrentUser() {
@@ -72,7 +73,7 @@ public class AccountsCommandTest {
         runInnerRunnable(service);
 
         // then
-        verify(service).send(sender, MessageKey.UNKNOWN_USER);
+        verify(messages).send(sender, MessageKey.UNKNOWN_USER);
         verify(sender, never()).sendMessage(anyString());
     }
 
@@ -88,7 +89,7 @@ public class AccountsCommandTest {
         runInnerRunnable(service);
 
         // then
-        verify(service).send(sender, MessageKey.USER_NOT_REGISTERED);
+        verify(messages).send(sender, MessageKey.USER_NOT_REGISTERED);
         verify(sender, never()).sendMessage(anyString());
     }
 

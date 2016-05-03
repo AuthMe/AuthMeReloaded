@@ -8,6 +8,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.task.ChangePasswordTask;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -15,13 +16,15 @@ import java.util.List;
  */
 public class ChangePasswordCommand extends PlayerCommand {
 
+    @Inject
+    private PlayerCache playerCache;
+
     @Override
     public void runCommand(Player player, List<String> arguments, CommandService commandService) {
         String oldPassword = arguments.get(0);
         String newPassword = arguments.get(1);
 
         String name = player.getName().toLowerCase();
-        final PlayerCache playerCache = commandService.getPlayerCache();
         if (!playerCache.isAuthenticated(name)) {
             commandService.send(player, MessageKey.NOT_LOGGED_IN);
             return;
