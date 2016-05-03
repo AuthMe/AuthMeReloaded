@@ -1,6 +1,6 @@
-package utils;
+package tools.utils;
 
-import utils.TagValue.TextTagValue;
+import tools.utils.TagValue.TextTagValue;
 
 import java.util.HashMap;
 import java.util.Map;

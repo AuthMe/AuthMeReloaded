@@ -1,10 +1,10 @@
-package permissions;
+package tools.permissions;
 
-import utils.FileUtils;
-import utils.TagValue.NestedTagValue;
-import utils.TagValueHolder;
-import utils.ToolTask;
-import utils.ToolsConstants;
+import tools.utils.FileUtils;
+import tools.utils.TagValue.NestedTagValue;
+import tools.utils.TagValueHolder;
+import tools.utils.ToolTask;
+import tools.utils.ToolsConstants;
 
 import java.util.Map;
 import java.util.Scanner;

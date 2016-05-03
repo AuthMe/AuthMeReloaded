@@ -1,4 +1,4 @@
-package messages.translation;
+package tools.messages.translation;
 
 import com.google.common.io.CharStreams;
 import com.google.gson.Gson;
@@ -6,8 +6,8 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import utils.ToolTask;
-import utils.ToolsConstants;
+import tools.utils.ToolTask;
+import tools.utils.ToolsConstants;
 
 import java.io.File;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package hashmethods;
+package tools.hashmethods;
 
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.EncryptionMethod;

@@ -1,15 +1,15 @@
-package messages.translation;
+package tools.messages.translation;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;
 import fr.xephi.authme.output.MessageKey;
-import messages.MessageFileVerifier;
-import messages.VerifyMessagesTask;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import utils.FileUtils;
-import utils.ToolTask;
-import utils.ToolsConstants;
+import tools.messages.MessageFileVerifier;
+import tools.messages.VerifyMessagesTask;
+import tools.utils.FileUtils;
+import tools.utils.ToolTask;
+import tools.utils.ToolsConstants;
 
 import java.io.File;
 import java.io.IOException;

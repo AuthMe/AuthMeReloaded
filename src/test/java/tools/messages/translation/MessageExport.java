@@ -1,4 +1,4 @@
-package messages.translation;
+package tools.messages.translation;
 
 import fr.xephi.authme.util.StringUtils;
 

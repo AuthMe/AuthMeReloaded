@@ -1,7 +1,7 @@
-package utils;
+package tools.utils;
 
-import utils.TagValue.NestedTagValue;
-import utils.TagValue.TextTagValue;
+import tools.utils.TagValue.NestedTagValue;
+import tools.utils.TagValue.TextTagValue;
 
 import java.util.Date;
 import java.util.Map;

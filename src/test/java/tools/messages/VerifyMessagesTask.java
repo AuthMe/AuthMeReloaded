@@ -1,11 +1,11 @@
-package messages;
+package tools.messages;
 
 import com.google.common.collect.Multimap;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import utils.ToolTask;
-import utils.ToolsConstants;
+import tools.utils.ToolTask;
+import tools.utils.ToolsConstants;
 
 import java.io.File;
 import java.util.ArrayList;

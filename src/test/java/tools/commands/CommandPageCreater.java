@@ -1,15 +1,15 @@
-package commands;
+package tools.commands;
 
 import fr.xephi.authme.command.CommandArgumentDescription;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.permission.PermissionNode;
-import utils.FileUtils;
-import utils.TagValue.NestedTagValue;
-import utils.TagValueHolder;
-import utils.ToolTask;
-import utils.ToolsConstants;
+import tools.utils.FileUtils;
+import tools.utils.TagValue.NestedTagValue;
+import tools.utils.TagValueHolder;
+import tools.utils.ToolTask;
+import tools.utils.ToolsConstants;
 
 import java.util.Collection;
 import java.util.HashSet;

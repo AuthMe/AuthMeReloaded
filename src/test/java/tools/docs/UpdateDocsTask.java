@@ -1,10 +1,10 @@
-package docs;
+package tools.docs;
 
 import com.google.common.collect.ImmutableSet;
-import commands.CommandPageCreater;
-import hashmethods.HashAlgorithmsDescriptionTask;
-import permissions.PermissionsListWriter;
-import utils.ToolTask;
+import tools.commands.CommandPageCreater;
+import tools.hashmethods.HashAlgorithmsDescriptionTask;
+import tools.permissions.PermissionsListWriter;
+import tools.utils.ToolTask;
 
 import java.util.Scanner;
 import java.util.Set;

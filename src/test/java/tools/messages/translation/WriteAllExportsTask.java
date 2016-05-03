@@ -1,9 +1,9 @@
-package messages.translation;
+package tools.messages.translation;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import utils.FileUtils;
-import utils.ToolsConstants;
+import tools.utils.FileUtils;
+import tools.utils.ToolsConstants;
 
 import java.io.File;
 import java.util.Scanner;

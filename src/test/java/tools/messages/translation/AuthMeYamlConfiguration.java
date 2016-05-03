@@ -1,4 +1,4 @@
-package messages.translation;
+package tools.messages.translation;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;

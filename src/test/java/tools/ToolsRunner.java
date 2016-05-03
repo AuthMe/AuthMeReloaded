@@ -1,5 +1,7 @@
-import utils.ToolTask;
-import utils.ToolsConstants;
+package tools;
+
+import tools.utils.ToolTask;
+import tools.utils.ToolsConstants;
 
 import java.io.File;
 import java.lang.reflect.Constructor;
@@ -108,7 +110,7 @@ public final class ToolsRunner {
         }
 
         String filePath = file.getPath();
-        String className = filePath
+        String className = "tools." + filePath
             .substring(ToolsConstants.TOOLS_SOURCE_ROOT.length(), filePath.length() - 5)
             .replace(File.separator, ".");
         try {

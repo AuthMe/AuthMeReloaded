@@ -1,11 +1,11 @@
-package permissions;
+package tools.permissions;
 
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import utils.FileUtils;
-import utils.ToolsConstants;
+import tools.utils.FileUtils;
+import tools.utils.ToolsConstants;
 
 import java.util.EnumSet;
 import java.util.HashMap;

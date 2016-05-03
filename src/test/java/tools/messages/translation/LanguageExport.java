@@ -1,4 +1,4 @@
-package messages.translation;
+package tools.messages.translation;
 
 import java.util.Collections;
 import java.util.List;
