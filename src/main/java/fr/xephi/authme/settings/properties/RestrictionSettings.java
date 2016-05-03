@@ -61,7 +61,7 @@ public class RestrictionSettings implements SettingsClass {
         "This is different from \"teleportUnAuthedToSpawn\" that teleport player",
         "back to his quit location after the authentication."})
     public static final Property<Boolean> FORCE_SPAWN_LOCATION_AFTER_LOGIN =
-        newProperty("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
+        newProperty("settings.restrictions.ForceSpawnLocOnJoin.enabled", false);
 
     @Comment("This option will save the quit location of the players.")
     public static final Property<Boolean> SAVE_QUIT_LOCATION =
@@ -150,10 +150,10 @@ public class RestrictionSettings implements SettingsClass {
         newProperty("settings.restrictions.displayOtherAccounts", true);
 
     @Comment({
-        "WorldNames where we need to force the spawn location for ForceSpawnLocOnJoinEnabled",
+        "WorldNames where we need to force the spawn location",
         "Case-sensitive!"})
     public static final Property<List<String>> FORCE_SPAWN_ON_WORLDS =
-        newListProperty("settings.restrictions.ForceSpawnOnTheseWorlds",
+        newListProperty("settings.restrictions.ForceSpawnLocOnJoin.worlds",
             "world", "world_nether", "world_the_end");
 
     @Comment("Ban ip when the ip is not the ip registered in database")
