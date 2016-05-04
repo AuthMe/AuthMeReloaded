@@ -416,10 +416,10 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- Bukkit API, http://www.spigotmc.org/ or http://bukkit.org/ -->
+        <!-- Spigot API, http://www.spigotmc.org/ or http://bukkit.org/ -->
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
+            <groupId>org.spigotmc</groupId>
+            <artifactId>spigot-api</artifactId>
             <version>${bukkit.version}</version>
             <scope>provided</scope>
             <exclusions>
@@ -442,6 +442,10 @@
                 <exclusion>
                     <artifactId>guava</artifactId>
                     <groupId>com.google.guava</groupId>
+                </exclusion>
+                <exclusion>
+                	<artifactId>bungeecord-chat</artifactId>
+                	<groupId>net.md-5</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -621,6 +625,10 @@
                 <exclusion>
                     <artifactId>junit</artifactId>
                     <groupId>junit</groupId>
+                </exclusion>
+                <exclusion>
+                	<artifactId>spigot-api</artifactId>
+                	<groupId>org.spigotmc</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
