@@ -99,7 +99,7 @@ public class NewAPI {
      * @return true if the player is an npc
      */
     public boolean isNPC(Player player) {
-        return Utils.isNPC(player);
+        return plugin.getPluginHooks().isNpc(player);
     }
 
     /**

@@ -451,14 +451,19 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() == null)
+        if (event.getWhoClicked() == null) {
             return;
-        if (!(event.getWhoClicked() instanceof Player))
+        }
+        if (!(event.getWhoClicked() instanceof Player)) {
             return;
-        if (Utils.checkAuth((Player) event.getWhoClicked()))
+        }
+        Player player = (Player) event.getWhoClicked();
+        if (Utils.checkAuth(player)) {
             return;
-        if (Utils.isNPC((Player) event.getWhoClicked()))
+        }
+        if (plugin.getPluginHooks().isNpc(player)) {
             return;
+        }
         event.setCancelled(true);
     }
 
