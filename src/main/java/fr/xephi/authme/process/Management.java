@@ -44,8 +44,8 @@ public class Management {
         runTask(new AsynchronousLogout(player, plugin, dataSource, processService));
     }
 
-    public void performRegister(final Player player, final String password, final String email) {
-        runTask(new AsyncRegister(player, password, email, plugin, dataSource, playerCache, processService));
+    public void performRegister(final Player player, final String password, final String email, final boolean autoLogin) {
+        runTask(new AsyncRegister(player, password, email, plugin, dataSource, playerCache, processService, autoLogin));
     }
 
     public void performUnregister(final Player player, final String password, final boolean force) {

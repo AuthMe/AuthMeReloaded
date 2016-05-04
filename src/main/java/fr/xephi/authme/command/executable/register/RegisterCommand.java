@@ -23,7 +23,7 @@ public class RegisterCommand extends PlayerCommand {
     public void runCommand(Player player, List<String> arguments, CommandService commandService) {
         if (commandService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
             //for two factor auth we don't need to check the usage
-            commandService.getManagement().performRegister(player, "", "");
+            commandService.getManagement().performRegister(player, "", "", true);
             return;
         }
 
@@ -50,7 +50,7 @@ public class RegisterCommand extends PlayerCommand {
         if (commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION) && !arguments.get(0).equals(arguments.get(1))) {
             commandService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
         } else {
-            commandService.getManagement().performRegister(player, arguments.get(0), "");
+            commandService.getManagement().performRegister(player, arguments.get(0), "", true);
         }
     }
 
@@ -70,7 +70,7 @@ public class RegisterCommand extends PlayerCommand {
             commandService.send(player, MessageKey.USAGE_REGISTER);
         } else {
             String thePass = RandomString.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
-            commandService.getManagement().performRegister(player, thePass, email);
+            commandService.getManagement().performRegister(player, thePass, email, true);
         }
     }
 
