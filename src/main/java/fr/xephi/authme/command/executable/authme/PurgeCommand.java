@@ -3,10 +3,12 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.Calendar;
 import java.util.List;
 
@@ -17,6 +19,9 @@ import java.util.List;
 public class PurgeCommand implements ExecutableCommand {
 
     private static final int MINIMUM_LAST_SEEN_DAYS = 30;
+
+    @Inject
+    private DataSource dataSource;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
@@ -45,7 +50,7 @@ public class PurgeCommand implements ExecutableCommand {
         long until = calendar.getTimeInMillis();
 
         // Purge the data, get the purged values
-        List<String> purged = commandService.getDataSource().autoPurgeDatabase(until);
+        List<String> purged = dataSource.autoPurgeDatabase(until);
 
         // Show a status message
         sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");

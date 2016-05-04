@@ -2,6 +2,7 @@ package fr.xephi.authme.permission;
 
 import de.bananaco.bpermissions.api.ApiLayer;
 import de.bananaco.bpermissions.api.CalculableType;
+import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.util.CollectionUtils;
 import net.milkbowl.vault.permission.Permission;
@@ -20,11 +21,12 @@ import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * <p>
@@ -48,10 +50,7 @@ public class PermissionsManager implements PermissionsService {
      * Server instance.
      */
     private final Server server;
-    /**
-     * Logger instance.
-     */
-    private Logger log;
+    private final PluginManager pluginManager;
     /**
      * Type of permissions system that is currently used.
      * Null if no permissions system is hooked and/or used.
@@ -70,11 +69,11 @@ public class PermissionsManager implements PermissionsService {
      * Constructor.
      *
      * @param server Server instance
-     * @param log    Logger
      */
-    public PermissionsManager(Server server, Logger log) {
+    @Inject
+    public PermissionsManager(Server server, PluginManager pluginManager) {
         this.server = server;
-        this.log = log;
+        this.pluginManager = pluginManager;
     }
 
     /**
@@ -100,39 +99,37 @@ public class PermissionsManager implements PermissionsService {
      *
      * @return The detected permissions system.
      */
+    @PostConstruct
     public PermissionsSystemType setup() {
         // Force-unhook from current hooked permissions systems
         unhook();
-
-        // Define the plugin manager
-        final PluginManager pluginManager = this.server.getPluginManager();
 
         // Reset used permissions system type flag
         permsType = null;
 
         // Loop through all the available permissions system types
-        for(PermissionsSystemType type : PermissionsSystemType.values()) {
+        for (PermissionsSystemType type : PermissionsSystemType.values()) {
             // Try to find and hook the current plugin if available, print an error if failed
             try {
                 // Try to find the plugin for the current permissions system
                 Plugin plugin = pluginManager.getPlugin(type.getPluginName());
 
                 // Make sure a plugin with this name was found
-                if(plugin == null)
+                if (plugin == null)
                     continue;
 
                 // Make sure the plugin is enabled before hooking
-                if(!plugin.isEnabled()) {
-                    this.log.info("Not hooking into " + type.getName() + " because it's disabled!");
+                if (!plugin.isEnabled()) {
+                    ConsoleLogger.info("Not hooking into " + type.getName() + " because it's disabled!");
                     continue;
                 }
 
                 // Use the proper method to hook this plugin
-                switch(type) {
+                switch (type) {
                     case PERMISSIONS_EX:
                         // Get the permissions manager for PermissionsEx and make sure it isn't null
-                        if(PermissionsEx.getPermissionManager() == null) {
-                            this.log.info("Failed to hook into " + type.getName() + "!");
+                        if (PermissionsEx.getPermissionManager() == null) {
+                            ConsoleLogger.info("Failed to hook into " + type.getName() + "!");
                             continue;
                         }
 
@@ -146,8 +143,8 @@ public class PermissionsManager implements PermissionsService {
                     case Z_PERMISSIONS:
                         // Set the zPermissions service and make sure it's valid
                         zPermissionsService = Bukkit.getServicesManager().load(ZPermissionsService.class);
-                        if(zPermissionsService == null) {
-                            this.log.info("Failed to hook into " + type.getName() + "!");
+                        if (zPermissionsService == null) {
+                            ConsoleLogger.info("Failed to hook into " + type.getName() + "!");
                             continue;
                         }
 
@@ -157,14 +154,14 @@ public class PermissionsManager implements PermissionsService {
                         // Get the permissions provider service
                         RegisteredServiceProvider<Permission> permissionProvider = this.server.getServicesManager().getRegistration(Permission.class);
                         if (permissionProvider == null) {
-                            this.log.info("Failed to hook into " + type.getName() + "!");
+                            ConsoleLogger.info("Failed to hook into " + type.getName() + "!");
                             continue;
                         }
 
                         // Get the Vault provider and make sure it's valid
                         vaultPerms = permissionProvider.getProvider();
-                        if(vaultPerms == null) {
-                            this.log.info("Not using " + type.getName() + " because it's disabled!");
+                        if (vaultPerms == null) {
+                            ConsoleLogger.info("Not using " + type.getName() + " because it's disabled!");
                             continue;
                         }
 
@@ -177,19 +174,19 @@ public class PermissionsManager implements PermissionsService {
                 this.permsType = type;
 
                 // Show a success message
-                this.log.info("Hooked into " + type.getName() + "!");
+                ConsoleLogger.info("Hooked into " + type.getName() + "!");
 
                 // Return the used permissions system type
                 return type;
 
             } catch (Exception ex) {
                 // An error occurred, show a warning message
-                this.log.info("Error while hooking into " + type.getName() + "!");
+                ConsoleLogger.logException("Error while hooking into " + type.getName(), ex);
             }
         }
 
         // No recognized permissions system found, show a message and return
-        this.log.info("No supported permissions system found! Permissions are disabled!");
+        ConsoleLogger.info("No supported permissions system found! Permissions are disabled!");
         return null;
     }
 
@@ -201,7 +198,7 @@ public class PermissionsManager implements PermissionsService {
         this.permsType = null;
 
         // Print a status message to the console
-        this.log.info("Unhooked from Permissions!");
+        ConsoleLogger.info("Unhooked from Permissions!");
     }
 
     /**
@@ -232,7 +229,7 @@ public class PermissionsManager implements PermissionsService {
         if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
             pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
             pluginName.equals("zPermissions") || pluginName.equals("Vault")) {
-            this.log.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
+            ConsoleLogger.info(pluginName + " plugin enabled, dynamically updating permissions hooks!");
             setup();
         }
     }
@@ -251,7 +248,7 @@ public class PermissionsManager implements PermissionsService {
         if (pluginName.equals("PermissionsEx") || pluginName.equals("PermissionsBukkit") ||
             pluginName.equals("bPermissions") || pluginName.equals("GroupManager") ||
             pluginName.equals("zPermissions") || pluginName.equals("Vault")) {
-            this.log.info(pluginName + " plugin disabled, updating hooks!");
+            ConsoleLogger.info(pluginName + " plugin disabled, updating hooks!");
             setup();
         }
     }
@@ -349,7 +346,6 @@ public class PermissionsManager implements PermissionsService {
 
             case Z_PERMISSIONS:
                 // zPermissions
-                @SuppressWarnings("deprecation")
                 Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(player.getWorld().getName(), null, player.getName());
                 if (perms.containsKey(permsNode))
                     return perms.get(permsNode);
@@ -451,7 +447,6 @@ public class PermissionsManager implements PermissionsService {
      *
      * @return The name of the primary permission group. Or null.
      */
-    @SuppressWarnings("deprecation")
     public String getPrimaryGroup(Player player) {
         // If no permissions system is used, return an empty list
         if (!isEnabled())

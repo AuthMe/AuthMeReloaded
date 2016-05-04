@@ -1,14 +1,14 @@
 package fr.xephi.authme.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
-import fr.xephi.authme.util.StringUtils;
+import javax.inject.Inject;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The AuthMe command handler, responsible for mapping incoming commands to the correct {@link CommandDescription}
@@ -29,6 +29,7 @@ public class CommandHandler {
      * 
      * @param commandService The CommandService instance
      */
+    @Inject
     public CommandHandler(CommandService commandService) {
         this.commandService = commandService;
     }

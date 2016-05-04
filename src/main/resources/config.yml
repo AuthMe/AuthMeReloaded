@@ -88,12 +88,19 @@ settings:
         # due to "Logged in from another Location"
         # This setting will prevent potetial security exploits.
         ForceSingleSession: true
-        # If enabled, every player will be teleported to the world spawnpoint
-        # after successful authentication.
-        # The quit location of the player will be overwritten.
-        # This is different from "teleportUnAuthedToSpawn" that teleport player
-        # back to his quit location after the authentication.
-        ForceSpawnLocOnJoinEnabled: false
+        ForceSpawnLocOnJoin: 
+            # If enabled, every player will be teleported to the world spawnpoint
+            # after successful authentication.
+            # The quit location of the player will be overwritten.
+            # This is different from "teleportUnAuthedToSpawn" that teleport player
+            # back to his quit location after the authentication.
+            enabled: false
+            # WorldNames where we need to force the spawn location
+            # Case-sensitive!
+            worlds: 
+            - 'world'
+            - 'world_nether'
+            - 'world_the_end'
         # This option will save the quit location of the players.
         SaveQuitLocation: false
         # To activate the restricted user feature you need
@@ -143,12 +150,6 @@ settings:
         # Should we display all other accounts from a player when he joins?
         # permission: /authme.admin.accounts
         displayOtherAccounts: true
-        # WorldNames where we need to force the spawn location for ForceSpawnLocOnJoinEnabled
-        # CASE SENSITIVE
-        ForceSpawnOnTheseWorlds:
-        - world
-        - world_nether
-        - world_the_end
         # Ban ip when the ip is not the ip registered in database
         banUnsafedIP: false
         # Spawn Priority, Values : authme, essentials, multiverse, default

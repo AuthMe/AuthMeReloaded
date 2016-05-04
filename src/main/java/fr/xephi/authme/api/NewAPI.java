@@ -12,6 +12,8 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.util.Utils;
 
+import javax.inject.Inject;
+
 /**
  * The current API of AuthMe. Recommended method of retrieving the API object:
  * <code>
@@ -28,6 +30,7 @@ public class NewAPI {
      *
      * @param plugin The AuthMe plugin instance
      */
+    @Inject
     public NewAPI(AuthMe plugin) {
         this.plugin = plugin;
     }
@@ -96,7 +99,7 @@ public class NewAPI {
      * @return true if the player is an npc
      */
     public boolean isNPC(Player player) {
-        return Utils.isNPC(player);
+        return plugin.getPluginHooks().isNpc(player);
     }
 
     /**

@@ -18,7 +18,7 @@ public class HashUtilsTest {
     /**
      * List of passwords whose hash is provided to the class to test against.
      */
-    public static final String[] GIVEN_PASSWORDS = {"", "password", "PassWord1", "&^%te$t?Pw@_"};
+    private static final String[] GIVEN_PASSWORDS = {"", "password", "PassWord1", "&^%te$t?Pw@_"};
 
     @Test
     public void shouldHashMd5() {

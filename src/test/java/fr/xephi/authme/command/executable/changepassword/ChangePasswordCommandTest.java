@@ -12,7 +12,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,26 +37,31 @@ import static org.mockito.Mockito.when;
 /**
  * Test for {@link ChangePasswordCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class ChangePasswordCommandTest {
 
+    @InjectMocks
+    private ChangePasswordCommand command;
+
+    @Mock
+    private PlayerCache playerCache;
+
+    @Mock
     private CommandService commandService;
 
     @Before
-    public void setUpMocks() {
-        commandService = mock(CommandService.class);
-
+    public void setSettings() {
         when(commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).thenReturn(2);
         when(commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).thenReturn(50);
         // Only allow passwords with alphanumerical characters for the test
         when(commandService.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX)).thenReturn("[a-zA-Z0-9]+");
-        when(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).thenReturn(Collections.<String> emptyList());
+        when(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS)).thenReturn(Collections.<String>emptyList());
     }
 
     @Test
     public void shouldRejectNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
-        ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
         command.executeCommand(sender, new ArrayList<String>(), commandService);
@@ -65,7 +74,6 @@ public class ChangePasswordCommandTest {
     public void shouldRejectNotLoggedInPlayer() {
         // given
         CommandSender sender = initPlayerWithName("name", false);
-        ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList("pass", "pass"), commandService);
@@ -78,7 +86,6 @@ public class ChangePasswordCommandTest {
     public void shouldRejectInvalidPassword() {
         // given
         CommandSender sender = initPlayerWithName("abc12", true);
-        ChangePasswordCommand command = new ChangePasswordCommand();
         String password = "newPW";
         given(commandService.validatePassword(password, "abc12")).willReturn(MessageKey.INVALID_PASSWORD_LENGTH);
 
@@ -94,7 +101,6 @@ public class ChangePasswordCommandTest {
     public void shouldForwardTheDataForValidPassword() {
         // given
         CommandSender sender = initPlayerWithName("parker", true);
-        ChangePasswordCommand command = new ChangePasswordCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList("abc123", "abc123"), commandService);
@@ -112,9 +118,7 @@ public class ChangePasswordCommandTest {
     private Player initPlayerWithName(String name, boolean loggedIn) {
         Player player = mock(Player.class);
         when(player.getName()).thenReturn(name);
-        PlayerCache playerCache = mock(PlayerCache.class);
         when(playerCache.isAuthenticated(name)).thenReturn(loggedIn);
-        when(commandService.getPlayerCache()).thenReturn(playerCache);
         return player;
     }
 

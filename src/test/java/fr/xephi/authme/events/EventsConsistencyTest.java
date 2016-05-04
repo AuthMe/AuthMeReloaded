@@ -75,6 +75,7 @@ public class EventsConsistencyTest {
         return !clazz.isInterface() && !clazz.isEnum() && !Modifier.isAbstract(clazz.getModifiers());
     }
 
+    @SuppressWarnings("unchecked")
     private static Class<? extends Event> getEventClassFromFile(File file) {
         String fileName = file.getPath();
         String className = fileName

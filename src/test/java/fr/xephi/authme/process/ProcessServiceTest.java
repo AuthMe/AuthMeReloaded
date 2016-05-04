@@ -13,9 +13,9 @@ import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -31,6 +31,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class ProcessServiceTest {
 
+    @InjectMocks
     private ProcessService processService;
     @Mock
     private ValidationService validationService;
@@ -50,12 +51,6 @@ public class ProcessServiceTest {
     private PluginHooks pluginHooks;
     @Mock
     private BukkitService bukkitService;
-
-    @Before
-    public void setUpService() {
-        processService = new ProcessService(settings, messages, authMe, dataSource, passwordSecurity,
-            pluginHooks, spawnLoader, validationService, bukkitService);
-    }
 
     @Test
     public void shouldGetProperty() {

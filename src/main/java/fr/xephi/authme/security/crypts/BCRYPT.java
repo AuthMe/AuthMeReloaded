@@ -9,13 +9,15 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.util.StringUtils;
 
+import javax.inject.Inject;
 
 @Recommendation(Usage.RECOMMENDED) // provided the salt length is >= 8
-@HasSalt(value = SaltType.TEXT) // length depends on Settings.bCryptLog2Rounds
+@HasSalt(value = SaltType.TEXT) // length depends on the bcryptLog2Rounds setting
 public class BCRYPT implements EncryptionMethod {
 
     private final int bCryptLog2Rounds;
 
+    @Inject
     public BCRYPT(NewSetting settings) {
         this.bCryptLog2Rounds = settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND);
     }

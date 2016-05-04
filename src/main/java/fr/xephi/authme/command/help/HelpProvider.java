@@ -10,10 +10,13 @@ import fr.xephi.authme.command.FoundCommandResult;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.util.CollectionUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,9 +48,10 @@ public class HelpProvider {
     private final PermissionsManager permissionsManager;
     private final String helpHeader;
 
-    public HelpProvider(PermissionsManager permissionsManager, String helpHeader) {
+    @Inject
+    public HelpProvider(PermissionsManager permissionsManager, NewSetting settings) {
         this.permissionsManager = permissionsManager;
-        this.helpHeader = helpHeader;
+        this.helpHeader = settings.getProperty(PluginSettings.HELP_HEADER);
     }
 
     public List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {

@@ -8,12 +8,19 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
  * Admin command for setting an email to an account.
  */
 public class SetEmailCommand implements ExecutableCommand {
+
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private PlayerCache playerCache;
 
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments,
@@ -32,7 +39,6 @@ public class SetEmailCommand implements ExecutableCommand {
             @Override
             public void run() {
                 // Validate the user
-                DataSource dataSource = commandService.getDataSource();
                 PlayerAuth auth = dataSource.getAuth(playerName);
                 if (auth == null) {
                     commandService.send(sender, MessageKey.UNKNOWN_USER);
@@ -50,8 +56,8 @@ public class SetEmailCommand implements ExecutableCommand {
                 }
 
                 // Update the player cache
-                if (PlayerCache.getInstance().getAuth(playerName) != null) {
-                    PlayerCache.getInstance().updatePlayer(auth);
+                if (playerCache.getAuth(playerName) != null) {
+                    playerCache.updatePlayer(auth);
                 }
 
                 // Show a status message

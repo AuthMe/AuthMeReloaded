@@ -2,32 +2,37 @@ package fr.xephi.authme;
 
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.permission.PermissionsManager;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static fr.xephi.authme.util.StringUtils.makePath;
 
 /**
  */
 public class DataManager {
 
-    private final AuthMe plugin;
-    private final PluginHooks pluginHooks;
-    private final BukkitService bukkitService;
+    @Inject
+    private Server server;
+    @Inject
+    private PluginHooks pluginHooks;
+    @Inject
+    private BukkitService bukkitService;
+    @Inject
+    private NewSetting settings;
+    @Inject
+    private PermissionsManager permissionsManager;
 
-    /*
-     * Constructor.
-     */
-    public DataManager(AuthMe plugin, PluginHooks pluginHooks, BukkitService bukkitService) {
-        this.plugin = plugin;
-        this.pluginHooks = pluginHooks;
-        this.bukkitService = bukkitService;
-    }
+    DataManager() { }
 
     private List<OfflinePlayer> getOfflinePlayers(List<String> names) {
         List<OfflinePlayer> result = new ArrayList<>();
@@ -98,9 +103,8 @@ public class DataManager {
 
     public synchronized void purgeDat(List<String> cleared) {
         int i = 0;
-        File dataFolder = new File(plugin.getServer().getWorldContainer()
-            + File.separator + plugin.getSettings().getProperty(PurgeSettings.DEFAULT_WORLD)
-            + File.separator + "players");
+        File dataFolder = new File(server.getWorldContainer(),
+            makePath(settings.getProperty(PurgeSettings.DEFAULT_WORLD), "players"));
         List<OfflinePlayer> offlinePlayers = getOfflinePlayers(cleared);
         for (OfflinePlayer player : offlinePlayers) {
             File playerFile = new File(dataFolder, Utils.getUUIDorName(player) + ".dat");
@@ -142,14 +146,8 @@ public class DataManager {
     // TODO: What is this method for? Is it correct?
     // TODO: Make it work with OfflinePlayers group data.
     public synchronized void purgePermissions(List<String> cleared) {
-        // Get the permissions manager, and make sure it's valid
-        PermissionsManager permsMan = plugin.getPermissionsManager();
-        if (permsMan == null) {
-            ConsoleLogger.showError("Unable to access permissions manager instance!");
-            return;
-        }
         for (String name : cleared) {
-            permsMan.removeAllGroups(bukkitService.getPlayerExact(name));
+            permissionsManager.removeAllGroups(bukkitService.getPlayerExact(name));
         }
         ConsoleLogger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
     }

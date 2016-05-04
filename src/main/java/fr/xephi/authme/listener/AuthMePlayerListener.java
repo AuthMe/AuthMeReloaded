@@ -18,6 +18,7 @@ import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -54,6 +55,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
+import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
@@ -68,27 +70,24 @@ public class AuthMePlayerListener implements Listener {
 
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
-    private final AuthMe plugin;
-    private final NewSetting settings;
-    private final Messages m;
-    private final DataSource dataSource;
-    private final AntiBot antiBot;
-    private final Management management;
-    private final BukkitService bukkitService;
-    private final ValidationService validationService;
-
-    public AuthMePlayerListener(AuthMe plugin, NewSetting settings, Messages messages, DataSource dataSource,
-                                AntiBot antiBot, Management management, BukkitService bukkitService,
-                                ValidationService validationService) {
-        this.plugin = plugin;
-        this.settings = settings;
-        this.m = messages;
-        this.dataSource = dataSource;
-        this.antiBot = antiBot;
-        this.management = management;
-        this.bukkitService = bukkitService;
-        this.validationService = validationService;
-    }
+    @Inject
+    private AuthMe plugin;
+    @Inject
+    private NewSetting settings;
+    @Inject
+    private Messages m;
+    @Inject
+    private DataSource dataSource;
+    @Inject
+    private AntiBot antiBot;
+    @Inject
+    private Management management;
+    @Inject
+    private BukkitService bukkitService;
+    @Inject
+    private SpawnLoader spawnLoader;
+    @Inject
+    private ValidationService validationService;
 
     private void handleChat(AsyncPlayerChatEvent event) {
         if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
@@ -205,7 +204,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        Location spawn = plugin.getSpawnLocation(player);
+        Location spawn = spawnLoader.getSpawnLocation(player);
         if (spawn != null && spawn.getWorld() != null) {
             if (!player.getWorld().equals(spawn.getWorld())) {
                 player.teleport(spawn);
@@ -408,12 +407,6 @@ public class AuthMePlayerListener implements Listener {
         plugin.getManagement().performQuit(player, true);
     }
 
-    /*
-     * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-     * Note #360: npc status can be used to bypass security!!!
-     * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-     */
-
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if (shouldCancelEvent(event)) {
@@ -458,14 +451,19 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerInventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() == null)
+        if (event.getWhoClicked() == null) {
             return;
-        if (!(event.getWhoClicked() instanceof Player))
+        }
+        if (!(event.getWhoClicked() instanceof Player)) {
             return;
-        if (Utils.checkAuth((Player) event.getWhoClicked()))
+        }
+        Player player = (Player) event.getWhoClicked();
+        if (Utils.checkAuth(player)) {
             return;
-        if (Utils.isNPC((Player) event.getWhoClicked()))
+        }
+        if (plugin.getPluginHooks().isNpc(player)) {
             return;
+        }
         event.setCancelled(true);
     }
 
@@ -513,7 +511,7 @@ public class AuthMePlayerListener implements Listener {
 
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
-        Location spawn = plugin.getSpawnLocation(player);
+        Location spawn = spawnLoader.getSpawnLocation(player);
         if (Settings.isSaveQuitLocationEnabled && dataSource.isAuthAvailable(name)) {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)

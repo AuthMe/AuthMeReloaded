@@ -11,8 +11,11 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 
+import javax.inject.Inject;
+
 public class AuthMeTabCompletePacketAdapter extends PacketAdapter {
 
+    @Inject
     public AuthMeTabCompletePacketAdapter(AuthMe plugin) {
         super(plugin, ListenerPriority.NORMAL, PacketType.Play.Client.TAB_COMPLETE);
     }

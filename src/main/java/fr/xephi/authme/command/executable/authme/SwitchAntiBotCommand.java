@@ -8,6 +8,7 @@ import fr.xephi.authme.command.help.HelpProvider;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
@@ -16,9 +17,11 @@ import java.util.List;
  */
 public class SwitchAntiBotCommand implements ExecutableCommand {
 
+    @Inject
+    private AntiBot antiBot;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
-        AntiBot antiBot = commandService.getAntiBot();
         if (arguments.isEmpty()) {
             sender.sendMessage("[AuthMe] AntiBot status: " + antiBot.getAntiBotStatus().name());
             return;

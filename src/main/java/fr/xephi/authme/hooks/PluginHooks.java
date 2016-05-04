@@ -1,19 +1,18 @@
 package fr.xephi.authme.hooks;
 
-import java.io.File;
-
+import com.earth2me.essentials.Essentials;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MVWorldManager;
+import fr.xephi.authme.ConsoleLogger;
+import net.minelink.ctplus.CombatTagPlus;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-import com.earth2me.essentials.Essentials;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MVWorldManager;
-
-import fr.xephi.authme.ConsoleLogger;
-import net.minelink.ctplus.CombatTagPlus;
+import javax.inject.Inject;
+import java.io.File;
 
 /**
  * Hooks into third-party plugins and allows to perform actions on them.
@@ -30,6 +29,7 @@ public class PluginHooks {
      *
      * @param pluginManager The server's plugin manager
      */
+    @Inject
     public PluginHooks(PluginManager pluginManager) {
         this.pluginManager = pluginManager;
         tryHookToCombatPlus();
@@ -78,12 +78,22 @@ public class PluginHooks {
     }
 
     /**
+     * Checks whether the player is an NPC.
+     *
+     * @param player The player to process
+     * @return True if player is NPC, false otherwise
+     */
+    public boolean isNpc(Player player) {
+        return player.hasMetadata("NPC") || isNpcInCombatTagPlus(player);
+    }
+
+    /**
      * Query the CombatTagPlus plugin whether the given player is an NPC.
      *
      * @param player The player to verify
      * @return True if the player is an NPC according to CombatTagPlus, false if not or if the plugin is unavailable
      */
-    public boolean isNpcInCombatTagPlus(Player player) {
+    private boolean isNpcInCombatTagPlus(Player player) {
         return combatTagPlus != null && combatTagPlus.getNpcPlayerHelper().isNpc(player);
     }
 

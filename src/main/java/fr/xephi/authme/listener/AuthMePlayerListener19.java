@@ -7,16 +7,17 @@ import org.spigotmc.event.player.PlayerSpawnLocationEvent;
 
 import fr.xephi.authme.AuthMe;
 
+import javax.inject.Inject;
+
 /**
  * Listener of player events for events introduced in Minecraft 1.9.
  */
 public class AuthMePlayerListener19 implements Listener {
 
-    private final AuthMe plugin;
+    @Inject
+    private AuthMe plugin;
     
-    public AuthMePlayerListener19(AuthMe plugin) {
-        this.plugin = plugin;
-    }
+    public AuthMePlayerListener19() { }
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerSpawn(PlayerSpawnLocationEvent event) {

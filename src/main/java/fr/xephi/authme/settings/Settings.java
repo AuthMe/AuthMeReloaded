@@ -102,7 +102,7 @@ public final class Settings {
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
         multiverse = load(HooksSettings.MULTIVERSE);
         bungee = load(HooksSettings.BUNGEECORD);
-        getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
+        getForcedWorlds = load(RestrictionSettings.FORCE_SPAWN_ON_WORLDS);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = configFile.getStringList("Protection.countries");
