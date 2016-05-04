@@ -1,8 +1,8 @@
-name: ${pluginName}
-authors: [${pluginAuthors}]
+name: ${bukkitplugin.name}
+authors: [${bukkitplugin.authors}]
 website: ${project.url}
 description: ${project.description}
-main: ${mainClass}
+main: ${bukkitplugin.main}
 version: ${project.version}-b${buildNumber}
 softdepend:
     - Vault
