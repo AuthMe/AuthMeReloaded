@@ -84,7 +84,7 @@ public class RegisterCommandTest {
         command.executeCommand(sender, Collections.<String>emptyList(), commandService);
 
         // then
-        verify(management).performRegister(sender, "", "");
+        verify(management).performRegister(sender, "", "", true);
     }
 
     @Test
@@ -204,7 +204,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commandService).validateEmail(playerMail);
-        verify(management).performRegister(eq(sender), argThat(stringWithLength(passLength)), eq(playerMail));
+        verify(management).performRegister(eq(sender), argThat(stringWithLength(passLength)), eq(playerMail), true);
     }
 
     @Test
@@ -230,7 +230,7 @@ public class RegisterCommandTest {
         command.executeCommand(sender, Collections.singletonList("myPass"), commandService);
 
         // then
-        verify(management).performRegister(sender, "myPass", "");
+        verify(management).performRegister(sender, "myPass", "", true);
     }
 
 

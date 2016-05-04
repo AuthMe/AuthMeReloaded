@@ -37,9 +37,10 @@ public class AsyncRegister implements Process {
     private final DataSource database;
     private final PlayerCache playerCache;
     private final ProcessService service;
+    private final boolean autoLogin;
 
     public AsyncRegister(Player player, String password, String email, AuthMe plugin, DataSource data,
-                         PlayerCache playerCache, ProcessService service) {
+                         PlayerCache playerCache, ProcessService service, boolean autoLogin) {
         this.player = player;
         this.password = password;
         this.name = player.getName().toLowerCase();
@@ -49,6 +50,7 @@ public class AsyncRegister implements Process {
         this.ip = Utils.getPlayerIp(player);
         this.playerCache = playerCache;
         this.service = service;
+        this.autoLogin = autoLogin;
     }
 
     private boolean preRegisterCheck() {
@@ -150,7 +152,7 @@ public class AsyncRegister implements Process {
             return;
         }
 
-        if (!Settings.forceRegLogin) {
+        if (!Settings.forceRegLogin && autoLogin) {
             //PlayerCache.getInstance().addPlayer(auth);
             //database.setLogged(name);
             // TODO: check this...

@@ -148,10 +148,11 @@ public class NewAPI {
     }
 
     /**
-     * Register a player with the given password.
+     * Register an OFFLINE/ONLINE player with the given password.
      *
      * @param playerName The player to register
      * @param password   The password to register the player with
+     * 
      * @return true if the player was registered successfully
      */
     public boolean registerPlayer(String playerName, String password) {
@@ -187,13 +188,24 @@ public class NewAPI {
     }
 
     /**
-     * Register a player with the given password.
+     * Force an ONLINE player to register.
+     *
+     * @param player    The player to register
+     * @param password  The password to use
+     * @param autoLogin Should the player be authenticated automatically after the registration?
+     */
+    public void forceRegister(Player player, String password, boolean autoLogin) {
+        plugin.getManagement().performRegister(player, password, null, autoLogin);
+    }
+
+    /**
+     * Register an ONLINE player with the given password.
      *
      * @param player   The player to register
      * @param password The password to use
      */
     public void forceRegister(Player player, String password) {
-        plugin.getManagement().performRegister(player, password, null);
+        forceRegister(player, password, true);
     }
 
     /**
