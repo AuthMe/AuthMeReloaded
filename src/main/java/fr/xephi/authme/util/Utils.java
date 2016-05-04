@@ -7,41 +7,23 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.EmailSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Utility class for various operations used in the codebase.
  */
 public final class Utils {
 
-    private static AuthMe plugin;
-    private static Wrapper wrapper;
-
-    private static boolean getOnlinePlayersIsCollection = false;
-    private static Method getOnlinePlayers;
-
-    static {
-        wrapper = Wrapper.getInstance();
-        plugin = wrapper.getAuthMe();
-        initializeOnlinePlayersIsCollectionField();
-    }
+    private static AuthMe plugin = AuthMe.getInstance();
 
     private Utils() {
-        // Utility class
     }
 
     /**
@@ -170,73 +152,17 @@ public final class Utils {
         final World world = theWorld;
         final Location loc = new Location(world, x, y, z);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(wrapper.getAuthMe(), new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
             @Override
             public void run() {
                 AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(pl, loc);
-                wrapper.getServer().getPluginManager().callEvent(tpEvent);
+                plugin.getServer().getPluginManager().callEvent(tpEvent);
                 if (!tpEvent.isCancelled()) {
                     pl.teleport(tpEvent.getTo());
                 }
             }
         });
-    }
-
-    /**
-     * Safe way to retrieve the list of online players from the server. Depending on the
-     * implementation of the server, either an array of {@link Player} instances is being returned,
-     * or a Collection. Always use this wrapper to retrieve online players instead of {@link
-     * Bukkit#getOnlinePlayers()} directly.
-     *
-     * @return collection of online players
-     *
-     * @see <a href="https://www.spigotmc.org/threads/solved-cant-use-new-getonlineplayers.33061/">SpigotMC
-     * forum</a>
-     * @see <a href="http://stackoverflow.com/questions/32130851/player-changed-from-array-to-collection">StackOverflow</a>
-     */
-    @SuppressWarnings("unchecked")
-    public static Collection<? extends Player> getOnlinePlayers() {
-        if (getOnlinePlayersIsCollection) {
-            return Bukkit.getOnlinePlayers();
-        }
-        try {
-            // The lookup of a method via Reflections is rather expensive, so we keep a reference to it
-            if (getOnlinePlayers == null) {
-                getOnlinePlayers = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
-            }
-            Object obj = getOnlinePlayers.invoke(null);
-            if (obj instanceof Collection<?>) {
-                return (Collection<? extends Player>) obj;
-            } else if (obj instanceof Player[]) {
-                return Arrays.asList((Player[]) obj);
-            } else {
-                String type = (obj != null) ? obj.getClass().getName() : "null";
-                ConsoleLogger.showError("Unknown list of online players of type " + type);
-            }
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-            ConsoleLogger.logException("Could not retrieve list of online players:", e);
-        }
-        return Collections.emptyList();
-    }
-
-    /**
-     * Method run when the Utils class is loaded to verify whether or not the Bukkit implementation
-     * returns the online players as a Collection.
-     *
-     * @see Utils#getOnlinePlayers()
-     */
-    private static void initializeOnlinePlayersIsCollectionField() {
-        try {
-            Method method = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
-            getOnlinePlayersIsCollection = method.getReturnType() == Collection.class;
-        } catch (NoSuchMethodException e) {
-            ConsoleLogger.showError("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
-        }
-    }
-
-    public static Player getPlayer(String name) {
-        return wrapper.getServer().getPlayerExact(name);
     }
 
     public static boolean isNPC(Player player) {
@@ -247,45 +173,19 @@ public final class Utils {
         if (Settings.isTeleportToSpawnEnabled && !Settings.noTeleport) {
             Location spawn = plugin.getSpawnLocation(player);
             AuthMeTeleportEvent tpEvent = new AuthMeTeleportEvent(player, spawn);
-            wrapper.getServer().getPluginManager().callEvent(tpEvent);
+            plugin.getServer().getPluginManager().callEvent(tpEvent);
             if (!tpEvent.isCancelled()) {
                 player.teleport(tpEvent.getTo());
             }
         }
     }
 
-    public static boolean isEmailCorrect(String email, NewSetting settings) {
-        if (!email.contains("@") || "your@email.com".equalsIgnoreCase(email)) {
-            return false;
-        }
-        final String emailDomain = email.split("@")[1];
-
-        List<String> whitelist = settings.getProperty(EmailSettings.DOMAIN_WHITELIST);
-        if (!CollectionUtils.isEmpty(whitelist)) {
-            return containsIgnoreCase(whitelist, emailDomain);
-        }
-
-        List<String> blacklist = settings.getProperty(EmailSettings.DOMAIN_BLACKLIST);
-        return CollectionUtils.isEmpty(blacklist) || !containsIgnoreCase(blacklist, emailDomain);
-    }
-
-    private static boolean containsIgnoreCase(Collection<String> coll, String needle) {
-        for (String entry : coll) {
-            if (entry.equalsIgnoreCase(needle)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static String getUUIDorName(OfflinePlayer player) {
-        String uuidOrName;
         try {
-            uuidOrName = player.getUniqueId().toString();
+            return player.getUniqueId().toString();
         } catch (Exception ignore) {
-            uuidOrName = player.getName();
+            return player.getName();
         }
-        return uuidOrName;
     }
 
     public enum GroupType {
@@ -293,5 +193,16 @@ public final class Utils {
         REGISTERED,
         NOTLOGGEDIN,
         LOGGEDIN
+    }
+
+    /**
+     * Returns the IP of the given player.
+     *
+     * @param p The player to return the IP address for
+     *
+     * @return The player's IP address
+     */
+    public static String getPlayerIp(Player p) {
+        return p.getAddress().getAddress().getHostAddress();
     }
 }

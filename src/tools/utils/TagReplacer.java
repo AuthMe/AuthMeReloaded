@@ -1,6 +1,7 @@
 package utils;
 
-import fr.xephi.authme.util.StringUtils;
+import utils.TagValue.NestedTagValue;
+import utils.TagValue.TextTagValue;
 
 import java.util.Date;
 import java.util.Map;
@@ -26,18 +27,24 @@ public class TagReplacer {
      * Replace a template with default tags and custom ones supplied by a map.
      *
      * @param template The template to process
-     * @param tags Map with additional tags, e.g. a map entry with key "foo" and value "bar" will replace
-     *  any occurrences of "{foo}" to "bar".
+     * @param tagValues Container with tags and their associated values
      * @return The filled template
      */
-    public static String applyReplacements(String template, Map<String, String> tags) {
+    public static String applyReplacements(String template, TagValueHolder tagValues) {
         String result = template;
-        for (Map.Entry<String, String> tagRule : tags.entrySet()) {
+        for (Map.Entry<String, TagValue<?>> tagRule : tagValues.getValues().entrySet()) {
             final String name = tagRule.getKey();
-            final String value = tagRule.getValue();
 
-            result = replaceOptionalTag(result, name, value)
-                .replace("{" + name + "}", value);
+            if (tagRule.getValue() instanceof TextTagValue) {
+                final TextTagValue value = (TextTagValue) tagRule.getValue();
+                result = replaceOptionalTag(result, name, value)
+                    .replace("{" + name + "}", value.getValue());
+            } else if (tagRule.getValue() instanceof NestedTagValue) {
+                final NestedTagValue value = (NestedTagValue) tagRule.getValue();
+                result = replaceIterateTag(replaceOptionalTag(result, name, value), name, value);
+            } else {
+                throw new IllegalStateException("Unknown tag value type");
+            }
         }
         return applyReplacements(result);
     }
@@ -58,14 +65,14 @@ public class TagReplacer {
                 + " on " + curDate);
     }
 
-    private static String replaceOptionalTag(String text, String tagName, String tagValue) {
+    private static String replaceOptionalTag(String text, String tagName, TagValue<?> tagValue) {
         Pattern regex = Pattern.compile("\\[" + tagName + "](.*?)\\[/" + tagName + "]", Pattern.DOTALL);
         Matcher matcher = regex.matcher(text);
 
         if (!matcher.find()) {
             // Couldn't find results, so just return text as it is
             return text;
-        } else if (StringUtils.isEmpty(tagValue)) {
+        } else if (tagValue.isEmpty()) {
             // Tag is empty, replace [tagName]some_text[/tagName] to nothing
             return matcher.replaceAll("");
         } else {
@@ -74,5 +81,30 @@ public class TagReplacer {
         }
     }
 
+    /**
+     * Replace iterating tags with the value. Tags of the type [#tag]...[/#tag] specify to iterate over the
+     * entries in {@link NestedTagValue} and to apply any replacements in there.
+     *
+     * @param text The file text
+     * @param tagName The tag name to handle
+     * @param tagValue The associated value
+     * @return The text with the applied replacement
+     */
+    private static String replaceIterateTag(String text, String tagName, NestedTagValue tagValue) {
+        Pattern regex = Pattern.compile("\\[#" + tagName + "](.*?)\\[/#" + tagName + "]\\s?", Pattern.DOTALL);
+        Matcher matcher = regex.matcher(text);
+
+        if (!matcher.find()) {
+            return text;
+        } else if (tagValue.isEmpty()) {
+            return matcher.replaceAll("");
+        }
+        final String innerTemplate = matcher.group(1).trim() + "\n";
+        String result = "";
+        for (TagValueHolder entry : tagValue.getValue()) {
+            result += applyReplacements(innerTemplate, entry);
+        }
+        return matcher.replaceAll(result);
+    }
 
 }

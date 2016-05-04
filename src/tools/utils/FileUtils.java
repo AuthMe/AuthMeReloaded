@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Utility class for reading from and writing to files.
@@ -18,7 +17,7 @@ public final class FileUtils {
     private FileUtils() {
     }
 
-    public static void generateFileFromTemplate(String templateFile, String destinationFile, Map<String, String> tags) {
+    public static void generateFileFromTemplate(String templateFile, String destinationFile, TagValueHolder tags) {
         String template = readFromFile(templateFile);
         String result = TagReplacer.applyReplacements(template, tags);
         writeToFile(destinationFile, result);
@@ -54,10 +53,6 @@ public final class FileUtils {
         } catch (IOException e) {
             throw new RuntimeException("Could not read from file '" + file + "'", e);
         }
-    }
-
-    public static String readFromToolsFile(String file) {
-        return readFromFile(ToolsConstants.TOOLS_SOURCE_ROOT + file);
     }
 
 }

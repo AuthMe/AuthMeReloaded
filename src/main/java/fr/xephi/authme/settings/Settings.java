@@ -8,10 +8,8 @@ import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
-import fr.xephi.authme.util.Wrapper;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,55 +20,27 @@ import java.util.regex.Pattern;
  */
 public final class Settings {
 
-    public static final File PLUGIN_FOLDER = Wrapper.getInstance().getDataFolder();
-    public static final File MODULE_FOLDER = new File(PLUGIN_FOLDER, "modules");
-    public static final File CACHE_FOLDER = new File(PLUGIN_FOLDER, "cache");
-    // This is not an option!
-    public static boolean antiBotInAction = false;
     public static List<String> allowCommands;
-    public static List<String> getJoinPermissions;
     public static List<String> getUnrestrictedName;
-    public static List<String> getRestrictedIp;
     public static List<String> getForcedWorlds;
     public static List<String> countries;
     public static List<String> countriesBlacklist;
-    public static List<String> forceCommands;
-    public static List<String> forceCommandsAsConsole;
-    public static List<String> forceRegisterCommands;
-    public static List<String> forceRegisterCommandsAsConsole;
-    public static List<String> unsafePasswords;
     public static HashAlgorithm getPasswordHash;
     public static Pattern nickPattern;
-    public static boolean useLogging = false;
-    public static boolean isChatAllowed, isPermissionCheckEnabled, isRegistrationEnabled,
+    public static boolean isPermissionCheckEnabled,
         isForcedRegistrationEnabled, isTeleportToSpawnEnabled,
         isSessionsEnabled, isAllowRestrictedIp,
-        isMovementAllowed, isKickNonRegisteredEnabled,
         isForceSingleSessionEnabled, isForceSpawnLocOnJoinEnabled,
-        isSaveQuitLocationEnabled, isForceSurvivalModeEnabled,
-        isKickOnWrongPasswordEnabled, enablePasswordConfirmation,
-        protectInventoryBeforeLogInEnabled, isStopEnabled, reloadSupport,
-        rakamakUseIp, noConsoleSpam, removePassword, displayOtherAccounts,
-        emailRegistration, multiverse, bungee,
-        banUnsafeIp, doubleEmailCheck, sessionExpireOnIpChange,
-        disableSocialSpy, useEssentialsMotd,
-        enableProtection, recallEmail, useWelcomeMessage,
-        broadcastWelcomeMessage, forceRegKick, forceRegLogin,
-        checkVeryGames, removeJoinMessage, removeLeaveMessage, delayJoinMessage,
-        noTeleport, hideTablistBeforeLogin, denyTabcompleteBeforeLogin,
-        kickPlayersBeforeStopping, allowAllCommandsIfRegIsOptional,
-        customAttributes, isRemoveSpeedEnabled, preventOtherCase;
+        isSaveQuitLocationEnabled, protectInventoryBeforeLogInEnabled,
+        isStopEnabled, reloadSupport, rakamakUseIp,
+        removePassword, multiverse, bungee,
+        enableProtection, forceRegLogin, noTeleport,
+        allowAllCommandsIfRegIsOptional, isRemoveSpeedEnabled;
     public static String getNickRegex, getUnloggedinGroup,
-        unRegisteredGroup,
-        backupWindowsPath, getRegisteredGroup,
-        rakamakUsers, rakamakUsersIp, getmailAccount, defaultWorld,
-        spawnPriority, crazyloginFileName, getPassRegex, sendPlayerTo;
-    public static int getWarnMessageInterval, getSessionTimeout,
-        getRegistrationTimeout, getMaxNickLength, getMinNickLength,
-        getPasswordMinLen, getMovementRadius, getmaxRegPerIp,
-        getNonActivatedGroup, passwordMaxLength, getRecoveryPassLength,
-        getMailPort, maxLoginTry, captchaLength, saltLength,
-        getmaxRegPerEmail, bCryptLog2Rounds, getMaxLoginPerIp, getMaxJoinPerIp;
+        unRegisteredGroup, backupWindowsPath, getRegisteredGroup,
+        rakamakUsers, rakamakUsersIp, defaultWorld, crazyloginFileName;
+    public static int getSessionTimeout, getMaxNickLength, getMinNickLength,
+        getNonActivatedGroup, maxLoginTry, captchaLength, getMaxLoginPerIp;
     protected static FileConfiguration configFile;
 
     /**
@@ -85,32 +55,19 @@ public final class Settings {
 
     private static void loadVariables() {
         isPermissionCheckEnabled = load(PluginSettings.ENABLE_PERMISSION_CHECK);
-        isForcedRegistrationEnabled = configFile.getBoolean("settings.registration.force", true);
-        isRegistrationEnabled = configFile.getBoolean("settings.registration.enabled", true);
+        isForcedRegistrationEnabled = load(RegistrationSettings.FORCE);
         isTeleportToSpawnEnabled = load(RestrictionSettings.TELEPORT_UNAUTHED_TO_SPAWN);
-        getWarnMessageInterval = load(RegistrationSettings.MESSAGE_INTERVAL);
         isSessionsEnabled = load(PluginSettings.SESSIONS_ENABLED);
         getSessionTimeout = configFile.getInt("settings.sessions.timeout", 10);
-        getRegistrationTimeout = load(RestrictionSettings.TIMEOUT);
-        isChatAllowed = load(RestrictionSettings.ALLOW_CHAT);
         getMaxNickLength = configFile.getInt("settings.restrictions.maxNicknameLength", 20);
         getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
-        getPasswordMinLen = configFile.getInt("settings.security.minPasswordLength", 4);
         getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
         nickPattern = Pattern.compile(getNickRegex);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
-        getRestrictedIp = load(RestrictionSettings.ALLOWED_RESTRICTED_USERS);
-        isMovementAllowed = configFile.getBoolean("settings.restrictions.allowMovement", false);
-        isRemoveSpeedEnabled = configFile.getBoolean("settings.restrictions.removeSpeed", true);
-        getMovementRadius = configFile.getInt("settings.restrictions.allowedMovementRadius", 100);
-        getJoinPermissions = configFile.getStringList("GroupOptions.Permissions.PermissionsOnJoin");
-        isKickOnWrongPasswordEnabled = configFile.getBoolean("settings.restrictions.kickOnWrongPassword", false);
-        isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
-        isForceSingleSessionEnabled = configFile.getBoolean("settings.restrictions.ForceSingleSession", true);
-        isForceSpawnLocOnJoinEnabled = configFile.getBoolean("settings.restrictions.ForceSpawnLocOnJoinEnabled", false);
+        isRemoveSpeedEnabled = load(RestrictionSettings.REMOVE_SPEED);
+        isForceSingleSessionEnabled = load(RestrictionSettings.FORCE_SINGLE_SESSION);
+        isForceSpawnLocOnJoinEnabled = load(RestrictionSettings.FORCE_SPAWN_LOCATION_AFTER_LOGIN);
         isSaveQuitLocationEnabled = configFile.getBoolean("settings.restrictions.SaveQuitLocation", false);
-        isForceSurvivalModeEnabled = configFile.getBoolean("settings.GameMode.ForceSurvivalMode", false);
-        getmaxRegPerIp = configFile.getInt("settings.restrictions.maxRegPerIp", 1);
         getPasswordHash = load(SecuritySettings.PASSWORD_HASH);
         getUnloggedinGroup = load(SecuritySettings.UNLOGGEDIN_GROUP);
         getNonActivatedGroup = configFile.getInt("ExternalBoardOptions.nonActivedUserGroup", -1);
@@ -122,18 +79,12 @@ public final class Settings {
         }
 
         getRegisteredGroup = configFile.getString("GroupOptions.RegisteredPlayerGroup", "");
-        enablePasswordConfirmation = load(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION);
-
         protectInventoryBeforeLogInEnabled = load(RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN);
-        denyTabcompleteBeforeLogin = load(RestrictionSettings.DENY_TABCOMPLETE_BEFORE_LOGIN);
-        hideTablistBeforeLogin = load(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN);
-
-        passwordMaxLength = load(SecuritySettings.MAX_PASSWORD_LENGTH);
         backupWindowsPath = configFile.getString("BackupSystem.MysqlWindowsPath", "C:\\Program Files\\MySQL\\MySQL Server 5.1\\");
         isStopEnabled = configFile.getBoolean("Security.SQLProblem.stopServer", true);
         reloadSupport = configFile.getBoolean("Security.ReloadCommand.useReloadCommandSupport", true);
 
-        allowAllCommandsIfRegIsOptional = configFile.getBoolean("settings.restrictions.allowAllCommandsIfRegistrationIsOptional", false);
+        allowAllCommandsIfRegIsOptional = load(RestrictionSettings.ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL);
         allowCommands = new ArrayList<>();
         allowCommands.addAll(Arrays.asList("/login", "/l", "/register", "/reg", "/email", "/captcha"));
         for (String cmd : configFile.getStringList("settings.restrictions.allowCommands")) {
@@ -146,71 +97,20 @@ public final class Settings {
         rakamakUsers = configFile.getString("Converter.Rakamak.fileName", "users.rak");
         rakamakUsersIp = configFile.getString("Converter.Rakamak.ipFileName", "UsersIp.rak");
         rakamakUseIp = configFile.getBoolean("Converter.Rakamak.useIp", false);
-        noConsoleSpam = load(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
         removePassword = configFile.getBoolean("Security.console.removePassword", true);
-        getmailAccount = configFile.getString("Email.mailAccount", "");
-        getMailPort = configFile.getInt("Email.mailPort", 465);
-        getRecoveryPassLength = configFile.getInt("Email.RecoveryPasswordLength", 8);
-        displayOtherAccounts = configFile.getBoolean("settings.restrictions.displayOtherAccounts", true);
         maxLoginTry = configFile.getInt("Security.captcha.maxLoginTry", 5);
         captchaLength = configFile.getInt("Security.captcha.captchaLength", 5);
-        emailRegistration = load(RegistrationSettings.USE_EMAIL_REGISTRATION);
-        saltLength = configFile.getInt("settings.security.doubleMD5SaltLength", 8);
-        getmaxRegPerEmail = configFile.getInt("Email.maxRegPerEmail", 1);
         multiverse = load(HooksSettings.MULTIVERSE);
-        bungee = configFile.getBoolean("Hooks.bungeecord", false);
+        bungee = load(HooksSettings.BUNGEECORD);
         getForcedWorlds = configFile.getStringList("settings.restrictions.ForceSpawnOnTheseWorlds");
-        banUnsafeIp = configFile.getBoolean("settings.restrictions.banUnsafedIP", false);
-        doubleEmailCheck = configFile.getBoolean("settings.registration.doubleEmailCheck", false);
-        sessionExpireOnIpChange = configFile.getBoolean("settings.sessions.sessionExpireOnIpChange", true);
-        useLogging = configFile.getBoolean("Security.console.logConsole", false);
-        disableSocialSpy = configFile.getBoolean("Hooks.disableSocialSpy", true);
-        bCryptLog2Rounds = configFile.getInt("ExternalBoardOptions.bCryptLog2Round", 10);
-        useEssentialsMotd = configFile.getBoolean("Hooks.useEssentialsMotd", false);
         defaultWorld = configFile.getString("Purge.defaultWorld", "world");
         enableProtection = configFile.getBoolean("Protection.enableProtection", false);
         countries = configFile.getStringList("Protection.countries");
-        forceCommands = configFile.getStringList("settings.forceCommands");
-        forceCommandsAsConsole = configFile.getStringList("settings.forceCommandsAsConsole");
-        recallEmail = configFile.getBoolean("Email.recallPlayers", false);
-        useWelcomeMessage = load(RegistrationSettings.USE_WELCOME_MESSAGE);
-        unsafePasswords = configFile.getStringList("settings.security.unsafePasswords");
         countriesBlacklist = configFile.getStringList("Protection.countriesBlacklist");
-        broadcastWelcomeMessage = load(RegistrationSettings.BROADCAST_WELCOME_MESSAGE);
-        forceRegKick = configFile.getBoolean("settings.registration.forceKickAfterRegister", false);
         forceRegLogin = load(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER);
-        spawnPriority = load(RestrictionSettings.SPAWN_PRIORITY);
         getMaxLoginPerIp = load(RestrictionSettings.MAX_LOGIN_PER_IP);
-        getMaxJoinPerIp = load(RestrictionSettings.MAX_JOIN_PER_IP);
-        checkVeryGames = load(HooksSettings.ENABLE_VERYGAMES_IP_CHECK);
-        removeJoinMessage = load(RegistrationSettings.REMOVE_JOIN_MESSAGE);
-        removeLeaveMessage = load(RegistrationSettings.REMOVE_LEAVE_MESSAGE);
-        delayJoinMessage = load(RegistrationSettings.DELAY_JOIN_MESSAGE);
         noTeleport = load(RestrictionSettings.NO_TELEPORT);
         crazyloginFileName = configFile.getString("Converter.CrazyLogin.fileName", "accounts.db");
-        getPassRegex = configFile.getString("settings.restrictions.allowedPasswordCharacters", "[\\x21-\\x7E]*");
-        forceRegisterCommands = configFile.getStringList("settings.forceRegisterCommands");
-        forceRegisterCommandsAsConsole = configFile.getStringList("settings.forceRegisterCommandsAsConsole");
-        customAttributes = configFile.getBoolean("Hooks.customAttributes");
-        preventOtherCase = configFile.getBoolean("settings.preventOtherCase", false);
-        kickPlayersBeforeStopping = configFile.getBoolean("Security.stop.kickPlayersBeforeStopping", true);
-        sendPlayerTo = configFile.getString("Hooks.sendPlayerTo", "");
-
-    }
-
-    /**
-     * Method switchAntiBotMod.
-     *
-     * @param mode boolean
-     */
-    public static void switchAntiBotMod(boolean mode) {
-        if (mode) {
-            isKickNonRegisteredEnabled = true;
-            antiBotInAction = true;
-        } else {
-            isKickNonRegisteredEnabled = configFile.getBoolean("settings.restrictions.kickNonRegistered", false);
-            antiBotInAction = false;
-        }
     }
 
     /**

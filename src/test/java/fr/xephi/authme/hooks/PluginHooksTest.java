@@ -2,8 +2,8 @@ package fr.xephi.authme.hooks;
 
 import com.earth2me.essentials.Essentials;
 import com.earth2me.essentials.User;
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.ReflectionTestUtils;
+import fr.xephi.authme.TestHelper;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
@@ -29,7 +29,7 @@ public class PluginHooksTest {
 
     @BeforeClass
     public static void setLogger() {
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     @Test

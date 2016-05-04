@@ -1,62 +1,58 @@
 package fr.xephi.authme.process.email;
 
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.ProcessService;
-import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
-import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.entity.Player;
-import org.junit.After;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 /**
  * Test for {@link AsyncAddEmail}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class AsyncAddEmailTest {
 
+    @Mock
     private Player player;
+    @Mock
     private DataSource dataSource;
+    @Mock
     private PlayerCache playerCache;
+    @Mock
     private ProcessService service;
 
     @BeforeClass
     public static void setUp() {
-        WrapperMock.createInstance();
-        ConsoleLoggerTestInitializer.setupLogger();
-    }
-
-    // Clean up the fields to ensure that no test uses elements of another test
-    @After
-    public void removeFieldValues() {
-        player = null;
-        dataSource = null;
-        playerCache = null;
-        service = null;
+        TestHelper.setupLogger();
     }
 
     @Test
     public void shouldAddEmail() {
         // given
-        AsyncAddEmail process = createProcess("my.mail@example.org");
+        String email = "my.mail@example.org";
+        AsyncAddEmail process = createProcess(email);
         given(player.getName()).willReturn("testEr");
         given(playerCache.isAuthenticated("tester")).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("tester")).willReturn(auth);
-        given(dataSource.isEmailStored("my.mail@example.org")).willReturn(false);
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(true);
+        given(service.validateEmail(email)).willReturn(true);
+        given(service.isEmailFreeForRegistration(email, player)).willReturn(true);
 
         // when
         process.run();
@@ -64,21 +60,24 @@ public class AsyncAddEmailTest {
         // then
         verify(dataSource).updateEmail(auth);
         verify(service).send(player, MessageKey.EMAIL_ADDED_SUCCESS);
-        verify(auth).setEmail("my.mail@example.org");
+        verify(auth).setEmail(email);
         verify(playerCache).updatePlayer(auth);
     }
 
     @Test
     public void shouldReturnErrorWhenMailCannotBeSaved() {
         // given
-        AsyncAddEmail process = createProcess("my.mail@example.org");
+        String email = "my.mail@example.org";
+        AsyncAddEmail process = createProcess(email);
         given(player.getName()).willReturn("testEr");
         given(playerCache.isAuthenticated("tester")).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("tester")).willReturn(auth);
-        given(dataSource.isEmailStored("my.mail@example.org")).willReturn(false);
+        given(dataSource.countAuthsByEmail(email)).willReturn(0);
         given(dataSource.updateEmail(any(PlayerAuth.class))).willReturn(false);
+        given(service.validateEmail(email)).willReturn(true);
+        given(service.isEmailFreeForRegistration(email, player)).willReturn(true);
 
         // when
         process.run();
@@ -97,7 +96,6 @@ public class AsyncAddEmailTest {
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn("another@mail.tld");
         given(playerCache.getAuth("my_player")).willReturn(auth);
-        given(dataSource.isEmailStored("some.mail@example.org")).willReturn(false);
 
         // when
         process.run();
@@ -110,13 +108,14 @@ public class AsyncAddEmailTest {
     @Test
     public void shouldNotAddMailIfItIsInvalid() {
         // given
-        AsyncAddEmail process = createProcess("invalid_mail");
+        String email = "invalid_mail";
+        AsyncAddEmail process = createProcess(email);
         given(player.getName()).willReturn("my_Player");
         given(playerCache.isAuthenticated("my_player")).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("my_player")).willReturn(auth);
-        given(dataSource.isEmailStored("invalid_mail")).willReturn(false);
+        given(service.validateEmail(email)).willReturn(false);
 
         // when
         process.run();
@@ -129,13 +128,15 @@ public class AsyncAddEmailTest {
     @Test
     public void shouldNotAddMailIfAlreadyUsed() {
         // given
-        AsyncAddEmail process = createProcess("player@mail.tld");
+        String email = "player@mail.tld";
+        AsyncAddEmail process = createProcess(email);
         given(player.getName()).willReturn("TestName");
         given(playerCache.isAuthenticated("testname")).willReturn(true);
         PlayerAuth auth = mock(PlayerAuth.class);
         given(auth.getEmail()).willReturn(null);
         given(playerCache.getAuth("testname")).willReturn(auth);
-        given(dataSource.isEmailStored("player@mail.tld")).willReturn(true);
+        given(service.validateEmail(email)).willReturn(true);
+        given(service.isEmailFreeForRegistration(email, player)).willReturn(false);
 
         // when
         process.run();
@@ -196,17 +197,12 @@ public class AsyncAddEmailTest {
     }
 
     /**
-     * Create an instance of {@link AsyncAddEmail} and save the mcoks to this class' fields.
+     * Create an instance of {@link AsyncAddEmail} with the class' mocks.
      *
      * @param email The email to use
      * @return The created process
      */
     private AsyncAddEmail createProcess(String email) {
-        player = mock(Player.class);
-        dataSource = mock(DataSource.class);
-        playerCache = mock(PlayerCache.class);
-        service = mock(ProcessService.class);
-        when(service.getSettings()).thenReturn(mock(NewSetting.class));
         return new AsyncAddEmail(player, email, dataSource, playerCache, service);
     }
 

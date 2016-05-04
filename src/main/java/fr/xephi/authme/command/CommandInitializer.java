@@ -271,7 +271,7 @@ public final class CommandInitializer {
         CommandDescription.builder()
             .parent(AUTHME_BASE)
             .labels("converter", "convert", "conv")
-            .description("Converter Command")
+            .description("Converter command")
             .detailedDescription("Converter command for AuthMeReloaded.")
             .withArgument("job", "Conversion job: xauth / crazylogin / rakamak / " +
                 "royalauth / vauth / sqlitetosql", false)

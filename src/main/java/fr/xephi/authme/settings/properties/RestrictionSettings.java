@@ -12,15 +12,19 @@ import static fr.xephi.authme.settings.domain.Property.newProperty;
 public class RestrictionSettings implements SettingsClass {
 
     @Comment({
-        "Can not authenticated players chat and see the chat log?",
+        "Can not authenticated players chat?",
         "Keep in mind that this feature also blocks all commands not",
         "listed in the list below."})
     public static final Property<Boolean> ALLOW_CHAT =
         newProperty("settings.restrictions.allowChat", false);
 
+    @Comment("Hide the chat log from players who are not authenticated?")
+    public static final Property<Boolean> HIDE_CHAT =
+        newProperty("settings.restrictions.hideChat", false);
+
     @Comment({
        "Allow unlogged users to use all the commands if registration is not forced!",
-       "WARNING: use this only if you need it!)"})
+       "WARNING: use this only if you need it!"})
     public static final Property<Boolean> ALLOW_ALL_COMMANDS_IF_REGISTRATION_IS_OPTIONAL =
         newProperty("settings.restrictions.allowAllCommandsIfRegistrationIsOptional", false);
 
@@ -29,8 +33,9 @@ public class RestrictionSettings implements SettingsClass {
         newListProperty("settings.restrictions.allowCommands",
             "login", "register", "l", "reg", "email", "captcha");
 
-    @Comment("Max number of allowed registrations per IP")
-    // TODO ljacqu 20160109: If 0 == unlimited, add this fact to the comment
+    @Comment({
+        "Max number of allowed registrations per IP",
+        "The value 0 means an unlimited number of registrations!"})
     public static final Property<Integer> MAX_REGISTRATION_PER_IP =
         newProperty("settings.restrictions.maxRegPerIp", 1);
 

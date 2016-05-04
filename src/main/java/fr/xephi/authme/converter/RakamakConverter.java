@@ -4,7 +4,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.Settings;
@@ -25,22 +24,23 @@ public class RakamakConverter implements Converter {
     private final AuthMe instance;
     private final DataSource database;
     private final CommandSender sender;
+    private final File pluginFolder;
 
     public RakamakConverter(AuthMe instance, CommandSender sender) {
         this.instance = instance;
         this.database = instance.getDataSource();
         this.sender = sender;
+        pluginFolder = instance.getDataFolder();
     }
 
     @Override
     // TODO ljacqu 20151229: Restructure this into smaller portions
     public void run() {
-        HashAlgorithm hash = Settings.getPasswordHash;
         boolean useIP = Settings.rakamakUseIp;
         String fileName = Settings.rakamakUsers;
         String ipFileName = Settings.rakamakUsersIp;
-        File source = new File(Settings.PLUGIN_FOLDER, fileName);
-        File ipfiles = new File(Settings.PLUGIN_FOLDER, ipFileName);
+        File source = new File(pluginFolder, fileName);
+        File ipfiles = new File(pluginFolder, ipFileName);
         HashMap<String, String> playerIP = new HashMap<>();
         HashMap<String, HashedPassword> playerPSW = new HashMap<>();
         try {
@@ -64,7 +64,7 @@ public class RakamakConverter implements Converter {
             while ((line = users.readLine()) != null) {
                 if (line.contains("=")) {
                     String[] arguments = line.split("=");
-                    HashedPassword hashedPassword = passwordSecurity.computeHash(hash, arguments[1], arguments[0]);
+                    HashedPassword hashedPassword = passwordSecurity.computeHash(arguments[1], arguments[0]);
                     playerPSW.put(arguments[0], hashedPassword);
 
                 }

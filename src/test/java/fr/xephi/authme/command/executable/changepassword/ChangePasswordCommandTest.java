@@ -18,10 +18,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.mock;
@@ -57,9 +58,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender).sendMessage(captor.capture());
-        assertThat(captor.getValue(), containsString("only for players"));
+        verify(sender).sendMessage(argThat(containsString("only for players")));
     }
 
     @Test
@@ -76,73 +75,19 @@ public class ChangePasswordCommandTest {
     }
 
     @Test
-    public void shouldDenyInvalidPassword() {
-        // given
-        CommandSender sender = initPlayerWithName("name", true);
-        ChangePasswordCommand command = new ChangePasswordCommand();
-
-        // when
-        command.executeCommand(sender, Arrays.asList("old123", "!pass"), commandService);
-
-        // then
-        verify(commandService).send(sender, MessageKey.PASSWORD_MATCH_ERROR);
-    }
-
-
-    @Test
-    public void shouldRejectPasswordEqualToNick() {
-        // given
-        CommandSender sender = initPlayerWithName("tester", true);
-        ChangePasswordCommand command = new ChangePasswordCommand();
-
-        // when
-        command.executeCommand(sender, Arrays.asList("old_", "Tester"), commandService);
-
-        // then
-        verify(commandService).send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-    }
-
-    @Test
-    public void shouldRejectTooLongPassword() {
+    public void shouldRejectInvalidPassword() {
         // given
         CommandSender sender = initPlayerWithName("abc12", true);
         ChangePasswordCommand command = new ChangePasswordCommand();
-        given(commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)).willReturn(3);
+        String password = "newPW";
+        given(commandService.validatePassword(password, "abc12")).willReturn(MessageKey.INVALID_PASSWORD_LENGTH);
 
         // when
-        command.executeCommand(sender, Arrays.asList("12", "test"), commandService);
+        command.executeCommand(sender, Arrays.asList("tester", password), commandService);
 
         // then
+        verify(commandService).validatePassword(password, "abc12");
         verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-    }
-
-    @Test
-    public void shouldRejectTooShortPassword() {
-        // given
-        CommandSender sender = initPlayerWithName("abc12", true);
-        ChangePasswordCommand command = new ChangePasswordCommand();
-        given(commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)).willReturn(7);
-
-        // when
-        command.executeCommand(sender, Arrays.asList("oldverylongpassword", "tester"), commandService);
-
-        // then
-        verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-    }
-
-    @Test
-    public void shouldRejectUnsafeCustomPassword() {
-        // given
-        CommandSender sender = initPlayerWithName("player", true);
-        ChangePasswordCommand command = new ChangePasswordCommand();
-        given(commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS))
-            .willReturn(Arrays.asList("test", "abc123"));
-
-        // when
-        command.executeCommand(sender, Arrays.asList("oldpw", "abc123"), commandService);
-
-        // then
-        verify(commandService).send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
     }
 
     @Test
@@ -155,6 +100,7 @@ public class ChangePasswordCommandTest {
         command.executeCommand(sender, Arrays.asList("abc123", "abc123"), commandService);
 
         // then
+        verify(commandService).validatePassword("abc123", "parker");
         verify(commandService, never()).send(eq(sender), any(MessageKey.class));
         ArgumentCaptor<ChangePasswordTask> taskCaptor = ArgumentCaptor.forClass(ChangePasswordTask.class);
         verify(commandService).runTaskAsynchronously(taskCaptor.capture());

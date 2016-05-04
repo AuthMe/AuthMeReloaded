@@ -6,7 +6,6 @@ import fr.xephi.authme.command.FoundResultStatus;
 import fr.xephi.authme.command.TestCommandsUtil;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
-import fr.xephi.authme.util.WrapperMock;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.junit.Before;
@@ -47,7 +46,6 @@ public class HelpProviderTest {
 
     @BeforeClass
     public static void setUpCommands() {
-        WrapperMock.createInstance();
         commands = TestCommandsUtil.generateCommands();
     }
 

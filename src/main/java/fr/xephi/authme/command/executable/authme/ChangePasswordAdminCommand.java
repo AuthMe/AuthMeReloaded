@@ -7,8 +7,6 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
 
 import java.util.List;
@@ -22,30 +20,16 @@ public class ChangePasswordAdminCommand implements ExecutableCommand {
     public void executeCommand(final CommandSender sender, List<String> arguments,
                                final CommandService commandService) {
         // Get the player and password
-        String playerName = arguments.get(0);
+        final String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);
 
         // Validate the password
-        String playerPassLowerCase = playerPass.toLowerCase();
-        if (!playerPassLowerCase.matches(commandService.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX))) {
-            commandService.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
+        MessageKey passwordError = commandService.validatePassword(playerPass, playerName);
+        if (passwordError != null) {
+            commandService.send(sender, passwordError);
             return;
         }
-        if (playerPassLowerCase.equalsIgnoreCase(playerName)) {
-            commandService.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-            return;
-        }
-        if (playerPassLowerCase.length() < commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)
-                || playerPassLowerCase.length() > commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)) {
-            commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-            return;
-        }
-        // TODO #602 20160312: The UNSAFE_PASSWORDS should be all lowercase
-        // -> introduce a lowercase String list property type
-        if (commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(playerPassLowerCase)) {
-            commandService.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
-            return;
-        }
+
         // Set the password
         final String playerNameLowerCase = playerName.toLowerCase();
         commandService.runTaskAsynchronously(new Runnable() {

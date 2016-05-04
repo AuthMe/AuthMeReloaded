@@ -12,9 +12,11 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
 import fr.xephi.authme.task.TimeoutTask;
 import fr.xephi.authme.util.Utils;
@@ -23,12 +25,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
+import static fr.xephi.authme.settings.properties.RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
+
 /**
  */
 public class ProcessSyncPasswordRegister implements Process {
 
-    protected final Player player;
-    protected final String name;
+    private final Player player;
+    private final String name;
     private final AuthMe plugin;
     private final ProcessService service;
 
@@ -49,27 +54,33 @@ public class ProcessSyncPasswordRegister implements Process {
     }
 
     private void forceCommands() {
-        for (String command : Settings.forceRegisterCommands) {
+        for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS)) {
             player.performCommand(command.replace("%p", player.getName()));
         }
-        for (String command : Settings.forceRegisterCommandsAsConsole) {
+        for (String command : service.getProperty(RegistrationSettings.FORCE_REGISTER_COMMANDS_AS_CONSOLE)) {
             Bukkit.getServer().dispatchCommand(Bukkit.getServer().getConsoleSender(),
-                command.replace("%p", player.getName()));
+                    command.replace("%p", player.getName()));
         }
     }
 
-    private void forceLogin(Player player) {
+    /**
+     * Request that the player log in.
+     *
+     * @param player the player
+     */
+    private void requestLogin(Player player) {
         Utils.teleportToSpawn(player);
         LimboCache cache = LimboCache.getInstance();
         cache.updateLimboPlayer(player);
-        int delay = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
+        int delay = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         BukkitTask task;
         if (delay != 0) {
             task = service.runTaskLater(new TimeoutTask(service.getAuthMe(), name, player), delay);
             cache.getLimboPlayer(name).setTimeoutTask(task);
         }
-        task = service.runTask(new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
+        task = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
+            name, MessageKey.LOGIN_MESSAGE, interval));
         cache.getLimboPlayer(name).setMessageTask(task);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
@@ -80,11 +91,15 @@ public class ProcessSyncPasswordRegister implements Process {
     public void run() {
         LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
         if (limbo != null) {
+            if (service.getProperty(RestrictionSettings.HIDE_TABLIST_BEFORE_LOGIN) && plugin.tablistHider != null) {
+                plugin.tablistHider.sendTablist(player);
+            }
+
             Utils.teleportToSpawn(player);
 
-            if (Settings.protectInventoryBeforeLogInEnabled && plugin.inventoryProtector != null) {
+            if (service.getProperty(HIDE_TABLIST_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
                 RestoreInventoryEvent event = new RestoreInventoryEvent(player);
-                Bukkit.getPluginManager().callEvent(event);
+                service.callEvent(event);
                 if (!event.isCancelled()) {
                     plugin.inventoryProtector.sendInventoryPacket(player);
                 }
@@ -99,7 +114,7 @@ public class ProcessSyncPasswordRegister implements Process {
 
         service.send(player, MessageKey.REGISTER_SUCCESS);
 
-        if (!Settings.getmailAccount.isEmpty()) {
+        if (!service.getProperty(EmailSettings.MAIL_ACCOUNT).isEmpty()) {
             service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
         }
 
@@ -111,41 +126,28 @@ public class ProcessSyncPasswordRegister implements Process {
         plugin.getServer().getPluginManager().callEvent(new LoginEvent(player));
         player.saveData();
 
-        if (!Settings.noConsoleSpam) {
-            ConsoleLogger.info(player.getName() + " registered " + service.getIpAddressManager().getPlayerIp(player));
+        if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
+            ConsoleLogger.info(player.getName() + " registered " + Utils.getPlayerIp(player));
         }
 
         // Kick Player after Registration is enabled, kick the player
-        if (Settings.forceRegKick) {
+        if (service.getProperty(RegistrationSettings.FORCE_KICK_AFTER_REGISTER)) {
             player.kickPlayer(service.retrieveSingleMessage(MessageKey.REGISTER_SUCCESS));
             return;
         }
 
-        // Register is finish and player is logged, display welcome message
-        if (service.getProperty(RegistrationSettings.USE_WELCOME_MESSAGE)) {
-            if (service.getProperty(RegistrationSettings.BROADCAST_WELCOME_MESSAGE)) {
-                for (String s : service.getSettings().getWelcomeMessage()) {
-                    plugin.getServer().broadcastMessage(plugin.replaceAllInfo(s, player));
-                }
-            } else {
-                for (String s : service.getSettings().getWelcomeMessage()) {
-                    player.sendMessage(plugin.replaceAllInfo(s, player));
-                }
-            }
-        }
+        // Register is now finished; we can force all commands
+        forceCommands();
 
-        // Request Login after Registration
-        if (Settings.forceRegLogin) {
-            forceLogin(player);
+        // Request login after registration
+        if (service.getProperty(RegistrationSettings.FORCE_LOGIN_AFTER_REGISTER)) {
+            requestLogin(player);
             return;
         }
 
-        if (Settings.bungee) {
+        if (service.getProperty(HooksSettings.BUNGEECORD)) {
             sendBungeeMessage();
         }
-
-        // Register is now finished; we can force all commands
-        forceCommands();
 
         sendTo();
     }

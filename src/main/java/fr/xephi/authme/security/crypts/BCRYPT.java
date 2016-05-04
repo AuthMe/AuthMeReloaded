@@ -5,13 +5,20 @@ import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
 import fr.xephi.authme.security.crypts.description.Usage;
-import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.util.StringUtils;
 
 
 @Recommendation(Usage.RECOMMENDED) // provided the salt length is >= 8
 @HasSalt(value = SaltType.TEXT) // length depends on Settings.bCryptLog2Rounds
 public class BCRYPT implements EncryptionMethod {
+
+    private final int bCryptLog2Rounds;
+
+    public BCRYPT(NewSetting settings) {
+        this.bCryptLog2Rounds = settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND);
+    }
 
     @Override
     public String computeHash(String password, String salt, String name) {
@@ -36,7 +43,7 @@ public class BCRYPT implements EncryptionMethod {
 
     @Override
     public String generateSalt() {
-        return BCryptService.gensalt(Settings.bCryptLog2Rounds);
+        return BCryptService.gensalt(bCryptLog2Rounds);
     }
 
     @Override

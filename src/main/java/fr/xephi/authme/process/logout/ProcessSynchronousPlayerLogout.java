@@ -74,7 +74,8 @@ public class ProcessSynchronousPlayerLogout implements Process {
             BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
             LimboCache.getInstance().getLimboPlayer(name).setTimeoutTask(id);
         }
-        BukkitTask msgT = service.runTask(new MessageTask(plugin, name, MessageKey.LOGIN_MESSAGE, interval));
+        BukkitTask msgT = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
+            name, MessageKey.LOGIN_MESSAGE, interval));
         LimboCache.getInstance().getLimboPlayer(name).setMessageTask(msgT);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();

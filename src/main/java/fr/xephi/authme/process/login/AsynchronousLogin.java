@@ -17,6 +17,7 @@ import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -52,7 +53,7 @@ public class AsynchronousLogin implements Process {
         this.forceLogin = forceLogin;
         this.plugin = plugin;
         this.database = data;
-        this.ip = service.getIpAddressManager().getPlayerIp(player);
+        this.ip = Utils.getPlayerIp(player);
         this.service = service;
     }
 
@@ -96,8 +97,8 @@ public class AsynchronousLogin implements Process {
                 String[] msg = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
                     ? service.retrieveMessage(MessageKey.REGISTER_EMAIL_MESSAGE)
                     : service.retrieveMessage(MessageKey.REGISTER_MESSAGE);
-                BukkitTask messageTask = service.runTask(
-                    new MessageTask(plugin, name, msg, service.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
+                BukkitTask messageTask = service.runTask(new MessageTask(service.getBukkitService(),
+                    name, msg, service.getProperty(RegistrationSettings.MESSAGE_INTERVAL)));
                 limboPlayer.setMessageTask(messageTask);
             }
             return null;
@@ -166,11 +167,12 @@ public class AsynchronousLogin implements Process {
 
             displayOtherAccounts(auth);
 
-            if (Settings.recallEmail && (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email))) {
+            if (service.getProperty(EmailSettings.RECALL_PLAYERS)
+                && (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email))) {
                 service.send(player, MessageKey.ADD_EMAIL_MESSAGE);
             }
 
-            if (!Settings.noConsoleSpam) {
+            if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                 ConsoleLogger.info(realName + " logged in!");
             }
 
@@ -182,8 +184,7 @@ public class AsynchronousLogin implements Process {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            ProcessSyncPlayerLogin syncPlayerLogin = new ProcessSyncPlayerLogin(
-                player, plugin, database, service.getSettings());
+            ProcessSyncPlayerLogin syncPlayerLogin = new ProcessSyncPlayerLogin(player, plugin, database, service);
             if (syncPlayerLogin.getLimbo() != null) {
                 if (syncPlayerLogin.getLimbo().getTimeoutTask() != null) {
                     syncPlayerLogin.getLimbo().getTimeoutTask().cancel();
@@ -213,7 +214,7 @@ public class AsynchronousLogin implements Process {
     }
 
     private void displayOtherAccounts(PlayerAuth auth) {
-        if (!Settings.displayOtherAccounts || auth == null) {
+        if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS) || auth == null) {
             return;
         }
 
@@ -222,7 +223,7 @@ public class AsynchronousLogin implements Process {
             return;
         }
         String message = "[AuthMe] " + StringUtils.join(", ", auths) + ".";
-        for (Player player : Utils.getOnlinePlayers()) {
+        for (Player player : service.getOnlinePlayers()) {
             if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)
                     || (player.getName().equals(this.player.getName())
                             && plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {

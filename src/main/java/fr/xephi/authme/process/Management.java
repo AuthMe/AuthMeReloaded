@@ -41,7 +41,7 @@ public class Management {
     }
 
     public void performRegister(final Player player, final String password, final String email) {
-        runTask(new AsyncRegister(player, password, email, plugin, dataSource, processService));
+        runTask(new AsyncRegister(player, password, email, plugin, dataSource, playerCache, processService));
     }
 
     public void performUnregister(final Player player, final String password, final boolean force) {

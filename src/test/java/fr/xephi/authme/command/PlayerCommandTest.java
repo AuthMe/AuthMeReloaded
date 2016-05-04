@@ -4,14 +4,13 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsString;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -28,12 +27,10 @@ public class PlayerCommandTest {
         PlayerCommandImpl command = new PlayerCommandImpl();
 
         // when
-        command.executeCommand(sender, Collections.<String> emptyList(), mock(CommandService.class));
+        command.executeCommand(sender, Collections.<String>emptyList(), mock(CommandService.class));
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(1)).sendMessage(captor.capture());
-        assertThat(captor.getValue(), containsString("only for players"));
+        verify(sender).sendMessage(argThat(containsString("only for players")));
     }
 
     @Test
@@ -58,12 +55,10 @@ public class PlayerCommandTest {
         PlayerCommandWithAlt command = new PlayerCommandWithAlt();
 
         // when
-        command.executeCommand(sender, Collections.<String> emptyList(), mock(CommandService.class));
+        command.executeCommand(sender, Collections.<String>emptyList(), mock(CommandService.class));
 
         // then
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-        verify(sender, times(1)).sendMessage(captor.capture());
-        assertThat(captor.getValue(), containsString("use /authme test <command> instead"));
+        verify(sender, times(1)).sendMessage(argThat(containsString("use /authme test <command> instead")));
     }
 
 

@@ -2,6 +2,10 @@ package fr.xephi.authme.security.crypts;
 
 /**
  * Public interface for custom password encryption methods.
+ * <p>
+ * Note that {@link fr.xephi.authme.security.PasswordSecurity} requires classes implementing this interface
+ * to either have the default constructor or an accessible constructor with one parameter of type
+ * {@link fr.xephi.authme.settings.NewSetting}.
  */
 public interface EncryptionMethod {
 
@@ -31,9 +35,9 @@ public interface EncryptionMethod {
     /**
      * Check whether the given hash matches the clear-text password.
      *
-     * @param password   The clear-text password to verify
+     * @param password       The clear-text password to verify
      * @param hashedPassword The hash to check the password against
-     * @param name       The player name to do the check for (sometimes required for generating the salt)
+     * @param name           The player name to do the check for (sometimes required for generating the salt)
      *
      * @return True if the password matches, false otherwise
      */

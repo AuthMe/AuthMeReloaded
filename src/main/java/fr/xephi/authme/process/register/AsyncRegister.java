@@ -12,8 +12,13 @@ import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.EmailSettings;
+import fr.xephi.authme.settings.properties.RegistrationSettings;
+import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
+import fr.xephi.authme.util.Utils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -30,43 +35,36 @@ public class AsyncRegister implements Process {
     private final String email;
     private final AuthMe plugin;
     private final DataSource database;
+    private final PlayerCache playerCache;
     private final ProcessService service;
 
     public AsyncRegister(Player player, String password, String email, AuthMe plugin, DataSource data,
-                         ProcessService service) {
+                         PlayerCache playerCache, ProcessService service) {
         this.player = player;
         this.password = password;
         this.name = player.getName().toLowerCase();
         this.email = email;
         this.plugin = plugin;
         this.database = data;
-        this.ip = service.getIpAddressManager().getPlayerIp(player);
+        this.ip = Utils.getPlayerIp(player);
+        this.playerCache = playerCache;
         this.service = service;
     }
 
     private boolean preRegisterCheck() {
-        String passLow = password.toLowerCase();
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+        if (playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return false;
-        } else if (!Settings.isRegistrationEnabled) {
+        } else if (!service.getProperty(RegistrationSettings.IS_ENABLED)) {
             service.send(player, MessageKey.REGISTRATION_DISABLED);
             return false;
         }
 
         //check the password safety only if it's not a automatically generated password
         if (service.getProperty(SecuritySettings.PASSWORD_HASH) != HashAlgorithm.TWO_FACTOR) {
-            if (!passLow.matches(Settings.getPassRegex)) {
-                service.send(player, MessageKey.PASSWORD_MATCH_ERROR);
-                return false;
-            } else if (passLow.equalsIgnoreCase(player.getName())) {
-                service.send(player, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-                return false;
-            } else if (password.length() < Settings.getPasswordMinLen || password.length() > Settings.passwordMaxLength) {
-                service.send(player, MessageKey.INVALID_PASSWORD_LENGTH);
-                return false;
-            } else if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(password.toLowerCase())) {
-                service.send(player, MessageKey.PASSWORD_UNSAFE_ERROR);
+            MessageKey passwordError = service.validatePassword(password, player.getName());
+            if (passwordError != null) {
+                service.send(player, passwordError);
                 return false;
             }
         }
@@ -75,15 +73,17 @@ public class AsyncRegister implements Process {
         if (database.isAuthAvailable(name)) {
             service.send(player, MessageKey.NAME_ALREADY_REGISTERED);
             return false;
-        } else if(Settings.getmaxRegPerIp > 0
-            && !ip.equalsIgnoreCase("127.0.0.1")
-            && !ip.equalsIgnoreCase("localhost")
+        }
+
+        final int maxRegPerIp = service.getProperty(RestrictionSettings.MAX_REGISTRATION_PER_IP);
+        if (maxRegPerIp > 0
+            && !"127.0.0.1".equalsIgnoreCase(ip)
+            && !"localhost".equalsIgnoreCase(ip)
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
-            int maxReg = Settings.getmaxRegPerIp;
             List<String> otherAccounts = database.getAllAuthsByIp(ip);
-            if (otherAccounts.size() >= maxReg) {
-                service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxReg),
-                    Integer.toString(otherAccounts.size()), StringUtils.join(", ", otherAccounts.toString()));
+            if (otherAccounts.size() >= maxRegPerIp) {
+                service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxRegPerIp),
+                    Integer.toString(otherAccounts.size()), StringUtils.join(", ", otherAccounts));
                 return false;
             }
         }
@@ -102,12 +102,12 @@ public class AsyncRegister implements Process {
     }
 
     private void emailRegister() {
-        if (Settings.getmaxRegPerEmail > 0
+        final int maxRegPerEmail = service.getProperty(EmailSettings.MAX_REG_PER_EMAIL);
+        if (maxRegPerEmail > 0
             && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)) {
-            int maxReg = Settings.getmaxRegPerEmail;
             int otherAccounts = database.countAuthsByEmail(email);
-            if (otherAccounts >= maxReg) {
-                service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxReg),
+            if (otherAccounts >= maxRegPerEmail) {
+                service.send(player, MessageKey.MAX_REGISTER_EXCEEDED, Integer.toString(maxRegPerEmail),
                     Integer.toString(otherAccounts), "@");
                 return;
             }

@@ -52,13 +52,13 @@ public class ProcessSyncEmailRegister implements Process {
                 limbo.setTimeoutTask(id);
             }
             BukkitTask messageTask = service.runTask(new MessageTask(
-                service.getAuthMe(), name, service.retrieveMessage(MessageKey.LOGIN_MESSAGE), msgInterval));
+                service.getBukkitService(), name, service.retrieveMessage(MessageKey.LOGIN_MESSAGE), msgInterval));
             limbo.setMessageTask(messageTask);
         }
 
         player.saveData();
         if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-            ConsoleLogger.info(player.getName() + " registered " + service.getIpAddressManager().getPlayerIp(player));
+            ConsoleLogger.info(player.getName() + " registered " + Utils.getPlayerIp(player));
         }
     }
 

@@ -67,6 +67,8 @@ settings:
         # Care that this feature blocks also all the commands not
         # listed in the list below.
         allowChat: false
+        # Can not authenticated players see the chat log?
+        hideChat: false
         # WARNING: use this only if you need it!
         # Allow unlogged users to use all the commands if registration is not forced!
         allowAllCommandsIfRegistrationIsOptional: false
@@ -159,6 +161,9 @@ settings:
         noTeleport: false
         # Regex syntax for allowed Chars in passwords.
         allowedPasswordCharacters: '[\x21-\x7E]*'
+        # Keeps collisions disabled for logged players
+        # Works only with MC 1.9
+        keepCollisionsDisabled: false
     GameMode:
         # ForceSurvivalMode to player when join ?
         ForceSurvivalMode: false
@@ -248,11 +253,11 @@ settings:
     forceRegisterCommands: []
     # Force these commands after /register as a server console, without any '/', use %p for replace with player name
     forceRegisterCommandsAsConsole: []
-    # Do we need to display the welcome message (welcome.txt) after a register or a login?
-    # You can use colors in this welcome.txt + some replaced strings :
-    # {PLAYER} : player name, {ONLINE} : display number of online players, {MAXPLAYERS} : display server slots,
-    # {IP} : player ip, {LOGINS} : number of players logged, {WORLD} : player current world, {SERVER} : server name
-    # {VERSION} : get current bukkit version, {COUNTRY} : player country
+    # Do we need to display the welcome message (welcome.txt) after a login?
+    # You can use colors in this welcome.txt + some replaced strings:
+    # {PLAYER}: player name, {ONLINE}: display number of online players, {MAXPLAYERS}: display server slots,
+    # {IP}: player ip, {LOGINS}: number of players logged, {WORLD}: player current world, {SERVER}: server name
+    # {VERSION}: get current bukkit version, {COUNTRY}: player country
     useWelcomeMessage: true
     # Do we need to broadcast the welcome message to all server or only to the player? set true for server or false for player
     broadcastWelcomeMessage: false
@@ -418,6 +423,3 @@ Protection:
     antiBotSensibility: 5
     # Duration in minutes of the antibot automatic system
     antiBotDuration: 10
-VeryGames:
-    # These features are only available on VeryGames Server Provider
-    enableIpCheck: false

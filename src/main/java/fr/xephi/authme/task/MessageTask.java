@@ -1,10 +1,10 @@
 package fr.xephi.authme.task;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.util.Utils;
+import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -12,28 +12,27 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class MessageTask implements Runnable {
 
-    private final AuthMe plugin;
+    private final BukkitService bukkitService;
     private final String name;
     private final String[] msg;
     private final int interval;
 
-    /**
-     * Constructor for MessageTask.
-     *
-     * @param plugin   AuthMe
-     * @param name     String
-     * @param lines  String[]
-     * @param interval int
+    /*
+     * Constructor.
      */
-    public MessageTask(AuthMe plugin, String name, String[] lines, int interval) {
-        this.plugin = plugin;
+    public MessageTask(BukkitService bukkitService, String name, String[] lines, int interval) {
+        this.bukkitService = bukkitService;
         this.name = name;
         this.msg = lines;
         this.interval = interval;
     }
 
-    public MessageTask(AuthMe plugin, String name, MessageKey messageKey, int interval) {
-        this(plugin, name, plugin.getMessages().retrieve(messageKey), interval);
+    /*
+     * Constructor.
+     */
+    public MessageTask(BukkitService bukkitService, Messages messages, String name, MessageKey messageKey,
+                       int interval) {
+        this(bukkitService, name, messages.retrieve(messageKey), interval);
     }
 
     @Override
@@ -42,12 +41,12 @@ public class MessageTask implements Runnable {
             return;
         }
 
-        for (Player player : Utils.getOnlinePlayers()) {
+        for (Player player : bukkitService.getOnlinePlayers()) {
             if (player.getName().equalsIgnoreCase(name)) {
                 for (String ms : msg) {
                     player.sendMessage(ms);
                 }
-                BukkitTask nextTask = plugin.getServer().getScheduler().runTaskLater(plugin, this, interval * 20);
+                BukkitTask nextTask = bukkitService.runTaskLater(this, interval * 20);
                 if (LimboCache.getInstance().hasLimboPlayer(name)) {
                     LimboCache.getInstance().getLimboPlayer(name).setMessageTask(nextTask);
                 }

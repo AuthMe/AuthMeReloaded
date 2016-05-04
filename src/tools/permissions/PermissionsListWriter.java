@@ -1,8 +1,8 @@
 package permissions;
 
-import com.google.common.collect.ImmutableMap;
 import utils.FileUtils;
-import utils.TagReplacer;
+import utils.TagValue.NestedTagValue;
+import utils.TagValueHolder;
 import utils.ToolTask;
 import utils.ToolsConstants;
 
@@ -45,29 +45,25 @@ public class PermissionsListWriter implements ToolTask {
     }
 
     private static void generateAndWriteFile() {
-        final String permissionsTagValue = generatePermissionsList();
+        final NestedTagValue permissionsTagValue = generatePermissionsList();
 
-        Map<String, String> tags = ImmutableMap.of("permissions", permissionsTagValue);
+        TagValueHolder tags = TagValueHolder.create().put("nodes", permissionsTagValue);
         FileUtils.generateFileFromTemplate(
             ToolsConstants.TOOLS_SOURCE_ROOT + "permissions/permission_nodes.tpl.md", PERMISSIONS_OUTPUT_FILE, tags);
         System.out.println("Wrote to '" + PERMISSIONS_OUTPUT_FILE + "'");
         System.out.println("Before committing, please verify the output!");
     }
 
-    private static String generatePermissionsList() {
+    private static NestedTagValue generatePermissionsList() {
         PermissionNodesGatherer gatherer = new PermissionNodesGatherer();
         Map<String, String> permissions = gatherer.gatherNodesWithJavaDoc();
-
-        final String template = FileUtils.readFromToolsFile("permissions/permission_node_entry.tpl.md");
-        StringBuilder sb = new StringBuilder();
-
+        NestedTagValue permissionTags = new NestedTagValue();
         for (Map.Entry<String, String> entry : permissions.entrySet()) {
-            Map<String, String> tags = ImmutableMap.of(
-                "node", entry.getKey(),
-                "description", entry.getValue());
-            sb.append(TagReplacer.applyReplacements(template, tags));
+            permissionTags.add(TagValueHolder.create()
+                .put("node", entry.getKey())
+                .put("description", entry.getValue()));
         }
-        return sb.toString();
+        return permissionTags;
     }
 
     private static void outputSimpleList() {

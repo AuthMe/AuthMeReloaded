@@ -3,10 +3,10 @@ package fr.xephi.authme;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.properties.PurgeSettings;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,16 +18,15 @@ public class DataManager {
 
     private final AuthMe plugin;
     private final PluginHooks pluginHooks;
+    private final BukkitService bukkitService;
 
-    /**
-     * Constructor for DataManager.
-     *
-     * @param plugin      The plugin instance
-     * @param pluginHooks Plugin hooks instance
+    /*
+     * Constructor.
      */
-    public DataManager(AuthMe plugin, PluginHooks pluginHooks) {
+    public DataManager(AuthMe plugin, PluginHooks pluginHooks, BukkitService bukkitService) {
         this.plugin = plugin;
         this.pluginHooks = pluginHooks;
+        this.bukkitService = bukkitService;
     }
 
     private List<OfflinePlayer> getOfflinePlayers(List<String> names) {
@@ -64,6 +63,9 @@ public class DataManager {
         int i = 0;
         File dataFolder = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative"
             + File.separator + "inventories");
+        if (!dataFolder.exists() || !dataFolder.isDirectory()) {
+            return;
+        }
         for (String file : dataFolder.list()) {
             String name = file;
             int idx;
@@ -123,6 +125,9 @@ public class DataManager {
         }
 
         final File userDataFolder = new File(essentialsDataFolder, "userdata");
+        if (!userDataFolder.exists() || !userDataFolder.isDirectory()) {
+            return;
+        }
         List<OfflinePlayer> offlinePlayers = getOfflinePlayers(cleared);
         for (OfflinePlayer player : offlinePlayers) {
             File playerFile = new File(userDataFolder, Utils.getUUIDorName(player) + ".yml");
@@ -143,21 +148,9 @@ public class DataManager {
             ConsoleLogger.showError("Unable to access permissions manager instance!");
             return;
         }
-        int i = 0;
         for (String name : cleared) {
-            permsMan.removeAllGroups(getOnlinePlayerLower(name));
-            i++;
+            permsMan.removeAllGroups(bukkitService.getPlayerExact(name));
         }
-        ConsoleLogger.info("AutoPurge: Removed permissions from " + i + " player(s).");
-    }
-
-    private Player getOnlinePlayerLower(String name) {
-        name = name.toLowerCase();
-        for (Player player : Utils.getOnlinePlayers()) {
-            if (player.getName().equalsIgnoreCase(name)) {
-                return player;
-            }
-        }
-        return null;
+        ConsoleLogger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
     }
 }

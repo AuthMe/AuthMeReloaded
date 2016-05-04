@@ -1,17 +1,19 @@
 package fr.xephi.authme.hooks;
 
-import com.earth2me.essentials.Essentials;
-import com.onarandombox.MultiverseCore.MultiverseCore;
-import com.onarandombox.MultiverseCore.api.MVWorldManager;
-import fr.xephi.authme.ConsoleLogger;
-import net.minelink.ctplus.CombatTagPlus;
+import java.io.File;
+
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 
-import java.io.File;
+import com.earth2me.essentials.Essentials;
+import com.onarandombox.MultiverseCore.MultiverseCore;
+import com.onarandombox.MultiverseCore.api.MVWorldManager;
+
+import fr.xephi.authme.ConsoleLogger;
+import net.minelink.ctplus.CombatTagPlus;
 
 /**
  * Hooks into third-party plugins and allows to perform actions on them.

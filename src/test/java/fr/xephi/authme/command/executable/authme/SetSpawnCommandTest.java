@@ -35,7 +35,7 @@ public class SetSpawnCommandTest {
         ExecutableCommand command = new SetSpawnCommand();
 
         // when
-        command.executeCommand(player, Collections.<String> emptyList(), service);
+        command.executeCommand(player, Collections.<String>emptyList(), service);
 
         // then
         verify(spawnLoader).setSpawn(location);
@@ -57,7 +57,7 @@ public class SetSpawnCommandTest {
         ExecutableCommand command = new SetSpawnCommand();
 
         // when
-        command.executeCommand(player, Collections.<String> emptyList(), service);
+        command.executeCommand(player, Collections.<String>emptyList(), service);
 
         // then
         verify(spawnLoader).setSpawn(location);

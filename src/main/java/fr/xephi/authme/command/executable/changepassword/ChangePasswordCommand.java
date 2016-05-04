@@ -5,8 +5,6 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.ChangePasswordTask;
 import org.bukkit.entity.Player;
 
@@ -30,22 +28,9 @@ public class ChangePasswordCommand extends PlayerCommand {
         }
 
         // Make sure the password is allowed
-        String playerPassLowerCase = newPassword.toLowerCase();
-        if (!playerPassLowerCase.matches(commandService.getProperty(RestrictionSettings.ALLOWED_PASSWORD_REGEX))) {
-            commandService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
-            return;
-        }
-        if (playerPassLowerCase.equalsIgnoreCase(name)) {
-            commandService.send(player, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-            return;
-        }
-        if (playerPassLowerCase.length() < commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)
-            || playerPassLowerCase.length() > commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)) {
-            commandService.send(player, MessageKey.INVALID_PASSWORD_LENGTH);
-            return;
-        }
-        if (commandService.getProperty(SecuritySettings.UNSAFE_PASSWORDS).contains(playerPassLowerCase)) {
-            commandService.send(player, MessageKey.PASSWORD_UNSAFE_ERROR);
+        MessageKey passwordError = commandService.validatePassword(newPassword, name);
+        if (passwordError != null) {
+            commandService.send(player, passwordError);
             return;
         }
 

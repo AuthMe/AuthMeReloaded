@@ -5,7 +5,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
@@ -15,8 +14,12 @@ import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -32,29 +35,19 @@ public class CommandService {
     private final PasswordSecurity passwordSecurity;
     private final PermissionsManager permissionsManager;
     private final NewSetting settings;
-    private final IpAddressManager ipAddressManager;
     private final PluginHooks pluginHooks;
     private final SpawnLoader spawnLoader;
     private final AntiBot antiBot;
+    private final ValidationService validationService;
+    private final BukkitService bukkitService;
 
-    /**
+    /*
      * Constructor.
-     *
-     * @param authMe The plugin instance
-     * @param commandMapper Command mapper
-     * @param helpProvider Help provider
-     * @param messages Messages instance
-     * @param passwordSecurity The Password Security instance
-     * @param permissionsManager The permissions manager
-     * @param settings The settings manager
-     * @param ipAddressManager The IP address manager
-     * @param pluginHooks The plugin hooks instance
-     * @param spawnLoader The spawn loader
      */
     public CommandService(AuthMe authMe, CommandMapper commandMapper, HelpProvider helpProvider, Messages messages,
                           PasswordSecurity passwordSecurity, PermissionsManager permissionsManager, NewSetting settings,
-                          IpAddressManager ipAddressManager, PluginHooks pluginHooks, SpawnLoader spawnLoader,
-                          AntiBot antiBot) {
+                          PluginHooks pluginHooks, SpawnLoader spawnLoader, AntiBot antiBot,
+                          ValidationService validationService, BukkitService bukkitService) {
         this.authMe = authMe;
         this.messages = messages;
         this.helpProvider = helpProvider;
@@ -62,10 +55,11 @@ public class CommandService {
         this.passwordSecurity = passwordSecurity;
         this.permissionsManager = permissionsManager;
         this.settings = settings;
-        this.ipAddressManager = ipAddressManager;
         this.pluginHooks = pluginHooks;
         this.spawnLoader = spawnLoader;
         this.antiBot = antiBot;
+        this.validationService = validationService;
+        this.bukkitService = bukkitService;
     }
 
     /**
@@ -199,10 +193,6 @@ public class CommandService {
         return settings;
     }
 
-    public IpAddressManager getIpAddressManager() {
-        return ipAddressManager;
-    }
-
     public PlayerCache getPlayerCache() {
         return PlayerCache.getInstance();
     }
@@ -217,6 +207,37 @@ public class CommandService {
 
     public AntiBot getAntiBot() {
         return antiBot;
+    }
+
+    /**
+     * Verifies whether a password is valid according to the plugin settings.
+     *
+     * @param password the password to verify
+     * @param username the username the password is associated with
+     * @return message key with the password error, or {@code null} if password is valid
+     */
+    public MessageKey validatePassword(String password, String username) {
+        return validationService.validatePassword(password, username);
+    }
+
+    public boolean validateEmail(String email) {
+        return validationService.validateEmail(email);
+    }
+
+    public boolean isEmailFreeForRegistration(String email, CommandSender sender) {
+        return validationService.isEmailFreeForRegistration(email, sender);
+    }
+
+    public Player getPlayer(String name) {
+        return bukkitService.getPlayerExact(name);
+    }
+
+    public Collection<? extends Player> getOnlinePlayers() {
+        return bukkitService.getOnlinePlayers();
+    }
+
+    public BukkitService getBukkitService() {
+        return bukkitService;
     }
 
 }

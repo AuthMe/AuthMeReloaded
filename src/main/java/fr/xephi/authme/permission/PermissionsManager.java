@@ -1,11 +1,10 @@
 package fr.xephi.authme.permission;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.logging.Logger;
-
+import de.bananaco.bpermissions.api.ApiLayer;
+import de.bananaco.bpermissions.api.CalculableType;
+import fr.xephi.authme.command.CommandDescription;
+import fr.xephi.authme.util.CollectionUtils;
+import net.milkbowl.vault.permission.Permission;
 import org.anjocaido.groupmanager.GroupManager;
 import org.anjocaido.groupmanager.permissions.AnjoPermissionsHandler;
 import org.bukkit.Bukkit;
@@ -18,14 +17,14 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.tyrannyofheaven.bukkit.zPermissions.ZPermissionsService;
-
-import de.bananaco.bpermissions.api.ApiLayer;
-import de.bananaco.bpermissions.api.CalculableType;
-import fr.xephi.authme.command.CommandDescription;
-import fr.xephi.authme.util.CollectionUtils;
-import net.milkbowl.vault.permission.Permission;
 import ru.tehkode.permissions.PermissionUser;
 import ru.tehkode.permissions.bukkit.PermissionsEx;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * <p>
@@ -50,17 +49,9 @@ public class PermissionsManager implements PermissionsService {
      */
     private final Server server;
     /**
-     * Plugin instance.
-     */
-    private final Plugin plugin;
-    /**
      * Logger instance.
      */
     private Logger log;
-    /**
-     * The permissions manager Bukkit listener instance.
-     */
-    private PermissionsManagerBukkitListener bukkitListener;
     /**
      * Type of permissions system that is currently used.
      * Null if no permissions system is hooked and/or used.
@@ -79,28 +70,11 @@ public class PermissionsManager implements PermissionsService {
      * Constructor.
      *
      * @param server Server instance
-     * @param plugin Plugin instance
      * @param log    Logger
      */
-    public PermissionsManager(Server server, Plugin plugin, Logger log) {
+    public PermissionsManager(Server server, Logger log) {
         this.server = server;
-        this.plugin = plugin;
         this.log = log;
-
-        // Create and register the Bukkit listener on the server if it's valid
-        if(this.server != null) {
-            // Create the Bukkit listener
-            this.bukkitListener = new PermissionsManagerBukkitListener(this);
-
-            // Get the plugin manager instance
-            PluginManager pluginManager = this.server.getPluginManager();
-
-            // Register the Bukkit listener
-            pluginManager.registerEvents(this.bukkitListener, this.plugin);
-
-            // Show a status message.
-            //this.log.info("Started permission plugins state listener!");
-        }
     }
 
     /**
@@ -280,15 +254,6 @@ public class PermissionsManager implements PermissionsService {
             this.log.info(pluginName + " plugin disabled, updating hooks!");
             setup();
         }
-    }
-
-    /**
-     * Get the permissions manager Bukkit listener instance.
-     *
-     * @return Listener instance.
-     */
-    public PermissionsManagerBukkitListener getListener() {
-        return this.bukkitListener;
     }
 
     /**

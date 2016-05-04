@@ -1,17 +1,16 @@
 package fr.xephi.authme.command.executable.authme;
 
+import java.util.List;
+
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
-import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
-
-import java.util.List;
 
 /**
  * Admin command to register a user.
@@ -25,26 +24,14 @@ public class RegisterAdminCommand implements ExecutableCommand {
         final String playerName = arguments.get(0);
         final String playerPass = arguments.get(1);
         final String playerNameLowerCase = playerName.toLowerCase();
-        final String playerPassLowerCase = playerPass.toLowerCase();
 
         // Command logic
-        if (!playerPassLowerCase.matches(Settings.getPassRegex)) {
-            commandService.send(sender, MessageKey.PASSWORD_MATCH_ERROR);
+        MessageKey passwordError = commandService.validatePassword(playerPass, playerName);
+        if (passwordError != null) {
+            commandService.send(sender, passwordError);
             return;
         }
-        if (playerPassLowerCase.equalsIgnoreCase(playerName)) {
-            commandService.send(sender, MessageKey.PASSWORD_IS_USERNAME_ERROR);
-            return;
-        }
-        if (playerPassLowerCase.length() < commandService.getProperty(SecuritySettings.MIN_PASSWORD_LENGTH)
-            || playerPassLowerCase.length() > commandService.getProperty(SecuritySettings.MAX_PASSWORD_LENGTH)) {
-            commandService.send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-            return;
-        }
-        if (!Settings.unsafePasswords.isEmpty() && Settings.unsafePasswords.contains(playerPassLowerCase)) {
-            commandService.send(sender, MessageKey.PASSWORD_UNSAFE_ERROR);
-            return;
-        }
+
         commandService.runTaskAsynchronously(new Runnable() {
 
             @Override
@@ -66,11 +53,18 @@ public class RegisterAdminCommand implements ExecutableCommand {
                     return;
                 }
                 commandService.getDataSource().setUnlogged(playerNameLowerCase);
-                if (Bukkit.getPlayerExact(playerName) != null) {
-                    Bukkit.getPlayerExact(playerName).kickPlayer("An admin just registered you, please log again");
-                } else {
-                    commandService.send(sender, MessageKey.REGISTER_SUCCESS);
-                    ConsoleLogger.info(playerName + " registered");
+
+                commandService.send(sender, MessageKey.REGISTER_SUCCESS);
+                ConsoleLogger.info(sender.getName() + " registered " + playerName);
+                Player player = commandService.getPlayer(playerName);
+                if (player != null) {
+                    final Player p = player;
+                    p.getServer().getScheduler().scheduleSyncDelayedTask(commandService.getAuthMe(), new Runnable() {
+                        @Override
+                        public void run() {
+                            p.kickPlayer("An admin just registered you, please log in again");
+                        }
+                    });
                 }
             }
         });

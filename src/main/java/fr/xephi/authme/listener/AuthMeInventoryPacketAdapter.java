@@ -22,7 +22,6 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.reflect.MethodUtils;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.cache.auth.PlayerCache;
@@ -37,6 +36,8 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+
+import org.apache.commons.lang.reflect.MethodUtils;
 
 public class AuthMeInventoryPacketAdapter extends PacketAdapter {
 
@@ -127,9 +128,11 @@ public class AuthMeInventoryPacketAdapter extends PacketAdapter {
         PacketContainer inventoryPacket = protocolManager.createPacket(PacketType.Play.Server.WINDOW_ITEMS);
         inventoryPacket.getIntegers().write(0, PLAYER_INVENTORY);
         int inventorySize = CRAFTING_SIZE + ARMOR_SIZE + MAIN_SIZE + HOTBAR_SIZE;
+
         ItemStack[] blankInventory = new ItemStack[inventorySize];
         Arrays.fill(blankInventory, new ItemStack(Material.AIR));
         inventoryPacket.getItemArrayModifier().write(0, blankInventory);
+
         try {
             protocolManager.sendServerPacket(player, inventoryPacket, false);
         } catch (InvocationTargetException invocationExc) {

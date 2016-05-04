@@ -3,11 +3,13 @@ package fr.xephi.authme.command.executable.email;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 
 import java.util.List;
 
+/**
+ * Command for setting an email to an account.
+ */
 public class AddEmailCommand extends PlayerCommand {
 
     @Override
@@ -15,9 +17,8 @@ public class AddEmailCommand extends PlayerCommand {
         String email = arguments.get(0);
         String emailConfirmation = arguments.get(1);
 
-        if (!Utils.isEmailCorrect(email, commandService.getSettings())) {
-            commandService.send(player, MessageKey.INVALID_EMAIL);
-        } else if (email.equals(emailConfirmation)) {
+        if (email.equals(emailConfirmation)) {
+            // Closer inspection of the mail address handled by the async task
             commandService.getManagement().performAddEmail(player, email);
         } else {
             commandService.send(player, MessageKey.CONFIRM_EMAIL_MESSAGE);

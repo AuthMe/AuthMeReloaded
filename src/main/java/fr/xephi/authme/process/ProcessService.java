@@ -1,7 +1,6 @@
 package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
@@ -11,9 +10,14 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
+import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitTask;
+
+import java.util.Collection;
 
 /**
  * Service for asynchronous and synchronous processes.
@@ -24,22 +28,24 @@ public class ProcessService {
     private final Messages messages;
     private final AuthMe authMe;
     private final DataSource dataSource;
-    private final IpAddressManager ipAddressManager;
     private final PasswordSecurity passwordSecurity;
     private final PluginHooks pluginHooks;
     private final SpawnLoader spawnLoader;
+    private final ValidationService validationService;
+    private final BukkitService bukkitService;
 
     public ProcessService(NewSetting settings, Messages messages, AuthMe authMe, DataSource dataSource,
-                          IpAddressManager ipAddressManager, PasswordSecurity passwordSecurity, PluginHooks pluginHooks,
-                          SpawnLoader spawnLoader) {
+                          PasswordSecurity passwordSecurity, PluginHooks pluginHooks, SpawnLoader spawnLoader,
+                          ValidationService validationService, BukkitService bukkitService) {
         this.settings = settings;
         this.messages = messages;
         this.authMe = authMe;
         this.dataSource = dataSource;
-        this.ipAddressManager = ipAddressManager;
         this.passwordSecurity = passwordSecurity;
         this.pluginHooks = pluginHooks;
         this.spawnLoader = spawnLoader;
+        this.validationService = validationService;
+        this.bukkitService = bukkitService;
     }
 
     /**
@@ -153,15 +159,6 @@ public class ProcessService {
     }
 
     /**
-     * Return the IP address manager.
-     *
-     * @return the ip address manager
-     */
-    public IpAddressManager getIpAddressManager() {
-        return ipAddressManager;
-    }
-
-    /**
      * Compute the hash for the given password.
      *
      * @param password the password to hash
@@ -197,6 +194,33 @@ public class ProcessService {
      */
     public DataSource getDataSource() {
         return dataSource;
+    }
+
+    /**
+     * Verifies whether a password is valid according to the plugin settings.
+     *
+     * @param password the password to verify
+     * @param username the username the password is associated with
+     * @return message key with the password error, or {@code null} if password is valid
+     */
+    public MessageKey validatePassword(String password, String username) {
+        return validationService.validatePassword(password, username);
+    }
+
+    public boolean validateEmail(String email) {
+        return validationService.validateEmail(email);
+    }
+
+    public boolean isEmailFreeForRegistration(String email, CommandSender sender) {
+        return validationService.isEmailFreeForRegistration(email, sender);
+    }
+
+    public Collection<? extends Player> getOnlinePlayers() {
+        return bukkitService.getOnlinePlayers();
+    }
+
+    public BukkitService getBukkitService() {
+        return bukkitService;
     }
 
 }

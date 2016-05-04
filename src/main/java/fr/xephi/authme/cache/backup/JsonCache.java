@@ -10,8 +10,8 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Settings;
 import org.bukkit.entity.Player;
 
 import java.io.File;
@@ -24,7 +24,7 @@ public class JsonCache {
     private final File cacheDir;
 
     public JsonCache() {
-        cacheDir = Settings.CACHE_FOLDER;
+        cacheDir = new File(AuthMe.getInstance().getDataFolder(), "cache");
         if (!cacheDir.exists() && !cacheDir.isDirectory() && !cacheDir.mkdir()) {
             ConsoleLogger.showError("Failed to create cache directory.");
         }

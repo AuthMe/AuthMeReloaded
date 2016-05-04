@@ -4,7 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
+import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.crypts.HashedPassword;
@@ -107,7 +107,7 @@ public abstract class AbstractResourceClosingTest {
                 return ((Property) invocation.getArguments()[0]).getDefaultValue();
             }
         });
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     /** Initialize the dataSource implementation to test based on a mock connection. */

@@ -13,7 +13,7 @@ import java.util.Comparator;
  *   property, then "DataSource" properties will come before the "security" ones.</li>
  * </ul>
  */
-final class PropertyMapComparator implements Comparator<Property> {
+final class PropertyMapComparator implements Comparator<Property<?>> {
 
     private Node parent = Node.createRoot();
 
@@ -22,12 +22,12 @@ final class PropertyMapComparator implements Comparator<Property> {
      *
      * @param property The property that is being added
      */
-    public void add(Property property) {
+    public void add(Property<?> property) {
         parent.addNode(property.getPath());
     }
 
     @Override
-    public int compare(Property p1, Property p2) {
+    public int compare(Property<?> p1, Property<?> p2) {
         return parent.compare(p1.getPath(), p2.getPath());
     }
 

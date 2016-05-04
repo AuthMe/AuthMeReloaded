@@ -1,6 +1,6 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
+import fr.xephi.authme.TestHelper;
 import org.junit.BeforeClass;
 
 /**
@@ -10,7 +10,7 @@ public class CryptPBKDF2DjangoTest extends AbstractEncryptionMethodTest {
 
     @BeforeClass
     public static void setupLogger() {
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
     }
 
     public CryptPBKDF2DjangoTest() {

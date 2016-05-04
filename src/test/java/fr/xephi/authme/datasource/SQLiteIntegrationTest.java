@@ -1,6 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
@@ -52,8 +51,7 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
         });
         set(DatabaseSettings.MYSQL_DATABASE, "sqlite-test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
-        set(DatabaseSettings.MYSQL_COL_SALT, "salt");
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
 
         Path sqlInitFile = TestHelper.getJarPath("/datasource-integration/sql-initialize.sql");
         // Note ljacqu 20160221: It appears that we can only run one statement per Statement.execute() so we split
@@ -75,7 +73,8 @@ public class SQLiteIntegrationTest extends AbstractDataSourceIntegrationTest {
     }
 
     @Override
-    protected DataSource getDataSource() {
+    protected DataSource getDataSource(String saltColumn) {
+        when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);
         return new SQLite(settings, con);
     }
 

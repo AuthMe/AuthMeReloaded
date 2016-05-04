@@ -1,8 +1,8 @@
 package fr.xephi.authme.util;
 
 import com.maxmind.geoip.LookupService;
+import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.settings.Settings;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,7 +37,8 @@ public class GeoLiteAPI {
         if (lookupService != null) {
             return true;
         }
-        final File data = new File(Settings.PLUGIN_FOLDER, "GeoIP.dat");
+        final File pluginFolder = AuthMe.getInstance().getDataFolder();
+        final File data = new File(pluginFolder, "GeoIP.dat");
         boolean dataIsOld = (System.currentTimeMillis() - data.lastModified()) > TimeUnit.DAYS.toMillis(30);
         if (dataIsOld && !data.delete()) {
             ConsoleLogger.showError("Failed to delete GeoLiteAPI database");

@@ -2,7 +2,6 @@ package fr.xephi.authme.datasource;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
-import fr.xephi.authme.ConsoleLoggerTestInitializer;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
@@ -53,8 +52,7 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
         });
         set(DatabaseSettings.MYSQL_DATABASE, "h2_test");
         set(DatabaseSettings.MYSQL_TABLE, "authme");
-        set(DatabaseSettings.MYSQL_COL_SALT, "salt");
-        ConsoleLoggerTestInitializer.setupLogger();
+        TestHelper.setupLogger();
 
         Path sqlInitFile = TestHelper.getJarPath("/datasource-integration/sql-initialize.sql");
         sqlInitialize = new String(Files.readAllBytes(sqlInitFile));
@@ -80,7 +78,8 @@ public class MySqlIntegrationTest extends AbstractDataSourceIntegrationTest {
     }
 
     @Override
-    protected DataSource getDataSource() {
+    protected DataSource getDataSource(String saltColumn) {
+        when(settings.getProperty(DatabaseSettings.MYSQL_COL_SALT)).thenReturn(saltColumn);
         return new MySQL(settings, hikariSource);
     }
 

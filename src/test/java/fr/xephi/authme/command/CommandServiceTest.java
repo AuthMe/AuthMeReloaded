@@ -2,7 +2,6 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.AntiBot;
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.command.help.HelpProvider;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
@@ -15,6 +14,8 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
+import fr.xephi.authme.util.BukkitService;
+import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -27,8 +28,8 @@ import org.mockito.runners.MockitoJUnitRunner;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -56,18 +57,20 @@ public class CommandServiceTest {
     @Mock
     private NewSetting settings;
     @Mock
-    private IpAddressManager ipAddressManager;
-    @Mock
     private PluginHooks pluginHooks;
     @Mock
     private SpawnLoader spawnLoader;
     @Mock
     private AntiBot antiBot;
+    @Mock
+    private ValidationService validationService;
+    @Mock
+    private BukkitService bukkitService;
 
     @Before
     public void setUpService() {
         commandService = new CommandService(authMe, commandMapper, helpProvider, messages, passwordSecurity,
-            permissionsManager, settings, ipAddressManager, pluginHooks, spawnLoader, antiBot);
+            permissionsManager, settings, pluginHooks, spawnLoader, antiBot, validationService, bukkitService);
     }
 
     @Test
@@ -221,11 +224,63 @@ public class CommandServiceTest {
     }
 
     @Test
-    public void shouldReturnIpAddressManager() {
-        // given/when
-        IpAddressManager ipManager = commandService.getIpAddressManager();
+    public void shouldValidatePassword() {
+        // given
+        String user = "asdf";
+        String password = "mySecret55";
+        given(validationService.validatePassword(password, user)).willReturn(MessageKey.INVALID_PASSWORD_LENGTH);
+
+        // when
+        MessageKey result = commandService.validatePassword(password, user);
 
         // then
-        assertThat(ipManager, equalTo(ipAddressManager));
+        assertThat(result, equalTo(MessageKey.INVALID_PASSWORD_LENGTH));
+        verify(validationService).validatePassword(password, user);
     }
+
+    @Test
+    public void shouldValidateEmail() {
+        // given
+        String email = "test@example.tld";
+        given(validationService.validateEmail(email)).willReturn(true);
+
+        // when
+        boolean result = commandService.validateEmail(email);
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(validationService).validateEmail(email);
+    }
+
+    @Test
+    public void shouldCheckIfEmailCanBeUsed() {
+        // given
+        String email = "mail@example.com";
+        CommandSender sender = mock(CommandSender.class);
+        given(validationService.isEmailFreeForRegistration(email, sender))
+            .willReturn(true);
+
+        // when
+        boolean result = commandService.isEmailFreeForRegistration(email, sender);
+
+        // then
+        assertThat(result, equalTo(true));
+        verify(validationService).isEmailFreeForRegistration(email, sender);
+    }
+
+    @Test
+    public void shouldGetPlayer() {
+        // given
+        String playerName = "_tester";
+        Player player = mock(Player.class);
+        given(bukkitService.getPlayerExact(playerName)).willReturn(player);
+
+        // when
+        Player result = commandService.getPlayer(playerName);
+
+        // then
+        assertThat(result, equalTo(player));
+        verify(bukkitService).getPlayerExact(playerName);
+    }
+
 }

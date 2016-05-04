@@ -35,10 +35,6 @@ public class HooksSettings implements SettingsClass {
     public static final Property<Boolean> CACHE_CUSTOM_ATTRIBUTES =
         newProperty("Hooks.customAttributes", false);
 
-    @Comment("These features are only available on VeryGames Server Provider")
-    public static final Property<Boolean> ENABLE_VERYGAMES_IP_CHECK =
-        newProperty("VeryGames.enableIpCheck", false);
-
     @Comment({
         "-1 means disabled. If you want that only activated players",
         "can log into your server, you can set here the group number",

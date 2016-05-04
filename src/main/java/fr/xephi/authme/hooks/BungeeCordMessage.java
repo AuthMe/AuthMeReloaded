@@ -7,7 +7,6 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.cache.IpAddressManager;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
@@ -17,17 +16,14 @@ import org.bukkit.plugin.messaging.PluginMessageListener;
 public class BungeeCordMessage implements PluginMessageListener {
 
     private final AuthMe plugin;
-    private final IpAddressManager ipAddressManager;
 
     /**
      * Constructor for BungeeCordMessage.
      *
      * @param plugin The plugin instance
-     * @param ipAddressManager The IP address manager
      */
-    public BungeeCordMessage(AuthMe plugin, IpAddressManager ipAddressManager) {
+    public BungeeCordMessage(AuthMe plugin) {
         this.plugin = plugin;
-        this.ipAddressManager = ipAddressManager;
     }
 
     @Override
@@ -37,11 +33,6 @@ public class BungeeCordMessage implements PluginMessageListener {
         }
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
-        if ("IP".equals(subChannel)) { // We need only the IP channel
-            String ip = in.readUTF();
-            // Put the IP (only the ip not the port) in the hashMap
-            ipAddressManager.addCache(player.getName(), ip);
-        }
         if ("AuthMe".equalsIgnoreCase(subChannel)) {
             String str = in.readUTF();
             final String[] args = str.split(";");

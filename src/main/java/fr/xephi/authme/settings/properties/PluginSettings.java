@@ -53,6 +53,12 @@ public class PluginSettings implements SettingsClass {
     public static final Property<Boolean> ENABLE_PERMISSION_CHECK =
         newProperty("permission.EnablePermissionCheck", false);
 
+    @Comment({
+        "Keeps collisions disabled for logged players",
+        "Works only with MC 1.9"
+    })
+    public static final Property<Boolean> KEEP_COLLISIONS_DISABLED =
+        newProperty("settings.restrictions.keepCollisionsDisabled", false);
 
     private PluginSettings() {
     }

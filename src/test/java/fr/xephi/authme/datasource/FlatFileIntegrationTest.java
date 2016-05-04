@@ -16,8 +16,8 @@ import java.util.List;
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
-import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertThat;
 
