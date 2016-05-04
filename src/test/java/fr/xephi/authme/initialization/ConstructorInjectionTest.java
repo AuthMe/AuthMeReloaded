@@ -20,6 +20,7 @@ import static org.junit.Assert.assertThat;
  */
 public class ConstructorInjectionTest {
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldReturnDependencies() {
         // given
@@ -73,6 +74,7 @@ public class ConstructorInjectionTest {
     @Test
     public void shouldReturnNullForNoConstructorInjection() {
         // given / when
+        @SuppressWarnings("rawtypes")
         Injection<FieldInjection> injection = ConstructorInjection.provide(FieldInjection.class).get();
 
         // then

@@ -346,7 +346,6 @@ public class PermissionsManager implements PermissionsService {
 
             case Z_PERMISSIONS:
                 // zPermissions
-                @SuppressWarnings("deprecation")
                 Map<String, Boolean> perms = zPermissionsService.getPlayerPermissions(player.getWorld().getName(), null, player.getName());
                 if (perms.containsKey(permsNode))
                     return perms.get(permsNode);
@@ -448,7 +447,6 @@ public class PermissionsManager implements PermissionsService {
      *
      * @return The name of the primary permission group. Or null.
      */
-    @SuppressWarnings("deprecation")
     public String getPrimaryGroup(Player player) {
         // If no permissions system is used, return an empty list
         if (!isEnabled())

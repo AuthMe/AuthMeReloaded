@@ -137,6 +137,7 @@ public class EncryptionMethodInfoGatherer {
         return key.cast(map.get(key));
     }
 
+    @SuppressWarnings("unchecked")
     private static AuthMeServiceInitializer createInitializer() {
         NewSetting settings = mock(NewSetting.class);
         // Return the default value for any property

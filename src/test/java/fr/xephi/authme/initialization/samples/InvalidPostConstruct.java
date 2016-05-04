@@ -9,8 +9,10 @@ import javax.inject.Inject;
 public abstract class InvalidPostConstruct {
 
     public static final class WithParams {
+        @SuppressWarnings("unused")
         @Inject
         private AlphaService alphaService;
+        @SuppressWarnings("unused")
         @Inject
         private ProvidedClass providedClass;
 

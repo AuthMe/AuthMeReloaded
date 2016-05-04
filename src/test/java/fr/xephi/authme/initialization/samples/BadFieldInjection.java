@@ -7,6 +7,7 @@ import javax.inject.Inject;
  */
 public class BadFieldInjection {
 
+    @SuppressWarnings("unused")
     @Inject
     private AlphaService alphaService;
 

@@ -424,6 +424,7 @@ public class MySQL implements DataSource {
                 rs.close();
                 pst.close();
             } else if (hashAlgorithm == HashAlgorithm.WORDPRESS) {
+                // NOTE: Eclipse says pst should be closed HERE, but it's a bug, we already close it above. -sgdc3
                 pst = con.prepareStatement("SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();
@@ -500,6 +501,7 @@ public class MySQL implements DataSource {
                 rs.close();
                 pst.close();
             } else if (hashAlgorithm == HashAlgorithm.XFBCRYPT) {
+                // NOTE: Eclipse says pst should be closed HERE, but it's a bug, we already close it above. -sgdc3
                 pst = con.prepareStatement("SELECT " + col.ID + " FROM " + tableName + " WHERE " + col.NAME + "=?;");
                 pst.setString(1, auth.getNickname());
                 rs = pst.executeQuery();

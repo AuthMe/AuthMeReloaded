@@ -407,12 +407,6 @@ public class AuthMePlayerListener implements Listener {
         plugin.getManagement().performQuit(player, true);
     }
 
-    /*
-     * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-     * Note #360: npc status can be used to bypass security!!!
-     * <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-     */
-
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
     public void onPlayerPickupItem(PlayerPickupItemEvent event) {
         if (shouldCancelEvent(event)) {

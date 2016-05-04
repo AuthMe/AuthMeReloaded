@@ -34,6 +34,7 @@ public class CommandService {
     private HelpProvider helpProvider;
     @Inject
     private CommandMapper commandMapper;
+    @SuppressWarnings("unused")
     @Inject
     private PasswordSecurity passwordSecurity;
     @Inject

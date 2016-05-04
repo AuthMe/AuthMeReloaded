@@ -24,6 +24,7 @@ import static org.junit.Assert.assertThat;
  */
 public class FieldInjectionTest {
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldReturnDependencies() {
         // given
@@ -105,9 +106,11 @@ public class FieldInjectionTest {
     }
 
     private static class ThrowingConstructor {
+        @SuppressWarnings("unused")
         @Inject
         private ProvidedClass providedClass;
 
+        @SuppressWarnings("unused")
         public ThrowingConstructor() {
             throw new UnsupportedOperationException("Exception in constructor");
         }

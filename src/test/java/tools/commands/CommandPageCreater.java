@@ -88,6 +88,7 @@ public class CommandPageCreater implements ToolTask {
      *
      * @return the initializer mock
      */
+    @SuppressWarnings("unchecked")
     private static AuthMeServiceInitializer getMockInitializer() {
         AuthMeServiceInitializer initializer = mock(AuthMeServiceInitializer.class);
         when(initializer.newInstance(isA(Class.class))).thenAnswer(new Answer<Object>() {

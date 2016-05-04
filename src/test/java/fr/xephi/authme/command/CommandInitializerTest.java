@@ -41,6 +41,7 @@ public class CommandInitializerTest {
 
     private static Set<CommandDescription> commands;
 
+    @SuppressWarnings("unchecked")
     @BeforeClass
     public static void initializeCommandManager() {
         AuthMeServiceInitializer initializer = mock(AuthMeServiceInitializer.class);

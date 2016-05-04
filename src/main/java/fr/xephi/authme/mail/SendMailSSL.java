@@ -152,7 +152,6 @@ public class SendMailSSL {
                 } else {
                     email.setStartTLSEnabled(true);
                     email.setStartTLSRequired(true);
-                    email.setTLS(true);
                 }
                 break;
             case 25:
@@ -161,7 +160,7 @@ public class SendMailSSL {
                 break;
             case 465:
                 email.setSslSmtpPort(Integer.toString(port));
-                email.setSSL(true);
+                email.setSSLOnConnect(true);
                 break;
             default:
                 email.setStartTLSEnabled(true);
