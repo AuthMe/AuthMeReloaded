@@ -204,7 +204,7 @@ public class RegisterCommandTest {
 
         // then
         verify(commandService).validateEmail(playerMail);
-        verify(management).performRegister(eq(sender), argThat(stringWithLength(passLength)), eq(playerMail), true);
+        verify(management).performRegister(eq(sender), argThat(stringWithLength(passLength)), eq(playerMail), eq(true));
     }
 
     @Test
