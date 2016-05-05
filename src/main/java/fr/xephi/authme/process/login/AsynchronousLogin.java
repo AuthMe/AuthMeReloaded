@@ -234,11 +234,9 @@ public class AsynchronousLogin implements Process {
             if ((player.getName().equalsIgnoreCase(this.player.getName()) && plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
                 player.sendMessage("You own " + auths.size() + " accounts:");
                 player.sendMessage(message);
-                return;
             } else if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)) {
                 player.sendMessage("The user " + player.getName() + " has " + auths.size() + " accounts:");
                 player.sendMessage(message);
-                return;
             }
         }
     }
