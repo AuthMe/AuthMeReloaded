@@ -22,6 +22,7 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
+import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
@@ -213,6 +214,7 @@ public class AsynchronousLogin implements Process {
         }
     }
 
+    // TODO: allow translation!
     private void displayOtherAccounts(PlayerAuth auth) {
         if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS) || auth == null) {
             return;
@@ -222,13 +224,21 @@ public class AsynchronousLogin implements Process {
         if (auths.size() < 2) {
             return;
         }
-        String message = "[AuthMe] " + StringUtils.join(", ", auths) + ".";
+        // TODO: color player names with green if the account is online
+        String message = StringUtils.join(", ", auths) + ".";
+
+        ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
+        ConsoleLogger.info(message);
+
         for (Player player : service.getOnlinePlayers()) {
-            if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)
-                    || (player.getName().equals(this.player.getName())
-                            && plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
-                player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has " + auths.size() + " accounts");
+            if ((player.getName().equalsIgnoreCase(this.player.getName()) && plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
+                player.sendMessage("You own " + auths.size() + " accounts:");
                 player.sendMessage(message);
+                return;
+            } else if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)) {
+                player.sendMessage("The user " + player.getName() + " has " + auths.size() + " accounts:");
+                player.sendMessage(message);
+                return;
             }
         }
     }
