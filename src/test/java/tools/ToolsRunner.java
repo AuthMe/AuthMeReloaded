@@ -29,16 +29,28 @@ public final class ToolsRunner {
         File toolsFolder = new File(ToolsConstants.TOOLS_SOURCE_ROOT);
         Map<String, ToolTask> tasks = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         collectTasksInDirectory(toolsFolder, tasks);
-        listAllTasks(tasks);
 
-        // Prompt user for task and handle input
-        System.out.println("Please enter the task to run:");
+        String inputTask;
         Scanner scanner = new Scanner(System.in);
-        String inputTask = scanner.nextLine();
-        ToolTask task = tasks.get(inputTask);
+        boolean interactive = true;
+        
+        if(args == null || args.length == 0) {
+            listAllTasks(tasks);
+            // Prompt user for task and handle input
+            System.out.println("Please enter the task to run:");
+            inputTask = scanner.nextLine();
+        } else {
+            interactive = false;
+            inputTask = args[0];
+        }
 
+        ToolTask task = tasks.get(inputTask);
         if (task != null) {
-            task.execute(scanner);
+            if(interactive) {
+                task.execute(scanner);
+            } else {
+                task.execute(null);
+            }
         } else {
             System.out.println("Unknown task");
         }

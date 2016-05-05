@@ -25,6 +25,11 @@ public class PermissionsListWriter implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
+        if(scanner == null) {
+            generateAndWriteFile();
+            return;
+        }
+        
         // Ask if result should be written to file
         System.out.println("Include description? [Enter 'n' for no]");
         boolean includeDescription = !matches("n", scanner);
