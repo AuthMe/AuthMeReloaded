@@ -179,6 +179,10 @@
                                     <pattern>net.ricecode.similarity</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
                                 </relocation>
+                                <relocation>
+                                    <pattern>javax.inject</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.inject</shadedPattern>
+                                </relocation>
                                 <!-- MCStats.org metrics -->
                                 <relocation>
                                     <pattern>org.mcstats</pattern>
@@ -217,6 +221,10 @@
                                 <relocation>
                                     <pattern>net.ricecode.similarity</pattern>
                                     <shadedPattern>fr.xephi.authme.libs.similarity</shadedPattern>
+                                </relocation>
+                                <relocation>
+                                    <pattern>javax.inject</pattern>
+                                    <shadedPattern>fr.xephi.authme.libs.inject</shadedPattern>
                                 </relocation>
                                 <!-- MCStats.org metrics -->
                                 <relocation>
@@ -384,8 +392,7 @@
             <optional>true</optional>
         </dependency>
 
-        <!-- javax.inject API -->
-        <!-- TODO: relocate!!!!!!!!!!!!!!!!!!!! -->
+        <!-- Inject API -->
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
