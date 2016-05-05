@@ -237,6 +237,28 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Exec Tools -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <classpathScope>test</classpathScope>
+                    <workingDirectory>${project.basedir}/target/test-classes</workingDirectory>
+                    <mainClass>tools.ToolsRunner</mainClass>
+                    <includeProjectDependencies>true</includeProjectDependencies>
+                </configuration>
+                <!-- Excluded from the lifecycle, it doesn't work!
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                -->
+            </plugin>
             <!-- Test coverage -->
             <plugin>
                 <groupId>org.jacoco</groupId>
