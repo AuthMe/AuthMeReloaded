@@ -54,15 +54,15 @@
         <project.jdkVersion>1.7</project.jdkVersion>
 
         <!-- Output properties -->
+        <project.outputName>AuthMe</project.outputName>
         <project.buildNumber>CUSTOM</project.buildNumber>
-        <project.outputFile>${bukkitplugin.name}-${project.version}</project.outputFile>
+        <project.versionCode>${project.version}-b${project.buildNumber}</project.versionCode>
+        <project.finalName>${project.outputName}-${project.version}</project.finalName>
 
         <!-- BukkitPlugin properties -->
-        <bukkitplugin.name>AuthMe</bukkitplugin.name>
+        <bukkitplugin.name>${project.outputName}</bukkitplugin.name>
         <bukkitplugin.main>${project.groupId}.${project.artifactId}.${bukkitplugin.name}</bukkitplugin.main>
         <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</bukkitplugin.authors>
-
-        <jarName>${bukkitplugin.name}-${project.version}-${project.buildNumber}</jarName>
 
         <!-- Change Bukkit Version HERE! -->
         <bukkit.version>1.9.2-R0.1-SNAPSHOT</bukkit.version>
@@ -84,7 +84,8 @@
     </profiles>
 
     <build>
-        <finalName>${jarName}-noshade</finalName>
+        <!-- Name of the NOSHADE jar (no shaded/relocated libraries) -->
+        <finalName>${project.finalName}-noshade</finalName>
 
         <resources>
             <resource>
@@ -184,7 +185,7 @@
                                     <shadedPattern>fr.xephi.authme</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <outputFile>target/${jarName}-spigot.jar</outputFile>
+                            <outputFile>target/${project.finalName}-spigot.jar</outputFile>
                         </configuration>
                     </execution>
                     <!-- 1.7.10 and lower -->
@@ -223,7 +224,7 @@
                                     <shadedPattern>fr.xephi.authme</shadedPattern>
                                 </relocation>
                             </relocations>
-                            <outputFile>target/${jarName}-legacy.jar</outputFile>
+                            <outputFile>target/${project.finalName}-legacy.jar</outputFile>
                         </configuration>
                     </execution>
                 </executions>
