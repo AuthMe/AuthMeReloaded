@@ -555,6 +555,10 @@ public class PermissionsManager implements PermissionsService {
         switch (this.permsType) {
             case PERMISSIONS_EX:
                 // Permissions Ex
+                if(!PermissionsEx.getPermissionManager().getGroupNames().contains(groupName)) {
+                    ConsoleLogger.showError("The plugin tried to set " + player + "'s group to " + groupName + ", but it doesn't exist!");
+                    return false;
+                }
                 PermissionUser user = PermissionsEx.getUser(player);
                 user.addGroup(groupName);
                 return true;
