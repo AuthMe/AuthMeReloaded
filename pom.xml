@@ -52,15 +52,17 @@
         <!-- Project properties -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.jdkVersion>1.7</project.jdkVersion>
-        
+
         <!-- Output properties -->
         <project.buildNumber>CUSTOM</project.buildNumber>
-        <project.outputFile>${pluginName}-${project.version}</project.outputFile>
+        <project.outputFile>${bukkitplugin.name}-${project.version}</project.outputFile>
 
         <!-- BukkitPlugin properties -->
         <bukkitplugin.name>AuthMe</bukkitplugin.name>
-        <bukkitplugin.main>${project.groupId}.${project.artifactId}.${pluginName}</bukkitplugin.main>
+        <bukkitplugin.main>${project.groupId}.${project.artifactId}.${bukkitplugin.name}</bukkitplugin.main>
         <bukkitplugin.authors>Xephi, sgdc3, DNx5, timvisee, games647, ljacqu</bukkitplugin.authors>
+
+        <jarName>${bukkitplugin.name}-${project.version}-${project.buildNumber}</jarName>
 
         <!-- Change Bukkit Version HERE! -->
         <bukkit.version>1.9.2-R0.1-SNAPSHOT</bukkit.version>
@@ -82,7 +84,7 @@
     </profiles>
 
     <build>
-        <finalName>${project.buildNumber}-noshade</finalName>
+        <finalName>${jarName}-noshade</finalName>
 
         <resources>
             <resource>
@@ -381,7 +383,6 @@
             <optional>true</optional>
         </dependency>
 
-        
         <!-- javax.inject API -->
         <!-- TODO: relocate!!!!!!!!!!!!!!!!!!!! -->
         <dependency>
