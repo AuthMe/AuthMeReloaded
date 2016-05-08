@@ -63,6 +63,13 @@ public class RestrictionSettings implements SettingsClass {
     public static final Property<Boolean> FORCE_SPAWN_LOCATION_AFTER_LOGIN =
         newProperty("settings.restrictions.ForceSpawnLocOnJoin.enabled", false);
 
+    @Comment({
+        "WorldNames where we need to force the spawn location",
+        "Case-sensitive!"})
+    public static final Property<List<String>> FORCE_SPAWN_ON_WORLDS =
+        newListProperty("settings.restrictions.ForceSpawnLocOnJoin.worlds",
+            "world", "world_nether", "world_the_end");
+
     @Comment("This option will save the quit location of the players.")
     public static final Property<Boolean> SAVE_QUIT_LOCATION =
         newProperty("settings.restrictions.SaveQuitLocation", false);
@@ -148,13 +155,6 @@ public class RestrictionSettings implements SettingsClass {
         "permission: /authme.admin.accounts"})
     public static final Property<Boolean> DISPLAY_OTHER_ACCOUNTS =
         newProperty("settings.restrictions.displayOtherAccounts", true);
-
-    @Comment({
-        "WorldNames where we need to force the spawn location",
-        "Case-sensitive!"})
-    public static final Property<List<String>> FORCE_SPAWN_ON_WORLDS =
-        newListProperty("settings.restrictions.ForceSpawnLocOnJoin.worlds",
-            "world", "world_nether", "world_the_end");
 
     @Comment("Ban ip when the ip is not the ip registered in database")
     public static final Property<Boolean> BAN_UNKNOWN_IP =
