@@ -7,22 +7,33 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link LogoutCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class LogoutCommandTest {
 
+    @InjectMocks
+    private LogoutCommand command;
+
+    @Mock
+    private Management management;
+
+    @Mock
     private CommandService commandService;
 
     @Before
@@ -34,13 +45,12 @@ public class LogoutCommandTest {
     public void shouldStopIfSenderIsNotAPlayer() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
-        LogoutCommand command = new LogoutCommand();
 
         // when
         command.executeCommand(sender, new ArrayList<String>(), commandService);
 
         // then
-        verify(commandService, never()).getManagement();
+        verifyZeroInteractions(management);
         verify(sender).sendMessage(argThat(containsString("only for players")));
     }
 
@@ -48,9 +58,6 @@ public class LogoutCommandTest {
     public void shouldCallManagementForPlayerCaller() {
         // given
         Player sender = mock(Player.class);
-        LogoutCommand command = new LogoutCommand();
-        Management management = mock(Management.class);
-        given(commandService.getManagement()).willReturn(management);
 
         // when
         command.executeCommand(sender, Collections.singletonList("password"), commandService);

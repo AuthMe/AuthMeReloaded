@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -22,6 +23,12 @@ public class PurgeCommand implements ExecutableCommand {
 
     @Inject
     private DataSource dataSource;
+
+    @Inject
+    private PluginHooks pluginHooks;
+
+    @Inject
+    private AuthMe plugin;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
@@ -56,9 +63,8 @@ public class PurgeCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");
 
         // Purge other data
-        AuthMe plugin = commandService.getAuthMe();
-        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES) &&
-            commandService.getPluginHooks().isEssentialsAvailable())
+        if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES)
+            && pluginHooks.isEssentialsAvailable())
             plugin.dataManager.purgeEssentials(purged);
         if (commandService.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             plugin.dataManager.purgeDat(purged);

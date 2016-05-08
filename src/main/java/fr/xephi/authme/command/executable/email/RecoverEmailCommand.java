@@ -29,11 +29,13 @@ public class RecoverEmailCommand extends PlayerCommand {
     @Inject
     private PlayerCache playerCache;
 
+    @Inject
+    private AuthMe plugin;
+
     @Override
     public void runCommand(Player player, List<String> arguments, CommandService commandService) {
         final String playerMail = arguments.get(0);
         final String playerName = player.getName();
-        final AuthMe plugin = commandService.getAuthMe();
 
         if (plugin.mail == null) {
             ConsoleLogger.showError("Mail API is not set");

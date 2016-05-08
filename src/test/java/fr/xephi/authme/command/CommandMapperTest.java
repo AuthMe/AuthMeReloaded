@@ -41,7 +41,9 @@ public class CommandMapperTest {
     @Before
     public void setUpMocks() {
         permissionsManager = mock(PermissionsManager.class);
-        mapper = new CommandMapper(commands, permissionsManager);
+        CommandInitializer initializer = mock(CommandInitializer.class);
+        given(initializer.getCommands()).willReturn(commands);
+        mapper = new CommandMapper(initializer, permissionsManager);
     }
 
     // -----------

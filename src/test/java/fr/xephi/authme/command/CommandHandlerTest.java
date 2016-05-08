@@ -2,11 +2,13 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.permission.PermissionsManager;
 import org.bukkit.command.CommandSender;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.MockitoAnnotations;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.List;
@@ -35,23 +37,24 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link CommandHandler}.
  */
-@SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
 // Justification: It's more readable to use asList() everywhere in the test when we often generated two lists where one
 // often consists of only one element, e.g. myMethod(asList("authme"), asList("my", "args"), ...)
+@SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
+@RunWith(MockitoJUnitRunner.class)
 public class CommandHandlerTest {
 
+    @InjectMocks
     private CommandHandler handler;
+
+    @Mock
     private CommandService serviceMock;
+
+    @Mock
+    private PermissionsManager permissionsManager;
 
     @Captor
     private ArgumentCaptor<List<String>> captor;
 
-    @Before
-    public void setUpCommandHandler() {
-        MockitoAnnotations.initMocks(this);
-        serviceMock = mock(CommandService.class);
-        handler = new CommandHandler(serviceMock);
-    }
 
     @Test
     public void shouldCallMappedCommandWithArgs() {
@@ -109,9 +112,7 @@ public class CommandHandlerTest {
         CommandDescription command = mock(CommandDescription.class);
         given(serviceMock.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
-        PermissionsManager permissionsManager = mock(PermissionsManager.class);
         given(permissionsManager.hasPermission(sender, command)).willReturn(true);
-        given(serviceMock.getPermissionsManager()).willReturn(permissionsManager);
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);
@@ -135,9 +136,7 @@ public class CommandHandlerTest {
         CommandDescription command = mock(CommandDescription.class);
         given(serviceMock.mapPartsToCommand(any(CommandSender.class), anyListOf(String.class))).willReturn(
             new FoundCommandResult(command, asList("unreg"), asList("testPlayer"), 0.0, INCORRECT_ARGUMENTS));
-        PermissionsManager permissionsManager = mock(PermissionsManager.class);
         given(permissionsManager.hasPermission(sender, command)).willReturn(false);
-        given(serviceMock.getPermissionsManager()).willReturn(permissionsManager);
 
         // when
         handler.processCommand(sender, bukkitLabel, bukkitArgs);

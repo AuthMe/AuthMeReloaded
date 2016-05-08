@@ -1,11 +1,10 @@
 package fr.xephi.authme.listener;
 
+import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.spigotmc.event.player.PlayerSpawnLocationEvent;
-
-import fr.xephi.authme.AuthMe;
 
 import javax.inject.Inject;
 
@@ -15,13 +14,13 @@ import javax.inject.Inject;
 public class AuthMePlayerListener19 implements Listener {
 
     @Inject
-    private AuthMe plugin;
-    
-    public AuthMePlayerListener19() { }
+    private SpawnLoader spawnLoader;
+
+    AuthMePlayerListener19() { }
     
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerSpawn(PlayerSpawnLocationEvent event) {
-        event.setSpawnLocation(plugin.getSpawnLocation(event.getPlayer()));
+        event.setSpawnLocation(spawnLoader.getSpawnLocation(event.getPlayer()));
     }
 
 }

@@ -4,12 +4,14 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.properties.EmailSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
 import static fr.xephi.authme.settings.properties.EmailSettings.RECOVERY_PASSWORD_LENGTH;
@@ -19,11 +21,14 @@ import static fr.xephi.authme.settings.properties.RestrictionSettings.ENABLE_PAS
 
 public class RegisterCommand extends PlayerCommand {
 
+    @Inject
+    private Management management;
+
     @Override
     public void runCommand(Player player, List<String> arguments, CommandService commandService) {
         if (commandService.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
             //for two factor auth we don't need to check the usage
-            commandService.getManagement().performRegister(player, "", "", true);
+            management.performRegister(player, "", "", true);
             return;
         }
 
@@ -50,7 +55,7 @@ public class RegisterCommand extends PlayerCommand {
         if (commandService.getProperty(ENABLE_PASSWORD_CONFIRMATION) && !arguments.get(0).equals(arguments.get(1))) {
             commandService.send(player, MessageKey.PASSWORD_MATCH_ERROR);
         } else {
-            commandService.getManagement().performRegister(player, arguments.get(0), "", true);
+            management.performRegister(player, arguments.get(0), "", true);
         }
     }
 
@@ -70,7 +75,7 @@ public class RegisterCommand extends PlayerCommand {
             commandService.send(player, MessageKey.USAGE_REGISTER);
         } else {
             String thePass = RandomString.generate(commandService.getProperty(RECOVERY_PASSWORD_LENGTH));
-            commandService.getManagement().performRegister(player, thePass, email, true);
+            management.performRegister(player, thePass, email, true);
         }
     }
 

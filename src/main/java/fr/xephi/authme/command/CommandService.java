@@ -1,20 +1,16 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.process.Management;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 import java.util.Collection;
@@ -27,7 +23,7 @@ import java.util.List;
 public class CommandService {
 
     @Inject
-    private AuthMe authMe;
+    private BukkitScheduler scheduler;
     @Inject
     private Messages messages;
     @Inject
@@ -36,15 +32,7 @@ public class CommandService {
     private CommandMapper commandMapper;
     @SuppressWarnings("unused")
     @Inject
-    private PasswordSecurity passwordSecurity;
-    @Inject
-    private PermissionsManager permissionsManager;
-    @Inject
     private NewSetting settings;
-    @Inject
-    private PluginHooks pluginHooks;
-    @Inject
-    private SpawnLoader spawnLoader;
     @Inject
     private ValidationService validationService;
     @Inject
@@ -86,19 +74,12 @@ public class CommandService {
      * Run the given task asynchronously with the Bukkit scheduler.
      *
      * @param task The task to run
+     * @return a BukkitTask that contains the id number
+     * @throws IllegalArgumentException if plugin is null
+     * @throws IllegalArgumentException if task is null
      */
-    public void runTaskAsynchronously(Runnable task) {
-        authMe.getServer().getScheduler().runTaskAsynchronously(authMe, task);
-    }
-
-    /**
-     * Return the AuthMe instance for further manipulation. Use only if other methods from
-     * the command service cannot be used.
-     *
-     * @return The AuthMe instance
-     */
-    public AuthMe getAuthMe() {
-        return authMe;
+    public BukkitTask runTaskAsynchronously(Runnable task) {
+        return bukkitService.runTaskAsynchronously(task);
     }
 
     /**
@@ -113,24 +94,6 @@ public class CommandService {
         for (String line : lines) {
             sender.sendMessage(line);
         }
-    }
-
-    /**
-     * Return the management instance of the plugin.
-     *
-     * @return The Management instance linked to the AuthMe instance
-     */
-    public Management getManagement() {
-        return authMe.getManagement();
-    }
-
-    /**
-     * Return the permissions manager.
-     *
-     * @return the permissions manager
-     */
-    public PermissionsManager getPermissionsManager() {
-        return permissionsManager;
     }
 
     /**
@@ -163,13 +126,6 @@ public class CommandService {
         return settings;
     }
 
-    public PluginHooks getPluginHooks() {
-        return pluginHooks;
-    }
-
-    public SpawnLoader getSpawnLoader() {
-        return spawnLoader;
-    }
 
     /**
      * Verifies whether a password is valid according to the plugin settings.

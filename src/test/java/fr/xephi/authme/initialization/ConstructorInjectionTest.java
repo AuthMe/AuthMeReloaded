@@ -1,6 +1,7 @@
 package fr.xephi.authme.initialization;
 
 import fr.xephi.authme.initialization.samples.AlphaService;
+import fr.xephi.authme.initialization.samples.BetaManager;
 import fr.xephi.authme.initialization.samples.ClassWithAnnotations;
 import fr.xephi.authme.initialization.samples.Duration;
 import fr.xephi.authme.initialization.samples.GammaService;
@@ -20,7 +21,6 @@ import static org.junit.Assert.assertThat;
  */
 public class ConstructorInjectionTest {
 
-    @SuppressWarnings("unchecked")
     @Test
     public void shouldReturnDependencies() {
         // given
@@ -74,8 +74,7 @@ public class ConstructorInjectionTest {
     @Test
     public void shouldReturnNullForNoConstructorInjection() {
         // given / when
-        @SuppressWarnings("rawtypes")
-        Injection<FieldInjection> injection = ConstructorInjection.provide(FieldInjection.class).get();
+        Injection<BetaManager> injection = ConstructorInjection.provide(BetaManager.class).get();
 
         // then
         assertThat(injection, nullValue());

@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -34,6 +35,8 @@ public class AuthMeServerListener implements Listener {
     private SpawnLoader spawnLoader;
     @Inject
     private ValidationService validationService;
+    @Inject
+    private PermissionsManager permissionsManager;
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onServerPing(ServerListPingEvent event) {
@@ -53,7 +56,7 @@ public class AuthMeServerListener implements Listener {
         }
 
         // Call the onPluginDisable method in the permissions manager
-        plugin.getPermissionsManager().onPluginDisable(event);
+        permissionsManager.onPluginDisable(event);
 
         final String pluginName = event.getPlugin().getName();
         if ("Essentials".equalsIgnoreCase(pluginName)) {
@@ -86,7 +89,7 @@ public class AuthMeServerListener implements Listener {
         }
 
         // Call the onPluginEnable method in the permissions manager
-        plugin.getPermissionsManager().onPluginEnable(event);
+        permissionsManager.onPluginEnable(event);
 
         final String pluginName = event.getPlugin().getName();
         if ("Essentials".equalsIgnoreCase(pluginName)) {

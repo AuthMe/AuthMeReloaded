@@ -1,15 +1,9 @@
 package fr.xephi.authme.command;
 
-import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
-import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.permission.PermissionsManager;
-import fr.xephi.authme.process.Management;
-import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.BukkitService;
@@ -42,23 +36,13 @@ public class CommandServiceTest {
     @InjectMocks
     private CommandService commandService;
     @Mock
-    private AuthMe authMe;
-    @Mock
     private CommandMapper commandMapper;
     @Mock
     private HelpProvider helpProvider;
     @Mock
     private Messages messages;
     @Mock
-    private PasswordSecurity passwordSecurity;
-    @Mock
-    private PermissionsManager permissionsManager;
-    @Mock
     private NewSetting settings;
-    @Mock
-    private PluginHooks pluginHooks;
-    @Mock
-    private SpawnLoader spawnLoader;
     @Mock
     private ValidationService validationService;
     @Mock
@@ -123,29 +107,6 @@ public class CommandServiceTest {
     }
 
     @Test
-    public void shouldReturnManagementObject() {
-        // given
-        Management management = mock(Management.class);
-        given(authMe.getManagement()).willReturn(management);
-
-        // when
-        Management result = commandService.getManagement();
-
-        // then
-        assertThat(result, equalTo(management));
-        verify(authMe).getManagement();
-    }
-
-    @Test
-    public void shouldReturnPermissionsManager() {
-        // given / when
-        PermissionsManager result = commandService.getPermissionsManager();
-
-        // then
-        assertThat(result, equalTo(permissionsManager));
-    }
-
-    @Test
     public void shouldRetrieveMessage() {
         // given
         MessageKey key = MessageKey.USAGE_CAPTCHA;
@@ -181,15 +142,6 @@ public class CommandServiceTest {
 
         // then
         assertThat(result, equalTo(settings));
-    }
-
-    @Test
-    public void shouldReturnAuthMe() {
-        // given/when
-        AuthMe result = commandService.getAuthMe();
-
-        // then
-        assertThat(result, equalTo(authMe));
     }
 
     @Test

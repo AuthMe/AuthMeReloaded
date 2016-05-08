@@ -9,16 +9,21 @@ import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class CaptchaCommand extends PlayerCommand {
+
+    @Inject
+    private AuthMe plugin;
+
+    @Inject
+    private PlayerCache playerCache;
 
     @Override
     public void runCommand(Player player, List<String> arguments, CommandService commandService) {
         final String playerNameLowerCase = player.getName().toLowerCase();
         final String captcha = arguments.get(0);
-        final AuthMe plugin = commandService.getAuthMe();
-        PlayerCache playerCache = PlayerCache.getInstance();
 
         // Command logic
         if (playerCache.isAuthenticated(playerNameLowerCase)) {

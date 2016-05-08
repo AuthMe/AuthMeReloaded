@@ -1,7 +1,6 @@
 package fr.xephi.authme.command;
 
 import fr.xephi.authme.command.executable.HelpCommand;
-import fr.xephi.authme.initialization.BaseCommands;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.CollectionUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -31,8 +30,8 @@ public class CommandMapper {
     private final PermissionsManager permissionsManager;
 
     @Inject
-    public CommandMapper(@BaseCommands Set<CommandDescription> baseCommands, PermissionsManager permissionsManager) {
-        this.baseCommands = baseCommands;
+    public CommandMapper(CommandInitializer commandInitializer, PermissionsManager permissionsManager) {
+        this.baseCommands = commandInitializer.getCommands();
         this.permissionsManager = permissionsManager;
     }
 

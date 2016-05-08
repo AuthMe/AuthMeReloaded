@@ -1,11 +1,14 @@
 package fr.xephi.authme.command.executable.authme;
 
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.settings.SpawnLoader;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 
@@ -18,7 +21,17 @@ import static org.mockito.Mockito.verify;
 /**
  * Test for {@link SetFirstSpawnCommand}.
  */
+@RunWith(MockitoJUnitRunner.class)
 public class SetFirstSpawnCommandTest {
+
+    @InjectMocks
+    private SetFirstSpawnCommand command;
+
+    @Mock
+    private SpawnLoader spawnLoader;
+
+    @Mock
+    private CommandService service;
 
     @Test
     public void shouldSetFirstSpawn() {
@@ -26,13 +39,7 @@ public class SetFirstSpawnCommandTest {
         Player player = mock(Player.class);
         Location location = mock(Location.class);
         given(player.getLocation()).willReturn(location);
-
-        SpawnLoader spawnLoader = mock(SpawnLoader.class);
         given(spawnLoader.setFirstSpawn(location)).willReturn(true);
-        CommandService service = mock(CommandService.class);
-        given(service.getSpawnLoader()).willReturn(spawnLoader);
-
-        ExecutableCommand command = new SetFirstSpawnCommand();
 
         // when
         command.executeCommand(player, Collections.<String>emptyList(), service);
@@ -48,13 +55,7 @@ public class SetFirstSpawnCommandTest {
         Player player = mock(Player.class);
         Location location = mock(Location.class);
         given(player.getLocation()).willReturn(location);
-
-        SpawnLoader spawnLoader = mock(SpawnLoader.class);
         given(spawnLoader.setFirstSpawn(location)).willReturn(false);
-        CommandService service = mock(CommandService.class);
-        given(service.getSpawnLoader()).willReturn(spawnLoader);
-
-        ExecutableCommand command = new SetFirstSpawnCommand();
 
         // when
         command.executeCommand(player, Collections.<String>emptyList(), service);

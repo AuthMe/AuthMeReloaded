@@ -74,7 +74,7 @@ class FieldInjection<T> implements Injection<T> {
      *
      * @param clazz the class to provide field injection for
      * @param <T> the class' type
-     * @return field injection provider for the given class
+     * @return field injection provider for the given class, or null if not applicable
      */
     public static <T> Provider<FieldInjection<T>> provide(final Class<T> clazz) {
         return new Provider<FieldInjection<T>>() {
@@ -85,7 +85,7 @@ class FieldInjection<T> implements Injection<T> {
                     return null;
                 }
                 List<Field> fields = getInjectionFields(clazz);
-                return fields == null ? null : new FieldInjection<>(constructor, fields);
+                return fields.isEmpty() ? null : new FieldInjection<>(constructor, fields);
             }
         };
     }

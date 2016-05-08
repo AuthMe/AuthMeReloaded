@@ -36,6 +36,9 @@ public class UnregisterAdminCommand implements ExecutableCommand {
     @Inject
     private PlayerCache playerCache;
 
+    @Inject
+    private AuthMe authMe;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
         // Get the player name
@@ -79,7 +82,6 @@ public class UnregisterAdminCommand implements ExecutableCommand {
      * @param service the command service
      */
     private void applyUnregisteredEffectsAndTasks(Player target, CommandService service) {
-        final AuthMe plugin = service.getAuthMe();
         final BukkitService bukkitService = service.getBukkitService();
         final String playerNameLowerCase = target.getName().toLowerCase();
 
@@ -88,11 +90,11 @@ public class UnregisterAdminCommand implements ExecutableCommand {
         int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         if (timeOut != 0) {
-            BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(plugin, playerNameLowerCase, target), timeOut);
+            BukkitTask id = bukkitService.runTaskLater(new TimeoutTask(authMe, playerNameLowerCase, target), timeOut);
             LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTask(id);
         }
         LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTask(
-            bukkitService.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
+            bukkitService.runTask(new MessageTask(service.getBukkitService(), authMe.getMessages(),
                 playerNameLowerCase, MessageKey.REGISTER_MESSAGE, interval)));
 
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {

@@ -8,6 +8,7 @@ import fr.xephi.authme.initialization.samples.ClassWithAbstractDependency;
 import fr.xephi.authme.initialization.samples.ClassWithAnnotations;
 import fr.xephi.authme.initialization.samples.Duration;
 import fr.xephi.authme.initialization.samples.FieldInjectionWithAnnotations;
+import fr.xephi.authme.initialization.samples.InstantiationFallbackClasses;
 import fr.xephi.authme.initialization.samples.InvalidClass;
 import fr.xephi.authme.initialization.samples.InvalidPostConstruct;
 import fr.xephi.authme.initialization.samples.InvalidStaticFieldInjection;
@@ -229,6 +230,18 @@ public class AuthMeServiceInitializerTest {
     public void shouldThrowForStaticFieldInjection() {
         // given / when / then
         initializer.newInstance(InvalidStaticFieldInjection.class);
+    }
+
+    @Test
+    public void shouldFallbackToSimpleInstantiationForPlainClass() {
+        // given / when
+        InstantiationFallbackClasses.HasFallbackDependency result =
+            initializer.get(InstantiationFallbackClasses.HasFallbackDependency.class);
+
+        // then
+        assertThat(result, not(nullValue()));
+        assertThat(result.getGammaService(), not(nullValue()));
+        assertThat(result.getFallbackDependency(), not(nullValue()));
     }
 
 }

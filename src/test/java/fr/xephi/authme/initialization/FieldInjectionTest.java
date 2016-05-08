@@ -105,6 +105,15 @@ public class FieldInjectionTest {
         FieldInjection.provide(InvalidStaticFieldInjection.class).get();
     }
 
+    @Test
+    public void shouldNotReturnFieldInjectionForZeroInjectFields() {
+        // given / when
+        Injection<NoInjectionClass> injection = FieldInjection.provide(NoInjectionClass.class).get();
+
+        // then
+        assertThat(injection, nullValue());
+    }
+
     private static class ThrowingConstructor {
         @SuppressWarnings("unused")
         @Inject
@@ -114,5 +123,11 @@ public class FieldInjectionTest {
         public ThrowingConstructor() {
             throw new UnsupportedOperationException("Exception in constructor");
         }
+    }
+
+    private static class NoInjectionClass {
+
+        private BetaManager betaManager;
+
     }
 }

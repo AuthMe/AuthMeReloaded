@@ -43,7 +43,7 @@ public class CommandInitializerTest {
 
     @SuppressWarnings("unchecked")
     @BeforeClass
-    public static void initializeCommandManager() {
+    public static void initializeCommandCollection() {
         AuthMeServiceInitializer initializer = mock(AuthMeServiceInitializer.class);
         when(initializer.newInstance(any(Class.class))).thenAnswer(new Answer<Object>() {
             @Override
@@ -52,8 +52,8 @@ public class CommandInitializerTest {
                 return mock(clazz);
             }
         });
-
-        commands = CommandInitializer.buildCommands(initializer);
+        CommandInitializer commandInitializer = new CommandInitializer(initializer);
+        commands = commandInitializer.getCommands();
     }
 
     @Test

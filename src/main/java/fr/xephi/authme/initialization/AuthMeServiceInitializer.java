@@ -132,7 +132,8 @@ public class AuthMeServiceInitializer {
      * @return the instantiated object
      */
     private <T> T instantiate(Class<T> clazz, Set<Class<?>> traversedClasses) {
-        Injection<T> injection = firstNotNull(ConstructorInjection.provide(clazz), FieldInjection.provide(clazz));
+        Injection<T> injection = firstNotNull(
+            ConstructorInjection.provide(clazz), FieldInjection.provide(clazz), InstantiationFallback.provide(clazz));
         if (injection == null) {
             throw new IllegalStateException("Did not find injection method for " + clazz + ". Make sure you have "
                 + "a constructor with @Inject or fields with @Inject. Fields with @Inject require "

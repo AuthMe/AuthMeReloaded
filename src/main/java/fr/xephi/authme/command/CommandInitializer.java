@@ -37,6 +37,7 @@ import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PlayerPermission;
 
+import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
@@ -48,13 +49,23 @@ import static fr.xephi.authme.permission.DefaultPermission.OP_ONLY;
 /**
  * Initializes all available AuthMe commands.
  */
-public final class CommandInitializer {
+public class CommandInitializer {
 
-    private CommandInitializer() {
-        // Helper class
+    private AuthMeServiceInitializer initializer;
+
+    private Set<CommandDescription> commands;
+
+    @Inject
+    public CommandInitializer(AuthMeServiceInitializer initializer) {
+        this.initializer = initializer;
+        buildCommands();
     }
 
-    public static Set<CommandDescription> buildCommands(AuthMeServiceInitializer initializer) {
+    public Set<CommandDescription> getCommands() {
+        return commands;
+    }
+
+    private void buildCommands() {
         // Register the base AuthMe Reloaded command
         final CommandDescription AUTHME_BASE = CommandDescription.builder()
             .labels("authme")
@@ -402,18 +413,16 @@ public final class CommandInitializer {
             EMAIL_BASE,
             CAPTCHA_BASE);
 
-        setHelpOnAllBases(baseCommands, initializer);
-        return baseCommands;
+        setHelpOnAllBases(baseCommands);
+        commands = baseCommands;
     }
 
     /**
      * Set the help command on all base commands, e.g. to register /authme help or /register help.
      *
      * @param commands The list of base commands to register a help child command on
-     * @param initializer The service initializer
      */
-    private static void setHelpOnAllBases(Collection<CommandDescription> commands,
-                                          AuthMeServiceInitializer initializer) {
+    private void setHelpOnAllBases(Collection<CommandDescription> commands) {
         final HelpCommand helpCommandExecutable = initializer.newInstance(HelpCommand.class);
         final List<String> helpCommandLabels = Arrays.asList("help", "hlp", "h", "sos", "?");
 

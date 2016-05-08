@@ -2,7 +2,6 @@ package fr.xephi.authme.command.executable.register;
 
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandService;
-import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -19,6 +18,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -40,10 +40,15 @@ import static org.mockito.Mockito.verifyZeroInteractions;
 @RunWith(MockitoJUnitRunner.class)
 public class RegisterCommandTest {
 
+    @InjectMocks
+    private RegisterCommand command;
+
     @Mock
     private CommandService commandService;
+
     @Mock
     private Management management;
+
     @Mock
     private Player sender;
 
@@ -54,7 +59,6 @@ public class RegisterCommandTest {
 
     @Before
     public void linkMocksAndProvideSettingDefaults() {
-        given(commandService.getManagement()).willReturn(management);
         given(commandService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.BCRYPT);
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(false);
         given(commandService.getProperty(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION)).willReturn(false);
@@ -64,7 +68,6 @@ public class RegisterCommandTest {
     public void shouldNotRunForNonPlayerSender() {
         // given
         CommandSender sender = mock(BlockCommandSender.class);
-        RegisterCommand command = new RegisterCommand();
 
         // when
         command.executeCommand(sender, new ArrayList<String>(), commandService);
@@ -78,7 +81,6 @@ public class RegisterCommandTest {
     public void shouldForwardToManagementForTwoFactor() {
         // given
         given(commandService.getProperty(SecuritySettings.PASSWORD_HASH)).willReturn(HashAlgorithm.TWO_FACTOR);
-        ExecutableCommand command = new RegisterCommand();
 
         // when
         command.executeCommand(sender, Collections.<String>emptyList(), commandService);
@@ -89,10 +91,7 @@ public class RegisterCommandTest {
 
     @Test
     public void shouldReturnErrorForEmptyArguments() {
-        // given
-        ExecutableCommand command = new RegisterCommand();
-
-        // when
+        // given / when
         command.executeCommand(sender, Collections.<String>emptyList(), commandService);
 
         // then
@@ -104,7 +103,6 @@ public class RegisterCommandTest {
     public void shouldReturnErrorForMissingConfirmation() {
         // given
         given(commandService.getProperty(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION)).willReturn(true);
-        ExecutableCommand command = new RegisterCommand();
 
         // when
         command.executeCommand(sender, Collections.singletonList("arrrr"), commandService);
@@ -119,7 +117,6 @@ public class RegisterCommandTest {
         // given
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
-        ExecutableCommand command = new RegisterCommand();
 
         // when
         command.executeCommand(sender, Collections.singletonList("test@example.org"), commandService);
@@ -135,7 +132,6 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(false);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("");
-        ExecutableCommand command = new RegisterCommand();
 
         // when
         command.executeCommand(sender, Collections.singletonList("myMail@example.tld"), commandService);
@@ -154,8 +150,6 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("server@example.com");
-
-        ExecutableCommand command = new RegisterCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList(playerMail, playerMail), commandService);
@@ -176,8 +170,6 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("server@example.com");
 
-        ExecutableCommand command = new RegisterCommand();
-
         // when
         command.executeCommand(sender, Arrays.asList(playerMail, "invalid"), commandService);
 
@@ -197,7 +189,6 @@ public class RegisterCommandTest {
         given(commandService.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)).willReturn(true);
         given(commandService.getProperty(RegistrationSettings.ENABLE_CONFIRM_EMAIL)).willReturn(true);
         given(commandService.getProperty(EmailSettings.MAIL_ACCOUNT)).willReturn("server@example.com");
-        ExecutableCommand command = new RegisterCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList(playerMail, playerMail), commandService);
@@ -211,7 +202,6 @@ public class RegisterCommandTest {
     public void shouldRejectInvalidPasswordConfirmation() {
         // given
         given(commandService.getProperty(RestrictionSettings.ENABLE_PASSWORD_CONFIRMATION)).willReturn(true);
-        ExecutableCommand command = new RegisterCommand();
 
         // when
         command.executeCommand(sender, Arrays.asList("myPass", "mypass"), commandService);
@@ -223,10 +213,7 @@ public class RegisterCommandTest {
 
     @Test
     public void shouldPerformPasswordValidation() {
-        // given
-        ExecutableCommand command = new RegisterCommand();
-
-        // when
+        // given / when
         command.executeCommand(sender, Collections.singletonList("myPass"), commandService);
 
         // then

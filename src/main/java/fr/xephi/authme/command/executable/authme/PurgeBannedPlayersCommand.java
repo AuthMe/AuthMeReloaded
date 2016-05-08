@@ -4,6 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -21,11 +22,14 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
     @Inject
     private DataSource dataSource;
 
+    @Inject
+    private PluginHooks pluginHooks;
+
+    @Inject
+    private AuthMe plugin;
+
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        // AuthMe plugin instance
-        final AuthMe plugin = commandService.getAuthMe();
-
         // Get the list of banned players
         List<String> bannedPlayers = new ArrayList<>();
         for (OfflinePlayer offlinePlayer : commandService.getBukkitService().getBannedPlayers()) {
@@ -35,7 +39,7 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
         // Purge the banned players
         dataSource.purgeBanned(bannedPlayers);
         if (commandService.getProperty(PurgeSettings.REMOVE_ESSENTIALS_FILES)
-            && commandService.getPluginHooks().isEssentialsAvailable())
+            && pluginHooks.isEssentialsAvailable())
             plugin.dataManager.purgeEssentials(bannedPlayers);
         if (commandService.getProperty(PurgeSettings.REMOVE_PLAYER_DAT))
             plugin.dataManager.purgeDat(bannedPlayers);

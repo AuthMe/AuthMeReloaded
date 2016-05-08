@@ -13,15 +13,16 @@ import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.output.MessageKey;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.List;
 
 public class ConverterCommand implements ExecutableCommand {
 
+    @Inject
+    private AuthMe authMe;
+
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        // AuthMe plugin instance
-        final AuthMe plugin = AuthMe.getInstance();
-
         // Get the conversion job
         String job = arguments.get(0);
 
@@ -36,22 +37,22 @@ public class ConverterCommand implements ExecutableCommand {
         Converter converter = null;
         switch (jobType) {
             case XAUTH:
-                converter = new xAuthConverter(plugin, sender);
+                converter = new xAuthConverter(authMe, sender);
                 break;
             case CRAZYLOGIN:
-                converter = new CrazyLoginConverter(plugin, sender);
+                converter = new CrazyLoginConverter(authMe, sender);
                 break;
             case RAKAMAK:
-                converter = new RakamakConverter(plugin, sender);
+                converter = new RakamakConverter(authMe, sender);
                 break;
             case ROYALAUTH:
-                converter = new RoyalAuthConverter(plugin);
+                converter = new RoyalAuthConverter(authMe);
                 break;
             case VAUTH:
-                converter = new vAuthConverter(plugin, sender);
+                converter = new vAuthConverter(authMe, sender);
                 break;
             case SQLITETOSQL:
-                converter = new SqliteToSql(plugin, sender, commandService.getSettings());
+                converter = new SqliteToSql(authMe, sender, commandService.getSettings());
                 break;
             default:
                 break;

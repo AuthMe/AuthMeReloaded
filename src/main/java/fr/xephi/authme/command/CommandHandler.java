@@ -2,6 +2,7 @@ package fr.xephi.authme.command;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.help.HelpProvider;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -23,6 +24,7 @@ public class CommandHandler {
     private static final double SUGGEST_COMMAND_THRESHOLD = 0.75;
 
     private final CommandService commandService;
+    private final PermissionsManager permissionsManager;
 
     /**
      * Create a command handler.
@@ -30,8 +32,9 @@ public class CommandHandler {
      * @param commandService The CommandService instance
      */
     @Inject
-    public CommandHandler(CommandService commandService) {
+    public CommandHandler(CommandService commandService, PermissionsManager permissionsManager) {
         this.commandService = commandService;
+        this.permissionsManager = permissionsManager;
     }
 
     /**
@@ -126,7 +129,7 @@ public class CommandHandler {
 
     private void sendImproperArgumentsMessage(CommandSender sender, FoundCommandResult result) {
         CommandDescription command = result.getCommandDescription();
-        if (!commandService.getPermissionsManager().hasPermission(sender, command)) {
+        if (!permissionsManager.hasPermission(sender, command)) {
             sendPermissionDeniedError(sender);
             return;
         }

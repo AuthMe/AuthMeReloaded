@@ -35,7 +35,8 @@ public class CommandPageCreater implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
-        final Set<CommandDescription> baseCommands = CommandInitializer.buildCommands(getMockInitializer());
+        CommandInitializer commandInitializer = new CommandInitializer(getMockInitializer());
+        final Set<CommandDescription> baseCommands = commandInitializer.getCommands();
         NestedTagValue commandTags = new NestedTagValue();
         addCommandsInfo(commandTags, baseCommands);
 

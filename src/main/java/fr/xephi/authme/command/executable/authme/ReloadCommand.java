@@ -7,6 +7,7 @@ import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.output.MessageKey;
 import org.bukkit.command.CommandSender;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
@@ -14,9 +15,11 @@ import java.util.List;
  */
 public class ReloadCommand implements ExecutableCommand {
 
+    @Inject
+    private AuthMe plugin;
+
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
-        AuthMe plugin = commandService.getAuthMe();
         try {
             plugin.reload();
             commandService.send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);

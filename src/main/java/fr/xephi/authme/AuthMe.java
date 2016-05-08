@@ -8,7 +8,6 @@ import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.command.CommandHandler;
-import fr.xephi.authme.command.CommandInitializer;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.datasource.DataSourceType;
@@ -18,7 +17,6 @@ import fr.xephi.authme.datasource.SQLite;
 import fr.xephi.authme.hooks.BungeeCordMessage;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.AuthMeServiceInitializer;
-import fr.xephi.authme.initialization.BaseCommands;
 import fr.xephi.authme.initialization.DataFolder;
 import fr.xephi.authme.initialization.MetricsStarter;
 import fr.xephi.authme.listener.AuthMeBlockListener;
@@ -261,7 +259,6 @@ public class AuthMe extends JavaPlugin {
         // Some statically injected things
         initializer.register(PlayerCache.class, PlayerCache.getInstance());
         initializer.register(LimboCache.class, LimboCache.getInstance());
-        initializer.provide(BaseCommands.class, CommandInitializer.buildCommands(initializer));
 
         permsMan         = initializer.get(PermissionsManager.class);
         bukkitService    = initializer.get(BukkitService.class);

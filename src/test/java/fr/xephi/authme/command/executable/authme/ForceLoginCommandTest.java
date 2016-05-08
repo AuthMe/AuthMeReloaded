@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -21,14 +22,23 @@ import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Test for {@link ForceLoginCommand}.
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ForceLoginCommandTest {
+
+    @InjectMocks
+    private ForceLoginCommand command;
+
+    @Mock
+    private Management management;
+
+    @Mock
+    private PermissionsManager permissionsManager;
 
     @Mock
     private CommandService commandService;
@@ -40,7 +50,6 @@ public class ForceLoginCommandTest {
         Player player = mockPlayer(false, playerName);
         given(commandService.getPlayer(playerName)).willReturn(player);
         CommandSender sender = mock(CommandSender.class);
-        ExecutableCommand command = new ForceLoginCommand();
 
         // when
         command.executeCommand(sender, Collections.singletonList(playerName), commandService);
@@ -48,7 +57,7 @@ public class ForceLoginCommandTest {
         // then
         verify(commandService).getPlayer(playerName);
         verify(sender).sendMessage(argThat(equalTo("Player needs to be online!")));
-        verify(commandService, never()).getManagement();
+        verifyZeroInteractions(management);
     }
 
     @Test
@@ -65,7 +74,7 @@ public class ForceLoginCommandTest {
         // then
         verify(commandService).getPlayer(playerName);
         verify(sender).sendMessage(argThat(equalTo("Player needs to be online!")));
-        verify(commandService, never()).getManagement();
+        verifyZeroInteractions(management);
     }
 
     @Test
@@ -74,12 +83,8 @@ public class ForceLoginCommandTest {
         String playerName = "testTest";
         Player player = mockPlayer(true, playerName);
         given(commandService.getPlayer(playerName)).willReturn(player);
-        PermissionsManager permissionsManager = mock(PermissionsManager.class);
         given(permissionsManager.hasPermission(player, PlayerPermission.CAN_LOGIN_BE_FORCED)).willReturn(false);
-        given(commandService.getPermissionsManager()).willReturn(permissionsManager);
-
         CommandSender sender = mock(CommandSender.class);
-        ExecutableCommand command = new ForceLoginCommand();
 
         // when
         command.executeCommand(sender, Collections.singletonList(playerName), commandService);
@@ -87,7 +92,7 @@ public class ForceLoginCommandTest {
         // then
         verify(commandService).getPlayer(playerName);
         verify(sender).sendMessage(argThat(containsString("You cannot force login the player")));
-        verify(commandService, never()).getManagement();
+        verifyZeroInteractions(management);
     }
 
     @Test
@@ -96,14 +101,8 @@ public class ForceLoginCommandTest {
         String playerName = "tester23";
         Player player = mockPlayer(true, playerName);
         given(commandService.getPlayer(playerName)).willReturn(player);
-        PermissionsManager permissionsManager = mock(PermissionsManager.class);
         given(permissionsManager.hasPermission(player, PlayerPermission.CAN_LOGIN_BE_FORCED)).willReturn(true);
-        given(commandService.getPermissionsManager()).willReturn(permissionsManager);
-        Management management = mock(Management.class);
-        given(commandService.getManagement()).willReturn(management);
-
         CommandSender sender = mock(CommandSender.class);
-        ExecutableCommand command = new ForceLoginCommand();
 
         // when
         command.executeCommand(sender, Collections.singletonList(playerName), commandService);
@@ -119,15 +118,9 @@ public class ForceLoginCommandTest {
         String senderName = "tester23";
         Player player = mockPlayer(true, senderName);
         given(commandService.getPlayer(senderName)).willReturn(player);
-        PermissionsManager permissionsManager = mock(PermissionsManager.class);
         given(permissionsManager.hasPermission(player, PlayerPermission.CAN_LOGIN_BE_FORCED)).willReturn(true);
-        given(commandService.getPermissionsManager()).willReturn(permissionsManager);
-        Management management = mock(Management.class);
-        given(commandService.getManagement()).willReturn(management);
-
         CommandSender sender = mock(CommandSender.class);
         given(sender.getName()).willReturn(senderName);
-        ExecutableCommand command = new ForceLoginCommand();
 
         // when
         command.executeCommand(sender, Collections.<String>emptyList(), commandService);
