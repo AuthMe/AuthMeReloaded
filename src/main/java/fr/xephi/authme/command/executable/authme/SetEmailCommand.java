@@ -6,6 +6,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -22,6 +23,9 @@ public class SetEmailCommand implements ExecutableCommand {
     @Inject
     private PlayerCache playerCache;
 
+    @Inject
+    private BukkitService bukkitService;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments,
                                final CommandService commandService) {
@@ -35,7 +39,7 @@ public class SetEmailCommand implements ExecutableCommand {
             return;
         }
 
-        commandService.runTaskAsynchronously(new Runnable() {
+        bukkitService.runTaskAsynchronously(new Runnable() {
             @Override
             public void run() {
                 // Validate the user

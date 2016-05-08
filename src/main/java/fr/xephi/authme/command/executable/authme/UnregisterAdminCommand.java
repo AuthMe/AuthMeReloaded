@@ -39,6 +39,9 @@ public class UnregisterAdminCommand implements ExecutableCommand {
     @Inject
     private AuthMe authMe;
 
+    @Inject
+    private BukkitService bukkitService;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments, CommandService commandService) {
         // Get the player name
@@ -58,7 +61,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
         }
 
         // Unregister the player
-        Player target = commandService.getPlayer(playerNameLowerCase);
+        Player target = bukkitService.getPlayerExact(playerNameLowerCase);
         playerCache.removePlayer(playerNameLowerCase);
         Utils.setGroup(target, Utils.GroupType.UNREGISTERED);
         if (target != null && target.isOnline()) {
@@ -82,7 +85,6 @@ public class UnregisterAdminCommand implements ExecutableCommand {
      * @param service the command service
      */
     private void applyUnregisteredEffectsAndTasks(Player target, CommandService service) {
-        final BukkitService bukkitService = service.getBukkitService();
         final String playerNameLowerCase = target.getName().toLowerCase();
 
         Utils.teleportToSpawn(target);
@@ -94,7 +96,7 @@ public class UnregisterAdminCommand implements ExecutableCommand {
             LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setTimeoutTask(id);
         }
         LimboCache.getInstance().getLimboPlayer(playerNameLowerCase).setMessageTask(
-            bukkitService.runTask(new MessageTask(service.getBukkitService(), authMe.getMessages(),
+            bukkitService.runTask(new MessageTask(bukkitService, authMe.getMessages(),
                 playerNameLowerCase, MessageKey.REGISTER_MESSAGE, interval)));
 
         if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {

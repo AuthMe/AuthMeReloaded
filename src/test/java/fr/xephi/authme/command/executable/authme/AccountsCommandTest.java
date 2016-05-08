@@ -4,7 +4,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.output.Messages;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,7 +42,7 @@ public class AccountsCommandTest {
     @Mock
     private DataSource dataSource;
     @Mock
-    private Messages messages;
+    private BukkitService bukkitService;
 
     @Test
     public void shouldGetAccountsOfCurrentUser() {
@@ -54,7 +54,7 @@ public class AccountsCommandTest {
 
         // when
         command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 2);
@@ -70,10 +70,10 @@ public class AccountsCommandTest {
 
         // when
         command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        runInnerRunnable(bukkitService);
 
         // then
-        verify(messages).send(sender, MessageKey.UNKNOWN_USER);
+        verify(service).send(sender, MessageKey.UNKNOWN_USER);
         verify(sender, never()).sendMessage(anyString());
     }
 
@@ -86,10 +86,10 @@ public class AccountsCommandTest {
 
         // when
         command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        runInnerRunnable(bukkitService);
 
         // then
-        verify(messages).send(sender, MessageKey.USER_NOT_REGISTERED);
+        verify(service).send(sender, MessageKey.USER_NOT_REGISTERED);
         verify(sender, never()).sendMessage(anyString());
     }
 
@@ -102,7 +102,7 @@ public class AccountsCommandTest {
 
         // when
         command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 1);
@@ -120,7 +120,7 @@ public class AccountsCommandTest {
 
         // when
         command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 1);
@@ -135,7 +135,7 @@ public class AccountsCommandTest {
 
         // when
         command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 1);
@@ -150,7 +150,7 @@ public class AccountsCommandTest {
 
         // when
         command.executeCommand(sender, arguments, service);
-        runInnerRunnable(service);
+        runInnerRunnable(bukkitService);
 
         // then
         String[] messages = getMessagesSentToSender(sender, 2);

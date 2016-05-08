@@ -7,6 +7,7 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.ChangePasswordTask;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -48,6 +49,9 @@ public class ChangePasswordCommandTest {
 
     @Mock
     private CommandService commandService;
+
+    @Mock
+    private BukkitService bukkitService;
 
     @Before
     public void setSettings() {
@@ -109,7 +113,7 @@ public class ChangePasswordCommandTest {
         verify(commandService).validatePassword("abc123", "parker");
         verify(commandService, never()).send(eq(sender), any(MessageKey.class));
         ArgumentCaptor<ChangePasswordTask> taskCaptor = ArgumentCaptor.forClass(ChangePasswordTask.class);
-        verify(commandService).runTaskAsynchronously(taskCaptor.capture());
+        verify(bukkitService).runTaskAsynchronously(taskCaptor.capture());
         ChangePasswordTask task = taskCaptor.getValue();
         assertThat((String) ReflectionTestUtils.getFieldValue(ChangePasswordTask.class, task, "newPassword"),
             equalTo("abc123"));

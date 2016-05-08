@@ -1,6 +1,5 @@
 package fr.xephi.authme;
 
-import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.util.BukkitService;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mockito;
@@ -60,13 +59,13 @@ public final class TestHelper {
     }
 
     /**
-     * Execute a {@link Runnable} passed to a mock's {@link CommandService#runTaskAsynchronously} method.
+     * Execute a {@link Runnable} passed to a mock's {@link BukkitService#runTaskAsynchronously} method.
      * Note that calling this method expects that there be a runnable sent to the method and will fail
      * otherwise.
      *
      * @param service The mock service
      */
-    public static void runInnerRunnable(CommandService service) {
+    public static void runInnerRunnable(BukkitService service) {
         ArgumentCaptor<Runnable> captor = ArgumentCaptor.forClass(Runnable.class);
         verify(service).runTaskAsynchronously(captor.capture());
         Runnable runnable = captor.getValue();

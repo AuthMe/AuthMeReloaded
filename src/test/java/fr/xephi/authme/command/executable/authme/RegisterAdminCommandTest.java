@@ -43,13 +43,16 @@ public class RegisterAdminCommandTest {
     private PasswordSecurity passwordSecurity;
 
     @Mock
+    private DataSource dataSource;
+
+    @Mock
+    private BukkitService bukkitService;
+
+    @Mock
     private CommandSender sender;
 
     @Mock
     private CommandService commandService;
-
-    @Mock
-    private DataSource dataSource;
 
     @BeforeClass
     public static void setUpLogger() {
@@ -69,7 +72,7 @@ public class RegisterAdminCommandTest {
         // then
         verify(commandService).validatePassword(password, user);
         verify(commandService).send(sender, MessageKey.INVALID_PASSWORD_LENGTH);
-        verify(commandService, never()).runTaskAsynchronously(any(Runnable.class));
+        verify(bukkitService, never()).runTaskAsynchronously(any(Runnable.class));
     }
 
     @Test
@@ -82,7 +85,7 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
-        TestHelper.runInnerRunnable(commandService);
+        TestHelper.runInnerRunnable(bukkitService);
 
         // then
         verify(commandService).validatePassword(password, user);
@@ -103,7 +106,7 @@ public class RegisterAdminCommandTest {
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
-        TestHelper.runInnerRunnable(commandService);
+        TestHelper.runInnerRunnable(bukkitService);
 
         // then
         verify(commandService).validatePassword(password, user);
@@ -123,11 +126,11 @@ public class RegisterAdminCommandTest {
         given(dataSource.saveAuth(any(PlayerAuth.class))).willReturn(true);
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
-        given(commandService.getPlayer(user)).willReturn(null);
+        given(bukkitService.getPlayerExact(user)).willReturn(null);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
-        TestHelper.runInnerRunnable(commandService);
+        TestHelper.runInnerRunnable(bukkitService);
 
         // then
         verify(commandService).validatePassword(password, user);
@@ -149,13 +152,11 @@ public class RegisterAdminCommandTest {
         HashedPassword hashedPassword = new HashedPassword("$aea2345EW235dfsa@#R%987048");
         given(passwordSecurity.computeHash(password, user)).willReturn(hashedPassword);
         Player player = mock(Player.class);
-        given(commandService.getPlayer(user)).willReturn(player);
-        BukkitService bukkitService = mock(BukkitService.class);
-        given(commandService.getBukkitService()).willReturn(bukkitService);
+        given(bukkitService.getPlayerExact(user)).willReturn(player);
 
         // when
         command.executeCommand(sender, Arrays.asList(user, password), commandService);
-        TestHelper.runInnerRunnable(commandService);
+        TestHelper.runInnerRunnable(bukkitService);
         runSyncDelayedTask(bukkitService);
 
         // then

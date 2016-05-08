@@ -6,6 +6,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.PlayerCommand;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.task.ChangePasswordTask;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.entity.Player;
 
 import javax.inject.Inject;
@@ -18,6 +19,9 @@ public class ChangePasswordCommand extends PlayerCommand {
 
     @Inject
     private PlayerCache playerCache;
+
+    @Inject
+    private BukkitService bukkitService;
 
     @Override
     public void runCommand(Player player, List<String> arguments, CommandService commandService) {
@@ -39,6 +43,6 @@ public class ChangePasswordCommand extends PlayerCommand {
 
         AuthMe plugin = AuthMe.getInstance();
         // TODO ljacqu 20160117: Call async task via Management
-        commandService.runTaskAsynchronously(new ChangePasswordTask(plugin, player, oldPassword, newPassword));
+        bukkitService.runTaskAsynchronously(new ChangePasswordTask(plugin, player, oldPassword, newPassword));
     }
 }

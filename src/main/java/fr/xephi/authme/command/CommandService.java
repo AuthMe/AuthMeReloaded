@@ -5,15 +5,10 @@ import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -23,20 +18,15 @@ import java.util.List;
 public class CommandService {
 
     @Inject
-    private BukkitScheduler scheduler;
-    @Inject
     private Messages messages;
     @Inject
     private HelpProvider helpProvider;
     @Inject
     private CommandMapper commandMapper;
-    @SuppressWarnings("unused")
     @Inject
     private NewSetting settings;
     @Inject
     private ValidationService validationService;
-    @Inject
-    private BukkitService bukkitService;
 
     /**
      * Send a message to a player.
@@ -68,18 +58,6 @@ public class CommandService {
      */
     public FoundCommandResult mapPartsToCommand(CommandSender sender, List<String> commandParts) {
         return commandMapper.mapPartsToCommand(sender, commandParts);
-    }
-
-    /**
-     * Run the given task asynchronously with the Bukkit scheduler.
-     *
-     * @param task The task to run
-     * @return a BukkitTask that contains the id number
-     * @throws IllegalArgumentException if plugin is null
-     * @throws IllegalArgumentException if task is null
-     */
-    public BukkitTask runTaskAsynchronously(Runnable task) {
-        return bukkitService.runTaskAsynchronously(task);
     }
 
     /**
@@ -144,18 +122,6 @@ public class CommandService {
 
     public boolean isEmailFreeForRegistration(String email, CommandSender sender) {
         return validationService.isEmailFreeForRegistration(email, sender);
-    }
-
-    public Player getPlayer(String name) {
-        return bukkitService.getPlayerExact(name);
-    }
-
-    public Collection<? extends Player> getOnlinePlayers() {
-        return bukkitService.getOnlinePlayers();
-    }
-
-    public BukkitService getBukkitService() {
-        return bukkitService;
     }
 
 }

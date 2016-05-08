@@ -4,6 +4,7 @@ import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.process.Management;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -23,12 +24,15 @@ public class ForceLoginCommand implements ExecutableCommand {
     @Inject
     private Management management;
 
+    @Inject
+    private BukkitService bukkitService;
+
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // Get the player query
         String playerName = arguments.isEmpty() ? sender.getName() : arguments.get(0);
 
-        Player player = commandService.getPlayer(playerName);
+        Player player = bukkitService.getPlayerExact(playerName);
         if (player == null || !player.isOnline()) {
             sender.sendMessage("Player needs to be online!");
         } else if (!permissionsManager.hasPermission(player, CAN_LOGIN_BE_FORCED)) {

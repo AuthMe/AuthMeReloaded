@@ -189,19 +189,4 @@ public class CommandServiceTest {
         verify(validationService).isEmailFreeForRegistration(email, sender);
     }
 
-    @Test
-    public void shouldGetPlayer() {
-        // given
-        String playerName = "_tester";
-        Player player = mock(Player.class);
-        given(bukkitService.getPlayerExact(playerName)).willReturn(player);
-
-        // when
-        Player result = commandService.getPlayer(playerName);
-
-        // then
-        assertThat(result, equalTo(player));
-        verify(bukkitService).getPlayerExact(playerName);
-    }
-
 }

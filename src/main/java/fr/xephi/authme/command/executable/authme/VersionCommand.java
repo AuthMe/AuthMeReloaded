@@ -3,16 +3,21 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
 import java.util.Collection;
 import java.util.List;
 
 import static fr.xephi.authme.settings.properties.PluginSettings.HELP_HEADER;
 
 public class VersionCommand implements ExecutableCommand {
+
+    @Inject
+    private BukkitService bukkitService;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
@@ -22,7 +27,7 @@ public class VersionCommand implements ExecutableCommand {
         sender.sendMessage(ChatColor.GOLD + "Version: " + ChatColor.WHITE + AuthMe.getPluginName()
             + " v" + AuthMe.getPluginVersion() + ChatColor.GRAY + " (build: " + AuthMe.getPluginBuildNumber() + ")");
         sender.sendMessage(ChatColor.GOLD + "Developers:");
-        Collection<? extends Player> onlinePlayers = commandService.getOnlinePlayers();
+        Collection<? extends Player> onlinePlayers = bukkitService.getOnlinePlayers();
         printDeveloper(sender, "Xephi", "xephi59", "Lead Developer", onlinePlayers);
         printDeveloper(sender, "DNx5", "DNx5", "Developer", onlinePlayers);
         printDeveloper(sender, "games647", "games647", "Developer", onlinePlayers);

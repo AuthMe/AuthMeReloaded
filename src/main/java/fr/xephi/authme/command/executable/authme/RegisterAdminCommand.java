@@ -8,6 +8,7 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -25,6 +26,9 @@ public class RegisterAdminCommand implements ExecutableCommand {
     @Inject
     private DataSource dataSource;
 
+    @Inject
+    private BukkitService bukkitService;
+
     @Override
     public void executeCommand(final CommandSender sender, List<String> arguments,
                                final CommandService commandService) {
@@ -40,7 +44,7 @@ public class RegisterAdminCommand implements ExecutableCommand {
             return;
         }
 
-        commandService.runTaskAsynchronously(new Runnable() {
+        bukkitService.runTaskAsynchronously(new Runnable() {
 
             @Override
             public void run() {
@@ -63,9 +67,9 @@ public class RegisterAdminCommand implements ExecutableCommand {
 
                 commandService.send(sender, MessageKey.REGISTER_SUCCESS);
                 ConsoleLogger.info(sender.getName() + " registered " + playerName);
-                final Player player = commandService.getPlayer(playerName);
+                final Player player = bukkitService.getPlayerExact(playerName);
                 if (player != null) {
-                    commandService.getBukkitService().scheduleSyncDelayedTask(new Runnable() {
+                    bukkitService.scheduleSyncDelayedTask(new Runnable() {
                         @Override
                         public void run() {
                             player.kickPlayer("An admin just registered you, please log in again");

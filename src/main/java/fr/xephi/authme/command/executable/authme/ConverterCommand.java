@@ -11,6 +11,7 @@ import fr.xephi.authme.converter.SqliteToSql;
 import fr.xephi.authme.converter.vAuthConverter;
 import fr.xephi.authme.converter.xAuthConverter;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.util.BukkitService;
 import org.bukkit.command.CommandSender;
 
 import javax.inject.Inject;
@@ -20,6 +21,9 @@ public class ConverterCommand implements ExecutableCommand {
 
     @Inject
     private AuthMe authMe;
+
+    @Inject
+    private BukkitService bukkitService;
 
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
@@ -59,7 +63,7 @@ public class ConverterCommand implements ExecutableCommand {
         }
 
         // Run the convert job
-        commandService.runTaskAsynchronously(converter);
+        bukkitService.runTaskAsynchronously(converter);
 
         // Show a status message
         sender.sendMessage("[AuthMe] Successfully converted from " + jobType.getName());
