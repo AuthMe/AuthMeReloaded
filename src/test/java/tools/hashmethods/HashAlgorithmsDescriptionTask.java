@@ -1,10 +1,10 @@
 package tools.hashmethods;
 
 import fr.xephi.authme.security.HashAlgorithm;
+import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
-import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
 import java.util.Map;
@@ -15,13 +15,18 @@ import java.util.Scanner;
  *
  * @see {@link fr.xephi.authme.security.HashAlgorithm}
  */
-public class HashAlgorithmsDescriptionTask implements ToolTask {
+public class HashAlgorithmsDescriptionTask implements AutoToolTask {
 
     private static final String CUR_FOLDER = ToolsConstants.TOOLS_SOURCE_ROOT + "hashmethods/";
     private static final String OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "hash_algorithms.md";
 
     @Override
     public void execute(Scanner scanner) {
+        executeDefault();
+    }
+
+    @Override
+    public void executeDefault() {
         // Gather info and construct a row for each method
         EncryptionMethodInfoGatherer infoGatherer = new EncryptionMethodInfoGatherer();
         Map<HashAlgorithm, MethodDescription> descriptions = infoGatherer.getDescriptions();

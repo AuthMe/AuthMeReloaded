@@ -1,5 +1,6 @@
 package tools;
 
+import tools.utils.AutoToolTask;
 import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
@@ -30,37 +31,42 @@ public final class ToolsRunner {
         Map<String, ToolTask> tasks = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
         collectTasksInDirectory(toolsFolder, tasks);
 
-        String inputTask;
-        Scanner scanner = new Scanner(System.in);
-        boolean interactive = true;
-        
         if (args == null || args.length == 0) {
-            listAllTasks(tasks);
-            // Prompt user for task and handle input
-            System.out.println("Please enter the task to run:");
-            inputTask = scanner.nextLine();
+            promptAndExecuteTask(tasks);
         } else {
-            interactive = false;
-            inputTask = args[0];
+            executeAutomaticTasks(tasks, args);
         }
+    }
+
+    private static void promptAndExecuteTask(Map<String, ToolTask> tasks) {
+        System.out.println("The following tasks are available:");
+        for (String key : tasks.keySet()) {
+            System.out.println("- " + key);
+        }
+
+        System.out.println("Please enter the task to run:");
+        Scanner scanner = new Scanner(System.in);
+        String inputTask = scanner.nextLine();
 
         ToolTask task = tasks.get(inputTask);
         if (task != null) {
-            if(interactive) {
-                task.execute(scanner);
-            } else {
-                task.execute(null);
-            }
+            task.execute(scanner);
         } else {
             System.out.println("Unknown task");
         }
         scanner.close();
     }
 
-    private static void listAllTasks(Map<String, ToolTask> taskCollection) {
-        System.out.println("The following tasks are available:");
-        for (String key : taskCollection.keySet()) {
-            System.out.println("- " + key);
+    private static void executeAutomaticTasks(Map<String, ToolTask> tasks, String... requests) {
+        for (String taskName : requests) {
+            ToolTask task = tasks.get(taskName);
+            if (task == null) {
+                System.out.format("Unknown task '%s'%n", taskName);
+            } else if (!(task instanceof AutoToolTask)) {
+                System.out.format("Task '%s' cannot be run on command line%n", taskName);
+            } else {
+                ((AutoToolTask) task).executeDefault();
+            }
         }
     }
 

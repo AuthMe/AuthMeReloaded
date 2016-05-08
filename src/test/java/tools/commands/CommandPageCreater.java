@@ -10,10 +10,10 @@ import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.permission.PermissionNode;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
-import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
 import java.util.Collection;
@@ -24,7 +24,7 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class CommandPageCreater implements ToolTask {
+public class CommandPageCreater implements AutoToolTask {
 
     private static final String OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "commands.md";
 
@@ -35,6 +35,11 @@ public class CommandPageCreater implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
+        executeDefault();
+    }
+
+    @Override
+    public void executeDefault() {
         CommandInitializer commandInitializer = new CommandInitializer(getMockInitializer());
         final Set<CommandDescription> baseCommands = commandInitializer.getCommands();
         NestedTagValue commandTags = new NestedTagValue();

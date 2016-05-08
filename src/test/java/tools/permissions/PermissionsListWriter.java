@@ -1,9 +1,9 @@
 package tools.permissions;
 
+import tools.utils.AutoToolTask;
 import tools.utils.FileUtils;
 import tools.utils.TagValue.NestedTagValue;
 import tools.utils.TagValueHolder;
-import tools.utils.ToolTask;
 import tools.utils.ToolsConstants;
 
 import java.util.Map;
@@ -14,7 +14,7 @@ import java.util.Set;
  * Task responsible for formatting a permissions node list and
  * for writing it to a file if desired.
  */
-public class PermissionsListWriter implements ToolTask {
+public class PermissionsListWriter implements AutoToolTask {
 
     private static final String PERMISSIONS_OUTPUT_FILE = ToolsConstants.DOCS_FOLDER + "permission_nodes.md";
 
@@ -25,11 +25,6 @@ public class PermissionsListWriter implements ToolTask {
 
     @Override
     public void execute(Scanner scanner) {
-        if(scanner == null) {
-            generateAndWriteFile();
-            return;
-        }
-        
         // Ask if result should be written to file
         System.out.println("Include description? [Enter 'n' for no]");
         boolean includeDescription = !matches("n", scanner);
@@ -47,6 +42,11 @@ public class PermissionsListWriter implements ToolTask {
         } else {
             System.out.println(generatePermissionsList());
         }
+    }
+
+    @Override
+    public void executeDefault() {
+        generateAndWriteFile();
     }
 
     private static void generateAndWriteFile() {
