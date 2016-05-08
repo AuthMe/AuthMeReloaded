@@ -14,7 +14,7 @@ import java.util.Set;
  */
 public class UpdateDocsTask implements ToolTask {
 
-    private final Set<Class<? extends ToolTask>> TASKS = ImmutableSet.of(
+    private final Set<Class<? extends ToolTask>> TASKS = ImmutableSet.<Class<? extends ToolTask>>of(
         CommandPageCreater.class, HashAlgorithmsDescriptionTask.class, PermissionsListWriter.class);
 
     @Override
