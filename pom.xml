@@ -246,6 +246,9 @@
                     <classpathScope>test</classpathScope>
                     <workingDirectory>${project.basedir}/target/test-classes</workingDirectory>
                     <mainClass>tools.ToolsRunner</mainClass>
+                    <arguments>
+                        <argument>writePermissionsList</argument>
+                    </arguments>
                     <includeProjectDependencies>true</includeProjectDependencies>
                 </configuration>
                 <!-- Excluded from the lifecycle, it doesn't work!

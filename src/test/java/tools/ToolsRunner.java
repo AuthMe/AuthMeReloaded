@@ -34,7 +34,7 @@ public final class ToolsRunner {
         Scanner scanner = new Scanner(System.in);
         boolean interactive = true;
         
-        if(args == null || args.length == 0) {
+        if (args == null || args.length == 0) {
             listAllTasks(tasks);
             // Prompt user for task and handle input
             System.out.println("Please enter the task to run:");
@@ -126,7 +126,7 @@ public final class ToolsRunner {
             .substring(ToolsConstants.TOOLS_SOURCE_ROOT.length(), filePath.length() - 5)
             .replace(File.separator, ".");
         try {
-            Class<?> clazz = ClassLoader.getSystemClassLoader().loadClass(className);
+            Class<?> clazz = ToolsRunner.class.getClassLoader().loadClass(className);
             return ToolTask.class.isAssignableFrom(clazz) && isInstantiable(clazz)
                 ? (Class<? extends ToolTask>) clazz
                 : null;
