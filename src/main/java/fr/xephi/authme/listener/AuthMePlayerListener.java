@@ -175,7 +175,7 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        /* 
+        /*
          * Limit player X and Z movements to 1 block
          * Deny player Y+ movements (allows falling)
          */

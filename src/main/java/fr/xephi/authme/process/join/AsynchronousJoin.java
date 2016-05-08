@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
+import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.FirstSpawnTeleportEvent;
 import fr.xephi.authme.events.ProtectInventoryEvent;
@@ -208,7 +209,10 @@ public class AsynchronousJoin implements Process {
         int msgInterval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         if (registrationTimeout > 0) {
             BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), registrationTimeout);
-            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTask(id);
+            LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
+            if (limboPlayer != null) {
+                limboPlayer.setTimeoutTask(id);
+            }
         }
 
         MessageKey msg;
@@ -222,7 +226,10 @@ public class AsynchronousJoin implements Process {
         if (msgInterval > 0 && LimboCache.getInstance().getLimboPlayer(name) != null) {
             BukkitTask msgTask = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
                 name, msg, msgInterval));
-            LimboCache.getInstance().getLimboPlayer(name).setMessageTask(msgTask);
+                       LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
+            if (limboPlayer != null) {
+                limboPlayer.setMessageTask(msgTask);
+            }
         }
     }
 
