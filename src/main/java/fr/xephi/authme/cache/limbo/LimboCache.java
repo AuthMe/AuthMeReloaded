@@ -85,7 +85,7 @@ public class LimboCache {
         name = name.toLowerCase();
         LimboPlayer cachedPlayer = cache.remove(name);
         if (cachedPlayer != null) {
-            cache.get(name).clearTasks();
+            cachedPlayer.clearTasks();
         }
     }
 
