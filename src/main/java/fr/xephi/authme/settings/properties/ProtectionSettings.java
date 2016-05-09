@@ -19,12 +19,12 @@ public class ProtectionSettings implements SettingsClass {
     @Comment({"Countries allowed to join the server and register, see http://dev.bukkit.org/bukkit-plugins/authme-reloaded/pages/countries-codes/ for countries' codes",
             "PLEASE USE QUOTES!"})
     public static final Property<List<String>> COUNTRIES_WHITELIST =
-        newListProperty("Protection.countries", "US", "GB", "A1");
+        newListProperty("Protection.countries", "US", "GB");
 
     @Comment({"Countries not allowed to join the server and register",
     "PLEASE USE QUOTES!"})
     public static final Property<List<String>> COUNTRIES_BLACKLIST =
-        newListProperty("Protection.countriesBlacklist");
+        newListProperty("Protection.countriesBlacklist", "A1");
 
     @Comment("Do we need to enable automatic antibot system?")
     public static final Property<Boolean> ENABLE_ANTIBOT =

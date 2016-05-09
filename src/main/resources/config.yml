@@ -108,12 +108,11 @@ settings:
         # AllowedRestrctedUser field.
         AllowRestrictedUser: false
         # The restricted user feature will kick players listed below
-        # if they dont match of the defined ip address.
+        # if they don't match of the defined ip address.
         # Example:
         #   AllowedRestrictedUser:
         #   - playername;127.0.0.1
-        AllowedRestrictedUser:
-        - playername;127.0.0.1
+        AllowedRestrictedUser: []
         # Should unregistered players be kicked immediately?
         kickNonRegistered: false
         # Should players be kicked on wrong password?
@@ -263,11 +262,11 @@ settings:
     # Do we need to broadcast the welcome message to all server or only to the player? set true for server or false for player
     broadcastWelcomeMessage: false
     # Should we delay the join message and display it once the player has logged in?
-    delayJoinMessage: true
+    delayJoinMessage: false
     # Should we remove join messages altogether?
-    removeJoinMessage: true
+    removeJoinMessage: false
     # Should we remove leave messages?
-    removeLeaveMessage: true
+    removeLeaveMessage: false
     # Do we need to add potion effect Blinding before login/register?
     applyBlindEffect: false
     # Do we need to prevent people to login with another case?
@@ -307,7 +306,7 @@ BackupSystem:
    # set Backup at every stop of Server
     OnServerStop: true
    # Windows only mysql installation Path
-    MysqlWindowsPath: 'C:\\Program Files\\MySQL\\MySQL Server 5.1\\'
+    MysqlWindowsPath: 'C:\Program Files\MySQL\MySQL Server 5.1\'
 Security:
     SQLProblem:
         # Stop the server if we can't contact the sql database
@@ -360,7 +359,7 @@ Email:
     # Random password length
     RecoveryPasswordLength: 8
     # Email subject of password get
-    mailSubject: 'Your new AuthMe Password'
+    mailSubject: 'Your new AuthMe password'
     # Like maxRegPerIp but with email
     maxRegPerEmail: 1
     # Recall players to add an email?

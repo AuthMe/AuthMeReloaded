@@ -32,7 +32,7 @@ public class DatabaseSettings implements SettingsClass {
 
     @Comment("Password about Database Connection Infos")
     public static final Property<String> MYSQL_PASSWORD =
-        newProperty("DataSource.mySQLPassword", "123456");
+        newProperty("DataSource.mySQLPassword", "12345");
 
     @Comment("Database Name, use with converters or as SQLITE database name")
     public static final Property<String> MYSQL_DATABASE =

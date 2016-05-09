@@ -12,13 +12,14 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
 /**
@@ -56,9 +57,8 @@ public class ConfigFileConsistencyTest {
     @Test
     public void shouldNotHaveUnknownConfigs() {
         // given
-        URL url = this.getClass().getResource(CONFIG_FILE);
-        File configFile = new File(url.getFile());
-        YamlConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
+        File configFile = TestHelper.getJarFile(CONFIG_FILE);
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
         Map<String, Object> allReadProperties = configuration.getValues(true);
         Set<String> knownKeys = getAllKnownPropertyPaths();
 
@@ -75,6 +75,20 @@ public class ConfigFileConsistencyTest {
         if (!unknownPaths.isEmpty()) {
             fail("Found " + unknownPaths.size() + " unknown property paths in the project's config.yml: \n- "
                 + StringUtils.join("\n- ", unknownPaths));
+        }
+    }
+
+    @Test
+    public void shouldHaveValueCorrespondingToPropertyDefault() {
+        // given
+        File configFile = TestHelper.getJarFile(CONFIG_FILE);
+        FileConfiguration configuration = YamlConfiguration.loadConfiguration(configFile);
+        PropertyMap propertyMap = SettingsFieldRetriever.getAllPropertyFields();
+
+        // when / then
+        for (Property<?> property : propertyMap.keySet()) {
+            assertThat("Default value of '" + property.getPath() + "' in config.yml should be the same as in Property",
+                property.getFromFile(configuration), equalTo(property.getDefaultValue()));
         }
     }
 

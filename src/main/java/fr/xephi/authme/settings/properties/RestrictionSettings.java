@@ -31,7 +31,7 @@ public class RestrictionSettings implements SettingsClass {
     @Comment("Allowed commands for unauthenticated players")
     public static final Property<List<String>> ALLOW_COMMANDS =
         newListProperty("settings.restrictions.allowCommands",
-            "login", "register", "l", "reg", "email", "captcha");
+            "/login", "/register", "/l", "/reg", "/email", "/captcha");
 
     @Comment({
         "Max number of allowed registrations per IP",
