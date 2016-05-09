@@ -4,7 +4,6 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.task.PurgeTask;
 import fr.xephi.authme.util.BukkitService;
 
@@ -28,9 +27,6 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
     private DataSource dataSource;
 
     @Inject
-    private PluginHooks pluginHooks;
-
-    @Inject
     private AuthMe plugin;
 
     @Inject
@@ -39,17 +35,18 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
     @Override
     public void executeCommand(CommandSender sender, List<String> arguments, CommandService commandService) {
         // Get the list of banned players
-        Set<String> bannedPlayers = new HashSet<>();
-        for (OfflinePlayer offlinePlayer : bukkitService.getBannedPlayers()) {
-            bannedPlayers.add(offlinePlayer.getName().toLowerCase());
+        Set<String> namedBanned = new HashSet<>();
+        Set<OfflinePlayer> bannedPlayers = bukkitService.getBannedPlayers();
+        for (OfflinePlayer offlinePlayer : bannedPlayers) {
+            namedBanned.add(offlinePlayer.getName().toLowerCase());
         }
 
         //todo: note this should may run async because it may executes a SQL-Query
         // Purge the banned players
-        dataSource.purgeBanned(bannedPlayers);
+        dataSource.purgeBanned(namedBanned);
 
         // Show a status message
         sender.sendMessage(ChatColor.GOLD + "Purging user accounts...");
-        new PurgeTask(plugin, plugin.getSettings(), sender, bannedPlayers).runTaskTimer(plugin, 0, 1);
+        new PurgeTask(plugin, plugin.getSettings(), sender, namedBanned, bannedPlayers).runTaskTimer(plugin, 0, 1);
     }
 }

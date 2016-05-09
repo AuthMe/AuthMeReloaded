@@ -27,19 +27,25 @@ public class PurgeTask extends BukkitRunnable {
     private final UUID sender;
     private final Set<String> toPurge;
 
-    private final OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
+    private final OfflinePlayer[] offlinePlayers;
 
     private final boolean autoPurging;
     private final int totalPurgeCount;
 
     private int currentPage = 0;
 
+    public PurgeTask(AuthMe plugin, NewSetting newSetting, CommandSender sender
+            , Set<String> purged, Set<OfflinePlayer> offlinePlayers) {
+        this(plugin, newSetting, sender, purged, false
+                , offlinePlayers.toArray(new OfflinePlayer[offlinePlayers.size()]));
+    }
+
     public PurgeTask(AuthMe plugin, NewSetting newSetting, CommandSender sender, Set<String> purged) {
-        this(plugin, newSetting, sender, purged, false);
+        this(plugin, newSetting, sender, purged, false, Bukkit.getOfflinePlayers());
     }
 
     public PurgeTask(AuthMe plugin, NewSetting newSetting, CommandSender sender, Set<String> purged
-            , boolean autoPurging) {
+            , boolean autoPurging, OfflinePlayer[] offlinePlayers) {
         this.plugin = plugin;
         this.newSetting = newSetting;
 
@@ -52,6 +58,7 @@ public class PurgeTask extends BukkitRunnable {
         this.toPurge = purged;
         this.totalPurgeCount = purged.size();
         this.autoPurging = autoPurging;
+        this.offlinePlayers = offlinePlayers;
 
         //this is commented out because I assume all players in the database already have an lowercase name
 //        toPurge = new HashSet<>(purged.size());
