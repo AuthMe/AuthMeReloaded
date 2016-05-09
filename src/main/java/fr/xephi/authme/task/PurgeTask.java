@@ -27,6 +27,8 @@ public class PurgeTask extends BukkitRunnable {
     private final UUID sender;
     private final Set<String> toPurge;
 
+    private final OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
+
     private final boolean autoPurging;
     private final int totalPurgeCount;
 
@@ -69,7 +71,6 @@ public class PurgeTask extends BukkitRunnable {
 
         Set<OfflinePlayer> playerPortion = new HashSet<OfflinePlayer>(INTERVALL_CHECK);
         Set<String> namePortion = new HashSet<String>(INTERVALL_CHECK);
-        OfflinePlayer[] offlinePlayers = Bukkit.getOfflinePlayers();
         for (int i = 0; i < INTERVALL_CHECK; i++) {
             int nextPosition = (currentPage * INTERVALL_CHECK) + i;
             if (offlinePlayers.length >= nextPosition) {
