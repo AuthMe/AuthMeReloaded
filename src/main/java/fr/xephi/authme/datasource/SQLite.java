@@ -16,7 +16,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  */
@@ -285,8 +287,8 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public List<String> autoPurgeDatabase(long until) {
-        List<String> list = new ArrayList<>();
+    public Set<String> autoPurgeDatabase(long until) {
+        Set<String> list = new HashSet<>();
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         try (PreparedStatement selectPst = con.prepareStatement(select);
@@ -302,6 +304,7 @@ public class SQLite implements DataSource {
         } catch (SQLException ex) {
             logSqlException(ex);
         }
+
         return list;
     }
 
@@ -425,7 +428,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public void purgeBanned(List<String> banned) {
+    public void purgeBanned(Set<String> banned) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : banned) {

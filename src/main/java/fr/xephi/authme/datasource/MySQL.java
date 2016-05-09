@@ -24,7 +24,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  */
@@ -610,8 +612,8 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized List<String> autoPurgeDatabase(long until) {
-        List<String> list = new ArrayList<>();
+    public synchronized Set<String> autoPurgeDatabase(long until) {
+        Set<String> list = new HashSet<>();
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         try (Connection con = getConnection();
@@ -628,6 +630,7 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             logSqlException(ex);
         }
+
         return list;
     }
 
@@ -738,7 +741,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized void purgeBanned(List<String> banned) {
+    public synchronized void purgeBanned(Set<String> banned) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : banned) {

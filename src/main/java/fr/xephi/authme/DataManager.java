@@ -6,16 +6,14 @@ import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.Utils;
-import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Server;
 
 import javax.inject.Inject;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import static fr.xephi.authme.util.StringUtils.makePath;
+import java.util.Set;
 
 /**
  */
@@ -34,25 +32,14 @@ public class DataManager {
 
     DataManager() { }
 
-    private List<OfflinePlayer> getOfflinePlayers(List<String> names) {
-        List<OfflinePlayer> result = new ArrayList<>();
-        for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
-            for (String name : names) {
-                if (name.equalsIgnoreCase(op.getName())) {
-                    result.add(op);
-                }
-            }
-        }
-        return result;
-    }
-
-    public void purgeAntiXray(List<String> cleared) {
+    public void purgeAntiXray(Set<String> cleared) {
         int i = 0;
         File dataFolder = new File("." + File.separator + "plugins" + File.separator + "AntiXRayData"
             + File.separator + "PlayerData");
         if (!dataFolder.exists() || !dataFolder.isDirectory()) {
             return;
         }
+
         for (String file : dataFolder.list()) {
             if (cleared.contains(file.toLowerCase())) {
                 File playerFile = new File(dataFolder, file);
@@ -61,10 +48,11 @@ public class DataManager {
                 }
             }
         }
+
         ConsoleLogger.info("AutoPurge: Removed " + i + " AntiXRayData Files");
     }
 
-    public synchronized void purgeLimitedCreative(List<String> cleared) {
+    public synchronized void purgeLimitedCreative(Set<String> cleared) {
         int i = 0;
         File dataFolder = new File("." + File.separator + "plugins" + File.separator + "LimitedCreative"
             + File.separator + "inventories");
@@ -101,17 +89,18 @@ public class DataManager {
         ConsoleLogger.info("AutoPurge: Removed " + i + " LimitedCreative Survival, Creative and Adventure files");
     }
 
-    public synchronized void purgeDat(List<String> cleared) {
+    public synchronized void purgeDat(Set<OfflinePlayer> cleared) {
         int i = 0;
-        File dataFolder = new File(server.getWorldContainer(),
-            makePath(settings.getProperty(PurgeSettings.DEFAULT_WORLD), "players"));
-        List<OfflinePlayer> offlinePlayers = getOfflinePlayers(cleared);
-        for (OfflinePlayer player : offlinePlayers) {
-            File playerFile = new File(dataFolder, Utils.getUUIDorName(player) + ".dat");
+        File dataFolder = new File(server.getWorldContainer()
+                , makePath(settings.getProperty(PurgeSettings.DEFAULT_WORLD), "players"));
+
+        for (OfflinePlayer offlinePlayer : cleared) {
+            File playerFile = new File(dataFolder, Utils.getUUIDorName(offlinePlayer) + ".dat");
             if (playerFile.delete()) {
                 i++;
             }
         }
+
         ConsoleLogger.info("AutoPurge: Removed " + i + " .dat Files");
     }
 
@@ -120,7 +109,7 @@ public class DataManager {
      *
      * @param cleared List of String
      */
-    public void purgeEssentials(List<String> cleared) {
+    public void purgeEssentials(Set<OfflinePlayer> cleared) {
         int i = 0;
         File essentialsDataFolder = pluginHooks.getEssentialsDataFolder();
         if (essentialsDataFolder == null) {
@@ -132,9 +121,9 @@ public class DataManager {
         if (!userDataFolder.exists() || !userDataFolder.isDirectory()) {
             return;
         }
-        List<OfflinePlayer> offlinePlayers = getOfflinePlayers(cleared);
-        for (OfflinePlayer player : offlinePlayers) {
-            File playerFile = new File(userDataFolder, Utils.getUUIDorName(player) + ".yml");
+
+        for (OfflinePlayer offlinePlayer : cleared) {
+            File playerFile = new File(userDataFolder, Utils.getUUIDorName(offlinePlayer) + ".yml");
             if (playerFile.exists() && playerFile.delete()) {
                 i++;
             }
@@ -145,10 +134,12 @@ public class DataManager {
 
     // TODO: What is this method for? Is it correct?
     // TODO: Make it work with OfflinePlayers group data.
-    public synchronized void purgePermissions(List<String> cleared) {
-        for (String name : cleared) {
+    public synchronized void purgePermissions(Set<OfflinePlayer> cleared) {
+        for (OfflinePlayer offlinePlayer : cleared) {
+            String name = offlinePlayer.getName();
             permissionsManager.removeAllGroups(bukkitService.getPlayerExact(name));
         }
+
         ConsoleLogger.info("AutoPurge: Removed permissions from " + cleared.size() + " player(s).");
     }
 }

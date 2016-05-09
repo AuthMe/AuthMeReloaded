@@ -15,6 +15,7 @@ import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -137,11 +138,12 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public List<String> autoPurgeDatabase(long until) {
-        List<String> cleared = source.autoPurgeDatabase(until);
+    public Set<String> autoPurgeDatabase(long until) {
+        Set<String> cleared = source.autoPurgeDatabase(until);
         for (String name : cleared) {
             cachedAuths.invalidate(name);
         }
+
         return cleared;
     }
 
@@ -187,7 +189,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized void purgeBanned(final List<String> banned) {
+    public synchronized void purgeBanned(final Set<String> banned) {
         source.purgeBanned(banned);
         cachedAuths.invalidateAll(banned);
     }
