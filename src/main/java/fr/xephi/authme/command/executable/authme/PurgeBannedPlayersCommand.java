@@ -47,6 +47,6 @@ public class PurgeBannedPlayersCommand implements ExecutableCommand {
 
         // Show a status message
         sender.sendMessage(ChatColor.GOLD + "Purging user accounts...");
-        new PurgeTask(plugin, plugin.getSettings(), sender, namedBanned, bannedPlayers).runTaskTimer(plugin, 0, 1);
+        new PurgeTask(plugin, sender, namedBanned, bannedPlayers).runTaskTimer(plugin, 0, 1);
     }
 }

@@ -68,6 +68,6 @@ public class PurgeCommand implements ExecutableCommand {
         // Show a status message
         sender.sendMessage(ChatColor.GOLD + "Deleted " + purged.size() + " user accounts");
         sender.sendMessage(ChatColor.GOLD + "Purging user accounts...");
-        new PurgeTask(plugin, plugin.getSettings(), sender, purged).runTaskTimer(plugin, 0, 1);
+        new PurgeTask(plugin, sender, purged).runTaskTimer(plugin, 0, 1);
     }
 }

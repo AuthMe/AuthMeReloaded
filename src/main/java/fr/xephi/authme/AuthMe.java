@@ -706,7 +706,8 @@ public class AuthMe extends JavaPlugin {
 
         ConsoleLogger.info("AutoPurging the Database: " + cleared.size() + " accounts removed!");
         ConsoleLogger.info("Purging user accounts...");
-        new PurgeTask(plugin, newSettings, Bukkit.getConsoleSender(), cleared).runTaskTimer(plugin, 0, 1);
+        new PurgeTask(plugin, Bukkit.getConsoleSender(), cleared, true, Bukkit.getOfflinePlayers())
+                .runTaskTimer(plugin, 0, 1);
     }
 
     // Return the spawn location of a player
