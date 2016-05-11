@@ -1,6 +1,7 @@
 package fr.xephi.authme;
 
 import com.google.common.base.Throwables;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
 
 import java.io.File;
@@ -45,6 +46,15 @@ public final class ConsoleLogger {
         logger.info(message);
         if (useLogging) {
             writeLog(message);
+        }
+    }
+
+    public static void debug(String message) {
+        if (!AuthMe.getInstance().getSettings().getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
+            logger.fine(message);
+            if (useLogging) {
+                writeLog("Debug: " + message);
+            }
         }
     }
 

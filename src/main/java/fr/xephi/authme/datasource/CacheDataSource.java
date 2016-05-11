@@ -53,6 +53,7 @@ public class CacheDataSource implements DataSource {
                     return executorService.submit(new Callable<Optional<PlayerAuth>>() {
                         @Override
                         public Optional<PlayerAuth> call() {
+                            ConsoleLogger.debug("REFRESH " + key);
                             return load(key);
                         }
                     });
