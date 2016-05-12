@@ -1,6 +1,7 @@
 package fr.xephi.authme.security.crypts;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
 import fr.xephi.authme.security.crypts.description.SaltType;
@@ -13,13 +14,13 @@ import javax.inject.Inject;
 
 @Recommendation(Usage.RECOMMENDED) // provided the salt length is >= 8
 @HasSalt(value = SaltType.TEXT) // length depends on the bcryptLog2Rounds setting
-public class BCRYPT implements EncryptionMethod {
+public class BCRYPT implements EncryptionMethod, SettingsDependent {
 
-    private final int bCryptLog2Rounds;
+    private int bCryptLog2Rounds;
 
     @Inject
     public BCRYPT(NewSetting settings) {
-        this.bCryptLog2Rounds = settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND);
+        loadSettings(settings);
     }
 
     @Override
@@ -51,5 +52,10 @@ public class BCRYPT implements EncryptionMethod {
     @Override
     public boolean hasSeparateSalt() {
         return false;
+    }
+
+    @Override
+    public void loadSettings(NewSetting settings) {
+        bCryptLog2Rounds = settings.getProperty(HooksSettings.BCRYPT_LOG2_ROUND);
     }
 }

@@ -5,6 +5,7 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.initialization.DataFolder;
+import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.FileUtils;
 import fr.xephi.authme.util.StringUtils;
@@ -27,7 +28,7 @@ import java.io.IOException;
  * should be taken from. In AuthMe, we can distinguish between the regular spawn and a "first spawn",
  * to which players will be teleported who have joined for the first time.
  */
-public class SpawnLoader {
+public class SpawnLoader implements SettingsDependent {
 
     private final File authMeConfigurationFile;
     private final PluginHooks pluginHooks;
@@ -49,7 +50,7 @@ public class SpawnLoader {
         FileUtils.copyFileFromResource(spawnFile, "spawn.yml");
         this.authMeConfigurationFile = new File(pluginFolder, "spawn.yml");
         this.pluginHooks = pluginHooks;
-        initialize(settings);
+        loadSettings(settings);
     }
 
     /**
@@ -57,7 +58,8 @@ public class SpawnLoader {
      *
      * @param settings The settings instance
      */
-    public void initialize(NewSetting settings) {
+    @Override
+    public void loadSettings(NewSetting settings) {
         spawnPriority = settings.getProperty(RestrictionSettings.SPAWN_PRIORITY).split(",");
         authMeConfiguration = YamlConfiguration.loadConfiguration(authMeConfigurationFile);
         loadEssentialsSpawn();

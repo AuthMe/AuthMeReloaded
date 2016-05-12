@@ -1,11 +1,15 @@
 package fr.xephi.authme.initialization.samples;
 
+import fr.xephi.authme.initialization.Reloadable;
+
 import javax.inject.Inject;
 
 /**
  * Sample - class that is always provided to the initializer beforehand.
  */
-public class ProvidedClass {
+public class ProvidedClass implements Reloadable {
+
+    private boolean wasReloaded = false;
 
     @Inject
     public ProvidedClass() {
@@ -15,4 +19,12 @@ public class ProvidedClass {
     public ProvidedClass(String manualConstructor) {
     }
 
+    @Override
+    public void reload() {
+        wasReloaded = true;
+    }
+
+    public boolean getWasReloaded() {
+        return wasReloaded;
+    }
 }

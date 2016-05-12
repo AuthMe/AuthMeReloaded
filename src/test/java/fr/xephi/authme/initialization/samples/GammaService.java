@@ -1,13 +1,16 @@
 package fr.xephi.authme.initialization.samples;
 
+import fr.xephi.authme.initialization.Reloadable;
+
 import javax.inject.Inject;
 
 /**
  * Sample - class dependent on alpha service.
  */
-public class GammaService {
+public class GammaService implements Reloadable {
 
     private AlphaService alphaService;
+    private boolean wasReloaded;
 
     @Inject
     public GammaService(AlphaService alphaService) {
@@ -16,5 +19,14 @@ public class GammaService {
 
     public AlphaService getAlphaService() {
         return alphaService;
+    }
+
+    @Override
+    public void reload() {
+        wasReloaded = true;
+    }
+
+    public boolean getWasReloaded() {
+        return wasReloaded;
     }
 }

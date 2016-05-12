@@ -3,6 +3,7 @@ package fr.xephi.authme.security;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.PasswordEncryptionEvent;
 import fr.xephi.authme.initialization.AuthMeServiceInitializer;
+import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.EncryptionMethod;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
@@ -15,7 +16,7 @@ import javax.inject.Inject;
 /**
  * Manager class for password-related operations.
  */
-public class PasswordSecurity {
+public class PasswordSecurity implements Reloadable {
 
     @Inject
     private NewSetting settings;
@@ -36,6 +37,7 @@ public class PasswordSecurity {
      * Load or reload the configuration.
      */
     @PostConstruct
+    @Override
     public void reload() {
         this.algorithm = settings.getProperty(SecuritySettings.PASSWORD_HASH);
         this.supportOldAlgorithm = settings.getProperty(SecuritySettings.SUPPORT_OLD_PASSWORD_HASH);

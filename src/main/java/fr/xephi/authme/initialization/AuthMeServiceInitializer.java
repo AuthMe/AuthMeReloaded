@@ -2,6 +2,7 @@ package fr.xephi.authme.initialization;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableSet;
+import fr.xephi.authme.settings.NewSetting;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Provider;
@@ -120,6 +121,26 @@ public class AuthMeServiceInitializer {
         T object = instantiate(clazz, traversedClasses);
         storeObject(object);
         return object;
+    }
+
+    /**
+     * Performs a reload on all applicable instances which are registered.
+     * Requires that the {@link NewSetting settings} instance be registered.
+     * <p>
+     * Note that the order in which these classes are reloaded is not guaranteed.
+     */
+    public void performReloadOnServices() {
+        NewSetting settings = (NewSetting) objects.get(NewSetting.class);
+        if (settings == null) {
+            throw new IllegalStateException("Settings instance is null");
+        }
+        for (Object object : objects.values()) {
+            if (object instanceof Reloadable) {
+                ((Reloadable) object).reload();
+            } else if (object instanceof SettingsDependent) {
+                ((SettingsDependent) object).loadSettings(settings);
+            }
+        }
     }
 
     /**

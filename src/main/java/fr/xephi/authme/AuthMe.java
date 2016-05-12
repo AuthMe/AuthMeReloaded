@@ -322,23 +322,6 @@ public class AuthMe extends JavaPlugin {
     }
 
     /**
-     * Reload certain components.
-     *
-     * @throws Exception if an error occurs
-     */
-    public void reload() throws Exception {
-        newSettings.reload();
-        // We do not change database type for consistency issues, but we'll output a note in the logs
-        if (!newSettings.getProperty(DatabaseSettings.BACKEND).equals(database.getType())) {
-            ConsoleLogger.info("Note: cannot change database type during /authme reload");
-        }
-        database.reload();
-        messages.reload(newSettings.getMessagesFile());
-        passwordSecurity.reload();
-        spawnLoader.initialize(newSettings);
-    }
-
-    /**
      * Set up the mail API, if enabled.
      */
     private void setupMailApi() {

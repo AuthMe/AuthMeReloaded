@@ -8,6 +8,7 @@ import fr.xephi.authme.initialization.samples.ClassWithAbstractDependency;
 import fr.xephi.authme.initialization.samples.ClassWithAnnotations;
 import fr.xephi.authme.initialization.samples.Duration;
 import fr.xephi.authme.initialization.samples.FieldInjectionWithAnnotations;
+import fr.xephi.authme.initialization.samples.GammaService;
 import fr.xephi.authme.initialization.samples.InstantiationFallbackClasses;
 import fr.xephi.authme.initialization.samples.InvalidClass;
 import fr.xephi.authme.initialization.samples.InvalidPostConstruct;
@@ -15,6 +16,7 @@ import fr.xephi.authme.initialization.samples.InvalidStaticFieldInjection;
 import fr.xephi.authme.initialization.samples.PostConstructTestClass;
 import fr.xephi.authme.initialization.samples.ProvidedClass;
 import fr.xephi.authme.initialization.samples.Size;
+import fr.xephi.authme.settings.NewSetting;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,6 +25,7 @@ import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Test for {@link AuthMeServiceInitializer}.
@@ -242,6 +245,36 @@ public class AuthMeServiceInitializerTest {
         assertThat(result, not(nullValue()));
         assertThat(result.getGammaService(), not(nullValue()));
         assertThat(result.getFallbackDependency(), not(nullValue()));
+    }
+
+    @Test
+    public void shouldPerformReloadOnApplicableInstances() {
+        // given
+        initializer.provide(Size.class, 12);
+        initializer.provide(Duration.class, -113L);
+        initializer.register(NewSetting.class, mock(NewSetting.class));
+
+        GammaService gammaService = initializer.get(GammaService.class);
+        PostConstructTestClass postConstructTestClass = initializer.get(PostConstructTestClass.class);
+        ProvidedClass providedClass = initializer.get(ProvidedClass.class);
+        initializer.get(ClassWithAnnotations.class);
+        // Assert that no class was somehow reloaded at initialization
+        assertThat(gammaService.getWasReloaded() || postConstructTestClass.getWasReloaded()
+            || providedClass.getWasReloaded(), equalTo(false));
+
+        // when
+        initializer.performReloadOnServices();
+
+        // then
+        assertThat(gammaService.getWasReloaded(), equalTo(true));
+        assertThat(postConstructTestClass.getWasReloaded(), equalTo(true));
+        assertThat(providedClass.getWasReloaded(), equalTo(true));
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowForNullSetting() {
+        // given / when / then
+        initializer.performReloadOnServices();
     }
 
 }

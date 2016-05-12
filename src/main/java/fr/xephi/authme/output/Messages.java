@@ -1,6 +1,8 @@
 package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.initialization.SettingsDependent;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.util.StringUtils;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +16,7 @@ import java.io.InputStreamReader;
 /**
  * Class for retrieving and sending translatable messages to players.
  */
-public class Messages {
+public class Messages implements SettingsDependent {
 
     private FileConfiguration configuration;
     private String fileName;
@@ -114,13 +116,9 @@ public class Messages {
         return message;
     }
 
-    /**
-     * Reset the messages manager to retrieve messages from the given file instead of the current one.
-     *
-     * @param messagesFile The new file to load messages from
-     */
-    public void reload(File messagesFile) {
-        initializeFile(messagesFile);
+    @Override
+    public void loadSettings(NewSetting settings) {
+        initializeFile(settings.getMessagesFile());
     }
 
     private void initializeFile(File messageFile) {

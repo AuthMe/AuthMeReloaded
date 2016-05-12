@@ -1,6 +1,7 @@
 package fr.xephi.authme.datasource;
 
 import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 /**
  * Interface for manipulating {@link PlayerAuth} objects from a data source.
  */
-public interface DataSource {
+public interface DataSource extends Reloadable {
 
     /**
      * Return whether there is a record for the given username.
@@ -204,6 +205,7 @@ public interface DataSource {
     /**
      * Reload the data source.
      */
+    @Override
     void reload();
 
 }

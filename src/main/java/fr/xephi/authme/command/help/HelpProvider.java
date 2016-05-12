@@ -7,6 +7,7 @@ import fr.xephi.authme.command.CommandDescription;
 import fr.xephi.authme.command.CommandPermissions;
 import fr.xephi.authme.command.CommandUtils;
 import fr.xephi.authme.command.FoundCommandResult;
+import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.permission.DefaultPermission;
 import fr.xephi.authme.permission.PermissionNode;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -26,7 +27,7 @@ import static java.util.Collections.singletonList;
 /**
  * Help syntax generator for AuthMe commands.
  */
-public class HelpProvider {
+public class HelpProvider implements SettingsDependent {
 
     // --- Bit flags ---
     /** Set to <i>not</i> show the command. */
@@ -46,12 +47,12 @@ public class HelpProvider {
     public static final int ALL_OPTIONS = ~HIDE_COMMAND;
 
     private final PermissionsManager permissionsManager;
-    private final String helpHeader;
+    private String helpHeader;
 
     @Inject
     public HelpProvider(PermissionsManager permissionsManager, NewSetting settings) {
         this.permissionsManager = permissionsManager;
-        this.helpHeader = settings.getProperty(PluginSettings.HELP_HEADER);
+        loadSettings(settings);
     }
 
     public List<String> printHelp(CommandSender sender, FoundCommandResult result, int options) {
@@ -86,6 +87,11 @@ public class HelpProvider {
         }
 
         return lines;
+    }
+
+    @Override
+    public void loadSettings(NewSetting settings) {
+        helpHeader = settings.getProperty(PluginSettings.HELP_HEADER);
     }
 
     private static void printDetailedDescription(CommandDescription command, List<String> lines) {

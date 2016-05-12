@@ -3,7 +3,12 @@ package fr.xephi.authme.command.executable.authme;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.TestHelper;
 import fr.xephi.authme.command.CommandService;
+import fr.xephi.authme.datasource.DataSource;
+import fr.xephi.authme.datasource.DataSourceType;
+import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.output.MessageKey;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
 import org.bukkit.command.CommandSender;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,6 +19,9 @@ import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.Collections;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
@@ -32,7 +40,13 @@ public class ReloadCommandTest {
     private AuthMe authMe;
 
     @Mock
-    private CommandService service;
+    private AuthMeServiceInitializer initializer;
+
+    @Mock
+    private NewSetting settings;
+
+    @Mock
+    private DataSource dataSource;
 
     @BeforeClass
     public static void setUpLogger() {
@@ -40,30 +54,55 @@ public class ReloadCommandTest {
     }
 
     @Test
-    public void shouldReload() throws Exception {
+    public void shouldReload() {
         // given
         CommandSender sender = mock(CommandSender.class);
+        CommandService service = mock(CommandService.class);
+        given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
+        given(dataSource.getType()).willReturn(DataSourceType.MYSQL);
 
         // when
         command.executeCommand(sender, Collections.<String>emptyList(), service);
 
         // then
-        verify(authMe).reload();
+        verify(settings).reload();
+        verify(initializer).performReloadOnServices();
         verify(service).send(sender, MessageKey.CONFIG_RELOAD_SUCCESS);
     }
 
     @Test
-    public void shouldHandleReloadError() throws Exception {
+    public void shouldHandleReloadError() {
         // given
-        doThrow(IllegalStateException.class).when(authMe).reload();
         CommandSender sender = mock(CommandSender.class);
+        CommandService service = mock(CommandService.class);
+        doThrow(IllegalStateException.class).when(initializer).performReloadOnServices();
+        given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
+        given(dataSource.getType()).willReturn(DataSourceType.MYSQL);
 
         // when
         command.executeCommand(sender, Collections.<String>emptyList(), service);
 
         // then
-        verify(authMe).reload();
+        verify(settings).reload();
+        verify(initializer).performReloadOnServices();
         verify(sender).sendMessage(matches("Error occurred.*"));
         verify(authMe).stopOrUnload();
+    }
+
+    @Test
+    public void shouldIssueWarningForChangedDatasourceSetting() {
+        // given
+        CommandSender sender = mock(CommandSender.class);
+        CommandService service = mock(CommandService.class);
+        given(settings.getProperty(DatabaseSettings.BACKEND)).willReturn(DataSourceType.MYSQL);
+        given(dataSource.getType()).willReturn(DataSourceType.SQLITE);
+
+        // when
+        command.executeCommand(sender, Collections.<String>emptyList(), service);
+
+        // then
+        verify(settings).reload();
+        verify(initializer).performReloadOnServices();
+        verify(sender).sendMessage(argThat(containsString("cannot change database type")));
     }
 }

@@ -2,6 +2,7 @@ package fr.xephi.authme.output;
 
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.TestHelper;
+import fr.xephi.authme.settings.NewSetting;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assume.assumeThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
@@ -247,9 +249,11 @@ public class MessagesIntegrationTest {
         MessageKey key = MessageKey.WRONG_PASSWORD;
         // assumption: message comes back as defined in messages_test.yml
         assumeThat(messages.retrieveSingle(key), equalTo("§cWrong password!"));
+        NewSetting settings = mock(NewSetting.class);
+        given(settings.getMessagesFile()).willReturn(TestHelper.getJarFile("/messages_test2.yml"));
 
         // when
-        messages.reload(TestHelper.getJarFile("/messages_test2.yml"));
+        messages.loadSettings(settings);
 
         // then
         assertThat(messages.retrieveSingle(key), equalTo("test2 - wrong password"));
