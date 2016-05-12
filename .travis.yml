@@ -3,7 +3,7 @@ sudo: false
 language: java
 jdk: oraclejdk7
 
-script: mvn verify -B
+script: mvn clean install -B
 
 notifications:
   webhooks:
