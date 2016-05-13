@@ -330,7 +330,7 @@
         <!-- Multiverse Repo -->
         <repository>
             <id>onarandombox</id>
-            <url>http://repo.onarandombox.com/content/groups/public</url>
+            <url>https://repo.onarandombox.com/content/groups/public</url>
         </repository>
 
         <!-- Vault Repo -->
