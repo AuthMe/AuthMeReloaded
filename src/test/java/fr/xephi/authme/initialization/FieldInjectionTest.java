@@ -127,7 +127,5 @@ public class FieldInjectionTest {
 
     private static class NoInjectionClass {
 
-        private BetaManager betaManager;
-
     }
 }

@@ -88,7 +88,7 @@ public class ConfigFileConsistencyTest {
         // when / then
         for (Property<?> property : propertyMap.keySet()) {
             assertThat("Default value of '" + property.getPath() + "' in config.yml should be the same as in Property",
-                property.getFromFile(configuration), equalTo(property.getDefaultValue()));
+                property.getFromFile(configuration).equals(property.getDefaultValue()), equalTo(true));
         }
     }
 

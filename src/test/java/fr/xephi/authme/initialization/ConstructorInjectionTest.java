@@ -21,6 +21,7 @@ import static org.junit.Assert.assertThat;
  */
 public class ConstructorInjectionTest {
 
+    @SuppressWarnings("unchecked")
     @Test
     public void shouldReturnDependencies() {
         // given
