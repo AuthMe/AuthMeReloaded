@@ -31,6 +31,16 @@ public class LoginEvent extends CustomEvent {
     }
 
     /**
+     *
+     * @return
+     * @deprecated this will always return true because this event is only called if it was successful
+     */
+    @Deprecated
+    public boolean isLogin() {
+        return true;
+    }
+
+    /**
      * Return the list of handlers, equivalent to {@link #getHandlers()} and required by {@link Event}.
      *
      * @return The list of handlers
