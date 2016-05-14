@@ -444,10 +444,7 @@ public class AuthMePlayerListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             @Override
             public void run() {
-                // Fix NPE, idk how this is possible -sgdc3
-                if(player != null && player.isOnline()) {
-                    player.closeInventory();
-                }
+                player.closeInventory();
             }
         }, 1);
     }
