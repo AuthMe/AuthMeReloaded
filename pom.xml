@@ -664,6 +664,10 @@
                 	<artifactId>spigot-api</artifactId>
                 	<groupId>org.spigotmc</groupId>
                 </exclusion>
+                <exclusion>
+                	<artifactId>jettison</artifactId>
+                	<groupId>org.codehaus.jettison</groupId>
+                </exclusion>
             </exclusions>
         </dependency>
 
