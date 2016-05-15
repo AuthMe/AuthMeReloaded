@@ -1,8 +1,20 @@
 package fr.xephi.authme.datasource;
 
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
+
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.security.HashAlgorithm;
@@ -14,17 +26,6 @@ import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
-
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  */
@@ -535,7 +536,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public boolean updatePassword(String user, HashedPassword password) {
+    public synchronized boolean updatePassword(String user, HashedPassword password) {
         user = user.toLowerCase();
         try (Connection con = getConnection()) {
             boolean useSalt = !col.SALT.isEmpty();
@@ -756,7 +757,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public boolean isLogged(String user) {
+    public synchronized boolean isLogged(String user) {
         String sql = "SELECT " + col.IS_LOGGED + " FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, user);
@@ -770,7 +771,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void setLogged(String user) {
+    public synchronized void setLogged(String user) {
         String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 1);
@@ -782,7 +783,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public void setUnlogged(String user) {
+    public synchronized void setUnlogged(String user) {
         String sql = "UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setInt(1, 0);
@@ -822,7 +823,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public boolean updateRealName(String user, String realName) {
+    public synchronized boolean updateRealName(String user, String realName) {
         String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, realName);
@@ -836,7 +837,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public boolean updateIp(String user, String ip) {
+    public synchronized boolean updateIp(String user, String ip) {
         String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, ip);

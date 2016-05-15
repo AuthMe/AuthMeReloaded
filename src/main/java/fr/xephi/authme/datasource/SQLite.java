@@ -1,14 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import com.google.common.annotations.VisibleForTesting;
-import fr.xephi.authme.ConsoleLogger;
-import fr.xephi.authme.cache.auth.PlayerAuth;
-import fr.xephi.authme.security.crypts.HashedPassword;
-import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
-import fr.xephi.authme.settings.properties.DatabaseSettings;
-import fr.xephi.authme.util.StringUtils;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,6 +8,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.google.common.annotations.VisibleForTesting;
+
+import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.cache.auth.PlayerAuth;
+import fr.xephi.authme.security.crypts.HashedPassword;
+import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.util.StringUtils;
 
 /**
  */
@@ -65,7 +66,6 @@ public class SQLite implements DataSource {
         Class.forName("org.sqlite.JDBC");
         ConsoleLogger.info("SQLite driver loaded");
         this.con = DriverManager.getConnection("jdbc:sqlite:plugins/AuthMe/" + database + ".db");
-
     }
 
     private synchronized void setup() throws SQLException {
@@ -131,7 +131,13 @@ public class SQLite implements DataSource {
 
     @Override
     public void reload() {
-        // TODO 20160309: Implement reloading
+        close(con);
+        try {
+            this.connect();
+            this.setup();
+        } catch (ClassNotFoundException | SQLException ex) {
+            ConsoleLogger.logException("Error during SQLite initialization:", ex);
+        }
     }
 
     @Override
@@ -239,7 +245,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public boolean updatePassword(String user, HashedPassword password) {
+    public synchronized boolean updatePassword(String user, HashedPassword password) {
         user = user.toLowerCase();
         PreparedStatement pst = null;
         try {
@@ -266,7 +272,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public boolean updateSession(PlayerAuth auth) {
+    public synchronized boolean updateSession(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IP + "=?, " + col.LAST_LOGIN + "=?, " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;");
@@ -322,7 +328,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public boolean updateQuitLoc(PlayerAuth auth) {
+    public synchronized boolean updateQuitLoc(PlayerAuth auth) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.LASTLOC_X + "=?, " + col.LASTLOC_Y + "=?, " + col.LASTLOC_Z + "=?, " + col.LASTLOC_WORLD + "=? WHERE " + col.NAME + "=?;");
@@ -342,7 +348,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public boolean updateEmail(PlayerAuth auth) {
+    public synchronized boolean updateEmail(PlayerAuth auth) {
         String sql = "UPDATE " + tableName + " SET " + col.EMAIL + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, auth.getEmail());
@@ -370,6 +376,16 @@ public class SQLite implements DataSource {
         if (st != null) {
             try {
                 st.close();
+            } catch (SQLException ex) {
+                logSqlException(ex);
+            }
+        }
+    }
+
+    private void close(Connection con) {
+        if (con != null) {
+            try {
+                con.close();
             } catch (SQLException ex) {
                 logSqlException(ex);
             }
@@ -443,7 +459,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public boolean isLogged(String user) {
+    public synchronized boolean isLogged(String user) {
         PreparedStatement pst = null;
         ResultSet rs = null;
         try {
@@ -462,7 +478,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public void setLogged(String user) {
+    public synchronized void setLogged(String user) {
         PreparedStatement pst = null;
         try {
             pst = con.prepareStatement("UPDATE " + tableName + " SET " + col.IS_LOGGED + "=? WHERE LOWER(" + col.NAME + ")=?;");
@@ -477,7 +493,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public void setUnlogged(String user) {
+    public synchronized void setUnlogged(String user) {
         PreparedStatement pst = null;
         if (user != null)
             try {
@@ -521,7 +537,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public boolean updateRealName(String user, String realName) {
+    public synchronized boolean updateRealName(String user, String realName) {
         String sql = "UPDATE " + tableName + " SET " + col.REAL_NAME + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, realName);
@@ -535,7 +551,7 @@ public class SQLite implements DataSource {
     }
 
     @Override
-    public boolean updateIp(String user, String ip) {
+    public synchronized boolean updateIp(String user, String ip) {
         String sql = "UPDATE " + tableName + " SET " + col.IP + "=? WHERE " + col.NAME + "=?;";
         try (PreparedStatement pst = con.prepareStatement(sql)) {
             pst.setString(1, ip);

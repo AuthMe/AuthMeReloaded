@@ -1,5 +1,11 @@
 package fr.xephi.authme.datasource;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -8,16 +14,11 @@ import com.google.common.util.concurrent.ListenableFuture;
 import com.google.common.util.concurrent.ListeningExecutorService;
 import com.google.common.util.concurrent.MoreExecutors;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 /**
  */
@@ -41,7 +42,8 @@ public class CacheDataSource implements DataSource {
                 .build())
         );
         cachedAuths = CacheBuilder.newBuilder()
-            .refreshAfterWrite(8, TimeUnit.MINUTES)
+            .refreshAfterWrite(5, TimeUnit.MINUTES)
+            .expireAfterAccess(15, TimeUnit.MINUTES)
             .build(new CacheLoader<String, Optional<PlayerAuth>>() {
                 @Override
                 public Optional<PlayerAuth> load(String key) {
@@ -110,7 +112,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean updatePassword(String user, HashedPassword password) {
+    public synchronized boolean updatePassword(String user, HashedPassword password) {
         user = user.toLowerCase();
         boolean result = source.updatePassword(user, password);
         if (result) {
@@ -120,7 +122,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateSession(PlayerAuth auth) {
+    public synchronized boolean updateSession(PlayerAuth auth) {
         boolean result = source.updateSession(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -129,7 +131,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateQuitLoc(final PlayerAuth auth) {
+    public synchronized boolean updateQuitLoc(final PlayerAuth auth) {
         boolean result = source.updateQuitLoc(auth);
         if (result) {
             cachedAuths.refresh(auth.getNickname());
@@ -199,17 +201,17 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean isLogged(String user) {
+    public synchronized boolean isLogged(String user) {
         return PlayerCache.getInstance().isAuthenticated(user);
     }
 
     @Override
-    public void setLogged(final String user) {
+    public synchronized void setLogged(final String user) {
         source.setLogged(user.toLowerCase());
     }
 
     @Override
-    public void setUnlogged(final String user) {
+    public synchronized void setUnlogged(final String user) {
         source.setUnlogged(user.toLowerCase());
     }
 
@@ -225,7 +227,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateRealName(String user, String realName) {
+    public synchronized boolean updateRealName(String user, String realName) {
         boolean result = source.updateRealName(user, realName);
         if (result) {
             cachedAuths.refresh(user);
@@ -234,7 +236,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public boolean updateIp(String user, String ip) {
+    public synchronized boolean updateIp(String user, String ip) {
         boolean result = source.updateIp(user, ip);
         if (result) {
             cachedAuths.refresh(user);
