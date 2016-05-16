@@ -5,6 +5,7 @@ import fr.xephi.authme.initialization.Reloadable;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * Interface for manipulating {@link PlayerAuth} objects from a data source.
@@ -75,7 +76,7 @@ public interface DataSource extends Reloadable {
      * @param until The minimum last login
      * @return The account names that have been removed
      */
-    List<String> autoPurgeDatabase(long until);
+    Set<String> autoPurgeDatabase(long until);
 
     /**
      * Remove a user record from the database.
@@ -127,7 +128,7 @@ public interface DataSource extends Reloadable {
      *
      * @param banned the list of players to delete
      */
-    void purgeBanned(List<String> banned);
+    void purgeBanned(Set<String> banned);
 
     /**
      * Return the data source type.

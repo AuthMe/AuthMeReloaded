@@ -10,6 +10,8 @@ import java.util.List;
 import static fr.xephi.authme.AuthMeMatchers.equalToHash;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthBasicData;
 import static fr.xephi.authme.AuthMeMatchers.hasAuthLocation;
+import java.util.HashSet;
+import java.util.Set;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
@@ -221,7 +223,7 @@ public abstract class AbstractDataSourceIntegrationTest {
     public void shouldDeletePlayers() {
         // given
         DataSource dataSource = getDataSource();
-        List<String> playersToDelete = Arrays.asList("bobby", "doesNotExist");
+        Set<String> playersToDelete = new HashSet<>(Arrays.asList("bobby", "doesNotExist"));
         assumeThat(dataSource.getAccountsRegistered(), equalTo(2));
 
         // when

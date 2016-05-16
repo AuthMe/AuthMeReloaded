@@ -1,16 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.pool.HikariPool.PoolInitializationException;
@@ -27,8 +16,19 @@ import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
 
-/**
- */
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 public class MySQL implements DataSource {
 
     private final String host;
@@ -611,8 +611,8 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized List<String> autoPurgeDatabase(long until) {
-        List<String> list = new ArrayList<>();
+    public synchronized Set<String> autoPurgeDatabase(long until) {
+        Set<String> list = new HashSet<>();
         String select = "SELECT " + col.NAME + " FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         String delete = "DELETE FROM " + tableName + " WHERE " + col.LAST_LOGIN + "<?;";
         try (Connection con = getConnection();
@@ -629,6 +629,7 @@ public class MySQL implements DataSource {
         } catch (SQLException ex) {
             logSqlException(ex);
         }
+
         return list;
     }
 
@@ -739,7 +740,7 @@ public class MySQL implements DataSource {
     }
 
     @Override
-    public synchronized void purgeBanned(List<String> banned) {
+    public synchronized void purgeBanned(Set<String> banned) {
         String sql = "DELETE FROM " + tableName + " WHERE " + col.NAME + "=?;";
         try (Connection con = getConnection(); PreparedStatement pst = con.prepareStatement(sql)) {
             for (String name : banned) {
