@@ -1,11 +1,5 @@
 package fr.xephi.authme.datasource;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -20,8 +14,13 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.security.crypts.HashedPassword;
 
-/**
- */
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
 public class CacheDataSource implements DataSource {
 
     private final DataSource source;
@@ -140,11 +139,12 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public List<String> autoPurgeDatabase(long until) {
-        List<String> cleared = source.autoPurgeDatabase(until);
+    public Set<String> autoPurgeDatabase(long until) {
+        Set<String> cleared = source.autoPurgeDatabase(until);
         for (String name : cleared) {
             cachedAuths.invalidate(name);
         }
+
         return cleared;
     }
 
@@ -190,7 +190,7 @@ public class CacheDataSource implements DataSource {
     }
 
     @Override
-    public synchronized void purgeBanned(final List<String> banned) {
+    public synchronized void purgeBanned(final Set<String> banned) {
         source.purgeBanned(banned);
         cachedAuths.invalidateAll(banned);
     }

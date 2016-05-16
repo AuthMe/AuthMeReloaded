@@ -17,7 +17,9 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Deprecated flat file datasource. The only method guaranteed to work is {@link FlatFile#getAllAuths()}
@@ -227,11 +229,11 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public List<String> autoPurgeDatabase(long until) {
+    public Set<String> autoPurgeDatabase(long until) {
         BufferedReader br = null;
         BufferedWriter bw = null;
         ArrayList<String> lines = new ArrayList<>();
-        List<String> cleared = new ArrayList<>();
+        Set<String> cleared = new HashSet<>();
         try {
             br = new BufferedReader(new FileReader(source));
             String line;
@@ -256,6 +258,7 @@ public class FlatFile implements DataSource {
             silentClose(br);
             silentClose(bw);
         }
+
         return cleared;
     }
 
@@ -414,7 +417,7 @@ public class FlatFile implements DataSource {
     }
 
     @Override
-    public void purgeBanned(List<String> banned) {
+    public void purgeBanned(Set<String> banned) {
         BufferedReader br = null;
         BufferedWriter bw = null;
         ArrayList<String> lines = new ArrayList<>();
