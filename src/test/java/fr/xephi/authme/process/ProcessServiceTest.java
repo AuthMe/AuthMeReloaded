@@ -141,33 +141,6 @@ public class ProcessServiceTest {
     }
 
     @Test
-    public void shouldReturnPluginHooks() {
-        // given / when
-        PluginHooks result = processService.getPluginHooks();
-
-        // then
-        assertThat(result, equalTo(pluginHooks));
-    }
-
-    @Test
-    public void shouldReturnSpawnLoader() {
-        // given / when
-        SpawnLoader result = processService.getSpawnLoader();
-
-        // then
-        assertThat(result, equalTo(spawnLoader));
-    }
-
-    @Test
-    public void shouldReturnDatasource() {
-        // given / when
-        DataSource result = processService.getDataSource();
-
-        // then
-        assertThat(result, equalTo(dataSource));
-    }
-
-    @Test
     public void shouldComputeHash() {
         // given
         String password = "test123";

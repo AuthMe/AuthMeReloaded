@@ -4,12 +4,13 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
-import fr.xephi.authme.cache.backup.JsonCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
+import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.NewProcess;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -22,55 +23,50 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-public class AsynchronousUnregister implements Process {
+import javax.inject.Inject;
 
-    private final Player player;
-    private final String name;
-    private final String password;
-    private final boolean force;
-    private final AuthMe plugin;
-    private final JsonCache playerCache;
-    private final ProcessService service;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
-    /**
-     * Constructor.
-     *
-     * @param player The player to perform the action for
-     * @param password The password
-     * @param force True to bypass password validation
-     * @param plugin The plugin instance
-     * @param service The process service
-     */
-    public AsynchronousUnregister(Player player, String password, boolean force, AuthMe plugin,
-                                  ProcessService service) {
-        this.player = player;
-        this.name = player.getName().toLowerCase();
-        this.password = password;
-        this.force = force;
-        this.plugin = plugin;
-        this.playerCache = new JsonCache();
-        this.service = service;
-    }
+public class AsynchronousUnregister implements NewProcess {
 
-    @Override
-    public void run() {
-        PlayerAuth cachedAuth = PlayerCache.getInstance().getAuth(name);
-        if (force || plugin.getPasswordSecurity().comparePassword(
-            password, cachedAuth.getPassword(), player.getName())) {
-            if (!service.getDataSource().removeAuth(name)) {
+    @Inject
+    private AuthMe plugin;
+
+    @Inject
+    private DataSource dataSource;
+
+    @Inject
+    private ProcessService service;
+
+    @Inject
+    private PasswordSecurity passwordSecurity;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private LimboCache limboCache;
+
+    AsynchronousUnregister() { }
+
+    public void unregister(Player player, String password, boolean force) {
+        final String name = player.getName().toLowerCase();
+        PlayerAuth cachedAuth = playerCache.getAuth(name);
+        if (force || passwordSecurity.comparePassword(password, cachedAuth.getPassword(), player.getName())) {
+            if (!dataSource.removeAuth(name)) {
                 service.send(player, MessageKey.ERROR);
                 return;
             }
-            int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
+            int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
             if (Settings.isForcedRegistrationEnabled) {
                 Utils.teleportToSpawn(player);
                 player.saveData();
-                PlayerCache.getInstance().removePlayer(player.getName().toLowerCase());
+                playerCache.removePlayer(player.getName().toLowerCase());
                 if (!Settings.getRegisteredGroup.isEmpty()) {
                     Utils.setGroup(player, GroupType.UNREGISTERED);
                 }
-                LimboCache.getInstance().addLimboPlayer(player);
-                LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
+                limboCache.addLimboPlayer(player);
+                LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
                 int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
                 if (timeOut != 0) {
                     BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
@@ -85,12 +81,8 @@ public class AsynchronousUnregister implements Process {
             if (!Settings.unRegisteredGroup.isEmpty()) {
                 Utils.setGroup(player, Utils.GroupType.UNREGISTERED);
             }
-            PlayerCache.getInstance().removePlayer(name);
-            // check if Player cache File Exist and delete it, preventing
-            // duplication of items
-            if (playerCache.doesCacheExist(player)) {
-                playerCache.removeCache(player);
-            }
+            playerCache.removePlayer(name);
+
             // Apply blind effect
             if (service.getProperty(RegistrationSettings.APPLY_BLIND_EFFECT)) {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));

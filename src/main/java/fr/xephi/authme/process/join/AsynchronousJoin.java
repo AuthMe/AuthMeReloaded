@@ -14,9 +14,10 @@ import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.NewProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
+import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
@@ -35,42 +36,48 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.inject.Inject;
+
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
 /**
  */
-public class AsynchronousJoin implements Process {
+public class AsynchronousJoin implements NewProcess {
 
-    private final AuthMe plugin;
-    private final Player player;
-    private final DataSource database;
-    private final String name;
-    private final ProcessService service;
-    private final PlayerCache playerCache;
-    private final PluginHooks pluginHooks;
+    @Inject
+    private AuthMe plugin;
 
-    private final boolean disableCollisions = MethodUtils
+    @Inject
+    private DataSource database;
+
+    @Inject
+    private ProcessService service;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private LimboCache limboCache;
+
+    @Inject
+    private PluginHooks pluginHooks;
+
+    @Inject
+    private SpawnLoader spawnLoader;
+
+    private static final boolean DISABLE_COLLISIONS = MethodUtils
             .getAccessibleMethod(LivingEntity.class, "setCollidable", new Class[]{}) != null;
 
-    public AsynchronousJoin(Player player, AuthMe plugin, DataSource database, PlayerCache playerCache,
-                            PluginHooks pluginHooks, ProcessService service) {
-        this.player = player;
-        this.plugin = plugin;
-        this.database = database;
-        this.name = player.getName().toLowerCase();
-        this.service = service;
-        this.playerCache = playerCache;
-        this.pluginHooks = pluginHooks;
-    }
+    AsynchronousJoin() { }
 
-    @Override
-    public void run() {
+    public void processJoin(final Player player) {
         if (Utils.isUnrestricted(player)) {
             return;
         }
+        final String name = player.getName().toLowerCase();
 
         if (service.getProperty(HooksSettings.DISABLE_SOCIAL_SPY)) {
-            service.getPluginHooks().setEssentialsSocialSpyStatus(player, false);
+            pluginHooks.setEssentialsSocialSpyStatus(player, false);
         }
 
         final String ip = Utils.getPlayerIp(player);
@@ -101,10 +108,10 @@ public class AsynchronousJoin implements Process {
             return;
         }
         // Prevent player collisions in 1.9
-        if (disableCollisions) {
+        if (DISABLE_COLLISIONS) {
             ((LivingEntity) player).setCollidable(false);
         }
-        final Location spawnLoc = service.getSpawnLoader().getSpawnLocation(player);
+        final Location spawnLoc = spawnLoader.getSpawnLocation(player);
         final boolean isAuthAvailable = database.isAuthAvailable(name);
         if (isAuthAvailable) {
             if (!service.getProperty(RestrictionSettings.NO_TELEPORT)) {
@@ -123,7 +130,7 @@ public class AsynchronousJoin implements Process {
                 }
             }
             placePlayerSafely(player, spawnLoc);
-            LimboCache.getInstance().updateLimboPlayer(player);
+            limboCache.updateLimboPlayer(player);
 
             // protect inventory
             if (service.getProperty(PROTECT_INVENTORY_BEFORE_LOGIN) && plugin.inventoryProtector != null) {
@@ -144,7 +151,7 @@ public class AsynchronousJoin implements Process {
                 }
                 PlayerAuth auth = database.getAuth(name);
                 database.setUnlogged(name);
-                PlayerCache.getInstance().removePlayer(name);
+                playerCache.removePlayer(name);
                 if (auth != null && auth.getIp().equals(ip)) {
                     service.send(player, MessageKey.SESSION_RECONNECTION);
                     plugin.getManagement().performLogin(player, "dontneed", true);
@@ -161,12 +168,12 @@ public class AsynchronousJoin implements Process {
                 return;
             }
 
-            if (!Settings.noTeleport && !needFirstSpawn() && Settings.isTeleportToSpawnEnabled
+            if (!Settings.noTeleport && !needFirstSpawn(player) && Settings.isTeleportToSpawnEnabled
                 || (Settings.isForceSpawnLocOnJoinEnabled && Settings.getForcedWorlds.contains(player.getWorld().getName()))) {
                 service.scheduleSyncDelayedTask(new Runnable() {
                     @Override
                     public void run() {
-                        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, PlayerCache.getInstance().isAuthenticated(name));
+                        SpawnTeleportEvent tpEvent = new SpawnTeleportEvent(player, player.getLocation(), spawnLoc, playerCache.isAuthenticated(name));
                         service.callEvent(tpEvent);
                         if (!tpEvent.isCancelled() && player.isOnline() && tpEvent.getTo() != null
                             && tpEvent.getTo().getWorld() != null) {
@@ -177,8 +184,8 @@ public class AsynchronousJoin implements Process {
             }
         }
 
-        if (!LimboCache.getInstance().hasLimboPlayer(name)) {
-            LimboCache.getInstance().addLimboPlayer(player);
+        if (!limboCache.hasLimboPlayer(name)) {
+            limboCache.addLimboPlayer(player);
         }
         Utils.setGroup(player, isAuthAvailable ? GroupType.NOTLOGGEDIN : GroupType.UNREGISTERED);
 
@@ -209,7 +216,7 @@ public class AsynchronousJoin implements Process {
         int msgInterval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         if (registrationTimeout > 0) {
             BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), registrationTimeout);
-            LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
+            LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
             if (limboPlayer != null) {
                 limboPlayer.setTimeoutTask(id);
             }
@@ -223,21 +230,21 @@ public class AsynchronousJoin implements Process {
                 ? MessageKey.REGISTER_EMAIL_MESSAGE
                 : MessageKey.REGISTER_MESSAGE;
         }
-        if (msgInterval > 0 && LimboCache.getInstance().getLimboPlayer(name) != null) {
+        if (msgInterval > 0 && limboCache.getLimboPlayer(name) != null) {
             BukkitTask msgTask = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
                 name, msg, msgInterval));
-                       LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
+                       LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
             if (limboPlayer != null) {
                 limboPlayer.setMessageTask(msgTask);
             }
         }
     }
 
-    private boolean needFirstSpawn() {
+    private boolean needFirstSpawn(final Player player) {
         if (player.hasPlayedBefore()) {
             return false;
         }
-        Location firstSpawn = service.getSpawnLoader().getFirstSpawn();
+        Location firstSpawn = spawnLoader.getFirstSpawn();
         if (firstSpawn == null) {
             return false;
         }

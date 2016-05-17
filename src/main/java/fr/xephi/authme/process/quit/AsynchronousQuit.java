@@ -7,7 +7,7 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.NewProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -17,35 +17,37 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-public class AsynchronousQuit implements Process {
+import javax.inject.Inject;
 
-    private final AuthMe plugin;
-    private final DataSource database;
-    private final Player player;
-    private final String name;
-    private boolean isOp = false;
-    private boolean needToChange = false;
-    private final boolean isKick;
-    private final ProcessService service;
+public class AsynchronousQuit implements NewProcess {
 
-    public AsynchronousQuit(Player p, AuthMe plugin, DataSource database, boolean isKick, ProcessService service) {
-        this.player = p;
-        this.plugin = plugin;
-        this.database = database;
-        this.name = p.getName().toLowerCase();
-        this.isKick = isKick;
-        this.service = service;
-    }
+    @Inject
+    private AuthMe plugin;
 
-    @Override
-    public void run() {
+    @Inject
+    private DataSource database;
+
+    @Inject
+    private ProcessService service;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private LimboCache limboCache;
+
+    AsynchronousQuit() { }
+
+
+    public void processQuit(Player player, boolean isKick) {
         if (player == null || Utils.isUnrestricted(player)) {
             return;
         }
+        final String name = player.getName().toLowerCase();
 
         String ip = Utils.getPlayerIp(player);
 
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+        if (playerCache.isAuthenticated(name)) {
             if (service.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION)) {
                 Location loc = player.getLocation();
                 PlayerAuth auth = PlayerAuth.builder()
@@ -62,14 +64,17 @@ public class AsynchronousQuit implements Process {
             database.updateSession(auth);
         }
 
-        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+        boolean needToChange = false;
+        boolean isOp = false;
+
+        LimboPlayer limbo = limboCache.getLimboPlayer(name);
         if (limbo != null) {
             if (!StringUtils.isEmpty(limbo.getGroup())) {
                 Utils.addNormal(player, limbo.getGroup());
             }
             needToChange = true;
             isOp = limbo.isOperator();
-            LimboCache.getInstance().deleteLimboPlayer(name);
+            limboCache.deleteLimboPlayer(name);
         }
         if (Settings.isSessionsEnabled && !isKick) {
             if (Settings.getSessionTimeout != 0) {
@@ -78,7 +83,7 @@ public class AsynchronousQuit implements Process {
 
                         @Override
                         public void run() {
-                            postLogout();
+                            postLogout(name);
                         }
 
                     }, Settings.getSessionTimeout * 20 * 60);
@@ -86,11 +91,11 @@ public class AsynchronousQuit implements Process {
                     plugin.sessions.put(name, task);
                 } else {
                     //plugin is disabled; we cannot schedule more tasks so run it directly here
-                    postLogout();
+                    postLogout(name);
                 }
             }
         } else {
-            PlayerCache.getInstance().removePlayer(name);
+            playerCache.removePlayer(name);
             database.setUnlogged(name);
         }
 
@@ -103,7 +108,7 @@ public class AsynchronousQuit implements Process {
         }
     }
 
-    private void postLogout() {
+    private void postLogout(String name) {
         PlayerCache.getInstance().removePlayer(name);
         database.setUnlogged(name);
         plugin.sessions.remove(name);

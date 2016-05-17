@@ -1,14 +1,11 @@
 package fr.xephi.authme.process;
 
 import fr.xephi.authme.AuthMe;
-import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.ValidationService;
@@ -32,13 +29,7 @@ public class ProcessService {
     @Inject
     private AuthMe authMe;
     @Inject
-    private DataSource dataSource;
-    @Inject
     private PasswordSecurity passwordSecurity;
-    @Inject
-    private PluginHooks pluginHooks;
-    @Inject
-    private SpawnLoader spawnLoader;
     @Inject
     private ValidationService validationService;
     @Inject
@@ -163,33 +154,6 @@ public class ProcessService {
      */
     public HashedPassword computeHash(String password, String username) {
         return passwordSecurity.computeHash(password, username);
-    }
-
-    /**
-     * Return the PluginHooks manager.
-     *
-     * @return PluginHooks instance
-     */
-    public PluginHooks getPluginHooks() {
-        return pluginHooks;
-    }
-
-    /**
-     * Return the spawn manager.
-     *
-     * @return SpawnLoader instance
-     */
-    public SpawnLoader getSpawnLoader() {
-        return spawnLoader;
-    }
-
-    /**
-     * Return the plugin's datasource.
-     *
-     * @return the datasource
-     */
-    public DataSource getDataSource() {
-        return dataSource;
     }
 
     /**

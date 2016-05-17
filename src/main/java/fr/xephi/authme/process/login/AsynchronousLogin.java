@@ -10,9 +10,10 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.events.AuthMeAsyncPreLoginEvent;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.AdminPermission;
+import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.NewProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
@@ -22,43 +23,41 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
+import javax.inject.Inject;
 import java.util.List;
 
 /**
  */
-public class AsynchronousLogin implements Process {
+public class AsynchronousLogin implements NewProcess {
 
-    private final Player player;
-    private final String name;
-    private final String realName;
-    private final String password;
-    private final boolean forceLogin;
-    private final AuthMe plugin;
-    private final DataSource database;
-    private final String ip;
-    private final ProcessService service;
+    @Inject
+    private AuthMe plugin;
 
-    public AsynchronousLogin(Player player, String password, boolean forceLogin, AuthMe plugin, DataSource data,
-                             ProcessService service) {
-        this.player = player;
-        this.name = player.getName().toLowerCase();
-        this.password = password;
-        this.realName = player.getName();
-        this.forceLogin = forceLogin;
-        this.plugin = plugin;
-        this.database = data;
-        this.ip = Utils.getPlayerIp(player);
-        this.service = service;
-    }
+    @Inject
+    private DataSource database;
 
-    private boolean needsCaptcha() {
+    @Inject
+    private ProcessService service;
+
+    @Inject
+    private PermissionsManager permissionsManager;
+
+    @Inject
+    private PlayerCache playerCache;
+
+    @Inject
+    private LimboCache limboCache;
+
+    AsynchronousLogin() { }
+
+    private boolean needsCaptcha(Player player) {
+        final String name = player.getName().toLowerCase();
         if (service.getProperty(SecuritySettings.USE_CAPTCHA)) {
             if (!plugin.captcha.containsKey(name)) {
                 plugin.captcha.putIfAbsent(name, 1);
@@ -82,8 +81,9 @@ public class AsynchronousLogin implements Process {
      *
      * @return PlayerAuth
      */
-    private PlayerAuth preAuth() {
-        if (PlayerCache.getInstance().isAuthenticated(name)) {
+    private PlayerAuth preAuth(Player player) {
+        final String name = player.getName().toLowerCase();
+        if (playerCache.isAuthenticated(name)) {
             service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
             return null;
         }
@@ -92,7 +92,7 @@ public class AsynchronousLogin implements Process {
         if (pAuth == null) {
             service.send(player, MessageKey.USER_NOT_REGISTERED);
 
-            LimboPlayer limboPlayer = LimboCache.getInstance().getLimboPlayer(name);
+            LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
             if (limboPlayer != null) {
                 limboPlayer.getMessageTask().cancel();
                 String[] msg = service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)
@@ -110,9 +110,10 @@ public class AsynchronousLogin implements Process {
             return null;
         }
 
+        final String ip = Utils.getPlayerIp(player);
         if (Settings.getMaxLoginPerIp > 0
-            && !plugin.getPermissionsManager().hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
-            && !ip.equalsIgnoreCase("127.0.0.1") && !ip.equalsIgnoreCase("localhost")) {
+            && !permissionsManager.hasPermission(player, PlayerStatePermission.ALLOW_MULTIPLE_ACCOUNTS)
+            && !"127.0.0.1".equalsIgnoreCase(ip) && !"localhost".equalsIgnoreCase(ip)) {
             if (plugin.isLoggedIp(name, ip)) {
                 service.send(player, MessageKey.ALREADY_LOGGED_IN_ERROR);
                 return null;
@@ -127,13 +128,13 @@ public class AsynchronousLogin implements Process {
         return pAuth;
     }
 
-    @Override
-    public void run() {
-        PlayerAuth pAuth = preAuth();
-        if (pAuth == null || needsCaptcha()) {
+    public void login(final Player player, String password, boolean forceLogin) {
+        PlayerAuth pAuth = preAuth(player);
+        if (pAuth == null || needsCaptcha(player)) {
             return;
         }
 
+        final String ip = Utils.getPlayerIp(player);
         if ("127.0.0.1".equals(pAuth.getIp()) && !pAuth.getIp().equals(ip)) {
             pAuth.setIp(ip);
             database.updateIp(pAuth.getNickname(), ip);
@@ -141,12 +142,13 @@ public class AsynchronousLogin implements Process {
 
         String email = pAuth.getEmail();
         boolean passwordVerified = forceLogin || plugin.getPasswordSecurity()
-            .comparePassword(password, pAuth.getPassword(), realName);
+            .comparePassword(password, pAuth.getPassword(), player.getName());
 
+        final String name = player.getName().toLowerCase();
         if (passwordVerified && player.isOnline()) {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
-                .realName(realName)
+                .realName(player.getName())
                 .ip(ip)
                 .email(email)
                 .password(pAuth.getPassword())
@@ -166,7 +168,7 @@ public class AsynchronousLogin implements Process {
             if (!forceLogin)
                 service.send(player, MessageKey.LOGIN_SUCCESS);
 
-            displayOtherAccounts(auth);
+            displayOtherAccounts(auth, player);
 
             if (service.getProperty(EmailSettings.RECALL_PLAYERS)
                 && (StringUtils.isEmpty(email) || "your@email.com".equalsIgnoreCase(email))) {
@@ -174,11 +176,11 @@ public class AsynchronousLogin implements Process {
             }
 
             if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                ConsoleLogger.info(realName + " logged in!");
+                ConsoleLogger.info(player.getName() + " logged in!");
             }
 
             // makes player isLoggedin via API
-            PlayerCache.getInstance().addPlayer(auth);
+            playerCache.addPlayer(auth);
             database.setLogged(name);
 
             // As the scheduling executes the Task most likely after the current
@@ -197,7 +199,7 @@ public class AsynchronousLogin implements Process {
             Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, syncPlayerLogin);
         } else if (player.isOnline()) {
             if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
-                ConsoleLogger.info(realName + " used the wrong password");
+                ConsoleLogger.info(player.getName() + " used the wrong password");
             }
             if (service.getProperty(RestrictionSettings.KICK_ON_WRONG_PASSWORD)) {
                 service.scheduleSyncDelayedTask(new Runnable() {
@@ -214,29 +216,30 @@ public class AsynchronousLogin implements Process {
         }
     }
 
-    // TODO: allow translation!
-    private void displayOtherAccounts(PlayerAuth auth) {
+    // TODO #423: allow translation!
+    private void displayOtherAccounts(PlayerAuth auth, Player player) {
         if (!service.getProperty(RestrictionSettings.DISPLAY_OTHER_ACCOUNTS) || auth == null) {
             return;
         }
 
-        List<String> auths = this.database.getAllAuthsByIp(auth.getIp());
+        List<String> auths = database.getAllAuthsByIp(auth.getIp());
         if (auths.size() < 2) {
             return;
         }
-        // TODO: color player names with green if the account is online
+        // TODO #423: color player names with green if the account is online
         String message = StringUtils.join(", ", auths) + ".";
 
         ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
         ConsoleLogger.info(message);
 
-        for (Player player : service.getOnlinePlayers()) {
-            if ((player.getName().equalsIgnoreCase(this.player.getName()) && plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
-                player.sendMessage("You own " + auths.size() + " accounts:");
-                player.sendMessage(message);
-            } else if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)) {
-                player.sendMessage("The user " + player.getName() + " has " + auths.size() + " accounts:");
-                player.sendMessage(message);
+        for (Player onlinePlayer : service.getOnlinePlayers()) {
+            if ((onlinePlayer.getName().equalsIgnoreCase(onlinePlayer.getName())
+                && permissionsManager.hasPermission(onlinePlayer, PlayerPermission.SEE_OWN_ACCOUNTS))) {
+                onlinePlayer.sendMessage("You own " + auths.size() + " accounts:");
+                onlinePlayer.sendMessage(message);
+            } else if (permissionsManager.hasPermission(onlinePlayer, AdminPermission.SEE_OTHER_ACCOUNTS)) {
+                onlinePlayer.sendMessage("The user " + onlinePlayer.getName() + " has " + auths.size() + " accounts:");
+                onlinePlayer.sendMessage(message);
             }
         }
     }

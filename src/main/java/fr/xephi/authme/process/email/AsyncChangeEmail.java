@@ -4,35 +4,30 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.Process;
+import fr.xephi.authme.process.NewProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.entity.Player;
 
+import javax.inject.Inject;
+
 /**
  * Async task for changing the email.
  */
-public class AsyncChangeEmail implements Process {
+public class AsyncChangeEmail implements NewProcess {
 
-    private final Player player;
-    private final String oldEmail;
-    private final String newEmail;
-    private final ProcessService service;
-    private final PlayerCache playerCache;
-    private final DataSource dataSource;
+    @Inject
+    private ProcessService service;
 
-    public AsyncChangeEmail(Player player, String oldEmail, String newEmail, DataSource dataSource,
-                            PlayerCache playerCache, ProcessService service) {
-        this.player = player;
-        this.oldEmail = oldEmail;
-        this.newEmail = newEmail;
-        this.playerCache = playerCache;
-        this.dataSource = dataSource;
-        this.service = service;
-    }
+    @Inject
+    private PlayerCache playerCache;
 
-    @Override
-    public void run() {
+    @Inject
+    private DataSource dataSource;
+
+    AsyncChangeEmail() { }
+
+    public void changeEmail(Player player, String oldEmail, String newEmail) {
         String playerName = player.getName().toLowerCase();
         if (playerCache.isAuthenticated(playerName)) {
             PlayerAuth auth = playerCache.getAuth(playerName);
@@ -47,14 +42,14 @@ public class AsyncChangeEmail implements Process {
             } else if (!service.isEmailFreeForRegistration(newEmail, player)) {
                 service.send(player, MessageKey.EMAIL_ALREADY_USED_ERROR);
             } else {
-                saveNewEmail(auth);
+                saveNewEmail(auth, player, newEmail);
             }
         } else {
-            outputUnloggedMessage();
+            outputUnloggedMessage(player);
         }
     }
 
-    private void saveNewEmail(PlayerAuth auth) {
+    private void saveNewEmail(PlayerAuth auth, Player player, String newEmail) {
         auth.setEmail(newEmail);
         if (dataSource.updateEmail(auth)) {
             playerCache.updatePlayer(auth);
@@ -64,7 +59,7 @@ public class AsyncChangeEmail implements Process {
         }
     }
 
-    private void outputUnloggedMessage() {
+    private void outputUnloggedMessage(Player player) {
         if (dataSource.isAuthAvailable(player.getName())) {
             service.send(player, MessageKey.LOGIN_MESSAGE);
         } else if (service.getProperty(RegistrationSettings.USE_EMAIL_REGISTRATION)) {
