@@ -96,11 +96,9 @@ public class PermissionsManager implements PermissionsService {
 
     /**
      * Setup and hook into the permissions systems.
-     *
-     * @return The detected permissions system.
      */
     @PostConstruct
-    public PermissionsSystemType setup() {
+    public void setup() {
         // Force-unhook from current hooked permissions systems
         unhook();
 
@@ -177,7 +175,7 @@ public class PermissionsManager implements PermissionsService {
                 ConsoleLogger.info("Hooked into " + type.getName() + "!");
 
                 // Return the used permissions system type
-                return type;
+                return;
 
             } catch (Exception ex) {
                 // An error occurred, show a warning message
@@ -187,7 +185,6 @@ public class PermissionsManager implements PermissionsService {
 
         // No recognized permissions system found, show a message and return
         ConsoleLogger.info("No supported permissions system found! Permissions are disabled!");
-        return null;
     }
 
     /**

@@ -166,7 +166,7 @@ public class AuthMeServiceInitializerTest {
         PostConstructTestClass testClass = initializer.get(PostConstructTestClass.class);
 
         // then
-        assertThat(testClass.werePostConstructsCalled(), equalTo(true));
+        assertThat(testClass.wasPostConstructCalled(), equalTo(true));
         assertThat(testClass.getBetaManager(), not(nullValue()));
     }
 
@@ -186,6 +186,18 @@ public class AuthMeServiceInitializerTest {
     public void shouldForwardExceptionFromPostConstruct() {
         // given / when / then
         initializer.get(InvalidPostConstruct.ThrowsException.class);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowForMultiplePostConstructMethods() {
+        // given / when / then
+        initializer.get(InvalidPostConstruct.MultiplePostConstructs.class);
+    }
+
+    @Test(expected = RuntimeException.class)
+    public void shouldThrowForPostConstructNotReturningVoid() {
+        // given / when / then
+        initializer.get(InvalidPostConstruct.NotVoidReturnType.class);
     }
 
     @Test(expected = RuntimeException.class)
