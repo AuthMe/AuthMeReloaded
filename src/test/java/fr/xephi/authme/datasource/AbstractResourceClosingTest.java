@@ -204,10 +204,11 @@ public abstract class AbstractResourceClosingTest {
     }
 
     /**
-     * Return a list with some test elements that correspond to the given list type's generic type.
+     * Return a collection of the required type with some test elements that correspond to the
+     * collection's generic type.
      *
-     * @param type The list type to process and build a test list for
-     * @return Test list with sample elements of the correct type
+     * @param type The collection type to process and build a test collection for
+     * @return Test collection with sample elements of the correct type
      */
     private static Collection<?> getTypedCollection(Type type) {
         if (type instanceof ParameterizedType) {

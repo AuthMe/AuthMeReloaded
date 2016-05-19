@@ -25,7 +25,6 @@ $pass = get_from_post_or_empty('password');
 
 $was_successful = false;
 if ($action && $user && $pass) {
-    require_once('Bcrypt.php');
     if ($action === 'Log in') {
         $was_successful = process_login($user, $pass, $authme_controller);
     } else if ($action === 'Register') {
