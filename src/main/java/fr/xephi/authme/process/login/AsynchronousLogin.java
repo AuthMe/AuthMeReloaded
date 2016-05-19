@@ -22,7 +22,6 @@ import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.task.MessageTask;
-import fr.xephi.authme.util.BukkitService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
 import org.bukkit.Bukkit;
@@ -230,13 +229,14 @@ public class AsynchronousLogin implements Process {
         ConsoleLogger.info("The user " + player.getName() + " has " + auths.size() + " accounts:");
         ConsoleLogger.info(message);
 
-        for (Player player : service.getOnlinePlayers()) {
-            if ((player.getName().equalsIgnoreCase(this.player.getName()) && plugin.getPermissionsManager().hasPermission(player, PlayerPermission.SEE_OWN_ACCOUNTS))) {
-                player.sendMessage("You own " + auths.size() + " accounts:");
-                player.sendMessage(message);
-            } else if (plugin.getPermissionsManager().hasPermission(player, AdminPermission.SEE_OTHER_ACCOUNTS)) {
-                player.sendMessage("The user " + player.getName() + " has " + auths.size() + " accounts:");
-                player.sendMessage(message);
+        for (Player onlinePlayer : service.getOnlinePlayers()) {
+            if (onlinePlayer.getName().equalsIgnoreCase(player.getName())
+                && plugin.getPermissionsManager().hasPermission(onlinePlayer, PlayerPermission.SEE_OWN_ACCOUNTS)) {
+                onlinePlayer.sendMessage("You own " + auths.size() + " accounts:");
+                onlinePlayer.sendMessage(message);
+            } else if (plugin.getPermissionsManager().hasPermission(onlinePlayer, AdminPermission.SEE_OTHER_ACCOUNTS)) {
+                onlinePlayer.sendMessage("The user " + player.getName() + " has " + auths.size() + " accounts:");
+                onlinePlayer.sendMessage(message);
             }
         }
     }
