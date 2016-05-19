@@ -44,16 +44,10 @@ import fr.xephi.authme.settings.SettingsMigrationService;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
 import fr.xephi.authme.settings.properties.EmailSettings;
-
-import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
-import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
-import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
-
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.PluginSettings;
 import fr.xephi.authme.settings.properties.PurgeSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
-import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.settings.properties.SettingsFieldRetriever;
 import fr.xephi.authme.settings.propertymap.PropertyMap;
 import fr.xephi.authme.task.PurgeTask;
@@ -64,6 +58,17 @@ import fr.xephi.authme.util.GeoLiteAPI;
 import fr.xephi.authme.util.MigrationService;
 import fr.xephi.authme.util.StringUtils;
 import fr.xephi.authme.util.Utils;
+import org.apache.logging.log4j.LogManager;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Server;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.scheduler.BukkitTask;
 
 import java.io.File;
 import java.sql.SQLException;
@@ -76,17 +81,9 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
-import org.apache.logging.log4j.LogManager;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Server;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_ACCOUNT;
+import static fr.xephi.authme.settings.properties.EmailSettings.MAIL_PASSWORD;
+import static fr.xephi.authme.settings.properties.EmailSettings.RECALL_PLAYERS;
 
 /**
  * The AuthMe main class.
@@ -223,8 +220,8 @@ public class AuthMe extends JavaPlugin {
             getServer().shutdown();
             return;
         }
-        ConsoleLogger.setLoggingOptions(newSettings.getProperty(SecuritySettings.USE_LOGGING),
-            new File(getDataFolder(), "authme.log"));
+        ConsoleLogger.setLogFile(new File(getDataFolder(), "authme.log"));
+        ConsoleLogger.setLoggingOptions(newSettings);
 
         // Old settings manager
         if (!loadSettings()) {
