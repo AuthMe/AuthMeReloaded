@@ -1,6 +1,7 @@
 package fr.xephi.authme;
 
 import com.google.common.base.Throwables;
+import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.SecuritySettings;
 import fr.xephi.authme.util.StringUtils;
 
@@ -21,20 +22,24 @@ public final class ConsoleLogger {
     private static final String NEW_LINE = System.getProperty("line.separator");
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("[MM-dd HH:mm:ss]");
     private static Logger logger;
+    private static boolean enableDebug = false;
     private static boolean useLogging = false;
     private static File logFile;
 
     private ConsoleLogger() {
-        // Service class
     }
 
     public static void setLogger(Logger logger) {
         ConsoleLogger.logger = logger;
     }
 
-    public static void setLoggingOptions(boolean useLogging, File logFile) {
-        ConsoleLogger.useLogging = useLogging;
+    public static void setLogFile(File logFile) {
         ConsoleLogger.logFile = logFile;
+    }
+
+    public static void setLoggingOptions(NewSetting settings) {
+        ConsoleLogger.useLogging = settings.getProperty(SecuritySettings.USE_LOGGING);
+        ConsoleLogger.enableDebug = !settings.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE);
     }
 
     /**
@@ -50,7 +55,7 @@ public final class ConsoleLogger {
     }
 
     public static void debug(String message) {
-        if (!AuthMe.getInstance().getSettings().getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
+        if (enableDebug) {
             logger.fine(message);
             if (useLogging) {
                 writeLog("Debug: " + message);

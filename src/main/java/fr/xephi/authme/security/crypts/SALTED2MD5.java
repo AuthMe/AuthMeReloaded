@@ -1,6 +1,5 @@
 package fr.xephi.authme.security.crypts;
 
-import fr.xephi.authme.initialization.SettingsDependent;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.security.crypts.description.HasSalt;
 import fr.xephi.authme.security.crypts.description.Recommendation;
@@ -15,13 +14,13 @@ import static fr.xephi.authme.security.HashUtils.md5;
 
 @Recommendation(Usage.ACCEPTABLE) // presuming that length is something sensible (>= 8)
 @HasSalt(value = SaltType.TEXT)   // length defined by the doubleMd5SaltLength setting
-public class SALTED2MD5 extends SeparateSaltMethod implements SettingsDependent {
+public class SALTED2MD5 extends SeparateSaltMethod {
 
-    private int saltLength;
+    private final int saltLength;
 
     @Inject
     public SALTED2MD5(NewSetting settings) {
-        loadSettings(settings);
+        saltLength = settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH);
     }
 
     @Override
@@ -34,9 +33,5 @@ public class SALTED2MD5 extends SeparateSaltMethod implements SettingsDependent 
         return RandomString.generateHex(saltLength);
     }
 
-    @Override
-    public void loadSettings(NewSetting settings) {
-        saltLength = settings.getProperty(SecuritySettings.DOUBLE_MD5_SALT_LENGTH);
-    }
 
 }

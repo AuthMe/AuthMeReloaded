@@ -17,22 +17,15 @@ public class PostConstructTestClass implements SettingsDependent {
     @Inject
     private BetaManager betaManager;
     private boolean wasPostConstructCalled = false;
-    private boolean wasSecondPostConstructCalled = false;
     private boolean wasReloaded = false;
 
     @PostConstruct
-    protected void setFieldToTrue() {
+    public void postConstructMethod() {
         wasPostConstructCalled = true;
     }
 
-    @PostConstruct
-    public int otherPostConstructMethod() {
-        wasSecondPostConstructCalled = true;
-        return 42;
-    }
-
-    public boolean werePostConstructsCalled() {
-        return wasPostConstructCalled && wasSecondPostConstructCalled;
+    public boolean wasPostConstructCalled() {
+        return wasPostConstructCalled;
     }
 
     public BetaManager getBetaManager() {

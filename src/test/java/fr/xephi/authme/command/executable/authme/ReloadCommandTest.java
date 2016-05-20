@@ -9,7 +9,9 @@ import fr.xephi.authme.initialization.AuthMeServiceInitializer;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
+import fr.xephi.authme.settings.properties.SecuritySettings;
 import org.bukkit.command.CommandSender;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,6 +53,13 @@ public class ReloadCommandTest {
     @BeforeClass
     public static void setUpLogger() {
         TestHelper.setupLogger();
+    }
+
+    @Before
+    public void setDefaultSettings() {
+        // Mock properties retrieved by ConsoleLogger
+        given(settings.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)).willReturn(false);
+        given(settings.getProperty(SecuritySettings.USE_LOGGING)).willReturn(false);
     }
 
     @Test

@@ -18,8 +18,11 @@ import fr.xephi.authme.initialization.samples.ProvidedClass;
 import fr.xephi.authme.initialization.samples.Size;
 import fr.xephi.authme.settings.NewSetting;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
@@ -35,6 +38,11 @@ public class AuthMeServiceInitializerTest {
     private static final String ALLOWED_PACKAGE = "fr.xephi.authme.initialization";
 
     private AuthMeServiceInitializer initializer;
+
+    // As we test many cases that throw exceptions, we use JUnit's ExpectedException Rule
+    // to make sure that we receive the exception we expect
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     @Before
     public void setInitializer() {
@@ -54,15 +62,17 @@ public class AuthMeServiceInitializerTest {
         }
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForInvalidPackage() {
         // given / when / then
+        expectRuntimeExceptionWith("outside of the allowed packages");
         initializer.get(InvalidClass.class);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForUnregisteredPrimitiveType() {
         // given / when / then
+        expectRuntimeExceptionWith("Primitive types must be provided");
         initializer.get(int.class);
     }
 
@@ -85,24 +95,27 @@ public class AuthMeServiceInitializerTest {
         assertThat(object.getGammaService(), equalTo(initializer.get(BetaManager.class).getDependencies()[1]));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldRecognizeCircularReferences() {
         // given / when / then
+        expectRuntimeExceptionWith("Found cyclic dependency");
         initializer.get(CircularClasses.Circular3.class);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForUnregisteredAnnotation() {
         // given
         initializer.provide(Size.class, 4523);
 
         // when / then
+        expectRuntimeExceptionWith("must be registered beforehand");
         initializer.get(ClassWithAnnotations.class);
     }
 
-    @Test(expected = RuntimeException.class)
-    public void shouldThrowForFieldInjectionWithNoDefaultConstructor() {
+    @Test
+    public void shouldThrowForFieldInjectionWithoutNoArgsConstructor() {
         // given / when / then
+        expectRuntimeExceptionWith("Did not find injection method");
         initializer.get(BadFieldInjection.class);
     }
 
@@ -124,36 +137,41 @@ public class AuthMeServiceInitializerTest {
             equalTo(result.getBetaManager().getDependencies()[1]));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForAnnotationAsKey() {
         // given / when / then
+        expectRuntimeExceptionWith("Cannot retrieve annotated elements in this way");
         initializer.get(Size.class);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForSecondRegistration() {
         // given / when / then
+        expectRuntimeExceptionWith("There is already an object present");
         initializer.register(ProvidedClass.class, new ProvidedClass(""));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForSecondAnnotationRegistration() {
         // given
         initializer.provide(Size.class, 12);
 
         // when / then
+        expectRuntimeExceptionWith("already registered");
         initializer.provide(Size.class, -8);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowForNullValueAssociatedToAnnotation() {
         // given / when / then
+        expectedException.expect(NullPointerException.class);
         initializer.provide(Duration.class, null);
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test
     public void shouldThrowForRegisterWithNull() {
         // given / when / then
+        expectedException.expect(NullPointerException.class);
         initializer.register(String.class, null);
     }
 
@@ -166,31 +184,49 @@ public class AuthMeServiceInitializerTest {
         PostConstructTestClass testClass = initializer.get(PostConstructTestClass.class);
 
         // then
-        assertThat(testClass.werePostConstructsCalled(), equalTo(true));
+        assertThat(testClass.wasPostConstructCalled(), equalTo(true));
         assertThat(testClass.getBetaManager(), not(nullValue()));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForInvalidPostConstructMethod() {
         // given / when / then
+        expectRuntimeExceptionWith("@PostConstruct method may not be static or have any parameters");
         initializer.get(InvalidPostConstruct.WithParams.class);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForStaticPostConstructMethod() {
         // given / when / then
+        expectRuntimeExceptionWith("@PostConstruct method may not be static or have any parameters");
         initializer.get(InvalidPostConstruct.Static.class);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldForwardExceptionFromPostConstruct() {
         // given / when / then
+        expectRuntimeExceptionWith("Error executing @PostConstruct method");
         initializer.get(InvalidPostConstruct.ThrowsException.class);
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
+    public void shouldThrowForMultiplePostConstructMethods() {
+        // given / when / then
+        expectRuntimeExceptionWith("Multiple methods with @PostConstruct");
+        initializer.get(InvalidPostConstruct.MultiplePostConstructs.class);
+    }
+
+    @Test
+    public void shouldThrowForPostConstructNotReturningVoid() {
+        // given / when / then
+        expectRuntimeExceptionWith("@PostConstruct method must have return type void");
+        initializer.get(InvalidPostConstruct.NotVoidReturnType.class);
+    }
+
+    @Test
     public void shouldThrowForAbstractNonRegisteredDependency() {
         // given / when / then
+        expectRuntimeExceptionWith("cannot be instantiated");
         initializer.get(ClassWithAbstractDependency.class);
     }
 
@@ -208,12 +244,13 @@ public class AuthMeServiceInitializerTest {
         assertThat(cwad.getAlphaService(), not(nullValue()));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForAlreadyRegisteredClass() {
         // given
         initializer.register(BetaManager.class, new BetaManager());
 
         // when / then
+        expectRuntimeExceptionWith("There is already an object present");
         initializer.register(BetaManager.class, new BetaManager());
     }
 
@@ -229,9 +266,10 @@ public class AuthMeServiceInitializerTest {
         assertThat(singletonScoped, not(sameInstance(requestScoped)));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForStaticFieldInjection() {
         // given / when / then
+        expectRuntimeExceptionWith("is static but annotated with @Inject");
         initializer.newInstance(InvalidStaticFieldInjection.class);
     }
 
@@ -271,10 +309,16 @@ public class AuthMeServiceInitializerTest {
         assertThat(providedClass.getWasReloaded(), equalTo(true));
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void shouldThrowForNullSetting() {
         // given / when / then
+        expectRuntimeExceptionWith("Settings instance is null");
         initializer.performReloadOnServices();
+    }
+
+    private void expectRuntimeExceptionWith(String message) {
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(containsString(message));
     }
 
 }

@@ -17,7 +17,6 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.NewSetting;
-import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -57,6 +56,7 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
 import static fr.xephi.authme.settings.properties.RestrictionSettings.ALLOWED_MOVEMENT_RADIUS;
@@ -354,14 +354,16 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        if (name.length() > Settings.getMaxNickLength || name.length() < Settings.getMinNickLength) {
+        if (name.length() > settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH) || name.length() < settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)) {
             event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_LENGTH));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
 
-        if (!Settings.nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
-            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS).replace("REG_EX", Settings.getNickRegex));
+        String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
+        Pattern nickPattern = Pattern.compile(nickRegEx);
+        if (nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS).replace("REG_EX", nickRegEx));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
@@ -505,14 +507,16 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
+        if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+            return;
+        }
         if (!shouldCancelEvent(event)) {
             return;
         }
-
         Player player = event.getPlayer();
         String name = player.getName().toLowerCase();
         Location spawn = spawnLoader.getSpawnLocation(player);
-        if (Settings.isSaveQuitLocationEnabled && dataSource.isAuthAvailable(name)) {
+        if (settings.getProperty(RestrictionSettings.SAVE_QUIT_LOCATION) && dataSource.isAuthAvailable(name)) {
             PlayerAuth auth = PlayerAuth.builder()
                 .name(name)
                 .realName(player.getName())

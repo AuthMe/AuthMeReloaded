@@ -144,8 +144,8 @@ public class AuthMeServiceInitializer {
     }
 
     /**
-     * Instantiates the given class by locating an @Inject constructor and retrieving
-     * or instantiating its parameters.
+     * Instantiates the given class by locating its @Inject elements and retrieving
+     * or instantiating the required instances.
      *
      * @param clazz the class to instantiate
      * @param traversedClasses collection of classes already traversed
@@ -164,13 +164,13 @@ public class AuthMeServiceInitializer {
         validateInjectionHasNoCircularDependencies(injection.getDependencies(), traversedClasses);
         Object[] dependencies = resolveDependencies(injection, traversedClasses);
         T object = injection.instantiateWith(dependencies);
-        executePostConstructMethods(object);
+        executePostConstructMethod(object);
         return object;
     }
 
     /**
-     * Resolves the dependencies for the given constructor, i.e. returns a collection that satisfy
-     * the constructor's parameter types by retrieving elements or instantiating them where necessary.
+     * Resolves the dependencies for the given class instantiation, i.e. returns a collection that satisfy
+     * the class' dependencies by retrieving elements or instantiating them where necessary.
      *
      * @param injection the injection parameters
      * @param traversedClasses collection of traversed classes
@@ -247,21 +247,20 @@ public class AuthMeServiceInitializer {
             + "allowed packages. It must be provided explicitly or the package must be passed to the constructor.");
     }
 
-    private static void executePostConstructMethods(Object object) {
-        for (Method method : object.getClass().getDeclaredMethods()) {
-            if (method.isAnnotationPresent(PostConstruct.class)) {
-                if (method.getParameterTypes().length == 0 && !Modifier.isStatic(method.getModifiers())) {
-                    try {
-                        method.setAccessible(true);
-                        method.invoke(object);
-                    } catch (IllegalAccessException | InvocationTargetException e) {
-                        throw new UnsupportedOperationException(e);
-                    }
-                } else {
-                    throw new IllegalStateException(String.format("@PostConstruct methods may not be static or have "
-                        + " any parameters. Method '%s' of class '%s' is either static or has parameters",
-                        method.getName(), object.getClass().getSimpleName()));
-                }
+    /**
+     * Executes an object's method annotated with {@link PostConstruct} if present.
+     * Throws an exception if there are multiple such methods, or if the method is static.
+     *
+     * @param object the object to execute the post construct method for
+     */
+    private static void executePostConstructMethod(Object object) {
+        Method postConstructMethod = getAndValidatePostConstructMethod(object.getClass());
+        if (postConstructMethod != null) {
+            try {
+                postConstructMethod.setAccessible(true);
+                postConstructMethod.invoke(object);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                throw new UnsupportedOperationException("Error executing @PostConstruct method", e);
             }
         }
     }
@@ -270,6 +269,32 @@ public class AuthMeServiceInitializer {
         if (clazz.isEnum() || clazz.isInterface() || Modifier.isAbstract(clazz.getModifiers())) {
             throw new IllegalStateException("Class " + clazz.getSimpleName() + " cannot be instantiated");
         }
+    }
+
+    /**
+     * Validate and locate the given class' post construct method. Returns {@code null} if none present.
+     *
+     * @param clazz the class to search
+     * @return post construct method, or null
+     */
+    private static Method getAndValidatePostConstructMethod(Class<?> clazz) {
+        Method postConstructMethod = null;
+        for (Method method : clazz.getDeclaredMethods()) {
+            if (method.isAnnotationPresent(PostConstruct.class)) {
+                if (postConstructMethod != null) {
+                    throw new IllegalStateException("Multiple methods with @PostConstruct on " + clazz);
+                } else if (method.getParameterTypes().length > 0 || Modifier.isStatic(method.getModifiers())) {
+                    throw new IllegalStateException("@PostConstruct method may not be static or have any parameters. "
+                        + "Invalid method in " + clazz);
+                } else if (method.getReturnType() != void.class) {
+                    throw new IllegalStateException("@PostConstruct method must have return type void. "
+                        + "Offending class: " + clazz);
+                } else {
+                    postConstructMethod = method;
+                }
+            }
+        }
+        return postConstructMethod;
     }
 
     @SafeVarargs

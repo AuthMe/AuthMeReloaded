@@ -115,11 +115,9 @@ public class FieldInjectionTest {
     }
 
     private static class ThrowingConstructor {
-        @SuppressWarnings("unused")
         @Inject
         private ProvidedClass providedClass;
 
-        @SuppressWarnings("unused")
         public ThrowingConstructor() {
             throw new UnsupportedOperationException("Exception in constructor");
         }

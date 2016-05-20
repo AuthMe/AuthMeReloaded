@@ -1,5 +1,6 @@
 package fr.xephi.authme.initialization;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.lang.reflect.AccessibleObject;
@@ -8,7 +9,7 @@ import java.lang.reflect.InvocationTargetException;
 
 /**
  * Fallback instantiation method for classes with an accessible no-args constructor
- * and no no {@link Inject} annotations whatsoever.
+ * and no elements whatsoever annotated with {@link Inject} or {@link PostConstruct}.
  */
 public class InstantiationFallback<T> implements Injection<T> {
 
@@ -54,9 +55,9 @@ public class InstantiationFallback<T> implements Injection<T> {
                 Constructor<T> noArgsConstructor = getNoArgsConstructor(clazz);
                 // Return fallback only if we have no args constructor and no @Inject annotation anywhere
                 if (noArgsConstructor != null
-                    && !isInjectAnnotationPresent(clazz.getDeclaredConstructors())
-                    && !isInjectAnnotationPresent(clazz.getDeclaredFields())
-                    && !isInjectAnnotationPresent(clazz.getDeclaredMethods())) {
+                    && !isInjectionAnnotationPresent(clazz.getDeclaredConstructors())
+                    && !isInjectionAnnotationPresent(clazz.getDeclaredFields())
+                    && !isInjectionAnnotationPresent(clazz.getDeclaredMethods())) {
                     return new InstantiationFallback<>(noArgsConstructor);
                 }
                 return null;
@@ -73,9 +74,9 @@ public class InstantiationFallback<T> implements Injection<T> {
         }
     }
 
-    private static <A extends AccessibleObject> boolean isInjectAnnotationPresent(A[] accessibles) {
+    private static <A extends AccessibleObject> boolean isInjectionAnnotationPresent(A[] accessibles) {
         for (A accessible : accessibles) {
-            if (accessible.isAnnotationPresent(Inject.class)) {
+            if (accessible.isAnnotationPresent(Inject.class) || accessible.isAnnotationPresent(PostConstruct.class)) {
                 return true;
             }
         }

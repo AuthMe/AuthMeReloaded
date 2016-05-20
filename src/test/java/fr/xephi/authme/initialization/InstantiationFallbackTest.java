@@ -65,4 +65,14 @@ public class InstantiationFallbackTest {
         assertThat(instantiation, nullValue());
     }
 
+    @Test
+    public void shouldReturnNullForClassWithPostConstruct() {
+        // given / when
+        Injection<InstantiationFallbackClasses.ClassWithPostConstruct> instantiation =
+            InstantiationFallback.provide(InstantiationFallbackClasses.ClassWithPostConstruct.class).get();
+
+        // then
+        assertThat(instantiation, nullValue());
+    }
+
 }

@@ -230,9 +230,9 @@ public class AsynchronousJoin implements AsynchronousProcess {
                 : MessageKey.REGISTER_MESSAGE;
         }
         if (msgInterval > 0 && limboCache.getLimboPlayer(name) != null) {
-            BukkitTask msgTask = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
-                name, msg, msgInterval));
-                       LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
+            BukkitTask msgTask = service.runTaskLater(new MessageTask(service.getBukkitService(), plugin.getMessages(),
+                    name, msg, msgInterval), 20L);
+            LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
             if (limboPlayer != null) {
                 limboPlayer.setMessageTask(msgTask);
             }
