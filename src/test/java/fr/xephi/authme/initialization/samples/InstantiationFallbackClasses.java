@@ -1,9 +1,10 @@
 package fr.xephi.authme.initialization.samples;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 
 /**
- * Sample class - triggers instantiation fallback.
+ * Sample class - tests various situations for the instantiation fallback.
  */
 public abstract class InstantiationFallbackClasses {
 
@@ -38,6 +39,14 @@ public abstract class InstantiationFallbackClasses {
         // Only use instantiation fallback if we're sure there isn't some sort of misconfiguration
         @Inject
         public void setGammaService(GammaService gammaService) {
+            // --
+        }
+    }
+
+    // Class with @PostConstruct method should never be instantiated by instantiation fallback
+    public static final class ClassWithPostConstruct {
+        @PostConstruct
+        public void postConstructMethod() {
             // --
         }
     }

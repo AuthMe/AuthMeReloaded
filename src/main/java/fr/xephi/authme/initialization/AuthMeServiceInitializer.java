@@ -260,7 +260,7 @@ public class AuthMeServiceInitializer {
                 postConstructMethod.setAccessible(true);
                 postConstructMethod.invoke(object);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new UnsupportedOperationException(e);
+                throw new UnsupportedOperationException("Error executing @PostConstruct method", e);
             }
         }
     }
@@ -287,7 +287,8 @@ public class AuthMeServiceInitializer {
                     throw new IllegalStateException("@PostConstruct method may not be static or have any parameters. "
                         + "Invalid method in " + clazz);
                 } else if (method.getReturnType() != void.class) {
-                    throw new IllegalStateException("@PostConstruct method must be void. Offending class: " + clazz);
+                    throw new IllegalStateException("@PostConstruct method must have return type void. "
+                        + "Offending class: " + clazz);
                 } else {
                     postConstructMethod = method;
                 }

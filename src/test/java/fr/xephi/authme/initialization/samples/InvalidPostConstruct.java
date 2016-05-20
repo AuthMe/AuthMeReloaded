@@ -34,6 +34,9 @@ public abstract class InvalidPostConstruct {
     }
 
     public static final class ThrowsException {
+        @Inject
+        private ProvidedClass providedClass;
+
         @PostConstruct
         public void throwingPostConstruct() {
             throw new IllegalStateException("Exception in post construct");
