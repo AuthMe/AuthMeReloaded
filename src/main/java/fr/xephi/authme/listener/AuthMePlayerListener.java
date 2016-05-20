@@ -17,7 +17,6 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.NewSetting;
-//import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -508,10 +507,10 @@ public class AuthMePlayerListener implements Listener {
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerRespawn(PlayerRespawnEvent event) {
-        if (!shouldCancelEvent(event)) {
+        if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
             return;
         }
-        if (settings.getProperty(RestrictionSettings.NO_TELEPORT)) {
+        if (!shouldCancelEvent(event)) {
             return;
         }
         Player player = event.getPlayer();
