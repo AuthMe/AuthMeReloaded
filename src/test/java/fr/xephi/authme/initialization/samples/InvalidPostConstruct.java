@@ -9,6 +9,11 @@ import javax.inject.Inject;
 public abstract class InvalidPostConstruct {
 
     public static final class WithParams {
+        @Inject
+        private AlphaService alphaService;
+        @Inject
+        private ProvidedClass providedClass;
+
         WithParams() { }
 
         @PostConstruct
@@ -36,6 +41,9 @@ public abstract class InvalidPostConstruct {
     }
 
     public static final class NotVoidReturnType {
+        @Inject
+        private ProvidedClass providedClass;
+
         @PostConstruct
         public int returnsInt() {
             return 42;
@@ -43,6 +51,9 @@ public abstract class InvalidPostConstruct {
     }
 
     public static final class MultiplePostConstructs {
+        @Inject
+        private ProvidedClass providedClass;
+
         @PostConstruct
         public void postConstruct1() {
             // --
