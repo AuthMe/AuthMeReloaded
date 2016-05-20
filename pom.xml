@@ -247,7 +247,7 @@
                     <workingDirectory>${project.basedir}/target/test-classes</workingDirectory>
                     <mainClass>tools.ToolsRunner</mainClass>
                     <arguments>
-                        <argument>writePermissionsList</argument>
+                        <argument>updateDocs</argument>
                     </arguments>
                     <includeProjectDependencies>true</includeProjectDependencies>
                 </configuration>
