@@ -17,6 +17,7 @@ import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerStatePermission;
 import fr.xephi.authme.process.Management;
 import fr.xephi.authme.settings.NewSetting;
+import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.HooksSettings;
 import fr.xephi.authme.settings.properties.ProtectionSettings;
@@ -360,10 +361,11 @@ public class AuthMePlayerListener implements Listener {
             return;
         }
 
-        String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
-        Pattern nickPattern = Pattern.compile(nickRegEx);
-        if (nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
-            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS).replace("REG_EX", nickRegEx));
+        // TODO: fixme! (the regex doesn't work if compiled from the new settings provider)
+        //String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
+        //Pattern nickPattern = Pattern.compile(nickRegEx);
+        if (Settings.nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS).replace("REG_EX", Settings.getNickRegex));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
         }
