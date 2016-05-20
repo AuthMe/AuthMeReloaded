@@ -14,7 +14,7 @@ import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.process.NewProcess;
+import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.SpawnLoader;
@@ -40,9 +40,8 @@ import javax.inject.Inject;
 
 import static fr.xephi.authme.settings.properties.RestrictionSettings.PROTECT_INVENTORY_BEFORE_LOGIN;
 
-/**
- */
-public class AsynchronousJoin implements NewProcess {
+
+public class AsynchronousJoin implements AsynchronousProcess {
 
     @Inject
     private AuthMe plugin;

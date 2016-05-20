@@ -3,8 +3,6 @@ package fr.xephi.authme.process;
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.domain.Property;
 import fr.xephi.authme.util.BukkitService;
@@ -28,8 +26,6 @@ public class ProcessService {
     private Messages messages;
     @Inject
     private AuthMe authMe;
-    @Inject
-    private PasswordSecurity passwordSecurity;
     @Inject
     private ValidationService validationService;
     @Inject
@@ -143,17 +139,6 @@ public class ProcessService {
      */
     public AuthMe getAuthMe() {
         return authMe;
-    }
-
-    /**
-     * Compute the hash for the given password.
-     *
-     * @param password the password to hash
-     * @param username the user to hash for
-     * @return the resulting hash
-     */
-    public HashedPassword computeHash(String password, String username) {
-        return passwordSecurity.computeHash(password, username);
     }
 
     /**

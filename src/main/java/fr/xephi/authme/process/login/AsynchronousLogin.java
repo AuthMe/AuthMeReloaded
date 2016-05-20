@@ -13,8 +13,9 @@ import fr.xephi.authme.permission.AdminPermission;
 import fr.xephi.authme.permission.PermissionsManager;
 import fr.xephi.authme.permission.PlayerPermission;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.process.NewProcess;
+import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.RandomString;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.DatabaseSettings;
@@ -34,7 +35,7 @@ import java.util.List;
 
 /**
  */
-public class AsynchronousLogin implements NewProcess {
+public class AsynchronousLogin implements AsynchronousProcess {
 
     @Inject
     private AuthMe plugin;
@@ -53,6 +54,10 @@ public class AsynchronousLogin implements NewProcess {
 
     @Inject
     private LimboCache limboCache;
+
+    @Inject
+    private SyncProcessManager syncProcessManager;
+
 
     AsynchronousLogin() { }
 
@@ -187,16 +192,16 @@ public class AsynchronousLogin implements NewProcess {
             // task, we schedule it in the end
             // so that we can be sure, and have not to care if it might be
             // processed in other order.
-            ProcessSyncPlayerLogin syncPlayerLogin = new ProcessSyncPlayerLogin(player, plugin, database, service);
-            if (syncPlayerLogin.getLimbo() != null) {
-                if (syncPlayerLogin.getLimbo().getTimeoutTask() != null) {
-                    syncPlayerLogin.getLimbo().getTimeoutTask().cancel();
+            LimboPlayer limboPlayer = limboCache.getLimboPlayer(name);
+            if (limboPlayer != null) {
+                if (limboPlayer.getTimeoutTask() != null) {
+                    limboPlayer.getTimeoutTask().cancel();
                 }
-                if (syncPlayerLogin.getLimbo().getMessageTask() != null) {
-                    syncPlayerLogin.getLimbo().getMessageTask().cancel();
+                if (limboPlayer.getMessageTask() != null) {
+                    limboPlayer.getMessageTask().cancel();
                 }
             }
-            Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, syncPlayerLogin);
+            syncProcessManager.processSyncPlayerLogin(player);
         } else if (player.isOnline()) {
             if (!service.getProperty(SecuritySettings.REMOVE_SPAM_FROM_CONSOLE)) {
                 ConsoleLogger.info(player.getName() + " used the wrong password");
@@ -233,12 +238,12 @@ public class AsynchronousLogin implements NewProcess {
         ConsoleLogger.info(message);
 
         for (Player onlinePlayer : service.getOnlinePlayers()) {
-            if ((onlinePlayer.getName().equalsIgnoreCase(onlinePlayer.getName())
-                && permissionsManager.hasPermission(onlinePlayer, PlayerPermission.SEE_OWN_ACCOUNTS))) {
+            if (onlinePlayer.getName().equalsIgnoreCase(player.getName())
+                && permissionsManager.hasPermission(onlinePlayer, PlayerPermission.SEE_OWN_ACCOUNTS)) {
                 onlinePlayer.sendMessage("You own " + auths.size() + " accounts:");
                 onlinePlayer.sendMessage(message);
             } else if (permissionsManager.hasPermission(onlinePlayer, AdminPermission.SEE_OTHER_ACCOUNTS)) {
-                onlinePlayer.sendMessage("The user " + onlinePlayer.getName() + " has " + auths.size() + " accounts:");
+                onlinePlayer.sendMessage("The user " + player.getName() + " has " + auths.size() + " accounts:");
                 onlinePlayer.sendMessage(message);
             }
         }

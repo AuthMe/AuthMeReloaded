@@ -5,8 +5,6 @@ import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
-import fr.xephi.authme.security.PasswordSecurity;
-import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.settings.NewSetting;
 import fr.xephi.authme.settings.SpawnLoader;
 import fr.xephi.authme.settings.properties.SecuritySettings;
@@ -39,8 +37,6 @@ public class ProcessServiceTest {
     private NewSetting settings;
     @Mock
     private Messages messages;
-    @Mock
-    private PasswordSecurity passwordSecurity;
     @Mock
     private AuthMe authMe;
     @Mock
@@ -138,22 +134,6 @@ public class ProcessServiceTest {
 
         // then
         assertThat(result, equalTo(authMe));
-    }
-
-    @Test
-    public void shouldComputeHash() {
-        // given
-        String password = "test123";
-        String username = "Username";
-        HashedPassword hashedPassword = new HashedPassword("hashedResult", "salt12342");
-        given(passwordSecurity.computeHash(password, username)).willReturn(hashedPassword);
-
-        // when
-        HashedPassword result = processService.computeHash(password, username);
-
-        // then
-        assertThat(result, equalTo(hashedPassword));
-        verify(passwordSecurity).computeHash(password, username);
     }
 
     @Test

@@ -7,8 +7,9 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.CacheDataSource;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.process.NewProcess;
+import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
 import fr.xephi.authme.util.StringUtils;
@@ -19,7 +20,9 @@ import org.bukkit.scheduler.BukkitTask;
 
 import javax.inject.Inject;
 
-public class AsynchronousQuit implements NewProcess {
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
+
+public class AsynchronousQuit implements AsynchronousProcess {
 
     @Inject
     private AuthMe plugin;
@@ -35,6 +38,9 @@ public class AsynchronousQuit implements NewProcess {
 
     @Inject
     private LimboCache limboCache;
+
+    @Inject
+    private SyncProcessManager syncProcessManager;
 
     AsynchronousQuit() { }
 
@@ -86,7 +92,7 @@ public class AsynchronousQuit implements NewProcess {
                             postLogout(name);
                         }
 
-                    }, Settings.getSessionTimeout * 20 * 60);
+                    }, Settings.getSessionTimeout * TICKS_PER_MINUTE);
 
                     plugin.sessions.put(name, task);
                 } else {
@@ -100,7 +106,7 @@ public class AsynchronousQuit implements NewProcess {
         }
 
         if (plugin.isEnabled()) {
-            service.scheduleSyncDelayedTask(new ProcessSyncronousPlayerQuit(plugin, player, isOp, needToChange));
+            syncProcessManager.processSyncPlayerQuit(player, isOp, needToChange);
         }
         // remove player from cache
         if (database instanceof CacheDataSource) {

@@ -4,8 +4,8 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -16,34 +16,29 @@ import fr.xephi.authme.util.Utils;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitTask;
 
-/**
- */
-public class ProcessSyncEmailRegister implements Process {
+import javax.inject.Inject;
 
-    private final Player player;
-    private final String name;
-    private final ProcessService service;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
-    /**
-     * Constructor for ProcessSyncEmailRegister.
-     *
-     * @param player The player to process an email registration for
-     * @param service The process service
-     */
-    public ProcessSyncEmailRegister(Player player, ProcessService service) {
-        this.player = player;
-        this.name = player.getName().toLowerCase();
-        this.service = service;
-    }
 
-    @Override
-    public void run() {
-        LimboPlayer limbo = LimboCache.getInstance().getLimboPlayer(name);
+public class ProcessSyncEmailRegister implements SynchronousProcess {
+
+    @Inject
+    private ProcessService service;
+
+    @Inject
+    private LimboCache limboCache;
+
+    public ProcessSyncEmailRegister() { }
+
+    public void processEmailRegister(Player player) {
+        final String name = player.getName().toLowerCase();
+        LimboPlayer limbo = limboCache.getLimboPlayer(name);
         if (!Settings.getRegisteredGroup.isEmpty()) {
             Utils.setGroup(player, Utils.GroupType.REGISTERED);
         }
         service.send(player, MessageKey.ACCOUNT_NOT_ACTIVATED);
-        int time = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
+        int time = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         int msgInterval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
 
         if (limbo != null) {

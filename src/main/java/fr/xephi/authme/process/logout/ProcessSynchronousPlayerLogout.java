@@ -7,8 +7,8 @@ import fr.xephi.authme.ConsoleLogger;
 import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.events.LogoutEvent;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.Process;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.SynchronousProcess;
 import fr.xephi.authme.settings.Settings;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import fr.xephi.authme.settings.properties.RestrictionSettings;
@@ -20,47 +20,42 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-/**
- */
-public class ProcessSynchronousPlayerLogout implements Process {
+import javax.inject.Inject;
 
-    private final Player player;
-    private final AuthMe plugin;
-    private final String name;
-    private final ProcessService service;
+import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
-    /**
-     * Constructor for ProcessSynchronousPlayerLogout.
-     *
-     * @param player Player
-     * @param plugin AuthMe
-     * @param service The process service
-     */
-    public ProcessSynchronousPlayerLogout(Player player, AuthMe plugin, ProcessService service) {
-        this.player = player;
-        this.plugin = plugin;
-        this.name = player.getName().toLowerCase();
-        this.service = service;
-    }
 
-    protected void sendBungeeMessage() {
+public class ProcessSynchronousPlayerLogout implements SynchronousProcess {
+
+    @Inject
+    private AuthMe plugin;
+
+    @Inject
+    private ProcessService service;
+
+    @Inject
+    private LimboCache limboCache;
+
+    ProcessSynchronousPlayerLogout() { }
+
+    private void sendBungeeMessage(Player player) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Forward");
         out.writeUTF("ALL");
         out.writeUTF("AuthMe");
-        out.writeUTF("logout;" + name);
+        out.writeUTF("logout;" + player.getName());
         player.sendPluginMessage(plugin, "BungeeCord", out.toByteArray());
     }
 
-    protected void restoreSpeedEffect() {
+    private void restoreSpeedEffect(Player player) {
         if (Settings.isRemoveSpeedEnabled) {
             player.setWalkSpeed(0.0F);
             player.setFlySpeed(0.0F);
         }
     }
 
-    @Override
-    public void run() {
+    public void processSyncLogout(Player player) {
+        final String name = player.getName().toLowerCase();
         if (plugin.sessions.containsKey(name)) {
             plugin.sessions.get(name).cancel();
             plugin.sessions.remove(name);
@@ -68,15 +63,15 @@ public class ProcessSynchronousPlayerLogout implements Process {
         if (Settings.protectInventoryBeforeLogInEnabled) {
             plugin.inventoryProtector.sendBlankInventoryPacket(player);
         }
-        int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * 20;
+        int timeOut = service.getProperty(RestrictionSettings.TIMEOUT) * TICKS_PER_SECOND;
         int interval = service.getProperty(RegistrationSettings.MESSAGE_INTERVAL);
         if (timeOut != 0) {
             BukkitTask id = service.runTaskLater(new TimeoutTask(plugin, name, player), timeOut);
-            LimboCache.getInstance().getLimboPlayer(name).setTimeoutTask(id);
+            limboCache.getLimboPlayer(name).setTimeoutTask(id);
         }
         BukkitTask msgT = service.runTask(new MessageTask(service.getBukkitService(), plugin.getMessages(),
             name, MessageKey.LOGIN_MESSAGE, interval));
-        LimboCache.getInstance().getLimboPlayer(name).setMessageTask(msgT);
+        limboCache.getLimboPlayer(name).setMessageTask(msgT);
         if (player.isInsideVehicle() && player.getVehicle() != null) {
             player.getVehicle().eject();
         }
@@ -84,11 +79,11 @@ public class ProcessSynchronousPlayerLogout implements Process {
             player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, timeOut, 2));
         }
         player.setOp(false);
-        restoreSpeedEffect();
+        restoreSpeedEffect(player);
         // Player is now logout... Time to fire event !
         Bukkit.getServer().getPluginManager().callEvent(new LogoutEvent(player));
         if (Settings.bungee) {
-            sendBungeeMessage();
+            sendBungeeMessage(player);
         }
         service.send(player, MessageKey.LOGOUT_SUCCESS);
         ConsoleLogger.info(player.getName() + " logged out");

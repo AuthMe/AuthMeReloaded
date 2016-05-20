@@ -8,7 +8,7 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.NewProcess;
+import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.settings.Settings;
@@ -27,7 +27,7 @@ import javax.inject.Inject;
 
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
 
-public class AsynchronousUnregister implements NewProcess {
+public class AsynchronousUnregister implements AsynchronousProcess {
 
     @Inject
     private AuthMe plugin;

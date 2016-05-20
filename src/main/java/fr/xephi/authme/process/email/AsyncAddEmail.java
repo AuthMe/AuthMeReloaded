@@ -5,7 +5,7 @@ import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
-import fr.xephi.authme.process.NewProcess;
+import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
 import fr.xephi.authme.settings.properties.RegistrationSettings;
 import org.bukkit.entity.Player;
@@ -15,7 +15,7 @@ import javax.inject.Inject;
 /**
  * Async task to add an email to an account.
  */
-public class AsyncAddEmail implements NewProcess {
+public class AsyncAddEmail implements AsynchronousProcess {
 
     @Inject
     private ProcessService service;

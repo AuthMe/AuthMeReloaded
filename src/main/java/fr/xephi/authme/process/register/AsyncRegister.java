@@ -6,9 +6,11 @@ import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.datasource.DataSource;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.permission.PlayerStatePermission;
-import fr.xephi.authme.process.NewProcess;
+import fr.xephi.authme.process.AsynchronousProcess;
 import fr.xephi.authme.process.ProcessService;
+import fr.xephi.authme.process.SyncProcessManager;
 import fr.xephi.authme.security.HashAlgorithm;
+import fr.xephi.authme.security.PasswordSecurity;
 import fr.xephi.authme.security.crypts.HashedPassword;
 import fr.xephi.authme.security.crypts.TwoFactor;
 import fr.xephi.authme.settings.Settings;
@@ -24,7 +26,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.List;
 
-public class AsyncRegister implements NewProcess {
+public class AsyncRegister implements AsynchronousProcess {
 
     @Inject
     private AuthMe plugin;
@@ -36,7 +38,13 @@ public class AsyncRegister implements NewProcess {
     private PlayerCache playerCache;
 
     @Inject
+    private PasswordSecurity passwordSecurity;
+
+    @Inject
     private ProcessService service;
+
+    @Inject
+    private SyncProcessManager syncProcessManager;
 
     AsyncRegister() { }
 
@@ -104,7 +112,7 @@ public class AsyncRegister implements NewProcess {
             }
         }
 
-        final HashedPassword hashedPassword = service.computeHash(password, name);
+        final HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
         final String ip = Utils.getPlayerIp(player);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
@@ -122,15 +130,13 @@ public class AsyncRegister implements NewProcess {
         database.updateEmail(auth);
         database.updateSession(auth);
         plugin.mail.main(auth, password);
-        ProcessSyncEmailRegister sync = new ProcessSyncEmailRegister(player, service);
-        service.scheduleSyncDelayedTask(sync);
-
+        syncProcessManager.processSyncEmailRegister(player);
     }
 
     private void passwordRegister(Player player, String password, boolean autoLogin) {
         final String name = player.getName().toLowerCase();
         final String ip = Utils.getPlayerIp(player);
-        final HashedPassword hashedPassword = service.computeHash(password, name);
+        final HashedPassword hashedPassword = passwordSecurity.computeHash(password, name);
         PlayerAuth auth = PlayerAuth.builder()
             .name(name)
             .realName(player.getName())
@@ -150,9 +156,7 @@ public class AsyncRegister implements NewProcess {
             // TODO: check this...
             plugin.getManagement().performLogin(player, "dontneed", true);
         }
-
-        ProcessSyncPasswordRegister sync = new ProcessSyncPasswordRegister(player, plugin, service);
-        service.scheduleSyncDelayedTask(sync);
+        syncProcessManager.processSyncPasswordRegister(player);
 
         //give the user the secret code to setup their app code generation
         if (service.getProperty(SecuritySettings.PASSWORD_HASH) == HashAlgorithm.TWO_FACTOR) {
