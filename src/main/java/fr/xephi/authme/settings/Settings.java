@@ -61,7 +61,7 @@ public final class Settings {
         getSessionTimeout = configFile.getInt("settings.sessions.timeout", 10);
         getMaxNickLength = configFile.getInt("settings.restrictions.maxNicknameLength", 20);
         getMinNickLength = configFile.getInt("settings.restrictions.minNicknameLength", 3);
-        getNickRegex = configFile.getString("settings.restrictions.allowedNicknameCharacters", "[a-zA-Z0-9_?]*");
+        getNickRegex = load(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
         nickPattern = Pattern.compile(getNickRegex);
         isAllowRestrictedIp = load(RestrictionSettings.ENABLE_RESTRICTED_USERS);
         isRemoveSpeedEnabled = load(RestrictionSettings.REMOVE_SPEED);

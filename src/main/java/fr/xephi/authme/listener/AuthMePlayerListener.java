@@ -362,7 +362,7 @@ public class AuthMePlayerListener implements Listener {
 
         String nickRegEx = settings.getProperty(RestrictionSettings.ALLOWED_NICKNAME_CHARACTERS);
         Pattern nickPattern = Pattern.compile(nickRegEx);
-        if (nickPattern.matcher(player.getName()).matches() || name.equalsIgnoreCase("Player")) {
+        if (name.equalsIgnoreCase("Player") || !nickPattern.matcher(player.getName()).matches()) {
             event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_CHARACTERS).replace("REG_EX", nickRegEx));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
             return;
