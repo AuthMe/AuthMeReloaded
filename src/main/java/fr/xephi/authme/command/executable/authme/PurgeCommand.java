@@ -4,9 +4,7 @@ import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.command.CommandService;
 import fr.xephi.authme.command.ExecutableCommand;
 import fr.xephi.authme.datasource.DataSource;
-import fr.xephi.authme.hooks.PluginHooks;
 import fr.xephi.authme.task.PurgeTask;
-import fr.xephi.authme.util.BukkitService;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
@@ -25,12 +23,6 @@ public class PurgeCommand implements ExecutableCommand {
 
     @Inject
     private DataSource dataSource;
-
-    @Inject
-    private PluginHooks pluginHooks;
-
-    @Inject
-    private BukkitService bukkitService;
 
     @Inject
     private AuthMe plugin;
