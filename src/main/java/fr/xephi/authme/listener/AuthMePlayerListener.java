@@ -36,7 +36,6 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerChatEvent;
@@ -92,26 +91,6 @@ public class AuthMePlayerListener implements Listener {
     private SpawnLoader spawnLoader;
     @Inject
     private ValidationService validationService;
-
-    /*
-    private void handleChat(AsyncPlayerChatEvent event) {
-        if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
-            return;
-        }
-
-        final Player player = event.getPlayer();
-        if (shouldCancelEvent(player)) {
-            event.setCancelled(true);
-            sendLoginOrRegisterMessage(player);
-        } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
-            for (Player p : bukkitService.getOnlinePlayers()) {
-                if (!PlayerCache.getInstance().isAuthenticated(p.getName())) {
-                    event.getRecipients().remove(p);
-                }
-            }
-        }
-    }
-    */
 
     private void sendLoginOrRegisterMessage(final Player player) {
         bukkitService.runTaskAsynchronously(new Runnable() {
@@ -175,33 +154,6 @@ public class AuthMePlayerListener implements Listener {
             }
         }
     }
-
-    /*
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
-    public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
-    public void onPlayerHighChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-    public void onPlayerHighestChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOWEST)
-    public void onPlayerEarlyChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-
-    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onPlayerLowChat(AsyncPlayerChatEvent event) {
-        handleChat(event);
-    }
-    */
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent event) {
