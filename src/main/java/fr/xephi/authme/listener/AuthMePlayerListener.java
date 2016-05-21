@@ -139,9 +139,12 @@ public class AuthMePlayerListener implements Listener {
         final Player player = event.getPlayer();
         if (shouldCancelEvent(player)) {
             event.setCancelled(true);
-            // TODO: a spambot calls this too often, too many threads checking if auth is available.
-            // Possible solution: add a cooldown. -sgdc3
-            // sendLoginOrRegisterMessage(player);
+            bukkitService.runTaskAsynchronously(new Runnable() {
+                @Override
+                public void run() {
+                    m.send(player, MessageKey.DENIED_CHAT_MESSAGE);
+                }
+            });
         } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
             Set<Player> recipients = event.getRecipients();
             Iterator<Player> iter = recipients.iterator();
