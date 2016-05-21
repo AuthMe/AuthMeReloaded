@@ -5,7 +5,7 @@ package fr.xephi.authme.initialization;
  *
  * @param <T> the type of the concerned object
  */
-interface Injection<T> {
+public interface Injection<T> {
 
     /**
      * Returns the dependencies that must be provided to instantiate the given item.

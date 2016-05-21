@@ -16,7 +16,7 @@ import java.util.List;
 /**
  * Functionality for field injection.
  */
-class FieldInjection<T> implements Injection<T> {
+public class FieldInjection<T> implements Injection<T> {
 
     private final Field[] fields;
     private final Constructor<T> defaultConstructor;

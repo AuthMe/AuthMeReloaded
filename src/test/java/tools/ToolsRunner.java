@@ -81,7 +81,7 @@ public final class ToolsRunner {
     private static void collectTasksInDirectory(File dir, Map<String, ToolTask> taskCollection) {
         File[] files = dir.listFiles();
         if (files == null) {
-            throw new RuntimeException("Cannot read folder '" + dir + "'");
+            throw new IllegalStateException("Cannot read folder '" + dir + "'");
         }
         for (File file : files) {
             if (file.isDirectory()) {
@@ -112,7 +112,7 @@ public final class ToolsRunner {
             return constructor.newInstance();
         } catch (NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException | InstantiationException e) {
-            throw new RuntimeException("Cannot instantiate task '" + taskClass + "'");
+            throw new IllegalStateException("Cannot instantiate task '" + taskClass + "'");
         }
     }
 
@@ -137,7 +137,7 @@ public final class ToolsRunner {
                 ? (Class<? extends ToolTask>) clazz
                 : null;
         } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
     }
 
