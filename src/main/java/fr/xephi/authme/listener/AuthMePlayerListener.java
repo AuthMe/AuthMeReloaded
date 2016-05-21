@@ -129,10 +129,9 @@ public class AuthMePlayerListener implements Listener {
         sendLoginOrRegisterMessage(event.getPlayer());
     }
 
-    // I think it should be sync! -sgdc3
     @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-    public void onPlayerNormalChat(PlayerChatEvent event) {
+    public void onPlayerChat(PlayerChatEvent event) {
         if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
             return;
         }
@@ -141,7 +140,7 @@ public class AuthMePlayerListener implements Listener {
         if (shouldCancelEvent(player)) {
             event.setCancelled(true);
             // TODO: a spambot calls this too often, too many threads checking if auth is available.
-            // Possible solution: add a cooldown.
+            // Possible solution: add a cooldown. -sgdc3
             // sendLoginOrRegisterMessage(player);
         } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
             Set<Player> recipients = event.getRecipients();
@@ -178,7 +177,6 @@ public class AuthMePlayerListener implements Listener {
 
         if (!settings.getProperty(RestrictionSettings.ALLOW_UNAUTHED_MOVEMENT)) {
             event.setTo(event.getFrom());
-            // sgdc3 TODO: remove this, maybe we should set the effect every x ticks, idk!
             if (settings.getProperty(RestrictionSettings.REMOVE_SPEED)) {
                 player.setFlySpeed(0.0f);
                 player.setWalkSpeed(0.0f);
