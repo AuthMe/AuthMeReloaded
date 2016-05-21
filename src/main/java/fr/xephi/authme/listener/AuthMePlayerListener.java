@@ -39,6 +39,7 @@ import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
@@ -55,6 +56,9 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 
 import javax.inject.Inject;
+
+import java.util.Iterator;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
@@ -89,6 +93,7 @@ public class AuthMePlayerListener implements Listener {
     @Inject
     private ValidationService validationService;
 
+    /*
     private void handleChat(AsyncPlayerChatEvent event) {
         if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
             return;
@@ -106,6 +111,7 @@ public class AuthMePlayerListener implements Listener {
             }
         }
     }
+    */
 
     private void sendLoginOrRegisterMessage(final Player player) {
         bukkitService.runTaskAsynchronously(new Runnable() {
@@ -144,6 +150,33 @@ public class AuthMePlayerListener implements Listener {
         sendLoginOrRegisterMessage(event.getPlayer());
     }
 
+    // I think it should be sync! -sgdc3
+    @SuppressWarnings("deprecation")
+    @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
+    public void onPlayerNormalChat(PlayerChatEvent event) {
+        if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
+            return;
+        }
+
+        final Player player = event.getPlayer();
+        if (shouldCancelEvent(player)) {
+            event.setCancelled(true);
+            // TODO: a spambot calls this too often, too may threads checking if auth is available.
+            // Possible solution: add a cooldown.
+            // sendLoginOrRegisterMessage(player);
+        } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
+            Set<Player> recipients = event.getRecipients();
+            Iterator<Player> iter = recipients.iterator();
+            if(iter.hasNext()) {
+                Player p = iter.next();
+                if(PlayerCache.getInstance().isAuthenticated(p.getName())) {
+                    iter.remove();
+                }
+            }
+        }
+    }
+
+    /*
     @EventHandler(ignoreCancelled = true, priority = EventPriority.NORMAL)
     public void onPlayerNormalChat(AsyncPlayerChatEvent event) {
         handleChat(event);
@@ -168,6 +201,7 @@ public class AuthMePlayerListener implements Listener {
     public void onPlayerLowChat(AsyncPlayerChatEvent event) {
         handleChat(event);
     }
+    */
 
     @EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent event) {
