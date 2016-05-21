@@ -161,7 +161,7 @@ public class AuthMePlayerListener implements Listener {
         final Player player = event.getPlayer();
         if (shouldCancelEvent(player)) {
             event.setCancelled(true);
-            // TODO: a spambot calls this too often, too may threads checking if auth is available.
+            // TODO: a spambot calls this too often, too many threads checking if auth is available.
             // Possible solution: add a cooldown.
             // sendLoginOrRegisterMessage(player);
         } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {

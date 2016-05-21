@@ -109,26 +109,28 @@ public class MySQL implements DataSource {
     private synchronized void setConnectionArguments() throws RuntimeException {
         ds = new HikariDataSource();
         ds.setPoolName("AuthMeMYSQLPool");
-        ds.setDriverClassName("com.mysql.jdbc.Driver");
-        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
-        ds.addDataSourceProperty("rewriteBatchedStatements", "true");
-        ds.addDataSourceProperty("jdbcCompliantTruncation", "false");
-        ds.addDataSourceProperty("cachePrepStmts", "true");
-        ds.addDataSourceProperty("prepStmtCacheSize", "250");
-        ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
 
-        //set utf-8 as default encoding
+        // Database URL
+        ds.setJdbcUrl("jdbc:mysql://" + this.host + ":" + this.port + "/" + this.database);
+
+        // Auth
+        ds.setUsername(this.username);
+        ds.setPassword(this.password);
+
+        // Encoding
         ds.addDataSourceProperty("characterEncoding", "utf8");
         ds.addDataSourceProperty("encoding","UTF-8");
         ds.addDataSourceProperty("useUnicode", "true");
 
-        ds.setUsername(this.username);
-        ds.setPassword(this.password);
-        ds.setInitializationFailFast(true); // Don't start the plugin if the database is unavailable
-        ds.setMaxLifetime(180000); // 3 Min
-        ds.setIdleTimeout(60000); // 1 Min
-        ds.setMinimumIdle(2);
-        ds.setMaximumPoolSize((Runtime.getRuntime().availableProcessors() * 2) + 1);
+        // Random stuff
+        ds.addDataSourceProperty("rewriteBatchedStatements", "true");
+        ds.addDataSourceProperty("jdbcCompliantTruncation", "false");
+
+        // Caching
+        ds.addDataSourceProperty("cachePrepStmts", "true");
+        ds.addDataSourceProperty("prepStmtCacheSize", "250");
+        ds.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+
         ConsoleLogger.info("Connection arguments loaded, Hikari ConnectionPool ready!");
     }
 
