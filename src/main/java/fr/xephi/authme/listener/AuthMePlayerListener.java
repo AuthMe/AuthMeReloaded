@@ -129,7 +129,6 @@ public class AuthMePlayerListener implements Listener {
         sendLoginOrRegisterMessage(event.getPlayer());
     }
 
-    @SuppressWarnings("deprecation")
     @EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
     public void onPlayerChat(PlayerChatEvent event) {
         if (settings.getProperty(RestrictionSettings.ALLOW_CHAT)) {
@@ -148,9 +147,9 @@ public class AuthMePlayerListener implements Listener {
         } else if (settings.getProperty(RestrictionSettings.HIDE_CHAT)) {
             Set<Player> recipients = event.getRecipients();
             Iterator<Player> iter = recipients.iterator();
-            if(iter.hasNext()) {
+            while (iter.hasNext()) {
                 Player p = iter.next();
-                if(PlayerCache.getInstance().isAuthenticated(p.getName())) {
+                if (PlayerCache.getInstance().isAuthenticated(p.getName())) {
                     iter.remove();
                 }
             }
