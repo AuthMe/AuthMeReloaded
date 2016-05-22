@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.backup.FileCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -35,7 +36,7 @@ public class TimeoutTask implements Runnable {
         if (PlayerCache.getInstance().isAuthenticated(name))
             return;
 
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getInstance().getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
                 if (LimboCache.getInstance().hasLimboPlayer(name)) {
                     LimboPlayer inv = LimboCache.getInstance().getLimboPlayer(name);

@@ -73,6 +73,8 @@ import fr.xephi.authme.settings.Spawn;
 import fr.xephi.authme.threads.FlatFileThread;
 import fr.xephi.authme.threads.MySQLThread;
 import fr.xephi.authme.threads.SQLiteThread;
+import java.util.ArrayList;
+import java.util.Collection;
 
 public class AuthMe extends JavaPlugin {
 
@@ -307,7 +309,7 @@ public class AuthMe extends JavaPlugin {
         if (Settings.reloadSupport)
         	try {
                 onReload();
-                if (server.getOnlinePlayers().length < 1) {
+                if (Utils.getInstance().getOnlinePlayers().size() < 1) {
                 	try {
                     	database.purgeLogged();
                 	} catch (NullPointerException npe) {
@@ -472,8 +474,8 @@ public class AuthMe extends JavaPlugin {
 
 	@Override
     public void onDisable() {
-        if (Bukkit.getOnlinePlayers().length != 0)
-        	for(Player player : Bukkit.getOnlinePlayers()) {
+        if (Utils.getInstance().getOnlinePlayers().size() != 0)
+        	for(Player player : Utils.getInstance().getOnlinePlayers()) {
         		this.savePlayer(player);
         	}
 
@@ -495,8 +497,8 @@ public class AuthMe extends JavaPlugin {
 
 	private void onReload() {
 		try {
-	    	if (Bukkit.getServer().getOnlinePlayers() != null) {
-	    		for (Player player : Bukkit.getServer().getOnlinePlayers()) {
+	    	if (Utils.getInstance().getOnlinePlayers() != null) {
+	    		for (Player player : Utils.getInstance().getOnlinePlayers()) {
 	    			if (database.isLogged(player.getName().toLowerCase())) {
 	    				String name = player.getName().toLowerCase();
 	    		        PlayerAuth pAuth = database.getAuth(name);
@@ -566,27 +568,26 @@ public class AuthMe extends JavaPlugin {
 		return m;
 	}
 
-	public Player generateKickPlayer(Player[] players) {
-		Player player = null;
-		int i;
-		for (i = 0 ; i <= players.length ; i++) {
-			Random rdm = new Random();
-			int a = rdm.nextInt(players.length);
-			if (!(authmePermissible(players[a], "authme.vip"))) {
-				player = players[a];
-				break;
-			}
-		}
-		if (player == null) {
-			for (Player p : players) {
-				if (!(authmePermissible(p, "authme.vip"))) {
-					player = p;
-					break;
-				}
-			}
-		}
-		return player;
-	}
+    public Player generateKickPlayer(Collection<? extends Player> players) {
+        List<Player> listPlayers = new ArrayList<>(players);
+
+        int i;
+        for (i = 0; i <= players.size(); i++) {
+            Random rdm = new Random();
+            int a = rdm.nextInt(players.size());
+            if (!(authmePermissible(listPlayers.get(a), "authme.vip"))) {
+                return listPlayers.get(a);
+            }
+        }
+
+        for (Player p : players) {
+            if (!(authmePermissible(p, "authme.vip"))) {
+                return p;
+            }
+        }
+
+        return null;
+    }
 
 	public boolean authmePermissible(Player player, String perm) {
 		if (player.hasPermission(perm))
@@ -803,7 +804,7 @@ public class AuthMe extends JavaPlugin {
     	Bukkit.getScheduler().scheduleSyncRepeatingTask(this, new Runnable(){
 			@Override
 			public void run() {
-		    	for (Player player : Bukkit.getOnlinePlayers()) {
+		    	for (Player player : Utils.getInstance().getOnlinePlayers()) {
 		    		if (player.isOnline()) {
 		    			String name = player.getName().toLowerCase();
 		    			if (database.isAuthAvailable(name))
@@ -822,7 +823,7 @@ public class AuthMe extends JavaPlugin {
     	try {
         	message = message.replace("&", "\u00a7");
         	message = message.replace("{PLAYER}", player.getName());
-        	message = message.replace("{ONLINE}", ""+this.getServer().getOnlinePlayers().length);
+        	message = message.replace("{ONLINE}", ""+ Utils.getInstance().getOnlinePlayers().size());
         	message = message.replace("{MAXPLAYERS}", ""+this.getServer().getMaxPlayers());
         	message = message.replace("{IP}", getIP(player));
         	message = message.replace("{LOGINS}", ""+PlayerCache.getInstance().getLogged());
@@ -848,7 +849,7 @@ public class AuthMe extends JavaPlugin {
     }
 
 	public boolean isLoggedIp(String name, String ip) {
-		for (Player player : this.getServer().getOnlinePlayers()) {
+		for (Player player : Utils.getInstance().getOnlinePlayers()) {
 			if(ip.equalsIgnoreCase(getIP(player)) && database.isLogged(player.getName().toLowerCase()) && !player.getName().equalsIgnoreCase(name))
 				return true;
 		}
@@ -856,7 +857,7 @@ public class AuthMe extends JavaPlugin {
 	}
 
 	public boolean hasJoinedIp(String name, String ip) {
-		for (Player player : this.getServer().getOnlinePlayers()) {
+		for (Player player : Utils.getInstance().getOnlinePlayers()) {
 			if(ip.equalsIgnoreCase(getIP(player)) && !player.getName().equalsIgnoreCase(name))
 				return true;
 		}

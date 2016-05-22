@@ -4,6 +4,12 @@
     <artifactId>AuthMe</artifactId>
     <packaging>jar</packaging>
     <name>AuthMe</name>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+    </properties>
 	<repositories>
 		<repository>
 			<id>Bukkit</id>
@@ -28,9 +34,18 @@
     <dependencies>
     	<dependency>
     		<groupId>org.bukkit</groupId>
-    		<artifactId>craftbukkit</artifactId>
-    		<version>1.7.9-R0.2</version>
-    	</dependency>
+    		<artifactId>bukkit</artifactId>
+    		<version>1.9.2-R0.1-SNAPSHOT</version>
+        </dependency>
+        <!-- Log4J Logger (required by the console filter) -->
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
+            <!-- Can't use newer versions due to api changes! -->
+            <version>2.0-beta9</version>
+            <scope>provided</scope>
+        </dependency>
+
     	<dependency>
     		<groupId>net.milkbowl.vault</groupId>
     		<artifactId>Vault</artifactId>

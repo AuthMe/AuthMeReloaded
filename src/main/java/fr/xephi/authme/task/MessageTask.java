@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import fr.xephi.authme.AuthMe;
+import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
 
@@ -27,7 +28,7 @@ public class MessageTask implements Runnable {
         if (PlayerCache.getInstance().isAuthenticated(name))
             return;
 
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getInstance().getOnlinePlayers()) {
             if (player.getName().toLowerCase().equals(name)) {
             	for (String ms : msg) {
             		player.sendMessage(ms);

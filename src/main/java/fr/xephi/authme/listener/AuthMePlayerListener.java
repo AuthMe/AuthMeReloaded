@@ -485,11 +485,11 @@ public class AuthMePlayerListener implements Listener {
         	return;
         }
 
-        if (plugin.getServer().getOnlinePlayers().length > plugin.getServer().getMaxPlayers()) {
+        if (Utils.getInstance().getOnlinePlayers().size() > plugin.getServer().getMaxPlayers()) {
         	event.allow();
         	return;
         } else {
-        	final Player pl = plugin.generateKickPlayer(plugin.getServer().getOnlinePlayers());
+        	final Player pl = plugin.generateKickPlayer(Utils.getInstance().getOnlinePlayers());
         	if (pl != null) {
         		pl.kickPlayer(m._("kick_forvip")[0]);
         		event.allow();

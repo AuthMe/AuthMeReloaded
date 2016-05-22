@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import fr.xephi.authme.AuthMe;
 import fr.xephi.authme.ConsoleLogger;
+import fr.xephi.authme.Utils;
 import fr.xephi.authme.cache.auth.PlayerAuth;
 import fr.xephi.authme.cache.auth.PlayerCache;
 import fr.xephi.authme.cache.limbo.LimboCache;
@@ -226,7 +227,7 @@ public class AsyncronousLogin {
             	uuidaccounts = uuidaccounts + ".";
             }
         }*/
-        for (Player player : plugin.getServer().getOnlinePlayers()) {
+        for (Player player : Utils.getInstance().getOnlinePlayers()) {
             if (plugin.authmePermissible(player, "authme.seeOtherAccounts")) {
                 player.sendMessage("[AuthMe] The player " + auth.getNickname() + " has "
                         + auths.size() + " accounts");

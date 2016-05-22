@@ -17,12 +17,23 @@ import fr.xephi.authme.cache.limbo.LimboCache;
 import fr.xephi.authme.cache.limbo.LimboPlayer;
 import fr.xephi.authme.events.AuthMeTeleportEvent;
 import fr.xephi.authme.settings.Settings;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 public class Utils {
     private String currentGroup;
     private static Utils singleton;
     int id;
     public AuthMe plugin;
+    private static final boolean getOnlinePlayersIsCollection;
+    private static Method getOnlinePlayers;
+
+    static {
+        getOnlinePlayersIsCollection = initializeOnlinePlayersIsCollectionField();
+    }
 
     public Utils(AuthMe plugin) {
     	this.plugin = plugin;
@@ -237,4 +248,57 @@ public class Utils {
         UNREGISTERED, REGISTERED, NOTLOGGEDIN, LOGGEDIN
     }
 
+    /**
+     * Safe way to retrieve the list of online players from the server. Depending on the
+     * implementation of the server, either an array of {@link Player} instances is being returned,
+     * or a Collection. Always use this wrapper to retrieve online players instead of {@link
+     * Bukkit#getOnlinePlayers()} directly.
+     *
+     * @return collection of online players
+     *
+     * @see <a href="https://www.spigotmc.org/threads/solved-cant-use-new-getonlineplayers.33061/">SpigotMC
+     * forum</a>
+     * @see <a href="http://stackoverflow.com/questions/32130851/player-changed-from-array-to-collection">StackOverflow</a>
+     */
+    @SuppressWarnings("unchecked")
+    public Collection<? extends Player> getOnlinePlayers() {
+        if (getOnlinePlayersIsCollection) {
+            return Bukkit.getOnlinePlayers();
+        }
+        try {
+            // The lookup of a method via Reflections is rather expensive, so we keep a reference to it
+            if (getOnlinePlayers == null) {
+                getOnlinePlayers = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
+            }
+            Object obj = getOnlinePlayers.invoke(null);
+            if (obj instanceof Collection<?>) {
+                return (Collection<? extends Player>) obj;
+            } else if (obj instanceof Player[]) {
+                return Arrays.asList((Player[]) obj);
+            } else {
+                String type = (obj != null) ? obj.getClass().getName() : "null";
+                ConsoleLogger.showError("Unknown list of online players of type " + type);
+            }
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
+            ConsoleLogger.showError(e.toString());
+        }
+
+        return Collections.emptyList();
+    }
+
+    /**
+     * Method run upon initialization to verify whether or not the Bukkit implementation
+     * returns the online players as a Collection.
+     *
+     * @see #getOnlinePlayers()
+     */
+    private static boolean initializeOnlinePlayersIsCollectionField() {
+        try {
+            Method method = Bukkit.class.getDeclaredMethod("getOnlinePlayers");
+            return method.getReturnType() == Collection.class;
+        } catch (NoSuchMethodException e) {
+            ConsoleLogger.showError("Error verifying if getOnlinePlayers is a collection! Method doesn't exist");
+        }
+        return false;
+    }
 }
