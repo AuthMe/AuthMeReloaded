@@ -88,7 +88,7 @@ settings:
         # due to "Logged in from another Location"
         # This setting will prevent potetial security exploits.
         ForceSingleSession: true
-        ForceSpawnLocOnJoin: 
+        ForceSpawnLocOnJoin:
             # If enabled, every player will be teleported to the world spawnpoint
             # after successful authentication.
             # The quit location of the player will be overwritten.
@@ -97,7 +97,7 @@ settings:
             enabled: false
             # WorldNames where we need to force the spawn location
             # Case-sensitive!
-            worlds: 
+            worlds:
             - 'world'
             - 'world_nether'
             - 'world_the_end'
@@ -418,8 +418,8 @@ Protection:
     countriesBlacklist:
     - 'A1'
     # Do we need to enable automatic antibot system?
-    enableAntiBot: false
+    enableAntiBot: true
     # Max number of player allowed to login in 5 secs before enable AntiBot system automatically
-    antiBotSensibility: 5
+    antiBotSensibility: 10
     # Duration in minutes of the antibot automatic system
     antiBotDuration: 10

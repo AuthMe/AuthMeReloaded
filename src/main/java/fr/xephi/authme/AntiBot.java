@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -12,6 +13,7 @@ import org.bukkit.entity.Player;
 import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_MINUTE;
 import static fr.xephi.authme.util.BukkitService.TICKS_PER_SECOND;
@@ -25,7 +27,8 @@ public class AntiBot {
     private final Messages messages;
     private final PermissionsManager permissionsManager;
     private final BukkitService bukkitService;
-    private final List<String> antibotPlayers = new ArrayList<>();
+    public final CopyOnWriteArrayList<String> antibotKicked = new CopyOnWriteArrayList<String>();
+    private final CopyOnWriteArrayList<String> antibotPlayers = new CopyOnWriteArrayList<String>();
     private AntiBotStatus antiBotStatus = AntiBotStatus.DISABLED;
 
     @Inject
@@ -77,6 +80,7 @@ public class AntiBot {
                 if (antiBotStatus == AntiBotStatus.ACTIVE) {
                     antiBotStatus = AntiBotStatus.LISTENING;
                     antibotPlayers.clear();
+                    antibotKicked.clear();
                     for (String s : messages.retrieve(MessageKey.ANTIBOT_AUTO_DISABLED_MESSAGE)) {
                         bukkitService.broadcastMessage(s.replace("%m", Integer.toString(duration)));
                     }

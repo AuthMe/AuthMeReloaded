@@ -28,6 +28,7 @@ import fr.xephi.authme.util.ValidationService;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -58,7 +59,11 @@ import javax.inject.Inject;
 
 import java.util.Iterator;
 import java.util.Set;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.regex.Pattern;
 
 import static fr.xephi.authme.listener.ListenerService.shouldCancelEvent;
@@ -73,6 +78,7 @@ public class AuthMePlayerListener implements Listener {
 
     public static final ConcurrentHashMap<String, String> joinMessage = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<String, Boolean> causeByAuthMe = new ConcurrentHashMap<>();
+
     @Inject
     private AuthMe plugin;
     @Inject
@@ -239,7 +245,7 @@ public class AuthMePlayerListener implements Listener {
             player.setGameMode(GameMode.SURVIVAL);
         }
 
-        // Shedule login task so works after the prelogin
+        // Schedule login task so works after the prelogin
         // (Fix found by Koolaid5000)
         bukkitService.runTask(new Runnable() {
             @Override
@@ -252,6 +258,23 @@ public class AuthMePlayerListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPreLogin(AsyncPlayerPreLoginEvent event) {
         PlayerAuth auth = dataSource.getAuth(event.getName());
+        if (auth == null && antiBot.getAntiBotStatus() == AntiBotStatus.ACTIVE) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            antiBot.antibotKicked.addIfAbsent(event.getName());
+            return;
+        }
+        if (auth == null && settings.getProperty(RestrictionSettings.KICK_NON_REGISTERED)) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.MUST_REGISTER_MESSAGE));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            return;
+        }
+        final String name = event.getName().toLowerCase();
+        if (name.length() > settings.getProperty(RestrictionSettings.MAX_NICKNAME_LENGTH) || name.length() < settings.getProperty(RestrictionSettings.MIN_NICKNAME_LENGTH)) {
+            event.setKickMessage(m.retrieveSingle(MessageKey.INVALID_NAME_LENGTH));
+            event.setLoginResult(AsyncPlayerPreLoginEvent.Result.KICK_OTHER);
+            return;
+        }
         if (settings.getProperty(RegistrationSettings.PREVENT_OTHER_CASE) && auth != null && auth.getRealName() != null) {
             String realName = auth.getRealName();
             if (!realName.isEmpty() && !"Player".equals(realName) && !realName.equals(event.getName())) {
@@ -273,7 +296,6 @@ public class AuthMePlayerListener implements Listener {
             }
         }
 
-        final String name = event.getName().toLowerCase();
         final Player player = bukkitService.getPlayerExact(name);
         // Check if forceSingleSession is set to true, so kick player that has
         // joined with same nick of online player
@@ -331,6 +353,7 @@ public class AuthMePlayerListener implements Listener {
         if (antiBot.getAntiBotStatus() == AntiBotStatus.ACTIVE && !isAuthAvailable) {
             event.setKickMessage(m.retrieveSingle(MessageKey.KICK_ANTIBOT));
             event.setResult(PlayerLoginEvent.Result.KICK_OTHER);
+            antiBot.antibotKicked.addIfAbsent(player.getName());
             return;
         }
 
@@ -375,6 +398,10 @@ public class AuthMePlayerListener implements Listener {
             event.setQuitMessage(null);
         }
 
+        if (antiBot.antibotKicked.contains(player.getName())) {
+        	return;
+        }
+
         management.performQuit(player, false);
     }
 
@@ -390,6 +417,10 @@ public class AuthMePlayerListener implements Listener {
             && event.getReason().equals(m.retrieveSingle(MessageKey.USERNAME_ALREADY_ONLINE_ERROR))) {
             event.setCancelled(true);
             return;
+        }
+
+        if (antiBot.antibotKicked.contains(player.getName())) {
+        	return;
         }
 
         plugin.getManagement().performQuit(player, true);
