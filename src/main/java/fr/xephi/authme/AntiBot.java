@@ -1,5 +1,6 @@
 package fr.xephi.authme;
 
+import fr.xephi.authme.listener.AuthMePlayerListener;
 import fr.xephi.authme.output.MessageKey;
 import fr.xephi.authme.output.Messages;
 import fr.xephi.authme.permission.PermissionsManager;
@@ -77,6 +78,7 @@ public class AntiBot {
                 if (antiBotStatus == AntiBotStatus.ACTIVE) {
                     antiBotStatus = AntiBotStatus.LISTENING;
                     antibotPlayers.clear();
+                    AuthMePlayerListener.antibotKicked.clear();
                     for (String s : messages.retrieve(MessageKey.ANTIBOT_AUTO_DISABLED_MESSAGE)) {
                         bukkitService.broadcastMessage(s.replace("%m", Integer.toString(duration)));
                     }
